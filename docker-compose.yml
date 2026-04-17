@@ -1,0 +1,12 @@
+services:
+  paperpilot:
+    build: .
+    image: paperpilot:latest
+    env_file:
+      - paperpilot/.env
+    volumes:
+      - ./paperpilot/output:/app/paperpilot/output
+      - ./paperpilot/data:/app/paperpilot/data
+      - ./paperpilot/logs:/app/paperpilot/logs
+      - ./paperpilot/config.yaml:/app/paperpilot/config.yaml:ro
+    command: ["--config", "paperpilot/config.yaml"]

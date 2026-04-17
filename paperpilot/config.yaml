@@ -54,11 +54,21 @@ weights:
   citation: 1.5
   author: 1.0
   keyword: 0.5
+  embedding: 2.5     # applied in Stage 3 (when enabled)
 
 # ===== Pipeline control =====
 pipeline:
   stage2_top_n: 30
+  stage3_top_n: 30
   stage4_top_n: 10
+
+# ===== Stage 3: Embedding similarity (optional) =====
+# Requires: pip install 'paperpilot[embedding]' (~80MB sentence-transformers).
+# When disabled, Stage 3 is skipped and Stage 4 consumes Stage 2 output.
+embedding:
+  enabled: false
+  backend: minilm                                     # future: specter2, bge, cohere
+  model: sentence-transformers/all-MiniLM-L6-v2
 
 # ===== LLM (Stage 4) =====
 # Provider options:

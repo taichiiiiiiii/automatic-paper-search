@@ -5,17 +5,31 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "paperpilot"
 version = "0.1.0"
-description = "AI/ML paper auto-collection & quality filtering pipeline"
+description = "AI/ML paper auto-collection & quality filtering pipeline (arXiv/S2/OpenAlex + LLM rerank)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "taichiiiiiiii" }]
+keywords = ["arxiv", "research", "ai", "ml", "papers", "llm", "semantic-scholar", "openalex"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Text Processing :: Linguistic",
+]
 dependencies = [
     "arxiv>=2.1.0",
     "requests>=2.31.0",
     "aiohttp>=3.9.0",
     "pyyaml>=6.0",
     "python-dotenv>=1.0.0",
+    "numpy>=1.26.0",
 ]
 
 [project.optional-dependencies]
@@ -27,6 +41,14 @@ dev = [
     "types-requests",
     "types-PyYAML",
 ]
+embedding = [
+    "sentence-transformers>=2.7.0",   # Stage 3 Embedding (MiniLM ~80MB)
+]
+
+[project.urls]
+Homepage = "https://github.com/taichiiiiiiii/automatic-paper-search"
+Repository = "https://github.com/taichiiiiiiii/automatic-paper-search"
+Issues = "https://github.com/taichiiiiiiii/automatic-paper-search/issues"
 
 [project.scripts]
 paperpilot = "paperpilot.collector:main"

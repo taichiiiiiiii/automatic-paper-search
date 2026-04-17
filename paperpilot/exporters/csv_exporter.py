@@ -30,6 +30,7 @@ COLUMNS = [
     "citation_score",
     "author_h_index",
     "author_score",
+    "embedding_similarity",
     "github_stars",
     "github_score",
     "has_code",
@@ -83,6 +84,11 @@ class CSVExporter(AbstractExporter):
                     "citation_score": round(p.citation_score, 2),
                     "author_h_index": p.author_h_index,
                     "author_score": round(p.author_score, 2),
+                    "embedding_similarity": (
+                        round(p.embedding_similarity, 2)
+                        if p.embedding_similarity is not None
+                        else ""
+                    ),
                     "github_stars": p.github_stars,
                     "github_score": round(p.github_score, 2),
                     "has_code": p.has_code,

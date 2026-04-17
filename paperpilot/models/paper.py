@@ -48,6 +48,9 @@ class Paper:
     keyword_match_count: int = 0
     keyword_score: float = 0.0
 
+    # ---- Stage 3: Embedding similarity ----
+    embedding_similarity: float | None = None  # 0..100, None if Stage 3 skipped
+
     # ---- Final ranking ----
     total_score: float = 0.0
     matched_keywords: list[str] = field(default_factory=list)
