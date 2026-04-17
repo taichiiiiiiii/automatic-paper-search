@@ -38,6 +38,13 @@ class Paper:
     github_score: float = 0.0
     has_code: bool = False
     is_official_repo: bool = False
+    citation_count: int = 0
+    influential_citations: int = 0
+    citation_velocity: float = 0.0
+    citation_score: float = 0.0
+    first_author_id: str | None = None
+    author_h_index: int = 0
+    author_score: float = 0.0
     keyword_match_count: int = 0
     keyword_score: float = 0.0
 

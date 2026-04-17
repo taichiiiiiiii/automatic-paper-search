@@ -18,7 +18,7 @@ import re
 from ..models import Paper
 from .base import AbstractSignal
 
-TIER_1 = {"NeurIPS", "NIPS", "ICML", "ICLR"}
+TIER_1 = {"NEURIPS", "NIPS", "ICML", "ICLR"}
 TIER_2 = {"AAAI", "CVPR", "ACL", "EMNLP"}
 TIER_3 = {"AISTATS", "NAACL", "ECCV", "ICCV", "IJCAI", "KDD", "WWW"}
 

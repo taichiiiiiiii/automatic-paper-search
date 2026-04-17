@@ -20,9 +20,21 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..exporters import AbstractExporter, CSVExporter, JSONExporter
-from ..signals import AbstractSignal, GitHubSignal, KeywordSignal, VenueSignal
-from ..sources import AbstractSource, ArxivSource
+from ..exporters import (
+    AbstractExporter,
+    CSVExporter,
+    JSONExporter,
+    SlackExporter,
+)
+from ..signals import (
+    AbstractSignal,
+    AuthorSignal,
+    CitationSignal,
+    GitHubSignal,
+    KeywordSignal,
+    VenueSignal,
+)
+from ..sources import AbstractSource, ArxivSource, S2Source
 from ..utils.dedup import load_seen_ids, mark_seen, purge_seen_ids, save_seen_ids
 from ..utils.logger import get_logger
 from .stage_collect import collect
@@ -53,9 +65,14 @@ class PipelineRunner:
 
     def _build_sources(self) -> list[AbstractSource]:
         srcs_cfg = self.config.get("sources", {})
+        env = self.config.get("env", {})
         sources: list[AbstractSource] = []
         if "arxiv" in srcs_cfg:
             sources.append(ArxivSource(srcs_cfg["arxiv"]))
+        if "s2" in srcs_cfg:
+            sources.append(
+                S2Source(srcs_cfg["s2"], api_key=env.get("s2_api_key"))
+            )
         return sources
 
     def _build_signals(self) -> list[AbstractSignal]:
@@ -64,6 +81,15 @@ class PipelineRunner:
         signals: list[AbstractSignal] = []
         if "venue" in sig_cfg:
             signals.append(VenueSignal(sig_cfg["venue"]))
+        # Citation before author so author IDs are populated first.
+        if "citation" in sig_cfg:
+            signals.append(
+                CitationSignal(sig_cfg["citation"], api_key=env.get("s2_api_key"))
+            )
+        if "author" in sig_cfg:
+            signals.append(
+                AuthorSignal(sig_cfg["author"], api_key=env.get("s2_api_key"))
+            )
         if "github" in sig_cfg:
             signals.append(
                 GitHubSignal(sig_cfg["github"], github_token=env.get("github_token"))
@@ -75,11 +101,16 @@ class PipelineRunner:
 
     def _build_exporters(self) -> list[AbstractExporter]:
         out_cfg = self.config.get("output", {})
+        env = self.config.get("env", {})
         exporters: list[AbstractExporter] = []
         if out_cfg.get("csv", {}).get("enabled"):
             exporters.append(CSVExporter(out_cfg["csv"]))
         if out_cfg.get("json", {}).get("enabled"):
             exporters.append(JSONExporter(out_cfg["json"]))
+        if out_cfg.get("slack", {}).get("enabled"):
+            exporters.append(
+                SlackExporter(out_cfg["slack"], webhook_url=env.get("slack_webhook_url"))
+            )
         return exporters
 
     # ---- run ----
