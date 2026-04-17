@@ -52,6 +52,12 @@ class Paper:
     total_score: float = 0.0
     matched_keywords: list[str] = field(default_factory=list)
 
+    # ---- Stage 4: LLM rerank (design doc Table 8) ----
+    llm_relevance: int | None = None  # 1..5, None = not evaluated
+    llm_summary_ja: str | None = None
+    llm_reason: str | None = None
+    llm_tags: list[str] = field(default_factory=list)
+
     # ---- Identity ----
     @property
     def uid(self) -> str:

@@ -6,15 +6,16 @@ GitHub Actions で毎日自動実行され、結果がリポジトリに自動�
 
 ## 特徴
 
-- **5段階パイプライン設計**（MVPでは Stage 0〜2 を実装）
-  - Stage 0: arXiv からの並列収集（async）
-  - Stage 1: ルールベースフィルタ + 差分更新（seen_ids）
-  - Stage 2: 品質シグナル（venue / GitHub Stars / keyword）でスコアリング
-  - Stage 3 (Embedding) / Stage 4 (LLM) は将来拡張
-- **プラグイン構造** — Source / Signal / Exporter は基底クラスを継承するだけで追加可能
-- **設定駆動** — `config.yaml` でキーワード・カテゴリ・重みを変更
+- **5段階パイプライン設計**（Stage 0, 1, 2, 4 を実装済み / Stage 3 Embedding は将来拡張）
+  - Stage 0: arXiv + Semantic Scholar からの並列収集（async）
+  - Stage 1: ルールベースフィルタ（カテゴリ/日付/除外語/差分）
+  - Stage 2: 品質シグナル（venue / citation / author / GitHub Stars / keyword）でスコアリング
+  - Stage 4: **LLM によるリランク + 日本語要約**（Ollama で完全ローカル動作、無料）
+- **プラグイン構造** — Source / Signal / Exporter / LLMProvider は基底クラスを継承するだけで追加可能
+- **設定駆動** — `config.yaml` でキーワード・カテゴリ・重み・LLMモデルを変更
 - **秘匿分離** — API キー類は `.env` のみ（`config.yaml` に書かない）
 - **冪等性** — 既出論文は seen_ids で除外。同じ config で2回実行しても重複しない
+- **Fail-Safe** — 外部API障害時は該当ソース/シグナルをスキップして継続
 
 ## 必要環境
 
@@ -43,7 +44,39 @@ python -m paperpilot.collector --keyword "diffusion model"
 
 # seen_ids を無視して再出力
 python -m paperpilot.collector --full
+
+# LLM 評価（Stage 4）を一時的にスキップ
+python -m paperpilot.collector --skip-llm
 ```
+
+## Stage 4 (LLM rerank) — Ollama セットアップ（任意）
+
+Stage 4 を使うと LLM が各論文に `relevance (1-5) / 日本語要約 / 読むべき理由 / タグ` を付与し、関連度順にリランクします。完全ローカルで無料動作する **Ollama** を推奨します。
+
+```bash
+# 1. Ollama インストール  (https://ollama.com)
+curl -fsSL https://ollama.com/install.sh | sh
+
+# 2. モデル取得（日本語に強い qwen2.5 を推奨 / 7B で ~5GB）
+ollama pull qwen2.5:7b
+
+# 3. Ollama サーバ起動（別ターミナル）
+ollama serve
+```
+
+`paperpilot/config.yaml` の `llm` セクションを有効化：
+
+```yaml
+llm:
+  enabled: true
+  provider: ollama
+  model: qwen2.5:7b
+  host: http://localhost:11434
+  batch_size: 5
+  timeout_seconds: 120
+```
+
+他の LLM を使う場合は `paperpilot/llm/` に `AbstractLLMProvider` を継承したクラスを追加してください（Claude / Gemini / OpenAI / Groq など）。
 
 出力は `paperpilot/output/papers_YYYY-MM-DD.{csv,json}` に保存されます。
 
@@ -56,28 +89,46 @@ search:
   days_back: 7
   max_results_per_keyword: 30
 
+sources:
+  arxiv: { enabled: true, delay_seconds: 3 }
+  s2:    { enabled: true, delay_seconds: 1 }
+
 signals:
-  venue: { enabled: true }
-  github: { enabled: true, max_lookups: 50 }
+  venue:    { enabled: true }
+  citation: { enabled: true, velocity_saturation: 2.0 }
+  author:   { enabled: true }
+  github:   { enabled: true, max_lookups: 50 }
 
 weights:
   venue: 3.0
   github: 2.0
+  citation: 1.5
+  author: 1.0
   keyword: 0.5
 
 pipeline:
   stage2_top_n: 30
+  stage4_top_n: 10
+
+llm:
+  enabled: false        # true にして Ollama を起動すれば Stage 4 が有効
+  provider: ollama
+  model: qwen2.5:7b
 ```
 
 ## スコアリング
 
 各シグナルは 0〜100 に正規化され、`weights` で重み付けされた合計が `total_score` になります。
 
-| シグナル | 出典 | 100点の例 |
-|----------|------|-----------|
-| venue | arXiv comment 欄を正規表現でパース | NeurIPS / ICML / ICLR 採択 |
-| github | Papers with Code → GitHub Stars | 1,000 stars 以上 |
-| keyword | タイトル・アブスト中のキーワード一致 | 全キーワードがタイトルに出現 |
+| シグナル | 出典 | 正規化 |
+|----------|------|--------|
+| venue | arXiv comment 欄を正規表現でパース | Tier1=100 / Tier2=80 / Tier3=60 / Workshop=30 |
+| citation | Semantic Scholar `/paper/batch` | `min(citations_per_day / saturation, 1) × 100` |
+| author | Semantic Scholar `/author/batch` | `min(h_index / 50, 1) × 100` |
+| github | Papers with Code → GitHub Stars | `log(stars+1) / log(10001) × 100` |
+| keyword | タイトル・アブストラクトのキーワード一致 | `min(match_count / 3, 1) × 100` |
+
+Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終ランキングされます。
 
 ## GitHub Actions
 

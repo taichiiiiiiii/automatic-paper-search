@@ -26,6 +26,7 @@ from ..exporters import (
     JSONExporter,
     SlackExporter,
 )
+from ..llm import AbstractLLMProvider, OllamaProvider
 from ..signals import (
     AbstractSignal,
     AuthorSignal,
@@ -38,6 +39,7 @@ from ..sources import AbstractSource, ArxivSource, S2Source
 from ..utils.dedup import load_seen_ids, mark_seen, purge_seen_ids, save_seen_ids
 from ..utils.logger import get_logger
 from .stage_collect import collect
+from .stage_llm_rank import llm_rerank
 from .stage_metric_score import metric_score
 from .stage_rule_filter import rule_filter
 
@@ -60,6 +62,7 @@ class PipelineRunner:
         self.sources = self._build_sources()
         self.signals = self._build_signals()
         self.exporters = self._build_exporters()
+        self.llm_provider = self._build_llm_provider()
 
     # ---- builders ----
 
@@ -113,6 +116,16 @@ class PipelineRunner:
             )
         return exporters
 
+    def _build_llm_provider(self) -> AbstractLLMProvider | None:
+        llm_cfg = self.config.get("llm", {})
+        if not llm_cfg or not llm_cfg.get("enabled"):
+            return None
+        provider_name = str(llm_cfg.get("provider", "")).lower()
+        if provider_name == "ollama":
+            return OllamaProvider(llm_cfg)
+        logger.warning("runner: unknown LLM provider '%s' — skipping Stage 4", provider_name)
+        return None
+
     # ---- run ----
 
     async def run(self) -> PipelineResult:
@@ -158,6 +171,26 @@ class PipelineRunner:
         )
         s2 = len(papers)
 
+        # Stage 4 (LLM rerank) — skipped when provider is None or disabled
+        stage4_top_n = int(pipe_cfg.get("stage4_top_n", 10))
+        profile = self._build_profile()
+        if self.llm_provider is not None and self.llm_provider.enabled:
+            try:
+                papers = llm_rerank(
+                    papers=papers,
+                    provider=self.llm_provider,
+                    profile=profile,
+                    top_n=stage4_top_n,
+                )
+            except Exception as e:
+                logger.warning("stage4: LLM rerank failed, using Stage 2 score: %s", e)
+                errors.append(f"stage4:{e}")
+                papers = papers[:stage4_top_n] if stage4_top_n > 0 else papers
+        elif stage4_top_n > 0:
+            # Keep the pipeline consistent: truncate to same top-N even when skipping LLM.
+            papers = papers[:stage4_top_n]
+        s4 = len(papers)
+
         # Export
         output_files: list[str] = []
         for exp in self.exporters:
@@ -185,6 +218,7 @@ class PipelineRunner:
                 "stage0_collected": s0,
                 "stage1_filtered": s1,
                 "stage2_scored": s2,
+                "stage4_ranked": s4,
             },
             duration_seconds=duration,
             sources_status=sources_status,
@@ -192,6 +226,25 @@ class PipelineRunner:
         )
         self._append_history(result, started, finished)
         return result
+
+    # ---- profile ----
+
+    def _build_profile(self) -> str:
+        """Derive a research profile string (design doc §4.4 mode C: keywords).
+
+        Preference order:
+            1. explicit config['profile']['description']
+            2. config['profile']['keywords']
+            3. fallback to search.keywords
+        """
+        prof_cfg = self.config.get("profile", {}) or {}
+        description = prof_cfg.get("description")
+        if isinstance(description, str) and description.strip():
+            return description.strip()
+        keywords = prof_cfg.get("keywords") or self.config.get("search", {}).get("keywords", [])
+        if keywords:
+            return "関心キーワード: " + ", ".join(str(k) for k in keywords)
+        return ""
 
     # ---- history ----
 
