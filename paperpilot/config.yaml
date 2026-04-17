@@ -27,6 +27,9 @@ sources:
   s2:
     enabled: true
     delay_seconds: 1.0
+  openalex:
+    enabled: false         # free; set PAPERPILOT_OPENALEX_EMAIL for polite-pool
+    delay_seconds: 1.0
 
 # ===== Quality signals =====
 signals:
@@ -58,13 +61,20 @@ pipeline:
 # ===== LLM (Stage 4) =====
 # Provider options:
 #   - ollama : local, free (requires `ollama serve` + `ollama pull <model>`)
-#   - (add claude/gemini/openai later by subclassing AbstractLLMProvider)
+#   - gemini : cloud, free tier (requires PAPERPILOT_GEMINI_API_KEY)
+#   - (add claude/openai later by subclassing AbstractLLMProvider)
 # Disable this block to skip Stage 4 entirely.
 llm:
-  enabled: false         # flip to true once Ollama is running
-  provider: ollama
+  enabled: false         # flip to true once the provider is ready
+  provider: ollama       # or "gemini"
+
+  # Ollama-specific settings (used when provider == 'ollama')
   model: qwen2.5:7b      # suggested: qwen2.5:7b / llama3.1:8b / gemma2:9b
   host: http://localhost:11434
+
+  # Gemini-specific settings (used when provider == 'gemini')
+  # model: gemini-1.5-flash   # swap in when switching provider
+
   batch_size: 5
   temperature: 0.2
   timeout_seconds: 120
@@ -86,6 +96,9 @@ output:
     dir: paperpilot/output
   slack:
     enabled: false    # set true when PAPERPILOT_SLACK_WEBHOOK_URL is configured
+    max_items: 10
+  email:
+    enabled: false    # set true when PAPERPILOT_SMTP_* and PAPERPILOT_EMAIL_TO are configured
     max_items: 10
 
 # ===== Incremental update =====
