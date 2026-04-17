@@ -346,19 +346,40 @@ PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 
 
 ---
 
-## プロジェクト固有 Skills / Agents
+## プロジェクト固有 Skills / Sub-agents
 
-`.claude/` 配下にこのプロジェクト専用の Skill と Agent を配置しています。該当タスクの時に自動で参照されます。
+`.claude/` 配下にこのプロジェクト専用の Skill とサブエージェントを配置しています。該当タスクの時に自動で参照されます。
 
-| 種類 | 名前 | 配置 | トリガー |
-|------|------|------|---------|
-| Skill | `add-plugin` | `.claude/skills/add-plugin/SKILL.md` | 「新しい Source/Signal/Exporter/LLMProvider を追加して」 |
-| Skill | `run-verification` | `.claude/skills/run-verification/SKILL.md` | 「テスト流して」「PR 前チェック」 |
-| Agent | `paperpilot-reviewer` | `.claude/agents/paperpilot-reviewer.md` | コード変更の PR 前レビュー（自動起動） |
+### Skills（必要時のみロード）
 
-これらは CLAUDE.md（常時ロード）とは違い、該当コマンド時にだけロードされるので、コンテキストを圧迫しません。
+| 名前 | 配置 | トリガー |
+|------|------|---------|
+| `add-plugin` | `.claude/skills/add-plugin/SKILL.md` | 「新しい Source/Signal/Exporter/LLMProvider を追加して」 |
+| `run-verification` | `.claude/skills/run-verification/SKILL.md` | 「テスト流して」「PR 前チェック」 |
 
-Skill / Agent を追加・変更した時は、この表を必ず更新してください。
+### Sub-agents（専門サブエージェント）
+
+| 名前 | 担当 | モデル | 自動起動トリガー |
+|------|------|------|-------------|
+| `source-agent` | `paperpilot/sources/` | sonnet | 新 Source 追加・arxiv/s2/openalex 改修 |
+| `signal-agent` | `paperpilot/signals/` | sonnet | 新 Signal 追加・スコア正規化変更 |
+| `exporter-agent` | `paperpilot/exporters/` | sonnet | 新 Exporter 追加・CSV 列拡張 |
+| `test-agent` | `paperpilot/tests/` | sonnet | カバレッジ低下・新モジュール追加後 |
+| `paperpilot-reviewer` | PR 前レビュー（10項目判定） | sonnet | **全ての変更で MUST BE USED** |
+
+エージェントの実行順序・並列化ルールは `.claude/agents/agent-orchestration.md` を参照。
+
+### 基本の呼び出しフロー
+
+```
+新機能実装
+  ↓ 専門 *-agent で TDD 実装（複数なら並列起動）
+  ↓ test-agent でカバレッジ補完
+  ↓ paperpilot-reviewer で最終チェック
+  ↓ develop へ commit & push
+```
+
+Skill / Agent を追加・変更した時は、この表と `.claude/agents/agent-orchestration.md` の分担表も更新してください。
 
 ---
 
