@@ -1,5 +1,9 @@
-# PaperPilot configuration
-# Secrets MUST NOT be written here - use .env
+# PaperPilot — WEEKLY deep-survey config
+# Pipeline runs once per week; citations / stars / venue info have had time to
+# mature. Companion `config.daily-watch.yaml` handles zero-latency
+# follow-author notifications.
+#
+# Secrets MUST NOT be written here — use .env.
 
 # ===== Search settings =====
 search:
@@ -55,6 +59,7 @@ weights:
   author: 1.0
   keyword: 0.5
   embedding: 2.5     # applied in Stage 3 (when enabled)
+  follow: 3.5        # highest — day-1 authority signal from watchlist
 
 # ===== Pipeline control =====
 pipeline:
@@ -95,11 +100,22 @@ llm:
   temperature: 0.2
   timeout_seconds: 120
 
-# ===== Research profile (optional, Stage 4 uses this) =====
-# If unset, the pipeline falls back to search.keywords (design doc §4.4 mode C).
+# ===== Research profile =====
+# Used by Stage 3 (embedding similarity) and Stage 4 (LLM relevance).
+# `follow_authors` / `follow_orgs` drive the FollowSignal — these are the
+# researchers / labs whose new papers must always rank high on day 1.
 profile:
   description: ""        # free-text research interest; leave empty to use keywords
   keywords: []           # overrides search.keywords when non-empty
+  follow_authors:        # list of author names (case / whitespace insensitive)
+    []
+    # - "Yann LeCun"
+    # - "Geoffrey Hinton"
+  follow_orgs:           # case-insensitive substring match against paper affiliations
+    []
+    # - "OpenAI"
+    # - "Google DeepMind"
+    # - "Anthropic"
 
 # ===== Output =====
 output:

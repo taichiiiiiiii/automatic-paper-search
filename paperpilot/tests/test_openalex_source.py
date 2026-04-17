@@ -35,7 +35,10 @@ def _openalex_work(
         "doi": f"https://doi.org/{doi}" if doi else None,
         "ids": {"doi": f"https://doi.org/{doi}" if doi else None},
         "authorships": [
-            {"author": {"display_name": a, "id": f"https://openalex.org/A{i}"}}
+            {
+                "author": {"display_name": a, "id": f"https://openalex.org/A{i}"},
+                "institutions": [{"display_name": "Test University"}],
+            }
             for i, a in enumerate(authors)
         ],
         "host_venue": {"display_name": venue} if venue else {},
@@ -188,6 +191,41 @@ def test_venue_falls_back_to_host_venue_when_primary_missing():
     p = src._to_paper(work, "kw", since_date=today - timedelta(days=7))
     assert p is not None
     assert p.venue == "ICLR"
+
+
+def test_affiliations_flattened_from_authorships():
+    """OpenAlex authorships each carry institutions; we flatten + dedup."""
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    work = _openalex_work(pub_date=today.isoformat(), authors=("Alice", "Bob"))
+    # Override with a richer institutions shape (Alice at Meta+OpenAI, Bob at Meta)
+    work["authorships"] = [
+        {
+            "author": {"display_name": "Alice", "id": "A1"},
+            "institutions": [
+                {"display_name": "Meta AI Research"},
+                {"display_name": "OpenAI"},
+            ],
+        },
+        {
+            "author": {"display_name": "Bob", "id": "A2"},
+            "institutions": [{"display_name": "Meta AI Research"}],
+        },
+    ]
+    p = src._to_paper(work, "kw", since_date=today - timedelta(days=7))
+    assert p is not None
+    # Deduped: Meta AI Research only appears once; order follows first-seen.
+    assert p.affiliations == ["Meta AI Research", "OpenAI"]
+
+
+def test_affiliations_empty_when_institutions_missing():
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    work = _openalex_work(pub_date=today.isoformat())
+    work["authorships"] = [{"author": {"display_name": "Alice"}}]  # no institutions
+    p = src._to_paper(work, "kw", since_date=today - timedelta(days=7))
+    assert p is not None
+    assert p.affiliations == []
 
 
 def test_venue_none_when_both_missing():

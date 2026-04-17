@@ -1,18 +1,22 @@
 # PaperPilot
 
-AI/ML 論文を arXiv から自動収集し、学会採択ステータス・GitHub Stars・キーワードマッチに基づいてスコアリングして CSV/JSON で出力するパイプライン。
+AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、学会採択ステータス・GitHub Stars・引用速度・著者・キーワード・LLM判定に基づいてスコアリングして CSV/JSON/Slack/Email で配信するパイプライン。
 
-GitHub Actions で毎日自動実行され、結果がリポジトリに自動コミットされます。
+**2 つの自動実行モード**（GitHub Actions）：
+- **週次深掘り**（Sat 7:00 JST）— 引用数・Stars が熟成してから総合ランキング
+- **毎日の著者ウォッチ**（07:00 JST 毎日）— フォロー中の研究者の新作を公開 0 秒後に通知
 
 ## 特徴
 
-- **5段階パイプライン設計**（Stage 0, 1, 2, 4 を実装済み / Stage 3 Embedding は将来拡張）
-  - Stage 0: arXiv + Semantic Scholar からの並列収集（async）
+- **5段階パイプライン**（全 Stage 実装済み）
+  - Stage 0: arXiv + Semantic Scholar + OpenAlex からの並列収集（async）
   - Stage 1: ルールベースフィルタ（カテゴリ/日付/除外語/差分）
-  - Stage 2: 品質シグナル（venue / citation / author / GitHub Stars / keyword）でスコアリング
-  - Stage 4: **LLM によるリランク + 日本語要約**（Ollama で完全ローカル動作、無料）
+  - Stage 2: 品質シグナル（venue / citation / author / GitHub Stars / keyword / **follow**）でスコアリング
+  - Stage 3: Embedding 類似度（MiniLM、オプション）
+  - Stage 4: **LLM によるリランク + 日本語要約**（Ollama / Gemini / Claude）
+- **FollowSignal** — 特定研究者 / 組織の新作を day-1 で最上位に（他シグナルが熟成前でも）
 - **プラグイン構造** — Source / Signal / Exporter / LLMProvider は基底クラスを継承するだけで追加可能
-- **設定駆動** — `config.yaml` でキーワード・カテゴリ・重み・LLMモデルを変更
+- **設定駆動** — `config.yaml` でキーワード・カテゴリ・重み・LLMモデル・フォロー研究者を変更
 - **秘匿分離** — API キー類は `.env` のみ（`config.yaml` に書かない）
 - **冪等性** — 既出論文は seen_ids で除外。同じ config で2回実行しても重複しない
 - **Fail-Safe** — 外部API障害時は該当ソース/シグナルをスキップして継続
@@ -134,18 +138,34 @@ llm:
 
 Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終ランキングされます。
 
-## GitHub Actions
+## GitHub Actions（2 系統運用）
 
-`.github/workflows/collect.yml` が毎日 22:00 UTC（07:00 JST）に実行されます。
-結果は `paperpilot/output/` に commit されます。
+### 1. 週次深掘り — `.github/workflows/collect-weekly.yml`
+
+毎週土曜 07:00 JST（Fri 22:00 UTC）実行。フル機能で CSV/JSON 生成 + commit。
+
+- `paperpilot/config.yaml` を参照
+- Stage 0〜4 フル稼働（LLM 有効時は Ollama/Gemini/Claude で日本語要約）
+- 先週 1 週間の引用数・Stars・venue 情報が熟成した状態で総合ランキング
+
+### 2. 毎日の著者ウォッチ — `.github/workflows/collect-daily-watch.yml`
+
+毎朝 07:00 JST（22:00 UTC）実行。`follow_authors` / `follow_orgs` にヒットした論文だけ Slack 通知。
+
+- `paperpilot/config.daily-watch.yaml` を参照
+- LLM / citation 無効（day-1 では意味なし）
+- 1 日窓 + 3 日 seen-ids で同じ論文の連続通知を防止
 
 ### Secrets（オプション）
 
 | 名前 | 用途 |
 |------|------|
 | `GH_PAT` | GitHub API 用 PAT（未設定時は `github.token` を使用） |
-| `S2_API_KEY` | Semantic Scholar API（将来拡張用） |
-| `SLACK_WEBHOOK_URL` | Slack 通知（将来拡張用） |
+| `S2_API_KEY` | Semantic Scholar API |
+| `OPENALEX_EMAIL` | OpenAlex polite-pool |
+| `GEMINI_API_KEY` | Gemini プロバイダ（Stage 4） |
+| `CLAUDE_API_KEY` | Claude プロバイダ（Stage 4） |
+| `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗通知 |
 
 ## ディレクトリ構成
 

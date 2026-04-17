@@ -6,6 +6,38 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — Day-1 authority signal & weekly/daily split
+
+- **`FollowSignal`** (`paperpilot/signals/follow_signal.py`) — new
+  `AbstractSignal` subclass that scores 100 when a paper is authored by
+  someone in `profile.follow_authors`, or 50 when any affiliation
+  contains a `profile.follow_orgs` substring. It's the only signal
+  that's fully informative on publication day (venue / citation /
+  stars all need time to mature).
+- **Paper model** — `affiliations: list[str]`, `follow_score: float`,
+  `follow_reason: str | None` fields.
+- **OpenAlex source** extracts `authorships[].institutions[].display_name`
+  into `Paper.affiliations` (deduped, first-seen order).
+- **Runner** wires FollowSignal between VenueSignal and KeywordSignal
+  so `follow_score` is available before the GitHub-lookup budget
+  decision.
+- **CSV exporter** exposes `follow_score`, `follow_reason`, and
+  `affiliations` columns near the front for quick scanning.
+- **`paperpilot/config.daily-watch.yaml`** — new companion config for
+  the daily real-time watch workflow (lean: no LLM, no citation, just
+  arXiv + OpenAlex + FollowSignal, 1-day window, 3-day seen-ids).
+- **GitHub Actions split**:
+  - `.github/workflows/collect-weekly.yml` — Saturday 07:00 JST deep
+    survey (old `collect.yml`, renamed).
+  - `.github/workflows/collect-daily-watch.yml` — daily 07:00 JST
+    followed-author alerts.
+
+### Changed
+
+- Default `config.yaml` positioned as the weekly deep-survey config
+  (header updated). `weights.follow: 3.5` added (highest weight — day-1
+  authority beats venue/stars).
+
 ## [0.1.0] — 2026-04-17
 
 Initial release. Implements all stages of the v2.1 design spec except

@@ -62,10 +62,13 @@ automatic-paper-search/
 ├── PaperPilot_市場調査レポート_v2.0_FINAL.docx
 ├── .github/
 │   └── workflows/
-│       └── collect.yml                  # 毎日 22:00 UTC 自動実行（PAT に workflow scope 必要）
+│       ├── collect-weekly.yml           # 毎週土曜 07:00 JST 深掘り（PAT に workflow scope 必要）
+│       ├── collect-daily-watch.yml      # 毎日 07:00 JST フォロー著者ウォッチ
+│       └── publish.yml                  # PyPI trusted-publisher（release 発火）
 └── paperpilot/
     ├── collector.py                     # CLI エントリーポイント
-    ├── config.yaml                      # 全体設定（秘匿情報なし）
+    ├── config.yaml                      # 週次深掘り設定（秘匿情報なし）
+    ├── config.daily-watch.yaml          # 毎日の follow-watch 用 lean config
     ├── .env.example                     # 環境変数テンプレート（Git 管理対象）
     ├── .env                             # 秘匿情報（Git 管理外・絶対にコミットしない）
     ├── .gitignore
@@ -88,6 +91,7 @@ automatic-paper-search/
     │   ├── citation_signal.py           # S2 /paper/batch
     │   ├── author_signal.py             # S2 /author/batch (h-index)
     │   ├── github_signal.py             # PwC + GitHub Stars (log-scale)
+    │   ├── follow_signal.py             # 著者/組織ウォッチリスト (day-1 authority)
     │   └── keyword_signal.py            # match_count / 3 * 100
     ├── exporters/                       # 出力
     │   ├── base.py                      # AbstractExporter
@@ -260,13 +264,15 @@ class Paper:
 
 | シグナル | 正規化式 | デフォルト重み |
 |---------|---------|--------------|
+| follow | 著者完全一致=100 / 所属部分一致=50 / 不一致=0 | **3.5**（day-1 最強） |
 | venue | Tier1=100 / Tier2=80 / Tier3=60 / Workshop=30 / 未査読=0 | **3.0** |
+| embedding | cos 類似度 × 100（Stage 3 有効時のみ） | **2.5** |
 | github | `log(stars+1) / log(10001) × 100` | **2.0** |
 | citation | `min(cites/day / saturation, 1) × 100` (sat=2.0) | **1.5** |
 | author | `min(h_index / 50, 1) × 100` | **1.0** |
 | keyword | `min(match_count / 3, 1) × 100` | **0.5** |
 
-理論最大値: `100 × (3+2+1.5+1+0.5) = 800`（embedding 未実装）
+理論最大値: `100 × (3.5+3+2.5+2+1.5+1+0.5) = 1400`
 
 ### Stage フロー（変更禁止）
 
