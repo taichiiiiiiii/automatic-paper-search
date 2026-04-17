@@ -101,6 +101,36 @@ paperpilot/
 | venue 検出率が 95% を割る | `tests/test_venue_stress.py` を必ず再実行 |
 | 著者 ID 無しで author batch を呼ぶ | dedupe + skip（`author_signal.py` 参照） |
 
+## エスカレーション条件（reviewer に判断を委ねる）
+
+以下に該当する場合、**自分で実装せず paperpilot-reviewer に相談**してから着手する：
+
+| 条件 | 理由 | 絶対ルール# |
+|------|------|--------|
+| `AbstractSignal.enrich_batch` / `enrich_one` のシグネチャを変える | Stage インターフェース変更 | 4 |
+| 既存 Signal の正規化式を変える（例: MAX_STARS の値） | 設計書 Table 12 / CLAUDE.md 更新が必要 | 5 |
+| デフォルト重み（venue=3.0 等）を変えたい | 設計書 §5.3 の承認が必要 | 5 |
+| Stage 1 の rule_filter にスコアリングを入れたい | **絶対禁止**（§4.2 の設計意図に反する） | 6 |
+| `stage_metric_score.py` の `total_score` 計算式を変える | reviewer 専権（複数 Signal 合算の契約） | — |
+| Paper モデルに新フィールド（例: `altmetric_score`）を追加 | Paper 変更の影響範囲承認 | — |
+| Embedding Stage 3 に手を出す | 現時点で reviewer 専権（SPECTER2 導入判断） | — |
+
+## 活用する Skill
+
+- `.claude/skills/add-plugin/SKILL.md` — 新 Signal 追加の TDD テンプレ、バッチ API パターン
+- `.claude/skills/run-verification/SKILL.md` — `test_venue_stress.py` も含めた検証
+
+必要に応じて `Read` ツールで参照する。
+
+## 守るべき絶対ルール（CLAUDE.md 参照）
+
+| # | ルール | 所有 |
+|---|--------|------|
+| 1 | API キーは `.env` のみ（S2 API キー等） | ✅ 一次所有 |
+| 3 | 外部 API を叩くテストを書かない | ✅ 一次所有 |
+| 5 | スコア正規化式・重みを仕様なく変更しない | ✅ 式は一次所有 / ⚠️ 重みは reviewer 専権 |
+| 7 | Signal は `enrich_batch` を優先 | ✅ 一次所有 |
+
 ## レビュー前チェックリスト
 
 - [ ] `AbstractSignal.enrich_one` / `enrich_batch` のシグネチャを変えていない

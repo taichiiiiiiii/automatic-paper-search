@@ -91,6 +91,36 @@ paperpilot/
 | Paper の `uid` が被る | `arxiv_id` / `doi` / `url` のどれかが必ず一意になるように埋める |
 | 日付パース失敗で全部 0件 | `_parse_pub_date` のフォールバック（publication_date → year → None）を必ず入れる |
 
+## エスカレーション条件（reviewer に判断を委ねる）
+
+以下に該当する場合、**自分で実装せず paperpilot-reviewer に相談**してから着手する：
+
+| 条件 | 理由 | 絶対ルール# |
+|------|------|--------|
+| `AbstractSource.fetch()` のシグネチャを変える必要がある | Stage インターフェース変更（他 Source も影響） | 4 |
+| Paper モデルに新フィールドを追加したい | CSV exporter / runner / 既存テストすべてに影響 | — |
+| `Paper.uid` の生成ロジックを変えたい | seen_ids の互換性破壊リスク | 8 |
+| 新しいデータ型（動画・画像メタ等）を Paper に取り込みたい | スキーマ拡張は設計書 Table 8 と同期 | — |
+| 複数 Source で共通化したいヘルパーが必要 | アーキテクチャ影響、`sources/base.py` 拡張は慎重に | 4 |
+| API が arxiv 以外で `categories` を返すが形式が違う | Stage 1 のカテゴリフィルタ仕様と整合 | 6 |
+
+## 活用する Skill
+
+- `.claude/skills/add-plugin/SKILL.md` — 新 Source 追加の詳細チェックリスト、TDD テンプレ
+- `.claude/skills/run-verification/SKILL.md` — 実装後の検証ループ（pytest + カバレッジ + スモーク）
+
+必要に応じて `Read` ツールで参照する。
+
+## 守るべき絶対ルール（CLAUDE.md 参照）
+
+| # | ルール | 所有 |
+|---|--------|------|
+| 1 | API キーは `.env` のみ | ✅ 一次所有 |
+| 3 | 外部 API を叩くテストを書かない | ✅ 一次所有 |
+| 4 | Stage インターフェース不変 | ⚠️ reviewer 専権、触る前に相談 |
+| 6 | Stage 1 はフィルタのみ | ⚠️ reviewer 専権 |
+| 8 | seen_ids の `{id: timestamp}` 形式 | ✅ 一次所有（`uid` 生成） |
+
 ## レビュー前チェックリスト
 
 - [ ] `AbstractSource.fetch()` のシグネチャを変えていない

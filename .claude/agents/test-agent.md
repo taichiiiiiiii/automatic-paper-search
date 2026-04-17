@@ -137,7 +137,7 @@ python3 -m pytest paperpilot/tests/ --cov=paperpilot --cov-report=term-missing -
 
 ## 新モジュール追加時の必須テスト
 
-source-agent / signal-agent / exporter-agent / llm-agent から渡ってきた場合：
+source-agent / signal-agent / exporter-agent、または `llm/` を reviewer 経由で変更した場合：
 
 1. **既存テストの網羅性チェック** — happy path / failure / edge case / boundary
 2. **不足ケースの追加** — テストを先に書いていれば通常は不要
@@ -175,6 +175,36 @@ source-agent / signal-agent / exporter-agent / llm-agent から渡ってきた�
 | モック対象のパスを間違う | `patch` は**利用側のパス**を指定する（`from X import Y` なら `current_module.Y` をモック） |
 | assertion の中で if 文 | テスト名を分割、parametrize を使う |
 | flaky test を ignore | 根本原因（時間/乱数/並行）を特定 |
+
+## エスカレーション条件（reviewer に判断を委ねる）
+
+以下に該当する場合、**本体を直さず paperpilot-reviewer に報告**する：
+
+| 条件 | 理由 |
+|------|------|
+| テストで本体のバグを発見した | 本体変更は該当 \*-agent の担当。test-agent は本体に触らない |
+| カバレッジが 80% を割る原因が「到達困難なコード」 | 本体側の構造問題の可能性。reviewer が refactor 指示 |
+| 既存テストが仕様変更で落ちる | 仕様判断が必要。reviewer が「テスト修正」か「本体修正」かを判定 |
+| venue 検出率が 95% を割る | 正規表現改善は signal-agent、テストデータ追加は test-agent |
+| 統合テスト（`test_runner.py`）で `total_score` 計算式の変更が必要 | 式変更は reviewer 専権（絶対ルール 5） |
+| `run_history.jsonl` スキーマの互換テストが壊れる | スキーマ変更は reviewer 専権（絶対ルール 9） |
+
+## 活用する Skill
+
+- `.claude/skills/run-verification/SKILL.md` — 検証ループ全部（L1 unit → L2 coverage → L3 venue → L4 runner → L5 smoke）
+- `.claude/skills/add-plugin/SKILL.md` — 新規プラグインに期待されるテストパターン（参考）
+
+必要に応じて `Read` ツールで参照する。
+
+## 守るべき絶対ルール（CLAUDE.md 参照）
+
+| # | ルール | 所有 |
+|---|--------|------|
+| 3 | 外部 API を叩くテストを書かない | ✅ **一次所有（最重要）** |
+| 2 | `.env` を commit しない | ⚠️ test も含めて commit 前に `git status` 確認 |
+
+※ test-agent は原則「本体ルールの守護者ではなく、それらを検証するレイヤー」。
+本体ルール違反を発見した場合は、reviewer 経由で該当 \*-agent に差し戻す。
 
 ## レビュー前チェックリスト
 
