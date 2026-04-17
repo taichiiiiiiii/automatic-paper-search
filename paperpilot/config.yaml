@@ -1,0 +1,69 @@
+# PaperPilot configuration (MVP scope: arXiv + venue/github signals + CSV/JSON)
+# Secrets MUST NOT be written here - use .env
+
+# ===== Search settings =====
+search:
+  keywords:
+    - large language model
+    - retrieval augmented generation
+    - reinforcement learning from human feedback
+  categories:
+    - cs.LG
+    - cs.AI
+    - cs.CL
+  days_back: 7
+  max_results_per_keyword: 30
+  exclude_words:
+    - survey
+    - tutorial
+    - thesis
+    - workshop report
+
+# ===== Data sources =====
+sources:
+  arxiv:
+    enabled: true
+    delay_seconds: 3
+
+# ===== Quality signals =====
+signals:
+  venue:
+    enabled: true
+  github:
+    enabled: true
+    # Papers with Code lookup is rate-limited; cap per-run lookups to keep runs fast.
+    max_lookups: 50
+
+# ===== Scoring weights (MVP uses venue/github/keyword only) =====
+weights:
+  venue: 3.0
+  github: 2.0
+  keyword: 0.5
+
+# ===== Pipeline control =====
+pipeline:
+  stage2_top_n: 30        # how many papers to keep after metric scoring
+
+# ===== Output =====
+# Paths are resolved relative to the current working directory when invoking the
+# CLI. The default GitHub Actions workflow runs from the repo root, so
+# `paperpilot/output` lands at the expected location.
+output:
+  csv:
+    enabled: true
+    dir: paperpilot/output
+    encoding: utf-8-sig
+  json:
+    enabled: true
+    dir: paperpilot/output
+
+# ===== Incremental update =====
+incremental:
+  enabled: true
+  seen_ids_file: paperpilot/data/seen_ids.json
+  max_age_days: 14
+
+# ===== Logging =====
+logging:
+  level: INFO
+  file: paperpilot/logs/paperpilot.log
