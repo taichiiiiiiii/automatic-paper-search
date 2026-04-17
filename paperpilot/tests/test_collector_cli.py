@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 
 from paperpilot import collector
@@ -13,33 +14,23 @@ from paperpilot import collector
 @dataclass
 class _FakeResult:
     output_count: int = 0
-    output_files: list[str] = None
-    stage_counts: dict = None
+    output_files: list[str] = field(default_factory=list)
+    stage_counts: dict[str, int] = field(default_factory=dict)
     duration_seconds: float = 0.1
-    sources_status: dict = None
-    errors: list = None
-
-    def __post_init__(self):
-        if self.output_files is None:
-            self.output_files = []
-        if self.stage_counts is None:
-            self.stage_counts = {}
-        if self.sources_status is None:
-            self.sources_status = {}
-        if self.errors is None:
-            self.errors = []
+    sources_status: dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
 
 
 class _FakeRunner:
     """Captures the config it was built with, returns a canned result."""
 
-    built_configs: list[dict] = []
+    built_configs: list[dict[str, Any]] = []
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict[str, Any]) -> None:
         _FakeRunner.built_configs.append(config)
         self.config = config
 
-    async def run(self):
+    async def run(self) -> _FakeResult:
         return _FakeResult(output_count=3, output_files=["x.csv"])
 
 
@@ -62,7 +53,7 @@ def _write_config(tmp_path: Path) -> Path:
     return path
 
 
-def _run_main(argv: list[str]) -> _FakeRunner:
+def _run_main(argv: list[str]) -> dict[str, Any]:
     _FakeRunner.built_configs.clear()
     with patch.object(collector, "PipelineRunner", _FakeRunner):
         with patch.object(sys, "argv", ["collector.py", *argv]):

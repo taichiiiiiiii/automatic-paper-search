@@ -91,12 +91,27 @@ class PipelineRunner:
         return sources
 
     def _build_signals(self) -> list[AbstractSignal]:
+        """Build signals in the order Stage 2 will execute them.
+
+        Order matters: GitHubSignal's `enrich_batch` prioritizes its lookup
+        budget by `venue_score + keyword_score`, so KeywordSignal must run
+        BEFORE GitHubSignal for the keyword term to have any effect.
+
+        CitationSignal is also placed before AuthorSignal because
+        CitationSignal populates `first_author_id` from its /paper/batch
+        response, which AuthorSignal then consumes.
+        """
         sig_cfg = self.config.get("signals", {})
         env = self.config.get("env", {})
         signals: list[AbstractSignal] = []
+        # Local / fast signals first so budget-aware signals (github) can see
+        # their scores.
         if "venue" in sig_cfg:
             signals.append(VenueSignal(sig_cfg["venue"]))
-        # Citation before author so author IDs are populated first.
+        # KeywordSignal is implicit — always on, sourced from search keywords.
+        keywords = self.config.get("search", {}).get("keywords", [])
+        signals.append(KeywordSignal({"enabled": True}, keywords=keywords))
+        # S2 batch signals: citation before author (author needs first_author_id).
         if "citation" in sig_cfg:
             signals.append(
                 CitationSignal(sig_cfg["citation"], api_key=env.get("s2_api_key"))
@@ -105,13 +120,12 @@ class PipelineRunner:
             signals.append(
                 AuthorSignal(sig_cfg["author"], api_key=env.get("s2_api_key"))
             )
+        # GitHub lookup last — its budget prioritization uses venue + keyword
+        # scores, both populated by this point.
         if "github" in sig_cfg:
             signals.append(
                 GitHubSignal(sig_cfg["github"], github_token=env.get("github_token"))
             )
-        # KeywordSignal is implicit — always on, sourced from search keywords.
-        keywords = self.config.get("search", {}).get("keywords", [])
-        signals.append(KeywordSignal({"enabled": True}, keywords=keywords))
         return signals
 
     def _build_exporters(self) -> list[AbstractExporter]:

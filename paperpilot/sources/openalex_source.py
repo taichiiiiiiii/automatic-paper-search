@@ -155,12 +155,16 @@ class OpenAlexSource(AbstractSource):
 
     @staticmethod
     def _rehydrate_abstract(inverted: dict[str, list[int]] | None) -> str:
-        """OpenAlex stores abstracts as a token -> positions mapping."""
+        """Rehydrate the inverted index to plain text.
+
+        Malformed upstream data may assign the same position to multiple
+        tokens; keep last-writer-wins so the abstract length stays bounded
+        even in that degenerate case.
+        """
         if not inverted:
             return ""
-        positions: list[tuple[int, str]] = []
+        pos_to_token: dict[int, str] = {}
         for token, indices in inverted.items():
             for idx in indices:
-                positions.append((idx, token))
-        positions.sort(key=lambda p: p[0])
-        return " ".join(tok for _, tok in positions)
+                pos_to_token[idx] = token
+        return " ".join(pos_to_token[i] for i in sorted(pos_to_token))

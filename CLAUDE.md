@@ -20,8 +20,19 @@
 ```
 OS：Linux / macOS / Windows
 Python：3.10 以上（開発・CIは 3.12）
-パッケージ管理：pip + requirements.txt
+パッケージ管理：pyproject.toml（pip install -e '.[dev]'）/ 互換用に requirements.txt も維持
 実行方法：python -m paperpilot.collector
+```
+
+### 開発ツール
+
+```bash
+pip install -e '.[dev]'       # runtime + pytest + ruff + mypy
+ruff check paperpilot/         # lint
+ruff format paperpilot/        # format
+mypy paperpilot/                # type check
+pytest paperpilot/tests/ --cov=paperpilot   # test
+pre-commit install             # git hook
 ```
 
 ### 依存ライブラリ
@@ -87,7 +98,8 @@ automatic-paper-search/
     ├── llm/                             # Stage 4 LLM プロバイダ
     │   ├── base.py                      # AbstractLLMProvider, PaperEvaluation
     │   ├── ollama_provider.py           # ローカル無料
-    │   └── gemini_provider.py           # Gemini (無料枠あり)
+    │   ├── gemini_provider.py           # Gemini (無料枠あり)
+    │   └── claude_provider.py           # Anthropic Claude（設計書の第一推奨）
     ├── models/
     │   └── paper.py                     # Paper データクラス
     ├── utils/
@@ -170,6 +182,7 @@ PAPERPILOT_GITHUB_TOKEN      # GitHub API レート制限緩和
 PAPERPILOT_S2_API_KEY        # Semantic Scholar
 PAPERPILOT_OPENALEX_EMAIL    # OpenAlex polite-pool
 PAPERPILOT_GEMINI_API_KEY    # Gemini プロバイダ
+PAPERPILOT_CLAUDE_API_KEY    # Claude プロバイダ
 PAPERPILOT_SLACK_WEBHOOK_URL # Slack 通知
 PAPERPILOT_SMTP_*            # Email 通知
 ```
@@ -391,12 +404,12 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Stage 1 (rule filter) | ✅ カテゴリ / 日付 / 除外 / seen_ids |
 | Stage 2 (metric scoring) | ✅ venue / citation / author / github / keyword |
 | Stage 3 (SPECTER2 embedding) | ❌ 未実装（torch 依存、将来拡張） |
-| Stage 4 (LLM rerank) | ✅ Ollama / Gemini |
+| Stage 4 (LLM rerank) | ✅ Ollama / Gemini / Claude |
 | Exporters | ✅ CSV / JSON / Slack / Email |
 | 差分更新 (seen_ids) | ✅ `{id: timestamp}` 日次パージ |
 | GitHub Actions | ⏸️ ワークフロー作成済み、PAT の workflow scope 追加待ち |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
-| テストカバレッジ | ✅ 97% (240 tests) |
+| テストカバレッジ | ✅ 97% (272+ tests) |
 
 ---
 

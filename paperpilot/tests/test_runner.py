@@ -132,3 +132,80 @@ def test_runner_handles_source_failure(tmp_path: Path):
     assert result.output_count == 0
     assert result.sources_status["arxiv"]["ok"] is False
     assert any("network down" in e for e in result.errors)
+
+
+def test_build_llm_provider_ollama(tmp_path: Path):
+    """runner._build_llm_provider picks the Ollama backend when configured."""
+    from paperpilot.llm.ollama_provider import OllamaProvider
+
+    config = _build_config(tmp_path)
+    config["llm"] = {"enabled": True, "provider": "ollama", "model": "qwen2.5:7b"}
+    runner = PipelineRunner(config)
+    assert isinstance(runner.llm_provider, OllamaProvider)
+
+
+def test_build_llm_provider_gemini(tmp_path: Path):
+    from paperpilot.llm.gemini_provider import GeminiProvider
+
+    config = _build_config(tmp_path)
+    config["llm"] = {"enabled": True, "provider": "gemini"}
+    config["env"]["gemini_api_key"] = "k"
+    runner = PipelineRunner(config)
+    assert isinstance(runner.llm_provider, GeminiProvider)
+    assert runner.llm_provider.enabled  # api key wired through
+
+
+def test_build_llm_provider_claude(tmp_path: Path):
+    from paperpilot.llm.claude_provider import ClaudeProvider
+
+    config = _build_config(tmp_path)
+    config["llm"] = {"enabled": True, "provider": "claude"}
+    config["env"]["claude_api_key"] = "sk-ant-k"
+    runner = PipelineRunner(config)
+    assert isinstance(runner.llm_provider, ClaudeProvider)
+    assert runner.llm_provider.enabled
+
+
+def test_build_llm_provider_unknown_returns_none(tmp_path: Path):
+    config = _build_config(tmp_path)
+    config["llm"] = {"enabled": True, "provider": "bogus-vendor"}
+    runner = PipelineRunner(config)
+    assert runner.llm_provider is None
+
+
+def test_build_llm_provider_disabled_returns_none(tmp_path: Path):
+    config = _build_config(tmp_path)
+    config["llm"] = {"enabled": False, "provider": "ollama"}
+    runner = PipelineRunner(config)
+    assert runner.llm_provider is None
+
+
+def test_build_signals_puts_keyword_before_github(tmp_path: Path):
+    """Critical ordering: KeywordSignal must run BEFORE GitHubSignal so the
+    latter can use keyword_score in its budget prioritization.
+    """
+    from paperpilot.signals.github_signal import GitHubSignal
+    from paperpilot.signals.keyword_signal import KeywordSignal
+
+    config = _build_config(tmp_path)
+    config["signals"] = {
+        "venue": {"enabled": True},
+        "github": {"enabled": True},
+    }
+    runner = PipelineRunner(config)
+    sig_classes = [type(s) for s in runner.signals]
+    assert KeywordSignal in sig_classes
+    assert GitHubSignal in sig_classes
+    assert sig_classes.index(KeywordSignal) < sig_classes.index(GitHubSignal)
+
+
+def test_build_signals_citation_before_author(tmp_path: Path):
+    """CitationSignal must run before AuthorSignal (it populates first_author_id)."""
+    from paperpilot.signals.author_signal import AuthorSignal
+    from paperpilot.signals.citation_signal import CitationSignal
+
+    config = _build_config(tmp_path)
+    config["signals"] = {"citation": {}, "author": {}}
+    runner = PipelineRunner(config)
+    sig_classes = [type(s) for s in runner.signals]
+    assert sig_classes.index(CitationSignal) < sig_classes.index(AuthorSignal)

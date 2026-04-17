@@ -59,8 +59,8 @@ def test_evaluate_batch_parses_json_array():
         return_value=_resp(200, body),
     ) as mock:
         evals = provider.evaluate_batch(papers, profile="RAG")
-    assert evals[0].relevance == 4
-    assert evals[1].relevance == 2
+    assert evals[0] is not None and evals[0].relevance == 4
+    assert evals[1] is not None and evals[1].relevance == 2
 
     # URL includes model name; API key is in x-goog-api-key header (not URL)
     url = mock.call_args.args[1]
@@ -104,6 +104,7 @@ def test_evaluate_batch_handles_markdown_fences():
         return_value=_resp(200, body),
     ):
         evals = provider.evaluate_batch(papers, profile="")
+    assert evals[0] is not None
     assert evals[0].relevance == 3
 
 

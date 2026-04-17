@@ -15,6 +15,12 @@ from dataclasses import dataclass
 
 from ..models import Paper
 
+# Bound LLM output strings so a runaway model can't bloat CSV / log files.
+_MAX_SUMMARY_LEN = 500
+_MAX_REASON_LEN = 200
+_MAX_TAG_LEN = 32
+_MAX_TAG_COUNT = 6
+
 
 @dataclass
 class PaperEvaluation:
@@ -25,39 +31,30 @@ class PaperEvaluation:
     reason: str
     tags: list[str]
 
-
-# Bound LLM output strings so a runaway model can't bloat CSV / log files.
-_MAX_SUMMARY_LEN = 500
-_MAX_REASON_LEN = 200
-_MAX_TAG_LEN = 32
-_MAX_TAG_COUNT = 6
-
-
-def _eval_from_dict(d: dict) -> PaperEvaluation | None:
-    """Construct PaperEvaluation from a dict; return None when invalid."""
-    if not isinstance(d, dict):
-        return None
-    rel = d.get("relevance")
-    try:
-        rel_int = int(rel) if rel is not None else None
-    except (TypeError, ValueError):
-        return None
-    if rel_int is None or rel_int < 1 or rel_int > 5:
-        return None
-    summary = str(d.get("summary_ja") or "").strip()[:_MAX_SUMMARY_LEN]
-    reason = str(d.get("reason") or "").strip()[:_MAX_REASON_LEN]
-    tags_raw = d.get("tags") or []
-    if isinstance(tags_raw, list):
-        tags = [
-            str(t).strip()[:_MAX_TAG_LEN] for t in tags_raw[:_MAX_TAG_COUNT] if t
-        ]
-    else:
-        tags = []
-    return PaperEvaluation(relevance=rel_int, summary_ja=summary, reason=reason, tags=tags)
-
-
-# Attach as classmethod for backward-compatible `PaperEvaluation.from_dict(...)`.
-PaperEvaluation.from_dict = classmethod(lambda cls, d: _eval_from_dict(d))  # type: ignore[attr-defined]
+    @classmethod
+    def from_dict(cls, d: object) -> PaperEvaluation | None:
+        """Construct from a dict; return None when required fields are invalid."""
+        if not isinstance(d, dict):
+            return None
+        rel = d.get("relevance")
+        try:
+            rel_int = int(rel) if rel is not None else None
+        except (TypeError, ValueError):
+            return None
+        if rel_int is None or rel_int < 1 or rel_int > 5:
+            return None
+        summary = str(d.get("summary_ja") or "").strip()[:_MAX_SUMMARY_LEN]
+        reason = str(d.get("reason") or "").strip()[:_MAX_REASON_LEN]
+        tags_raw = d.get("tags") or []
+        if isinstance(tags_raw, list):
+            tags = [
+                str(t).strip()[:_MAX_TAG_LEN]
+                for t in tags_raw[:_MAX_TAG_COUNT]
+                if t
+            ]
+        else:
+            tags = []
+        return cls(relevance=rel_int, summary_ja=summary, reason=reason, tags=tags)
 
 
 SYSTEM_PROMPT = """\
@@ -115,8 +112,11 @@ class AbstractLLMProvider(ABC):
     name: str = "abstract"
 
     def __init__(self, config: dict) -> None:
+        # Initialize the secret slot first so subclass `enabled` properties
+        # can safely reference `self._api_key` during base __init__.
+        self._api_key: str | None = None
         self.config = config or {}
-        self.enabled: bool = bool(self.config.get("enabled", True))
+        self.enabled = bool(self.config.get("enabled", True))
         self.batch_size: int = int(self.config.get("batch_size", 5))
         self.timeout_seconds: float = float(self.config.get("timeout_seconds", 60))
 

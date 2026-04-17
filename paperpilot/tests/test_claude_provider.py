@@ -56,8 +56,8 @@ def test_evaluate_batch_parses_json_array():
         return_value=_resp(200, body),
     ) as mock:
         evals = provider.evaluate_batch(papers, profile="LLM")
-    assert evals[0].relevance == 5
-    assert evals[1].relevance == 2
+    assert evals[0] is not None and evals[0].relevance == 5
+    assert evals[1] is not None and evals[1].relevance == 2
 
     # API key is in x-api-key header, NOT in URL or params
     headers = mock.call_args.kwargs["headers"]
@@ -80,6 +80,7 @@ def test_evaluate_batch_handles_markdown_fences():
         return_value=_resp(200, body),
     ):
         evals = provider.evaluate_batch(papers, profile="")
+    assert evals[0] is not None
     assert evals[0].relevance == 3
 
 
