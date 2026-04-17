@@ -91,7 +91,7 @@ def test_slack_posts_formatted_message():
     ) as mock:
         result = exp.export(_sample_papers())
     assert result == "slack"
-    args, kwargs = mock.call_args
+    _args, kwargs = mock.call_args
     body = kwargs["json_body"]
     assert "PaperPilot" in body["text"]
     assert "T1" in body["text"]

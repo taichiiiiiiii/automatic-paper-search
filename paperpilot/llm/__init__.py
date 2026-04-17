@@ -1,11 +1,13 @@
 from .base import AbstractLLMProvider, PaperEvaluation, build_evaluation_prompt
-from .ollama_provider import OllamaProvider
+from .claude_provider import ClaudeProvider
 from .gemini_provider import GeminiProvider
+from .ollama_provider import OllamaProvider
 
 __all__ = [
     "AbstractLLMProvider",
-    "PaperEvaluation",
-    "OllamaProvider",
+    "ClaudeProvider",
     "GeminiProvider",
+    "OllamaProvider",
+    "PaperEvaluation",
     "build_evaluation_prompt",
 ]

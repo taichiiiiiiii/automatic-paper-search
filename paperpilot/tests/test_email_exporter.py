@@ -71,6 +71,8 @@ def test_send_invokes_smtp_with_tls():
 
 
 def test_respects_max_items():
+    import re
+
     papers = [_mk_paper(f"P{i}") for i in range(30)]
     exp = EmailExporter({"enabled": True, "max_items": 3}, smtp_settings=_build_settings())
     fake_smtp = MagicMock()
@@ -78,8 +80,10 @@ def test_respects_max_items():
         exp.export(papers)
     msg = fake_smtp.send_message.call_args.args[0]
     body = _extract_body(msg)
-    assert body.count("P0") + body.count("P1") + body.count("P2") >= 3
-    assert "P28" not in body and "P29" not in body
+    # Use word-boundary regex so "P0" doesn't falsely match "P10"/"P20"/"P29".
+    titles_seen = set(re.findall(r"\bP\d+\b", body))
+    assert {"P0", "P1", "P2"} <= titles_seen
+    assert not (titles_seen & {f"P{i}" for i in range(3, 30)})
 
 
 def test_no_tls_branch():
@@ -114,6 +118,32 @@ def test_smtp_exception_returns_none():
         side_effect=OSError("connection refused"),
     ):
         assert exp.export(papers) is None
+
+
+def test_starttls_ssl_error_quits_connection():
+    """OSError / ssl.SSLError raised during starttls must not leak the client."""
+    import ssl
+
+    papers = [_mk_paper("x")]
+    exp = EmailExporter({"enabled": True}, smtp_settings=_build_settings())
+    fake_smtp = MagicMock()
+    fake_smtp.starttls.side_effect = ssl.SSLError("tls handshake failed")
+    with patch("paperpilot.exporters.email_exporter.smtplib.SMTP", return_value=fake_smtp):
+        assert exp.export(papers) is None
+    fake_smtp.quit.assert_called_once()
+
+
+def test_login_authentication_error_quits_connection():
+    """SMTPAuthenticationError returns None and ensures quit was called."""
+    import smtplib as _smtp
+
+    papers = [_mk_paper("x")]
+    exp = EmailExporter({"enabled": True}, smtp_settings=_build_settings())
+    fake_smtp = MagicMock()
+    fake_smtp.login.side_effect = _smtp.SMTPAuthenticationError(535, b"bad creds")
+    with patch("paperpilot.exporters.email_exporter.smtplib.SMTP", return_value=fake_smtp):
+        assert exp.export(papers) is None
+    fake_smtp.quit.assert_called_once()
 
 
 def _extract_body(msg) -> str:

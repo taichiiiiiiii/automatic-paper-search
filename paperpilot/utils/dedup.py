@@ -34,13 +34,17 @@ def load_seen_ids(path: str | Path) -> dict[str, str]:
     try:
         with p.open("r", encoding="utf-8") as f:
             data = json.load(f)
-        # Support legacy list format gracefully.
-        if isinstance(data, list):
-            now = datetime.now().isoformat()
-            return {uid: now for uid in data}
-        return data
     except (json.JSONDecodeError, OSError):
         return {}
+    # Support legacy list format gracefully.
+    if isinstance(data, list):
+        now = datetime.now().isoformat()
+        return {str(uid): now for uid in data}
+    if not isinstance(data, dict):
+        # Malformed file (e.g. a string or null) — treat as empty.
+        return {}
+    # Defensive: coerce any non-string values to iso-now to keep purge working.
+    return {str(k): str(v) for k, v in data.items() if k}
 
 
 def save_seen_ids(path: str | Path, seen: dict[str, str]) -> None:

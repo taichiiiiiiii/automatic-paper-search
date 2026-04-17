@@ -12,6 +12,7 @@ Supports:
 
 from __future__ import annotations
 
+import contextlib
 import html
 import smtplib
 from datetime import date
@@ -67,14 +68,14 @@ class EmailExporter(AbstractExporter):
             if user and password:
                 client.login(str(user), str(password))
             client.send_message(msg)
-        except smtplib.SMTPException as e:
+        except (smtplib.SMTPException, OSError) as e:
+            # OSError covers ssl.SSLError / socket errors from starttls() and
+            # DNS-level failures, which are NOT subclasses of SMTPException.
             logger.warning("email: send failed: %s", e)
             return None
         finally:
-            try:
+            with contextlib.suppress(Exception):  # best-effort cleanup
                 client.quit()
-            except Exception:  # pragma: no cover — best-effort cleanup
-                pass
 
         logger.info("email: sent %d papers to %s", len(top), to_addr)
         return "email"

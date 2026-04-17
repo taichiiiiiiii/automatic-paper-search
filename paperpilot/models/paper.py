@@ -7,7 +7,7 @@ them.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import date, datetime
 from typing import Any
 
@@ -76,7 +76,7 @@ class Paper:
         return d
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "Paper":
+    def from_dict(cls, d: dict[str, Any]) -> Paper:
         """Inverse of to_dict() for reading cached papers."""
         d = dict(d)
         d.pop("uid", None)

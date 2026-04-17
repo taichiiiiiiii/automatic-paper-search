@@ -86,6 +86,8 @@ def test_runner_end_to_end_with_mocked_arxiv(tmp_path: Path):
 
 
 def test_runner_incremental_second_run_filters_seen(tmp_path: Path):
+    import json
+
     config = _build_config(tmp_path)
     papers = _fake_arxiv_papers()
 
@@ -95,6 +97,18 @@ def test_runner_incremental_second_run_filters_seen(tmp_path: Path):
     runner1 = PipelineRunner(config)
     with patch.object(runner1.sources[0], "afetch", side_effect=_fake_afetch):
         first = asyncio.run(runner1.run())
+
+    # Verify seen_ids.json actually grew with the expected IDs from run 1.
+    seen_path = tmp_path / "seen_ids.json"
+    assert seen_path.exists()
+    with seen_path.open() as f:
+        seen = json.load(f)
+    assert len(seen) == 3
+    assert set(seen.keys()) == {f"arxiv:2604.000{i}" for i in (1, 2, 3)}
+    # Timestamps are ISO-8601 strings
+    from datetime import datetime
+    for ts in seen.values():
+        datetime.fromisoformat(ts)  # raises if malformed
 
     runner2 = PipelineRunner(config)
     with patch.object(runner2.sources[0], "afetch", side_effect=_fake_afetch):

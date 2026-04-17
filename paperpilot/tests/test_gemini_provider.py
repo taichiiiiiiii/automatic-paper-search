@@ -62,11 +62,14 @@ def test_evaluate_batch_parses_json_array():
     assert evals[0].relevance == 4
     assert evals[1].relevance == 2
 
-    # URL includes model name and API key is in params
+    # URL includes model name; API key is in x-goog-api-key header (not URL)
     url = mock.call_args.args[1]
     assert "gemini-1.5-flash" in url
-    params = mock.call_args.kwargs["params"]
-    assert params.get("key") == "k"
+    headers = mock.call_args.kwargs["headers"]
+    assert headers.get("x-goog-api-key") == "k"
+    # Security: the key must NOT appear in URL or params (avoids proxy logs)
+    assert "key=" not in url
+    assert "key" not in (mock.call_args.kwargs.get("params") or {})
 
 
 def test_evaluate_batch_api_failure():

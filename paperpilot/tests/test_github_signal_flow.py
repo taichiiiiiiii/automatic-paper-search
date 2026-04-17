@@ -135,7 +135,7 @@ def test_enrich_one_swallows_exceptions():
 
 
 def test_enrich_batch_respects_max_lookups():
-    """High-scoring papers should be prioritized when the budget is tight."""
+    """High-scoring papers must be prioritized when the budget is tight."""
     papers = [
         _mk_paper(arxiv_id=f"2604.00{i}", uid_suffix=str(i)) for i in range(5)
     ]
@@ -143,15 +143,14 @@ def test_enrich_batch_respects_max_lookups():
     for i, p in enumerate(papers):
         p.keyword_score = float(i * 10)  # p4 highest, p0 lowest
 
-    call_log: list[str] = []
+    queried_ids: list[str] = []
 
     def _tracked(*args, **kwargs):
-        url = args[1]  # method="GET", url=...
         params = kwargs.get("params") or {}
-        # Count only the top-level PwC /papers/?arxiv_id=... lookup
-        if "paperswithcode" in url and "arxiv_id" in params:
-            call_log.append(url)
-        return _resp(200, {"results": []})  # PwC returns no match
+        aid = params.get("arxiv_id")
+        if aid:
+            queried_ids.append(aid)
+        return _resp(200, {"results": []})  # PwC returns no match (fast fail)
 
     with patch(
         "paperpilot.signals.github_signal.request_with_retry",
@@ -160,8 +159,10 @@ def test_enrich_batch_respects_max_lookups():
         sig = GitHubSignal({"enabled": True, "max_lookups": 2})
         sig.enrich_batch(papers)
 
-    # Only 2 lookups budget → 2 calls
-    assert len(call_log) == 2
+    # Budget respected — exactly 2 papers looked up
+    assert len(queried_ids) == 2
+    # Priority check: the 2 highest-scoring papers (p4, p3) got the lookups
+    assert set(queried_ids) == {"2604.004", "2604.003"}
 
 
 def test_fetch_github_stars_extracts_owner_repo():
@@ -178,8 +179,20 @@ def test_fetch_github_stars_extracts_owner_repo():
 def test_fetch_github_stars_rejects_non_github_url():
     sig = GitHubSignal({"enabled": True})
     assert sig._fetch_github_stars(None) is None
+    assert sig._fetch_github_stars("") is None
+    # Non-github hosts
     assert sig._fetch_github_stars("http://gitlab.com/a/b") is None
+    # SSRF attempt via substring
+    assert sig._fetch_github_stars("http://evil.com/?x=github.com/a/b") is None
+    # Path traversal in owner/repo segments
+    assert sig._fetch_github_stars("https://github.com/owner/../escape") is None
+    assert sig._fetch_github_stars("https://github.com/owner/repo;rm -rf") is None
+    # Too-short path
     assert sig._fetch_github_stars("https://github.com/") is None
+    assert sig._fetch_github_stars("https://github.com/onlyowner") is None
+    # Unsupported scheme
+    assert sig._fetch_github_stars("file:///etc/passwd") is None
+    assert sig._fetch_github_stars("javascript:alert(1)") is None
 
 
 def test_github_token_added_to_headers():

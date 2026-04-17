@@ -92,7 +92,7 @@ class ArxivSource(AbstractSource):
             dt = dt.replace(tzinfo=timezone.utc)
         return dt.astimezone(timezone.utc).date()
 
-    def _to_paper(self, result: "arxiv.Result", matched_kw: str) -> Paper:
+    def _to_paper(self, result: arxiv.Result, matched_kw: str) -> Paper:
         arxiv_id = result.get_short_id().split("v")[0]  # strip version suffix
         return Paper(
             title=result.title.strip(),

@@ -56,7 +56,7 @@ class CitationSignal(AbstractSignal):
             if data is None:
                 continue
             # Response preserves order, nulls for missing IDs.
-            for (paper, _rid), payload in zip(chunk, data):
+            for (paper, _rid), payload in zip(chunk, data, strict=False):
                 if not payload:
                     continue
                 self._apply(paper, payload, today)
@@ -137,5 +137,10 @@ class CitationSignal(AbstractSignal):
                 pub = None
         if pub is None:
             pub = paper.published_date
+        # S2 occasionally returns a publicationDate in the future (embargo /
+        # timezone glitch). Clamp so velocity never gets artificially inflated
+        # by a negative elapsed-days fallthrough.
+        if pub > today:
+            pub = today
         days = max((today - pub).days, 1)
         return cites / days

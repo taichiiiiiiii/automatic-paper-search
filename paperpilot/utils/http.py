@@ -6,7 +6,12 @@ Retry policy (design doc §6.2, Table 17):
   - Timeout          : log and retry once
   - HTTP 404 / other : return the response without retry (caller handles)
 
-Returns None only when the request ultimately fails after retries.
+Overall deadline: the accumulated wall-clock time (including backoff sleeps
+and socket timeouts) is capped by `overall_deadline` so a single call can
+never stack retries to ~90s and derail Stage-0 timing estimates.
+
+Returns None only when the request ultimately fails after retries or the
+overall deadline elapses.
 """
 
 from __future__ import annotations
@@ -29,6 +34,8 @@ _MAX_RETRIES_5XX = 2
 
 _MAX_RETRIES_TIMEOUT = 1
 
+_DEFAULT_DEADLINE_MULTIPLIER = 3.0  # overall_deadline default = timeout * 3
+
 
 def request_with_retry(
     method: str,
@@ -38,14 +45,25 @@ def request_with_retry(
     headers: dict[str, str] | None = None,
     json_body: dict[str, Any] | None = None,
     timeout: float = 10.0,
+    overall_deadline: float | None = None,
 ) -> requests.Response | None:
-    """Execute an HTTP request with the retry policy described above."""
+    """Execute an HTTP request with retry + exponential backoff.
+
+    `timeout` is the per-socket timeout. `overall_deadline` caps the total
+    wall-clock time including backoff sleeps; defaults to timeout * 3.
+    """
+    if overall_deadline is None:
+        overall_deadline = timeout * _DEFAULT_DEADLINE_MULTIPLIER
+    start = time.monotonic()
     attempts_429 = 0
     attempts_5xx = 0
     attempts_timeout = 0
     backoff_429 = _BACKOFF_429_INITIAL
 
     while True:
+        if time.monotonic() - start > overall_deadline:
+            logger.warning("http: overall deadline %.1fs exceeded: %s", overall_deadline, url)
+            return None
         try:
             resp = requests.request(
                 method,

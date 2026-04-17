@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 
-from paperpilot.signals.github_signal import _stars_to_score, MAX_STARS
+from paperpilot.signals.github_signal import MAX_STARS, _stars_to_score
 
 
 def test_zero_stars():

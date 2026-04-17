@@ -25,23 +25,39 @@ class PaperEvaluation:
     reason: str
     tags: list[str]
 
-    @classmethod
-    def from_dict(cls, d: dict) -> "PaperEvaluation | None":
-        """Construct from a dict; return None if required fields are invalid."""
-        if not isinstance(d, dict):
-            return None
-        rel = d.get("relevance")
-        try:
-            rel_int = int(rel) if rel is not None else None
-        except (TypeError, ValueError):
-            return None
-        if rel_int is None or rel_int < 1 or rel_int > 5:
-            return None
-        summary = str(d.get("summary_ja") or "").strip()
-        reason = str(d.get("reason") or "").strip()
-        tags_raw = d.get("tags") or []
-        tags = [str(t).strip() for t in tags_raw if t] if isinstance(tags_raw, list) else []
-        return cls(relevance=rel_int, summary_ja=summary, reason=reason, tags=tags)
+
+# Bound LLM output strings so a runaway model can't bloat CSV / log files.
+_MAX_SUMMARY_LEN = 500
+_MAX_REASON_LEN = 200
+_MAX_TAG_LEN = 32
+_MAX_TAG_COUNT = 6
+
+
+def _eval_from_dict(d: dict) -> PaperEvaluation | None:
+    """Construct PaperEvaluation from a dict; return None when invalid."""
+    if not isinstance(d, dict):
+        return None
+    rel = d.get("relevance")
+    try:
+        rel_int = int(rel) if rel is not None else None
+    except (TypeError, ValueError):
+        return None
+    if rel_int is None or rel_int < 1 or rel_int > 5:
+        return None
+    summary = str(d.get("summary_ja") or "").strip()[:_MAX_SUMMARY_LEN]
+    reason = str(d.get("reason") or "").strip()[:_MAX_REASON_LEN]
+    tags_raw = d.get("tags") or []
+    if isinstance(tags_raw, list):
+        tags = [
+            str(t).strip()[:_MAX_TAG_LEN] for t in tags_raw[:_MAX_TAG_COUNT] if t
+        ]
+    else:
+        tags = []
+    return PaperEvaluation(relevance=rel_int, summary_ja=summary, reason=reason, tags=tags)
+
+
+# Attach as classmethod for backward-compatible `PaperEvaluation.from_dict(...)`.
+PaperEvaluation.from_dict = classmethod(lambda cls, d: _eval_from_dict(d))  # type: ignore[attr-defined]
 
 
 SYSTEM_PROMPT = """\
