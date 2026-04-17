@@ -38,6 +38,7 @@ def metric_score(
             + p.citation_score * float(weights.get("citation", 0.0))
             + p.author_score * float(weights.get("author", 0.0))
             + p.keyword_score * float(weights.get("keyword", 0.0))
+            + p.follow_score * float(weights.get("follow", 0.0))
         )
 
     papers.sort(key=lambda p: p.total_score, reverse=True)

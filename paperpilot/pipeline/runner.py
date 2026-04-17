@@ -37,6 +37,7 @@ from ..signals import (
     AbstractSignal,
     AuthorSignal,
     CitationSignal,
+    FollowSignal,
     GitHubSignal,
     KeywordSignal,
     VenueSignal,
@@ -110,6 +111,19 @@ class PipelineRunner:
         # their scores.
         if "venue" in sig_cfg:
             signals.append(VenueSignal(sig_cfg["venue"]))
+        # FollowSignal: zero-latency authority signal. Runs before keyword so
+        # follow_score contributes to total ordering before GitHub budgets.
+        profile_cfg = self.config.get("profile") or {}
+        follow_authors = profile_cfg.get("follow_authors") or []
+        follow_orgs = profile_cfg.get("follow_orgs") or []
+        if follow_authors or follow_orgs:
+            signals.append(
+                FollowSignal(
+                    sig_cfg.get("follow") or {"enabled": True},
+                    follow_authors=follow_authors,
+                    follow_orgs=follow_orgs,
+                )
+            )
         # KeywordSignal is implicit — always on, sourced from search keywords.
         keywords = self.config.get("search", {}).get("keywords", [])
         signals.append(KeywordSignal({"enabled": True}, keywords=keywords))

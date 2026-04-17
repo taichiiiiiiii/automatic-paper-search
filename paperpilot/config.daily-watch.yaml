@@ -1,0 +1,114 @@
+# PaperPilot — DAILY follow-authors watch config
+#
+# Runs every morning with a 1-day window. Only papers whose authors or
+# affiliations appear in `profile.follow_authors` / `follow_orgs` rank
+# highly — everything else gets filtered out. No LLM calls, no citation
+# lookups (day-1 papers have none). Output destined for Slack / Email
+# real-time alerts.
+#
+# Companion `config.yaml` handles the weekly deep-survey that waits for
+# citations / stars / venue info to mature.
+
+# ===== Search settings =====
+search:
+  keywords:
+    # Keywords kept broad so we don't miss a followed author who writes outside
+    # our usual topic. FollowSignal takes over for ranking.
+    - large language model
+    - retrieval
+    - multimodal
+  categories:
+    - cs.LG
+    - cs.AI
+    - cs.CL
+    - cs.CV
+  days_back: 1
+  max_results_per_keyword: 50     # wider net; FollowSignal filters
+  exclude_words:
+    - survey
+    - tutorial
+
+# ===== Data sources =====
+sources:
+  arxiv:
+    enabled: true
+    delay_seconds: 3
+  s2:
+    enabled: false           # not needed: no citation signal used here
+  openalex:
+    enabled: true            # required for affiliations (FollowSignal org match)
+    delay_seconds: 1.0
+
+# ===== Quality signals (lean for speed) =====
+signals:
+  venue:
+    enabled: true            # cheap (regex), occasionally useful on day 1
+  # Citation / author h-index / github skipped — too slow / 0 on day 1.
+  follow:
+    enabled: true
+
+# ===== Scoring weights =====
+# Follow dominates; venue is a tiny secondary signal.
+weights:
+  follow: 3.5
+  venue: 0.5
+  keyword: 0.1               # deprioritized; we only want followed-author hits
+
+# ===== Pipeline control =====
+pipeline:
+  stage2_top_n: 10           # small batch — only the day's hits
+  stage4_top_n: 10
+
+# ===== LLM (Stage 4) disabled for daily runs (cost / latency) =====
+llm:
+  enabled: false
+
+# ===== Stage 3 Embedding disabled (no profile nuance needed) =====
+embedding:
+  enabled: false
+
+# ===== Research profile — fill these in! =====
+profile:
+  description: ""
+  keywords: []
+  follow_authors:
+    # Add researchers whose new arXiv submissions must always alert you.
+    []
+    # - "Yann LeCun"
+    # - "Geoffrey Hinton"
+    # - "Ilya Sutskever"
+  follow_orgs:
+    []
+    # - "OpenAI"
+    # - "Anthropic"
+    # - "Google DeepMind"
+    # - "Meta AI Research"
+    # - "FAIR"
+
+# ===== Output =====
+# Typically only Slack / Email — CSV / JSON are optional.
+output:
+  csv:
+    enabled: true
+    dir: paperpilot/output/daily
+    encoding: utf-8-sig
+  json:
+    enabled: false
+  slack:
+    enabled: false           # flip true + set PAPERPILOT_SLACK_WEBHOOK_URL
+    max_items: 10
+  email:
+    enabled: false
+    max_items: 10
+
+# ===== Incremental update (CRITICAL for daily mode) =====
+# Without this, the same paper re-alerts every day it stays in the 1-day window.
+incremental:
+  enabled: true
+  seen_ids_file: paperpilot/data/seen_ids.daily.json
+  max_age_days: 3
+
+# ===== Logging =====
+logging:
+  level: INFO
+  file: paperpilot/logs/paperpilot-daily.log

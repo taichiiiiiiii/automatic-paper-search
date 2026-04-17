@@ -107,6 +107,15 @@ class OpenAlexSource(AbstractSource):
             for a in authorships
             if a.get("author", {}).get("display_name")
         ]
+        # Affiliations: flatten institutions across all authorships, dedup.
+        affiliations: list[str] = []
+        seen_aff: set[str] = set()
+        for auth in authorships:
+            for inst in auth.get("institutions") or []:
+                name = inst.get("display_name") if isinstance(inst, dict) else None
+                if name and name not in seen_aff:
+                    seen_aff.add(name)
+                    affiliations.append(name)
 
         # OpenAlex deprecated `host_venue` in 2023 in favor of
         # `primary_location.source.display_name`. Try the new field first,
@@ -133,6 +142,7 @@ class OpenAlexSource(AbstractSource):
             pdf_url=pdf_url,
             categories=[],
             comment=None,
+            affiliations=affiliations,
             venue=venue or None,
             matched_keywords=[matched_kw],
         )

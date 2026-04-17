@@ -28,6 +28,7 @@ class Paper:
     pdf_url: str | None = None
     categories: list[str] = field(default_factory=list)
     comment: str | None = None  # arXiv comment field (e.g. "Accepted at ICLR 2026")
+    affiliations: list[str] = field(default_factory=list)  # OpenAlex only (for now)
 
     # ---- Enriched by Signals ----
     venue: str | None = None
@@ -47,6 +48,8 @@ class Paper:
     author_score: float = 0.0
     keyword_match_count: int = 0
     keyword_score: float = 0.0
+    follow_score: float = 0.0   # FollowSignal: 100 for author match, 50 for org match
+    follow_reason: str | None = None  # "followed_author" | "followed_org" | None
 
     # ---- Stage 3: Embedding similarity ----
     embedding_similarity: float | None = None  # 0..100, None if Stage 3 skipped
