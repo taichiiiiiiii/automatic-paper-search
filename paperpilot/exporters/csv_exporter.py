@@ -15,6 +15,10 @@ logger = get_logger(__name__)
 COLUMNS = [
     "rank",
     "total_score",
+    "llm_relevance",
+    "llm_summary_ja",
+    "llm_reason",
+    "llm_tags",
     "title",
     "authors",
     "venue",
@@ -64,6 +68,10 @@ class CSVExporter(AbstractExporter):
                 row = {
                     "rank": rank,
                     "total_score": round(p.total_score, 2),
+                    "llm_relevance": p.llm_relevance if p.llm_relevance is not None else "",
+                    "llm_summary_ja": p.llm_summary_ja or "",
+                    "llm_reason": p.llm_reason or "",
+                    "llm_tags": "; ".join(p.llm_tags),
                     "title": p.title,
                     "authors": "; ".join(p.authors),
                     "venue": p.venue or "",

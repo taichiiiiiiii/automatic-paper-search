@@ -53,6 +53,27 @@ weights:
 # ===== Pipeline control =====
 pipeline:
   stage2_top_n: 30
+  stage4_top_n: 10
+
+# ===== LLM (Stage 4) =====
+# Provider options:
+#   - ollama : local, free (requires `ollama serve` + `ollama pull <model>`)
+#   - (add claude/gemini/openai later by subclassing AbstractLLMProvider)
+# Disable this block to skip Stage 4 entirely.
+llm:
+  enabled: false         # flip to true once Ollama is running
+  provider: ollama
+  model: qwen2.5:7b      # suggested: qwen2.5:7b / llama3.1:8b / gemma2:9b
+  host: http://localhost:11434
+  batch_size: 5
+  temperature: 0.2
+  timeout_seconds: 120
+
+# ===== Research profile (optional, Stage 4 uses this) =====
+# If unset, the pipeline falls back to search.keywords (design doc §4.4 mode C).
+profile:
+  description: ""        # free-text research interest; leave empty to use keywords
+  keywords: []           # overrides search.keywords when non-empty
 
 # ===== Output =====
 output:

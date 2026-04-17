@@ -38,6 +38,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Ignore seen-ids (re-output papers from previous runs)",
     )
+    p.add_argument(
+        "--skip-llm",
+        action="store_true",
+        help="Skip Stage 4 (LLM rerank) even if configured",
+    )
     return p.parse_args()
 
 
@@ -55,6 +60,8 @@ def main() -> int:
         config.setdefault("search", {}).setdefault("keywords", []).extend(args.keyword)
     if args.full:
         config.setdefault("incremental", {})["enabled"] = False
+    if args.skip_llm:
+        config.setdefault("llm", {})["enabled"] = False
 
     runner = PipelineRunner(config)
     result = asyncio.run(runner.run())
