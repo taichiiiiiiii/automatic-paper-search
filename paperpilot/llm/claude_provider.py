@@ -46,7 +46,7 @@ class ClaudeProvider(AbstractLLMProvider):
         self.max_tokens = int(self.config.get("max_tokens", 2048))
 
     @property
-    def enabled(self) -> bool:  # type: ignore[override]
+    def enabled(self) -> bool:
         """Auto-disable when the API key is missing."""
         return bool(self._enabled) and bool(self._api_key)
 

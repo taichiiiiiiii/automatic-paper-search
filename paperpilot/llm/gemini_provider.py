@@ -43,17 +43,13 @@ class GeminiProvider(AbstractLLMProvider):
         self.temperature = float(self.config.get("temperature", 0.2))
 
     @property
-    def enabled(self) -> bool:  # type: ignore[override]
+    def enabled(self) -> bool:
         """Disabled automatically when the API key is missing."""
         return bool(self._enabled) and bool(self._api_key)
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
         self._enabled = bool(value)
-
-    # AbstractLLMProvider.__init__ set `self.enabled` via setter above
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
 
     def evaluate_batch(
         self, papers: list[Paper], profile: str

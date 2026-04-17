@@ -15,6 +15,10 @@ def _mk(
     comment: str | None = None,
     uid_suffix: str = "1",
 ) -> Paper:
+    # Note: use `categories if categories is not None else [...]` rather than
+    # `categories or [...]` so an empty list stays empty (simulates S2/OpenAlex).
+    if categories is None:
+        categories = ["cs.LG"]
     return Paper(
         title=title,
         authors=["A"],
@@ -23,7 +27,7 @@ def _mk(
         published_date=pub or date.today(),
         source="arxiv",
         arxiv_id=f"2604.000{uid_suffix}",
-        categories=categories or ["cs.LG"],
+        categories=categories,
         comment=comment,
     )
 
@@ -39,6 +43,19 @@ def test_empty_categories_allows_all():
     papers = [_mk(categories=["cs.LG"], uid_suffix="1"), _mk(categories=["math.ST"], uid_suffix="2")]
     kept = rule_filter(papers, exclude_words=[], categories=[])
     assert len(kept) == 2
+
+
+def test_paper_without_categories_passes_category_filter():
+    """Papers from sources that don't expose categories (S2, OpenAlex) must
+    not be silently dropped when the user has configured a category filter.
+    """
+    papers = [
+        _mk(categories=["cs.LG"], uid_suffix="1"),
+        _mk(categories=[], uid_suffix="2"),  # S2/OpenAlex style — no categories
+    ]
+    kept = rule_filter(papers, exclude_words=[], categories=["cs.LG"])
+    assert len(kept) == 2
+    assert any(p.categories == [] for p in kept)
 
 
 def test_date_filter():

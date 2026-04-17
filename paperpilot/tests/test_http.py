@@ -17,6 +17,7 @@ def _resp(status: int, body=None):
 def test_success_first_try():
     with patch.object(http_mod.requests, "request", return_value=_resp(200, {"a": 1})) as m:
         r = http_mod.request_with_retry("GET", "http://x")
+    assert r is not None
     assert r.status_code == 200
     assert m.call_count == 1
 
@@ -27,6 +28,7 @@ def test_429_exponential_backoff_retries(monkeypatch):
     monkeypatch.setattr(http_mod.time, "sleep", lambda s: sleeps.append(s))
     with patch.object(http_mod.requests, "request", side_effect=responses):
         r = http_mod.request_with_retry("GET", "http://x")
+    assert r is not None
     assert r.status_code == 200
     # Two backoffs: 2s then 4s
     assert sleeps == [2.0, 4.0]
@@ -37,6 +39,7 @@ def test_429_gives_up_after_max_retries(monkeypatch):
     always_429 = [_resp(429)] * 10
     with patch.object(http_mod.requests, "request", side_effect=always_429):
         r = http_mod.request_with_retry("GET", "http://x")
+    assert r is not None
     assert r.status_code == 429
 
 
@@ -45,6 +48,7 @@ def test_5xx_retry(monkeypatch):
     monkeypatch.setattr(http_mod.time, "sleep", lambda s: None)
     with patch.object(http_mod.requests, "request", side_effect=responses):
         r = http_mod.request_with_retry("GET", "http://x")
+    assert r is not None
     assert r.status_code == 200
 
 
@@ -61,6 +65,7 @@ def test_timeout_retry_once(monkeypatch):
     monkeypatch.setattr(http_mod.time, "sleep", lambda s: None)
     with patch.object(http_mod.requests, "request", side_effect=_req):
         r = http_mod.request_with_retry("GET", "http://x")
+    assert r is not None
     assert r.status_code == 200
     assert len(calls) == 2
 
@@ -76,6 +81,7 @@ def test_request_exception_returns_none():
 def test_404_passes_through_no_retry():
     with patch.object(http_mod.requests, "request", return_value=_resp(404)) as m:
         r = http_mod.request_with_retry("GET", "http://x")
+    assert r is not None
     assert r.status_code == 404
     assert m.call_count == 1
 

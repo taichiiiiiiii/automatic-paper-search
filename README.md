@@ -19,15 +19,19 @@ GitHub Actions で毎日自動実行され、結果がリポジトリに自動�
 
 ## 必要環境
 
-- Python 3.12+
+- Python 3.10+（開発・CI は 3.12）
 - 任意で GitHub Personal Access Token（API レート制限を 60 → 5,000 req/h に拡大）
 
 ## セットアップ
 
 ```bash
-cd paperpilot
-pip install -r requirements.txt
-cp .env.example .env   # 必要に応じて値を記入
+# runtime のみ
+pip install -r paperpilot/requirements.txt
+
+# 開発用（pytest + ruff + mypy を含む）
+pip install -e '.[dev]'
+
+cp paperpilot/.env.example paperpilot/.env   # 必要に応じて値を記入
 ```
 
 ## 実行

@@ -41,7 +41,9 @@ async def collect(
 
     papers: list[Paper] = []
     for src, result in zip(enabled, results, strict=False):
-        if isinstance(result, Exception):
+        # asyncio.gather(return_exceptions=True) may return BaseException
+        # subclasses too (e.g. CancelledError); handle the full hierarchy.
+        if isinstance(result, BaseException):
             logger.warning("stage0: source '%s' failed: %s", src.name, result)
             status[src.name] = {"ok": False, "count": 0, "error": str(result)}
             continue

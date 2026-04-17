@@ -91,6 +91,7 @@ def test_evaluate_batch_truncates_extra_results():
     ):
         evals = provider.evaluate_batch(papers, profile="")
     assert len(evals) == 1
+    assert evals[0] is not None
     assert evals[0].relevance == 4
 
 

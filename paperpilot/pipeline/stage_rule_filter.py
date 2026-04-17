@@ -29,7 +29,10 @@ def rule_filter(
     cat_set = {c.strip() for c in categories if c.strip()}
 
     def passes(p: Paper) -> bool:
-        if cat_set and not (set(p.categories) & cat_set):
+        # Category filter: papers whose source doesn't expose categories
+        # (S2, OpenAlex) pass through; only reject when the paper has
+        # categories and none of them match the configured set.
+        if cat_set and p.categories and not (set(p.categories) & cat_set):
             return False
         if since_date is not None and p.published_date < since_date:
             return False

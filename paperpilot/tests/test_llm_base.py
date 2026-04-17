@@ -27,8 +27,8 @@ def test_paper_evaluation_invalid_relevance():
 
 
 def test_paper_evaluation_non_dict():
-    assert PaperEvaluation.from_dict("not a dict") is None  # type: ignore[arg-type]
-    assert PaperEvaluation.from_dict(None) is None  # type: ignore[arg-type]
+    assert PaperEvaluation.from_dict("not a dict") is None
+    assert PaperEvaluation.from_dict(None) is None
 
 
 def test_paper_evaluation_tags_fallback():

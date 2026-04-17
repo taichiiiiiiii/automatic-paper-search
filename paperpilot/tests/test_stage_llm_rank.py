@@ -41,7 +41,7 @@ def _mk(title: str, score: float = 0.0) -> Paper:
 
 def test_rerank_sorts_by_relevance_desc():
     papers = [_mk("A", score=10), _mk("B", score=20), _mk("C", score=30)]
-    evaluations = [
+    evaluations: list[PaperEvaluation | None] = [
         PaperEvaluation(relevance=2, summary_ja="s1", reason="r1", tags=[]),
         PaperEvaluation(relevance=5, summary_ja="s2", reason="r2", tags=[]),
         PaperEvaluation(relevance=3, summary_ja="s3", reason="r3", tags=[]),
@@ -57,7 +57,7 @@ def test_rerank_sorts_by_relevance_desc():
 
 def test_rerank_batches_correctly():
     papers = [_mk(f"P{i}") for i in range(7)]
-    evaluations = [
+    evaluations: list[PaperEvaluation | None] = [
         PaperEvaluation(relevance=i % 5 + 1, summary_ja="", reason="", tags=[])
         for i in range(7)
     ]
@@ -89,6 +89,21 @@ def test_rerank_no_provider_returns_top_n():
     papers = [_mk(f"P{i}", score=float(i)) for i in range(5)]
     out = llm_rerank(papers, provider=None, profile="", top_n=3)
     assert len(out) == 3
+
+
+def test_rerank_catches_provider_exception():
+    """When evaluate_batch raises, Stage 4 must still return papers (Fail-Safe)."""
+
+    class _BoomProvider(FakeProvider):
+        def evaluate_batch(self, papers, profile):
+            raise RuntimeError("llm crashed")
+
+    papers = [_mk("A", score=10), _mk("B", score=20)]
+    provider = _BoomProvider([], batch_size=5)
+    out = llm_rerank(papers, provider=provider, profile="", top_n=5)
+    # All papers flow through with llm_relevance=None
+    assert len(out) == 2
+    assert all(p.llm_relevance is None for p in out)
 
 
 def test_rerank_disabled_provider_returns_top_n():

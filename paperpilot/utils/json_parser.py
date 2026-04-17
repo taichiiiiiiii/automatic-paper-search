@@ -24,7 +24,7 @@ _JSON_ARRAY_RE = re.compile(r"\[\s*\{.*\}\s*\]", re.DOTALL)
 _JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
 
 
-def parse_llm_response(text: str) -> Any | None:
+def parse_llm_response(text: str | None) -> Any | None:
     """Try three strategies to parse an LLM response into JSON."""
     if text is None:
         return None

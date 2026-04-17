@@ -156,5 +156,5 @@ def _extract_body(msg) -> str:
         )
     payload = msg.get_payload(decode=True)
     if payload is not None:
-        return payload.decode("utf-8", errors="ignore")
+        return str(payload.decode("utf-8", errors="ignore"))
     return str(msg.get_payload())
