@@ -27,7 +27,12 @@ from ..exporters import (
     JSONExporter,
     SlackExporter,
 )
-from ..llm import AbstractLLMProvider, GeminiProvider, OllamaProvider
+from ..llm import (
+    AbstractLLMProvider,
+    ClaudeProvider,
+    GeminiProvider,
+    OllamaProvider,
+)
 from ..signals import (
     AbstractSignal,
     AuthorSignal,
@@ -137,6 +142,8 @@ class PipelineRunner:
             return OllamaProvider(llm_cfg)
         if provider_name == "gemini":
             return GeminiProvider(llm_cfg, api_key=env.get("gemini_api_key"))
+        if provider_name == "claude":
+            return ClaudeProvider(llm_cfg, api_key=env.get("claude_api_key"))
         logger.warning("runner: unknown LLM provider '%s' — skipping Stage 4", provider_name)
         return None
 

@@ -42,7 +42,7 @@ def llm_rerank(
         except Exception as e:
             logger.warning("stage4: provider '%s' raised: %s", provider.name, e)
             results = [None] * len(chunk)
-        for paper, evaluation in zip(chunk, results):
+        for paper, evaluation in zip(chunk, results, strict=False):
             _apply(paper, evaluation)
 
     # Sort: evaluated (relevance high->low) first, then total_score

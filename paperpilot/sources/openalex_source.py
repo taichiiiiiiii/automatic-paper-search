@@ -108,7 +108,14 @@ class OpenAlexSource(AbstractSource):
             if a.get("author", {}).get("display_name")
         ]
 
-        venue = (work.get("host_venue") or {}).get("display_name")
+        # OpenAlex deprecated `host_venue` in 2023 in favor of
+        # `primary_location.source.display_name`. Try the new field first,
+        # then fall back to the legacy one for older fixtures.
+        primary = work.get("primary_location") or {}
+        primary_source = primary.get("source") or {}
+        venue = primary_source.get("display_name")
+        if not venue:
+            venue = (work.get("host_venue") or {}).get("display_name")
 
         open_access = work.get("open_access") or {}
         pdf_url = open_access.get("oa_url") if isinstance(open_access, dict) else None

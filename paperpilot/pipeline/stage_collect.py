@@ -40,7 +40,7 @@ async def collect(
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     papers: list[Paper] = []
-    for src, result in zip(enabled, results):
+    for src, result in zip(enabled, results, strict=False):
         if isinstance(result, Exception):
             logger.warning("stage0: source '%s' failed: %s", src.name, result)
             status[src.name] = {"ok": False, "count": 0, "error": str(result)}

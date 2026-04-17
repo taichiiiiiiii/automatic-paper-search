@@ -7,13 +7,22 @@ Star score (design doc §4.3, Table 12):
   score = log(stars + 1) / log(MAX_STARS + 1) * 100
   with MAX_STARS = 10000
 
-Both APIs are rate limited; we stop after `max_lookups` to keep runs
-fast. Failures degrade silently (score stays 0).
+Budget semantics:
+  `max_lookups` caps the number of *papers* we attempt to resolve. Each
+  resolved paper issues up to 3 HTTP calls (PwC paper -> PwC repos ->
+  GitHub API), so the actual HTTP call upper bound is roughly
+  `max_lookups * 3`. Papers missing arxiv_id are skipped without
+  charging the budget so the top-scoring papers always get a lookup.
+
+Both APIs are rate limited; we stop after the budget is exhausted to
+keep runs fast. Failures degrade silently (score stays 0).
 """
 
 from __future__ import annotations
 
 import math
+import re
+from urllib.parse import urlparse
 
 from ..models import Paper
 from ..utils.http import request_with_retry
@@ -27,6 +36,11 @@ GH_API = "https://api.github.com"
 TIMEOUT = 10
 MAX_STARS = 10_000
 _LOG_DENOM = math.log(MAX_STARS + 1)
+
+# SSRF / path-traversal hardening: only accept clean github.com URLs whose
+# owner/repo look like GitHub's allowed identifier set.
+_GH_NETLOC = {"github.com", "www.github.com"}
+_REPO_SEGMENT_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
 def _stars_to_score(stars: int) -> float:
@@ -128,12 +142,15 @@ class GitHubSignal(AbstractSignal):
         return gh_url, stars, is_official
 
     def _fetch_github_stars(self, repo_url: str | None) -> int | None:
-        if not repo_url or "github.com" not in repo_url:
+        """Resolve owner/repo from a URL strictly and fetch stargazer count.
+
+        Defensive against SSRF (non-github hosts) and path traversal
+        (slashes / unicode / control chars in owner/repo segments).
+        """
+        owner_repo = _parse_github_repo_url(repo_url)
+        if owner_repo is None:
             return None
-        parts = repo_url.rstrip("/").split("github.com/", 1)[-1].split("/")
-        if len(parts) < 2:
-            return None
-        owner, repo = parts[0], parts[1].replace(".git", "")
+        owner, repo = owner_repo
         r = request_with_retry(
             "GET",
             f"{GH_API}/repos/{owner}/{repo}",
@@ -143,3 +160,25 @@ class GitHubSignal(AbstractSignal):
         if r is None or r.status_code != 200:
             return None
         return int((r.json() or {}).get("stargazers_count") or 0)
+
+
+def _parse_github_repo_url(url: str | None) -> tuple[str, str] | None:
+    """Strict parse of a GitHub URL -> (owner, repo). None on any deviation."""
+    if not url:
+        return None
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return None
+    if parsed.scheme not in {"http", "https"}:
+        return None
+    if parsed.netloc.lower() not in _GH_NETLOC:
+        return None
+    segments = [s for s in parsed.path.split("/") if s]
+    if len(segments) < 2:
+        return None
+    owner = segments[0]
+    repo = segments[1].removesuffix(".git")
+    if not (_REPO_SEGMENT_RE.match(owner) and _REPO_SEGMENT_RE.match(repo)):
+        return None
+    return owner, repo

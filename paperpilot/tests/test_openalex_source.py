@@ -165,3 +165,36 @@ def test_doi_normalized_without_prefix():
     p = src._to_paper(work, "kw", since_date=today - timedelta(days=7))
     assert p is not None
     assert p.doi == "10.1/abc"  # 'https://doi.org/' prefix stripped
+
+
+def test_venue_prefers_primary_location_over_host_venue():
+    """OpenAlex v2: primary_location.source.display_name is the canonical field."""
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    work = _openalex_work(pub_date=today.isoformat(), venue="LEGACY_VENUE")
+    # Inject both: new-style primary_location (should win) + legacy host_venue
+    work["primary_location"] = {"source": {"display_name": "Nature"}}
+    p = src._to_paper(work, "kw", since_date=today - timedelta(days=7))
+    assert p is not None
+    assert p.venue == "Nature"
+
+
+def test_venue_falls_back_to_host_venue_when_primary_missing():
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    work = _openalex_work(pub_date=today.isoformat(), venue="ICLR")
+    # primary_location returns null (actual live-API default)
+    work["primary_location"] = None
+    p = src._to_paper(work, "kw", since_date=today - timedelta(days=7))
+    assert p is not None
+    assert p.venue == "ICLR"
+
+
+def test_venue_none_when_both_missing():
+    src = OpenAlexSource({"enabled": True, "delay_seconds": 0})
+    today = date.today()
+    work = _openalex_work(pub_date=today.isoformat(), venue=None)
+    work["primary_location"] = None
+    p = src._to_paper(work, "kw", since_date=today - timedelta(days=7))
+    assert p is not None
+    assert p.venue is None

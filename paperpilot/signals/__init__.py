@@ -1,15 +1,15 @@
+from .author_signal import AuthorSignal
 from .base import AbstractSignal
-from .venue_signal import VenueSignal
+from .citation_signal import CitationSignal
 from .github_signal import GitHubSignal
 from .keyword_signal import KeywordSignal
-from .citation_signal import CitationSignal
-from .author_signal import AuthorSignal
+from .venue_signal import VenueSignal
 
 __all__ = [
     "AbstractSignal",
-    "VenueSignal",
+    "AuthorSignal",
+    "CitationSignal",
     "GitHubSignal",
     "KeywordSignal",
-    "CitationSignal",
-    "AuthorSignal",
+    "VenueSignal",
 ]

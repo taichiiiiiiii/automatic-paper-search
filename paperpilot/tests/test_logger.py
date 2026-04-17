@@ -78,6 +78,6 @@ def test_logger_writes_to_file(tmp_path):
     assert "hello world" in log_path.read_text(encoding="utf-8")
 
 
-def teardown_module(module):  # noqa: D401 — pytest hook
+def teardown_module(module):
     """Reset root handlers so other test modules start clean."""
     _cleanup_root()

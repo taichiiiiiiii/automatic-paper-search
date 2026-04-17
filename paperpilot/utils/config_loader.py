@@ -31,15 +31,23 @@ def load_config(config_path: str | Path = "config.yaml") -> dict[str, Any]:
     else:
         load_dotenv()  # falls back to cwd / parent search
 
+    # SMTP port is always normalized to int for a consistent downstream type.
+    port_raw = os.getenv("PAPERPILOT_SMTP_PORT")
+    try:
+        smtp_port = int(port_raw) if port_raw else 587
+    except ValueError:
+        smtp_port = 587
+
     config["env"] = {
         "github_token": os.getenv("PAPERPILOT_GITHUB_TOKEN"),
         "s2_api_key": os.getenv("PAPERPILOT_S2_API_KEY"),
         "openalex_email": os.getenv("PAPERPILOT_OPENALEX_EMAIL"),
         "slack_webhook_url": os.getenv("PAPERPILOT_SLACK_WEBHOOK_URL"),
         "gemini_api_key": os.getenv("PAPERPILOT_GEMINI_API_KEY"),
+        "claude_api_key": os.getenv("PAPERPILOT_CLAUDE_API_KEY"),
         "smtp": {
             "server": os.getenv("PAPERPILOT_SMTP_SERVER"),
-            "port": os.getenv("PAPERPILOT_SMTP_PORT") or 587,
+            "port": smtp_port,
             "user": os.getenv("PAPERPILOT_SMTP_USER"),
             "password": os.getenv("PAPERPILOT_SMTP_PASSWORD"),
             "to": os.getenv("PAPERPILOT_EMAIL_TO"),

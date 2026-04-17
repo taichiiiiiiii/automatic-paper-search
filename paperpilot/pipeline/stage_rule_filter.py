@@ -34,9 +34,7 @@ def rule_filter(
         if since_date is not None and p.published_date < since_date:
             return False
         text = f"{p.title}\n{p.abstract}\n{p.comment or ''}".lower()
-        if any(w in text for w in excludes_lower):
-            return False
-        return True
+        return not any(w in text for w in excludes_lower)
 
     kept = [p for p in papers if passes(p)]
     logger.info(

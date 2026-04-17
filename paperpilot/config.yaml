@@ -42,7 +42,9 @@ signals:
     enabled: true
   github:
     enabled: true
-    # Papers with Code lookup is rate-limited; cap per-run lookups to keep runs fast.
+    # Cap the number of PAPERS we try to resolve. Each paper issues up to
+    # 3 HTTP calls (PwC paper -> PwC repos -> GitHub stars), so max_lookups: 50
+    # means at most ~150 HTTP requests to PwC/GitHub per run.
     max_lookups: 50
 
 # ===== Scoring weights =====
@@ -62,11 +64,11 @@ pipeline:
 # Provider options:
 #   - ollama : local, free (requires `ollama serve` + `ollama pull <model>`)
 #   - gemini : cloud, free tier (requires PAPERPILOT_GEMINI_API_KEY)
-#   - (add claude/openai later by subclassing AbstractLLMProvider)
+#   - claude : cloud, paid (requires PAPERPILOT_CLAUDE_API_KEY) — spec's primary
 # Disable this block to skip Stage 4 entirely.
 llm:
   enabled: false         # flip to true once the provider is ready
-  provider: ollama       # or "gemini"
+  provider: ollama       # or "gemini" / "claude"
 
   # Ollama-specific settings (used when provider == 'ollama')
   model: qwen2.5:7b      # suggested: qwen2.5:7b / llama3.1:8b / gemma2:9b
@@ -74,6 +76,10 @@ llm:
 
   # Gemini-specific settings (used when provider == 'gemini')
   # model: gemini-1.5-flash   # swap in when switching provider
+
+  # Claude-specific settings (used when provider == 'claude')
+  # model: claude-sonnet-4-20250514   # or claude-opus-4-* / claude-haiku-4-*
+  # max_tokens: 2048                   # Claude requires explicit max_tokens
 
   batch_size: 5
   temperature: 0.2

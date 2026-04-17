@@ -78,3 +78,37 @@ def test_404_passes_through_no_retry():
         r = http_mod.request_with_retry("GET", "http://x")
     assert r.status_code == 404
     assert m.call_count == 1
+
+
+def test_overall_deadline_exceeded_returns_none(monkeypatch):
+    """If retries stack past the deadline, bail out rather than continuing."""
+    # Freeze monotonic clock, advance on each sleep.
+    now = [0.0]
+    monkeypatch.setattr(http_mod.time, "monotonic", lambda: now[0])
+
+    def _sleep(s):
+        now[0] += s
+
+    monkeypatch.setattr(http_mod.time, "sleep", _sleep)
+
+    # Always return 429 so the loop keeps backing off.
+    with patch.object(
+        http_mod.requests, "request", side_effect=[_resp(429)] * 20
+    ):
+        # Deadline 5s, first 429 sleeps 2s, second 4s (total 6s > 5s deadline)
+        r = http_mod.request_with_retry(
+            "GET", "http://x", timeout=1.0, overall_deadline=5.0
+        )
+    assert r is None
+
+
+def test_overall_deadline_defaults_to_3x_timeout(monkeypatch):
+    """overall_deadline defaults to timeout * 3 when not specified."""
+    now = [0.0]
+    monkeypatch.setattr(http_mod.time, "monotonic", lambda: now[0])
+    monkeypatch.setattr(http_mod.time, "sleep", lambda s: now.__setitem__(0, now[0] + s))
+
+    # timeout=1s -> default deadline=3s. 429 sleeps: 2, 4 (exceeds 3s on 2nd try).
+    with patch.object(http_mod.requests, "request", side_effect=[_resp(429)] * 5):
+        r = http_mod.request_with_retry("GET", "http://x", timeout=1.0)
+    assert r is None

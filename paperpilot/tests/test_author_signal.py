@@ -72,7 +72,7 @@ def test_dedup_author_ids():
         sig = AuthorSignal({"enabled": True})
         out = sig.enrich_batch([p1, p2])
     # Called exactly once with 1 unique id
-    args, kwargs = mock.call_args
+    _args, kwargs = mock.call_args
     assert kwargs["json_body"]["ids"] == ["AID_1"]
     assert out[0].author_h_index == 10
     assert out[1].author_h_index == 10
