@@ -23,10 +23,11 @@ from typing import Any
 from ..exporters import (
     AbstractExporter,
     CSVExporter,
+    EmailExporter,
     JSONExporter,
     SlackExporter,
 )
-from ..llm import AbstractLLMProvider, OllamaProvider
+from ..llm import AbstractLLMProvider, GeminiProvider, OllamaProvider
 from ..signals import (
     AbstractSignal,
     AuthorSignal,
@@ -35,7 +36,7 @@ from ..signals import (
     KeywordSignal,
     VenueSignal,
 )
-from ..sources import AbstractSource, ArxivSource, S2Source
+from ..sources import AbstractSource, ArxivSource, OpenAlexSource, S2Source
 from ..utils.dedup import load_seen_ids, mark_seen, purge_seen_ids, save_seen_ids
 from ..utils.logger import get_logger
 from .stage_collect import collect
@@ -76,6 +77,12 @@ class PipelineRunner:
             sources.append(
                 S2Source(srcs_cfg["s2"], api_key=env.get("s2_api_key"))
             )
+        if "openalex" in srcs_cfg:
+            sources.append(
+                OpenAlexSource(
+                    srcs_cfg["openalex"], email=env.get("openalex_email")
+                )
+            )
         return sources
 
     def _build_signals(self) -> list[AbstractSignal]:
@@ -114,15 +121,22 @@ class PipelineRunner:
             exporters.append(
                 SlackExporter(out_cfg["slack"], webhook_url=env.get("slack_webhook_url"))
             )
+        if out_cfg.get("email", {}).get("enabled"):
+            exporters.append(
+                EmailExporter(out_cfg["email"], smtp_settings=env.get("smtp"))
+            )
         return exporters
 
     def _build_llm_provider(self) -> AbstractLLMProvider | None:
         llm_cfg = self.config.get("llm", {})
         if not llm_cfg or not llm_cfg.get("enabled"):
             return None
+        env = self.config.get("env", {})
         provider_name = str(llm_cfg.get("provider", "")).lower()
         if provider_name == "ollama":
             return OllamaProvider(llm_cfg)
+        if provider_name == "gemini":
+            return GeminiProvider(llm_cfg, api_key=env.get("gemini_api_key"))
         logger.warning("runner: unknown LLM provider '%s' — skipping Stage 4", provider_name)
         return None
 
