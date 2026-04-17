@@ -45,6 +45,7 @@ from ..sources import AbstractSource, ArxivSource, OpenAlexSource, S2Source
 from ..utils.dedup import load_seen_ids, mark_seen, purge_seen_ids, save_seen_ids
 from ..utils.logger import get_logger
 from .stage_collect import collect
+from .stage_embedding import AbstractEncoder, embed_and_rank
 from .stage_llm_rank import llm_rerank
 from .stage_metric_score import metric_score
 from .stage_rule_filter import rule_filter
@@ -69,6 +70,7 @@ class PipelineRunner:
         self.signals = self._build_signals()
         self.exporters = self._build_exporters()
         self.llm_provider = self._build_llm_provider()
+        self.encoder = self._build_encoder()
 
     # ---- builders ----
 
@@ -161,6 +163,24 @@ class PipelineRunner:
         logger.warning("runner: unknown LLM provider '%s' — skipping Stage 4", provider_name)
         return None
 
+    def _build_encoder(self) -> AbstractEncoder | None:
+        """Stage 3 encoder. None disables Stage 3 (mode A)."""
+        emb_cfg = self.config.get("embedding", {})
+        if not emb_cfg.get("enabled"):
+            return None
+        backend = str(emb_cfg.get("backend", "minilm")).lower()
+        if backend == "minilm":
+            # Lazy import so the sentence-transformers dep stays optional.
+            try:
+                from .encoders import MiniLMEncoder
+            except ImportError as e:
+                logger.warning("runner: MiniLM encoder unavailable (%s) — skipping Stage 3", e)
+                return None
+            model = str(emb_cfg.get("model", "sentence-transformers/all-MiniLM-L6-v2"))
+            return MiniLMEncoder(model_name=model)
+        logger.warning("runner: unknown encoder backend '%s' — skipping Stage 3", backend)
+        return None
+
     # ---- run ----
 
     async def run(self) -> PipelineResult:
@@ -206,9 +226,27 @@ class PipelineRunner:
         )
         s2 = len(papers)
 
+        # Profile for Stage 3 / Stage 4 (§4.4 fallback: keywords if unset)
+        profile = self._build_profile()
+
+        # Stage 3 (Embedding similarity) — optional; skipped when encoder is None.
+        s3 = s2  # default unchanged
+        if self.encoder is not None:
+            try:
+                papers = embed_and_rank(
+                    papers=papers,
+                    encoder=self.encoder,
+                    profile_text=profile,
+                    top_n=int(pipe_cfg.get("stage3_top_n", 30)),
+                    weight=float(self.config.get("weights", {}).get("embedding", 2.5)),
+                )
+            except Exception as e:
+                logger.warning("stage3: embedding failed, falling through: %s", e)
+                errors.append(f"stage3:{e}")
+            s3 = len(papers)
+
         # Stage 4 (LLM rerank) — skipped when provider is None or disabled
         stage4_top_n = int(pipe_cfg.get("stage4_top_n", 10))
-        profile = self._build_profile()
         if self.llm_provider is not None and self.llm_provider.enabled:
             try:
                 papers = llm_rerank(
@@ -253,6 +291,7 @@ class PipelineRunner:
                 "stage0_collected": s0,
                 "stage1_filtered": s1,
                 "stage2_scored": s2,
+                "stage3_embedded": s3,
                 "stage4_ranked": s4,
             },
             duration_seconds=duration,
