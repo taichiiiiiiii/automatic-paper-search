@@ -1,4 +1,4 @@
-# PaperPilot configuration (MVP scope: arXiv + venue/github signals + CSV/JSON)
+# PaperPilot configuration
 # Secrets MUST NOT be written here - use .env
 
 # ===== Search settings =====
@@ -24,30 +24,37 @@ sources:
   arxiv:
     enabled: true
     delay_seconds: 3
+  s2:
+    enabled: true
+    delay_seconds: 1.0
 
 # ===== Quality signals =====
 signals:
   venue:
+    enabled: true
+  citation:
+    enabled: true
+    velocity_saturation: 2.0   # citations/day to reach 100
+  author:
     enabled: true
   github:
     enabled: true
     # Papers with Code lookup is rate-limited; cap per-run lookups to keep runs fast.
     max_lookups: 50
 
-# ===== Scoring weights (MVP uses venue/github/keyword only) =====
+# ===== Scoring weights =====
 weights:
   venue: 3.0
   github: 2.0
+  citation: 1.5
+  author: 1.0
   keyword: 0.5
 
 # ===== Pipeline control =====
 pipeline:
-  stage2_top_n: 30        # how many papers to keep after metric scoring
+  stage2_top_n: 30
 
 # ===== Output =====
-# Paths are resolved relative to the current working directory when invoking the
-# CLI. The default GitHub Actions workflow runs from the repo root, so
-# `paperpilot/output` lands at the expected location.
 output:
   csv:
     enabled: true
@@ -56,6 +63,9 @@ output:
   json:
     enabled: true
     dir: paperpilot/output
+  slack:
+    enabled: false    # set true when PAPERPILOT_SLACK_WEBHOOK_URL is configured
+    max_items: 10
 
 # ===== Incremental update =====
 incremental:

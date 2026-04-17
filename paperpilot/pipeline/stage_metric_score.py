@@ -35,6 +35,8 @@ def metric_score(
         p.total_score = (
             p.venue_score * float(weights.get("venue", 0.0))
             + p.github_score * float(weights.get("github", 0.0))
+            + p.citation_score * float(weights.get("citation", 0.0))
+            + p.author_score * float(weights.get("author", 0.0))
             + p.keyword_score * float(weights.get("keyword", 0.0))
         )
 
