@@ -346,6 +346,22 @@ PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 
 
 ---
 
+## プロジェクト固有 Skills / Agents
+
+`.claude/` 配下にこのプロジェクト専用の Skill と Agent を配置しています。該当タスクの時に自動で参照されます。
+
+| 種類 | 名前 | 配置 | トリガー |
+|------|------|------|---------|
+| Skill | `add-plugin` | `.claude/skills/add-plugin/SKILL.md` | 「新しい Source/Signal/Exporter/LLMProvider を追加して」 |
+| Skill | `run-verification` | `.claude/skills/run-verification/SKILL.md` | 「テスト流して」「PR 前チェック」 |
+| Agent | `paperpilot-reviewer` | `.claude/agents/paperpilot-reviewer.md` | コード変更の PR 前レビュー（自動起動） |
+
+これらは CLAUDE.md（常時ロード）とは違い、該当コマンド時にだけロードされるので、コンテキストを圧迫しません。
+
+Skill / Agent を追加・変更した時は、この表を必ず更新してください。
+
+---
+
 ## 実装ステータス（2026-04-17 時点）
 
 | 仕様 | 状態 |
