@@ -116,6 +116,36 @@ def send(self, papers):
     requests.post(url, json={"text": "..." + str(papers)})  # ❌
 ```
 
+## エスカレーション条件（reviewer に判断を委ねる）
+
+以下に該当する場合、**自分で実装せず paperpilot-reviewer に相談**してから着手する：
+
+| 条件 | 理由 | 絶対ルール# |
+|------|------|--------|
+| `AbstractExporter.export()` のシグネチャを変える | 他 Exporter も影響する契約変更 | 4 |
+| CSV / JSON の既存列を**削除・並び替え**したい | 下流スクリプトの破壊的変更 | — |
+| CSV の既存列の**セマンティクス**（型・フォーマット）を変える | 下流互換性 | — |
+| Paper モデルに新フィールドを追加（新シグナル連動でない） | 影響範囲承認 | — |
+| `export()` の戻り値型を変える（`str \| None` の契約） | 下流 `runner._append_history` の期待を破る | — |
+| `run_history.jsonl` の構造に依存した Exporter | スキーマ同期が必要 | 9 |
+
+※ CSV 列の**追加（右端）**は自由。削除・並び替えのみ reviewer 承認が必要。
+
+## 活用する Skill
+
+- `.claude/skills/add-plugin/SKILL.md` — 新 Exporter 追加の TDD テンプレ、秘匿情報の扱い
+- `.claude/skills/run-verification/SKILL.md` — CSV 列回帰・Slack/Email モックテストの検証
+
+必要に応じて `Read` ツールで参照する。
+
+## 守るべき絶対ルール（CLAUDE.md 参照）
+
+| # | ルール | 所有 |
+|---|--------|------|
+| 1 | API キー / webhook URL は `.env` のみ | ✅ 一次所有 |
+| 3 | 外部 API / SMTP を叩くテストを書かない | ✅ 一次所有 |
+| 10 | Slack / Email は未設定時 no-op | ✅ **一次所有（最重要）** |
+
 ## レビュー前チェックリスト
 
 - [ ] `AbstractExporter.export()` のシグネチャを変えていない
