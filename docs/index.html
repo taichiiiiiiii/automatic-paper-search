@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PaperPilot — Conference Paper Catalog</title>
+  <meta name="description" content="AI/ML 学会論文の自動収集 + フィルタブルカタログ。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    .conf-list {
+      list-style: none;
+      margin: 0;
+      padding: 0 var(--space-edge) var(--space-section);
+    }
+    .conf {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--color-rule);
+      align-items: start;
+    }
+    .conf__name {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 500;
+      margin: 0 0 0.4rem;
+      letter-spacing: -0.012em;
+    }
+    .conf__name a { color: var(--color-ink); }
+    .conf__name a:hover {
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+    .conf__meta {
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      color: var(--color-ink-subtle);
+      letter-spacing: 0.05em;
+    }
+    .conf__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.7rem;
+    }
+    .conf__tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.18rem 0.5rem;
+      background: var(--color-tag-bg);
+      color: var(--color-tag-ink);
+      border-radius: 3px;
+    }
+    .conf__count {
+      font-family: var(--font-serif);
+      font-size: 2.4rem;
+      font-weight: 500;
+      color: var(--color-ink);
+      text-align: right;
+      line-height: 1;
+      font-variation-settings: "opsz" 24;
+    }
+    .conf__count-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: var(--text-tag);
+      letter-spacing: 0.08em;
+      color: var(--color-ink-subtle);
+      text-align: right;
+      margin-top: 0.35rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <nav class="hero__breadcrumb" aria-label="breadcrumb">PaperPilot</nav>
+    <h1 class="hero__title">Conference <em>paper catalog</em></h1>
+    <p class="hero__lede">
+      AI/ML 主要学会の採択論文を自動収集し、検索・フィルタ可能な形で公開しています。
+      毎週土曜に arXiv からの新着を取り込みます。
+    </p>
+  </header>
+
+  <main>
+    <ul class="conf-list" id="conf-list"></ul>
+  </main>
+
+  <footer class="footer">
+    <span>Built by <a href="https://github.com/taichiiiiiiii/automatic-paper-search">PaperPilot</a></span>
+    <span>Auto-updated weekly · MIT License</span>
+  </footer>
+
+  <script>
+    fetch("conferences.json", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((conferences) => {
+        const list = document.getElementById("conf-list");
+        if (!conferences.length) {
+          list.innerHTML = `<li style="padding: 2rem var(--space-edge); color: var(--color-ink-subtle);">No conferences yet.</li>`;
+          return;
+        }
+        list.innerHTML = conferences.map((c) => {
+          const oral = c.types.Oral || 0;
+          const tags = c.top_tags.map(([t, n]) =>
+            `<span class="conf__tag">${t} <span style="opacity:0.6">${n}</span></span>`
+          ).join("");
+          return `
+            <li class="conf">
+              <div>
+                <h2 class="conf__name"><a href="${c.name}/">${c.name.toUpperCase().replace("-", " ")}</a></h2>
+                <p class="conf__meta">${c.papers} papers · ${oral} oral · ${c.top_tags.length} top tags</p>
+                <div class="conf__tags">${tags}</div>
+              </div>
+              <div>
+                <div class="conf__count">${c.papers}</div>
+                <span class="conf__count-label">papers</span>
+              </div>
+            </li>`;
+        }).join("");
+      })
+      .catch(() => {
+        document.getElementById("conf-list").innerHTML = `<li style="padding: 2rem var(--space-edge);">Failed to load conferences.json</li>`;
+      });
+  </script>
+</body>
+</html>
