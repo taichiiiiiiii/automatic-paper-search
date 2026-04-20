@@ -1,11 +1,14 @@
 // PaperPilot viewer — vanilla, no framework. Loads papers.json and renders a filterable list.
 const DATA_URL = "papers.json";
+const LINEAGE_URL = "lineage-demo.json";
 
 const state = {
   papers: [],
   search: "",
-  type: "all",       // all | Oral | Poster
+  type: "all",
   activeTags: new Set(),
+  lineage: null,
+  relationsByPaperId: new Map(),
 };
 
 const els = {
@@ -20,10 +23,128 @@ const els = {
   statUpdated: document.getElementById("stat-updated"),
 };
 
+const REL_LABEL = {
+  supersedes: { icon: "🔄", label: "Supersedes", direction: "down" },
+  successor:  { icon: "🟡", label: "Successor", direction: "down" },
+  extends:    { icon: "🌱", label: "Extended by", direction: "down" },
+  ablation:   { icon: "🔬", label: "Ablation by", direction: "down" },
+  baseline_only: { icon: "📏", label: "Used as baseline by", direction: "down" },
+  contrasts:  { icon: "⚔️", label: "Contrasts with", direction: "down" },
+};
+const REL_LABEL_REVERSE = {
+  supersedes: { icon: "⬆️", label: "Supersedes", direction: "up" },
+  successor:  { icon: "⬆️", label: "Continues from", direction: "up" },
+  extends:    { icon: "⬆️", label: "Extends", direction: "up" },
+  ablation:   { icon: "🔬", label: "Ablates", direction: "up" },
+  baseline_only: { icon: "📏", label: "Uses as baseline", direction: "up" },
+  contrasts:  { icon: "⚔️", label: "Contrasted with", direction: "up" },
+};
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[c]));
+}
+
+function injectDemoPapers() {
+  if (!state.lineage) return;
+  const existingTitles = new Set(state.papers.map((p) => p.title.toLowerCase().trim()));
+  const demos = state.lineage.nodes
+    .filter((n) => n.show_in_catalog)
+    .filter((n) => !existingTitles.has(n.title.toLowerCase().trim()))
+    .map((n) => ({
+      title: n.title,
+      type: n.catalog_type || "Poster",
+      tags: n.catalog_tags || n.kinds || [],
+      venue: `${n.venue || ""} ${n.year || ""}`.trim(),
+      authors: n.authors || [],
+      arxiv_url: n.arxiv_url || "",
+      pdf_url: n.pdf_url || "",
+      abstract: n.abstract || n.tldr || "",
+      lineage_id: n.id,
+      _demo: true,
+    }));
+  state.papers = [...demos, ...state.papers];
+}
+
+function buildRelationsIndex() {
+  if (!state.lineage) return;
+  const { nodes, edges } = state.lineage;
+  const nodeById = new Map(nodes.map((n) => [n.id, n]));
+
+  for (const node of nodes) {
+    state.relationsByPaperId.set(node.id, { incoming: [], outgoing: [] });
+  }
+  for (const e of edges) {
+    const srcEntry = state.relationsByPaperId.get(e.src);
+    const dstEntry = state.relationsByPaperId.get(e.dst);
+    if (srcEntry) srcEntry.outgoing.push({ ...e, other: nodeById.get(e.dst) });
+    if (dstEntry) dstEntry.incoming.push({ ...e, other: nodeById.get(e.src) });
+  }
+}
+
+function findLineageId(paper) {
+  if (paper.lineage_id) return paper.lineage_id;
+  if (!state.lineage) return null;
+  const t = paper.title.toLowerCase().trim();
+  const node = state.lineage.nodes.find((n) => t === n.title.toLowerCase().trim());
+  return node ? node.id : null;
+}
+
+function renderRelationsSection(paper) {
+  const lineageId = findLineageId(paper);
+  if (!lineageId) return "";
+  const rel = state.relationsByPaperId.get(lineageId);
+  if (!rel || (rel.incoming.length === 0 && rel.outgoing.length === 0)) return "";
+
+  const groups = new Map();
+  for (const e of rel.incoming) {
+    const meta = REL_LABEL_REVERSE[e.rel] || { icon: "•", label: e.rel };
+    const key = `up:${e.rel}`;
+    if (!groups.has(key)) groups.set(key, { meta, items: [] });
+    groups.get(key).items.push(e);
+  }
+  for (const e of rel.outgoing) {
+    const meta = REL_LABEL[e.rel] || { icon: "•", label: e.rel };
+    const key = `down:${e.rel}`;
+    if (!groups.has(key)) groups.set(key, { meta, items: [] });
+    groups.get(key).items.push(e);
+  }
+
+  const groupOrder = ["up:supersedes", "up:successor", "up:extends", "up:ablation",
+                      "down:supersedes", "down:successor", "down:extends",
+                      "down:ablation", "down:baseline_only",
+                      "up:baseline_only", "up:contrasts", "down:contrasts"];
+  const orderedKeys = groupOrder.filter((k) => groups.has(k));
+
+  const groupHtml = orderedKeys.map((k) => {
+    const { meta, items } = groups.get(k);
+    const itemsHtml = items.map((e) => {
+      const venue = `${e.other.venue || ""} ${e.other.year || ""}`.trim();
+      const why = e.rationale ? `<span class="rel-rationale">→ ${escapeHtml(e.rationale)}</span>` : "";
+      return `<li class="rel-item">
+        <span class="rel-item__title">${escapeHtml(e.other.title)}</span>
+        <span class="rel-item__venue">${escapeHtml(venue)}</span>
+        ${why}
+      </li>`;
+    }).join("");
+    return `<div class="rel-group rel-group--${k.split(":")[1]}">
+      <div class="rel-group__head">${meta.icon} ${meta.label} <span class="rel-group__count">(${items.length})</span></div>
+      <ul class="rel-group__items">${itemsHtml}</ul>
+    </div>`;
+  }).join("");
+
+  const total = rel.incoming.length + rel.outgoing.length;
+  return `
+    <div class="paper__relations">
+      <button class="paper__relations-toggle" type="button" aria-expanded="false">
+        🌳 Relations <span class="paper__relations-count">(${total})</span>
+      </button>
+      <div class="paper__relations-body">
+        ${groupHtml}
+        <a class="paper__relations-link" href="lineage.html?focus=${encodeURIComponent(lineageId)}">View full lineage →</a>
+      </div>
+    </div>`;
 }
 
 function renderPaper(p, idx) {
@@ -37,6 +158,7 @@ function renderPaper(p, idx) {
     p.pdf_url ? `<a href="${escapeHtml(p.pdf_url)}" target="_blank" rel="noopener">PDF</a>` : "",
   ].filter(Boolean).join("");
   const hasAbstract = p.abstract && p.abstract.length > 0;
+  const relationsHtml = renderRelationsSection(p);
 
   return `
     <li class="paper" data-idx="${idx}">
@@ -49,6 +171,7 @@ function renderPaper(p, idx) {
         ${tagsHtml ? `<div class="paper__tags">${tagsHtml}</div>` : ""}
         <div class="paper__meta">${linksHtml}${hasAbstract ? '<button class="paper__expand-btn" type="button">Abstract</button>' : ""}</div>
         ${hasAbstract ? `<div class="paper__abstract">${escapeHtml(p.abstract)}</div>` : ""}
+        ${relationsHtml}
       </div>
     </li>`;
 }
@@ -142,14 +265,30 @@ function bindEvents() {
       const paper = expandBtn.closest(".paper");
       paper.classList.toggle("is-expanded");
       expandBtn.textContent = paper.classList.contains("is-expanded") ? "Hide abstract" : "Abstract";
+      return;
+    }
+    const relToggle = e.target.closest(".paper__relations-toggle");
+    if (relToggle) {
+      const open = relToggle.getAttribute("aria-expanded") === "true";
+      relToggle.setAttribute("aria-expanded", String(!open));
+      const body = relToggle.nextElementSibling;
+      if (body) body.classList.toggle("is-open", !open);
     }
   });
 }
 
 async function init() {
   try {
-    const res = await fetch(DATA_URL, { cache: "no-store" });
-    state.papers = await res.json();
+    const [papersRes, lineageRes] = await Promise.all([
+      fetch(DATA_URL, { cache: "no-store" }),
+      fetch(LINEAGE_URL, { cache: "no-store" }).catch(() => null),
+    ]);
+    state.papers = await papersRes.json();
+    if (lineageRes && lineageRes.ok) {
+      state.lineage = await lineageRes.json();
+      buildRelationsIndex();
+      injectDemoPapers();
+    }
   } catch (e) {
     els.list.innerHTML = `<li class="empty-state">Failed to load papers.json</li>`;
     return;

@@ -1,0 +1,282 @@
+{
+  "root": "flashatt-2",
+  "focus_paper": {
+    "id": "flashatt-2",
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "year": 2024,
+    "venue": "ICLR",
+    "venue_tier": "A+",
+    "authors": ["Tri Dao"],
+    "kinds": ["empirical", "system"],
+    "github_stars": 15200,
+    "tldr": "FlashAttention の GPU 利用率を 2x 改善する work partitioning"
+  },
+  "nodes": [
+    {
+      "id": "attention-2017",
+      "title": "Attention Is All You Need",
+      "year": 2017,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": ["Vaswani", "Shazeer", "Parmar", "+5"],
+      "kinds": ["empirical"],
+      "github_stars": 80000,
+      "citations": 120000,
+      "tldr": "Self-attention のみで構成された Transformer を提案"
+    },
+    {
+      "id": "reformer-2020",
+      "title": "Reformer: The Efficient Transformer",
+      "year": 2020,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": ["Kitaev", "Kaiser", "Levskaya"],
+      "kinds": ["empirical"],
+      "github_stars": 2100,
+      "tldr": "LSH attention で長文脈の計算量を削減"
+    },
+    {
+      "id": "linear-2020",
+      "title": "Linear Transformers",
+      "year": 2020,
+      "venue": "ICML",
+      "venue_tier": "A+",
+      "authors": ["Katharopoulos", "Vyas"],
+      "kinds": ["theory", "empirical"],
+      "github_stars": 1500,
+      "tldr": "kernel feature map で attention を線形化"
+    },
+    {
+      "id": "performer-2021",
+      "title": "Performer: Rethinking Attention with Performers",
+      "year": 2021,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": ["Choromanski", "Likhosherstov"],
+      "kinds": ["theory", "empirical"],
+      "github_stars": 1200,
+      "tldr": "FAVOR+ で attention をランダム特徴近似"
+    },
+    {
+      "id": "flashatt-2022",
+      "title": "FlashAttention: Fast and Memory-Efficient Exact Attention",
+      "year": 2022,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": ["Tri Dao", "Fu", "Ermon"],
+      "kinds": ["empirical", "system"],
+      "github_stars": 12500,
+      "tldr": "IO-aware な attention で memory bottleneck を解消"
+    },
+    {
+      "id": "flashatt-2",
+      "title": "FlashAttention-2: Faster Attention with Better Parallelism",
+      "year": 2024,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": ["Tri Dao"],
+      "kinds": ["empirical", "system"],
+      "github_stars": 15200,
+      "is_focus": true,
+      "tldr": "GPU 利用率を 2x 改善する work partitioning",
+      "show_in_catalog": true,
+      "catalog_type": "Oral",
+      "catalog_tags": ["attention", "efficient-transformer", "system"],
+      "abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention-2 reduces the number of non-matmul FLOPs, parallelizes the attention computation across different thread blocks, and partitions the work between warps to reduce communication.",
+      "arxiv_url": "https://arxiv.org/abs/2307.08691",
+      "pdf_url": "https://arxiv.org/pdf/2307.08691"
+    },
+    {
+      "id": "flashatt-3",
+      "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony",
+      "year": 2026,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": ["Shah", "Bikshandi", "Dao"],
+      "kinds": ["empirical", "system"],
+      "github_stars": 3400,
+      "is_trending": true,
+      "tldr": "H100 の TMA/WGMMA を活用し 1.5-2x 高速化",
+      "show_in_catalog": true,
+      "catalog_type": "Oral",
+      "catalog_tags": ["attention", "efficient-transformer", "system", "gpu-kernel"],
+      "abstract": "FlashAttention-3 exploits the asynchrony of the Tensor Cores and TMA to overlap the overall computation and memory movement using warp-specialization, interleave block-wise matmul and softmax operations, and use block quantization with incoherent processing to leverage hardware support for FP8 low-precision.",
+      "arxiv_url": "https://arxiv.org/abs/2407.08608",
+      "pdf_url": "https://arxiv.org/pdf/2407.08608"
+    },
+    {
+      "id": "pagedatt-2023",
+      "title": "PagedAttention: Memory Management for LLM Serving",
+      "year": 2023,
+      "venue": "SOSP",
+      "venue_tier": "A+",
+      "authors": ["Kwon", "Li", "+5"],
+      "kinds": ["system"],
+      "github_stars": 21000,
+      "tldr": "OS の paging を attention KV キャッシュに応用"
+    },
+    {
+      "id": "ringatt-2024",
+      "title": "Ring Attention with Blockwise Transformers",
+      "year": 2024,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": ["Liu", "Zaharia", "Abbeel"],
+      "kinds": ["system", "empirical"],
+      "github_stars": 800,
+      "tldr": "デバイス間で blockwise に attention を分散実行"
+    },
+    {
+      "id": "longllama-2024",
+      "title": "LongLLaMA: Focused Transformer Training",
+      "year": 2024,
+      "venue": "NeurIPS",
+      "venue_tier": "A+",
+      "authors": ["Tworkowski", "+4"],
+      "kinds": ["empirical"],
+      "github_stars": 1500,
+      "tldr": "Contrastive training で長文脈に拡張"
+    },
+    {
+      "id": "mamba-2024",
+      "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+      "year": 2024,
+      "venue": "COLM",
+      "venue_tier": "A",
+      "authors": ["Gu", "Dao"],
+      "kinds": ["theory", "empirical"],
+      "github_stars": 13000,
+      "is_trending": true,
+      "tldr": "Selective SSM で attention を完全に置き換える"
+    },
+    {
+      "id": "mamba-2-2026",
+      "title": "Mamba-2: Transformers are SSMs",
+      "year": 2026,
+      "venue": "ICLR",
+      "venue_tier": "A+",
+      "authors": ["Dao", "Gu"],
+      "kinds": ["theory", "empirical"],
+      "github_stars": 5800,
+      "is_trending": true,
+      "tldr": "SSM と attention の数学的等価性を示す",
+      "show_in_catalog": true,
+      "catalog_type": "Oral",
+      "catalog_tags": ["state-space-model", "theory", "long-context"],
+      "abstract": "While Transformers have been the main architecture behind deep learning's success in language modeling, state-space models (SSMs) such as Mamba have recently been shown to match or outperform Transformers at small to medium scale. We show that these families of models are actually quite closely related, and develop a rich framework of theoretical connections between SSMs and variants of attention, connected through various decompositions of a well-studied class of structured semiseparable matrices.",
+      "arxiv_url": "https://arxiv.org/abs/2405.21060",
+      "pdf_url": "https://arxiv.org/pdf/2405.21060"
+    },
+    {
+      "id": "fa-ablation-2025",
+      "title": "On the Anatomy of FlashAttention: Component Ablation",
+      "year": 2025,
+      "venue": "arXiv",
+      "venue_tier": "preprint",
+      "authors": ["anonymous"],
+      "kinds": ["analysis"],
+      "github_stars": 0,
+      "tldr": "FA-2 の各構成要素の寄与を定量分析"
+    }
+  ],
+  "edges": [
+    {
+      "src": "attention-2017",
+      "dst": "reformer-2020",
+      "rel": "extends",
+      "conf": 0.88,
+      "rationale": "標準 attention を LSH で近似する別路線への拡張"
+    },
+    {
+      "src": "attention-2017",
+      "dst": "linear-2020",
+      "rel": "extends",
+      "conf": 0.85,
+      "rationale": "Kernel 化により線形計算量化"
+    },
+    {
+      "src": "attention-2017",
+      "dst": "performer-2021",
+      "rel": "extends",
+      "conf": 0.86,
+      "rationale": "ランダム特徴で近似する別アプローチ"
+    },
+    {
+      "src": "attention-2017",
+      "dst": "flashatt-2022",
+      "rel": "successor",
+      "conf": 0.95,
+      "rationale": "厳密な attention のまま IO 効率を抜本改善"
+    },
+    {
+      "src": "flashatt-2022",
+      "dst": "flashatt-2",
+      "rel": "supersedes",
+      "conf": 0.98,
+      "rationale": "同じ IO-aware 路線で work partitioning により 2x 改善"
+    },
+    {
+      "src": "flashatt-2",
+      "dst": "flashatt-3",
+      "rel": "supersedes",
+      "conf": 0.97,
+      "rationale": "H100 の async 機能を活用して 1.5-2x 改善"
+    },
+    {
+      "src": "flashatt-2",
+      "dst": "pagedatt-2023",
+      "rel": "extends",
+      "conf": 0.78,
+      "rationale": "メモリ管理の発想を KV キャッシュに応用"
+    },
+    {
+      "src": "flashatt-2",
+      "dst": "ringatt-2024",
+      "rel": "extends",
+      "conf": 0.82,
+      "rationale": "単一 GPU 最適化を分散環境へ拡張"
+    },
+    {
+      "src": "flashatt-2",
+      "dst": "longllama-2024",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "FA を基盤に long-context training に応用"
+    },
+    {
+      "src": "flashatt-2",
+      "dst": "mamba-2024",
+      "rel": "contrasts",
+      "conf": 0.86,
+      "rationale": "Attention 自体を放棄し SSM で代替する対立路線"
+    },
+    {
+      "src": "mamba-2024",
+      "dst": "mamba-2-2026",
+      "rel": "supersedes",
+      "conf": 0.94,
+      "rationale": "理論的基盤を整理して効率実装を提示"
+    },
+    {
+      "src": "flashatt-2",
+      "dst": "fa-ablation-2025",
+      "rel": "ablation",
+      "conf": 0.91,
+      "rationale": "FA-2 の構成要素ごとの貢献を分解測定"
+    },
+    {
+      "src": "reformer-2020",
+      "dst": "flashatt-2",
+      "rel": "baseline_only",
+      "conf": 0.62,
+      "rationale": "比較ベースラインとしてのみ言及"
+    },
+    {
+      "src": "performer-2021",
+      "dst": "flashatt-2",
+      "rel": "baseline_only",
+      "conf": 0.58,
+      "rationale": "近似 attention 系のベースライン参照"
+    }
+  ]
+}
