@@ -51,34 +51,24 @@ async function init() {
 
   bindLayoutButtons();
   bindRootButton();
+  bindSearch();
   renderFilterChips();
   render();
   scrollToFocus(false);
+  updateTitle();
 
   window.addEventListener("popstate", () => {
     const p = new URLSearchParams(window.location.search);
     const r = p.get("focus");
     const next = r && known.has(r) ? r : state.data.root;
-    if (state.focusId !== next) {
-      state.focusId = next;
-      render();
-      scrollToFocus(true);
-    }
+    if (state.focusId !== next) focusPaper(next, { push: false });
   });
 }
 
 function bindRootButton() {
   const btn = document.getElementById("btn-root");
   if (!btn) return;
-  btn.addEventListener("click", () => {
-    if (state.focusId === state.data.root) return;
-    state.focusId = state.data.root;
-    const url = new URL(window.location.href);
-    url.searchParams.delete("focus");
-    window.history.pushState({}, "", url);
-    render();
-    scrollToFocus(true);
-  });
+  btn.addEventListener("click", () => focusPaper(state.data.root));
 }
 
 function bindLayoutButtons() {
@@ -114,6 +104,71 @@ function renderFilterChips() {
     else state.visibleRelations.add(rel);
     btn.setAttribute("aria-pressed", state.visibleRelations.has(rel));
     render();
+  });
+}
+
+function focusPaper(id, { push = true, smooth = true } = {}) {
+  if (state.focusId === id) return;
+  state.focusId = id;
+  const url = new URL(window.location.href);
+  url.searchParams.set("focus", id);
+  if (push) window.history.pushState({}, "", url);
+  else window.history.replaceState({}, "", url);
+  render();
+  scrollToFocus(smooth);
+  updateTitle();
+}
+
+function updateTitle() {
+  const node = state.data?.nodes.find((n) => n.id === state.focusId);
+  if (node) document.title = `${node.title.slice(0, 60)} — Lineage — PaperPilot`;
+}
+
+function bindSearch() {
+  const input = document.getElementById("search-input");
+  const results = document.getElementById("search-results");
+  if (!input || !results) return;
+  const renderResults = (q) => {
+    if (!q) { results.classList.remove("is-open"); results.innerHTML = ""; return; }
+    const lower = q.toLowerCase();
+    const matches = state.data.nodes
+      .filter((n) => {
+        const hay = (n.title + " " + (n.authors || []).join(" ")).toLowerCase();
+        return hay.includes(lower);
+      })
+      .slice(0, 8);
+    if (matches.length === 0) {
+      results.innerHTML = `<div class="lineage-search__empty">一致なし</div>`;
+    } else {
+      results.innerHTML = matches.map((n) => {
+        const sub = `${n.venue || ""} ${n.year || ""}`.trim();
+        return `<button class="lineage-search__item" data-id="${n.id}" type="button">
+          <span class="lineage-search__title">${escapeHtml(n.title)}</span>
+          <span class="lineage-search__sub">${escapeHtml(sub)}</span>
+        </button>`;
+      }).join("");
+    }
+    results.classList.add("is-open");
+  };
+  input.addEventListener("input", (e) => renderResults(e.target.value.trim()));
+  input.addEventListener("focus", (e) => { if (e.target.value.trim()) renderResults(e.target.value.trim()); });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { input.value = ""; results.classList.remove("is-open"); input.blur(); }
+    if (e.key === "Enter") {
+      const first = results.querySelector(".lineage-search__item");
+      if (first) first.click();
+    }
+  });
+  results.addEventListener("click", (e) => {
+    const btn = e.target.closest(".lineage-search__item");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    focusPaper(id);
+    input.value = "";
+    results.classList.remove("is-open");
+  });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".lineage-search")) results.classList.remove("is-open");
   });
 }
 
@@ -436,15 +491,7 @@ function drawSvg(positioned, edges) {
     card.className = "node-card";
     if (p.id === state.focusId) card.classList.add("node-card--focus");
     if (p.is_trending) card.classList.add("node-card--trending");
-    card.addEventListener("click", () => {
-      if (state.focusId === p.id) return;
-      state.focusId = p.id;
-      const url = new URL(window.location.href);
-      url.searchParams.set("focus", p.id);
-      window.history.pushState({}, "", url);
-      render();
-      scrollToFocus(true);
-    });
+    card.addEventListener("click", () => focusPaper(p.id));
     card.addEventListener("mouseenter", () => highlightConnectedEdges(p.id, true));
     card.addEventListener("mouseleave", () => highlightConnectedEdges(p.id, false));
 
