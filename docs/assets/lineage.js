@@ -1,5 +1,5 @@
 // Lineage viewer — pure SVG family tree / timeline. Requires utils.js loaded first.
-const { escapeHtml, formatStars, loadFirstLineage, LINEAGE_URLS } = window.PP;
+const { escapeHtml, formatStars, loadLineage } = window.PP;
 const NODE_W = 220;
 const NODE_H = 150;
 const LEVEL_GAP = 80;
@@ -35,7 +35,7 @@ const els = {
 };
 
 async function init() {
-  state.data = await loadFirstLineage(LINEAGE_URLS);
+  state.data = await loadLineage();
   if (!state.data) {
     els.canvas.innerHTML = `<p class="empty-state">Failed to load lineage data</p>`;
     return;

@@ -10,7 +10,7 @@ const state = {
   relationsByPaperId: new Map(),
 };
 
-const { escapeHtml, loadFirstLineage, LINEAGE_URLS } = window.PP;
+const { escapeHtml, loadLineage } = window.PP;
 
 const els = {
   list: document.getElementById("paper-list"),
@@ -255,7 +255,7 @@ async function init() {
   try {
     const [papersRes, lineage] = await Promise.all([
       fetch(PAPERS_URL, { cache: "no-store" }),
-      loadFirstLineage(LINEAGE_URLS),
+      loadLineage(),
     ]);
     state.papers = await papersRes.json();
     if (lineage) {
