@@ -20,11 +20,36 @@ const RELATION_LABEL_JA = {
   ablation: "分析", baseline_only: "比較", contrasts: "対立",
 };
 
+const STORAGE_KEY = "pp.lineage.prefs";
+const DEFAULT_RELATIONS = ["supersedes", "successor", "extends", "ablation", "contrasts"];
+
+function loadPrefs() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function savePrefs() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      layout: state.layout,
+      visibleRelations: [...state.visibleRelations],
+    }));
+  } catch { /* localStorage may be disabled */ }
+}
+
+const prefs = loadPrefs();
 const state = {
   data: null,
-  layout: "tree",
+  layout: prefs?.layout === "timeline" ? "timeline" : "tree",
   focusId: null,
-  visibleRelations: new Set(["supersedes", "successor", "extends", "ablation", "contrasts"]),
+  visibleRelations: new Set(
+    Array.isArray(prefs?.visibleRelations) && prefs.visibleRelations.length > 0
+      ? prefs.visibleRelations.filter((r) => ALL_RELATIONS.includes(r))
+      : DEFAULT_RELATIONS
+  ),
 };
 
 const els = {
@@ -86,14 +111,16 @@ function bindRootButton() {
 }
 
 function bindLayoutButtons() {
-  for (const btn of document.querySelectorAll(".layout-btn")) {
+  for (const btn of document.querySelectorAll(".layout-btn[data-layout]")) {
     btn.addEventListener("click", () => {
       state.layout = btn.dataset.layout;
-      for (const b of document.querySelectorAll(".layout-btn")) {
+      for (const b of document.querySelectorAll(".layout-btn[data-layout]")) {
         b.setAttribute("aria-pressed", b === btn ? "true" : "false");
       }
+      savePrefs();
       render();
     });
+    btn.setAttribute("aria-pressed", btn.dataset.layout === state.layout ? "true" : "false");
   }
 }
 
@@ -117,6 +144,7 @@ function renderFilterChips() {
     if (state.visibleRelations.has(rel)) state.visibleRelations.delete(rel);
     else state.visibleRelations.add(rel);
     btn.setAttribute("aria-pressed", state.visibleRelations.has(rel));
+    savePrefs();
     render();
   });
 }
