@@ -1,0 +1,94 @@
+[
+  {
+    "paperId": "d6cc5c6917cf8dcd0ebc0619e544a7b5f7b2c7d1",
+    "externalIds": {
+      "ArXiv": "2603.28610",
+      "CorpusId": 286973945
+    },
+    "title": "ResAdapt: Adaptive Resolution for Efficient Multimodal Reasoning",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.28610, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2232817310",
+        "name": "Huanxuan Liao"
+      },
+      {
+        "authorId": "97234013",
+        "name": "Zhongtao Jiang"
+      },
+      {
+        "authorId": "2273544720",
+        "name": "Yupu Hao"
+      },
+      {
+        "authorId": "2352995949",
+        "name": "Yuqiao Tan"
+      },
+      {
+        "authorId": "1954845",
+        "name": "Shizhu He"
+      },
+      {
+        "authorId": "2257315249",
+        "name": "Jun Zhao"
+      },
+      {
+        "authorId": "2346642166",
+        "name": "Kun Xu"
+      },
+      {
+        "authorId": "2283274776",
+        "name": "Kang Liu"
+      }
+    ],
+    "abstract": "Multimodal Large Language Models (MLLMs) achieve stronger visual understanding by scaling input fidelity, yet the resulting visual token growth makes jointly sustaining high spatial resolution and long temporal context prohibitive. We argue that the bottleneck lies not in how post-encoding representations are compressed but in the volume of pixels the encoder receives, and address it with ResAdapt, an Input-side adaptation framework that learns how much visual budget each frame should receive before encoding. ResAdapt couples a lightweight Allocator with an unchanged MLLM backbone, so the backbone retains its native visual-token interface while receiving an operator-transformed input. We formulate allocation as a contextual bandit and train the Allocator with Cost-Aware Policy Optimization (CAPO), which converts sparse rollout feedback into a stable accuracy-cost learning signal. Across budget-controlled video QA, temporal grounding, and image reasoning tasks, ResAdapt improves low-budget operating points and often lies on or near the efficiency-accuracy frontier, with the clearest gains on reasoning-intensive benchmarks under aggressive compression. Notably, ResAdapt supports up to 16x more frames at the same visual budget while delivering over 15% performance gain. Code is available at https://github.com/Xnhyacinth/ResAdapt."
+  },
+  {
+    "paperId": "1557da6a88102f5909c54fb631000722381e433d",
+    "externalIds": {
+      "ArXiv": "2603.27650",
+      "CorpusId": 286974059
+    },
+    "title": "V-CAST: Video Curvature-Aware Spatio-Temporal Pruning for Efficient Video Large Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.27650, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2284600713",
+        "name": "Xinying Lin"
+      },
+      {
+        "authorId": "2347171305",
+        "name": "Xuyang Liu"
+      },
+      {
+        "authorId": "2362565280",
+        "name": "Yiyu Wang"
+      },
+      {
+        "authorId": "2375765390",
+        "name": "Teng Ma"
+      },
+      {
+        "authorId": "2250940197",
+        "name": "Wenqi Ren"
+      }
+    ],
+    "abstract": "Video large language models (VideoLLMs) show strong capability in video understanding, yet long-context inference is still dominated by massive redundant visual tokens in the prefill stage. We revisit token compression for VideoLLMs under a tight budget and identify a key bottleneck, namely insufficient spatio-temporal information coverage. Existing methods often introduce discontinuous coverage through coarse per-frame allocation or scene segmentation, and token merging can further misalign spatio-temporal coordinates under MRoPE-style discrete (t,h,w) bindings. To address these issues, we propose V-CAST (Video Curvature-Aware Spatio-Temporal Pruning), a training-free, plug-and-play pruning policy for long-context video inference. V-CAST casts token compression as a trajectory approximation problem and introduces a curvature-guided temporal allocation module that routes per-frame token budgets to semantic turns and event boundaries. It further adopts a dual-anchor spatial selection mechanism that preserves high-entropy visual evidence without attention intervention, while keeping retained tokens at their original coordinates to maintain positional alignment. Extensive experiments across multiple VideoLLMs of different architectures and scales demonstrate that V-CAST achieves 98.6% of the original performance, outperforms the second-best method by +1.1% on average, and reduces peak memory and total latency to 86.7% and 86.4% of vanilla Qwen3-VL-8B-Instruct."
+  }
+]

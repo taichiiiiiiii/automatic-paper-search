@@ -1,0 +1,162 @@
+[
+  {
+    "paperId": "f8b0c93addc66f3f847ee991c52b679e1cba1c58",
+    "externalIds": {
+      "ArXiv": "2603.21786",
+      "CorpusId": 286766132
+    },
+    "title": "The Universal Normal Embedding",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.21786, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2425370210",
+        "name": "Chen Tasker"
+      },
+      {
+        "authorId": "2275268888",
+        "name": "Roy Betser"
+      },
+      {
+        "authorId": "2388813",
+        "name": "Eyal Gofer"
+      },
+      {
+        "authorId": "2211998315",
+        "name": "M. Levi"
+      },
+      {
+        "authorId": "2356782842",
+        "name": "Guy Gilboa"
+      }
+    ],
+    "abstract": "Generative models and vision encoders have largely advanced on separate tracks, optimized for different goals and grounded in different mathematical principles. Yet, they share a fundamental property: latent space Gaussianity. Generative models map Gaussian noise to images, while encoders map images to semantic embeddings whose coordinates empirically behave as Gaussian. We hypothesize that both are views of a shared latent source, the Universal Normal Embedding (UNE): an approximately Gaussian latent space from which encoder embeddings and DDIM-inverted noise arise as noisy linear projections. To test our hypothesis, we introduce NoiseZoo, a dataset of per-image latents comprising DDIM-inverted diffusion noise and matching encoder representations (CLIP, DINO). On CelebA, linear probes in both spaces yield strong, aligned attribute predictions, indicating that generative noise encodes meaningful semantics along linear directions. These directions further enable faithful, controllable edits (e.g., smile, gender, age) without architectural changes, where simple orthogonalization mitigates spurious entanglements. Taken together, our results provide empirical support for the UNE hypothesis and reveal a shared Gaussian-like latent geometry that concretely links encoding and generation. Code and data are available https://rbetser.github.io/UNE/"
+  },
+  {
+    "paperId": "5609a96c9b2db4f5e3b58ad968511c97e30107b1",
+    "externalIds": {
+      "ArXiv": "2603.15026",
+      "CorpusId": 286573097
+    },
+    "title": "Training-free Detection of Generated Videos via Spatial-Temporal Likelihoods",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.15026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2424079584",
+        "name": "Omer Ben Hayun"
+      },
+      {
+        "authorId": "2275268888",
+        "name": "Roy Betser"
+      },
+      {
+        "authorId": "2211998315",
+        "name": "M. Levi"
+      },
+      {
+        "authorId": "2025077636",
+        "name": "Levi Kassel"
+      },
+      {
+        "authorId": "2356782842",
+        "name": "Guy Gilboa"
+      }
+    ],
+    "abstract": "Following major advances in text and image generation, the video domain has surged, producing highly realistic and controllable sequences. Along with this progress, these models also raise serious concerns about misinformation, making reliable detection of synthetic videos increasingly crucial. Image-based detectors are fundamentally limited because they operate per frame and ignore temporal dynamics, while supervised video detectors generalize poorly to unseen generators, a critical drawback given the rapid emergence of new models. These challenges motivate zero-shot approaches, which avoid synthetic data and instead score content against real-data statistics, enabling training-free, model-agnostic detection. We introduce STALL, a simple, training-free, theoretically justified detector that provides likelihood-based scoring for videos, jointly modeling spatial and temporal evidence within a probabilistic framework. We evaluate STALL on two public benchmarks and introduce ComGenVid, a new benchmark with state-of-the-art generative models. STALL consistently outperforms prior image- and video-based baselines. Code and data are available at https://omerbenhayun.github.io/stall-video."
+  },
+  {
+    "paperId": "dd38b62cb8962b8fcb0489879f1cc8641b447002",
+    "externalIds": {
+      "ArXiv": "2603.14610",
+      "CorpusId": 286572455
+    },
+    "title": "Make it SING: Analyzing Semantic Invariants in Classifiers",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.14610, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2197146854",
+        "name": "Harel Yadid"
+      },
+      {
+        "authorId": "2211998315",
+        "name": "M. Levi"
+      },
+      {
+        "authorId": "2275268888",
+        "name": "Roy Betser"
+      },
+      {
+        "authorId": "2356782842",
+        "name": "Guy Gilboa"
+      }
+    ],
+    "abstract": "All classifiers, including state-of-the-art vision models, possess invariants, partially rooted in the geometry of their linear mappings. These invariants, which reside in the null-space of the classifier, induce equivalent sets of inputs that map to identical outputs. The semantic content of these invariants remains vague, as existing approaches struggle to provide human-interpretable information. To address this gap, we present Semantic Interpretation of the Null-space Geometry (SING), a method that constructs equivalent images, with respect to the network, and assigns semantic interpretations to the available variations. We use a mapping from network features to multi-modal vision language models. This allows us to obtain natural language descriptions and visual examples of the induced semantic shifts. SING can be applied to a single image, uncovering local invariants, or to sets of images, allowing a breadth of statistical analysis at the class and model levels. For example, our method reveals that ResNet50 leaks relevant semantic attributes to the null space, whereas DinoViT, a ViT pretrained with self-supervised DINO, is superior in maintaining class semantics across the invariant space."
+  },
+  {
+    "paperId": "dc11ee89ebc7dcbaf750141a4b13232c928bff4d",
+    "externalIds": {
+      "ArXiv": "2511.09433",
+      "CorpusId": 286462624
+    },
+    "title": "What We Don't C: Manifold Disentanglement for Structured Discovery",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.09433, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2279750032",
+        "name": "Brian Rogers"
+      },
+      {
+        "authorId": "2386817167",
+        "name": "Micah Bowles"
+      },
+      {
+        "authorId": "2263120423",
+        "name": "Chris J. Lintott"
+      },
+      {
+        "authorId": "2391961864",
+        "name": "Steve Croft"
+      },
+      {
+        "authorId": "2059917633",
+        "name": "O. N. King"
+      },
+      {
+        "authorId": "4439383",
+        "name": "Jamie Ray"
+      }
+    ],
+    "abstract": "Accessing information in learned representations is critical for annotation, discovery, and data filtering in disciplines where high-dimensional datasets are common. We introduce What We Don't C, a novel approach based on latent flow matching that disentangles latent subspaces by explicitly removing information included in conditional guidance, resulting in meaningful residual representations. This allows factors of variation which have not already been captured in conditioning to become more readily available. We show how guidance in the flow path necessarily represses the information from the guiding, conditioning variables. Our results highlight this approach as a simple yet powerful mechanism for analyzing, controlling, and repurposing latent representations, providing a pathway toward using generative models to explore what we don't capture, consider, or catalog."
+  }
+]

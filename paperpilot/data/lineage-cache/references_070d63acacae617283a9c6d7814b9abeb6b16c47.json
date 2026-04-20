@@ -1,0 +1,2067 @@
+[
+  {
+    "paperId": "350b3b62348efcf89fc0aad904e79f5234a804cb",
+    "externalIds": {
+      "ArXiv": "2512.05590",
+      "CorpusId": 283672163
+    },
+    "title": "General and Domain-Specific Zero-shot Detection of Generated Images via Conditional Likelihood",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.05590, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275268888",
+        "name": "Roy Betser"
+      },
+      {
+        "authorId": "2220097567",
+        "name": "O. Hofman"
+      },
+      {
+        "authorId": "2327050898",
+        "name": "R. Vainshtein"
+      },
+      {
+        "authorId": "2356782842",
+        "name": "Guy Gilboa"
+      }
+    ],
+    "abstract": "The rapid advancement of generative models, particularly diffusion-based methods, has significantly improved the realism of synthetic images. As new generative models continuously emerge, detecting generated images remains a critical challenge. While fully supervised, and few-shot methods have been proposed, maintaining an updated dataset is time-consuming and challenging. Consequently, zero-shot methods have gained increasing attention in recent years. We find that existing zero-shot methods often struggle to adapt to specific image domains, such as artistic images, limiting their real-world applicability. In this work, we introduce CLIDE, a novel zero-shot detection method based on conditional likelihood approximation. Our approach computes likelihoods conditioned on real images, enabling adaptation across diverse image domains. We extensively evaluate CLIDE, demonstrating SOTA performance on a large-scale general dataset and significantly outperform existing methods in domain-specific cases. These results demonstrate the robustness of our method and underscore the need of broad, domain-aware generalization for the AI-generated image detection task. Code is available at https://tinyurl.com/clide-detector."
+  },
+  {
+    "paperId": "988ef01812555a4e2a5810bd245a71f31896b36c",
+    "externalIds": {
+      "ArXiv": "2511.08544",
+      "DBLP": "journals/corr/abs-2511-08544",
+      "DOI": "10.48550/arXiv.2511.08544",
+      "CorpusId": 282922448
+    },
+    "title": "LeJEPA: Provable and Scalable Self-Supervised Learning Without the Heuristics",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.08544, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277741253",
+        "name": "Randall Balestriero"
+      },
+      {
+        "authorId": "2270469816",
+        "name": "Yann LeCun"
+      }
+    ],
+    "abstract": "Learning manipulable representations of the world and its dynamics is central to AI. Joint-Embedding Predictive Architectures (JEPAs) offer a promising blueprint, but lack of practical guidance and theory has led to ad-hoc R&D. We present a comprehensive theory of JEPAs and instantiate it in {\\bf LeJEPA}, a lean, scalable, and theoretically grounded training objective. First, we identify the isotropic Gaussian as the optimal distribution that JEPAs'embeddings should follow to minimize downstream prediction risk. Second, we introduce a novel objective--{\\bf Sketched Isotropic Gaussian Regularization} (SIGReg)--to constrain embeddings to reach that ideal distribution. Combining the JEPA predictive loss with SIGReg yields LeJEPA with numerous theoretical and practical benefits: (i) single trade-off hyperparameter, (ii) linear time and memory complexity, (iii) stability across hyper-parameters, architectures (ResNets, ViTs, ConvNets) and domains, (iv) heuristics-free, e.g., no stop-gradient, no teacher-student, no hyper-parameter schedulers, and (v) distributed training-friendly implementation requiring only $\\approx$50 lines of code. Our empirical validation covers 10+ datasets, 60+ architectures, all with varying scales and domains. As an example, using imagenet-1k for pretraining and linear evaluation with frozen backbone, LeJEPA reaches 79\\% with a ViT-H/14. We hope that the simplicity and theory-friendly ecosystem offered by LeJEPA will reestablish self-supervised pre-training as a core pillar of AI research (\\href{https://github.com/rbalestr-lab/lejepa}{GitHub repo})."
+  },
+  {
+    "paperId": "8702a0e747ca525e79dd7667d17558f7d016da90",
+    "externalIds": {
+      "ArXiv": "2510.05949",
+      "DBLP": "journals/corr/abs-2510-05949",
+      "DOI": "10.48550/arXiv.2510.05949",
+      "CorpusId": 281887011
+    },
+    "title": "Gaussian Embeddings: How JEPAs Secretly Learn Your Data Density",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.05949, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277741253",
+        "name": "Randall Balestriero"
+      },
+      {
+        "authorId": "2289844757",
+        "name": "Nicolas Ballas"
+      },
+      {
+        "authorId": "2284991448",
+        "name": "Michael Rabbat"
+      },
+      {
+        "authorId": "2270469816",
+        "name": "Yann LeCun"
+      }
+    ],
+    "abstract": "Joint Embedding Predictive Architectures (JEPAs) learn representations able to solve numerous downstream tasks out-of-the-box. JEPAs combine two objectives: (i) a latent-space prediction term, i.e., the representation of a slightly perturbed sample must be predictable from the original sample's representation, and (ii) an anti-collapse term, i.e., not all samples should have the same representation. While (ii) is often considered as an obvious remedy to representation collapse, we uncover that JEPAs'anti-collapse term does much more--it provably estimates the data density. In short, any successfully trained JEPA can be used to get sample probabilities, e.g., for data curation, outlier detection, or simply for density estimation. Our theoretical finding is agnostic of the dataset and architecture used--in any case one can compute the learned probabilities of sample $x$ efficiently and in closed-form using the model's Jacobian matrix at $x$. Our findings are empirically validated across datasets (synthetic, controlled, and Imagenet) and across different Self Supervised Learning methods falling under the JEPA family (I-JEPA and DINOv2) and on multimodal models, such as MetaCLIP. We denote the method extracting the JEPA learned density as {\\bf JEPA-SCORE}."
+  },
+  {
+    "paperId": "6a809389d02fc3e6f7f3961c2ab974d12ee1613a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-06934",
+      "ArXiv": "2505.06934",
+      "DOI": "10.48550/arXiv.2505.06934",
+      "CorpusId": 278502174
+    },
+    "title": "Whitened CLIP as a Likelihood Surrogate of Images and Captions",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.06934, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275268888",
+        "name": "Roy Betser"
+      },
+      {
+        "authorId": "2211998315",
+        "name": "M. Levi"
+      },
+      {
+        "authorId": "2277246803",
+        "name": "Guy Gilboa"
+      }
+    ],
+    "abstract": "Likelihood approximations for images are not trivial to compute and can be useful in many applications. We examine the use of Contrastive Language-Image Pre-training (CLIP) to assess the likelihood of images and captions. We introduce \\textit{Whitened CLIP}, a novel transformation of the CLIP latent space via an invertible linear operation. This transformation ensures that each feature in the embedding space has zero mean, unit standard deviation, and no correlation with all other features, resulting in an identity covariance matrix. We show that the whitened embeddings statistics can be well approximated as a standard normal distribution, thus, the log-likelihood is estimated simply by the square Euclidean norm in the whitened embedding space. The whitening procedure is completely training-free and performed using a pre-computed whitening matrix, hence, is very fast. We present several preliminary experiments demonstrating the properties and applicability of these likelihood scores to images and captions."
+  },
+  {
+    "paperId": "58640d3f9243eb2446c4902b35d4e0f780a52869",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-00685",
+      "ArXiv": "2505.00685",
+      "DOI": "10.48550/arXiv.2505.00685",
+      "CorpusId": 278237549
+    },
+    "title": "On the Importance of Gaussianizing Representations",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.00685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2358453001",
+        "name": "Daniel Eftekhari"
+      },
+      {
+        "authorId": "2734935",
+        "name": "Vardan Papyan"
+      }
+    ],
+    "abstract": "The normal distribution plays a central role in information theory - it is at the same time the best-case signal and worst-case noise distribution, has the greatest representational capacity of any distribution, and offers an equivalence between uncorrelatedness and independence for joint distributions. Accounting for the mean and variance of activations throughout the layers of deep neural networks has had a significant effect on facilitating their effective training, but seldom has a prescription for precisely what distribution these activations should take, and how this might be achieved, been offered. Motivated by the information-theoretic properties of the normal distribution, we address this question and concurrently present normality normalization: a novel normalization layer which encourages normality in the feature representations of neural networks using the power transform and employs additive Gaussian noise during training. Our experiments comprehensively demonstrate the effectiveness of normality normalization, in regards to its generalization performance on an array of widely used model and dataset combinations, its strong performance across various common factors of variation such as model width, depth, and training minibatch size, its suitability for usage wherever existing normalization layers are conventionally used, and as a means to improving model robustness to random perturbations."
+  },
+  {
+    "paperId": "ce414ee6bb8ad8f31d3dbce1748fccecbcc7c678",
+    "externalIds": {
+      "DBLP": "conf/icml/DraganovVDBMKB25",
+      "ArXiv": "2502.09252",
+      "DOI": "10.48550/arXiv.2502.09252",
+      "CorpusId": 276317944
+    },
+    "title": "On the Importance of Embedding Norms in Self-Supervised Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.09252, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2308033231",
+        "name": "Andrew Draganov"
+      },
+      {
+        "authorId": "101290348",
+        "name": "Sharvaree P. Vadgama"
+      },
+      {
+        "authorId": "1396418912",
+        "name": "Sebastian Damrich"
+      },
+      {
+        "authorId": "2170081114",
+        "name": "Jan Niklas Böhm"
+      },
+      {
+        "authorId": "2394164966",
+        "name": "Lucas Maes"
+      },
+      {
+        "authorId": "2321927417",
+        "name": "Dmitry Kobak"
+      },
+      {
+        "authorId": "2261388326",
+        "name": "Erik J. Bekkers"
+      }
+    ],
+    "abstract": "Self-supervised learning (SSL) allows training data representations without a supervised signal and has become an important paradigm in machine learning. Most SSL methods employ the cosine similarity between embedding vectors and hence effectively embed data on a hypersphere. While this seemingly implies that embedding norms cannot play any role in SSL, a few recent works have suggested that embedding norms have properties related to network convergence and confidence. In this paper, we resolve this apparent contradiction and systematically establish the embedding norm's role in SSL training. Using theoretical analysis, simulations, and experiments, we show that embedding norms (i) govern SSL convergence rates and (ii) encode network confidence, with smaller norms corresponding to unexpected samples. Additionally, we show that manipulating embedding norms can have large effects on convergence speed. Our findings demonstrate that SSL embedding norms are integral to understanding and optimizing network behavior."
+  },
+  {
+    "paperId": "a8797c6a3004c8e9513e5d4da61255355a4fea33",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-09718",
+      "ArXiv": "2412.09718",
+      "DOI": "10.48550/arXiv.2412.09718",
+      "CorpusId": 274763376
+    },
+    "title": "BayesAdapter: enhanced uncertainty estimation in CLIP few-shot adaptation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.09718, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2335446311",
+        "name": "Pablo Morales-Álvarez"
+      },
+      {
+        "authorId": "2023556",
+        "name": "S. Christodoulidis"
+      },
+      {
+        "authorId": "1893915",
+        "name": "M. Vakalopoulou"
+      },
+      {
+        "authorId": "2274337028",
+        "name": "Pablo Piantanida"
+      },
+      {
+        "authorId": "144702316",
+        "name": "J. Dolz"
+      }
+    ],
+    "abstract": "The emergence of large pre-trained vision-language models (VLMs) represents a paradigm shift in machine learning, with unprecedented results in a broad span of visual recognition tasks. CLIP, one of the most popular VLMs, has exhibited remarkable zero-shot and transfer learning capabilities in classification. To transfer CLIP to downstream tasks, adapters constitute a parameter-efficient approach that avoids backpropagation through the large model (unlike related prompt learning methods). However, CLIP adapters have been developed to target discriminative performance, and the quality of their uncertainty estimates has been overlooked. In this work we show that the discriminative performance of state-of-the-art CLIP adapters does not always correlate with their uncertainty estimation capabilities, which are essential for a safe deployment in real-world scenarios. We also demonstrate that one of such adapters is obtained through MAP inference from a more general probabilistic framework. Based on this observation we introduce BayesAdapter, which leverages Bayesian inference to estimate a full probability distribution instead of a single point, better capturing the variability inherent in the parameter space. In a comprehensive empirical evaluation we show that our approach obtains high quality uncertainty estimates in the predictions, standing out in calibration and selective classification. Our code will be publicly available upon acceptance of the paper."
+  },
+  {
+    "paperId": "7399d9a04b90b4595e0e29cdaf5ae89922ec7541",
+    "externalIds": {
+      "ArXiv": "2412.06014",
+      "DBLP": "journals/corr/abs-2412-06014",
+      "DOI": "10.48550/arXiv.2412.06014",
+      "CorpusId": 274598055
+    },
+    "title": "Post-hoc Probabilistic Vision-Language Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.06014, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "120415877",
+        "name": "Anton Baumann"
+      },
+      {
+        "authorId": "2329953039",
+        "name": "Rui Li"
+      },
+      {
+        "authorId": "2295989756",
+        "name": "Marcus Klasson"
+      },
+      {
+        "authorId": "2260985662",
+        "name": "Santeri Mentu"
+      },
+      {
+        "authorId": "1387873091",
+        "name": "Shyamgopal Karthik"
+      },
+      {
+        "authorId": "1854487018",
+        "name": "Zeynep Akata"
+      },
+      {
+        "authorId": "2249761330",
+        "name": "Arno Solin"
+      },
+      {
+        "authorId": "2249760043",
+        "name": "Martin Trapp"
+      }
+    ],
+    "abstract": "Vision-language models (VLMs), such as CLIP and SigLIP, have found remarkable success in classification, retrieval, and generative tasks. For this, VLMs deterministically map images and text descriptions to a joint latent space in which their similarity is assessed using the cosine similarity. However, a deterministic mapping of inputs fails to capture uncertainties over concepts arising from domain shifts when used in downstream tasks. In this work, we propose post-hoc uncertainty estimation in VLMs that does not require additional training. Our method leverages a Bayesian posterior approximation over the last layers in VLMs and analytically quantifies uncertainties over cosine similarities. We demonstrate its effectiveness for uncertainty quantification and support set selection in active learning. Compared to baselines, we obtain improved and well-calibrated predictive uncertainties, interpretable uncertainty estimates, and sample-efficient active learning. Our results show promise for safety-critical applications of large-scale models."
+  },
+  {
+    "paperId": "faf3e1ce2ed32f3c669ead93da2a4821cd8cc8ae",
+    "externalIds": {
+      "ArXiv": "2411.14517",
+      "DBLP": "journals/corr/abs-2411-14517",
+      "DOI": "10.48550/arXiv.2411.14517",
+      "CorpusId": 274192677
+    },
+    "title": "The Double-Ellipsoid Geometry of CLIP",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.14517, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2211998315",
+        "name": "M. Levi"
+      },
+      {
+        "authorId": "2277246803",
+        "name": "Guy Gilboa"
+      }
+    ],
+    "abstract": "Contrastive Language-Image Pre-Training (CLIP) is highly instrumental in machine learning applications within a large variety of domains. We investigate the geometry of this embedding, which is still not well understood. We examine the raw unnormalized embedding and show that text and image reside on linearly separable ellipsoid shells, not centered at the origin. We explain the benefits of having this structure, allowing to better embed instances according to their uncertainty during contrastive training. Frequent concepts in the dataset yield more false negatives, inducing greater uncertainty. A new notion of conformity is introduced, which measures the average cosine similarity of an instance to any other instance within a representative data set. We show this measure can be accurately estimated by simply computing the cosine similarity to the modality mean vector. Furthermore, we find that CLIP's modality gap optimizes the matching of the conformity distributions of image and text."
+  },
+  {
+    "paperId": "56cbcd94f9a6f3a80bc7ed82e4822fe53819ac01",
+    "externalIds": {
+      "ArXiv": "2410.21869",
+      "DBLP": "conf/iclr/ReizingerBJVBBK25",
+      "DOI": "10.48550/arXiv.2410.21869",
+      "CorpusId": 273661572
+    },
+    "title": "Cross-Entropy Is All You Need To Invert the Data Generating Process",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 22,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.21869, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1382657853",
+        "name": "Patrik Reizinger"
+      },
+      {
+        "authorId": "2086981365",
+        "name": "Alice Bizeul"
+      },
+      {
+        "authorId": "2256998812",
+        "name": "Attila Juhos"
+      },
+      {
+        "authorId": "2256154222",
+        "name": "Julia E. Vogt"
+      },
+      {
+        "authorId": "2316890879",
+        "name": "Randall Balestriero"
+      },
+      {
+        "authorId": "40634590",
+        "name": "Wieland Brendel"
+      },
+      {
+        "authorId": "2307009631",
+        "name": "D. Klindt"
+      }
+    ],
+    "abstract": "Supervised learning has become a cornerstone of modern machine learning, yet a comprehensive theory explaining its effectiveness remains elusive. Empirical phenomena, such as neural analogy-making and the linear representation hypothesis, suggest that supervised models can learn interpretable factors of variation in a linear fashion. Recent advances in self-supervised learning, particularly nonlinear Independent Component Analysis, have shown that these methods can recover latent structures by inverting the data generating process. We extend these identifiability results to parametric instance discrimination, then show how insights transfer to the ubiquitous setting of supervised learning with cross-entropy minimization. We prove that even in standard classification tasks, models learn representations of ground-truth factors of variation up to a linear transformation. We corroborate our theoretical contribution with a series of empirical studies. First, using simulated data matching our theoretical assumptions, we demonstrate successful disentanglement of latent factors. Second, we show that on DisLib, a widely-used disentanglement benchmark, simple classification tasks recover latent structures up to linear transformations. Finally, we reveal that models trained on ImageNet encode representations that permit linear decoding of proxy factors of variation. Together, our theoretical findings and experiments offer a compelling explanation for recent observations of linear representations, such as superposition in neural networks. This work takes a significant step toward a cohesive theory that accounts for the unreasonable effectiveness of supervised deep learning."
+  },
+  {
+    "paperId": "e06646137889e796cf9006117811a251783367ee",
+    "externalIds": {
+      "DBLP": "journals/remotesensing/ZhangHK24",
+      "DOI": "10.3390/rs16101708",
+      "CorpusId": 269826556
+    },
+    "title": "HGR Correlation Pooling Fusion Framework for Recognition and Classification in Multimodal Remote Sensing Data",
+    "venue": "Remote Sensing",
+    "year": 2024,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2072-4292/16/10/1708/pdf?version=1715416692",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/rs16101708?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/rs16101708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2301646612",
+        "name": "Hongkang Zhang"
+      },
+      {
+        "authorId": "2257134558",
+        "name": "Shao-Lun Huang"
+      },
+      {
+        "authorId": "1691686",
+        "name": "E. Kuruoglu"
+      }
+    ],
+    "abstract": "This paper investigates remote sensing data recognition and classification with multimodal data fusion. Aiming at the problems of low recognition and classification accuracy and the difficulty in integrating multimodal features in existing methods, a multimodal remote sensing data recognition and classification model based on a heatmap and Hirschfeld–Gebelein–Rényi (HGR) correlation pooling fusion operation is proposed. A novel HGR correlation pooling fusion algorithm is developed by combining a feature fusion method and an HGR maximum correlation algorithm. This method enables the restoration of the original signal without changing the value of transmitted information by performing reverse operations on the sample data. This enhances feature learning for images and improves performance in specific tasks of interpretation by efficiently using multi-modal information with varying degrees of relevance. Ship recognition experiments conducted on the QXS-SROPT dataset demonstrate that the proposed method surpasses existing remote sensing data recognition methods. Furthermore, land cover classification experiments conducted on the Houston 2013 and MUUFL datasets confirm the generalizability of the proposed method. The experimental results fully validate the effectiveness and significant superiority of the proposed method in the recognition and classification of multimodal remote sensing data."
+  },
+  {
+    "paperId": "872d78c04c8fb115d492eea98199407991670533",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-08471",
+      "ArXiv": "2404.08471",
+      "DOI": "10.48550/arXiv.2404.08471",
+      "CorpusId": 269137489
+    },
+    "title": "Revisiting Feature Prediction for Learning Visual Representations from Video",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2024,
+    "citationCount": 248,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.08471, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1453740540",
+        "name": "Adrien Bardes"
+      },
+      {
+        "authorId": "2048163343",
+        "name": "Q. Garrido"
+      },
+      {
+        "authorId": "2296601397",
+        "name": "Jean Ponce"
+      },
+      {
+        "authorId": "2296665228",
+        "name": "Xinlei Chen"
+      },
+      {
+        "authorId": "2066127975",
+        "name": "Michael G. Rabbat"
+      },
+      {
+        "authorId": "2265899558",
+        "name": "Yann LeCun"
+      },
+      {
+        "authorId": "38698856",
+        "name": "Mahmoud Assran"
+      },
+      {
+        "authorId": "2289844757",
+        "name": "Nicolas Ballas"
+      }
+    ],
+    "abstract": "This paper explores feature prediction as a stand-alone objective for unsupervised learning from video and introduces V-JEPA, a collection of vision models trained solely using a feature prediction objective, without the use of pretrained image encoders, text, negative examples, reconstruction, or other sources of supervision. The models are trained on 2 million videos collected from public datasets and are evaluated on downstream image and video tasks. Our results show that learning by predicting video features leads to versatile visual representations that perform well on both motion and appearance-based tasks, without adaption of the model's parameters; e.g., using a frozen backbone. Our largest model, a ViT-H/16 trained only on videos, obtains 81.9% on Kinetics-400, 72.2% on Something-Something-v2, and 77.9% on ImageNet1K."
+  },
+  {
+    "paperId": "18ce9f02a61f43d9233ab9a7c2d7fb04495a4d1f",
+    "externalIds": {
+      "ArXiv": "2303.14938",
+      "CorpusId": 257766823
+    },
+    "title": "Logarithmic bounds for isoperimetry and slices of convex sets",
+    "venue": "",
+    "year": 2023,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.14938, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40929866",
+        "name": "B. Klartag"
+      }
+    ],
+    "abstract": "We prove that the Bourgain slicing conjecture and the Kannan-Lov\\'asz-Simonovits (KLS) isoperimetric conjecture in $\\mathbb{R}^n$ hold true up to a factor of $\\sqrt{\\log n}$. A new ingredient used in the proof is an improved log-concave Lichnerowicz inequality."
+  },
+  {
+    "paperId": "ee57e4d7a125f4ca8916284a857c3760d7d378d3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2301-08243",
+      "ArXiv": "2301.08243",
+      "DOI": "10.1109/CVPR52729.2023.01499",
+      "CorpusId": 255999752
+    },
+    "title": "Self-Supervised Learning from Images with a Joint-Embedding Predictive Architecture",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 735,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.08243",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.08243, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38698856",
+        "name": "Mahmoud Assran"
+      },
+      {
+        "authorId": "2101830371",
+        "name": "Quentin Duval"
+      },
+      {
+        "authorId": "1806773",
+        "name": "Ishan Misra"
+      },
+      {
+        "authorId": "2329288",
+        "name": "Piotr Bojanowski"
+      },
+      {
+        "authorId": "2065988715",
+        "name": "Pascal Vincent"
+      },
+      {
+        "authorId": "2066127975",
+        "name": "Michael G. Rabbat"
+      },
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      },
+      {
+        "authorId": "2482072",
+        "name": "Nicolas Ballas"
+      }
+    ],
+    "abstract": "This paper demonstrates an approach for learning highly semantic image representations without relying on hand-crafted data-augmentations. We introduce the Image-based Joint-Embedding Predictive Architecture (I-JEPA), a non-generative approach for self-supervised learning from images. The idea behind I-JEPA is simple: from a single context block, predict the representations of various target blocks in the same image. A core design choice to guide I-JEPA towards producing semantic representations is the masking strategy; specifically, it is crucial to (a) sample target blocks with sufficiently large scale (semantic), and to (b) use a sufficiently informative (spatially distributed) context block. Empirically, when combined with Vision Transformers, we find I-JEPA to be highly scalable. For instance, we train a ViT-Huge/14 on ImageNet using 16 A100 GPUs in under 72 hours to achieve strong downstream performance across a wide range of tasks, from linear classification to object counting and depth prediction."
+  },
+  {
+    "paperId": "b8d4beeb8df994db12688226cf2a619f1d633b72",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-01571",
+      "ArXiv": "2210.01571",
+      "DOI": "10.48550/arXiv.2210.01571",
+      "CorpusId": 252693313
+    },
+    "title": "VICRegL: Self-Supervised Learning of Local Visual Features",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 169,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.01571",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.01571, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1453740540",
+        "name": "Adrien Bardes"
+      },
+      {
+        "authorId": "144189388",
+        "name": "J. Ponce"
+      },
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      }
+    ],
+    "abstract": "Most recent self-supervised methods for learning image representations focus on either producing a global feature with invariance properties, or producing a set of local features. The former works best for classification tasks while the latter is best for detection and segmentation tasks. This paper explores the fundamental trade-off between learning local and global features. A new method called VICRegL is proposed that learns good global and local features simultaneously, yielding excellent performance on detection and segmentation tasks while maintaining good performance on classification tasks. Concretely, two identical branches of a standard convolutional net architecture are fed two differently distorted versions of the same image. The VICReg criterion is applied to pairs of global feature vectors. Simultaneously, the VICReg criterion is applied to pairs of local feature vectors occurring before the last pooling layer. Two local feature vectors are attracted to each other if their l2-distance is below a threshold or if their relative locations are consistent with a known geometric transformation between the two input images. We demonstrate strong performance on linear classification and segmentation transfer tasks. Code and pretrained models are publicly available at: https://github.com/facebookresearch/VICRegL"
+  },
+  {
+    "paperId": "32e89d4d1225f3e02ac38ec93efc39fb61ccdde8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-02053",
+      "ArXiv": "2203.02053",
+      "DOI": "10.48550/arXiv.2203.02053",
+      "CorpusId": 247244904
+    },
+    "title": "Mind the Gap: Understanding the Modality Gap in Multi-modal Contrastive Representation Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 680,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.02053",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151253861",
+        "name": "Weixin Liang"
+      },
+      {
+        "authorId": "49889860",
+        "name": "Yuhui Zhang"
+      },
+      {
+        "authorId": "33778474",
+        "name": "Yongchan Kwon"
+      },
+      {
+        "authorId": "34149749",
+        "name": "Serena Yeung"
+      },
+      {
+        "authorId": "145085305",
+        "name": "James Y. Zou"
+      }
+    ],
+    "abstract": "We present modality gap, an intriguing geometric phenomenon of the representation space of multi-modal models. Specifically, we show that different data modalities (e.g. images and text) are embedded at arm's length in their shared representation in multi-modal models such as CLIP. Our systematic analysis demonstrates that this gap is caused by a combination of model initialization and contrastive learning optimization. In model initialization, we show empirically and theoretically that the representation of a common deep neural network is restricted to a narrow cone. As a consequence, in a multi-modal model with two encoders, the representations of the two modalities are clearly apart when the model is initialized. During optimization, contrastive learning keeps the different modalities separate by a certain distance, which is influenced by the temperature parameter in the loss function. Our experiments further demonstrate that varying the modality gap distance has a significant impact in improving the model's downstream zero-shot classification performance and fairness. Our code and data are available at https://modalitygap.readthedocs.io/"
+  },
+  {
+    "paperId": "3f1774d91c7c219f063f40b894e837e6c48b2bb2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-04156",
+      "ArXiv": "2106.04156",
+      "CorpusId": 235367888
+    },
+    "title": "Provable Guarantees for Self-Supervised Deep Learning with Spectral Contrastive Loss",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 385,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.04156, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "134168070",
+        "name": "Jeff Z. HaoChen"
+      },
+      {
+        "authorId": "3460405",
+        "name": "Colin Wei"
+      },
+      {
+        "authorId": "1799820",
+        "name": "Adrien Gaidon"
+      },
+      {
+        "authorId": "1901958",
+        "name": "Tengyu Ma"
+      }
+    ],
+    "abstract": "Recent works in self-supervised learning have advanced the state-of-the-art by relying on the contrastive learning paradigm, which learns representations by pushing positive pairs, or similar examples from the same class, closer together while keeping negative pairs far apart. Despite the empirical successes, theoretical foundations are limited -- prior analyses assume conditional independence of the positive pairs given the same class label, but recent empirical applications use heavily correlated positive pairs (i.e., data augmentations of the same image). Our work analyzes contrastive learning without assuming conditional independence of positive pairs using a novel concept of the augmentation graph on data. Edges in this graph connect augmentations of the same data, and ground-truth classes naturally form connected sub-graphs. We propose a loss that performs spectral decomposition on the population augmentation graph and can be succinctly written as a contrastive learning objective on neural net representations. Minimizing this objective leads to features with provable accuracy guarantees under linear probe evaluation. By standard generalization bounds, these accuracy guarantees also hold when minimizing the training contrastive loss. Empirically, the features learned by our objective can match or outperform several strong baselines on benchmark vision datasets. In all, this work provides the first provable analysis for contrastive learning where guarantees for linear probe evaluation can apply to realistic empirical settings."
+  },
+  {
+    "paperId": "ad4a0938c48e61b7827869e4ac3baffd0aefab35",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2104-14294",
+      "ArXiv": "2104.14294",
+      "DOI": "10.1109/ICCV48922.2021.00951",
+      "CorpusId": 233444273
+    },
+    "title": "Emerging Properties in Self-Supervised Vision Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 8772,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2104.14294",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.14294, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2062862676",
+        "name": "Mathilde Caron"
+      },
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "1806773",
+        "name": "Ishan Misra"
+      },
+      {
+        "authorId": "2065248680",
+        "name": "Herv'e J'egou"
+      },
+      {
+        "authorId": "2599292",
+        "name": "J. Mairal"
+      },
+      {
+        "authorId": "2329288",
+        "name": "Piotr Bojanowski"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      }
+    ],
+    "abstract": "In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [16] that stand out compared to convolutional networks (convnets). Beyond the fact that adapting self-supervised methods to this architecture works particularly well, we make the following observations: first, self-supervised ViT features contain explicit information about the semantic segmentation of an image, which does not emerge as clearly with supervised ViTs, nor with convnets. Second, these features are also excellent k-NN classifiers, reaching 78.3% top-1 on ImageNet with a small ViT. Our study also underlines the importance of momentum encoder [26], multi-crop training [9], and the use of small patches with ViTs. We implement our findings into a simple self-supervised method, called DINO, which we interpret as a form of self-distillation with no labels. We show the synergy between DINO and ViTs by achieving 80.1% top-1 on ImageNet in linear evaluation with ViT-Base."
+  },
+  {
+    "paperId": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4",
+    "externalIds": {
+      "DBLP": "conf/icml/RadfordKHRGASAM21",
+      "ArXiv": "2103.00020",
+      "CorpusId": 231591445
+    },
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 46775,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.00020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2110935237",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "40087786",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP."
+  },
+  {
+    "paperId": "a56759300364982894bad81ab08ca3642cf6b06d",
+    "externalIds": {
+      "DBLP": "conf/icml/ZimmermannSSBB21",
+      "ArXiv": "2102.08850",
+      "CorpusId": 231942400
+    },
+    "title": "Contrastive Learning Inverts the Data Generating Process",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 260,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.08850, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "149408648",
+        "name": "Roland S. Zimmermann"
+      },
+      {
+        "authorId": "49738125",
+        "name": "Yash Sharma"
+      },
+      {
+        "authorId": "1742225443",
+        "name": "Steffen Schneider"
+      },
+      {
+        "authorId": "1731199",
+        "name": "M. Bethge"
+      },
+      {
+        "authorId": "40634590",
+        "name": "Wieland Brendel"
+      }
+    ],
+    "abstract": "Contrastive learning has recently seen tremendous success in self-supervised learning. So far, however, it is largely unclear why the learned representations generalize so effectively to a large variety of downstream tasks. We here prove that feedforward models trained with objectives belonging to the commonly used InfoNCE family learn to implicitly invert the underlying generative model of the observed data. While the proofs make certain statistical assumptions about the generative model, we observe empirically that our findings hold even if these assumptions are severely violated. Our theory highlights a fundamental connection between contrastive learning, generative modeling, and nonlinear independent component analysis, thereby furthering our understanding of the learned representations as well as providing a theoretical foundation to derive more effective contrastive losses."
+  },
+  {
+    "paperId": "6860ea2f005cdea79a4de5ac90feb0e06ada5c0a",
+    "externalIds": {
+      "ArXiv": "2101.05841",
+      "CorpusId": 238407718
+    },
+    "title": "Lecture notes on high-dimensional data",
+    "venue": "",
+    "year": 2021,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.05841, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3251366",
+        "name": "Sven-Ake Wegner"
+      }
+    ],
+    "abstract": "These are lecture notes based on the first part of a course on 'Mathematical Data Science', which I taught to final year BSc students in the UK in 2019-2020. Topics include: concentration of measure in high dimensions; Gaussian random vectors in high dimensions; random projections; separation/disentangling of Gaussian data. A revised version has been published as part of the textbook [Mathematical Introduction to Data Science, Springer, Berlin, Heidelberg, 2024, https://link.springer.com/book/10.1007/978-3-662-69426-8]."
+  },
+  {
+    "paperId": "0e23d2f14e7e56e81538f4a63e11689d8ac1eb9d",
+    "externalIds": {
+      "MAG": "3107668149",
+      "DBLP": "conf/cvpr/ChenH21",
+      "ArXiv": "2011.10566",
+      "DOI": "10.1109/CVPR46437.2021.01549",
+      "CorpusId": 227118869
+    },
+    "title": "Exploring Simple Siamese Representation Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 4897,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2011.10566",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.10566, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39717886",
+        "name": "Xinlei Chen"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      }
+    ],
+    "abstract": "Siamese networks have become a common structure in various recent models for unsupervised visual representation learning. These models maximize the similarity between two augmentations of one image, subject to certain conditions for avoiding collapsing solutions. In this paper, we report surprising empirical results that simple Siamese networks can learn meaningful representations even using none of the following: (i) negative sample pairs, (ii) large batches, (iii) momentum encoders. Our experiments show that collapsing solutions do exist for the loss and structure, but a stop-gradient operation plays an essential role in preventing collapsing. We provide a hypothesis on the implication of stop-gradient, and further show proof-of-concept experiments verifying it. Our \"SimSiam\" method achieves competitive results on ImageNet and downstream tasks. We hope this simple baseline will motivate people to rethink the roles of Siamese architectures for unsupervised representation learning. Code is made available.1"
+  },
+  {
+    "paperId": "fa5853fdef7d2f6bb68203d187ddacbbddc63a8b",
+    "externalIds": {
+      "MAG": "3088300790",
+      "DOI": "10.1080/14697688.2020.1813475",
+      "CorpusId": 221910705
+    },
+    "title": "High-Dimensional Probability: An Introduction with Applications in Data Science",
+    "venue": "Quantitative finance (Print)",
+    "year": 2020,
+    "citationCount": 3766,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1080/14697688.2020.1813475?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/14697688.2020.1813475, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2660689",
+        "name": "O. Papaspiliopoulos"
+      }
+    ],
+    "abstract": "© 2018, Cambridge University Press Let us summarize our findings. A random projection of a set T in R n onto an m-dimensional subspace approximately preserves the geometry of T if m ⪆ d ( T ) . For..."
+  },
+  {
+    "paperId": "806e27fb9d8781c3c6e918734453418ebbeae96c",
+    "externalIds": {
+      "MAG": "3065974826",
+      "ArXiv": "2008.08186",
+      "PubMedCentral": "7547234",
+      "DBLP": "journals/corr/abs-2008-08186",
+      "DOI": "10.1073/pnas.2015509117",
+      "CorpusId": 221172897,
+      "PubMed": "32958680"
+    },
+    "title": "Prevalence of neural collapse during the terminal phase of deep learning training",
+    "venue": "Proceedings of the National Academy of Sciences of the United States of America",
+    "year": 2020,
+    "citationCount": 823,
+    "openAccessPdf": {
+      "url": "https://www.pnas.org/content/pnas/117/40/24652.full.pdf",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2008.08186, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2734935",
+        "name": "Vardan Papyan"
+      },
+      {
+        "authorId": "2358805461",
+        "name": "Xuemei Han"
+      },
+      {
+        "authorId": "1709392",
+        "name": "D. Donoho"
+      }
+    ],
+    "abstract": "Significance Modern deep neural networks for image classification have achieved superhuman performance. Yet, the complex details of trained networks have forced most practitioners and researchers to regard them as black boxes with little that could be understood. This paper considers in detail a now-standard training methodology: driving the cross-entropy loss to zero, continuing long after the classification error is already zero. Applying this methodology to an authoritative collection of standard deepnets and datasets, we observe the emergence of a simple and highly symmetric geometry of the deepnet features and of the deepnet classifier, and we document important benefits that the geometry conveys—thereby helping us understand an important component of the modern deep learning training paradigm. Modern practice for training classification deepnets involves a terminal phase of training (TPT), which begins at the epoch where training error first vanishes. During TPT, the training error stays effectively zero, while training loss is pushed toward zero. Direct measurements of TPT, for three prototypical deepnet architectures and across seven canonical classification datasets, expose a pervasive inductive bias we call neural collapse (NC), involving four deeply interconnected phenomena. (NC1) Cross-example within-class variability of last-layer training activations collapses to zero, as the individual activations themselves collapse to their class means. (NC2) The class means collapse to the vertices of a simplex equiangular tight frame (ETF). (NC3) Up to rescaling, the last-layer classifiers collapse to the class means or in other words, to the simplex ETF (i.e., to a self-dual configuration). (NC4) For a given activation, the classifier’s decision collapses to simply choosing whichever class has the closest train class mean (i.e., the nearest class center [NCC] decision rule). The symmetric and very simple geometry induced by the TPT confers important benefits, including better generalization performance, better robustness, and better interpretability."
+  },
+  {
+    "paperId": "4effd0f6b51b73335c3a2b7b880d168fbbe09298",
+    "externalIds": {
+      "DBLP": "conf/icml/ErmolovSSS21",
+      "MAG": "3041919418",
+      "ArXiv": "2007.06346",
+      "CorpusId": 220496043
+    },
+    "title": "Whitening for Self-Supervised Representation Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 372,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.06346, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064701324",
+        "name": "Aleksandr Ermolov"
+      },
+      {
+        "authorId": "10753214",
+        "name": "Aliaksandr Siarohin"
+      },
+      {
+        "authorId": "1716310",
+        "name": "E. Sangineto"
+      },
+      {
+        "authorId": "1703601",
+        "name": "N. Sebe"
+      }
+    ],
+    "abstract": "Recent literature on self-supervised learning is based on the contrastive loss, where image instances which share the same semantic content (\"positives\") are contrasted with instances extracted from other images (\"negatives\"). However, in order for the learning to be effective, a lot of negatives should be compared with a positive pair. This is not only computationally demanding, but it also requires that the positive and the negative representations are kept consistent with each other over a long training period. In this paper we propose a different direction and a new loss function for self-supervised learning which is based on the whitening of the latent-space features. The whitening operation has a \"scattering\" effect on the batch samples, which compensates the lack of a large number of negatives, avoiding degenerate solutions where all the sample representations collapse to a single point. We empirically show that our loss accelerates self-supervised training and the learned representations are much more effective for downstream tasks than previously published work."
+  },
+  {
+    "paperId": "a1e4a227006bbce24e17e39bf606e624131c89e5",
+    "externalIds": {
+      "DBLP": "conf/icml/RoederMK21",
+      "MAG": "3040074755",
+      "ArXiv": "2007.00810",
+      "CorpusId": 220302489
+    },
+    "title": "On Linear Identifiability of Learned Representations",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 103,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.00810, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6574647",
+        "name": "Geoffrey Roeder"
+      },
+      {
+        "authorId": "2096458",
+        "name": "Luke Metz"
+      },
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      }
+    ],
+    "abstract": "Identifiability is a desirable property of a statistical model: it implies that the true model parameters may be estimated to any desired precision, given sufficient computational resources and data. We study identifiability in the context of representation learning: discovering nonlinear data representations that are optimal with respect to some downstream task. When parameterized as deep neural networks, such representation functions typically lack identifiability in parameter space, because they are overparameterized by design. In this paper, building on recent advances in nonlinear ICA, we aim to rehabilitate identifiability by showing that a large family of discriminative models are in fact identifiable in function space, up to a linear indeterminacy. Many models for representation learning in a wide variety of domains have been identifiable in this sense, including text, images and audio, state-of-the-art at time of publication. We derive sufficient conditions for linear identifiability and provide empirical support for the result on both simulated and real-world data."
+  },
+  {
+    "paperId": "9a56ab8b1aba50dc2fea3cf4b531d30891a88ba9",
+    "externalIds": {
+      "MAG": "3027758526",
+      "ArXiv": "2005.10242",
+      "DBLP": "conf/icml/0001I20",
+      "CorpusId": 218718310
+    },
+    "title": "Understanding Contrastive Representation Learning through Alignment and Uniformity on the Hypersphere",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2332,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.10242, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3978031",
+        "name": "Tongzhou Wang"
+      },
+      {
+        "authorId": "2094770",
+        "name": "Phillip Isola"
+      }
+    ],
+    "abstract": "Contrastive representation learning has been outstandingly successful in practice. In this work, we identify two key properties related to the contrastive loss: (1) alignment (closeness) of features from positive pairs, and (2) uniformity of the induced distribution of the (normalized) features on the hypersphere. We prove that, asymptotically, the contrastive loss optimizes these properties, and analyze their positive effects on downstream tasks. Empirically, we introduce an optimizable metric to quantify each property. Extensive experiments on standard vision and language datasets confirm the strong agreement between both metrics and downstream task performance. Remarkably, directly optimizing for these two metrics leads to representations with comparable or better performance at downstream tasks than contrastive learning. \nProject Page: this https URL \nCode: this https URL , this https URL"
+  },
+  {
+    "paperId": "7f768fa192a76ab097ccfda0a68523bc36425423",
+    "externalIds": {
+      "DBLP": "conf/nips/Tian0PKSI20",
+      "ArXiv": "2005.10243",
+      "MAG": "3026092005",
+      "CorpusId": 218719252
+    },
+    "title": "What makes for good views for contrastive learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 1537,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.10243, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2476765",
+        "name": "Yonglong Tian"
+      },
+      {
+        "authorId": "1491624845",
+        "name": "Chen Sun"
+      },
+      {
+        "authorId": "16443937",
+        "name": "Ben Poole"
+      },
+      {
+        "authorId": "1707347",
+        "name": "Dilip Krishnan"
+      },
+      {
+        "authorId": "2462253",
+        "name": "C. Schmid"
+      },
+      {
+        "authorId": "2094770",
+        "name": "Phillip Isola"
+      }
+    ],
+    "abstract": "Contrastive learning between multiple views of the data has recently achieved state of the art performance in the field of self-supervised representation learning. Despite its success, the influence of different view choices has been less studied. In this paper, we use empirical analysis to better understand the importance of view selection, and argue that we should reduce the mutual information (MI) between views while keeping task-relevant information intact. To verify this hypothesis, we devise unsupervised and semi-supervised frameworks that learn effective views by aiming to reduce their MI. We also consider data augmentation as a way to reduce MI, and show that increasing data augmentation indeed leads to decreasing MI and improves downstream classification accuracy. As a by-product, we also achieve a new state-of-the-art accuracy on unsupervised pre-training for ImageNet classification ($73\\%$ top-1 linear readoff with a ResNet-50). In addition, transferring our models to PASCAL VOC object detection and COCO instance segmentation consistently outperforms supervised pre-training. Code:this http URL"
+  },
+  {
+    "paperId": "7af72a461ed7cda180e7eab878efd5f35d79bbf4",
+    "externalIds": {
+      "DBLP": "conf/icml/ChenK0H20",
+      "MAG": "3034978746",
+      "ArXiv": "2002.05709",
+      "CorpusId": 211096730
+    },
+    "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 23765,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.05709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145358498",
+        "name": "Ting Chen"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed contrastive self-supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by SimCLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of-the-art, matching the performance of a supervised ResNet-50. When fine-tuned on only 1% of the labels, we achieve 85.8% top-5 accuracy, outperforming AlexNet with 100X fewer labels."
+  },
+  {
+    "paperId": "add2f205338d70e10ce5e686df4a690e2851bdfc",
+    "externalIds": {
+      "DBLP": "conf/cvpr/He0WXG20",
+      "MAG": "2987283559",
+      "ArXiv": "1911.05722",
+      "DOI": "10.1109/cvpr42600.2020.00975",
+      "CorpusId": 207930212
+    },
+    "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 14695,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1911.05722",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.05722, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "146884473",
+        "name": "Haoqi Fan"
+      },
+      {
+        "authorId": "98264506",
+        "name": "Yuxin Wu"
+      },
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We present Momentum Contrast (MoCo) for unsupervised visual representation learning. From a perspective on contrastive learning as dictionary look-up, we build a dynamic dictionary with a queue and a moving-averaged encoder. This enables building a large and consistent dictionary on-the-fly that facilitates contrastive unsupervised learning. MoCo provides competitive results under the common linear protocol on ImageNet classification. More importantly, the representations learned by MoCo transfer well to downstream tasks. MoCo can outperform its supervised pre-training counterpart in 7 detection/segmentation tasks on PASCAL VOC, COCO, and other datasets, sometimes surpassing it by large margins. This suggests that the gap between unsupervised and supervised representation learning has been largely closed in many vision tasks."
+  },
+  {
+    "paperId": "62847bbffe4f1cc34ccb13290e5770f7c6e6fbb4",
+    "externalIds": {
+      "MAG": "3037238545",
+      "DBLP": "conf/aistats/FarquharOG20",
+      "ArXiv": "1907.00865",
+      "CorpusId": 209947029
+    },
+    "title": "Radial Bayesian Neural Networks: Beyond Discrete Support In Large-Scale Bayesian Deep Learning",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2019,
+    "citationCount": 70,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.00865, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33859827",
+        "name": "Sebastian Farquhar"
+      },
+      {
+        "authorId": "144484861",
+        "name": "Michael A. Osborne"
+      },
+      {
+        "authorId": "2681954",
+        "name": "Y. Gal"
+      }
+    ],
+    "abstract": "We propose Radial Bayesian Neural Networks (BNNs): a variational approximate posterior for BNNs which scales well to large models while maintaining a distribution over weight-space with full support. Other scalable Bayesian deep learning methods, like MC dropout or deep ensembles, have discrete support-they assign zero probability to almost all of the weight-space. Unlike these discrete support methods, Radial BNNs' full support makes them suitable for use as a prior for sequential inference. In addition, they solve the conceptual challenges with the a priori implausibility of weight distributions with discrete support. The Radial BNN is motivated by avoiding a sampling problem in 'mean-field' variational inference (MFVI) caused by the so-called 'soap-bubble' pathology of multivariate Gaussians. We show that, unlike MFVI, Radial BNNs are robust to hyperparameters and can be efficiently applied to a challenging real-world medical application without needing ad-hoc tweaks and intensive tuning. In fact, in this setting Radial BNNs out-perform discrete-support methods like MC dropout. Lastly, by using Radial BNNs as a theoretically principled, robust alternative to MFVI we make significant strides in a Bayesian continual learning evaluation."
+  },
+  {
+    "paperId": "4e12084e96ee9c1ff0e7c843f31b43b14deb6e77",
+    "externalIds": {
+      "DBLP": "journals/tit/HuangX21",
+      "ArXiv": "1907.00393",
+      "DOI": "10.1109/TIT.2020.3044622",
+      "CorpusId": 231974007
+    },
+    "title": "On the Sample Complexity of HGR Maximal Correlation Functions for Large Datasets",
+    "venue": "IEEE Transactions on Information Theory",
+    "year": 2019,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1907.00393",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.00393, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1681906",
+        "name": "Shao-Lun Huang"
+      },
+      {
+        "authorId": "40863902",
+        "name": "Xiangxiang Xu"
+      }
+    ],
+    "abstract": "The Hirschfeld-Gebelein–Rényi (HGR) maximal correlation and the corresponding functions have been shown useful in many machine learning scenarios. In this paper, we study the sample complexity of estimating the HGR maximal correlation functions by the alternating conditional expectation (ACE) algorithm using training samples from large datasets. Specifically, we develop a mathematical framework to characterize the learning errors between the maximal correlation functions computed from the true distribution, and the functions estimated from the ACE algorithm. For both supervised and semi-supervised learning scenarios, we establish the analytical expressions for the error exponents of the learning errors. Furthermore, we demonstrate that for large datasets, the upper bounds for the sample complexity of learning the HGR maximal correlation functions by the ACE algorithm can be expressed using the established error exponents. Moreover, with our theoretical results, we investigate the sampling strategy for different types of samples in semi-supervised learning with a total sampling budget constraint, and an optimal sampling strategy is developed to maximize the error exponent of the learning error. Finally, the numerical simulations are presented to support our theoretical results."
+  },
+  {
+    "paperId": "403227333329b36183004f04db72362b604adef3",
+    "externalIds": {
+      "MAG": "2951585248",
+      "DBLP": "journals/corr/abs-1902-09229",
+      "ArXiv": "1902.09229",
+      "CorpusId": 67855945
+    },
+    "title": "A Theoretical Analysis of Contrastive Unsupervised Representation Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2019,
+    "citationCount": 870,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1902.09229, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145563459",
+        "name": "Sanjeev Arora"
+      },
+      {
+        "authorId": "73772228",
+        "name": "H. Khandeparkar"
+      },
+      {
+        "authorId": "10398264",
+        "name": "M. Khodak"
+      },
+      {
+        "authorId": "73776012",
+        "name": "Orestis Plevrakis"
+      },
+      {
+        "authorId": "10769461",
+        "name": "Nikunj Saunshi"
+      }
+    ],
+    "abstract": "Recent empirical works have successfully used unlabeled data to learn feature representations that are broadly useful in downstream classification tasks. Several of these methods are reminiscent of the well-known word2vec embedding algorithm: leveraging availability of pairs of semantically \"similar\" data points and \"negative samples,\" the learner forces the inner product of representations of similar pairs with each other to be higher on average than with negative samples. The current paper uses the term contrastive learning for such algorithms and presents a theoretical framework for analyzing them by introducing latent classes and hypothesizing that semantically similar points are sampled from the same latent class. This framework allows us to show provable guarantees on the performance of the learned representations on the average classification task that is comprised of a subset of the same set of latent classes. Our generalization bound also shows that learned representations can reduce (labeled) sample complexity on downstream tasks. We conduct controlled experiments in both the text and image domains to support the theory."
+  },
+  {
+    "paperId": "d03ca175e2b2745126e792fdc31dfadae4c63afa",
+    "externalIds": {
+      "ArXiv": "1807.03888",
+      "DBLP": "journals/corr/abs-1807-03888",
+      "MAG": "2867167548",
+      "CorpusId": 49667948
+    },
+    "title": "A Simple Unified Framework for Detecting Out-of-Distribution Samples and Adversarial Attacks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 2503,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.03888, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      },
+      {
+        "authorId": "2208511",
+        "name": "Kibok Lee"
+      },
+      {
+        "authorId": "1697141",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "143720148",
+        "name": "Jinwoo Shin"
+      }
+    ],
+    "abstract": "Detecting test samples drawn sufficiently far away from the training distribution statistically or adversarially is a fundamental requirement for deploying a good classifier in many real-world machine learning applications. However, deep neural networks with the softmax classifier are known to produce highly overconfident posterior distributions even for such abnormal samples. In this paper, we propose a simple yet effective method for detecting any abnormal samples, which is applicable to any pre-trained softmax neural classifier. We obtain the class conditional Gaussian distributions with respect to (low- and upper-level) features of the deep models under Gaussian discriminant analysis, which result in a confidence score based on the Mahalanobis distance. While most prior methods have been evaluated for detecting either out-of-distribution or adversarial samples, but not both, the proposed method achieves the state-of-the-art performances for both cases in our experiments. Moreover, we found that our proposed method is more robust in harsh cases, e.g., when the training dataset has noisy labels or small number of samples. Finally, we show that the proposed method enjoys broader usage by applying it to class-incremental learning: whenever out-of-distribution samples are detected, our classification rule can incorporate new classes well without further training deep models."
+  },
+  {
+    "paperId": "b227f3e4c0dc96e5ac5426b85485a70f2175a205",
+    "externalIds": {
+      "ArXiv": "1807.03748",
+      "MAG": "2842511635",
+      "DBLP": "journals/corr/abs-1807-03748",
+      "CorpusId": 49670925
+    },
+    "title": "Representation Learning with Contrastive Predictive Coding",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 12965,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.03748, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422336",
+        "name": "Aäron van den Oord"
+      },
+      {
+        "authorId": "2144417088",
+        "name": "Yazhe Li"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      }
+    ],
+    "abstract": "While supervised learning has enabled great progress in many applications, unsupervised learning has not seen such widespread adoption, and remains an important and challenging endeavor for artificial intelligence. In this work, we propose a universal unsupervised learning approach to extract useful representations from high-dimensional data, which we call Contrastive Predictive Coding. The key insight of our model is to learn such representations by predicting the future in latent space by using powerful autoregressive models. We use a probabilistic contrastive loss which induces the latent space to capture information that is maximally useful to predict future samples. It also makes the model tractable by using negative sampling. While most prior work has focused on evaluating representations for a particular modality, we demonstrate that our approach is able to learn useful representations achieving strong performance on four distinct domains: speech, images, text and reinforcement learning in 3D environments."
+  },
+  {
+    "paperId": "212af8d82353dc58851cc484600a64b42c790f1a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1805-08651",
+      "MAG": "2964193753",
+      "ArXiv": "1805.08651",
+      "CorpusId": 46897575
+    },
+    "title": "Nonlinear ICA Using Auxiliary Variables and Generalized Contrastive Learning",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2018,
+    "citationCount": 393,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.08651, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1791548",
+        "name": "Aapo Hyvärinen"
+      },
+      {
+        "authorId": "2072856367",
+        "name": "Hiroaki Sasaki"
+      },
+      {
+        "authorId": "145369890",
+        "name": "Richard E. Turner"
+      }
+    ],
+    "abstract": "Nonlinear ICA is a fundamental problem for unsupervised representation learning, emphasizing the capacity to recover the underlying latent variables generating the data (i.e., identifiability). Recently, the very first identifiability proofs for nonlinear ICA have been proposed, leveraging the temporal structure of the independent components. Here, we propose a general framework for nonlinear ICA, which, as a special case, can make use of temporal structure. It is based on augmenting the data by an auxiliary variable, such as the time index, the history of the time series, or any other available information. We propose to learn nonlinear ICA by discriminating between true augmented data, or data in which the auxiliary variable has been randomized. This enables the framework to be implemented algorithmically through logistic regression, possibly in a neural network. We provide a comprehensive proof of the identifiability of the model as well as the consistency of our estimation method. The approach not only provides a general theoretical framework combining and generalizing previously proposed nonlinear ICA models and algorithms, but also brings practical advantages."
+  },
+  {
+    "paperId": "5f90bfbb93cd3c36e550a8aacc400a6c3f0a7c7e",
+    "externalIds": {
+      "MAG": "2796335507",
+      "DBLP": "journals/corr/abs-1804-00891",
+      "ArXiv": "1804.00891",
+      "CorpusId": 4566639
+    },
+    "title": "Hyperspherical Variational Auto-Encoders",
+    "venue": "Conference on Uncertainty in Artificial Intelligence",
+    "year": 2018,
+    "citationCount": 445,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.00891, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054378991",
+        "name": "Tim R. Davidson"
+      },
+      {
+        "authorId": "41020959",
+        "name": "Luca Falorsi"
+      },
+      {
+        "authorId": "41019080",
+        "name": "Nicola De Cao"
+      },
+      {
+        "authorId": "41016725",
+        "name": "Thomas Kipf"
+      },
+      {
+        "authorId": "1849327",
+        "name": "J. Tomczak"
+      }
+    ],
+    "abstract": "The Variational Auto-Encoder (VAE) is one of the most used unsupervised machine learning models. But although the default choice of a Gaussian distribution for both the prior and posterior represents a mathematically convenient distribution often leading to competitive results, we show that this parameterization fails to model data with a latent hyperspherical structure. To address this issue we propose using a von Mises-Fisher (vMF) distribution instead, leading to a hyperspherical latent space. Through a series of experiments we show how such a hyperspherical VAE, or $\\mathcal{S}$-VAE, is more suitable for capturing data with a hyperspherical latent structure, while outperforming a normal, $\\mathcal{N}$-VAE, in low dimensions on other data types."
+  },
+  {
+    "paperId": "5694e46284460a648fe29117cbc55f6c9be3fa3c",
+    "externalIds": {
+      "MAG": "2963446712",
+      "ArXiv": "1608.06993",
+      "DBLP": "journals/corr/HuangLW16a",
+      "DOI": "10.1109/CVPR.2017.243",
+      "CorpusId": 9433631
+    },
+    "title": "Densely Connected Convolutional Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 42590,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1608.06993",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1608.06993, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143983679",
+        "name": "Gao Huang"
+      },
+      {
+        "authorId": "2109168016",
+        "name": "Zhuang Liu"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      }
+    ],
+    "abstract": "Recent work has shown that convolutional networks can be substantially deeper, more accurate, and efficient to train if they contain shorter connections between layers close to the input and those close to the output. In this paper, we embrace this observation and introduce the Dense Convolutional Network (DenseNet), which connects each layer to every other layer in a feed-forward fashion. Whereas traditional convolutional networks with L layers have L connections&#x2014;one between each layer and its subsequent layer&#x2014;our network has L(L+1)/2 direct connections. For each layer, the feature-maps of all preceding layers are used as inputs, and its own feature-maps are used as inputs into all subsequent layers. DenseNets have several compelling advantages: they alleviate the vanishing-gradient problem, strengthen feature propagation, encourage feature reuse, and substantially reduce the number of parameters. We evaluate our proposed architecture on four highly competitive object recognition benchmark tasks (CIFAR-10, CIFAR-100, SVHN, and ImageNet). DenseNets obtain significant improvements over the state-of-the-art on most of them, whilst requiring less memory and computation to achieve high performance. Code and pre-trained models are available at https://github.com/liuzhuang13/DenseNet."
+  },
+  {
+    "paperId": "3ad068ebde8f1d3a450a8c7e64a3428507bc2f51",
+    "externalIds": {
+      "MAG": "2963762683",
+      "DBLP": "journals/corr/HyvarinenM16",
+      "ArXiv": "1605.06336",
+      "CorpusId": 1056320
+    },
+    "title": "Unsupervised Feature Extraction by Time-Contrastive Learning and Nonlinear ICA",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 478,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.06336, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1791548",
+        "name": "Aapo Hyvärinen"
+      },
+      {
+        "authorId": "2068628792",
+        "name": "H. Morioka"
+      }
+    ],
+    "abstract": "Nonlinear independent component analysis (ICA) provides an appealing framework for unsupervised feature learning, but the models proposed so far are not identifiable. Here, we first propose a new intuitive principle of unsupervised deep learning from time series which uses the nonstationary structure of the data. Our learning principle, time-contrastive learning (TCL), finds a representation which allows optimal discrimination of time segments (windows). Surprisingly, we show how TCL can be related to a nonlinear ICA model, when ICA is redefined to include temporal nonstationarities. In particular, we show that TCL combined with linear ICA estimates the nonlinear ICA model up to point-wise transformations of the sources, and this solution is unique --- thus providing the first identifiability result for nonlinear ICA which is rigorous, constructive, as well as very general."
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 225608,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation."
+  },
+  {
+    "paperId": "71b7178df5d2b112d07e45038cb5637208659ff7",
+    "externalIds": {
+      "ArXiv": "1405.0312",
+      "DBLP": "conf/eccv/LinMBHPRDZ14",
+      "MAG": "2952122856",
+      "DOI": "10.1007/978-3-319-10602-1_48",
+      "CorpusId": 14113767
+    },
+    "title": "Microsoft COCO: Common Objects in Context",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 51875,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2F978-3-319-10602-1_48.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1405.0312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "48966748",
+        "name": "James Hays"
+      },
+      {
+        "authorId": "1690922",
+        "name": "P. Perona"
+      },
+      {
+        "authorId": "1770537",
+        "name": "Deva Ramanan"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "1699161",
+        "name": "C. L. Zitnick"
+      }
+    ],
+    "abstract": "We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model."
+  },
+  {
+    "paperId": "87f4535d9887f572953e59c95c203de2e4c3a186",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1304-6133",
+      "MAG": "1590505944",
+      "ArXiv": "1304.6133",
+      "CorpusId": 14080178
+    },
+    "title": "On Maximal Correlation, Hypercontractivity, and the Data Processing Inequality studied by Erkip and Cover",
+    "venue": "arXiv.org",
+    "year": 2013,
+    "citationCount": 155,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1304.6133, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145785241",
+        "name": "V. Anantharam"
+      },
+      {
+        "authorId": "6475907",
+        "name": "A. Gohari"
+      },
+      {
+        "authorId": "145014349",
+        "name": "Sudeep Kamath"
+      },
+      {
+        "authorId": "145040228",
+        "name": "Chandra Nair"
+      }
+    ],
+    "abstract": "In this paper we provide a new geometric characterization of the Hirschfeld-Gebelein-R\\'{e}nyi maximal correlation of a pair of random $(X,Y)$, as well as of the chordal slope of the nontrivial boundary of the hypercontractivity ribbon of $(X,Y)$ at infinity. The new characterizations lead to simple proofs for some of the known facts about these quantities. We also provide a counterexample to a data processing inequality claimed by Erkip and Cover, and find the correct tight constant for this kind of inequality."
+  },
+  {
+    "paperId": "99d7c4838c7266f0cf40efefb5234eb9a2d95683",
+    "externalIds": {
+      "MAG": "167165788",
+      "DOI": "10.1007/978-3-642-25983-8",
+      "CorpusId": 118983975
+    },
+    "title": "Spherical Harmonics and Approximations on the Unit Sphere: An Introduction",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 497,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-25983-8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-25983-8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40628946",
+        "name": "K. Atkinson"
+      },
+      {
+        "authorId": "3322423",
+        "name": "W. Han"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "474885b0ea7a9d501b876b1982d6bd34c12c2599",
+    "externalIds": {
+      "MAG": "1574941790",
+      "DOI": "10.1002/0471667196.ESS7149",
+      "CorpusId": 118017260
+    },
+    "title": "Directional Statistics, I",
+    "venue": "",
+    "year": 2011,
+    "citationCount": 2279,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1002/0471667196.ESS7149?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1002/0471667196.ESS7149, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1877358",
+        "name": "S. Jammalamadaka"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DengDSLL009",
+      "MAG": "2108598243",
+      "DOI": "10.1109/CVPR.2009.5206848",
+      "CorpusId": 57246310
+    },
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2009,
+    "citationCount": 72311,
+    "openAccessPdf": {
+      "url": "http://www.image-net.org/papers/imagenet_cvpr09.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2009.5206848?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2009.5206848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144847596",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "94451829",
+        "name": "K. Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "a962569b7decff456f08f2d1e7c7af408a629409",
+    "externalIds": {
+      "MAG": "1975736346",
+      "DOI": "10.1002/9781118165904",
+      "CorpusId": 119566970
+    },
+    "title": "A weak convergence approach to the theory of large deviations",
+    "venue": "",
+    "year": 1997,
+    "citationCount": 1257,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1002/9781118165904?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1002/9781118165904, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143738632",
+        "name": "J. Lynch"
+      },
+      {
+        "authorId": "1794620",
+        "name": "P. Dupuis"
+      },
+      {
+        "authorId": "2177774575",
+        "name": "R. Ellis"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "45ee7447b9dd406496c4a5d9d8fb6556366a01c6",
+    "externalIds": {
+      "MAG": "1509689762",
+      "DOI": "10.1007/978-1-4757-2545-2",
+      "CorpusId": 117819015
+    },
+    "title": "Weak Convergence and Empirical Processes: With Applications to Statistics",
+    "venue": "",
+    "year": 1996,
+    "citationCount": 6507,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-1-4757-2545-2?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-1-4757-2545-2, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2856876",
+        "name": "T. Mikosch"
+      },
+      {
+        "authorId": "100654936",
+        "name": "A. Vaart"
+      },
+      {
+        "authorId": "144952368",
+        "name": "J. Wellner"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "76b0a46ee00bc34fcc8ebd4b22e1fe672cdd652c",
+    "externalIds": {
+      "MAG": "1968104963",
+      "DOI": "10.1214/AOS/1176346703",
+      "CorpusId": 85511682
+    },
+    "title": "Asymptotics of Graphical Projection Pursuit",
+    "venue": "",
+    "year": 1984,
+    "citationCount": 630,
+    "openAccessPdf": {
+      "url": "https://projecteuclid.org/journals/annals-of-statistics/volume-12/issue-3/Asymptotics-of-Graphical-Projection-Pursuit/10.1214/aos/1176346703.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1214/AOS/1176346703?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1214/AOS/1176346703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2796350",
+        "name": "P. Diaconis"
+      },
+      {
+        "authorId": "32854168",
+        "name": "D. Freedman"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "73f1dfdb4a3156835454ba434b4e9b1c77e49c75",
+    "externalIds": {
+      "MAG": "2091406001",
+      "DOI": "10.1093/BIOMET/60.3.613",
+      "CorpusId": 123524671
+    },
+    "title": "Tests for departure from normality. Empirical results for the distributions of b2 and √b1",
+    "venue": "",
+    "year": 1973,
+    "citationCount": 813,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1093/BIOMET/60.3.613?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1093/BIOMET/60.3.613, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "80899776",
+        "name": "R. D'Agostino"
+      },
+      {
+        "authorId": "28582490",
+        "name": "E. S. Pearson"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "6b6cc549ef1f0c2dc92b1560c5a410f1d2df9d38",
+    "externalIds": {
+      "MAG": "2000305036",
+      "DOI": "10.1080/01621459.1954.10501232",
+      "CorpusId": 120763325
+    },
+    "title": "A Test of Goodness of Fit",
+    "venue": "",
+    "year": 1954,
+    "citationCount": 2521,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1080/01621459.1954.10501232?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/01621459.1954.10501232, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152426762",
+        "name": "T. Anderson"
+      },
+      {
+        "authorId": "47715395",
+        "name": "D. Darling"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "e2dbbb0dee0fe2cf2030a0f2292bf4cf2c81a6dc",
+    "externalIds": {
+      "MAG": "2107327484",
+      "DOI": "10.1017/S0305004100013517",
+      "CorpusId": 123648642
+    },
+    "title": "A Connection between Correlation and Contingency",
+    "venue": "Mathematical Proceedings of the Cambridge Philosophical Society",
+    "year": 1935,
+    "citationCount": 603,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1017/S0305004100013517?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1017/S0305004100013517, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50476726",
+        "name": "H. Hirschfeld"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "f8905f6ad4d1351128aba606a0994242d8f08a94",
+    "externalIds": {
+      "DOI": "10.1080/14786446008642902",
+      "CorpusId": 262724397
+    },
+    "title": "Illustrations of the Dynamical Theory of Gases",
+    "venue": "",
+    "year": 1860,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1080/14786446008642902?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/14786446008642902, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2264102370",
+        "name": "J. Maxwell"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "6eb79424b000e7cd0d47d480f2d7bace0e9720c4",
+    "externalIds": {
+      "DBLP": "reference/stat/Modarres11a",
+      "MAG": "89238720",
+      "DOI": "10.1007/978-3-642-04898-2_359",
+      "CorpusId": 28185082
+    },
+    "title": "Measures of Dependence",
+    "venue": "International Encyclopedia of Statistical Science",
+    "year": 2011,
+    "citationCount": 461,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-04898-2_359?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-04898-2_359, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2344500",
+        "name": "R. Modarres"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5d90f06bb70a0a3dced62413346235c02b1aa086",
+    "externalIds": {
+      "MAG": "2945315962",
+      "CorpusId": 18268744
+    },
+    "title": "Learning Multiple Layers of Features from Tiny Images",
+    "venue": "",
+    "year": 2009,
+    "citationCount": 41535,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "cd8bb70897e7ac6f8470e48695e4ee97f91793c1",
+    "externalIds": {
+      "CorpusId": 55575297
+    },
+    "title": "A dozen de Finetti-style results in search of a theory",
+    "venue": "",
+    "year": 2005,
+    "citationCount": 302,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2796350",
+        "name": "P. Diaconis"
+      },
+      {
+        "authorId": "32854168",
+        "name": "D. Freedman"
+      },
+      {
+        "authorId": "2397271130",
+        "name": "A. D. D. Finetti-style"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "004fb2deb756ffa5cda8f53d8c38c0f52f3ad5d5",
+    "externalIds": {
+      "MAG": "1995228946",
+      "DOI": "10.1002/ZAMM.19410210604",
+      "CorpusId": 119970955
+    },
+    "title": "Das statistische Problem der Korrelation als Variations‐ und Eigenwertproblem und sein Zusammenhang mit der Ausgleichsrechnung",
+    "venue": "",
+    "year": 1941,
+    "citationCount": 363,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1002/ZAMM.19410210604?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1002/ZAMM.19410210604, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "17124670",
+        "name": "H. Gebelein"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "a3d296ca90276d433d4e5f6a023621a74600ed67",
+    "externalIds": {
+      "CorpusId": 15596294
+    },
+    "title": "On the Maximum Correlation Coefficient *",
+    "venue": "",
+    "year": null,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2259247007",
+        "name": "W. Bryc"
+      },
+      {
+        "authorId": "2259248221",
+        "name": "A. Dembo"
+      },
+      {
+        "authorId": "2375457927",
+        "name": "A. Kagan"
+      }
+    ],
+    "abstract": null
+  }
+]

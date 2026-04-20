@@ -1,0 +1,49 @@
+{
+  "paperId": "d9835fac3dfd3a22083b5a016a689dada8a5af4e",
+  "externalIds": {
+    "ArXiv": "2603.06704",
+    "CorpusId": 286372016
+  },
+  "title": "On the Generalization Capacities of MLLMs for Spatial Intelligence",
+  "venue": "",
+  "year": 2026,
+  "referenceCount": 51,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.06704, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2372725300",
+      "name": "Gongjie Zhang"
+    },
+    {
+      "authorId": "2350520914",
+      "name": "Wenhao Li"
+    },
+    {
+      "authorId": "2372232181",
+      "name": "Quanhao Qian"
+    },
+    {
+      "authorId": "2372246114",
+      "name": "Jiuniu Wang"
+    },
+    {
+      "authorId": "2373574966",
+      "name": "Deli Zhao"
+    },
+    {
+      "authorId": "2237947102",
+      "name": "Shijian Lu"
+    },
+    {
+      "authorId": "2376110719",
+      "name": "Ran Xu"
+    }
+  ],
+  "abstract": "Multimodal Large Language Models (MLLMs) that directly process RGB inputs for tasks like 3D localization and navigation have shown remarkable potential. However, we argue that these RGB-only approaches are fundamentally flawed in their ability to generalize across cameras. By ignoring camera parameters, they entangle an object's physical properties with the camera's perspective, creating an irresolvable ambiguity. We show this leads MLLMs to overfit to the training camera distribution, rather than learning true and generalizable 3D geometric principles. To address this, we propose Camera-Aware MLLM framework for spatial MLLMs. It learns generalizable spatial reasoning by: (i) injecting camera intrinsics via a dense embedding that conditions each visual token; (ii) introducing a camera-aware data augmentation strategy that synthetically varies camera parameters, forcing the model to disentangle camera properties from scene content; and (iii) distilling geometric priors from a 3D vision foundation model. Extensive experiments demonstrate that camera-aware MLLMs substantially outperform their naive counterparts, particularly in cross-camera generalization tests on spatially-grounded tasks, indicating that camera-awareness is not only beneficial but also a prerequisite for robust and generalizable spatial intelligence in MLLMs."
+}

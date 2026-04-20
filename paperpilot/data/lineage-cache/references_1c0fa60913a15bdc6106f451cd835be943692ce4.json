@@ -1,0 +1,2282 @@
+[
+  {
+    "paperId": "a1467bd0b11e96f1aac74a91d4842433fd2a9541",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-22323",
+      "ArXiv": "2505.22323",
+      "DOI": "10.48550/arXiv.2505.22323",
+      "CorpusId": 278959367
+    },
+    "title": "Advancing Expert Specialization for Better MoE",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 22,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.22323, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355274982",
+        "name": "Hongcan Guo"
+      },
+      {
+        "authorId": "2308303348",
+        "name": "Haolang Lu"
+      },
+      {
+        "authorId": "2308273962",
+        "name": "Guoshun Nan"
+      },
+      {
+        "authorId": "2363875114",
+        "name": "Bolun Chu"
+      },
+      {
+        "authorId": "2363877105",
+        "name": "Jialin Zhuang"
+      },
+      {
+        "authorId": "2363828380",
+        "name": "Yuan Yang"
+      },
+      {
+        "authorId": "2363877449",
+        "name": "Wenhao Che"
+      },
+      {
+        "authorId": "2113966687",
+        "name": "Sicong Leng"
+      },
+      {
+        "authorId": "2293485367",
+        "name": "Qimei Cui"
+      },
+      {
+        "authorId": "2276487516",
+        "name": "Xudong Jiang"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models enable efficient scaling of large language models (LLMs) by activating only a subset of experts per input. However, we observe that the commonly used auxiliary load balancing loss often leads to expert overlap and overly uniform routing, which hinders expert specialization and degrades overall performance during post-training. To address this, we propose a simple yet effective solution that introduces two complementary objectives: (1) an orthogonality loss to encourage experts to process distinct types of tokens, and (2) a variance loss to encourage more discriminative routing decisions. Gradient-level analysis demonstrates that these objectives are compatible with the existing auxiliary loss and contribute to optimizing the training process. Experimental results over various model architectures and across multiple benchmarks show that our method significantly enhances expert specialization. Notably, our method improves classic MoE baselines with auxiliary loss by up to 23.79%, while also maintaining load balancing in downstream tasks, without any architectural modifications or additional components. We will release our code to contribute to the community."
+  },
+  {
+    "paperId": "982b06fcaa812a121e6df48a8345be1d2f763d19",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-07639",
+      "ArXiv": "2503.07639",
+      "DOI": "10.48550/arXiv.2503.07639",
+      "CorpusId": 276928904
+    },
+    "title": "Mixture of Experts Made Intrinsically Interpretable",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.07639, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2423981059",
+        "name": "Xingyi Yang"
+      },
+      {
+        "authorId": "2325150356",
+        "name": "Constantin Venhoff"
+      },
+      {
+        "authorId": "2285214499",
+        "name": "Ashkan Khakzar"
+      },
+      {
+        "authorId": "2288102632",
+        "name": "Christian Schröder de Witt"
+      },
+      {
+        "authorId": "144679302",
+        "name": "P. Dokania"
+      },
+      {
+        "authorId": "2335448801",
+        "name": "A. Bibi"
+      },
+      {
+        "authorId": "2282534002",
+        "name": "Philip H. S. Torr"
+      }
+    ],
+    "abstract": "Neurons in large language models often exhibit \\emph{polysemanticity}, simultaneously encoding multiple unrelated concepts and obscuring interpretability. Instead of relying on post-hoc methods, we present \\textbf{MoE-X}, a Mixture-of-Experts (MoE) language model designed to be \\emph{intrinsically} interpretable. Our approach is motivated by the observation that, in language models, wider networks with sparse activations are more likely to capture interpretable factors. However, directly training such large sparse networks is computationally prohibitive. MoE architectures offer a scalable alternative by activating only a subset of experts for any given input, inherently aligning with interpretability objectives. In MoE-X, we establish this connection by rewriting the MoE layer as an equivalent sparse, large MLP. This approach enables efficient scaling of the hidden size while maintaining sparsity. To further enhance interpretability, we enforce sparse activation within each expert and redesign the routing mechanism to prioritize experts with the highest activation sparsity. These designs ensure that only the most salient features are routed and processed by the experts. We evaluate MoE-X on chess and natural language tasks, showing that it achieves performance comparable to dense models while significantly improving interpretability. MoE-X achieves a perplexity better than GPT-2, with interpretability surpassing even sparse autoencoder (SAE)-based approaches."
+  },
+  {
+    "paperId": "ad911fa763c3e19b947c4144eee3dc4010ee4380",
+    "externalIds": {
+      "ArXiv": "2501.13074",
+      "DBLP": "journals/corr/abs-2501-13074",
+      "DOI": "10.48550/arXiv.2501.13074",
+      "CorpusId": 275789951
+    },
+    "title": "Autonomy-of-Experts Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.13074, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "66261602",
+        "name": "Ang Lv"
+      },
+      {
+        "authorId": "2227552556",
+        "name": "Ruobing Xie"
+      },
+      {
+        "authorId": "2323591981",
+        "name": "Yining Qian"
+      },
+      {
+        "authorId": "2300519532",
+        "name": "Songhao Wu"
+      },
+      {
+        "authorId": "2277239672",
+        "name": "Xingwu Sun"
+      },
+      {
+        "authorId": "2261082002",
+        "name": "Zhanhui Kang"
+      },
+      {
+        "authorId": "2277518788",
+        "name": "Di Wang"
+      },
+      {
+        "authorId": "2323508522",
+        "name": "Rui Yan"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models mostly use a router to assign tokens to specific expert modules, activating only partial parameters and often outperforming dense models. We argue that the separation between the router's decision-making and the experts' execution is a critical yet overlooked issue, leading to suboptimal expert selection and ineffective learning. To address this, we propose Autonomy-of-Experts (AoE), a novel MoE paradigm in which experts autonomously select themselves to process inputs. AoE is based on the insight that an expert is aware of its own capacity to effectively process a token, an awareness reflected in the scale of its internal activations. In AoE, routers are removed; instead, experts pre-compute internal activations for inputs and are ranked based on their activation norms. Only the top-ranking experts proceed with the forward pass, while the others abort. The overhead of pre-computing activations is reduced through a low-rank weight factorization. This self-evaluating-then-partner-comparing approach ensures improved expert selection and effective learning. We pre-train language models having 700M up to 4B parameters, demonstrating that AoE outperforms traditional MoE models with comparable efficiency."
+  },
+  {
+    "paperId": "cf7f15e93bc4151f39a01b95f58d03179ab10696",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-11873",
+      "ArXiv": "2501.11873",
+      "DOI": "10.48550/arXiv.2501.11873",
+      "CorpusId": 275787957
+    },
+    "title": "Demons in the Detail: On Implementing Load Balancing Loss for Training Specialized Mixture-of-Expert Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.11873, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2337236034",
+        "name": "Zihan Qiu"
+      },
+      {
+        "authorId": "2259588806",
+        "name": "Zeyu Huang"
+      },
+      {
+        "authorId": "2312091718",
+        "name": "Bo Zheng"
+      },
+      {
+        "authorId": "2341530596",
+        "name": "Kaiyue Wen"
+      },
+      {
+        "authorId": "2108727290",
+        "name": "Zekun Wang"
+      },
+      {
+        "authorId": "47447639",
+        "name": "Rui Men"
+      },
+      {
+        "authorId": "2315980300",
+        "name": "Ivan Titov"
+      },
+      {
+        "authorId": "2248487202",
+        "name": "Dayiheng Liu"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "2326803484",
+        "name": "Junyang Lin"
+      }
+    ],
+    "abstract": "This paper revisits the implementation of $\\textbf{L}$oad-$\\textbf{b}$alancing $\\textbf{L}$oss (LBL) when training Mixture-of-Experts (MoEs) models. Specifically, LBL for MoEs is defined as $N_E \\sum_{i=1}^{N_E} f_i p_i$, where $N_E$ is the total number of experts, $f_i$ represents the frequency of expert $i$ being selected, and $p_i$ denotes the average gating score of the expert $i$. Existing MoE training frameworks usually employ the parallel training strategy so that $f_i$ and the LBL are calculated within a $\\textbf{micro-batch}$ and then averaged across parallel groups. In essence, a micro-batch for training billion-scale LLMs normally contains very few sequences. So, the micro-batch LBL is almost at the sequence level, and the router is pushed to distribute the token evenly within each sequence. Under this strict constraint, even tokens from a domain-specific sequence ($\\textit{e.g.}$, code) are uniformly routed to all experts, thereby inhibiting expert specialization. In this work, we propose calculating LBL using a $\\textbf{global-batch}$ to loose this constraint. Because a global-batch contains much more diverse sequences than a micro-batch, which will encourage load balance at the corpus level. Specifically, we introduce an extra communication step to synchronize $f_i$ across micro-batches and then use it to calculate the LBL. Through experiments on training MoEs-based LLMs (up to $\\textbf{42.8B}$ total parameters and $\\textbf{400B}$ tokens), we surprisingly find that the global-batch LBL strategy yields excellent performance gains in both pre-training perplexity and downstream tasks. Our analysis reveals that the global-batch LBL also greatly improves the domain specialization of MoE experts."
+  },
+  {
+    "paperId": "88aa6b1f37d1fd8e0a40499ce9bb87873f03aaa8",
+    "externalIds": {
+      "ArXiv": "2412.15115",
+      "DBLP": "journals/corr/abs-2412-15115",
+      "DOI": "10.48550/arXiv.2412.15115",
+      "CorpusId": 274859421
+    },
+    "title": "Qwen2.5 Technical Report",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 3616,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.15115, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2336242315",
+        "name": "Qwen An Yang"
+      },
+      {
+        "authorId": "2257101724",
+        "name": "Baosong Yang"
+      },
+      {
+        "authorId": "2321681508",
+        "name": "Beichen Zhang"
+      },
+      {
+        "authorId": "2321578848",
+        "name": "Binyuan Hui"
+      },
+      {
+        "authorId": "2312091718",
+        "name": "Bo Zheng"
+      },
+      {
+        "authorId": "2325918197",
+        "name": "Bowen Yu"
+      },
+      {
+        "authorId": "2311714296",
+        "name": "Chengyuan Li"
+      },
+      {
+        "authorId": "2248487202",
+        "name": "Dayiheng Liu"
+      },
+      {
+        "authorId": "152159016",
+        "name": "Fei Huang"
+      },
+      {
+        "authorId": "51490462",
+        "name": "Guanting Dong"
+      },
+      {
+        "authorId": "2312183452",
+        "name": "Haoran Wei"
+      },
+      {
+        "authorId": "2314068968",
+        "name": "Huan Lin"
+      },
+      {
+        "authorId": "2243424858",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "2321581897",
+        "name": "Jianhong Tu"
+      },
+      {
+        "authorId": "2323510768",
+        "name": "Jianwei Zhang"
+      },
+      {
+        "authorId": "2336243053",
+        "name": "Jianxin Yang"
+      },
+      {
+        "authorId": "2328943044",
+        "name": "Jiaxin Yang"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "2326803484",
+        "name": "Junyang Lin"
+      },
+      {
+        "authorId": "2247877609",
+        "name": "K. Dang"
+      },
+      {
+        "authorId": "2257001403",
+        "name": "Keming Lu"
+      },
+      {
+        "authorId": "2387215667",
+        "name": "Keqin Bao"
+      },
+      {
+        "authorId": "2303430522",
+        "name": "Kexin Yang"
+      },
+      {
+        "authorId": "2265527327",
+        "name": "Le Yu"
+      },
+      {
+        "authorId": "2223106060",
+        "name": "Mei Li"
+      },
+      {
+        "authorId": "2065790119",
+        "name": "Mingfeng Xue"
+      },
+      {
+        "authorId": "2288896179",
+        "name": "Pei Zhang"
+      },
+      {
+        "authorId": "2152206465",
+        "name": "Qin Zhu"
+      },
+      {
+        "authorId": "47447639",
+        "name": "Rui Men"
+      },
+      {
+        "authorId": "2248039532",
+        "name": "Runji Lin"
+      },
+      {
+        "authorId": "2309297259",
+        "name": "Tianhao Li"
+      },
+      {
+        "authorId": "2307468401",
+        "name": "Tingyu Xia"
+      },
+      {
+        "authorId": "2274095735",
+        "name": "Xingzhang Ren"
+      },
+      {
+        "authorId": "2312110505",
+        "name": "Xuancheng Ren"
+      },
+      {
+        "authorId": "2234000716",
+        "name": "Yang Fan"
+      },
+      {
+        "authorId": "2118000701",
+        "name": "Yang Su"
+      },
+      {
+        "authorId": "2163069125",
+        "name": "Yi-Chao Zhang"
+      },
+      {
+        "authorId": "2244411465",
+        "name": "Yunyang Wan"
+      },
+      {
+        "authorId": "2238712089",
+        "name": "Yuqi Liu"
+      },
+      {
+        "authorId": "2248072386",
+        "name": "Zeyu Cui"
+      },
+      {
+        "authorId": "2321656193",
+        "name": "Zhenru Zhang"
+      },
+      {
+        "authorId": "2337236034",
+        "name": "Zihan Qiu"
+      },
+      {
+        "authorId": "2325151882",
+        "name": "Shanghaoran Quan"
+      },
+      {
+        "authorId": "2108727290",
+        "name": "Zekun Wang"
+      }
+    ],
+    "abstract": "In this report, we introduce Qwen2.5, a comprehensive series of large language models (LLMs) designed to meet diverse needs. Compared to previous iterations, Qwen 2.5 has been significantly improved during both the pre-training and post-training stages. In terms of pre-training, we have scaled the high-quality pre-training datasets from the previous 7 trillion tokens to 18 trillion tokens. This provides a strong foundation for common sense, expert knowledge, and reasoning capabilities. In terms of post-training, we implement intricate supervised finetuning with over 1 million samples, as well as multistage reinforcement learning. Post-training techniques enhance human preference, and notably improve long text generation, structural data analysis, and instruction following. To handle diverse and varied use cases effectively, we present Qwen2.5 LLM series in rich sizes. Open-weight offerings include base and instruction-tuned models, with quantized versions available. In addition, for hosted solutions, the proprietary models currently include two mixture-of-experts (MoE) variants: Qwen2.5-Turbo and Qwen2.5-Plus, both available from Alibaba Cloud Model Studio. Qwen2.5 has demonstrated top-tier performance on a wide range of benchmarks evaluating language understanding, reasoning, mathematics, coding, human preference alignment, etc. Specifically, the open-weight flagship Qwen2.5-72B-Instruct outperforms a number of open and proprietary models and demonstrates competitive performance to the state-of-the-art open-weight model, Llama-3-405B-Instruct, which is around 5 times larger. Qwen2.5-Turbo and Qwen2.5-Plus offer superior cost-effectiveness while performing competitively against GPT-4o-mini and GPT-4o respectively. Additionally, as the foundation, Qwen2.5 models have been instrumental in training specialized models such as Qwen2.5-Math, Qwen2.5-Coder, QwQ, and multimodal models."
+  },
+  {
+    "paperId": "7016fe2456a23b0e2d013fcf0e0666a63ff22808",
+    "externalIds": {
+      "ArXiv": "2412.04139",
+      "DBLP": "conf/iclr/ParkJKK25",
+      "DOI": "10.48550/arXiv.2412.04139",
+      "CorpusId": 274515118
+    },
+    "title": "Monet: Mixture of Monosemantic Experts for Transformers",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.04139, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326546675",
+        "name": "Jungwoo Park"
+      },
+      {
+        "authorId": "2307082134",
+        "name": "Y. Ahn"
+      },
+      {
+        "authorId": "2307220781",
+        "name": "Kee-Eung Kim"
+      },
+      {
+        "authorId": "2281792202",
+        "name": "Jaewoo Kang"
+      }
+    ],
+    "abstract": "Understanding the internal computations of large language models (LLMs) is crucial for aligning them with human values and preventing undesirable behaviors like toxic content generation. However, mechanistic interpretability is hindered by polysemanticity -- where individual neurons respond to multiple, unrelated concepts. While Sparse Autoencoders (SAEs) have attempted to disentangle these features through sparse dictionary learning, they have compromised LLM performance due to reliance on post-hoc reconstruction loss. To address this issue, we introduce Mixture of Monosemantic Experts for Transformers (Monet) architecture, which incorporates sparse dictionary learning directly into end-to-end Mixture-of-Experts pretraining. Our novel expert decomposition method enables scaling the expert count to 262,144 per layer while total parameters scale proportionally to the square root of the number of experts. Our analyses demonstrate mutual exclusivity of knowledge across experts and showcase the parametric knowledge encapsulated within individual experts. Moreover, Monet allows knowledge manipulation over domains, languages, and toxicity mitigation without degrading general performance. Our pursuit of transparent LLMs highlights the potential of scaling expert counts to enhance mechanistic interpretability and directly resect the internal knowledge to fundamentally adjust model behavior. The source code and pretrained checkpoints are available at https://github.com/dmis-lab/Monet."
+  },
+  {
+    "paperId": "3574c479f248b83a01035c5fafb01793013cc467",
+    "externalIds": {
+      "ArXiv": "2408.15664",
+      "DBLP": "journals/corr/abs-2408-15664",
+      "DOI": "10.48550/arXiv.2408.15664",
+      "CorpusId": 271974266
+    },
+    "title": "Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 137,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.15664, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2189508204",
+        "name": "Lean Wang"
+      },
+      {
+        "authorId": "2278395340",
+        "name": "Huazuo Gao"
+      },
+      {
+        "authorId": "2278389597",
+        "name": "Chenggang Zhao"
+      },
+      {
+        "authorId": "2264243000",
+        "name": "Xu Sun"
+      },
+      {
+        "authorId": "2307085654",
+        "name": "Damai Dai"
+      }
+    ],
+    "abstract": "For Mixture-of-Experts (MoE) models, an unbalanced expert load will lead to routing collapse or increased computational overhead. Existing methods commonly employ an auxiliary loss to encourage load balance, but a large auxiliary loss will introduce non-negligible interference gradients into training and thus impair the model performance. In order to control load balance while not producing undesired gradients during training, we propose Loss-Free Balancing, featured by an auxiliary-loss-free load balancing strategy. To be specific, before the top-K routing decision, Loss-Free Balancing will first apply an expert-wise bias to the routing scores of each expert. By dynamically updating the bias of each expert according to its recent load, Loss-Free Balancing can consistently maintain a balanced distribution of expert load. In addition, since Loss-Free Balancing does not produce any interference gradients, it also elevates the upper bound of model performance gained from MoE training. We validate the performance of Loss-Free Balancing on MoE models with up to 3B parameters trained on up to 200B tokens. Experimental results show that Loss-Free Balancing achieves both better performance and better load balance compared with traditional auxiliary-loss-controlled load balancing strategies."
+  },
+  {
+    "paperId": "b441b775766896878de91cd10fac59286cf093d2",
+    "externalIds": {
+      "ArXiv": "2407.06677",
+      "ACL": "2024.emnlp-main.1164",
+      "DBLP": "journals/corr/abs-2407-06677",
+      "DOI": "10.48550/arXiv.2407.06677",
+      "CorpusId": 271064350
+    },
+    "title": "Mixture-of-Modules: Reinventing Transformers as Dynamic Assemblies of Modules",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.06677, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2165228008",
+        "name": "Zhuocheng Gong"
+      },
+      {
+        "authorId": "66261602",
+        "name": "Ang Lv"
+      },
+      {
+        "authorId": "2323534462",
+        "name": "Jian Guan"
+      },
+      {
+        "authorId": "2310498123",
+        "name": "Junxi Yan"
+      },
+      {
+        "authorId": "2282529632",
+        "name": "Wei Wu"
+      },
+      {
+        "authorId": "2302812779",
+        "name": "Huishuai Zhang"
+      },
+      {
+        "authorId": "2261448024",
+        "name": "Minlie Huang"
+      },
+      {
+        "authorId": "2302798554",
+        "name": "Dongyan Zhao"
+      },
+      {
+        "authorId": "2309006951",
+        "name": "Rui Yan"
+      }
+    ],
+    "abstract": "Is it always necessary to compute tokens from shallow to deep layers in Transformers? The continued success of vanilla Transformers and their variants suggests an undoubted “yes”. In this work, however, we attempt to break the depth-ordered convention by proposing a novel architecture dubbed mixture-of-modules (MoM), which is motivated by an intuition that any layer, regardless of its position, can be used to compute a token as long as it possesses the needed processing capabilities. The construction of MoM starts from a finite set of modules defined by multi-head attention and feed-forward networks, each distinguished by its unique parameterization. Two routers then iteratively select attention modules and feed-forward modules from the set to process a token. The selection dynamically expands the computation graph in the forward pass of the token, culminating in an assembly of modules. We show that MoM provides not only a unified framework for Transformers and their numerous variants but also a flexible and learnable approach for reducing redundancy in Transformer parameterization. We pre-train various MoMs using OpenWebText. Empirical results demonstrate that MoMs, of different sizes, consistently outperform vanilla transformers. More interestingly, after removing 50% of the multi-head attention modules and 25% of the feed-forward modules, an MoM model still holds comparable performance. Additionally, by properly adjusting the number of modules and compressing the model depth, one can have an MoM that achieves comparable performance to GPT-2 (774M) while saving 16% TFLOPs and 42% memory usage during forward computation."
+  },
+  {
+    "paperId": "003d92b4f111ac16f9c5d5aaa2be3e67543a968d",
+    "externalIds": {
+      "ArXiv": "2406.19598",
+      "DBLP": "journals/corr/abs-2406-19598",
+      "DOI": "10.48550/arXiv.2406.19598",
+      "CorpusId": 270845965
+    },
+    "title": "Mixture of In-Context Experts Enhance LLMs' Long Context Awareness",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.19598, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276490643",
+        "name": "Hongzhan Lin"
+      },
+      {
+        "authorId": "66261602",
+        "name": "Ang Lv"
+      },
+      {
+        "authorId": "2266420263",
+        "name": "Yuhan Chen"
+      },
+      {
+        "authorId": "2303683715",
+        "name": "Chen Zhu"
+      },
+      {
+        "authorId": "2303478148",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2283086825",
+        "name": "Hengshu Zhu"
+      },
+      {
+        "authorId": "2279338390",
+        "name": "Rui Yan"
+      }
+    ],
+    "abstract": "Many studies have revealed that large language models (LLMs) exhibit uneven awareness of different contextual positions. Their limited context awareness can lead to overlooking critical information and subsequent task failures. While several approaches have been proposed to enhance LLMs' context awareness, achieving both effectiveness and efficiency remains challenging. In this paper, for LLMs utilizing RoPE as position embeddings, we introduce a novel method called\"Mixture of In-Context Experts\"(MoICE) to address this challenge. MoICE comprises two key components: a router integrated into each attention head within LLMs and a lightweight router-only training optimization strategy: (1) MoICE views each RoPE angle as an `in-context' expert, demonstrated to be capable of directing the attention of a head to specific contextual positions. Consequently, each attention head flexibly processes tokens using multiple RoPE angles dynamically selected by the router to attend to the needed positions. This approach mitigates the risk of overlooking essential contextual information. (2) The router-only training strategy entails freezing LLM parameters and exclusively updating routers for only a few steps. When applied to open-source LLMs including Llama and Mistral, MoICE surpasses prior methods across multiple tasks on long context understanding and generation, all while maintaining commendable inference efficiency."
+  },
+  {
+    "paperId": "1406bb4cb6801bc4767b661308118c888a9b09da",
+    "externalIds": {
+      "ArXiv": "2406.01574",
+      "DBLP": "conf/nips/WangMZNCGRAHJLK24",
+      "DOI": "10.48550/arXiv.2406.01574",
+      "CorpusId": 270210486
+    },
+    "title": "MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 1443,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.01574, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238120100",
+        "name": "Yubo Wang"
+      },
+      {
+        "authorId": "2461713",
+        "name": "Xueguang Ma"
+      },
+      {
+        "authorId": "2143853895",
+        "name": "Ge Zhang"
+      },
+      {
+        "authorId": "2268493966",
+        "name": "Yuansheng Ni"
+      },
+      {
+        "authorId": "2304449194",
+        "name": "Abhranil Chandra"
+      },
+      {
+        "authorId": "2304752176",
+        "name": "Shiguang Guo"
+      },
+      {
+        "authorId": "2268493042",
+        "name": "Weiming Ren"
+      },
+      {
+        "authorId": "2304445005",
+        "name": "Aaran Arulraj"
+      },
+      {
+        "authorId": "2299486403",
+        "name": "Xuan He"
+      },
+      {
+        "authorId": "2112347577",
+        "name": "Ziyan Jiang"
+      },
+      {
+        "authorId": "2304932037",
+        "name": "Tianle Li"
+      },
+      {
+        "authorId": "2218153604",
+        "name": "Max W.F. Ku"
+      },
+      {
+        "authorId": "2304713202",
+        "name": "Kai Wang"
+      },
+      {
+        "authorId": "2304444725",
+        "name": "Alex Zhuang"
+      },
+      {
+        "authorId": "2304426528",
+        "name": "Rongqi \"Richard\" Fan"
+      },
+      {
+        "authorId": "2284988933",
+        "name": "Xiang Yue"
+      },
+      {
+        "authorId": "2253811180",
+        "name": "Wenhu Chen"
+      }
+    ],
+    "abstract": "In the age of large-scale language models, benchmarks like the Massive Multitask Language Understanding (MMLU) have been pivotal in pushing the boundaries of what AI can achieve in language comprehension and reasoning across diverse domains. However, as models continue to improve, their performance on these benchmarks has begun to plateau, making it increasingly difficult to discern differences in model capabilities. This paper introduces MMLU-Pro, an enhanced dataset designed to extend the mostly knowledge-driven MMLU benchmark by integrating more challenging, reasoning-focused questions and expanding the choice set from four to ten options. Additionally, MMLU-Pro eliminates the trivial and noisy questions in MMLU. Our experimental results show that MMLU-Pro not only raises the challenge, causing a significant drop in accuracy by 16% to 33% compared to MMLU but also demonstrates greater stability under varying prompts. With 24 different prompt styles tested, the sensitivity of model scores to prompt variations decreased from 4-5% in MMLU to just 2% in MMLU-Pro. Additionally, we found that models utilizing Chain of Thought (CoT) reasoning achieved better performance on MMLU-Pro compared to direct answering, which is in stark contrast to the findings on the original MMLU, indicating that MMLU-Pro includes more complex reasoning questions. Our assessments confirm that MMLU-Pro is a more discriminative benchmark to better track progress in the field."
+  },
+  {
+    "paperId": "af6aa336c25ead669da0df560376a32314e08006",
+    "externalIds": {
+      "ArXiv": "2402.12851",
+      "DBLP": "journals/corr/abs-2402-12851",
+      "DOI": "10.48550/arXiv.2402.12851",
+      "CorpusId": 267759827
+    },
+    "title": "MoELoRA: Contrastive Learning Guided Mixture of Experts on Parameter-Efficient Fine-Tuning for Large Language Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 52,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.12851, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2280137715",
+        "name": "Tongxu Luo"
+      },
+      {
+        "authorId": "2238951064",
+        "name": "Jiahe Lei"
+      },
+      {
+        "authorId": "2257004176",
+        "name": "Fangyu Lei"
+      },
+      {
+        "authorId": "2290973054",
+        "name": "Weihao Liu"
+      },
+      {
+        "authorId": "1954845",
+        "name": "Shizhu He"
+      },
+      {
+        "authorId": "2257315249",
+        "name": "Jun Zhao"
+      },
+      {
+        "authorId": "2283274776",
+        "name": "Kang Liu"
+      }
+    ],
+    "abstract": "Fine-tuning is often necessary to enhance the adaptability of Large Language Models (LLM) to downstream tasks. Nonetheless, the process of updating billions of parameters demands significant computational resources and training time, which poses a substantial obstacle to the widespread application of large-scale models in various scenarios. To address this issue, Parameter-Efficient Fine-Tuning (PEFT) has emerged as a prominent paradigm in recent research. However, current PEFT approaches that employ a limited set of global parameters (such as LoRA, which adds low-rank approximation matrices to all weights) face challenges in flexibly combining different computational modules in downstream tasks. In this work, we introduce a novel PEFT method: MoELoRA. We consider LoRA as Mixture of Experts (MoE), and to mitigate the random routing phenomenon observed in MoE, we propose the utilization of contrastive learning to encourage experts to learn distinct features. We conducted experiments on 11 tasks in math reasoning and common-sense reasoning benchmarks. With the same number of parameters, our approach outperforms LoRA significantly. In math reasoning, MoELoRA achieved an average performance that was 4.2% higher than LoRA, and demonstrated competitive performance compared to the 175B GPT-3.5 on several benchmarks."
+  },
+  {
+    "paperId": "ad1bb59e3e18a0dd8503c3961d6074f162baf710",
+    "externalIds": {
+      "DBLP": "conf/acl/SoldainiKBSAABC24",
+      "ArXiv": "2402.00159",
+      "DOI": "10.48550/arXiv.2402.00159",
+      "CorpusId": 267364861
+    },
+    "title": "Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 447,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.00159, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3328733",
+        "name": "Luca Soldaini"
+      },
+      {
+        "authorId": "2282136328",
+        "name": "Rodney Kinney"
+      },
+      {
+        "authorId": "2166136235",
+        "name": "Akshita Bhagia"
+      },
+      {
+        "authorId": "2264248042",
+        "name": "Dustin Schwenk"
+      },
+      {
+        "authorId": "2282136757",
+        "name": "David Atkinson"
+      },
+      {
+        "authorId": "2202417686",
+        "name": "Russell Authur"
+      },
+      {
+        "authorId": "50757607",
+        "name": "Ben Bogin"
+      },
+      {
+        "authorId": "37619618",
+        "name": "Khyathi Raghavi Chandu"
+      },
+      {
+        "authorId": "2282136556",
+        "name": "Jennifer Dumas"
+      },
+      {
+        "authorId": "51131518",
+        "name": "Yanai Elazar"
+      },
+      {
+        "authorId": "2275055850",
+        "name": "Valentin Hofmann"
+      },
+      {
+        "authorId": "47286118",
+        "name": "A. Jha"
+      },
+      {
+        "authorId": "51467955",
+        "name": "Sachin Kumar"
+      },
+      {
+        "authorId": "2259003726",
+        "name": "L. Lucy"
+      },
+      {
+        "authorId": "2156533327",
+        "name": "Xinxi Lyu"
+      },
+      {
+        "authorId": "2052363815",
+        "name": "Nathan Lambert"
+      },
+      {
+        "authorId": "2124977543",
+        "name": "Ian Magnusson"
+      },
+      {
+        "authorId": "2146964035",
+        "name": "Jacob Daniel Morrison"
+      },
+      {
+        "authorId": "2037383772",
+        "name": "Niklas Muennighoff"
+      },
+      {
+        "authorId": "23175870",
+        "name": "Aakanksha Naik"
+      },
+      {
+        "authorId": "2282136595",
+        "name": "Crystal Nam"
+      },
+      {
+        "authorId": "2267244582",
+        "name": "Matthew E. Peters"
+      },
+      {
+        "authorId": "3023068",
+        "name": "Abhilasha Ravichander"
+      },
+      {
+        "authorId": "46666605",
+        "name": "Kyle Richardson"
+      },
+      {
+        "authorId": "101568984",
+        "name": "Shannon Zejiang Shen"
+      },
+      {
+        "authorId": "2268272",
+        "name": "Emma Strubell"
+      },
+      {
+        "authorId": "34202134",
+        "name": "Nishant Subramani"
+      },
+      {
+        "authorId": "3385516",
+        "name": "Oyvind Tafjord"
+      },
+      {
+        "authorId": "2158819969",
+        "name": "Pete Walsh"
+      },
+      {
+        "authorId": "2137813791",
+        "name": "Luke S. Zettlemoyer"
+      },
+      {
+        "authorId": "2264002618",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "2264251662",
+        "name": "Hanna Hajishirzi"
+      },
+      {
+        "authorId": "2260133345",
+        "name": "Iz Beltagy"
+      },
+      {
+        "authorId": "3458736",
+        "name": "Dirk Groeneveld"
+      },
+      {
+        "authorId": "34176020",
+        "name": "Jesse Dodge"
+      },
+      {
+        "authorId": "46258841",
+        "name": "Kyle Lo"
+      }
+    ],
+    "abstract": "Information about pretraining corpora used to train the current best-performing language models is seldom discussed: commercial models rarely detail their data, and even open models are often released without accompanying training data or recipes to reproduce them. As a result, it is challenging to conduct and advance scientific research on language modeling, such as understanding how training data impacts model capabilities and limitations. To facilitate scientific research on language model pretraining, we curate and release Dolma, a three-trillion-token English corpus, built from a diverse mixture of web content, scientific papers, code, public-domain books, social media, and encyclopedic materials. We extensively document Dolma, including its design principles, details about its construction, and a summary of its contents. We present analyses and experimental results on intermediate states of Dolma to share what we have learned about important data curation practices. Finally, we open-source our data curation toolkit to enable reproduction of our work as well as support further research in large-scale data curation."
+  },
+  {
+    "paperId": "da77f2880f9adf73ce162a7be2b0c520bccec1f0",
+    "externalIds": {
+      "DBLP": "conf/iclr/Hendawy0D24",
+      "ArXiv": "2311.11385",
+      "DOI": "10.48550/arXiv.2311.11385",
+      "CorpusId": 265294615
+    },
+    "title": "Multi-Task Reinforcement Learning with Mixture of Orthogonal Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.11385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2267332948",
+        "name": "Ahmed Hendawy"
+      },
+      {
+        "authorId": "2258414437",
+        "name": "Jan Peters"
+      },
+      {
+        "authorId": "1399348619",
+        "name": "Carlo D'Eramo"
+      }
+    ],
+    "abstract": "Multi-Task Reinforcement Learning (MTRL) tackles the long-standing problem of endowing agents with skills that generalize across a variety of problems. To this end, sharing representations plays a fundamental role in capturing both unique and common characteristics of the tasks. Tasks may exhibit similarities in terms of skills, objects, or physical properties while leveraging their representations eases the achievement of a universal policy. Nevertheless, the pursuit of learning a shared set of diverse representations is still an open challenge. In this paper, we introduce a novel approach for representation learning in MTRL that encapsulates common structures among the tasks using orthogonal representations to promote diversity. Our method, named Mixture Of Orthogonal Experts (MOORE), leverages a Gram-Schmidt process to shape a shared subspace of representations generated by a mixture of experts. When task-specific information is provided, MOORE generates relevant representations from this shared subspace. We assess the effectiveness of our approach on two MTRL benchmarks, namely MiniGrid and MetaWorld, showing that MOORE surpasses related baselines and establishes a new state-of-the-art result on MetaWorld."
+  },
+  {
+    "paperId": "95240dda409e28acccdc5cf619ad0c036cf4292d",
+    "externalIds": {
+      "DBLP": "conf/icml/LiuWDZY0S0TRC23",
+      "ArXiv": "2310.17157",
+      "DOI": "10.48550/arXiv.2310.17157",
+      "CorpusId": 260815690
+    },
+    "title": "Deja Vu: Contextual Sparsity for Efficient LLMs at Inference Time",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.17157, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117941145",
+        "name": "Zichang Liu"
+      },
+      {
+        "authorId": "39597242",
+        "name": "Jue Wang"
+      },
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      },
+      {
+        "authorId": "2190694474",
+        "name": "Tianyi Zhou"
+      },
+      {
+        "authorId": "2833699",
+        "name": "Binhang Yuan"
+      },
+      {
+        "authorId": "2214956470",
+        "name": "Zhao Song"
+      },
+      {
+        "authorId": "4260659",
+        "name": "Anshumali Shrivastava"
+      },
+      {
+        "authorId": "1776014",
+        "name": "Ce Zhang"
+      },
+      {
+        "authorId": "1932187449",
+        "name": "Yuandong Tian"
+      },
+      {
+        "authorId": "1803218",
+        "name": "Christopher Ré"
+      },
+      {
+        "authorId": "4319427",
+        "name": "Beidi Chen"
+      }
+    ],
+    "abstract": "Large language models (LLMs) with hundreds of billions of parameters have sparked a new wave of exciting AI applications. However, they are computationally expensive at inference time. Sparsity is a natural approach to reduce this cost, but existing methods either require costly retraining, have to forgo LLM's in-context learning ability, or do not yield wall-clock time speedup on modern hardware. We hypothesize that contextual sparsity, which are small, input-dependent sets of attention heads and MLP parameters that yield approximately the same output as the dense model for a given input, can address these issues. We show that contextual sparsity exists, that it can be accurately predicted, and that we can exploit it to speed up LLM inference in wall-clock time without compromising LLM's quality or in-context learning ability. Based on these insights, we propose DejaVu, a system that uses a low-cost algorithm to predict contextual sparsity on the fly given inputs to each layer, along with an asynchronous and hardware-aware implementation that speeds up LLM inference. We validate that DejaVu can reduce the inference latency of OPT-175B by over 2X compared to the state-of-the-art FasterTransformer, and over 6X compared to the widely used Hugging Face implementation, without compromising model quality. The code is available at https://github.com/FMInference/DejaVu."
+  },
+  {
+    "paperId": "9d2860bd00652b08f5be1cd77c2934d3be98df21",
+    "externalIds": {
+      "ArXiv": "2310.09762",
+      "DBLP": "journals/corr/abs-2310-09762",
+      "DOI": "10.48550/arXiv.2310.09762",
+      "CorpusId": 264146569
+    },
+    "title": "Diversifying the Mixture-of-Experts Representation for Language Models with Orthogonal Optimizer",
+    "venue": "European Conference on Artificial Intelligence",
+    "year": 2023,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.09762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2185826034",
+        "name": "Boan Liu"
+      },
+      {
+        "authorId": "46573238",
+        "name": "Liang Ding"
+      },
+      {
+        "authorId": "2144035454",
+        "name": "Li Shen"
+      },
+      {
+        "authorId": "2065263152",
+        "name": "Keqin Peng"
+      },
+      {
+        "authorId": "143789117",
+        "name": "Yu Cao"
+      },
+      {
+        "authorId": "2296862172",
+        "name": "Dazhao Cheng"
+      },
+      {
+        "authorId": "2255502438",
+        "name": "D. Tao"
+      }
+    ],
+    "abstract": "The Mixture of Experts (MoE) has emerged as a highly successful technique in deep learning, based on the principle of divide-and-conquer to maximize model capacity without significant additional computational cost. Even in the era of large-scale language models (LLMs), MoE continues to play a crucial role, as some researchers have indicated that GPT-4 adopts the MoE structure to ensure diverse inference results. However, MoE is susceptible to performance degeneracy, particularly evident in the issues of imbalance and homogeneous representation among experts. While previous studies have extensively addressed the problem of imbalance, the challenge of homogeneous representation remains unresolved. In this study, we shed light on the homogeneous representation problem, wherein experts in the MoE fail to specialize and lack diversity, leading to frustratingly high similarities in their representations (up to 99\\% in a well-performed MoE model). This problem restricts the expressive power of the MoE and, we argue, contradicts its original intention. To tackle this issue, we propose a straightforward yet highly effective solution: OMoE, an orthogonal expert optimizer. Additionally, we introduce an alternating training strategy that encourages each expert to update in a direction orthogonal to the subspace spanned by other experts. Our algorithm facilitates MoE training in two key ways: firstly, it explicitly enhances representation diversity, and secondly, it implicitly fosters interaction between experts during orthogonal weights computation. Through extensive experiments, we demonstrate that our proposed optimization algorithm significantly improves the performance of fine-tuning the MoE model on the GLUE benchmark, SuperGLUE benchmark, question-answering task, and name entity recognition tasks."
+  },
+  {
+    "paperId": "236c7dafea3df7ecffb5f18ec780d12f2f27d4b0",
+    "externalIds": {
+      "DBLP": "conf/nips/HuangBZZZSLLZLF23",
+      "ArXiv": "2305.08322",
+      "DOI": "10.48550/arXiv.2305.08322",
+      "CorpusId": 258685666
+    },
+    "title": "C-Eval: A Multi-Level Multi-Discipline Chinese Evaluation Suite for Foundation Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 806,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.08322",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.08322, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2296738020",
+        "name": "Yuzhen Huang"
+      },
+      {
+        "authorId": "2115834034",
+        "name": "Yuzhuo Bai"
+      },
+      {
+        "authorId": "2217435907",
+        "name": "Zhihao Zhu"
+      },
+      {
+        "authorId": "2108012146",
+        "name": "Junlei Zhang"
+      },
+      {
+        "authorId": "6062056",
+        "name": "Jinghan Zhang"
+      },
+      {
+        "authorId": "2217252347",
+        "name": "Tangjun Su"
+      },
+      {
+        "authorId": "2217264323",
+        "name": "Junteng Liu"
+      },
+      {
+        "authorId": "2051969465",
+        "name": "Chuancheng Lv"
+      },
+      {
+        "authorId": null,
+        "name": "Yikai Zhang"
+      },
+      {
+        "authorId": "2217263111",
+        "name": "Jiayi Lei"
+      },
+      {
+        "authorId": "51466208",
+        "name": "Fanchao Qi"
+      },
+      {
+        "authorId": "46956602",
+        "name": "Yao Fu"
+      },
+      {
+        "authorId": "1753344",
+        "name": "Maosong Sun"
+      },
+      {
+        "authorId": "6215698",
+        "name": "Junxian He"
+      }
+    ],
+    "abstract": "New NLP benchmarks are urgently needed to align with the rapid development of large language models (LLMs). We present C-Eval, the first comprehensive Chinese evaluation suite designed to assess advanced knowledge and reasoning abilities of foundation models in a Chinese context. C-Eval comprises multiple-choice questions across four difficulty levels: middle school, high school, college, and professional. The questions span 52 diverse disciplines, ranging from humanities to science and engineering. C-Eval is accompanied by C-Eval Hard, a subset of very challenging subjects in C-Eval that requires advanced reasoning abilities to solve. We conduct a comprehensive evaluation of the most advanced LLMs on C-Eval, including both English- and Chinese-oriented models. Results indicate that only GPT-4 could achieve an average accuracy of over 60%, suggesting that there is still significant room for improvement for current LLMs. We anticipate C-Eval will help analyze important strengths and shortcomings of foundation models, and foster their development and growth for Chinese users."
+  },
+  {
+    "paperId": "68c834c19cd126bbd6d25a3572d7205cfed76271",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-06364",
+      "ArXiv": "2304.06364",
+      "DOI": "10.48550/arXiv.2304.06364",
+      "CorpusId": 258108259
+    },
+    "title": "AGIEval: A Human-Centric Benchmark for Evaluating Foundation Models",
+    "venue": "NAACL-HLT",
+    "year": 2023,
+    "citationCount": 798,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.06364",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.06364, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "81970097",
+        "name": "Wanjun Zhong"
+      },
+      {
+        "authorId": "1717462692",
+        "name": "Ruixiang Cui"
+      },
+      {
+        "authorId": "2214448244",
+        "name": "Yiduo Guo"
+      },
+      {
+        "authorId": "3887469",
+        "name": "Yaobo Liang"
+      },
+      {
+        "authorId": "2115338656",
+        "name": "Shuai Lu"
+      },
+      {
+        "authorId": "2214155529",
+        "name": "Yanlin Wang"
+      },
+      {
+        "authorId": "2282542305",
+        "name": "A. Saied"
+      },
+      {
+        "authorId": "2109136147",
+        "name": "Weizhu Chen"
+      },
+      {
+        "authorId": "46429989",
+        "name": "Nan Duan"
+      }
+    ],
+    "abstract": "Evaluating the general abilities of foundation models to tackle human-level tasks is a vital aspect of their development and application in the pursuit of Artificial General Intelligence (AGI). Traditional benchmarks, which rely on artificial datasets, may not accurately represent human-level capabilities. In this paper, we introduce AGIEval, a novel benchmark specifically designed to assess foundation model in the context of human-centric standardized exams, such as college entrance exams, law school admission tests, math competitions, and lawyer qualification tests. We evaluate several state-of-the-art foundation models, including GPT-4, ChatGPT, and Text-Davinci-003, using this benchmark. Impressively, GPT-4 surpasses average human performance on SAT, LSAT, and math competitions, attaining a 95% accuracy rate on the SAT Math test and a 92.5% accuracy on the English test of the Chinese national college entrance exam. This demonstrates the extraordinary performance of contemporary foundation models. In contrast, we also find that GPT-4 is less proficient in tasks that require complex reasoning or specific domain knowledge. Our comprehensive analyses of model capabilities (understanding, knowledge, reasoning, and calculation) reveal these models' strengths and limitations, providing valuable insights into future directions for enhancing their general capabilities. By concentrating on tasks pertinent to human cognition and decision-making, our benchmark delivers a more meaningful and robust evaluation of foundation models' performance in real-world scenarios. The data, code, and all model outputs are released in https://github.com/ruixiangcui/AGIEval."
+  },
+  {
+    "paperId": "663a41c866d49ce052801fbc88947d39764cad29",
+    "externalIds": {
+      "DBLP": "conf/acl/SuzgunSSGTCCLCZ23",
+      "ArXiv": "2210.09261",
+      "DOI": "10.48550/arXiv.2210.09261",
+      "CorpusId": 252917648
+    },
+    "title": "Challenging BIG-Bench Tasks and Whether Chain-of-Thought Can Solve Them",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 1786,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.09261",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.09261, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51903517",
+        "name": "Mirac Suzgun"
+      },
+      {
+        "authorId": "1471909492",
+        "name": "Nathan Scales"
+      },
+      {
+        "authorId": "1821614764",
+        "name": "Nathanael Scharli"
+      },
+      {
+        "authorId": "3159346",
+        "name": "Sebastian Gehrmann"
+      },
+      {
+        "authorId": "144447820",
+        "name": "Yi Tay"
+      },
+      {
+        "authorId": "3351938",
+        "name": "Hyung Won Chung"
+      },
+      {
+        "authorId": "2841893",
+        "name": "A. Chowdhery"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2226805",
+        "name": "Ed H. Chi"
+      },
+      {
+        "authorId": "65855107",
+        "name": "Denny Zhou"
+      },
+      {
+        "authorId": "119640649",
+        "name": "Jason Wei"
+      }
+    ],
+    "abstract": "BIG-Bench (Srivastava et al., 2022) is a diverse evaluation suite that focuses on tasks believed to be beyond the capabilities of current language models. Language models have already made good progress on this benchmark, with the best model in the BIG-Bench paper outperforming average reported human-rater results on 65% of the BIG-Bench tasks via few-shot prompting. But on what tasks do language models fall short of average human-rater performance, and are those tasks actually unsolvable by current language models? In this work, we focus on a suite of 23 challenging BIG-Bench tasks which we call BIG-Bench Hard (BBH). These are the task for which prior language model evaluations did not outperform the average human-rater. We find that applying chain-of-thought (CoT) prompting to BBH tasks enables PaLM to surpass the average human-rater performance on 10 of the 23 tasks, and Codex (code-davinci-002) to surpass the average human-rater performance on 17 of the 23 tasks. Since many tasks in BBH require multi-step reasoning, few-shot prompting without CoT, as done in the BIG-Bench evaluations (Srivastava et al., 2022), substantially underestimates the best performance and capabilities of language models, which is better captured via CoT prompting. As further analysis, we explore the interaction between CoT and model scale on BBH, finding that CoT enables emergent task performance on several BBH tasks with otherwise flat scaling curves."
+  },
+  {
+    "paperId": "1bc9865ebf52b59abac7f5ee4456ff2ac37fcff3",
+    "externalIds": {
+      "ArXiv": "2202.08906",
+      "CorpusId": 248496391
+    },
+    "title": "ST-MoE: Designing Stable and Transferable Sparse Expert Models",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 350,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.08906, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "49596195",
+        "name": "Sameer Kumar"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      }
+    ],
+    "abstract": "Scale has opened new frontiers in natural language processing -- but at a high cost. In response, Mixture-of-Experts (MoE) and Switch Transformers have been proposed as an energy efficient path to even larger and more capable language models. But advancing the state-of-the-art across a broad set of natural language tasks has been hindered by training instabilities and uncertain quality during fine-tuning. Our work focuses on these issues and acts as a design guide. We conclude by scaling a sparse model to 269B parameters, with a computational cost comparable to a 32B dense encoder-decoder Transformer (Stable and Transferable Mixture-of-Experts or ST-MoE-32B). For the first time, a sparse model achieves state-of-the-art performance in transfer learning, across a diverse set of tasks including reasoning (SuperGLUE, ARC Easy, ARC Challenge), summarization (XSum, CNN-DM), closed book question answering (WebQA, Natural Questions), and adversarially constructed tasks (Winogrande, ANLI R3)."
+  },
+  {
+    "paperId": "d6045d2ccc9c09ca1671348de86d07da6bc28eea",
+    "externalIds": {
+      "ArXiv": "2110.14168",
+      "DBLP": "journals/corr/abs-2110-14168",
+      "CorpusId": 239998651
+    },
+    "title": "Training Verifiers to Solve Math Word Problems",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 8124,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.14168, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6062736",
+        "name": "K. Cobbe"
+      },
+      {
+        "authorId": "13622184",
+        "name": "Vineet Kosaraju"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3407285",
+        "name": "Matthias Plappert"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "7406311",
+        "name": "Reiichiro Nakano"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      }
+    ],
+    "abstract": "State-of-the-art language models can match human performance on many tasks, but they still struggle to robustly perform multi-step mathematical reasoning. To diagnose the failures of current models and support research, we introduce GSM8K, a dataset of 8.5K high quality linguistically diverse grade school math word problems. We find that even the largest transformer models fail to achieve high test performance, despite the conceptual simplicity of this problem distribution. To increase performance, we propose training verifiers to judge the correctness of model completions. At test time, we generate many candidate solutions and select the one ranked highest by the verifier. We demonstrate that verification significantly improves performance on GSM8K, and we provide strong empirical evidence that verification scales more effectively with increased data than a finetuning baseline."
+  },
+  {
+    "paperId": "57d1e7ac339e783898f2c3b1af55737cbeee9fc5",
+    "externalIds": {
+      "DBLP": "conf/nips/HendrycksBKABTS21",
+      "ArXiv": "2103.03874",
+      "CorpusId": 232134851
+    },
+    "title": "Measuring Mathematical Problem Solving With the MATH Dataset",
+    "venue": "NeurIPS Datasets and Benchmarks",
+    "year": 2021,
+    "citationCount": 4869,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.03874, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "148070327",
+        "name": "Saurav Kadavath"
+      },
+      {
+        "authorId": "2054194196",
+        "name": "Akul Arora"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "2090511698",
+        "name": "Eric Tang"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "Many intellectual endeavors require mathematical problem solving, but this skill remains beyond the capabilities of computers. To measure this ability in machine learning models, we introduce MATH, a new dataset of 12,500 challenging competition mathematics problems. Each problem in MATH has a full step-by-step solution which can be used to teach models to generate answer derivations and explanations. To facilitate future research and increase accuracy on MATH, we also contribute a large auxiliary pretraining dataset which helps teach models the fundamentals of mathematics. Even though we are able to increase accuracy on MATH, our results show that accuracy remains relatively low, even with enormous Transformer models. Moreover, we find that simply increasing budgets and model parameter counts will be impractical for achieving strong mathematical reasoning if scaling trends continue. While scaling Transformers is automatically solving most other text-based tasks, scaling is not currently solving MATH. To have more traction on mathematical problem solving we will likely need new algorithmic advancements from the broader research community."
+  },
+  {
+    "paperId": "fdacf2a732f55befdc410ea927091cad3b791f13",
+    "externalIds": {
+      "DBLP": "journals/jmlr/FedusZS22",
+      "ArXiv": "2101.03961",
+      "CorpusId": 231573431
+    },
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "venue": "Journal of machine learning research",
+    "year": 2021,
+    "citationCount": 3643,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.03961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communication and computational costs. Our proposed training techniques help wrangle the instabilities and we show large sparse models may be trained, for the first time, with lower precision (bfloat16) formats. We design models based off T5-Base and T5-Large to obtain up to 7x increases in pre-training speed with the same computational resources. These improvements extend into multilingual settings where we measure gains over the mT5-Base version across all 101 languages. Finally, we advance the current scale of language models by pre-training up to trillion parameter models on the\"Colossal Clean Crawled Corpus\"and achieve a 4x speedup over the T5-XXL model."
+  },
+  {
+    "paperId": "4a54d58a4b20e4f3af25cea3c188a12082a95e02",
+    "externalIds": {
+      "DBLP": "conf/emnlp/GevaSBL21",
+      "ACL": "2021.emnlp-main.446",
+      "ArXiv": "2012.14913",
+      "DOI": "10.18653/v1/2021.emnlp-main.446",
+      "CorpusId": 229923720
+    },
+    "title": "Transformer Feed-Forward Layers Are Key-Value Memories",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2020,
+    "citationCount": 1296,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.emnlp-main.446.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.14913, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22245981",
+        "name": "Mor Geva"
+      },
+      {
+        "authorId": "39347554",
+        "name": "R. Schuster"
+      },
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      },
+      {
+        "authorId": "39455775",
+        "name": "Omer Levy"
+      }
+    ],
+    "abstract": "Feed-forward layers constitute two-thirds of a transformer model’s parameters, yet their role in the network remains under-explored. We show that feed-forward layers in transformer-based language models operate as key-value memories, where each key correlates with textual patterns in the training examples, and each value induces a distribution over the output vocabulary. Our experiments show that the learned patterns are human-interpretable, and that lower layers tend to capture shallow patterns, while upper layers learn more semantic ones. The values complement the keys’ input patterns by inducing output distributions that concentrate probability mass on tokens likely to appear immediately after each pattern, particularly in the upper layers. Finally, we demonstrate that the output of a feed-forward layer is a composition of its memories, which is subsequently refined throughout the model’s layers via residual connections to produce the final output distribution."
+  },
+  {
+    "paperId": "814a4f680b9ba6baba23b93499f4b48af1a27678",
+    "externalIds": {
+      "ArXiv": "2009.03300",
+      "DBLP": "journals/corr/abs-2009-03300",
+      "MAG": "3083410900",
+      "CorpusId": 221516475
+    },
+    "title": "Measuring Massive Multitask Language Understanding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 7661,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.03300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "1380103052",
+        "name": "Andy Zou"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "We propose a new test to measure a text model's multitask accuracy. The test covers 57 tasks including elementary mathematics, US history, computer science, law, and more. To attain high accuracy on this test, models must possess extensive world knowledge and problem solving ability. We find that while most recent models have near random-chance accuracy, the very largest GPT-3 model improves over random chance by almost 20 percentage points on average. However, on every one of the 57 tasks, the best models still need substantial improvements before they can reach expert-level accuracy. Models also have lopsided performance and frequently do not know when they are wrong. Worse, they still have near-random accuracy on some socially important subjects such as morality and law. By comprehensively evaluating the breadth and depth of a model's academic and professional understanding, our test can be used to analyze models across many tasks and to identify important shortcomings."
+  },
+  {
+    "paperId": "1882f194cb43828852cc052887671e55a80f945a",
+    "externalIds": {
+      "MAG": "3040573126",
+      "DBLP": "conf/iclr/LepikhinLXCFHKS21",
+      "ArXiv": "2006.16668",
+      "CorpusId": 220265858
+    },
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 1886,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.16668, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150077954",
+        "name": "Dmitry Lepikhin"
+      },
+      {
+        "authorId": "34946720",
+        "name": "HyoukJoong Lee"
+      },
+      {
+        "authorId": "2145139570",
+        "name": "Yuanzhong Xu"
+      },
+      {
+        "authorId": "7167328",
+        "name": "Dehao Chen"
+      },
+      {
+        "authorId": "2345617",
+        "name": "Orhan Firat"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      }
+    ],
+    "abstract": "Neural network scaling has been critical for improving the model quality in many real-world machine learning applications with vast amounts of training data and compute. Although this trend of scaling is affirmed to be a sure-fire approach for better model quality, there are challenges on the path such as the computation cost, ease of programming, and efficient implementation on parallel devices. GShard is a module composed of a set of lightweight annotation APIs and an extension to the XLA compiler. It provides an elegant way to express a wide range of parallel computation patterns with minimal changes to the existing model code. GShard enabled us to scale up multilingual neural machine translation Transformer model with Sparsely-Gated Mixture-of-Experts beyond 600 billion parameters using automatic sharding. We demonstrate that such a giant model can efficiently be trained on 2048 TPU v3 accelerators in 4 days to achieve far superior quality for translation from 100 languages to English compared to the prior art."
+  },
+  {
+    "paperId": "38643c2926b10f6f74f122a7037e2cd20d77c0f1",
+    "externalIds": {
+      "MAG": "3018378048",
+      "ArXiv": "2004.11362",
+      "DBLP": "conf/nips/KhoslaTWSTIMLK20",
+      "CorpusId": 216080787
+    },
+    "title": "Supervised Contrastive Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 6002,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.11362, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8980423",
+        "name": "Prannay Khosla"
+      },
+      {
+        "authorId": "1388407541",
+        "name": "Piotr Teterwak"
+      },
+      {
+        "authorId": "2146562893",
+        "name": "Chen Wang"
+      },
+      {
+        "authorId": "8707513",
+        "name": "Aaron Sarna"
+      },
+      {
+        "authorId": "2476765",
+        "name": "Yonglong Tian"
+      },
+      {
+        "authorId": "2094770",
+        "name": "Phillip Isola"
+      },
+      {
+        "authorId": "2064102741",
+        "name": "Aaron Maschinot"
+      },
+      {
+        "authorId": "1681442",
+        "name": "Ce Liu"
+      },
+      {
+        "authorId": "1707347",
+        "name": "Dilip Krishnan"
+      }
+    ],
+    "abstract": "Cross entropy is the most widely used loss function for supervised training of image classification models. In this paper, we propose a novel training methodology that consistently outperforms cross entropy on supervised learning tasks across different architectures and data augmentations. We modify the batch contrastive loss, which has recently been shown to be very effective at learning powerful representations in the self-supervised setting. We are thus able to leverage label information more effectively than cross entropy. Clusters of points belonging to the same class are pulled together in embedding space, while simultaneously pushing apart clusters of samples from different classes. In addition to this, we leverage key ingredients such as large batch sizes and normalized embeddings, which have been shown to benefit self-supervised learning. On both ResNet-50 and ResNet-200, we outperform cross entropy by over 1%, setting a new state of the art number of 78.8% among methods that use AutoAugment data augmentation. The loss also shows clear benefits for robustness to natural corruptions on standard benchmarks on both calibration and accuracy. Compared to cross entropy, our supervised contrastive loss is more stable to hyperparameter settings such as optimizers or data augmentations."
+  },
+  {
+    "paperId": "7af72a461ed7cda180e7eab878efd5f35d79bbf4",
+    "externalIds": {
+      "DBLP": "conf/icml/ChenK0H20",
+      "MAG": "3034978746",
+      "ArXiv": "2002.05709",
+      "CorpusId": 211096730
+    },
+    "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 23765,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.05709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145358498",
+        "name": "Ting Chen"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed contrastive self-supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by SimCLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of-the-art, matching the performance of a supervised ResNet-50. When fine-tuned on only 1% of the labels, we achieve 85.8% top-5 accuracy, outperforming AlexNet with 100X fewer labels."
+  },
+  {
+    "paperId": "9770fff7379a7ab9006b48939462354dda9a2053",
+    "externalIds": {
+      "MAG": "2953271402",
+      "DBLP": "journals/corr/abs-1905-10044",
+      "ArXiv": "1905.10044",
+      "ACL": "N19-1300",
+      "DOI": "10.18653/v1/N19-1300",
+      "CorpusId": 165163607
+    },
+    "title": "BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 2284,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.10044, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143997772",
+        "name": "Christopher Clark"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      },
+      {
+        "authorId": "123052390",
+        "name": "Michael Collins"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "In this paper we study yes/no questions that are naturally occurring — meaning that they are generated in unprompted and unconstrained settings. We build a reading comprehension dataset, BoolQ, of such questions, and show that they are unexpectedly challenging. They often query for complex, non-factoid information, and require difficult entailment-like inference to solve. We also explore the effectiveness of a range of transfer learning baselines. We find that transferring from entailment data is more effective than transferring from paraphrase or extractive QA data, and that it, surprisingly, continues to be very beneficial even when starting from massive pre-trained language models such as BERT. Our best method trains BERT on MultiNLI and then re-trains it on our train set. It achieves 80.4% accuracy compared to 90% accuracy of human annotators (and 62% majority-baseline), leaving a significant gap for future work."
+  },
+  {
+    "paperId": "8b0f27bb594b1eaaf493eaf1e2ee723a2b0a19ad",
+    "externalIds": {
+      "MAG": "2946609015",
+      "DBLP": "journals/corr/abs-1905-07830",
+      "ACL": "P19-1472",
+      "ArXiv": "1905.07830",
+      "DOI": "10.18653/v1/P19-1472",
+      "CorpusId": 159041722
+    },
+    "title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 3945,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1472.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.07830, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Recent work by Zellers et al. (2018) introduced a new task of commonsense natural language inference: given an event description such as “A woman sits at a piano,” a machine must select the most likely followup: “She sets her fingers on the keys.” With the introduction of BERT, near human-level performance was reached. Does this mean that machines can perform human level commonsense inference? In this paper, we show that commonsense inference still proves difficult for even state-of-the-art models, by presenting HellaSwag, a new challenge dataset. Though its questions are trivial for humans (>95% accuracy), state-of-the-art models struggle (<48%). We achieve this via Adversarial Filtering (AF), a data collection paradigm wherein a series of discriminators iteratively select an adversarial set of machine-generated wrong answers. AF proves to be surprisingly robust. The key insight is to scale up the length and complexity of the dataset examples towards a critical ‘Goldilocks’ zone wherein generated text is ridiculous to humans, yet often misclassified by state-of-the-art models. Our construction of HellaSwag, and its resulting difficulty, sheds light on the inner workings of deep pretrained models. More broadly, it suggests a new path forward for NLP research, in which benchmarks co-evolve with the evolving state-of-the-art in an adversarial way, so as to present ever-harder challenges."
+  },
+  {
+    "paperId": "1536e8958697c5364f68b2e2448905dbbeb3a0ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1809-02789",
+      "MAG": "2952396187",
+      "ACL": "D18-1260",
+      "ArXiv": "1809.02789",
+      "DOI": "10.18653/v1/D18-1260",
+      "CorpusId": 52183757
+    },
+    "title": "Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 2299,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1260.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.02789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      }
+    ],
+    "abstract": "We present a new kind of question answering dataset, OpenBookQA, modeled after open book exams for assessing human understanding of a subject. The open book that comes with our questions is a set of 1326 elementary level science facts. Roughly 6000 questions probe an understanding of these facts and their application to novel situations. This requires combining an open book fact (e.g., metals conduct electricity) with broad common knowledge (e.g., a suit of armor is made of metal) obtained from other sources. While existing QA datasets over documents or knowledge bases, being generally self-contained, focus on linguistic understanding, OpenBookQA probes a deeper understanding of both the topic—in the context of common knowledge—and the language it is expressed in. Human performance on OpenBookQA is close to 92%, but many state-of-the-art pre-trained QA methods perform surprisingly poorly, worse than several simple neural baselines we develop. Our oracle experiments designed to circumvent the knowledge retrieval bottleneck demonstrate the value of both the open book and additional facts. We leave it as a challenge to solve the retrieval problem in this multi-hop setting and to close the large gap to human performance."
+  },
+  {
+    "paperId": "b227f3e4c0dc96e5ac5426b85485a70f2175a205",
+    "externalIds": {
+      "ArXiv": "1807.03748",
+      "MAG": "2842511635",
+      "DBLP": "journals/corr/abs-1807-03748",
+      "CorpusId": 49670925
+    },
+    "title": "Representation Learning with Contrastive Predictive Coding",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 12965,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.03748, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422336",
+        "name": "Aäron van den Oord"
+      },
+      {
+        "authorId": "2144417088",
+        "name": "Yazhe Li"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      }
+    ],
+    "abstract": "While supervised learning has enabled great progress in many applications, unsupervised learning has not seen such widespread adoption, and remains an important and challenging endeavor for artificial intelligence. In this work, we propose a universal unsupervised learning approach to extract useful representations from high-dimensional data, which we call Contrastive Predictive Coding. The key insight of our model is to learn such representations by predicting the future in latent space by using powerful autoregressive models. We use a probabilistic contrastive loss which induces the latent space to capture information that is maximally useful to predict future samples. It also makes the model tractable by using negative sampling. While most prior work has focused on evaluating representations for a particular modality, we demonstrate that our approach is able to learn useful representations achieving strong performance on four distinct domains: speech, images, text and reinforcement learning in 3D environments."
+  },
+  {
+    "paperId": "88bb0a28bb58d847183ec505dda89b63771bb495",
+    "externalIds": {
+      "ArXiv": "1803.05457",
+      "DBLP": "journals/corr/abs-1803-05457",
+      "MAG": "2794325560",
+      "CorpusId": 3922816
+    },
+    "title": "Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 4369,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.05457, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "3390191",
+        "name": "Isaac Cowhey"
+      },
+      {
+        "authorId": "1741101",
+        "name": "Oren Etzioni"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      },
+      {
+        "authorId": "3393851",
+        "name": "Carissa Schoenick"
+      },
+      {
+        "authorId": "3385516",
+        "name": "Oyvind Tafjord"
+      }
+    ],
+    "abstract": "We present a new question set, text corpus, and baselines assembled to encourage AI research in advanced question answering. Together, these constitute the AI2 Reasoning Challenge (ARC), which requires far more powerful knowledge and reasoning than previous challenges such as SQuAD or SNLI. The ARC question set is partitioned into a Challenge Set and an Easy Set, where the Challenge Set contains only questions answered incorrectly by both a retrieval-based algorithm and a word co-occurence algorithm. The dataset contains only natural, grade-school science questions (authored for human tests), and is the largest public-domain set of this kind (7,787 questions). We test several baselines on the Challenge Set, including leading neural models from the SQuAD and SNLI tasks, and find that none are able to significantly outperform a random baseline, reflecting the difficult nature of this task. We are also releasing the ARC Corpus, a corpus of 14M science sentences relevant to the task, and implementations of the three neural baseline models tested. Can your model perform better? We pose ARC as a challenge to the community."
+  },
+  {
+    "paperId": "d07284a6811f1b2745d91bdb06b040b57f226882",
+    "externalIds": {
+      "MAG": "2950541952",
+      "DBLP": "conf/iclr/LoshchilovH19",
+      "CorpusId": 53592270
+    },
+    "title": "Decoupled Weight Decay Regularization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 32709,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "932a5de79d8a8ebb75ea0c43493450fd9922e738",
+    "externalIds": {
+      "DBLP": "journals/corr/WelblLG17",
+      "MAG": "2963123047",
+      "ACL": "W17-4413",
+      "ArXiv": "1707.06209",
+      "DOI": "10.18653/v1/W17-4413",
+      "CorpusId": 1553193
+    },
+    "title": "Crowdsourcing Multiple Choice Science Questions",
+    "venue": "NUT@EMNLP",
+    "year": 2017,
+    "citationCount": 786,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/W17-4413.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.06209, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1851564",
+        "name": "Johannes Welbl"
+      },
+      {
+        "authorId": "22243769",
+        "name": "Nelson F. Liu"
+      },
+      {
+        "authorId": "40642935",
+        "name": "Matt Gardner"
+      }
+    ],
+    "abstract": "We present a novel method for obtaining high-quality, domain-targeted multiple choice questions from crowd workers. Generating these questions can be difficult without trading away originality, relevance or diversity in the answer options. Our method addresses these problems by leveraging a large corpus of domain-specific text and a small set of existing questions. It produces model suggestions for document selection and answer distractor choice which aid the human question generation process. With this method we have assembled SciQ, a dataset of 13.7K multiple choice science exam questions. We demonstrate that the method produces in-domain questions by providing an analysis of this new dataset and by showing that humans cannot distinguish the crowdsourced questions from original questions. When using SciQ as additional training data to existing questions, we observe accuracy improvements on real science exams."
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "MAG": "2963403868",
+      "ArXiv": "1706.03762",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 173251,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data."
+  },
+  {
+    "paperId": "f010affab57b5fcf1cd6be23df79d8ec98c7289c",
+    "externalIds": {
+      "MAG": "2612431505",
+      "ArXiv": "1705.03551",
+      "ACL": "P17-1147",
+      "DBLP": "journals/corr/JoshiCWZ17",
+      "DOI": "10.18653/v1/P17-1147",
+      "CorpusId": 26501419
+    },
+    "title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 3640,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P17-1147.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      },
+      {
+        "authorId": "1780531",
+        "name": "Daniel S. Weld"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We present TriviaQA, a challenging reading comprehension dataset containing over 650K question-answer-evidence triples. TriviaQA includes 95K question-answer pairs authored by trivia enthusiasts and independently gathered evidence documents, six per question on average, that provide high quality distant supervision for answering the questions. We show that, in comparison to other recently introduced large-scale datasets, TriviaQA (1) has relatively complex, compositional questions, (2) has considerable syntactic and lexical variability between questions and corresponding answer-evidence sentences, and (3) requires more cross sentence reasoning to find answers. We also present two baseline algorithms: a feature-based classifier and a state-of-the-art neural network, that performs well on SQuAD reading comprehension. Neither approach comes close to human performance (23% and 40% vs. 80%), suggesting that TriviaQA is a challenging testbed that is worth significant future study."
+  },
+  {
+    "paperId": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+    "externalIds": {
+      "DBLP": "journals/corr/ShazeerMMDLHD17",
+      "MAG": "2952339051",
+      "ArXiv": "1701.06538",
+      "CorpusId": 12462234
+    },
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 4314,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.06538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "1861312",
+        "name": "Azalia Mirhoseini"
+      },
+      {
+        "authorId": "2275364713",
+        "name": "Krzysztof Maziarz"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational efficiency on modern GPU clusters. We introduce a Sparsely-Gated Mixture-of-Experts layer (MoE), consisting of up to thousands of feed-forward sub-networks. A trainable gating network determines a sparse combination of these experts to use for each example. We apply the MoE to the tasks of language modeling and machine translation, where model capacity is critical for absorbing the vast quantities of knowledge available in the training corpora. We present model architectures in which a MoE with up to 137 billion parameters is applied convolutionally between stacked LSTM layers. On large language modeling and machine translation benchmarks, these models achieve significantly better results than state-of-the-art at lower computational cost."
+  },
+  {
+    "paperId": "5cfbbf3cdff0f905874589bcd21b2646340a5447",
+    "externalIds": {
+      "MAG": "2145755360",
+      "DBLP": "conf/aaaiss/RoemmeleBG11",
+      "CorpusId": 434646
+    },
+    "title": "Choice of Plausible Alternatives: An Evaluation of Commonsense Causal Reasoning",
+    "venue": "AAAI Spring Symposium: Logical Formalizations of Commonsense Reasoning",
+    "year": 2011,
+    "citationCount": 930,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "35168946",
+        "name": "A. Gordon"
+      },
+      {
+        "authorId": "1714932",
+        "name": "Zornitsa Kozareva"
+      },
+      {
+        "authorId": "3316824",
+        "name": "Melissa Roemmele"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "92e121c6e114fe3cfb89370df03847c66a9b4e28",
+    "externalIds": {
+      "CorpusId": 199370376
+    },
+    "title": "An Adversarial Winograd Schema Challenge at Scale",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 2976,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2325708",
+        "name": "Keisuke Sakaguchi"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "1857797",
+        "name": "Chandra Bhagavatula"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c21a4d70d83e0f6eb2a9e1c41d034842dd561e47",
+    "externalIds": {
+      "MAG": "2952331680",
+      "ACL": "N19-1421",
+      "DBLP": "journals/corr/abs-1811-00937",
+      "ArXiv": "1811.00937",
+      "DOI": "10.18653/v1/N19-1421",
+      "CorpusId": 53296520
+    },
+    "title": "CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 2348,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.00937, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "12371246",
+        "name": "Alon Talmor"
+      },
+      {
+        "authorId": "47426264",
+        "name": "Jonathan Herzig"
+      },
+      {
+        "authorId": "35219984",
+        "name": "Nicholas Lourie"
+      },
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      }
+    ],
+    "abstract": "When answering a question, people often draw upon their rich world knowledge in addition to the particular context. Recent work has focused primarily on answering questions given some relevant document or context, and required very little general background. To investigate question answering with prior knowledge, we present CommonsenseQA: a challenging new dataset for commonsense question answering. To capture common sense beyond associations, we extract from ConceptNet (Speer et al., 2017) multiple target concepts that have the same semantic relation to a single source concept. Crowd-workers are asked to author multiple-choice questions that mention the source concept and discriminate in turn between each of the target concepts. This encourages workers to create questions with complex semantics that often require prior knowledge. We create 12,247 questions through this procedure and demonstrate the difficulty of our task with a large number of strong baselines. Our best baseline is based on BERT-large (Devlin et al., 2018) and obtains 56% accuracy, well below human performance, which is 89%."
+  },
+  {
+    "paperId": "1c46943103bd7b7a2c7be86859995a4144d1938b",
+    "externalIds": {
+      "MAG": "2187089797",
+      "CorpusId": 5855042
+    },
+    "title": "Visualizing Data using t-SNE",
+    "venue": "",
+    "year": 2008,
+    "citationCount": 48460,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1803520",
+        "name": "L. Maaten"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null
+  }
+]

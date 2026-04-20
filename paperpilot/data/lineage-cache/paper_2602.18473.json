@@ -1,0 +1,47 @@
+{
+  "paperId": "43a80aa909c82877ec0ebc585bf2f8193f1d5c2b",
+  "externalIds": {
+    "ArXiv": "2602.18473",
+    "DBLP": "journals/corr/abs-2602-18473",
+    "DOI": "10.48550/arXiv.2602.18473",
+    "CorpusId": 285974159
+  },
+  "title": "Decentralized Attention Fails Centralized Signals: Rethinking Transformers for Medical Time Series",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "referenceCount": 73,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.18473, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2395722390",
+      "name": "Guo Yu"
+    },
+    {
+      "authorId": "2229335212",
+      "name": "Juncheng Wang"
+    },
+    {
+      "authorId": "2363479291",
+      "name": "Chen Yang"
+    },
+    {
+      "authorId": "2257306939",
+      "name": "Jing Qin"
+    },
+    {
+      "authorId": "1388720262",
+      "name": "Angelica I. Avilés-Rivero"
+    },
+    {
+      "authorId": "2327289498",
+      "name": "Shujun Wang"
+    }
+  ],
+  "abstract": "Accurate analysis of medical time series (MedTS) data, such as electroencephalography (EEG) and electrocardiography (ECG), plays a pivotal role in healthcare applications, including the diagnosis of brain and heart diseases. MedTS data typically exhibit two critical patterns: temporal dependencies within individual channels and channel dependencies across multiple channels. While recent advances in deep learning have leveraged Transformer-based models to effectively capture temporal dependencies, they often struggle with modeling channel dependencies. This limitation stems from a structural mismatch: MedTS signals are inherently centralized, whereas the Transformer's attention mechanism is decentralized, making it less effective at capturing global synchronization and unified waveform patterns. To address this mismatch, we propose CoTAR (Core Token Aggregation-Redistribution), a centralized MLP-based module designed to replace decentralized attention. Instead of allowing all tokens to interact directly, as in standard attention, CoTAR introduces a global core token that serves as a proxy to facilitate inter-token interactions, thereby enforcing a centralized aggregation and redistribution strategy. This design not only better aligns with the centralized nature of MedTS signals but also reduces computational complexity from quadratic to linear. Experiments on five benchmarks validate the superiority of our method in both effectiveness and efficiency, achieving up to a 12.13% improvement on the APAVA dataset, while using only 33% of the memory and 20% of the inference time compared to the previous state of the art. Code and all training scripts are available at https://github.com/Levi-Ackman/TeCh."
+}

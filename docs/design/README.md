@@ -24,6 +24,7 @@ PaperPilot — AI/ML 論文自動収集・品質フィルタリングシステ�
 - [外部 API インターフェース仕様](05-apis.md)
 - [シーケンス設計](06-sequences.md)
 - [運用（NFR・テスト・CI）](07-operations.md)
+- [リネージ機能ロードマップ](08-lineage-roadmap.md)
 
 ---
 
