@@ -154,26 +154,56 @@ function layoutTree(nodes, edges, focusId) {
   }
   const sortedLevels = [...byLevel.keys()].sort((a, b) => a - b);
 
-  for (const lv of sortedLevels) {
-    if (lv === 0) continue;
-    const row = byLevel.get(lv);
-    row.sort((a, b) => {
-      const ra = RELATION_RANK[a._rel] ?? 99;
-      const rb = RELATION_RANK[b._rel] ?? 99;
-      if (ra !== rb) return ra - rb;
-      return (a.year || 0) - (b.year || 0);
+  // Position nodes relative to their neighbor at the adjacent level,
+  // so siblings sharing a parent cluster together (minimizes crossings).
+  const xByNodeId = new Map();
+  xByNodeId.set(focusId, 0);
+
+  const zeroIdx = sortedLevels.indexOf(0);
+  const GAP_X = NODE_W + SIBLING_GAP;
+
+  const positionRow = (row, getPreferredX) => {
+    const withPref = row.map((n) => ({ node: n, pref: getPreferredX(n) }));
+    withPref.sort((a, b) => a.pref - b.pref);
+    let lastX = -Infinity;
+    for (const { node, pref } of withPref) {
+      const x = Math.max(pref, lastX + GAP_X);
+      xByNodeId.set(node.id, x);
+      lastX = x;
+    }
+  };
+
+  // Upward (ancestors): each node's preferred x = avg of its children's x at level+1
+  for (let i = zeroIdx - 1; i >= 0; i--) {
+    const lv = sortedLevels[i];
+    const row = byLevel.get(lv) || [];
+    positionRow(row, (node) => {
+      const childXs = [];
+      for (const { id } of children.get(node.id) || []) {
+        if (xByNodeId.has(id) && level.get(id) === lv + 1) childXs.push(xByNodeId.get(id));
+      }
+      return childXs.length ? childXs.reduce((a, b) => a + b, 0) / childXs.length : 0;
+    });
+  }
+
+  // Downward (descendants): each node's preferred x = avg of its parents' x at level-1
+  for (let i = zeroIdx + 1; i < sortedLevels.length; i++) {
+    const lv = sortedLevels[i];
+    const row = byLevel.get(lv) || [];
+    positionRow(row, (node) => {
+      const parentXs = [];
+      for (const { id } of parents.get(node.id) || []) {
+        if (xByNodeId.has(id) && level.get(id) === lv - 1) parentXs.push(xByNodeId.get(id));
+      }
+      return parentXs.length ? parentXs.reduce((a, b) => a + b, 0) / parentXs.length : 0;
     });
   }
 
   const positioned = [];
   sortedLevels.forEach((lv, idx) => {
-    const row = byLevel.get(lv);
-    const rowWidth = row.length * NODE_W + (row.length - 1) * SIBLING_GAP;
-    row.forEach((n, i) => {
-      const x = -rowWidth / 2 + i * (NODE_W + SIBLING_GAP);
-      const y = idx * (NODE_H + LEVEL_GAP);
-      positioned.push({ ...n, _x: x, _y: y });
-    });
+    for (const n of byLevel.get(lv) || []) {
+      positioned.push({ ...n, _x: xByNodeId.get(n.id) ?? 0, _y: idx * (NODE_H + LEVEL_GAP) });
+    }
   });
 
   if (positioned.length === 0) return [];
