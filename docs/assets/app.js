@@ -1,6 +1,5 @@
-// PaperPilot viewer — vanilla, no framework. Loads papers.json and renders a filterable list.
-const DATA_URL = "papers.json";
-const LINEAGE_URL = "lineage-demo.json";
+// PaperPilot catalog viewer. Requires utils.js loaded first.
+const PAPERS_URL = "papers.json";
 
 const state = {
   papers: [],
@@ -10,6 +9,8 @@ const state = {
   lineage: null,
   relationsByPaperId: new Map(),
 };
+
+const { escapeHtml, loadFirstLineage, LINEAGE_URLS } = window.PP;
 
 const els = {
   list: document.getElementById("paper-list"),
@@ -39,33 +40,6 @@ const REL_LABEL_REVERSE = {
   baseline_only: { icon: "📏", label: "Uses as baseline", direction: "up" },
   contrasts:  { icon: "⚔️", label: "Contrasted with", direction: "up" },
 };
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  }[c]));
-}
-
-function injectDemoPapers() {
-  if (!state.lineage) return;
-  const existingTitles = new Set(state.papers.map((p) => p.title.toLowerCase().trim()));
-  const demos = state.lineage.nodes
-    .filter((n) => n.show_in_catalog)
-    .filter((n) => !existingTitles.has(n.title.toLowerCase().trim()))
-    .map((n) => ({
-      title: n.title,
-      type: n.catalog_type || "Poster",
-      tags: n.catalog_tags || n.kinds || [],
-      venue: `${n.venue || ""} ${n.year || ""}`.trim(),
-      authors: n.authors || [],
-      arxiv_url: n.arxiv_url || "",
-      pdf_url: n.pdf_url || "",
-      abstract: n.abstract || n.tldr || "",
-      lineage_id: n.id,
-      _demo: true,
-    }));
-  state.papers = [...demos, ...state.papers];
-}
 
 function buildRelationsIndex() {
   if (!state.lineage) return;
@@ -279,15 +253,14 @@ function bindEvents() {
 
 async function init() {
   try {
-    const [papersRes, lineageRes] = await Promise.all([
-      fetch(DATA_URL, { cache: "no-store" }),
-      fetch(LINEAGE_URL, { cache: "no-store" }).catch(() => null),
+    const [papersRes, lineage] = await Promise.all([
+      fetch(PAPERS_URL, { cache: "no-store" }),
+      loadFirstLineage(LINEAGE_URLS),
     ]);
     state.papers = await papersRes.json();
-    if (lineageRes && lineageRes.ok) {
-      state.lineage = await lineageRes.json();
+    if (lineage) {
+      state.lineage = lineage;
       buildRelationsIndex();
-      injectDemoPapers();
     }
   } catch (e) {
     els.list.innerHTML = `<li class="empty-state">Failed to load papers.json</li>`;

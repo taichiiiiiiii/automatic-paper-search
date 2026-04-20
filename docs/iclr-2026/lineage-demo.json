@@ -1,16 +1,5 @@
 {
   "root": "flashatt-2",
-  "focus_paper": {
-    "id": "flashatt-2",
-    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
-    "year": 2024,
-    "venue": "ICLR",
-    "venue_tier": "A+",
-    "authors": ["Tri Dao"],
-    "kinds": ["empirical", "system"],
-    "github_stars": 15200,
-    "tldr": "FlashAttention の GPU 利用率を 2x 改善する work partitioning"
-  },
   "nodes": [
     {
       "id": "attention-2017",
@@ -18,8 +7,15 @@
       "year": 2017,
       "venue": "NeurIPS",
       "venue_tier": "A+",
-      "authors": ["Vaswani", "Shazeer", "Parmar", "+5"],
-      "kinds": ["empirical"],
+      "authors": [
+        "Vaswani",
+        "Shazeer",
+        "Parmar",
+        "+5"
+      ],
+      "kinds": [
+        "empirical"
+      ],
       "github_stars": 80000,
       "citations": 120000,
       "tldr": "Self-attention のみで構成された Transformer を提案"
@@ -30,8 +26,14 @@
       "year": 2020,
       "venue": "ICLR",
       "venue_tier": "A+",
-      "authors": ["Kitaev", "Kaiser", "Levskaya"],
-      "kinds": ["empirical"],
+      "authors": [
+        "Kitaev",
+        "Kaiser",
+        "Levskaya"
+      ],
+      "kinds": [
+        "empirical"
+      ],
       "github_stars": 2100,
       "tldr": "LSH attention で長文脈の計算量を削減"
     },
@@ -41,8 +43,14 @@
       "year": 2020,
       "venue": "ICML",
       "venue_tier": "A+",
-      "authors": ["Katharopoulos", "Vyas"],
-      "kinds": ["theory", "empirical"],
+      "authors": [
+        "Katharopoulos",
+        "Vyas"
+      ],
+      "kinds": [
+        "theory",
+        "empirical"
+      ],
       "github_stars": 1500,
       "tldr": "kernel feature map で attention を線形化"
     },
@@ -52,8 +60,14 @@
       "year": 2021,
       "venue": "ICLR",
       "venue_tier": "A+",
-      "authors": ["Choromanski", "Likhosherstov"],
-      "kinds": ["theory", "empirical"],
+      "authors": [
+        "Choromanski",
+        "Likhosherstov"
+      ],
+      "kinds": [
+        "theory",
+        "empirical"
+      ],
       "github_stars": 1200,
       "tldr": "FAVOR+ で attention をランダム特徴近似"
     },
@@ -63,8 +77,15 @@
       "year": 2022,
       "venue": "NeurIPS",
       "venue_tier": "A+",
-      "authors": ["Tri Dao", "Fu", "Ermon"],
-      "kinds": ["empirical", "system"],
+      "authors": [
+        "Tri Dao",
+        "Fu",
+        "Ermon"
+      ],
+      "kinds": [
+        "empirical",
+        "system"
+      ],
       "github_stars": 12500,
       "tldr": "IO-aware な attention で memory bottleneck を解消"
     },
@@ -74,17 +95,16 @@
       "year": 2024,
       "venue": "ICLR",
       "venue_tier": "A+",
-      "authors": ["Tri Dao"],
-      "kinds": ["empirical", "system"],
+      "authors": [
+        "Tri Dao"
+      ],
+      "kinds": [
+        "empirical",
+        "system"
+      ],
       "github_stars": 15200,
       "is_focus": true,
-      "tldr": "GPU 利用率を 2x 改善する work partitioning",
-      "show_in_catalog": true,
-      "catalog_type": "Oral",
-      "catalog_tags": ["attention", "efficient-transformer", "system"],
-      "abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention-2 reduces the number of non-matmul FLOPs, parallelizes the attention computation across different thread blocks, and partitions the work between warps to reduce communication.",
-      "arxiv_url": "https://arxiv.org/abs/2307.08691",
-      "pdf_url": "https://arxiv.org/pdf/2307.08691"
+      "tldr": "GPU 利用率を 2x 改善する work partitioning"
     },
     {
       "id": "flashatt-3",
@@ -92,17 +112,18 @@
       "year": 2026,
       "venue": "ICLR",
       "venue_tier": "A+",
-      "authors": ["Shah", "Bikshandi", "Dao"],
-      "kinds": ["empirical", "system"],
+      "authors": [
+        "Shah",
+        "Bikshandi",
+        "Dao"
+      ],
+      "kinds": [
+        "empirical",
+        "system"
+      ],
       "github_stars": 3400,
       "is_trending": true,
-      "tldr": "H100 の TMA/WGMMA を活用し 1.5-2x 高速化",
-      "show_in_catalog": true,
-      "catalog_type": "Oral",
-      "catalog_tags": ["attention", "efficient-transformer", "system", "gpu-kernel"],
-      "abstract": "FlashAttention-3 exploits the asynchrony of the Tensor Cores and TMA to overlap the overall computation and memory movement using warp-specialization, interleave block-wise matmul and softmax operations, and use block quantization with incoherent processing to leverage hardware support for FP8 low-precision.",
-      "arxiv_url": "https://arxiv.org/abs/2407.08608",
-      "pdf_url": "https://arxiv.org/pdf/2407.08608"
+      "tldr": "H100 の TMA/WGMMA を活用し 1.5-2x 高速化"
     },
     {
       "id": "pagedatt-2023",
@@ -110,8 +131,14 @@
       "year": 2023,
       "venue": "SOSP",
       "venue_tier": "A+",
-      "authors": ["Kwon", "Li", "+5"],
-      "kinds": ["system"],
+      "authors": [
+        "Kwon",
+        "Li",
+        "+5"
+      ],
+      "kinds": [
+        "system"
+      ],
       "github_stars": 21000,
       "tldr": "OS の paging を attention KV キャッシュに応用"
     },
@@ -121,8 +148,15 @@
       "year": 2024,
       "venue": "ICLR",
       "venue_tier": "A+",
-      "authors": ["Liu", "Zaharia", "Abbeel"],
-      "kinds": ["system", "empirical"],
+      "authors": [
+        "Liu",
+        "Zaharia",
+        "Abbeel"
+      ],
+      "kinds": [
+        "system",
+        "empirical"
+      ],
       "github_stars": 800,
       "tldr": "デバイス間で blockwise に attention を分散実行"
     },
@@ -132,8 +166,13 @@
       "year": 2024,
       "venue": "NeurIPS",
       "venue_tier": "A+",
-      "authors": ["Tworkowski", "+4"],
-      "kinds": ["empirical"],
+      "authors": [
+        "Tworkowski",
+        "+4"
+      ],
+      "kinds": [
+        "empirical"
+      ],
       "github_stars": 1500,
       "tldr": "Contrastive training で長文脈に拡張"
     },
@@ -143,8 +182,14 @@
       "year": 2024,
       "venue": "COLM",
       "venue_tier": "A",
-      "authors": ["Gu", "Dao"],
-      "kinds": ["theory", "empirical"],
+      "authors": [
+        "Gu",
+        "Dao"
+      ],
+      "kinds": [
+        "theory",
+        "empirical"
+      ],
       "github_stars": 13000,
       "is_trending": true,
       "tldr": "Selective SSM で attention を完全に置き換える"
@@ -155,17 +200,17 @@
       "year": 2026,
       "venue": "ICLR",
       "venue_tier": "A+",
-      "authors": ["Dao", "Gu"],
-      "kinds": ["theory", "empirical"],
+      "authors": [
+        "Dao",
+        "Gu"
+      ],
+      "kinds": [
+        "theory",
+        "empirical"
+      ],
       "github_stars": 5800,
       "is_trending": true,
-      "tldr": "SSM と attention の数学的等価性を示す",
-      "show_in_catalog": true,
-      "catalog_type": "Oral",
-      "catalog_tags": ["state-space-model", "theory", "long-context"],
-      "abstract": "While Transformers have been the main architecture behind deep learning's success in language modeling, state-space models (SSMs) such as Mamba have recently been shown to match or outperform Transformers at small to medium scale. We show that these families of models are actually quite closely related, and develop a rich framework of theoretical connections between SSMs and variants of attention, connected through various decompositions of a well-studied class of structured semiseparable matrices.",
-      "arxiv_url": "https://arxiv.org/abs/2405.21060",
-      "pdf_url": "https://arxiv.org/pdf/2405.21060"
+      "tldr": "SSM と attention の数学的等価性を示す"
     },
     {
       "id": "fa-ablation-2025",
@@ -173,8 +218,12 @@
       "year": 2025,
       "venue": "arXiv",
       "venue_tier": "preprint",
-      "authors": ["anonymous"],
-      "kinds": ["analysis"],
+      "authors": [
+        "anonymous"
+      ],
+      "kinds": [
+        "analysis"
+      ],
       "github_stars": 0,
       "tldr": "FA-2 の各構成要素の寄与を定量分析"
     }

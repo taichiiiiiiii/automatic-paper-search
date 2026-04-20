@@ -1,7 +1,5 @@
-// Lineage viewer — vanilla JS, no D3. Pure SVG layout.
-// Loads lineage-demo.json and renders a family tree or timeline.
-
-const DATA_URL = "lineage-demo.json";
+// Lineage viewer — pure SVG family tree / timeline. Requires utils.js loaded first.
+const { escapeHtml, formatStars, loadFirstLineage, LINEAGE_URLS } = window.PP;
 const NODE_W = 220;
 const NODE_H = 150;
 const LEVEL_GAP = 80;
@@ -37,11 +35,9 @@ const els = {
 };
 
 async function init() {
-  try {
-    const res = await fetch(DATA_URL, { cache: "no-store" });
-    state.data = await res.json();
-  } catch (e) {
-    els.canvas.innerHTML = `<p class="empty-state">Failed to load lineage-demo.json</p>`;
+  state.data = await loadFirstLineage(LINEAGE_URLS);
+  if (!state.data) {
+    els.canvas.innerHTML = `<p class="empty-state">Failed to load lineage data</p>`;
     return;
   }
 
@@ -333,9 +329,8 @@ function drawSvg(positioned, edges) {
     const venue = `${p.venue || ""} ${p.year || ""}`.trim();
     const authors = (p.authors || []).slice(0, 2).join(", ") + ((p.authors || []).length > 2 ? ` +${p.authors.length - 2}` : "");
     const kinds = (p.kinds || []).map((k) => `<span class="node-card__kind">${escapeHtml(k)}</span>`).join("");
-    const stars = typeof p.github_stars === "number" && p.github_stars > 0
-      ? `<span class="node-card__stars">⭐${formatStars(p.github_stars)}</span>`
-      : "";
+    const starStr = formatStars(p.github_stars);
+    const stars = starStr ? `<span class="node-card__stars">⭐${starStr}</span>` : "";
     const trending = p.is_trending ? `<span class="trending-badge">📈 trending</span>` : "";
 
     card.innerHTML = `
@@ -362,16 +357,6 @@ function markerClass(rel) {
   return rel;
 }
 
-function formatStars(n) {
-  if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
-  return n.toString();
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  }[c]));
-}
 
 function onEdgeHover(e) {
   const rel = e.currentTarget.dataset.rel;

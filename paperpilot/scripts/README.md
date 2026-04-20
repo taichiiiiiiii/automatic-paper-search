@@ -112,3 +112,69 @@ GitHub Secrets:
 
 - `GCP_SA_JSON` — サービスアカウント JSON（中身を丸ごと貼る）
 - `PAPERPILOT_SHEET_ID` — Spreadsheet ID
+
+---
+
+## `build_lineage.py` — 論文の系譜（リネージ）を自動生成
+
+ICLR 2026 の Oral 論文について、**過去に引用した論文（祖先）** と
+**この論文を引用した論文（子孫）** を Semantic Scholar から取得し、
+LLM で関係種別（`supersedes` / `successor` / `extends` / `ablation` /
+`baseline_only` / `contrasts` / `unrelated`）を判定します。
+
+出力は `docs/iclr-2026/lineage.json`。サイト側は `lineage.json` があれば
+そちらを優先し、無ければ `lineage-demo.json` にフォールバック。
+
+### 使い方
+
+```bash
+# 環境変数読み込み（.env 推奨、gitignored）
+export $(grep -v '^#' paperpilot/.env | xargs)
+
+# スモークテスト（最初の 1 件のみ）
+python paperpilot/scripts/build_lineage.py --limit 1
+
+# 全 Oral（13 件）
+python paperpilot/scripts/build_lineage.py
+```
+
+### 必要な環境変数
+
+**LLM プロバイダ（いずれか 1 つ）**
+
+- `PAPERPILOT_GROQ_API_KEY` — **推奨**、無料で 30 RPM / 14,400 RPD
+  - キー取得: https://console.groq.com/keys
+- `PAPERPILOT_GEMINI_API_KEY` — 1 日 20 req（無料枠が狭い）
+  - キー取得: https://aistudio.google.com/apikey
+  - 課金有効化で RPD を数万に拡大可
+
+両方設定されている場合は **Groq が優先**。
+
+### パラメータ（コード内の定数）
+
+| 名前 | 既定値 | 意味 |
+|---|---|---|
+| `TOP_PARENTS` | 15 | 各論文あたりの祖先取り込み上限 |
+| `TOP_CHILDREN` | 15 | 同、子孫 |
+| `S2_RATE_DELAY` | 3.5 秒 | Semantic Scholar 呼び出し間隔 |
+| `GROQ_RATE_DELAY` | 2.2 秒 | Groq 呼び出し間隔（~27 RPM） |
+| `GEMINI_RATE_DELAY` | 7.0 秒 | Gemini 呼び出し間隔（~8 RPM） |
+| `ABSTRACT_TRIM` | 600 文字 | LLM に渡す abstract の上限 |
+
+### キャッシュ
+
+`paperpilot/data/lineage-cache/` に:
+
+- `paper_<arxiv_id>.json` — S2 の論文メタデータ
+- `references_<s2_id>.json` / `citations_<s2_id>.json` — 引用リスト
+- `classifications.json` — LLM の関係判定結果
+
+再実行時はキャッシュを参照するため、**中断しても再開で続行**できます。
+やり直したい場合はキャッシュディレクトリを削除してください。
+
+### コスト目安（Phase 1: Oral 13 件）
+
+- S2 呼び出し: ~30 回（無料）
+- LLM 呼び出し: ~300〜400 件
+  - Groq 無料枠: **$0**
+  - Gemini 課金: **~$0.10〜$0.30**

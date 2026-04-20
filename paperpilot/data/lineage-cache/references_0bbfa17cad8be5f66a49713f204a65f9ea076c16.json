@@ -1,0 +1,2314 @@
+[
+  {
+    "paperId": "7d0cd786215f2ffa4f21c59643dc2da30be17ae8",
+    "externalIds": {
+      "ArXiv": "2503.17286",
+      "DBLP": "journals/corr/abs-2503-17286",
+      "DOI": "10.48550/arXiv.2503.17286",
+      "CorpusId": 277244886
+    },
+    "title": "Offline Model-Based Optimization: Comprehensive Review",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2025,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.17286, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303794981",
+        "name": "Minsu Kim"
+      },
+      {
+        "authorId": "2279334260",
+        "name": "Jiayao Gu"
+      },
+      {
+        "authorId": "2351715308",
+        "name": "Ye Yuan"
+      },
+      {
+        "authorId": "2253458572",
+        "name": "Taeyoung Yun"
+      },
+      {
+        "authorId": "2243875493",
+        "name": "Zixuan Liu"
+      },
+      {
+        "authorId": "1865800402",
+        "name": "Y. Bengio"
+      },
+      {
+        "authorId": "2243412535",
+        "name": "Can Chen"
+      }
+    ],
+    "abstract": "Offline optimization is a fundamental challenge in science and engineering, where the goal is to optimize black-box functions using only offline datasets. This setting is particularly relevant when querying the objective function is prohibitively expensive or infeasible, with applications spanning protein engineering, material discovery, neural architecture search, and beyond. The main difficulty lies in accurately estimating the objective landscape beyond the available data, where extrapolations are fraught with significant epistemic uncertainty. This uncertainty can lead to objective hacking(reward hacking), exploiting model inaccuracies in unseen regions, or other spurious optimizations that yield misleadingly high performance estimates outside the training distribution. Recent advances in model-based optimization(MBO) have harnessed the generalization capabilities of deep neural networks to develop offline-specific surrogate and generative models. Trained with carefully designed strategies, these models are more robust against out-of-distribution issues, facilitating the discovery of improved designs. Despite its growing impact in accelerating scientific discovery, the field lacks a comprehensive review. To bridge this gap, we present the first thorough review of offline MBO. We begin by formalizing the problem for both single-objective and multi-objective settings and by reviewing recent benchmarks and evaluation metrics. We then categorize existing approaches into two key areas: surrogate modeling, which emphasizes accurate function approximation in out-of-distribution regions, and generative modeling, which explores high-dimensional design spaces to identify high-performing designs. Finally, we examine the key challenges and propose promising directions for advancement in this rapidly evolving field including safe control of superintelligent systems."
+  },
+  {
+    "paperId": "f1e664a4b9d4c827383d6607708aeed2af519855",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-17299",
+      "ArXiv": "2503.17299",
+      "DOI": "10.48550/arXiv.2503.17299",
+      "CorpusId": 277244640
+    },
+    "title": "Preference-Guided Diffusion for Multi-Objective Offline Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.17299, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2351604212",
+        "name": "Yashas Annadani"
+      },
+      {
+        "authorId": "11631312",
+        "name": "Syrine Belakaria"
+      },
+      {
+        "authorId": "2311442978",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2284338671",
+        "name": "Stefan Bauer"
+      },
+      {
+        "authorId": "2311436870",
+        "name": "Barbara Engelhardt"
+      }
+    ],
+    "abstract": "Offline multi-objective optimization aims to identify Pareto-optimal solutions given a dataset of designs and their objective values. In this work, we propose a preference-guided diffusion model that generates Pareto-optimal designs by leveraging a classifier-based guidance mechanism. Our guidance classifier is a preference model trained to predict the probability that one design dominates another, directing the diffusion model toward optimal regions of the design space. Crucially, this preference model generalizes beyond the training distribution, enabling the discovery of Pareto-optimal solutions outside the observed dataset. We introduce a novel diversity-aware preference guidance, augmenting Pareto dominance preference with diversity criteria. This ensures that generated solutions are optimal and well-distributed across the objective space, a capability absent in prior generative methods for offline multi-objective optimization. We evaluate our approach on various continuous offline multi-objective optimization tasks and find that it consistently outperforms other inverse/generative approaches while remaining competitive with forward/ surrogate-based optimization methods. Our results highlight the effectiveness of classifier-guided diffusion models in generating diverse and high-quality solutions that approximate the Pareto front well."
+  },
+  {
+    "paperId": "05f9997d61460fea9b586f98722c4be32f4a8b22",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-10193",
+      "ArXiv": "2412.10193",
+      "DOI": "10.48550/arXiv.2412.10193",
+      "CorpusId": 274762839,
+      "PubMed": "41847592"
+    },
+    "title": "Simple Guidance Mechanisms for Discrete Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 99,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.10193, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1999174380",
+        "name": "Yair Schiff"
+      },
+      {
+        "authorId": "2238950288",
+        "name": "S. Sahoo"
+      },
+      {
+        "authorId": "2192207316",
+        "name": "Hao Phung"
+      },
+      {
+        "authorId": "2335873325",
+        "name": "Guanghan Wang"
+      },
+      {
+        "authorId": "2302857105",
+        "name": "Sam Boshar"
+      },
+      {
+        "authorId": "2201332269",
+        "name": "Hugo Dalla-torre"
+      },
+      {
+        "authorId": "2331809807",
+        "name": "Bernardo P. de Almeida"
+      },
+      {
+        "authorId": "2305682177",
+        "name": "Alexander Rush"
+      },
+      {
+        "authorId": "2263290685",
+        "name": "Thomas Pierrot"
+      },
+      {
+        "authorId": "2257271109",
+        "name": "V. Kuleshov"
+      }
+    ],
+    "abstract": "Diffusion models for continuous data gained widespread adoption owing to their high quality generation and control mechanisms. However, controllable diffusion on discrete data faces challenges given that continuous guidance methods do not directly apply to discrete diffusion. Here, we provide a straightforward derivation of classifier-free and classifier-based guidance for discrete diffusion, as well as a new class of diffusion models that leverage uniform noise and that are more guidable because they can continuously edit their outputs. We improve the quality of these models with a novel continuous-time variational lower bound that yields state-of-the-art performance, especially in settings involving guidance or fast generation. Empirically, we demonstrate that our guidance mechanisms combined with uniform noise diffusion improve controllable generation relative to autoregressive and diffusion baselines on several discrete data domains, including genomic sequences, small molecule design, and discretized image generation. Code to reproduce our experiments is available here."
+  },
+  {
+    "paperId": "f03074286282431a5afa1927cc79792d51980cb7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-03718",
+      "ArXiv": "2412.03718",
+      "DOI": "10.48550/arXiv.2412.03718",
+      "CorpusId": 274514683
+    },
+    "title": "ParetoFlow: Guided Flows in Multi-Objective Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.03718, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283264350",
+        "name": "Ye Yuan"
+      },
+      {
+        "authorId": "2243412535",
+        "name": "Can Chen"
+      },
+      {
+        "authorId": "2243333924",
+        "name": "C. Pal"
+      },
+      {
+        "authorId": "2243903453",
+        "name": "Xue Liu"
+      }
+    ],
+    "abstract": "In offline multi-objective optimization (MOO), we leverage an offline dataset of designs and their associated labels to simultaneously minimize multiple objectives. This setting more closely mirrors complex real-world problems compared to single-objective optimization. Recent works mainly employ evolutionary algorithms and Bayesian optimization, with limited attention given to the generative modeling capabilities inherent in such data. In this study, we explore generative modeling in offline MOO through flow matching, noted for its effectiveness and efficiency. We introduce ParetoFlow, specifically designed to guide flow sampling to approximate the Pareto front. Traditional predictor (classifier) guidance is inadequate for this purpose because it models only a single objective. In response, we propose a multi-objective predictor guidance module that assigns each sample a weight vector, representing a weighted distribution across multiple objective predictions. A local filtering scheme is introduced to address non-convex Pareto fronts. These weights uniformly cover the entire objective space, effectively directing sample generation towards the Pareto front. Since distributions with similar weights tend to generate similar samples, we introduce a neighboring evolution module to foster knowledge sharing among neighboring distributions. This module generates offspring from these distributions, and selects the most promising one for the next iteration. Our method achieves state-of-the-art performance across various tasks."
+  },
+  {
+    "paperId": "16243a0b41aa8a757b97a1dbb4ad0df8b2ff9bc5",
+    "externalIds": {
+      "ArXiv": "2406.03722",
+      "DBLP": "journals/corr/abs-2406-03722",
+      "DOI": "10.48550/arXiv.2406.03722",
+      "CorpusId": 270285973
+    },
+    "title": "Offline Multi-Objective Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.03722, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2140320254",
+        "name": "Ke Xue"
+      },
+      {
+        "authorId": "2304953779",
+        "name": "Rong-Xi Tan"
+      },
+      {
+        "authorId": "2186904398",
+        "name": "Xiaobin Huang"
+      },
+      {
+        "authorId": "2275057079",
+        "name": "Chao Qian"
+      }
+    ],
+    "abstract": "Offline optimization aims to maximize a black-box objective function with a static dataset and has wide applications. In addition to the objective function being black-box and expensive to evaluate, numerous complex real-world problems entail optimizing multiple conflicting objectives, i.e., multi-objective optimization (MOO). Nevertheless, offline MOO has not progressed as much as offline single-objective optimization (SOO), mainly due to the lack of benchmarks like Design-Bench for SOO. To bridge this gap, we propose a first benchmark for offline MOO, covering a range of problems from synthetic to real-world tasks. This benchmark provides tasks, datasets, and open-source examples, which can serve as a foundation for method comparisons and advancements in offline MOO. Furthermore, we analyze how the current related methods can be adapted to offline MOO from four fundamental perspectives, including data, model architecture, learning algorithm, and search algorithm. Empirical results show improvements over the best value of the training set, demonstrating the effectiveness of offline MOO methods. As no particular method stands out significantly, there is still an open challenge in further enhancing the effectiveness of offline MOO. We finally discuss future challenges for offline MOO, with the hope of shedding some light on this emerging field. Our code is available at \\url{https://github.com/lamda-bbo/offline-moo}."
+  },
+  {
+    "paperId": "c8bfa3abf6a8cbf0a5b3a093661510f34cfa0098",
+    "externalIds": {
+      "DBLP": "conf/iclr/NisonoffXAL25",
+      "ArXiv": "2406.01572",
+      "DOI": "10.48550/arXiv.2406.01572",
+      "CorpusId": 270214339
+    },
+    "title": "Unlocking Guidance for Discrete State-Space Diffusion and Flow Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 97,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.01572, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4527007",
+        "name": "Hunter M. Nisonoff"
+      },
+      {
+        "authorId": "2304669531",
+        "name": "Junhao Xiong"
+      },
+      {
+        "authorId": "2287565309",
+        "name": "Stephan Allenspach"
+      },
+      {
+        "authorId": "2261919343",
+        "name": "Jennifer Listgarten"
+      }
+    ],
+    "abstract": "Generative models on discrete state-spaces have a wide range of potential applications, particularly in the domain of natural sciences. In continuous state-spaces, controllable and flexible generation of samples with desired properties has been realized using guidance on diffusion and flow models. However, these guidance approaches are not readily amenable to discrete state-space models. Consequently, we introduce a general and principled method for applying guidance on such models. Our method depends on leveraging continuous-time Markov processes on discrete state-spaces, which unlocks computational tractability for sampling from a desired guided distribution. We demonstrate the utility of our approach, Discrete Guidance, on a range of applications including guided generation of small-molecules, DNA sequences and protein sequences."
+  },
+  {
+    "paperId": "4a5ba3075d61f6258059dc311f761eb85848b22d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2406-01661",
+      "ArXiv": "2406.01661",
+      "DOI": "10.48550/arXiv.2406.01661",
+      "CorpusId": 270226596
+    },
+    "title": "A Diffusion Model Framework for Unsupervised Neural Combinatorial Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 58,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.01661, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268317793",
+        "name": "Sebastian Sanokowski"
+      },
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "2268320216",
+        "name": "Sebastian Lehner"
+      }
+    ],
+    "abstract": "Learning to sample from intractable distributions over discrete sets without relying on corresponding training data is a central problem in a wide range of fields, including Combinatorial Optimization. Currently, popular deep learning-based approaches rely primarily on generative models that yield exact sample likelihoods. This work introduces a method that lifts this restriction and opens the possibility to employ highly expressive latent variable models like diffusion models. Our approach is conceptually based on a loss that upper bounds the reverse Kullback-Leibler divergence and evades the requirement of exact sample likelihoods. We experimentally validate our approach in data-free Combinatorial Optimization and demonstrate that our method achieves a new state-of-the-art on a wide range of benchmark problems."
+  },
+  {
+    "paperId": "bb857c72e7c75fc3d4b44b1dcaa66c62ea10a2e1",
+    "externalIds": {
+      "DBLP": "conf/cvpr/KarrasALHAL24",
+      "ArXiv": "2312.02696",
+      "DOI": "10.1109/CVPR52733.2024.02282",
+      "CorpusId": 265659032
+    },
+    "title": "Analyzing and Improving the Training Dynamics of Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 383,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2312.02696",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.02696, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269733477",
+        "name": "T. Karras"
+      },
+      {
+        "authorId": "1907688",
+        "name": "M. Aittala"
+      },
+      {
+        "authorId": "49244945",
+        "name": "J. Lehtinen"
+      },
+      {
+        "authorId": "1454226629",
+        "name": "Janne Hellsten"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      }
+    ],
+    "abstract": "Diffusion models currently dominate the field of data- driven image synthesis with their unparalleled scaling to large datasets. In this paper, we identify and rectify several causes for uneven and ineffective training in the popular ADM diffusion model architecture, without altering its high- level structure. Observing uncontrolled magnitude changes and imbalances in both the network activations and weights over the course of training, we redesign the network layers to preserve activation, weight, and update magnitudes on ex- pectation. We find that systematic application of this philoso- phy eliminates the observed drifts and imbalances, resulting in considerably better networks at equal computational com- plexity. Our modifications improve the previous record FID of 2.41 in ImageNet-512 synthesis to 1.81, achieved using fast deterministic sampling. As an independent contribution, we present a method for setting the exponential moving average (EMA) parameters post-hoc, i.e., after completing the training run. This allows precise tuning of EMA length without the cost of performing several training runs, and reveals its surprising interactions with network architecture, training time, and guidance."
+  },
+  {
+    "paperId": "7f9d083452781dbb3259eb76096f73cc4d369a5c",
+    "externalIds": {
+      "DBLP": "conf/nips/YuanCLNL23",
+      "ArXiv": "2309.11600",
+      "DOI": "10.48550/arXiv.2309.11600",
+      "CorpusId": 262084065
+    },
+    "title": "Importance-aware Co-teaching for Offline Model-based Optimization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.11600",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.11600, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283264350",
+        "name": "Ye Yuan"
+      },
+      {
+        "authorId": "2243412535",
+        "name": "Can Chen"
+      },
+      {
+        "authorId": "2243875493",
+        "name": "Zixuan Liu"
+      },
+      {
+        "authorId": "2934259",
+        "name": "Willie Neiswanger"
+      },
+      {
+        "authorId": "2243903453",
+        "name": "Xue Liu"
+      }
+    ],
+    "abstract": "Offline model-based optimization aims to find a design that maximizes a property of interest using only an offline dataset, with applications in robot, protein, and molecule design, among others. A prevalent approach is gradient ascent, where a proxy model is trained on the offline dataset and then used to optimize the design. This method suffers from an out-of-distribution issue, where the proxy is not accurate for unseen designs. To mitigate this issue, we explore using a pseudo-labeler to generate valuable data for fine-tuning the proxy. Specifically, we propose \\textit{\\textbf{I}mportance-aware \\textbf{C}o-\\textbf{T}eaching for Offline Model-based Optimization}~(\\textbf{ICT}). This method maintains three symmetric proxies with their mean ensemble as the final proxy, and comprises two steps. The first step is \\textit{pseudo-label-driven co-teaching}. In this step, one proxy is iteratively selected as the pseudo-labeler for designs near the current optimization point, generating pseudo-labeled data. Subsequently, a co-teaching process identifies small-loss samples as valuable data and exchanges them between the other two proxies for fine-tuning, promoting knowledge transfer. This procedure is repeated three times, with a different proxy chosen as the pseudo-labeler each time, ultimately enhancing the ensemble performance. To further improve accuracy of pseudo-labels, we perform a secondary step of \\textit{meta-learning-based sample reweighting}, which assigns importance weights to samples in the pseudo-labeled dataset and updates them via meta-learning. ICT achieves state-of-the-art results across multiple design-bench tasks, achieving the best mean rank of $3.1$ and median rank of $2$, among $15$ methods. Our source code can be found here."
+  },
+  {
+    "paperId": "4bf07a29e43404466e419a3c6c350ebbaabc6970",
+    "externalIds": {
+      "DBLP": "conf/nips/ChenBLLP23",
+      "ArXiv": "2309.11592",
+      "DOI": "10.48550/arXiv.2309.11592",
+      "CorpusId": 262083707
+    },
+    "title": "Parallel-mentoring for Offline Model-based Optimization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.11592",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.11592, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2243412535",
+        "name": "Can Chen"
+      },
+      {
+        "authorId": "12757989",
+        "name": "Christopher Beckham"
+      },
+      {
+        "authorId": "2243875493",
+        "name": "Zixuan Liu"
+      },
+      {
+        "authorId": "2243903453",
+        "name": "Xue Liu"
+      },
+      {
+        "authorId": "2243333924",
+        "name": "C. Pal"
+      }
+    ],
+    "abstract": "We study offline model-based optimization to maximize a black-box objective function with a static dataset of designs and scores. These designs encompass a variety of domains, including materials, robots and DNA sequences. A common approach trains a proxy on the static dataset to approximate the black-box objective function and performs gradient ascent to obtain new designs. However, this often results in poor designs due to the proxy inaccuracies for out-of-distribution designs. Recent studies indicate that: (a) gradient ascent with a mean ensemble of proxies generally outperforms simple gradient ascent, and (b) a trained proxy provides weak ranking supervision signals for design selection. Motivated by (a) and (b), we propose \\textit{parallel-mentoring} as an effective and novel method that facilitates mentoring among parallel proxies, creating a more robust ensemble to mitigate the out-of-distribution issue. We focus on the three-proxy case and our method consists of two modules. The first module, \\textit{voting-based pairwise supervision}, operates on three parallel proxies and captures their ranking supervision signals as pairwise comparison labels. These labels are combined through majority voting to generate consensus labels, which incorporate ranking supervision signals from all proxies and enable mutual mentoring. However, label noise arises due to possible incorrect consensus. To alleviate this, we introduce an \\textit{adaptive soft-labeling} module with soft-labels initialized as consensus labels. Based on bi-level optimization, this module fine-tunes proxies in the inner level and learns more accurate labels in the outer level to adaptively mentor proxies, resulting in a more robust ensemble. Experiments validate the effectiveness of our method. Our code is available here."
+  },
+  {
+    "paperId": "9d24424dcddf836870b74293ac1222cb6a371bd9",
+    "externalIds": {
+      "DBLP": "conf/nips/YuanHNCW23",
+      "ArXiv": "2307.07055",
+      "DOI": "10.48550/arXiv.2307.07055",
+      "CorpusId": 259924894
+    },
+    "title": "Reward-Directed Conditional Diffusion: Provable Distribution Estimation and Reward Improvement",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 52,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.07055",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.07055, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2114127372",
+        "name": "Hui Yuan"
+      },
+      {
+        "authorId": "2112769495",
+        "name": "Kaixuan Huang"
+      },
+      {
+        "authorId": "103688818",
+        "name": "Chengzhuo Ni"
+      },
+      {
+        "authorId": "2108809403",
+        "name": "Minshuo Chen"
+      },
+      {
+        "authorId": "2258997595",
+        "name": "Mengdi Wang"
+      }
+    ],
+    "abstract": "We explore the methodology and theory of reward-directed generation via conditional diffusion models. Directed generation aims to generate samples with desired properties as measured by a reward function, which has broad applications in generative AI, reinforcement learning, and computational biology. We consider the common learning scenario where the data set consists of unlabeled data along with a smaller set of data with noisy reward labels. Our approach leverages a learned reward function on the smaller data set as a pseudolabeler. From a theoretical standpoint, we show that this directed generator can effectively learn and sample from the reward-conditioned data distribution. Additionally, our model is capable of recovering the latent subspace representation of data. Moreover, we establish that the model generates a new population that moves closer to a user-specified target reward value, where the optimality gap aligns with the off-policy bandit regret in the feature subspace. The improvement in rewards obtained is influenced by the interplay between the strength of the reward signal, the distribution shift, and the cost of off-support extrapolation. We provide empirical results to validate our theory and highlight the relationship between the strength of extrapolation and the quality of generated samples."
+  },
+  {
+    "paperId": "74d4de69a1a81ad9a76abbfcffa24e186e96afd3",
+    "externalIds": {
+      "DBLP": "conf/icml/KrishnamoorthyM23",
+      "ArXiv": "2306.07180",
+      "DOI": "10.48550/arXiv.2306.07180",
+      "CorpusId": 259138671
+    },
+    "title": "Diffusion Models for Black-Box Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 94,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2306.07180",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.07180, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1438304004",
+        "name": "S. Krishnamoorthy"
+      },
+      {
+        "authorId": "1999903454",
+        "name": "Satvik Mashkaria"
+      },
+      {
+        "authorId": "1954250",
+        "name": "Aditya Grover"
+      }
+    ],
+    "abstract": "The goal of offline black-box optimization (BBO) is to optimize an expensive black-box function using a fixed dataset of function evaluations. Prior works consider forward approaches that learn surrogates to the black-box function and inverse approaches that directly map function values to corresponding points in the input domain of the black-box function. These approaches are limited by the quality of the offline dataset and the difficulty in learning one-to-many mappings in high dimensions, respectively. We propose Denoising Diffusion Optimization Models (DDOM), a new inverse approach for offline black-box optimization based on diffusion models. Given an offline dataset, DDOM learns a conditional generative model over the domain of the black-box function conditioned on the function values. We investigate several design choices in DDOM, such as re-weighting the dataset to focus on high function values and the use of classifier-free guidance at test-time to enable generalization to function values that can even exceed the dataset maxima. Empirically, we conduct experiments on the Design-Bench benchmark and show that DDOM achieves results competitive with state-of-the-art baselines."
+  },
+  {
+    "paperId": "61f466f8b12df44009ab6a827bdb63f3f93a453d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-03111",
+      "ArXiv": "2306.03111",
+      "DOI": "10.48550/arXiv.2306.03111",
+      "CorpusId": 259089247
+    },
+    "title": "Bootstrapped Training of Score-Conditioned Generator for Offline Design of Biological Sequences",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.03111",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.03111, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116507411",
+        "name": "Minsu Kim"
+      },
+      {
+        "authorId": "2133376851",
+        "name": "Federico Berto"
+      },
+      {
+        "authorId": "70560338",
+        "name": "Sungsoo Ahn"
+      },
+      {
+        "authorId": "2294562330",
+        "name": "Jinkyoo Park"
+      }
+    ],
+    "abstract": "We study the problem of optimizing biological sequences, e.g., proteins, DNA, and RNA, to maximize a black-box score function that is only evaluated in an offline dataset. We propose a novel solution, bootstrapped training of score-conditioned generator (BootGen) algorithm. Our algorithm repeats a two-stage process. In the first stage, our algorithm trains the biological sequence generator with rank-based weights to enhance the accuracy of sequence generation based on high scores. The subsequent stage involves bootstrapping, which augments the training dataset with self-generated data labeled by a proxy score function. Our key idea is to align the score-based generation with a proxy score function, which distills the knowledge of the proxy score function to the generator. After training, we aggregate samples from multiple bootstrapped generators and proxies to produce a diverse design. Extensive experiments show that our method outperforms competitive baselines on biological sequential design tasks. We provide reproducible source code: \\href{https://github.com/kaist-silab/bootgen}{https://github.com/kaist-silab/bootgen}."
+  },
+  {
+    "paperId": "51d3cbbc574cf10bfc45712edfd86b82649a13ee",
+    "externalIds": {
+      "DBLP": "conf/iclr/AnLJLH24",
+      "ArXiv": "2305.16943",
+      "CorpusId": 266693934
+    },
+    "title": "DiffusionNAG: Predictor-guided Neural Architecture Generation with Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.16943, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277548482",
+        "name": "Sohyun An"
+      },
+      {
+        "authorId": "2110616001",
+        "name": "Hayeon Lee"
+      },
+      {
+        "authorId": "2116434088",
+        "name": "Jaehyeong Jo"
+      },
+      {
+        "authorId": "1472875852",
+        "name": "Seanie Lee"
+      },
+      {
+        "authorId": "2254008573",
+        "name": "Sung Ju Hwang"
+      }
+    ],
+    "abstract": "Existing NAS methods suffer from either an excessive amount of time for repetitive sampling and training of many task-irrelevant architectures. To tackle such limitations of existing NAS methods, we propose a paradigm shift from NAS to a novel conditional Neural Architecture Generation (NAG) framework based on diffusion models, dubbed DiffusionNAG. Specifically, we consider the neural architectures as directed graphs and propose a graph diffusion model for generating them. Moreover, with the guidance of parameterized predictors, DiffusionNAG can flexibly generate task-optimal architectures with the desired properties for diverse tasks, by sampling from a region that is more likely to satisfy the properties. This conditional NAG scheme is significantly more efficient than previous NAS schemes which sample the architectures and filter them using the property predictors. We validate the effectiveness of DiffusionNAG through extensive experiments in two predictor-based NAS scenarios: Transferable NAS and Bayesian Optimization (BO)-based NAS. DiffusionNAG achieves superior performance with speedups of up to 35 times when compared to the baselines on Transferable NAS benchmarks. Furthermore, when integrated into a BO-based algorithm, DiffusionNAG outperforms existing BO-based NAS approaches, particularly in the large MobileNetV3 search space on the ImageNet 1K dataset. Code is available at https://github.com/CownowAn/DiffusionNAG."
+  },
+  {
+    "paperId": "cd7427ba511c126ed0cf32ba9404b6aa53da0153",
+    "externalIds": {
+      "ArXiv": "2303.08797",
+      "DBLP": "journals/corr/abs-2303-08797",
+      "DOI": "10.48550/arXiv.2303.08797",
+      "CorpusId": 257532329
+    },
+    "title": "Stochastic Interpolants: A Unifying Framework for Flows and Diffusions",
+    "venue": "Journal of machine learning research",
+    "year": 2023,
+    "citationCount": 697,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.08797",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.08797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "27590460",
+        "name": "M. Albergo"
+      },
+      {
+        "authorId": "12061674",
+        "name": "N. Boffi"
+      },
+      {
+        "authorId": "1397404076",
+        "name": "E. Vanden-Eijnden"
+      }
+    ],
+    "abstract": "A class of generative models that unifies flow-based and diffusion-based methods is introduced. These models extend the framework proposed in Albergo&Vanden-Eijnden (2023), enabling the use of a broad class of continuous-time stochastic processes called `stochastic interpolants' to bridge any two arbitrary probability density functions exactly in finite time. These interpolants are built by combining data from the two prescribed densities with an additional latent variable that shapes the bridge in a flexible way. The time-dependent probability density function of the stochastic interpolant is shown to satisfy a first-order transport equation as well as a family of forward and backward Fokker-Planck equations with tunable diffusion. Upon consideration of the time evolution of an individual sample, this viewpoint immediately leads to both deterministic and stochastic generative models based on probability flow equations or stochastic differential equations with an adjustable level of noise. The drift coefficients entering these models are time-dependent velocity fields characterized as the unique minimizers of simple quadratic objective functions, one of which is a new objective for the score of the interpolant density. Remarkably, we show that minimization of these quadratic objectives leads to control of the likelihood for any of our generative models built upon stochastic dynamics. By contrast, we establish that generative models based upon a deterministic dynamics must, in addition, control the Fisher divergence between the target and the model. We also construct estimators for the likelihood and the cross-entropy of interpolant-based generative models, discuss connections with other stochastic bridges, and demonstrate that such models recover the Schr\\\"odinger bridge between the two target densities when explicitly optimizing over the interpolant."
+  },
+  {
+    "paperId": "90889ff0ce930528e65b1b761bf9bcf9195e5051",
+    "externalIds": {
+      "ArXiv": "2303.06614",
+      "DBLP": "conf/nips/LuBTP23",
+      "DOI": "10.48550/arXiv.2303.06614",
+      "CorpusId": 257495808
+    },
+    "title": "Synthetic Experience Replay",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.06614",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.06614, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110752472",
+        "name": "Cong Lu"
+      },
+      {
+        "authorId": "2053179501",
+        "name": "Philip J. Ball"
+      },
+      {
+        "authorId": "1410302742",
+        "name": "Jack Parker-Holder"
+      }
+    ],
+    "abstract": "A key theme in the past decade has been that when large neural networks and large datasets combine they can produce remarkable results. In deep reinforcement learning (RL), this paradigm is commonly made possible through experience replay, whereby a dataset of past experiences is used to train a policy or value function. However, unlike in supervised or self-supervised learning, an RL agent has to collect its own data, which is often limited. Thus, it is challenging to reap the benefits of deep learning, and even small neural networks can overfit at the start of training. In this work, we leverage the tremendous recent progress in generative modeling and propose Synthetic Experience Replay (SynthER), a diffusion-based approach to flexibly upsample an agent's collected experience. We show that SynthER is an effective method for training RL agents across offline and online settings, in both proprioceptive and pixel-based environments. In offline settings, we observe drastic improvements when upsampling small offline datasets and see that additional synthetic data also allows us to effectively train larger networks. Furthermore, SynthER enables online agents to train with a much higher update-to-data ratio than before, leading to a significant increase in sample efficiency, without any algorithmic changes. We believe that synthetic training data could open the door to realizing the full potential of deep learning for replay-based RL algorithms from limited data. Finally, we open-source our code at https://github.com/conglu1997/SynthER."
+  },
+  {
+    "paperId": "5f90d43e6ece5c6ee6e8186e4b57d46c85377713",
+    "externalIds": {
+      "ArXiv": "2302.08224",
+      "DBLP": "journals/corr/abs-2302-08224",
+      "DOI": "10.48550/arXiv.2302.08224",
+      "CorpusId": 256900800
+    },
+    "title": "DIFUSCO: Graph-based Diffusion Solvers for Combinatorial Optimization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 256,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.08224",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.08224, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48064856",
+        "name": "Zhiqing Sun"
+      },
+      {
+        "authorId": "35729970",
+        "name": "Yiming Yang"
+      }
+    ],
+    "abstract": "Neural network-based Combinatorial Optimization (CO) methods have shown promising results in solving various NP-complete (NPC) problems without relying on hand-crafted domain knowledge. This paper broadens the current scope of neural solvers for NPC problems by introducing a new graph-based diffusion framework, namely DIFUSCO. Our framework casts NPC problems as discrete {0, 1}-vector optimization problems and leverages graph-based denoising diffusion models to generate high-quality solutions. We investigate two types of diffusion models with Gaussian and Bernoulli noise, respectively, and devise an effective inference schedule to enhance the solution quality. We evaluate our methods on two well-studied NPC combinatorial optimization problems: Traveling Salesman Problem (TSP) and Maximal Independent Set (MIS). Experimental results show that DIFUSCO strongly outperforms the previous state-of-the-art neural solvers, improving the performance gap between ground-truth and neural solvers from 1.76% to 0.46% on TSP-500, from 2.46% to 1.17% on TSP-1000, and from 3.19% to 2.58% on TSP10000. For the MIS problem, DIFUSCO outperforms the previous state-of-the-art neural solver on the challenging SATLIB benchmark."
+  },
+  {
+    "paperId": "736973165f98105fec3729b7db414ae4d80fcbeb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-09748",
+      "ArXiv": "2212.09748",
+      "DOI": "10.1109/ICCV51070.2023.00387",
+      "CorpusId": 254854389
+    },
+    "title": "Scalable Diffusion Models with Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 5373,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2212.09748",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.09748, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35235273",
+        "name": "William S. Peebles"
+      },
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      }
+    ],
+    "abstract": "We explore a new class of diffusion models based on the transformer architecture. We train latent diffusion models of images, replacing the commonly-used U-Net backbone with a transformer that operates on latent patches. We analyze the scalability of our Diffusion Transformers (DiTs) through the lens of forward pass complexity as measured by Gflops. We find that DiTs with higher Gflops—through increased transformer depth/width or increased number of input tokens—consistently have lower FID. In addition to possessing good scalability properties, our largest DiT-XL/2 models outperform all prior diffusion models on the class-conditional ImageNet 512×512 and 256×256 benchmarks, achieving a state-of-the-art FID of 2.27 on the latter."
+  },
+  {
+    "paperId": "22775e58932cdfbd273a2a835a22c5d86800a458",
+    "externalIds": {
+      "ArXiv": "2211.15089",
+      "DBLP": "journals/corr/abs-2211-15089",
+      "DOI": "10.48550/arXiv.2211.15089",
+      "CorpusId": 254044531
+    },
+    "title": "Continuous diffusion for categorical data",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 178,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2211.15089",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.15089, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48373216",
+        "name": "S. Dieleman"
+      },
+      {
+        "authorId": "1389567300",
+        "name": "Laurent Sartran"
+      },
+      {
+        "authorId": "2122353841",
+        "name": "Arman Roshannai"
+      },
+      {
+        "authorId": "2417003",
+        "name": "N. Savinov"
+      },
+      {
+        "authorId": "2825246",
+        "name": "Yaroslav Ganin"
+      },
+      {
+        "authorId": "16326904",
+        "name": "Pierre H. Richemond"
+      },
+      {
+        "authorId": "1701800",
+        "name": "A. Doucet"
+      },
+      {
+        "authorId": "86898863",
+        "name": "Robin Strudel"
+      },
+      {
+        "authorId": "1745899",
+        "name": "Chris Dyer"
+      },
+      {
+        "authorId": "49089615",
+        "name": "Conor Durkan"
+      },
+      {
+        "authorId": "41231781",
+        "name": "Curtis Hawthorne"
+      },
+      {
+        "authorId": "37212795",
+        "name": "R. Leblond"
+      },
+      {
+        "authorId": "7649077",
+        "name": "Will Grathwohl"
+      },
+      {
+        "authorId": "40523747",
+        "name": "J. Adler"
+      }
+    ],
+    "abstract": "Diffusion models have quickly become the go-to paradigm for generative modelling of perceptual signals (such as images and sound) through iterative refinement. Their success hinges on the fact that the underlying physical phenomena are continuous. For inherently discrete and categorical data such as language, various diffusion-inspired alternatives have been proposed. However, the continuous nature of diffusion models conveys many benefits, and in this work we endeavour to preserve it. We propose CDCD, a framework for modelling categorical data with diffusion models that are continuous both in time and input space. We demonstrate its efficacy on several language modelling tasks."
+  },
+  {
+    "paperId": "e3160e5fa4cd8e5d3b0fc8e4c0c2032d68b58f34",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-12765",
+      "ArXiv": "2210.12765",
+      "DOI": "10.48550/arXiv.2210.12765",
+      "CorpusId": 253097761
+    },
+    "title": "Multi-Objective GFlowNets",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 112,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2210.12765",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.12765, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1383135665",
+        "name": "Moksh Jain"
+      },
+      {
+        "authorId": "1498636613",
+        "name": "S. Raparthy"
+      },
+      {
+        "authorId": "83015253",
+        "name": "Alex Hernandez-Garcia"
+      },
+      {
+        "authorId": "1416982829",
+        "name": "Jarrid Rector-Brooks"
+      },
+      {
+        "authorId": "1865800402",
+        "name": "Y. Bengio"
+      },
+      {
+        "authorId": "2259929505",
+        "name": "Santiago Miret"
+      },
+      {
+        "authorId": "2416433",
+        "name": "Emmanuel Bengio"
+      }
+    ],
+    "abstract": "We study the problem of generating diverse candidates in the context of Multi-Objective Optimization. In many applications of machine learning such as drug discovery and material design, the goal is to generate candidates which simultaneously optimize a set of potentially conflicting objectives. Moreover, these objectives are often imperfect evaluations of some underlying property of interest, making it important to generate diverse candidates to have multiple options for expensive downstream evaluations. We propose Multi-Objective GFlowNets (MOGFNs), a novel method for generating diverse Pareto optimal solutions, based on GFlowNets. We introduce two variants of MOGFNs: MOGFN-PC, which models a family of independent sub-problems defined by a scalarization function, with reward-conditional GFlowNets, and MOGFN-AL, which solves a sequence of sub-problems defined by an acquisition function in an active learning loop. Our experiments on wide variety of synthetic and benchmark tasks demonstrate advantages of the proposed methods in terms of the Pareto performance and importantly, improved candidate diversity, which is the main contribution of this work."
+  },
+  {
+    "paperId": "af68f10ab5078bfc519caae377c90ee6d9c504e9",
+    "externalIds": {
+      "ArXiv": "2210.02747",
+      "DBLP": "journals/corr/abs-2210-02747",
+      "CorpusId": 252734897
+    },
+    "title": "Flow Matching for Generative Modeling",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 3985,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.02747, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3232072",
+        "name": "Y. Lipman"
+      },
+      {
+        "authorId": "51466615",
+        "name": "Ricky T. Q. Chen"
+      },
+      {
+        "authorId": "1405681873",
+        "name": "Heli Ben-Hamu"
+      },
+      {
+        "authorId": "1729762",
+        "name": "Maximilian Nickel"
+      },
+      {
+        "authorId": "123542315",
+        "name": "Matt Le"
+      }
+    ],
+    "abstract": "We introduce a new paradigm for generative modeling built on Continuous Normalizing Flows (CNFs), allowing us to train CNFs at unprecedented scale. Specifically, we present the notion of Flow Matching (FM), a simulation-free approach for training CNFs based on regressing vector fields of fixed conditional probability paths. Flow Matching is compatible with a general family of Gaussian probability paths for transforming between noise and data samples -- which subsumes existing diffusion paths as specific instances. Interestingly, we find that employing FM with diffusion paths results in a more robust and stable alternative for training diffusion models. Furthermore, Flow Matching opens the door to training CNFs with other, non-diffusion probability paths. An instance of particular interest is using Optimal Transport (OT) displacement interpolation to define the conditional probability paths. These paths are more efficient than diffusion paths, provide faster training and sampling, and result in better generalization. Training CNFs using Flow Matching on ImageNet leads to consistently better performance than alternative diffusion-based methods in terms of both likelihood and sample quality, and allows fast and reliable sample generation using off-the-shelf numerical ODE solvers."
+  },
+  {
+    "paperId": "cd6496bc404e18a24f634e3dded2ed1cdca03e0f",
+    "externalIds": {
+      "ArXiv": "2209.12892",
+      "DBLP": "journals/corr/abs-2209-12892",
+      "DOI": "10.48550/arXiv.2209.12892",
+      "CorpusId": 252531555
+    },
+    "title": "Learning to Learn with Generative Models of Neural Network Checkpoints",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 93,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.12892",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.12892, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35235273",
+        "name": "William S. Peebles"
+      },
+      {
+        "authorId": "30407997",
+        "name": "Ilija Radosavovic"
+      },
+      {
+        "authorId": "2679394",
+        "name": "Tim Brooks"
+      },
+      {
+        "authorId": "1763086",
+        "name": "Alexei A. Efros"
+      },
+      {
+        "authorId": "153652147",
+        "name": "J. Malik"
+      }
+    ],
+    "abstract": "We explore a data-driven approach for learning to optimize neural networks. We construct a dataset of neural network checkpoints and train a generative model on the parameters. In particular, our model is a conditional diffusion transformer that, given an initial input parameter vector and a prompted loss, error, or return, predicts the distribution over parameter updates that achieve the desired metric. At test time, it can optimize neural networks with unseen parameters for downstream tasks in just one update. We find that our approach successfully generates parameters for a wide range of loss prompts. Moreover, it can sample multimodal parameter solutions and has favorable scaling properties. We apply our method to different neural network architectures and tasks in supervised and reinforcement learning."
+  },
+  {
+    "paperId": "244054a4254a2147e43a3dad9c124b9b7eb4a04a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2209-03003",
+      "ArXiv": "2209.03003",
+      "DOI": "10.48550/arXiv.2209.03003",
+      "CorpusId": 252111177
+    },
+    "title": "Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 2669,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.03003",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.03003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46521757",
+        "name": "Xingchao Liu"
+      },
+      {
+        "authorId": "29777869",
+        "name": "Chengyue Gong"
+      },
+      {
+        "authorId": "2165566517",
+        "name": "Qiang Liu"
+      }
+    ],
+    "abstract": "We present rectified flow, a surprisingly simple approach to learning (neural) ordinary differential equation (ODE) models to transport between two empirically observed distributions \\pi_0 and \\pi_1, hence providing a unified solution to generative modeling and domain transfer, among various other tasks involving distribution transport. The idea of rectified flow is to learn the ODE to follow the straight paths connecting the points drawn from \\pi_0 and \\pi_1 as much as possible. This is achieved by solving a straightforward nonlinear least squares optimization problem, which can be easily scaled to large models without introducing extra parameters beyond standard supervised learning. The straight paths are special and preferred because they are the shortest paths between two points, and can be simulated exactly without time discretization and hence yield computationally efficient models. We show that the procedure of learning a rectified flow from data, called rectification, turns an arbitrary coupling of \\pi_0 and \\pi_1 to a new deterministic coupling with provably non-increasing convex transport costs. In addition, recursively applying rectification allows us to obtain a sequence of flows with increasingly straight paths, which can be simulated accurately with coarse time discretization in the inference phase. In empirical studies, we show that rectified flow performs superbly on image generation, image-to-image translation, and domain adaptation. In particular, on image generation and translation, our method yields nearly straight flows that give high quality results even with a single Euler discretization step."
+  },
+  {
+    "paperId": "af9f365ed86614c800f082bd8eb14be76072ad16",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2207-12598",
+      "ArXiv": "2207.12598",
+      "DOI": "10.48550/arXiv.2207.12598",
+      "CorpusId": 249145348
+    },
+    "title": "Classifier-Free Diffusion Guidance",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 5994,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.12598",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.12598, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      }
+    ],
+    "abstract": "Classifier guidance is a recently introduced method to trade off mode coverage and sample fidelity in conditional diffusion models post training, in the same spirit as low temperature sampling or truncation in other types of generative models. Classifier guidance combines the score estimate of a diffusion model with the gradient of an image classifier and thereby requires training an image classifier separate from the diffusion model. It also raises the question of whether guidance can be performed without a classifier. We show that guidance can be indeed performed by a pure generative model without such a classifier: in what we call classifier-free guidance, we jointly train a conditional and an unconditional diffusion model, and we combine the resulting conditional and unconditional score estimates to attain a trade-off between sample quality and diversity similar to that obtained using classifier guidance."
+  },
+  {
+    "paperId": "2f4c451922e227cbbd4f090b74298445bbd900d0",
+    "externalIds": {
+      "DBLP": "conf/nips/KarrasAAL22",
+      "ArXiv": "2206.00364",
+      "DOI": "10.48550/arXiv.2206.00364",
+      "CorpusId": 249240415
+    },
+    "title": "Elucidating the Design Space of Diffusion-Based Generative Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 3174,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.00364",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.00364, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2976930",
+        "name": "Tero Karras"
+      },
+      {
+        "authorId": "1907688",
+        "name": "M. Aittala"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      }
+    ],
+    "abstract": "We argue that the theory and practice of diffusion-based generative models are currently unnecessarily convoluted and seek to remedy the situation by presenting a design space that clearly separates the concrete design choices. This lets us identify several changes to both the sampling and training processes, as well as preconditioning of the score networks. Together, our improvements yield new state-of-the-art FID of 1.79 for CIFAR-10 in a class-conditional setting and 1.97 in an unconditional setting, with much faster sampling (35 network evaluations per image) than prior designs. To further demonstrate their modular nature, we show that our design changes dramatically improve both the efficiency and quality obtainable with pre-trained score networks from previous work, including improving the FID of a previously trained ImageNet-64 model from 2.07 to near-SOTA 1.55, and after re-training with our proposed improvements to a new SOTA of 1.36."
+  },
+  {
+    "paperId": "9695824d7a01fad57ba9c01d7d76a519d78d65e7",
+    "externalIds": {
+      "ArXiv": "2205.11487",
+      "DBLP": "journals/corr/abs-2205-11487",
+      "DOI": "10.48550/arXiv.2205.11487",
+      "CorpusId": 248986576
+    },
+    "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 8077,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.11487",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.11487, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51497543",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2054003577",
+        "name": "Saurabh Saxena"
+      },
+      {
+        "authorId": "2111917831",
+        "name": "Lala Li"
+      },
+      {
+        "authorId": "21040156",
+        "name": "Jay Whang"
+      },
+      {
+        "authorId": "40081727",
+        "name": "Emily L. Denton"
+      },
+      {
+        "authorId": "81419386",
+        "name": "Seyed Kamyar Seyed Ghasemipour"
+      },
+      {
+        "authorId": "143990191",
+        "name": "Burcu Karagol Ayan"
+      },
+      {
+        "authorId": "1982213",
+        "name": "S. S. Mahdavi"
+      },
+      {
+        "authorId": "143826364",
+        "name": "Raphael Gontijo Lopes"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "We present Imagen, a text-to-image diffusion model with an unprecedented degree of photorealism and a deep level of language understanding. Imagen builds on the power of large transformer language models in understanding text and hinges on the strength of diffusion models in high-fidelity image generation. Our key discovery is that generic large language models (e.g. T5), pretrained on text-only corpora, are surprisingly effective at encoding text for image synthesis: increasing the size of the language model in Imagen boosts both sample fidelity and image-text alignment much more than increasing the size of the image diffusion model. Imagen achieves a new state-of-the-art FID score of 7.27 on the COCO dataset, without ever training on COCO, and human raters find Imagen samples to be on par with the COCO data itself in image-text alignment. To assess text-to-image models in greater depth, we introduce DrawBench, a comprehensive and challenging benchmark for text-to-image models. With DrawBench, we compare Imagen with recent methods including VQ-GAN+CLIP, Latent Diffusion Models, and DALL-E 2, and find that human raters prefer Imagen over other models in side-by-side comparisons, both in terms of sample quality and image-text alignment. See https://imagen.research.google/ for an overview of the results."
+  },
+  {
+    "paperId": "aeac2b147991e84b1a35b0acd054d11820e08b1d",
+    "externalIds": {
+      "ArXiv": "2203.12742",
+      "DBLP": "journals/corr/abs-2203-12742",
+      "DOI": "10.48550/arXiv.2203.12742",
+      "CorpusId": 247628012
+    },
+    "title": "Accelerating Bayesian Optimization for Biological Sequence Design with Denoising Autoencoders",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 137,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.12742",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.12742, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067201658",
+        "name": "S. Stanton"
+      },
+      {
+        "authorId": "151254077",
+        "name": "Wesley J. Maddox"
+      },
+      {
+        "authorId": "13297813",
+        "name": "Nate Gruver"
+      },
+      {
+        "authorId": "51070534",
+        "name": "Phillip M. Maffettone"
+      },
+      {
+        "authorId": "2064292502",
+        "name": "E. Delaney"
+      },
+      {
+        "authorId": "3407175",
+        "name": "Peyton Greenside"
+      },
+      {
+        "authorId": "145771261",
+        "name": "A. Wilson"
+      }
+    ],
+    "abstract": "Bayesian optimization (BayesOpt) is a gold standard for query-efficient continuous optimization. However, its adoption for drug design has been hindered by the discrete, high-dimensional nature of the decision variables. We develop a new approach (LaMBO) which jointly trains a denoising autoencoder with a discriminative multi-task Gaussian process head, allowing gradient-based optimization of multi-objective acquisition functions in the latent space of the autoencoder. These acquisition functions allow LaMBO to balance the explore-exploit tradeoff over multiple design rounds, and to balance objective tradeoffs by optimizing sequences at many different points on the Pareto frontier. We evaluate LaMBO on two small-molecule design tasks, and introduce new tasks optimizing \\emph{in silico} and \\emph{in vitro} properties of large-molecule fluorescent proteins. In our experiments LaMBO outperforms genetic optimizers and does not require a large pretraining corpus, demonstrating that BayesOpt is practical and effective for biological sequence design."
+  },
+  {
+    "paperId": "f23222ad51b9b1f4c1addcf848906db7698ccbff",
+    "externalIds": {
+      "DBLP": "conf/icml/TrabuccoGKL22",
+      "ArXiv": "2202.08450",
+      "CorpusId": 237263462
+    },
+    "title": "Design-Bench: Benchmarks for Data-Driven Offline Model-Based Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 125,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.08450, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2362618764",
+        "name": "Brandon Trabucco"
+      },
+      {
+        "authorId": "3468192",
+        "name": "Xinyang Geng"
+      },
+      {
+        "authorId": "1488785534",
+        "name": "Aviral Kumar"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Black-box model-based optimization (MBO) problems, where the goal is to find a design input that maximizes an unknown objective function, are ubiquitous in a wide range of domains, such as the design of proteins, DNA sequences, aircraft, and robots. Solving model-based optimization problems typically requires actively querying the unknown objective function on design proposals, which means physically building the candidate molecule, aircraft, or robot, testing it, and storing the result. This process can be expensive and time consuming, and one might instead prefer to optimize for the best design using only the data one already has. This setting -- called offline MBO -- poses substantial and different algorithmic challenges than more commonly studied online techniques. A number of recent works have demonstrated success with offline MBO for high-dimensional optimization problems using high-capacity deep neural networks. However, the lack of standardized benchmarks in this emerging field is making progress difficult to track. To address this, we present Design-Bench, a benchmark for offline MBO with a unified evaluation protocol and reference implementations of recent methods. Our benchmark includes a suite of diverse and realistic tasks derived from real-world optimization problems in biology, materials science, and robotics that present distinct challenges for offline MBO. Our benchmark and reference implementations are released at github.com/rail-berkeley/design-bench and github.com/rail-berkeley/design-baselines."
+  },
+  {
+    "paperId": "3312af738432a817e0d3d913dca87d7445a85696",
+    "externalIds": {
+      "ArXiv": "2202.02514",
+      "DBLP": "conf/icml/JoLH22",
+      "CorpusId": 246634850
+    },
+    "title": "Score-based Generative Modeling of Graphs via the System of Stochastic Differential Equations",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 318,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.02514, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116434088",
+        "name": "Jaehyeong Jo"
+      },
+      {
+        "authorId": "2116981434",
+        "name": "Seul Lee"
+      },
+      {
+        "authorId": "35788904",
+        "name": "Sung Ju Hwang"
+      }
+    ],
+    "abstract": "Generating graph-structured data requires learning the underlying distribution of graphs. Yet, this is a challenging problem, and the previous graph generative methods either fail to capture the permutation-invariance property of graphs or cannot sufficiently model the complex dependency between nodes and edges, which is crucial for generating real-world graphs such as molecules. To overcome such limitations, we propose a novel score-based generative model for graphs with a continuous-time framework. Specifically, we propose a new graph diffusion process that models the joint distribution of the nodes and edges through a system of stochastic differential equations (SDEs). Then, we derive novel score matching objectives tailored for the proposed diffusion process to estimate the gradient of the joint log-density with respect to each component, and introduce a new solver for the system of SDEs to efficiently sample from the reverse diffusion process. We validate our graph generation method on diverse datasets, on which it either achieves significantly superior or competitive performance to the baselines. Further analysis shows that our method is able to generate molecules that lie close to the training distribution yet do not violate the chemical valency rule, demonstrating the effectiveness of the system of SDEs in modeling the node-edge relationships. Our code is available at https://github.com/harryjo97/GDSS."
+  },
+  {
+    "paperId": "c10075b3746a9f3dd5811970e93c8ca3ad39b39d",
+    "externalIds": {
+      "ArXiv": "2112.10752",
+      "DBLP": "journals/corr/abs-2112-10752",
+      "DOI": "10.1109/CVPR52688.2022.01042",
+      "CorpusId": 245335280
+    },
+    "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 23719,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2112.10752",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.10752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      },
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "2053482699",
+        "name": "Dominik Lorenz"
+      },
+      {
+        "authorId": "35175531",
+        "name": "Patrick Esser"
+      },
+      {
+        "authorId": "1796707",
+        "name": "B. Ommer"
+      }
+    ],
+    "abstract": "By decomposing the image formation process into a sequential application of denoising autoencoders, diffusion models (DMs) achieve state-of-the-art synthesis results on image data and beyond. Additionally, their formulation allows for a guiding mechanism to control the image generation process without retraining. However, since these models typically operate directly in pixel space, optimization of powerful DMs often consumes hundreds of GPU days and inference is expensive due to sequential evaluations. To enable DM training on limited computational resources while retaining their quality and flexibility, we apply them in the latent space of powerful pretrained autoencoders. In contrast to previous work, training diffusion models on such a representation allows for the first time to reach a near-optimal point between complexity reduction and detail preservation, greatly boosting visual fidelity. By introducing cross-attention layers into the model architecture, we turn diffusion models into powerful and flexible generators for general conditioning inputs such as text or bounding boxes and high-resolution synthesis becomes possible in a convolutional manner. Our latent diffusion models (LDMs) achieve new state of the art scores for image inpainting and class-conditional image synthesis and highly competitive performance on various tasks, including unconditional image generation, text-to-image synthesis, and super-resolution, while significantly reducing computational requirements compared to pixel-based DMs."
+  },
+  {
+    "paperId": "8972662d3df3a7aede57584e5959b82702b1ba97",
+    "externalIds": {
+      "ArXiv": "2110.14188",
+      "DBLP": "conf/nips/YuASS21",
+      "CorpusId": 239998215
+    },
+    "title": "RoMA: Robust Model Adaptation for Offline Model-based Optimization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.14188, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052088734",
+        "name": "Sihyun Yu"
+      },
+      {
+        "authorId": "70560338",
+        "name": "Sungsoo Ahn"
+      },
+      {
+        "authorId": "1779453",
+        "name": "Le Song"
+      },
+      {
+        "authorId": "143720148",
+        "name": "Jinwoo Shin"
+      }
+    ],
+    "abstract": "We consider the problem of searching an input maximizing a black-box objective function given a static dataset of input-output queries. A popular approach to solving this problem is maintaining a proxy model, e.g., a deep neural network (DNN), that approximates the true objective function. Here, the main challenge is how to avoid adversarially optimized inputs during the search, i.e., the inputs where the DNN highly overestimates the true objective function. To handle the issue, we propose a new framework, coined robust model adaptation (RoMA), based on gradient-based optimization of inputs over the DNN. Specifically, it consists of two steps: (a) a pre-training strategy to robustly train the proxy model and (b) a novel adaptation procedure of the proxy model to have robust estimates for a specific set of candidate solutions. At a high level, our scheme utilizes the local smoothness prior to overcome the brittleness of the DNN. Experiments under various tasks show the effectiveness of RoMA compared with previous methods, obtaining state-of-the-art results, e.g., RoMA outperforms all at 4 out of 6 tasks and achieves runner-up results at the remaining tasks."
+  },
+  {
+    "paperId": "792249fdfb563263bb15adf659ff735630dab098",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-06882",
+      "ArXiv": "2107.06882",
+      "CorpusId": 235826266
+    },
+    "title": "Conservative Objective Models for Effective Offline Model-Based Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.06882, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2362618764",
+        "name": "Brandon Trabucco"
+      },
+      {
+        "authorId": "1488785534",
+        "name": "Aviral Kumar"
+      },
+      {
+        "authorId": "3468192",
+        "name": "Xinyang Geng"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Computational design problems arise in a number of settings, from synthetic biology to computer architectures. In this paper, we aim to solve data-driven model-based optimization (MBO) problems, where the goal is to find a design input that maximizes an unknown objective function provided access to only a static dataset of prior experiments. Such data-driven optimization procedures are the only practical methods in many real-world domains where active data collection is expensive (e.g., when optimizing over proteins) or dangerous (e.g., when optimizing over aircraft designs). Typical methods for MBO that optimize the design against a learned model suffer from distributional shift: it is easy to find a design that\"fools\"the model into predicting a high value. To overcome this, we propose conservative objective models (COMs), a method that learns a model of the objective function that lower bounds the actual value of the ground-truth objective on out-of-distribution inputs, and uses it for optimization. Structurally, COMs resemble adversarial training methods used to overcome adversarial examples. COMs are simple to implement and outperform a number of existing methods on a wide range of MBO problems, including optimizing protein sequences, robot morphologies, neural network weights, and superconducting materials."
+  },
+  {
+    "paperId": "91b32fc0a23f0af53229fceaae9cce43a0406d2e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-03006",
+      "ArXiv": "2107.03006",
+      "CorpusId": 235755106
+    },
+    "title": "Structured Denoising Diffusion Models in Discrete State-Spaces",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1635,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.03006, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2058365883",
+        "name": "Jacob Austin"
+      },
+      {
+        "authorId": "2150444707",
+        "name": "Daniel D. Johnson"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1725299",
+        "name": "Daniel Tarlow"
+      },
+      {
+        "authorId": "9965217",
+        "name": "Rianne van den Berg"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPMs) (Ho et al. 2020) have shown impressive results on image and waveform generation in continuous state spaces. Here, we introduce Discrete Denoising Diffusion Probabilistic Models (D3PMs), diffusion-like generative models for discrete data that generalize the multinomial diffusion model of Hoogeboom et al. 2021, by going beyond corruption processes with uniform transition probabilities. This includes corruption with transition matrices that mimic Gaussian kernels in continuous space, matrices based on nearest neighbors in embedding space, and matrices that introduce absorbing states. The third allows us to draw a connection between diffusion models and autoregressive and mask-based generative models. We show that the choice of transition matrix is an important design decision that leads to improved results in image and text domains. We also introduce a new loss function that combines the variational lower bound with an auxiliary cross entropy loss. For text, this model class achieves strong results on character-level text generation while scaling to large vocabularies on LM1B. On the image dataset CIFAR-10, our models approach the sample quality and exceed the log-likelihood of the continuous-space DDPM model."
+  },
+  {
+    "paperId": "8f5562ead9861744a1192c1bef69283e25200aa8",
+    "externalIds": {
+      "DBLP": "conf/nips/DaultonBB21",
+      "ArXiv": "2105.08195",
+      "CorpusId": 234762890
+    },
+    "title": "Parallel Bayesian Optimization of Multiple Noisy Objectives with Expected Hypervolume Improvement",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 225,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.08195, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1380273392",
+        "name": "Sam Daulton"
+      },
+      {
+        "authorId": "3146790",
+        "name": "Maximilian Balandat"
+      },
+      {
+        "authorId": "3071703",
+        "name": "E. Bakshy"
+      }
+    ],
+    "abstract": "Optimizing multiple competing black-box objectives is a challenging problem in many fields, including science, engineering, and machine learning. Multi-objective Bayesian optimization (MOBO) is a sample-efficient approach for identifying the optimal trade-offs between the objectives. However, many existing methods perform poorly when the observations are corrupted by noise. We propose a novel acquisition function, NEHVI, that overcomes this important practical limitation by applying a Bayesian treatment to the popular expected hypervolume improvement (EHVI) criterion and integrating over this uncertainty in the Pareto frontier. We argue that, even in the noiseless setting, generating multiple candidates in parallel is an incarnation of EHVI with uncertainty in the Pareto frontier and therefore can be addressed using the same underlying technique. Through this lens, we derive a natural parallel variant, $q$NEHVI, that reduces computational complexity of parallel EHVI from exponential to polynomial with respect to the batch size. $q$NEHVI is one-step Bayes-optimal for hypervolume maximization in both noisy and noiseless environments, and we show that it can be optimized effectively with gradient-based methods via sample average approximation. Empirically, we demonstrate not only that $q$NEHVI is substantially more robust to observation noise than existing MOBO approaches, but also that it achieves state-of-the-art optimization performance and competitive wall-times in large-batch environments."
+  },
+  {
+    "paperId": "64ea8f180d0682e6c18d1eb688afdb2027c02794",
+    "externalIds": {
+      "ArXiv": "2105.05233",
+      "DBLP": "journals/corr/abs-2105-05233",
+      "CorpusId": 234357997
+    },
+    "title": "Diffusion Models Beat GANs on Image Synthesis",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 11400,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.05233, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      }
+    ],
+    "abstract": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this on unconditional image synthesis by finding a better architecture through a series of ablations. For conditional image synthesis, we further improve sample quality with classifier guidance: a simple, compute-efficient method for trading off diversity for fidelity using gradients from a classifier. We achieve an FID of 2.97 on ImageNet 128$\\times$128, 4.59 on ImageNet 256$\\times$256, and 7.72 on ImageNet 512$\\times$512, and we match BigGAN-deep even with as few as 25 forward passes per sample, all while maintaining better coverage of the distribution. Finally, we find that classifier guidance combines well with upsampling diffusion models, further improving FID to 3.94 on ImageNet 256$\\times$256 and 3.85 on ImageNet 512$\\times$512. We release our code at https://github.com/openai/guided-diffusion"
+  },
+  {
+    "paperId": "67571d29190faea9fbd104acd16274f8c4edf254",
+    "externalIds": {
+      "ArXiv": "2105.01601",
+      "DBLP": "conf/nips/TolstikhinHKBZU21",
+      "CorpusId": 233714958
+    },
+    "title": "MLP-Mixer: An all-MLP Architecture for Vision",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 3496,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.01601, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3121264",
+        "name": "I. Tolstikhin"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "1470947219",
+        "name": "Jessica Yung"
+      },
+      {
+        "authorId": "51027911",
+        "name": "Daniel Keysers"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "34302129",
+        "name": "M. Lučić"
+      },
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) are the go-to model for computer vision. Recently, attention-based networks, such as the Vision Transformer, have also become popular. In this paper we show that while convolutions and attention are both sufficient for good performance, neither of them are necessary. We present MLP-Mixer, an architecture based exclusively on multi-layer perceptrons (MLPs). MLP-Mixer contains two types of layers: one with MLPs applied independently to image patches (i.e.\"mixing\"the per-location features), and one with MLPs applied across patches (i.e.\"mixing\"spatial information). When trained on large datasets, or with modern regularization schemes, MLP-Mixer attains competitive scores on image classification benchmarks, with pre-training and inference cost comparable to state-of-the-art models. We hope that these results spark further research beyond the realms of well established CNNs and Transformers."
+  },
+  {
+    "paperId": "de18baa4964804cf471d85a5a090498242d2e79f",
+    "externalIds": {
+      "ArXiv": "2102.09672",
+      "DBLP": "conf/icml/NicholD21",
+      "CorpusId": 231979499
+    },
+    "title": "Improved Denoising Diffusion Probabilistic Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 5148,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.09672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPM) are a class of generative models which have recently been shown to produce excellent samples. We show that with a few simple modifications, DDPMs can also achieve competitive log-likelihoods while maintaining high sample quality. Additionally, we find that learning variances of the reverse diffusion process allows sampling with an order of magnitude fewer forward passes with a negligible difference in sample quality, which is important for the practical deployment of these models. We additionally use precision and recall to compare how well DDPMs and GANs cover the target distribution. Finally, we show that the sample quality and likelihood of these models scale smoothly with model capacity and training compute, making them easily scalable. We release our code at https://github.com/openai/improved-diffusion"
+  },
+  {
+    "paperId": "633e2fbfc0b21e959a244100937c5853afca4853",
+    "externalIds": {
+      "ArXiv": "2011.13456",
+      "DBLP": "journals/corr/abs-2011-13456",
+      "MAG": "3110257065",
+      "CorpusId": 227209335
+    },
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 10034,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.13456, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2109224633",
+        "name": "Abhishek Kumar"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "16443937",
+        "name": "Ben Poole"
+      }
+    ],
+    "abstract": "Creating noise from data is easy; creating data from noise is generative modeling. We present a stochastic differential equation (SDE) that smoothly transforms a complex data distribution to a known prior distribution by slowly injecting noise, and a corresponding reverse-time SDE that transforms the prior distribution back into the data distribution by slowly removing the noise. Crucially, the reverse-time SDE depends only on the time-dependent gradient field (\\aka, score) of the perturbed data distribution. By leveraging advances in score-based generative modeling, we can accurately estimate these scores with neural networks, and use numerical SDE solvers to generate samples. We show that this framework encapsulates previous approaches in score-based generative modeling and diffusion probabilistic modeling, allowing for new sampling procedures and new modeling capabilities. In particular, we introduce a predictor-corrector framework to correct errors in the evolution of the discretized reverse-time SDE. We also derive an equivalent neural ODE that samples from the same distribution as the SDE, but additionally enables exact likelihood computation, and improved sampling efficiency. In addition, we provide a new way to solve inverse problems with score-based models, as demonstrated with experiments on class-conditional generation, image inpainting, and colorization. Combined with multiple architectural improvements, we achieve record-breaking performance for unconditional image generation on CIFAR-10 with an Inception score of 9.89 and FID of 2.20, a competitive likelihood of 2.99 bits/dim, and demonstrate high fidelity generation of 1024 x 1024 images for the first time from a score-based generative model."
+  },
+  {
+    "paperId": "014576b866078524286802b1d0e18628520aa886",
+    "externalIds": {
+      "ArXiv": "2010.02502",
+      "DBLP": "journals/corr/abs-2010-02502",
+      "MAG": "3092442149",
+      "CorpusId": 222140788
+    },
+    "title": "Denoising Diffusion Implicit Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 11471,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.02502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51453887",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "2057110631",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "2066211828",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPMs) have achieved high quality image generation without adversarial training, yet they require simulating a Markov chain for many steps to produce a sample. To accelerate sampling, we present denoising diffusion implicit models (DDIMs), a more efficient class of iterative implicit probabilistic models with the same training procedure as DDPMs. In DDPMs, the generative process is defined as the reverse of a Markovian diffusion process. We construct a class of non-Markovian diffusion processes that lead to the same training objective, but whose reverse process can be much faster to sample from. We empirically demonstrate that DDIMs can produce high quality samples $10 \\times$ to $50 \\times$ faster in terms of wall-clock time compared to DDPMs, allow us to trade off computation for sample quality, and can perform semantically meaningful image interpolation directly in the latent space."
+  },
+  {
+    "paperId": "c1d9e62b78deff7312836f5f1b8e05f806ba7fda",
+    "externalIds": {
+      "DBLP": "journals/jossw/BiscaniI20",
+      "MAG": "3086784814",
+      "DOI": "10.21105/JOSS.02338",
+      "CorpusId": 224994448
+    },
+    "title": "A parallel global multiobjective framework for optimization: pagmo",
+    "venue": "Journal of Open Source Software",
+    "year": 2020,
+    "citationCount": 263,
+    "openAccessPdf": {
+      "url": "https://joss.theoj.org/papers/10.21105/joss.02338.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.21105/JOSS.02338?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.21105/JOSS.02338, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3129678",
+        "name": "F. Biscani"
+      },
+      {
+        "authorId": "145985675",
+        "name": "D. Izzo"
+      }
+    ],
+    "abstract": "Efficient implementantions of bio-inspired and evolutionary algorithms are sided to state-ofthe-art optimization algorithms (Simplex Methods, SQP methods, interior points methods, etc.) and can be used concurrently (also together with algorithms coded by the user) to build an optimization pipeline exploiting algorithmic cooperation via the asynchronous, generalized island model (Izzo, Ruciński, & Biscani, 2012)."
+  },
+  {
+    "paperId": "0636223a1b230a0efe950bb29ebf472cfad5246a",
+    "externalIds": {
+      "DBLP": "conf/icml/XuTMRSM20",
+      "MAG": "3034757316",
+      "CorpusId": 220444563
+    },
+    "title": "Prediction-Guided Multi-Objective Reinforcement Learning for Continuous Robot Control",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2145754514",
+        "name": "Jie Xu"
+      },
+      {
+        "authorId": "51150784",
+        "name": "Yunsheng Tian"
+      },
+      {
+        "authorId": "12558026",
+        "name": "Pingchuan Ma"
+      },
+      {
+        "authorId": "145944286",
+        "name": "D. Rus"
+      },
+      {
+        "authorId": "35315389",
+        "name": "S. Sueda"
+      },
+      {
+        "authorId": "1752521",
+        "name": "W. Matusik"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29358,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL"
+  },
+  {
+    "paperId": "1c55f470a8273788d82f05500d507b408a5722b8",
+    "externalIds": {
+      "ArXiv": "2006.05078",
+      "MAG": "3035677605",
+      "DBLP": "conf/nips/DaultonBB20",
+      "CorpusId": 219558512
+    },
+    "title": "Differentiable Expected Hypervolume Improvement for Parallel Multi-Objective Bayesian Optimization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 345,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.05078, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1380273392",
+        "name": "Sam Daulton"
+      },
+      {
+        "authorId": "3146790",
+        "name": "Maximilian Balandat"
+      },
+      {
+        "authorId": "3071703",
+        "name": "E. Bakshy"
+      }
+    ],
+    "abstract": "In many real-world scenarios, decision makers seek to efficiently optimize multiple competing objectives in a sample-efficient fashion. Multi-objective Bayesian optimization (BO) is a common approach, but many existing acquisition functions do not have known analytic gradients and suffer from high computational overhead. We leverage recent advances in programming models and hardware acceleration for multi-objective BO using Expected Hypervolume Improvement (EHVI)---an algorithm notorious for its high computational complexity. We derive a novel formulation of $q$-Expected Hypervolume Improvement ($q$EHVI), an acquisition function that extends EHVI to the parallel, constrained evaluation setting. $q$EHVI is an exact computation of the joint EHVI of $q$ new candidate points (up to Monte-Carlo (MC) integration error). Whereas previous EHVI formulations rely on gradient-free acquisition optimization or approximated gradients, we compute exact gradients of the MC estimator via auto-differentiation, thereby enabling efficient and effective optimization using first-order and quasi-second-order methods. Lastly, our empirical evaluation demonstrates that $q$EHVI is computationally tractable in many practical scenarios and outperforms state-of-the-art multi-objective BO algorithms at a fraction of their wall time."
+  },
+  {
+    "paperId": "ad8c95627ebb85fde2026bf2ecfe7b4d980983d6",
+    "externalIds": {
+      "DBLP": "journals/asc/TanabeI20",
+      "MAG": "2998757713",
+      "ArXiv": "2009.12867",
+      "DOI": "10.1016/j.asoc.2020.106078",
+      "CorpusId": 214241999
+    },
+    "title": "An easy-to-use real-world multi-objective optimization problem suite",
+    "venue": "Applied Soft Computing",
+    "year": 2020,
+    "citationCount": 317,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2009.12867",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.12867, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2485853",
+        "name": "Ryoji Tanabe"
+      },
+      {
+        "authorId": "10022373",
+        "name": "H. Ishibuchi"
+      }
+    ],
+    "abstract": "Abstract Although synthetic test problems are widely used for the performance assessment of evolutionary multi-objective optimization algorithms, they are likely to include unrealistic properties which may lead to overestimation/underestimation. To address this issue, we present a multi-objective optimization problem suite consisting of 16 bound-constrained real-world problems. The problem suite includes various problems in terms of the number of objectives, the shape of the Pareto front, and the type of design variables. 4 out of the 16 problems are multi-objective mixed-integer optimization problems. We provide Java, C, and Matlab source codes of the 16 problems so that they are available in an off-the-shelf manner. We examine an approximated Pareto front of each test problem. We also analyze the performance of six representative evolutionary multi-objective optimization algorithms on the 16 problems. In addition to the 16 problems, we present 8 constrained multi-objective real-world problems."
+  },
+  {
+    "paperId": "b16492ec402d3d38b2d61de9c4ad37f03966ab9f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2003-00638",
+      "MAG": "3037879915",
+      "ArXiv": "2003.00638",
+      "CorpusId": 211677799
+    },
+    "title": "Permutation Invariant Graph Generation via Score-Based Generative Modeling",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2020,
+    "citationCount": 348,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.00638, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "113760187",
+        "name": "Chenhao Niu"
+      },
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "51453887",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "3303970",
+        "name": "Shengjia Zhao"
+      },
+      {
+        "authorId": "1954250",
+        "name": "Aditya Grover"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Learning generative models for graph-structured data is challenging because graphs are discrete, combinatorial, and the underlying data distribution is invariant to the ordering of nodes. However, most of the existing generative models for graphs are not invariant to the chosen ordering, which might lead to an undesirable bias in the learned distribution. To address this difficulty, we propose a permutation invariant approach to modeling graphs, using the recent framework of score-based generative modeling. In particular, we design a permutation equivariant, multi-channel graph neural network to model the gradient of the data distribution at the input graph (a.k.a., the score function). This permutation equivariant model of gradients implicitly defines a permutation invariant distribution for graphs. We train this graph neural network with score matching and sample from it with annealed Langevin dynamics. In our experiments, we first demonstrate the capacity of this new architecture in learning discrete graph algorithms. For graph generation, we find that our learning approach achieves better or comparable results to existing models on benchmark datasets."
+  },
+  {
+    "paperId": "449c5660d637741f7aa7ff42549c32b43c9968bf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2001-06782",
+      "MAG": "2997359900",
+      "ArXiv": "2001.06782",
+      "CorpusId": 210839011
+    },
+    "title": "Gradient Surgery for Multi-Task Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 1723,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.06782, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10909315",
+        "name": "Tianhe Yu"
+      },
+      {
+        "authorId": "2121434953",
+        "name": "Saurabh Kumar"
+      },
+      {
+        "authorId": "2129458064",
+        "name": "Abhishek Gupta"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1944801",
+        "name": "Karol Hausman"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While deep learning and deep reinforcement learning (RL) systems have demonstrated impressive results in domains such as image classification, game playing, and robotic control, data efficiency remains a major challenge. Multi-task learning has emerged as a promising approach for sharing structure across multiple tasks to enable more efficient learning. However, the multi-task setting presents a number of optimization challenges, making it difficult to realize large efficiency gains compared to learning tasks independently. The reasons why multi-task learning is so challenging compared to single-task learning are not fully understood. In this work, we identify a set of three conditions of the multi-task optimization landscape that cause detrimental gradient interference, and develop a simple yet general approach for avoiding such interference between task gradients. We propose a form of gradient surgery that projects a task's gradient onto the normal plane of the gradient of any other task that has a conflicting gradient. On a series of challenging multi-task supervised and multi-task RL problems, this approach leads to substantial gains in efficiency and performance. Further, it is model-agnostic and can be combined with previously-proposed multi-task architectures for enhanced performance."
+  },
+  {
+    "paperId": "8403eb1de9cd5ee56f8976d6b9846cb4adc282cf",
+    "externalIds": {
+      "ArXiv": "1912.13464",
+      "MAG": "3106158578",
+      "DBLP": "journals/corr/abs-1912-13464",
+      "CorpusId": 209515681
+    },
+    "title": "Model Inversion Networks for Model-Based Optimization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.13464, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1488785534",
+        "name": "Aviral Kumar"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "In this work, we aim to solve data-driven optimization problems, where the goal is to find an input that maximizes an unknown score function given access to a dataset of inputs with corresponding scores. When the inputs are high-dimensional and valid inputs constitute a small subset of this space (e.g., valid protein sequences or valid natural images), such model-based optimization problems become exceptionally difficult, since the optimizer must avoid out-of-distribution and invalid inputs. We propose to address such problem with model inversion networks (MINs), which learn an inverse mapping from scores to inputs. MINs can scale to high-dimensional input spaces and leverage offline logged data for both contextual and non-contextual optimization problems. MINs can also handle both purely offline data sources and active data collection. We evaluate MINs on tasks from the Bayesian optimization literature, high-dimensional model-based optimization problems over images and protein designs, and contextual bandit optimization from logged data."
+  },
+  {
+    "paperId": "582157494d72dd28dc28172f04dfd5f25fb17bff",
+    "externalIds": {
+      "ArXiv": "1711.02257",
+      "MAG": "2949139602",
+      "DBLP": "conf/icml/ChenBLR18",
+      "CorpusId": 4703661
+    },
+    "title": "GradNorm: Gradient Normalization for Adaptive Loss Balancing in Deep Multitask Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 1744,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.02257, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111606331",
+        "name": "Zhao Chen"
+      },
+      {
+        "authorId": "2442177",
+        "name": "Vijay Badrinarayanan"
+      },
+      {
+        "authorId": "50521003",
+        "name": "Chen-Yu Lee"
+      },
+      {
+        "authorId": "39863668",
+        "name": "A. Rabinovich"
+      }
+    ],
+    "abstract": "Deep multitask networks, in which one neural network produces multiple predictive outputs, can offer better speed and performance than their single-task counterparts but are challenging to train properly. We present a gradient normalization (GradNorm) algorithm that automatically balances training in deep multitask models by dynamically tuning gradient magnitudes. We show that for various network architectures, for both regression and classification tasks, and on both synthetic and real datasets, GradNorm improves accuracy and reduces overfitting across multiple tasks when compared to single-task networks, static baselines, and other adaptive multitask loss balancing techniques. GradNorm also matches or surpasses the performance of exhaustive grid search methods, despite only involving a single asymmetry hyperparameter $\\alpha$. Thus, what was once a tedious search process that incurred exponentially more compute for each task added can now be accomplished within a few training runs, irrespective of the number of tasks. Ultimately, we will demonstrate that gradient manipulation affords us great control over the training dynamics of multitask networks and may be one of the keys to unlocking the potential of multitask learning."
+  },
+  {
+    "paperId": "950d65c97c198287ec8fe165c8c9dfdc959831c4",
+    "externalIds": {
+      "MAG": "2553462639",
+      "CorpusId": 15373186
+    },
+    "title": "Quality Assessment of MORL Algorithms: A Utility-Based Approach",
+    "venue": "",
+    "year": 2015,
+    "citationCount": 48,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3378188",
+        "name": "Luisa M. Zintgraf"
+      },
+      {
+        "authorId": "3362477",
+        "name": "Timon V. Kanters"
+      },
+      {
+        "authorId": "1917202",
+        "name": "D. Roijers"
+      },
+      {
+        "authorId": "1799949",
+        "name": "F. Oliehoek"
+      },
+      {
+        "authorId": "34316682",
+        "name": "Philipp Beau"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "7f46f1b3c2c3919de17b07eefa7dab889a3d1eca",
+    "externalIds": {
+      "DBLP": "journals/tec/DebJ14",
+      "MAG": "2022485595",
+      "DOI": "10.1109/TEVC.2013.2281535",
+      "CorpusId": 206682597
+    },
+    "title": "An Evolutionary Many-Objective Optimization Algorithm Using Reference-Point-Based Nondominated Sorting Approach, Part I: Solving Problems With Box Constraints",
+    "venue": "IEEE Transactions on Evolutionary Computation",
+    "year": 2014,
+    "citationCount": 5810,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TEVC.2013.2281535?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TEVC.2013.2281535, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145080287",
+        "name": "K. Deb"
+      },
+      {
+        "authorId": "48669829",
+        "name": "Himanshu Jain"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "7a59fde27461a3ef4a21a249cc403d0d96e4a0d7",
+    "externalIds": {
+      "MAG": "2144902422",
+      "DBLP": "conf/nips/RahimiR07",
+      "CorpusId": 877929
+    },
+    "title": "Random Features for Large-Scale Kernel Machines",
+    "venue": "Neural Information Processing Systems",
+    "year": 2007,
+    "citationCount": 4793,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "31558848",
+        "name": "A. Rahimi"
+      },
+      {
+        "authorId": "9229182",
+        "name": "B. Recht"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "ae4c3d6d5959b13a78a9027b0bf7a03495e6a05b",
+    "externalIds": {
+      "MAG": "1564638059",
+      "DBLP": "conf/emo/ZitzlerBT06",
+      "DOI": "10.1007/978-3-540-70928-2_64",
+      "CorpusId": 7169377
+    },
+    "title": "The Hypervolume Indicator Revisited: On the Design of Pareto-compliant Indicators Via Weighted Integration",
+    "venue": "International Conference on Evolutionary Multi-Criterion Optimization",
+    "year": 2007,
+    "citationCount": 664,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-540-70928-2_64?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-540-70928-2_64, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1690300",
+        "name": "E. Zitzler"
+      },
+      {
+        "authorId": "2533376",
+        "name": "D. Brockhoff"
+      },
+      {
+        "authorId": "143980067",
+        "name": "L. Thiele"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "ed821ad1d14c733578d5ac18aa582b99e17e38df",
+    "externalIds": {
+      "MAG": "3034445646",
+      "DBLP": "journals/corr/abs-2006-03227",
+      "ArXiv": "2006.03227",
+      "DOI": "10.1111/j.1365-246X.2006.03227.x",
+      "CorpusId": 129022417
+    },
+    "title": "Population-Based Black-Box Optimization for Biological Sequence Design",
+    "venue": "International Conference on Machine Learning",
+    "year": 2007,
+    "citationCount": 142,
+    "openAccessPdf": {
+      "url": "https://academic.oup.com/gji/article-pdf/168/2/757/2030222/168-2-757.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.03227, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2265887296",
+        "name": "Christof Angermüller"
+      },
+      {
+        "authorId": "2265887292",
+        "name": "David Belanger"
+      },
+      {
+        "authorId": "3071104",
+        "name": "Andreea Gane"
+      },
+      {
+        "authorId": "1867856",
+        "name": "Zelda E. Mariet"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "2056418611",
+        "name": "Kevin Murphy"
+      },
+      {
+        "authorId": "2265885065",
+        "name": "Lucy J. Colwell"
+      },
+      {
+        "authorId": "2265885590",
+        "name": "D. Sculley"
+      }
+    ],
+    "abstract": "SUMMARY \n \nThe Upper Silesian Coal Basin (USCB) in Poland is one of the most seismically active mining areas in the world. Seismic observations supported by the Central Mining Institute date back to the 1950s, and include an extensive mine tremors data bank, which has been in operation since that time. More than 55 900 mine tremors of energy E≥ 105 J (local magnitude ML≥ 1.5) occurred over the period 1974–2005. \n \n \n \nIn the USCB, two types of tremors can be distinguished. These are the so-called ‘mining-tectonic’ seismicity and ‘mining’ seismicity. The ‘mining-tectonic’ seismicity results from the interaction between mining and tectonic factors. These seismic events appear to be located in tectonically disturbed zones and their sources are visibly more energetic. The mine tremor source mechanism can mostly be the normal dip-slip fault with a marked strike-slip component in the source region. The rupture plane azimuths and dips of these seismic events correlate well with the strike and dip of the pre-existing local faults, in the vicinity of which the mine tremor sources have been located. The generalized mine tremor source mechanism of the events under consideration contributed a less than 15 per cent implosion component, an about 15 per cent uniaxial compressional component, and an about 70 per cent shear component to the total seismic moment tensor solution. \n \n \n \nThe second one—‘mining seismicity’—is strongly associated with the mining activity and seismic events that occur in the vicinity of active mining excavations. These events are energetically weak and their source mechanism can be of explosive type. The total seismic moment tensor is composed of: 20–50 per cent explosive component, practically the same amount of uniaxial compressional component and a very small amount of shear component (less than 10 per cent)."
+  },
+  {
+    "paperId": "6776d977898bc094f31f42b9d2d8848d390d4d05",
+    "externalIds": {
+      "MAG": "2950106713",
+      "ArXiv": "math-ph/0311024",
+      "DOI": "10.1016/J.AIM.2004.05.006",
+      "CorpusId": 14387866
+    },
+    "title": "Minimal Riesz Energy Point Configurations for Rectifiable d-Dimensional Manifolds",
+    "venue": "",
+    "year": 2003,
+    "citationCount": 162,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.aim.2004.05.006",
+      "status": "BRONZE",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/math-ph/0311024, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47762372",
+        "name": "D. Hardin"
+      },
+      {
+        "authorId": "1729514",
+        "name": "E. Saff"
+      }
+    ],
+    "abstract": "We investigate the energy of arrangements of N points on a rectifiable d-dimensional manifold A R d 0 that interact through the power law (Riesz) potential V = 1/r s , where s > 0 and r is Euclidean distance in R d 0 . With Es(A,N) denoting the minimal energy for such N-point configurations, we determine the asymptotic behavior (as N ! 1) of Es(A,N) for each fixed s d. Moreover, if A has positive d-dimensional Hausdor measure, we show that N-point configurations on A that minimize the s-energy are asymptotically uniformly distributed with respect to d-dimensional Hausdor measure on A when s d. Even for the unit sphere S d R d+1 , these results are new."
+  },
+  {
+    "paperId": "6eddc19efa13f7e70301908d98e85a19d6f32a02",
+    "externalIds": {
+      "MAG": "2126105956",
+      "DBLP": "journals/tec/DebAPM02",
+      "DOI": "10.1109/4235.996017",
+      "CorpusId": 9914171
+    },
+    "title": "A fast and elitist multiobjective genetic algorithm: NSGA-II",
+    "venue": "IEEE Transactions on Evolutionary Computation",
+    "year": 2002,
+    "citationCount": 47129,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/4235.996017?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/4235.996017, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145080287",
+        "name": "K. Deb"
+      },
+      {
+        "authorId": "2112401245",
+        "name": "S. Agrawal"
+      },
+      {
+        "authorId": "143761916",
+        "name": "Amrit Pratap"
+      },
+      {
+        "authorId": "2939646",
+        "name": "T. Meyarivan"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c8e964060a87848f3702d5342584a4c3be1c938a",
+    "externalIds": {
+      "MAG": "1558919105",
+      "DBLP": "conf/ppsn/ZitzlerT98",
+      "DOI": "10.1007/BFb0056872",
+      "CorpusId": 10549248
+    },
+    "title": "Multiobjective Optimization Using Evolutionary Algorithms - A Comparative Case Study",
+    "venue": "Parallel Problem Solving from Nature",
+    "year": 1998,
+    "citationCount": 2627,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/BFb0056872?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/BFb0056872, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1690300",
+        "name": "E. Zitzler"
+      },
+      {
+        "authorId": "143980067",
+        "name": "L. Thiele"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "bd2d4ce70e89e338bf06d5eac25dd366aae76225",
+    "externalIds": {
+      "DBLP": "journals/siamjo/DasD98",
+      "MAG": "2024008934",
+      "DOI": "10.1137/S1052623496307510",
+      "CorpusId": 207081991
+    },
+    "title": "Normal-Boundary Intersection: A New Method for Generating the Pareto Surface in Nonlinear Multicriteria Optimization Problems",
+    "venue": "SIAM Journal on Optimization",
+    "year": 1998,
+    "citationCount": 2508,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1137/S1052623496307510?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1137/S1052623496307510, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6412881",
+        "name": "Indraneel Das"
+      },
+      {
+        "authorId": "1800149",
+        "name": "J. Dennis"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "9d3af1c5fd5f7fb51467b4308952bc4da8285396",
+    "externalIds": {
+      "MAG": "2206047865",
+      "DOI": "10.1177/003591577707000909",
+      "CorpusId": 28208293
+    },
+    "title": "Paper",
+    "venue": "",
+    "year": 1977,
+    "citationCount": 4983,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1177/003591577707000909",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1177/003591577707000909?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1177/003591577707000909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32057228",
+        "name": "N. Cambridge"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "f51afa2745947c11300c65ce001dc6fb2ddd5c2e",
+    "externalIds": {
+      "DBLP": "books/daglib/0004745",
+      "MAG": "1595498733",
+      "CorpusId": 7131045
+    },
+    "title": "Multi-objective optimization using evolutionary algorithms",
+    "venue": "Wiley-Interscience series in systems and optimization",
+    "year": 2001,
+    "citationCount": 14539,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "145080287",
+        "name": "K. Deb"
+      }
+    ],
+    "abstract": null
+  }
+]
