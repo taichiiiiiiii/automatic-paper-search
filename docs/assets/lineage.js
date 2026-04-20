@@ -50,9 +50,35 @@ async function init() {
   state.focusId = requested && known.has(requested) ? requested : state.data.root;
 
   bindLayoutButtons();
+  bindRootButton();
   renderFilterChips();
   render();
   scrollToFocus(false);
+
+  window.addEventListener("popstate", () => {
+    const p = new URLSearchParams(window.location.search);
+    const r = p.get("focus");
+    const next = r && known.has(r) ? r : state.data.root;
+    if (state.focusId !== next) {
+      state.focusId = next;
+      render();
+      scrollToFocus(true);
+    }
+  });
+}
+
+function bindRootButton() {
+  const btn = document.getElementById("btn-root");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    if (state.focusId === state.data.root) return;
+    state.focusId = state.data.root;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("focus");
+    window.history.pushState({}, "", url);
+    render();
+    scrollToFocus(true);
+  });
 }
 
 function bindLayoutButtons() {
@@ -415,7 +441,7 @@ function drawSvg(positioned, edges) {
       state.focusId = p.id;
       const url = new URL(window.location.href);
       url.searchParams.set("focus", p.id);
-      window.history.replaceState({}, "", url);
+      window.history.pushState({}, "", url);
       render();
       scrollToFocus(true);
     });
