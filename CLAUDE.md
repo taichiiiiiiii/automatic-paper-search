@@ -1,7 +1,8 @@
 # CLAUDE.md — PaperPilot 実装ガイド
 
 このファイルは Claude Code が本プロジェクトを実装する際に参照する指示書です。
-設計書（`PaperPilot_基本設計書_v2.1_FINAL.docx`）および市場調査レポート（`PaperPilot_市場調査レポート_v2.0_FINAL.docx`）と合わせて読むこと。
+設計書（[`docs/design/`](docs/design/)）および市場調査レポート（[`docs/research/`](docs/research/)）と合わせて読むこと。
+原本 `.docx` は [`archive/`](archive/) に保管されていますが、**編集は markdown 側で行う**ことが正。
 
 ---
 
@@ -11,7 +12,7 @@
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
 - **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM のみ有料オプション）
 - **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア
-- **参照仕様書：** `PaperPilot_基本設計書_v2.1_FINAL.docx`（Round 2 レビュー25件反映版）
+- **参照仕様書：** [`docs/design/`](docs/design/)（v2.1、Round 2 レビュー25件反映版、原本は `archive/`）
 
 ---
 
@@ -58,8 +59,12 @@ pytest-cov>=4.1
 automatic-paper-search/
 ├── CLAUDE.md                            # このファイル
 ├── README.md                            # ユーザー向けドキュメント
-├── PaperPilot_基本設計書_v2.1_FINAL.docx  # 仕様書（Round 2 レビュー反映版）
-├── PaperPilot_市場調査レポート_v2.0_FINAL.docx
+├── docs/
+│   ├── design/                          # 基本設計書 v2.1（markdown 正本）
+│   ├── research/                        # 市場調査レポート v2.0（markdown 正本）
+│   ├── iclr-2026/                       # GitHub Pages 論文ビューア
+│   └── assets/                          # 共通 CSS/JS
+├── archive/                             # 原本 .docx の保管先（編集禁止）
 ├── .github/
 │   └── workflows/
 │       ├── collect-weekly.yml           # 毎週土曜 07:00 JST 深掘り（PAT に workflow scope 必要）
@@ -350,7 +355,7 @@ PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 
 
 ## 仕様変更時のルール
 
-**仕様・設計に変更が生じた場合は、このファイル（CLAUDE.md）と設計書（`PaperPilot_基本設計書_v2.1_FINAL.docx`）を必ず同時に更新すること。**
+**仕様・設計に変更が生じた場合は、このファイル（CLAUDE.md）と設計書（[`docs/design/`](docs/design/)）を必ず同時に更新すること。**
 
 | 変更の種類 | 更新箇所 |
 |---|---|
