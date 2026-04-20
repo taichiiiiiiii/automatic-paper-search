@@ -52,6 +52,7 @@ async function init() {
   bindLayoutButtons();
   renderFilterChips();
   render();
+  scrollToFocus(false);
 }
 
 function bindLayoutButtons() {
@@ -87,6 +88,39 @@ function renderFilterChips() {
     else state.visibleRelations.add(rel);
     btn.setAttribute("aria-pressed", state.visibleRelations.has(rel));
     render();
+  });
+}
+
+function highlightConnectedEdges(nodeId, on) {
+  for (const path of els.svg.querySelectorAll(".edge")) {
+    if (path.dataset.src === nodeId || path.dataset.dst === nodeId) {
+      path.classList.toggle("edge--highlight", on);
+    } else {
+      path.classList.toggle("edge--dim", on);
+    }
+  }
+}
+
+function scrollToFocus(smooth) {
+  requestAnimationFrame(() => {
+    const fo = els.svg.querySelector("foreignObject");
+    const focusFo = [...els.svg.querySelectorAll("foreignObject")].find(
+      (el) => el.querySelector(".node-card--focus")
+    );
+    if (!focusFo || !els.canvas) return;
+    const x = parseFloat(focusFo.getAttribute("x")) + NODE_W / 2;
+    const y = parseFloat(focusFo.getAttribute("y")) + NODE_H / 2;
+    const svgRect = els.svg.getBoundingClientRect();
+    const canvasRect = els.canvas.getBoundingClientRect();
+    const scaleX = svgRect.width / parseFloat(els.svg.getAttribute("width") || svgRect.width);
+    const scaleY = svgRect.height / parseFloat(els.svg.getAttribute("height") || svgRect.height);
+    const targetScrollLeft = x * scaleX - canvasRect.width / 2;
+    const targetScrollTop = y * scaleY - canvasRect.height / 2;
+    els.canvas.scrollTo({
+      left: Math.max(0, targetScrollLeft),
+      top: Math.max(0, targetScrollTop),
+      behavior: smooth ? "smooth" : "auto",
+    });
   });
 }
 
@@ -163,39 +197,51 @@ function layoutTree(nodes, edges, focusId) {
   const GAP_X = NODE_W + SIBLING_GAP;
 
   const positionRow = (row, getPreferredX) => {
+    if (row.length === 0) return;
     const withPref = row.map((n) => ({ node: n, pref: getPreferredX(n) }));
     withPref.sort((a, b) => a.pref - b.pref);
+
     let lastX = -Infinity;
+    const temp = [];
     for (const { node, pref } of withPref) {
       const x = Math.max(pref, lastX + GAP_X);
-      xByNodeId.set(node.id, x);
+      temp.push({ node, pref, x });
       lastX = x;
     }
+    // Center the row's actual x around the row's preferred-x centroid so
+    // tied-preference groups don't all drift to the right.
+    const avgPref = temp.reduce((s, t) => s + t.pref, 0) / temp.length;
+    const avgActual = temp.reduce((s, t) => s + t.x, 0) / temp.length;
+    const shift = avgPref - avgActual;
+    for (const t of temp) xByNodeId.set(t.node.id, t.x + shift);
   };
 
-  // Upward (ancestors): each node's preferred x = avg of its children's x at level+1
+  // Look at ALL already-positioned connected nodes (any level) so gaps in
+  // levels don't force unrelated nodes to pile at x=0.
   for (let i = zeroIdx - 1; i >= 0; i--) {
-    const lv = sortedLevels[i];
-    const row = byLevel.get(lv) || [];
+    const row = byLevel.get(sortedLevels[i]) || [];
     positionRow(row, (node) => {
-      const childXs = [];
+      const xs = [];
       for (const { id } of children.get(node.id) || []) {
-        if (xByNodeId.has(id) && level.get(id) === lv + 1) childXs.push(xByNodeId.get(id));
+        if (xByNodeId.has(id)) xs.push(xByNodeId.get(id));
       }
-      return childXs.length ? childXs.reduce((a, b) => a + b, 0) / childXs.length : 0;
+      for (const { id } of parents.get(node.id) || []) {
+        if (xByNodeId.has(id)) xs.push(xByNodeId.get(id));
+      }
+      return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
     });
   }
-
-  // Downward (descendants): each node's preferred x = avg of its parents' x at level-1
   for (let i = zeroIdx + 1; i < sortedLevels.length; i++) {
-    const lv = sortedLevels[i];
-    const row = byLevel.get(lv) || [];
+    const row = byLevel.get(sortedLevels[i]) || [];
     positionRow(row, (node) => {
-      const parentXs = [];
+      const xs = [];
       for (const { id } of parents.get(node.id) || []) {
-        if (xByNodeId.has(id) && level.get(id) === lv - 1) parentXs.push(xByNodeId.get(id));
+        if (xByNodeId.has(id)) xs.push(xByNodeId.get(id));
       }
-      return parentXs.length ? parentXs.reduce((a, b) => a + b, 0) / parentXs.length : 0;
+      for (const { id } of children.get(node.id) || []) {
+        if (xByNodeId.has(id)) xs.push(xByNodeId.get(id));
+      }
+      return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
     });
   }
 
@@ -320,6 +366,8 @@ function drawSvg(positioned, edges) {
     path.dataset.rel = e.rel;
     path.dataset.rationale = e.rationale || "";
     path.dataset.conf = e.conf ?? "";
+    path.dataset.src = e.src;
+    path.dataset.dst = e.dst;
     path.addEventListener("mouseenter", onEdgeHover);
     path.addEventListener("mousemove", onEdgeMove);
     path.addEventListener("mouseleave", onEdgeLeave);
@@ -369,13 +417,10 @@ function drawSvg(positioned, edges) {
       url.searchParams.set("focus", p.id);
       window.history.replaceState({}, "", url);
       render();
-      requestAnimationFrame(() => {
-        const target = els.svg.querySelector(".node-card--focus");
-        if (target && target.scrollIntoView) {
-          target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-        }
-      });
+      scrollToFocus(true);
     });
+    card.addEventListener("mouseenter", () => highlightConnectedEdges(p.id, true));
+    card.addEventListener("mouseleave", () => highlightConnectedEdges(p.id, false));
 
     const tier = p.venue_tier === "A+" ? "aplus"
                : p.venue_tier === "A" ? "a"

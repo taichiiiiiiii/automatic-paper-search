@@ -492,12 +492,16 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   display: flex;
   flex-wrap: wrap;
   gap: 1.2rem;
-  padding: 1rem var(--space-edge);
+  padding: 0.75rem var(--space-edge);
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--color-ink-muted);
   background: var(--color-surface-alt, oklch(98% 0.005 270));
   border-bottom: 1px solid var(--color-rule);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(8px);
 }
 .legend__item { display: flex; align-items: center; gap: 0.5rem; }
 .legend__swatch {
@@ -524,6 +528,27 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
       0 0 / 32px 32px,
     var(--color-bg);
   min-height: 70vh;
+  position: relative;
+}
+.lineage-canvas::before,
+.lineage-canvas::after {
+  content: "";
+  position: sticky;
+  display: block;
+  left: 0; right: 0;
+  height: 24px;
+  pointer-events: none;
+  z-index: 2;
+}
+.lineage-canvas::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--color-bg), transparent);
+  margin-bottom: -24px;
+}
+.lineage-canvas::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--color-bg), transparent);
+  margin-top: -24px;
 }
 
 .lineage-canvas svg {
@@ -550,9 +575,12 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 #edges:hover .edge:not(:hover) {
   opacity: 0.18;
 }
-#nodes .node-card:hover ~ * .edge,
-#edges .edge--highlight {
-  opacity: 1;
+.edge--highlight {
+  opacity: 1 !important;
+  stroke-width: 3 !important;
+}
+.edge--dim {
+  opacity: 0.1 !important;
 }
 .edge--supersedes { stroke: var(--rel-supersedes); stroke-width: 2.4; }
 .edge--successor  { stroke: var(--rel-successor); stroke-width: 2; }
@@ -610,7 +638,11 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   fill: var(--color-ink);
   pointer-events: none;
   user-select: none;
-  opacity: 0.85;
+  opacity: 0.9;
+  paint-order: stroke;
+  stroke: var(--color-surface-elevated, #fff);
+  stroke-width: 3;
+  stroke-linejoin: round;
 }
 .edge-label-bg {
   fill: var(--color-surface-elevated, #fff);
