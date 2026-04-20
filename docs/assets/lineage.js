@@ -5,8 +5,7 @@ const NODE_H = 150;
 const LEVEL_GAP = 80;
 const SIBLING_GAP = 28;
 const PADDING = 40;
-const MAX_DEPTH = 2;
-const MAX_SIBLINGS = 6;
+const MAX_DEPTH = 3;
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const XHTML_NS = "http://www.w3.org/1999/xhtml";
@@ -15,6 +14,10 @@ const GENEALOGY = new Set(["supersedes", "successor", "extends", "ablation"]);
 const ALL_RELATIONS = ["supersedes", "successor", "extends", "ablation", "baseline_only", "contrasts"];
 const RELATION_RANK = {
   supersedes: 0, successor: 1, extends: 2, ablation: 3, contrasts: 4, baseline_only: 5,
+};
+const RELATION_LABEL_JA = {
+  supersedes: "置換", successor: "後継", extends: "拡張",
+  ablation: "分析", baseline_only: "比較", contrasts: "対立",
 };
 
 const state = {
@@ -151,8 +154,6 @@ function layoutTree(nodes, edges, focusId) {
   }
   const sortedLevels = [...byLevel.keys()].sort((a, b) => a - b);
 
-  // Within each level, sort by (relation rank, year)
-  // and cap to MAX_SIBLINGS, dropping lower-priority siblings
   for (const lv of sortedLevels) {
     if (lv === 0) continue;
     const row = byLevel.get(lv);
@@ -162,9 +163,6 @@ function layoutTree(nodes, edges, focusId) {
       if (ra !== rb) return ra - rb;
       return (a.year || 0) - (b.year || 0);
     });
-    if (row.length > MAX_SIBLINGS) {
-      byLevel.set(lv, row.slice(0, MAX_SIBLINGS));
-    }
   }
 
   const positioned = [];
@@ -296,6 +294,27 @@ function drawSvg(positioned, edges) {
     path.addEventListener("mousemove", onEdgeMove);
     path.addEventListener("mouseleave", onEdgeLeave);
     edgeGroup.appendChild(path);
+
+    const label = RELATION_LABEL_JA[e.rel];
+    if (label) {
+      const labelMidX = (ax + bx) / 2;
+      const labelMidY = midY;
+      const bg = document.createElementNS(SVG_NS, "rect");
+      bg.setAttribute("class", `edge-label-bg edge-label-bg--${markerClass(e.rel)}`);
+      bg.setAttribute("x", labelMidX - 14);
+      bg.setAttribute("y", labelMidY - 8);
+      bg.setAttribute("width", 28);
+      bg.setAttribute("height", 16);
+      bg.setAttribute("rx", 3);
+      edgeGroup.appendChild(bg);
+      const text = document.createElementNS(SVG_NS, "text");
+      text.setAttribute("class", `edge-label edge-label--${markerClass(e.rel)}`);
+      text.setAttribute("x", labelMidX);
+      text.setAttribute("y", labelMidY + 4);
+      text.setAttribute("text-anchor", "middle");
+      text.textContent = label;
+      edgeGroup.appendChild(text);
+    }
   }
   els.svg.appendChild(edgeGroup);
 
@@ -314,13 +333,18 @@ function drawSvg(positioned, edges) {
     if (p.id === state.focusId) card.classList.add("node-card--focus");
     if (p.is_trending) card.classList.add("node-card--trending");
     card.addEventListener("click", () => {
+      if (state.focusId === p.id) return;
       state.focusId = p.id;
-      if (state.layout === "tree") {
-        const url = new URL(window.location.href);
-        url.searchParams.set("focus", p.id);
-        window.history.replaceState({}, "", url);
-        render();
-      }
+      const url = new URL(window.location.href);
+      url.searchParams.set("focus", p.id);
+      window.history.replaceState({}, "", url);
+      render();
+      requestAnimationFrame(() => {
+        const target = els.svg.querySelector(".node-card--focus");
+        if (target && target.scrollIntoView) {
+          target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        }
+      });
     });
 
     const tier = p.venue_tier === "A+" ? "aplus"
