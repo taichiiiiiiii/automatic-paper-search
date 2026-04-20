@@ -38,9 +38,23 @@ const els = {
 };
 
 async function init() {
+  els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state" id="loading-msg">データ読み込み中...</p>`);
   state.data = await loadLineage();
+  const loadingMsg = document.getElementById("loading-msg");
+  if (loadingMsg) loadingMsg.remove();
   if (!state.data) {
-    els.canvas.innerHTML = `<p class="empty-state">Failed to load lineage data</p>`;
+    els.canvas.insertAdjacentHTML("beforeend", `
+      <div class="empty-state">
+        <p>lineage データの読み込みに失敗しました</p>
+        <button class="layout-btn" onclick="location.reload()">🔄 再試行</button>
+      </div>`);
+    return;
+  }
+  if (!state.data.root || !state.data.nodes.some((n) => n.id === state.data.root)) {
+    state.data.root = state.data.nodes[0]?.id;
+  }
+  if (!state.data.root) {
+    els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state">lineage に表示可能なノードがありません</p>`);
     return;
   }
 
