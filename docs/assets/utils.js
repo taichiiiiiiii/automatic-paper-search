@@ -22,24 +22,15 @@
     return n.toString();
   };
 
-  // Try each URL in order; return the first successful JSON that has .nodes
-  // with at least one entry. Returns null if none work.
-  PP.loadFirstLineage = async function loadFirstLineage(urls) {
-    for (const url of urls) {
-      try {
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) continue;
-        const data = await res.json();
-        if (data && Array.isArray(data.nodes) && data.nodes.length > 0) {
-          return data;
-        }
-      } catch (_) { /* try next */ }
-    }
+  PP.loadLineage = async function loadLineage(url = "lineage.json") {
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data && Array.isArray(data.nodes) && data.nodes.length > 0) return data;
+    } catch (_) { /* fall through */ }
     return null;
   };
-
-  // Standard fallback chain: real data first, demo as fallback.
-  PP.LINEAGE_URLS = ["lineage.json", "lineage-demo.json"];
 
   root.PP = PP;
 })(window);

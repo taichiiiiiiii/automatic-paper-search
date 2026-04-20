@@ -122,8 +122,7 @@ ICLR 2026 の Oral 論文について、**過去に引用した論文（祖先�
 LLM で関係種別（`supersedes` / `successor` / `extends` / `ablation` /
 `baseline_only` / `contrasts` / `unrelated`）を判定します。
 
-出力は `docs/iclr-2026/lineage.json`。サイト側は `lineage.json` があれば
-そちらを優先し、無ければ `lineage-demo.json` にフォールバック。
+出力は `docs/iclr-2026/lineage.json`。サイトはこのファイルを読み込みます。
 
 ### 使い方
 
