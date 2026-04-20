@@ -564,10 +564,55 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   border-color: var(--color-ink-muted);
 }
 .node-card--focus {
-  border: 2px solid var(--color-accent);
-  box-shadow: 0 0 0 4px oklch(62% 0.2 260 / 0.12),
-              0 8px 24px oklch(0% 0 0 / 0.08);
+  border: 2.5px solid var(--color-accent);
+  box-shadow: 0 0 0 6px oklch(58% 0.18 30 / 0.18),
+              0 0 0 10px oklch(58% 0.18 30 / 0.08),
+              0 10px 32px oklch(0% 0 0 / 0.12);
+  position: relative;
+  transform: translateY(-1px);
 }
+.node-card--focus::before {
+  content: "★ FOCUS";
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background: var(--color-accent);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.1em;
+  z-index: 1;
+}
+
+.edge-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--color-ink);
+  pointer-events: none;
+  user-select: none;
+}
+.edge-label-bg {
+  fill: var(--color-surface-elevated, #fff);
+  stroke: currentColor;
+  stroke-width: 0.5;
+  pointer-events: none;
+}
+.edge-label-bg--supersedes, .edge-label--supersedes { color: oklch(55% 0.14 75); }
+.edge-label-bg--successor,  .edge-label--successor  { color: oklch(72% 0.13 80); }
+.edge-label-bg--extends,    .edge-label--extends    { color: oklch(62% 0.14 145); }
+.edge-label-bg--ablation,   .edge-label--ablation   { color: oklch(60% 0.13 240); }
+.edge-label-bg--baseline,   .edge-label--baseline   { color: oklch(60% 0.02 270); }
+.edge-label-bg--contrasts,  .edge-label--contrasts  { color: oklch(58% 0.20 25); }
+.edge-label--supersedes { fill: oklch(40% 0.14 75); }
+.edge-label--successor  { fill: oklch(45% 0.13 80); }
+.edge-label--extends    { fill: oklch(42% 0.14 145); }
+.edge-label--ablation   { fill: oklch(42% 0.13 240); }
+.edge-label--baseline   { fill: oklch(45% 0.02 270); }
+.edge-label--contrasts  { fill: oklch(42% 0.20 25); }
 .node-card--trending {
   background: linear-gradient(180deg, var(--color-bg) 0%, oklch(97% 0.02 75) 100%);
 }
