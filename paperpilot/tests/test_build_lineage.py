@@ -23,7 +23,6 @@ import pytest
 from paperpilot.llm.base import RelationClassification
 from paperpilot.scripts import build_lineage
 
-
 # ---- provider selection ----
 
 

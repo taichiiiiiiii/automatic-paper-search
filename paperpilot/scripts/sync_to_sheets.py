@@ -135,7 +135,7 @@ def main() -> None:
     sh = open_or_create_sheet(client, args.sheet_id, args.title, args.share)
     ws = get_or_create_worksheet(sh, args.tab, rows=len(rows) + 1, cols=len(header))
 
-    ws.update(values=[header] + rows, range_name="A1")
+    ws.update(values=[header, *rows], range_name="A1")
     apply_formatting(ws, header, rows)
 
     print(f"OK Synced {len(rows)} rows -> {sh.url}")
