@@ -37,14 +37,45 @@ jobs:
           PAPERPILOT_OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PAPERPILOT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PAPERPILOT_SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
         run: python -m paperpilot.collector --config paperpilot/config.yaml
+
+      # Visualization layer: regenerate summary.csv + papers.json for every
+      # conference subdir that has pipeline output. Oral curation is
+      # optional (missing oral_summaries_ja.md -> everything becomes
+      # Poster). Skips silently when no conferences are set up.
+      - name: Regenerate summary + papers.json for each conference
+        run: |
+          shopt -s nullglob
+          for conf in paperpilot/output/*/; do
+            name=$(basename "$conf")
+            if ls "$conf"/papers_*.csv >/dev/null 2>&1; then
+              echo "--- $name ---"
+              python paperpilot/scripts/build_summary_csv.py --conference "$name"
+              python paperpilot/scripts/build_pages.py --conference "$name"
+            fi
+          done
+
+      # Lineage regeneration is expensive (hundreds of LLM calls per run)
+      # and only useful for conferences where the Oral curation is done.
+      # Runs only when PAPERPILOT_GROQ_API_KEY is configured — otherwise
+      # we keep whatever lineage.json was last committed.
+      - name: Regenerate lineage.json (if Groq key available)
+        if: ${{ secrets.GROQ_API_KEY != '' }}
+        env:
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        continue-on-error: true   # viewer falls back to last good lineage.json
+        run: python paperpilot/scripts/build_lineage.py
 
       - name: Commit results
         run: |
           git config user.name "PaperPilot Bot"
           git config user.email "bot@paperpilot.dev"
-          git add paperpilot/output paperpilot/data || true
+          # docs/ carries the viewer data (papers.json / lineage.json) that
+          # GitHub Pages serves, so it must be committed alongside the CSVs.
+          git add paperpilot/output paperpilot/data docs || true
           git pull --rebase origin main || true
           if git diff --cached --quiet; then
             echo "No changes to commit."
