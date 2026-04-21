@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from paperpilot.llm.base import RelationClassification
+from paperpilot.llm.base import AbstractLLMProvider, RelationClassification
 from paperpilot.scripts import build_lineage
 
 # ---- provider selection ----
@@ -60,15 +60,25 @@ def test_build_provider_exits_without_any_key(monkeypatch):
 # ---- _classify_cached ----
 
 
-class _FakeProvider:
-    """Minimal AbstractLLMProvider-compatible stub for tests."""
+class _FakeProvider(AbstractLLMProvider):
+    """Minimal AbstractLLMProvider subclass for tests.
+
+    Subclasses instead of ducktyping so mypy accepts _FakeProvider
+    wherever AbstractLLMProvider is required. evaluate_batch is
+    stubbed — these tests only exercise classify_relation.
+    """
+
+    name = "fake"
 
     def __init__(self, return_value: RelationClassification | None):
+        super().__init__({"enabled": True})
         self.return_value = return_value
         self.calls: list[tuple[dict, dict]] = []
-        self.name = "fake"
 
-    def classify_relation(self, a: dict, b: dict):
+    def evaluate_batch(self, papers, profile):  # pragma: no cover - unused in lineage tests
+        return [None] * len(papers)
+
+    def classify_relation(self, a: dict, b: dict) -> RelationClassification | None:
         self.calls.append((a, b))
         return self.return_value
 
@@ -308,7 +318,7 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
         )
 
     provider = _FakeProvider(return_value=None)
-    provider.classify_relation = fake_classify  # type: ignore[assignment]
+    provider.classify_relation = fake_classify  # type: ignore[method-assign]
 
     monkeypatch.setattr(
         build_lineage, "build_provider", lambda: (provider, 0)
