@@ -138,6 +138,9 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
     groq_key = os.environ.get("PAPERPILOT_GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
     gemini_key = os.environ.get("PAPERPILOT_GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
+    # Annotate explicitly as the base class so mypy accepts either concrete
+    # subclass on the way back out of the tuple.
+    provider: AbstractLLMProvider
     if groq_key:
         model = os.environ.get("PAPERPILOT_GROQ_MODEL", "llama-3.3-70b-versatile")
         provider = GroqProvider(
@@ -180,9 +183,13 @@ def _s2_get(url: str) -> dict[str, Any] | None:
         return None
     if resp.status_code == 200:
         try:
-            return resp.json()
+            payload = resp.json()
         except ValueError:
             return None
+        # S2 always returns a JSON object for the endpoints we call; narrowing
+        # here keeps the return type honest for mypy and guards against the
+        # rare case of an error wrapper coming back as a top-level list.
+        return payload if isinstance(payload, dict) else None
     # 404 / 4xx / non-retryable → treat as "not found", silently skip.
     return None
 
@@ -190,7 +197,8 @@ def _s2_get(url: str) -> dict[str, Any] | None:
 def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
     cache = CACHE_DIR / f"paper_{arxiv_id}.json"
     if cache.exists():
-        return json.loads(cache.read_text())
+        cached = json.loads(cache.read_text())
+        return cached if isinstance(cached, dict) else None
     url = f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={S2_FIELDS_PAPER}"
     data = _s2_get(url)
     if data:
@@ -203,7 +211,8 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
     """kind = 'references' or 'citations'."""
     cache = CACHE_DIR / f"{kind}_{s2_id}.json"
     if cache.exists():
-        return json.loads(cache.read_text())
+        cached = json.loads(cache.read_text())
+        return cached if isinstance(cached, list) else []
     url = (
         f"https://api.semanticscholar.org/graph/v1/paper/{s2_id}/{kind}"
         f"?fields={S2_FIELDS_REL}&limit={min(limit * 4, 100)}"

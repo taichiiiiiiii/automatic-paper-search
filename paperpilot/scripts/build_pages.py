@@ -17,6 +17,7 @@ import csv
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 PROJECT = Path(__file__).resolve().parents[1]
@@ -36,7 +37,7 @@ def _maybe_int(value: str | None) -> int | None:
         return None
 
 
-def load_summary(summary_csv: Path) -> list[dict[str, object]]:
+def load_summary(summary_csv: Path) -> list[dict[str, Any]]:
     with summary_csv.open(encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         return [
@@ -61,7 +62,7 @@ def load_summary(summary_csv: Path) -> list[dict[str, object]]:
         ]
 
 
-def build_conference(name: str) -> dict[str, object] | None:
+def build_conference(name: str) -> dict[str, Any] | None:
     summary_csv = PROJECT / "output" / name / "summary.csv"
     if not summary_csv.exists():
         print(f"  skip {name}: no summary.csv")
@@ -77,9 +78,9 @@ def build_conference(name: str) -> dict[str, object] | None:
     tag_counts: dict[str, int] = {}
     type_counts: dict[str, int] = {}
     for p in papers:
-        for t in p["tags"]:  # type: ignore[union-attr]
+        for t in p["tags"]:
             tag_counts[t] = tag_counts.get(t, 0) + 1
-        type_counts[p["type"]] = type_counts.get(p["type"], 0) + 1  # type: ignore[index]
+        type_counts[p["type"]] = type_counts.get(p["type"], 0) + 1
 
     return {
         "name": name,
@@ -89,7 +90,7 @@ def build_conference(name: str) -> dict[str, object] | None:
     }
 
 
-def write_index(conferences: list[dict[str, object]]) -> None:
+def write_index(conferences: list[dict[str, Any]]) -> None:
     index_data = DOCS_ROOT / "conferences.json"
     index_data.write_text(json.dumps(conferences, ensure_ascii=False, indent=2), encoding="utf-8")
 
