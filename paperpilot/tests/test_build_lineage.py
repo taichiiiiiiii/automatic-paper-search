@@ -371,7 +371,7 @@ def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
     )
 
     result = build_lineage.build(limit=None)
-    assert result == {"root": None, "nodes": [], "edges": []}
+    assert result == {"root": None, "nodes": [], "edges": [], "clusters": []}
     assert provider.calls == []
 
 
@@ -534,3 +534,79 @@ def test_build_accepts_conference_argument(tmp_path: Path, monkeypatch):
     # the hardcoded "ICLR 2026".
     focus_node = next(n for n in result["nodes"] if n.get("is_focus"))
     assert focus_node["venue"] == "NEURIPS 2025"
+
+
+# ---- cluster generation ----
+
+
+def test_build_clusters_groups_focus_by_primary_tag():
+    nodes = [
+        {"id": "a", "kinds": ["Vision", "SSL"], "is_focus": True},
+        {"id": "b", "kinds": ["LLM"], "is_focus": True},
+        {"id": "c", "kinds": ["Vision"], "is_focus": True},
+        {"id": "e", "kinds": ["LLM"], "is_focus": True},
+        {"id": "d", "kinds": ["LLM", "Eval"], "is_focus": True},
+    ]
+    clusters = build_lineage.build_clusters(nodes)
+    labels = [(c["label"], c["focus_ids"]) for c in clusters]
+    # LLM (3) comes before Vision (2); focus_ids within each cluster are
+    # sorted so output is deterministic regardless of input order.
+    assert labels == [("LLM", ["b", "d", "e"]), ("Vision", ["a", "c"])]
+
+
+def test_build_clusters_ignores_non_focus_nodes():
+    nodes: list[dict] = [
+        {"id": "f", "kinds": ["Vision"], "is_focus": True},
+        {"id": "r", "kinds": ["Vision"]},  # related, not focus — must be ignored
+    ]
+    clusters = build_lineage.build_clusters(nodes)
+    assert [c["focus_ids"] for c in clusters] == [["f"]]
+
+
+def test_build_clusters_slugifies_labels():
+    nodes = [
+        {"id": "x", "kinds": ["Time Series"], "is_focus": True},
+        {"id": "y", "kinds": ["A+"], "is_focus": True},
+    ]
+    clusters = build_lineage.build_clusters(nodes)
+    ids = sorted(c["id"] for c in clusters)
+    assert ids == ["a", "time-series"]
+
+
+def test_build_clusters_disambiguates_colliding_slugs():
+    """When two labels slugify to the same id, preserve both clusters with
+    suffixed ids so papers don't get silently merged under the wrong label."""
+    nodes = [
+        {"id": "p1", "kinds": ["A+"], "is_focus": True},
+        {"id": "p2", "kinds": ["A-"], "is_focus": True},
+    ]
+    clusters = build_lineage.build_clusters(nodes)
+    # Both labels survive as distinct clusters — neither silently inherits
+    # the other's label.
+    labels = sorted(c["label"] for c in clusters)
+    assert labels == ["A+", "A-"]
+    # Ids are disambiguated so the UI can route correctly.
+    ids = [c["id"] for c in clusters]
+    assert len(set(ids)) == 2, f"expected distinct ids, got {ids}"
+
+
+def test_build_clusters_uncategorized_fallback():
+    nodes = [
+        {"id": "n1", "kinds": [], "is_focus": True},
+        {"id": "n2", "is_focus": True},  # no kinds key at all
+    ]
+    clusters = build_lineage.build_clusters(nodes)
+    assert len(clusters) == 1
+    assert clusters[0]["id"] == "uncategorized"
+    assert sorted(clusters[0]["focus_ids"]) == ["n1", "n2"]
+
+
+def test_build_clusters_ordered_alphabetically_when_tied():
+    nodes = [
+        {"id": "a", "kinds": ["Vision"], "is_focus": True},
+        {"id": "b", "kinds": ["LLM"], "is_focus": True},
+        {"id": "c", "kinds": ["Eval"], "is_focus": True},
+    ]
+    clusters = build_lineage.build_clusters(nodes)
+    # All three tied at 1 member → alphabetical.
+    assert [c["label"] for c in clusters] == ["Eval", "LLM", "Vision"]
