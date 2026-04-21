@@ -80,10 +80,12 @@ embedding:
 #   - ollama : local, free (requires `ollama serve` + `ollama pull <model>`)
 #   - gemini : cloud, free tier (requires PAPERPILOT_GEMINI_API_KEY)
 #   - claude : cloud, paid (requires PAPERPILOT_CLAUDE_API_KEY) — spec's primary
+#   - groq   : cloud, free tier 30 RPM / 14400 RPD (requires PAPERPILOT_GROQ_API_KEY)
+#              primary backend for lineage relation classification
 # Disable this block to skip Stage 4 entirely.
 llm:
   enabled: false         # flip to true once the provider is ready
-  provider: ollama       # or "gemini" / "claude"
+  provider: ollama       # or "gemini" / "claude" / "groq"
 
   # Ollama-specific settings (used when provider == 'ollama')
   model: qwen2.5:7b      # suggested: qwen2.5:7b / llama3.1:8b / gemma2:9b
@@ -95,6 +97,9 @@ llm:
   # Claude-specific settings (used when provider == 'claude')
   # model: claude-sonnet-4-20250514   # or claude-opus-4-* / claude-haiku-4-*
   # max_tokens: 2048                   # Claude requires explicit max_tokens
+
+  # Groq-specific settings (used when provider == 'groq')
+  # model: llama-3.3-70b-versatile   # see https://console.groq.com/docs/models
 
   batch_size: 5
   temperature: 0.2

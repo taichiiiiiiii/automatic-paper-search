@@ -4,6 +4,12 @@ Each provider implements evaluate_batch() to score a list of papers
 against a research profile. The output follows a fixed schema
 (PaperEvaluation) so callers are provider-agnostic.
 
+Providers may *optionally* implement classify_relation() to classify how
+one paper relates to another (used by `paperpilot/scripts/build_lineage.py`
+to build the family-tree view). The default implementation returns None
+so existing providers stay source-compatible; only providers that support
+the feature override it.
+
 The prompt design (system + user templates) is shared by all providers
 so behavior is consistent regardless of which backend is used.
 """
@@ -106,6 +112,105 @@ def build_evaluation_prompt(papers: list[Paper], profile: str) -> tuple[str, str
     return SYSTEM_PROMPT, user
 
 
+# ---- Lineage relation classification (used by scripts/build_lineage.py) ----
+
+_VALID_RELATIONS = frozenset(
+    {
+        "supersedes",
+        "successor",
+        "extends",
+        "ablation",
+        "baseline_only",
+        "contrasts",
+        "unrelated",
+    }
+)
+
+_MAX_RATIONALE_LEN = 280
+_CLASSIFY_ABSTRACT_TRIM = 600
+
+
+@dataclass
+class RelationClassification:
+    """How paper B relates to paper A, as classified by an LLM.
+
+    Valid relations (design doc §5.5): supersedes / successor / extends /
+    ablation / baseline_only / contrasts / unrelated.
+    """
+
+    relation: str
+    confidence: float  # 0.0 .. 1.0
+    rationale: str  # one short Japanese sentence (required — empty tooltips are worse than no edge)
+
+    @classmethod
+    def from_dict(cls, d: object) -> RelationClassification | None:
+        if not isinstance(d, dict):
+            return None
+        rel = d.get("relation")
+        if not isinstance(rel, str) or rel not in _VALID_RELATIONS:
+            return None
+        rationale = str(d.get("rationale") or "").strip()[:_MAX_RATIONALE_LEN]
+        if not rationale:
+            # An empty rationale would render an empty tooltip in the viewer.
+            # Reject rather than emit a silent edge.
+            return None
+        try:
+            conf = float(d.get("confidence", 0.7))
+        except (TypeError, ValueError):
+            conf = 0.7
+        # Clamp to [0, 1] — the UI treats confidence as an opacity multiplier.
+        conf = max(0.0, min(1.0, conf))
+        return cls(relation=rel, confidence=conf, rationale=rationale)
+
+
+CLASSIFY_SYSTEM_PROMPT = """\
+You classify the relationship between two AI/ML research papers.
+
+Reply with ONLY a single JSON object, no markdown fences, no prose:
+{"relation": "<relation>", "confidence": <0.0-1.0>, "rationale": "<one short Japanese sentence>"}
+
+Valid `relation` values (choose exactly one):
+- supersedes: B uses A's approach but clearly outperforms it, replacing A as the reference.
+- successor: B continues A's research line with a natural improvement (weaker than supersedes).
+- extends: B applies A's method to a different domain, task, or scale.
+- ablation: B is an analysis / ablation study of A's components.
+- baseline_only: B merely cites A as a baseline for comparison without building on it.
+- contrasts: B argues for a fundamentally different approach to the same problem.
+- unrelated: B cites A only tangentially with no real intellectual link.
+"""
+
+_CLASSIFY_USER_TEMPLATE = """\
+PAPER A (older / target):
+Title: {a_title}
+Year: {a_year}
+Abstract: {a_abstract}
+
+PAPER B (newer / candidate):
+Title: {b_title}
+Year: {b_year}
+Abstract: {b_abstract}
+
+How does Paper B relate to Paper A?
+"""
+
+
+def build_classify_prompt(a: dict, b: dict) -> tuple[str, str]:
+    """Return (system_prompt, user_prompt) for a single A→B relation classification.
+
+    `a` / `b` are plain dicts (not `Paper`) so callers can pass S2 responses
+    directly without adapting into the full pipeline schema.
+    """
+    user = _CLASSIFY_USER_TEMPLATE.format(
+        a_title=a.get("title", ""),
+        a_year=a.get("year", "?"),
+        a_abstract=(a.get("abstract") or "")[:_CLASSIFY_ABSTRACT_TRIM],
+        b_title=b.get("title", ""),
+        b_year=b.get("year", "?"),
+        b_abstract=(b.get("abstract") or "")[:_CLASSIFY_ABSTRACT_TRIM],
+    )
+    return CLASSIFY_SYSTEM_PROMPT, user
+
+
 class AbstractLLMProvider(ABC):
     """Contract every LLM backend must fulfil."""
 
@@ -127,3 +232,11 @@ class AbstractLLMProvider(ABC):
         """Evaluate a chunk of papers. Must return one result per input paper,
         preserving order. None for individual papers that could not be parsed.
         """
+
+    def classify_relation(
+        self, a: dict, b: dict
+    ) -> RelationClassification | None:
+        """Classify how paper B relates to paper A. Optional — providers that
+        don't support lineage classification return None (the caller then
+        falls back / skips the edge)."""
+        return None
