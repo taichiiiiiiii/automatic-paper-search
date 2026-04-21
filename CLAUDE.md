@@ -458,17 +458,17 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Stage 1 (rule filter) | ✅ カテゴリ / 日付 / 除外 / seen_ids |
 | Stage 2 (metric scoring) | ✅ venue / citation / author / github / keyword / follow |
 | Stage 3 (embedding) | ✅ MiniLM / backend=minilm（SPECTER2/BGE は将来拡張） |
-| Stage 4 (LLM rerank) | ✅ Ollama / Gemini / Claude |
+| Stage 4 (LLM rerank) | ✅ Ollama / Gemini / Claude / Groq |
 | Exporters | ✅ CSV / JSON / Slack / Email |
 | 差分更新 (seen_ids) | ✅ `{id: timestamp}` 日次パージ |
-| GitHub Actions | ⏸️ ワークフロー作成済み、PAT の workflow scope 追加待ち |
+| GitHub Actions | ⏸️ ワークフロー作成済み、PAT の workflow scope 追加待ち（#12 / #14） |
 | **ビューア一覧 (papers.json)** | ✅ `index.html` + `build_pages.py` で生成 |
-| **家系図ビュー (lineage.json)** | ⚠️ 動作するが `build_lineage.py` が LLM 抽象をバイパス（urllib 直叩き）。CI 未統合・手動実行 |
-| **Groq Provider (lineage 第一候補)** | ❌ `paperpilot/llm/groq_provider.py` 未作成 |
-| **scripts のテスト** | ❌ `paperpilot/scripts/` はカバレッジ対象外 |
+| **家系図ビュー (lineage.json)** | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI (`collect-weekly.yml`) に統合済 |
+| **Groq Provider (lineage 第一候補)** | ✅ `paperpilot/llm/groq_provider.py` (Gemini もフォールバック対応) |
+| **scripts のテスト** | 🟡 `build_lineage` / `build_pages` / `build_summary_csv` は smoke test 済。`sync_to_sheets` は未対応（#24） |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
-| テストカバレッジ | ✅ 97% (272+ tests) |
+| テストカバレッジ | ✅ 96% (334 tests) |
 
 ---
 
-*最終更新：2026年4月21日（家系図ビューアを主要出力として明記・絶対ルール §11-13 追加）*
+*最終更新：2026年4月21日（Groq Provider / classify_relation 抽象を追加、家系図ビューを週次 CI に統合、`paperpilot/scripts/*` に smoke test を追加）*
