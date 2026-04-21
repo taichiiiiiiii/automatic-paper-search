@@ -22,6 +22,19 @@ PROJECT = Path(__file__).resolve().parents[1]
 DOCS_ROOT = ROOT / "docs"
 
 
+def _maybe_int(value: str | None) -> int | None:
+    """Parse a numeric field from the CSV. Empty / missing / unparseable -> None."""
+    if value is None:
+        return None
+    value = value.strip()
+    if not value:
+        return None
+    try:
+        return int(float(value))  # handles "17.0" etc from pandas-exported CSVs
+    except ValueError:
+        return None
+
+
 def load_summary(summary_csv: Path) -> list[dict[str, object]]:
     with summary_csv.open(encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -35,6 +48,13 @@ def load_summary(summary_csv: Path) -> list[dict[str, object]]:
                 "arxiv_url": row["arxiv_url"],
                 "pdf_url": row["pdf_url"],
                 "abstract": row["abstract"],
+                # Stage 2 signal outputs carried forward from summary.csv.
+                # Strings stay as strings (empty="" for missing); numerics
+                # become ints so the viewer skips coercion.
+                "arxiv_id": row.get("arxiv_id", ""),
+                "citation_count": _maybe_int(row.get("citation_count")),
+                "venue_tier": _maybe_int(row.get("venue_tier")),
+                "github_stars": _maybe_int(row.get("github_stars")),
             }
             for row in reader
         ]
