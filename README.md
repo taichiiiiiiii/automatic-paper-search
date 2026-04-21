@@ -1,10 +1,13 @@
 # PaperPilot
 
-AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、学会採択ステータス・GitHub Stars・引用速度・著者・キーワード・LLM判定に基づいてスコアリングして CSV/JSON/Slack/Email で配信するパイプライン。
+AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン。補助出力として CSV / JSON / Slack / Email にも配信できます。
+
+**主要な出力:** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。
+LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に分類し、先行研究と後継研究を一枚の SVG で俯瞰できます。
 
 **2 つの自動実行モード**（GitHub Actions）：
-- **週次深掘り**（Sat 7:00 JST）— 引用数・Stars が熟成してから総合ランキング
-- **毎日の著者ウォッチ**（07:00 JST 毎日）— フォロー中の研究者の新作を公開 0 秒後に通知
+- **週次深掘り**（Sat 7:00 JST）— 収集 → スコアリング → summary.csv → papers.json → lineage.json の全工程を回す
+- **毎日の著者ウォッチ**（07:00 JST 毎日）— フォロー中の研究者の新作を公開 0 秒後に通知（lean、LLM 不使用）
 
 ## 特徴
 
@@ -13,7 +16,8 @@ AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、学�
   - Stage 1: ルールベースフィルタ（カテゴリ/日付/除外語/差分）
   - Stage 2: 品質シグナル（venue / citation / author / GitHub Stars / keyword / **follow**）でスコアリング
   - Stage 3: Embedding 類似度（MiniLM、オプション）
-  - Stage 4: **LLM によるリランク + 日本語要約**（Ollama / Gemini / Claude）
+  - Stage 4: **LLM によるリランク + 日本語要約**（Ollama / Gemini / Claude / Groq）
+- **家系図ビューア** — S2 の引用グラフを LLM で関係分類し、`docs/<conference>/lineage.html` にインタラクティブ表示
 - **FollowSignal** — 特定研究者 / 組織の新作を day-1 で最上位に（他シグナルが熟成前でも）
 - **プラグイン構造** — Source / Signal / Exporter / LLMProvider は基底クラスを継承するだけで追加可能
 - **設定駆動** — `config.yaml` でキーワード・カテゴリ・重み・LLMモデル・フォロー研究者を変更
@@ -87,6 +91,38 @@ llm:
 他の LLM を使う場合は `paperpilot/llm/` に `AbstractLLMProvider` を継承したクラスを追加してください（Claude / Gemini / OpenAI / Groq など）。
 
 出力は `paperpilot/output/papers_YYYY-MM-DD.{csv,json}` に保存されます。
+
+## 家系図ビューア
+
+パイプラインの成果物を `docs/<conference>/` 配下の静的サイトに変換する補助パイプラインが `paperpilot/scripts/` にあります。
+
+```
+output/<conf>/papers_YYYY-MM-DD.csv
+  │
+  ├─ build_summary_csv.py   → summary.csv（8 列 + 自動タグ）
+  ├─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー）
+  └─ build_lineage.py       → docs/<conf>/lineage.json（家系図）
+                              （S2 引用グラフ + LLM 関係分類）
+```
+
+### ローカルで実行
+
+```bash
+# 論文一覧ビューだけ（LLM 不要）
+python paperpilot/scripts/build_summary_csv.py --conference iclr-2026
+python paperpilot/scripts/build_pages.py --conference iclr-2026
+
+# 家系図（Groq API キーが必要）
+export PAPERPILOT_GROQ_API_KEY=gsk_...   # https://console.groq.com/keys (無料、30 RPM)
+python paperpilot/scripts/build_lineage.py --conference iclr-2026 --limit 1  # スモーク
+python paperpilot/scripts/build_lineage.py --conference iclr-2026            # 全 Oral
+```
+
+`docs/` 以下を GitHub Pages で公開すれば、ブラウザから `index.html` / `lineage.html` にアクセスできます。CI (`collect-weekly.yml`) ではこれら 3 スクリプトが順番に呼ばれ、docs/ ごと commit されます。
+
+### LLM プロバイダの優先順位
+
+`build_lineage.py` は `PAPERPILOT_GROQ_API_KEY` を優先し、無ければ `PAPERPILOT_GEMINI_API_KEY` にフォールバックします。1 Oral 論文あたり最大 30 件の引用関係を分類するため、無料枠を考えると Groq 推奨です。
 
 ## 設定（`paperpilot/config.yaml`）
 
@@ -163,26 +199,36 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 | `GH_PAT` | GitHub API 用 PAT（未設定時は `github.token` を使用） |
 | `S2_API_KEY` | Semantic Scholar API |
 | `OPENALEX_EMAIL` | OpenAlex polite-pool |
-| `GEMINI_API_KEY` | Gemini プロバイダ（Stage 4） |
+| `GEMINI_API_KEY` | Gemini プロバイダ（Stage 4 + lineage 分類） |
 | `CLAUDE_API_KEY` | Claude プロバイダ（Stage 4） |
+| `GROQ_API_KEY` | Groq プロバイダ（lineage 分類の第一候補、無料枠 30 RPM） |
 | `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗通知 |
 
 ## ディレクトリ構成
 
 ```
-paperpilot/
-├── collector.py          # CLI エントリ
-├── config.yaml           # 検索設定（秘匿情報なし）
-├── .env.example          # 環境変数テンプレート
-├── pipeline/             # Stage 0〜2 の実装
-├── sources/              # arXiv source（基底クラス + プラグイン）
-├── signals/              # venue / github / keyword シグナル
-├── exporters/            # CSV / JSON
-├── models/paper.py       # 論文データモデル
-├── utils/                # config_loader, dedup, rate_limiter, logger
-├── data/                 # seen_ids.json, run_history.jsonl
-├── output/               # papers_YYYY-MM-DD.{csv,json}
-└── logs/                 # paperpilot.log
+automatic-paper-search/
+├── docs/
+│   ├── iclr-2026/          # GitHub Pages 家系図ビュー（本命出力）
+│   │   ├── index.html      # 論文一覧（papers.json）
+│   │   ├── lineage.html    # 家系図（lineage.json）
+│   │   └── {papers,lineage}.json
+│   └── assets/             # 共通 CSS/JS
+└── paperpilot/
+    ├── collector.py        # CLI エントリ
+    ├── config.yaml         # 検索設定（秘匿情報なし）
+    ├── .env.example        # 環境変数テンプレート
+    ├── pipeline/           # Stage 0〜4 の実装
+    ├── sources/            # arXiv / S2 / OpenAlex
+    ├── signals/            # venue / citation / author / github / keyword / follow
+    ├── exporters/          # CSV / JSON / Slack / Email
+    ├── llm/                # Ollama / Gemini / Claude / Groq
+    ├── scripts/            # build_summary_csv / build_pages / build_lineage / sync_to_sheets
+    ├── models/paper.py     # 論文データモデル
+    ├── utils/              # config_loader, dedup, http, rate_limiter, logger
+    ├── data/               # seen_ids.json, run_history.jsonl, lineage-cache/
+    ├── output/             # papers_YYYY-MM-DD.{csv,json}
+    └── logs/               # paperpilot.log
 ```
 
 ## 拡張ポイント
@@ -190,8 +236,9 @@ paperpilot/
 - **新しい Source の追加**: `sources/base.py` の `AbstractSource` を継承し `fetch()` を実装
 - **新しい Signal の追加**: `signals/base.py` の `AbstractSignal` を継承し `enrich_one()` または `enrich_batch()` を実装
 - **新しい Exporter の追加**: `exporters/base.py` の `AbstractExporter` を継承し `export()` を実装
+- **新しい LLMProvider の追加**: `llm/base.py` の `AbstractLLMProvider` を継承し `evaluate_batch()` を実装（家系図分類にも対応したい場合は `classify_relation()` も）
 
-詳細は同梱の基本設計書 v2.1（`PaperPilot_基本設計書_v2.1_FINAL.docx`）を参照。
+詳細は [`docs/design/`](docs/design/) の基本設計書 v2.1 を参照。
 
 ## ライセンス
 
