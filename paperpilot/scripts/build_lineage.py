@@ -247,6 +247,8 @@ def to_node(
     kinds: list[str] | None = None,
     override_venue: str | None = None,
     override_tier: str | None = None,
+    catalog_citations: int | None = None,
+    catalog_stars: int | None = None,
 ) -> dict:
     venue = override_venue or (paper.get("venue") or "arXiv").strip() or "arXiv"
     tier = override_tier or venue_tier_for(paper.get("venue") or "")
@@ -256,6 +258,14 @@ def to_node(
         last_space = tldr.rfind(" ")
         if last_space > 80:
             tldr = tldr[:last_space] + "…"
+    # Catalog (Stage 2) values win when provided; otherwise use S2's response
+    # so related nodes still have citation counts for the viewer to size on.
+    citation_count = (
+        catalog_citations
+        if catalog_citations is not None
+        else (paper.get("citationCount") or 0)
+    )
+    github_stars = catalog_stars if catalog_stars is not None else 0
     return {
         "id": paper["paperId"],
         "title": paper["title"],
@@ -264,7 +274,8 @@ def to_node(
         "venue_tier": tier,
         "authors": [a.get("name", "") for a in (paper.get("authors") or [])][:5],
         "kinds": kinds or [],
-        "github_stars": 0,
+        "citation_count": citation_count,
+        "github_stars": github_stars,
         "tldr": tldr,
         **({"is_focus": True} if focus else {}),
         **({"is_trending": True} if trending else {}),
@@ -352,12 +363,18 @@ def build(
         # Catalog says these are ICLR 2026 Oral — S2 only knows them as arXiv
         # preprints, so override for the focus nodes.
         catalog_kinds = paper.get("tags", [])[:3] or ["empirical"]
+        # Forward Stage 2 signals (#23). S2's citation count on arXiv preprints
+        # is often zero / stale for recently-accepted papers.
+        catalog_citations = paper.get("citation_count")
+        catalog_stars = paper.get("github_stars")
         nodes[focus_id] = to_node(
             focus_paper,
             focus=True,
             kinds=catalog_kinds,
             override_venue=venue_label,
             override_tier="A+",
+            catalog_citations=catalog_citations if isinstance(catalog_citations, int) else None,
+            catalog_stars=catalog_stars if isinstance(catalog_stars, int) else None,
         )
 
         parents = select_top(fetch_related(focus_id, "references", TOP_PARENTS * 4), TOP_PARENTS)
