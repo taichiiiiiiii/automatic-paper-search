@@ -1,6 +1,7 @@
 """Sync the lightweight summary CSV to a Google Spreadsheet (idempotent upsert).
 
-Reads `output/iclr-2026/summary.csv` and pushes it to a Google Sheet.
+Reads `output/<conference>/summary.csv` (default conference: iclr-2026)
+and pushes it to a Google Sheet.
 - Authenticates via a service-account JSON key (path from $GOOGLE_APPLICATION_CREDENTIALS
   or --credentials).
 - Re-uses an existing spreadsheet by ID ($PAPERPILOT_SHEET_ID or --sheet-id);
@@ -12,6 +13,9 @@ Run:
     GOOGLE_APPLICATION_CREDENTIALS=~/secrets/sa.json \
     PAPERPILOT_SHEET_ID=1AbCdEf...                     \
         python -m paperpilot.scripts.sync_to_sheets
+
+    # other venues
+    python -m paperpilot.scripts.sync_to_sheets --conference neurips-2025
 
 Required deps:
     pip install -e '.[sheets]'   # gspread + google-auth

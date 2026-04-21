@@ -1,11 +1,11 @@
-"""Build a real lineage graph for ICLR 2026 Oral papers.
+"""Build a real lineage graph for a conference's Oral papers.
 
-For each Oral paper:
+For each Oral paper in docs/<conference>/papers.json:
   1. Resolve to a Semantic Scholar paperId via arXiv ID.
   2. Fetch top-N references (parents) and citations (children) from S2.
   3. Classify each (focus, related) pair via an AbstractLLMProvider into one of:
      supersedes / successor / extends / ablation / baseline_only / contrasts / unrelated.
-  4. Persist results to docs/iclr-2026/lineage.json.
+  4. Persist results to docs/<conference>/lineage.json.
 
 LLM providers are selected in this order (first key present wins):
     PAPERPILOT_GROQ_API_KEY  → GroqProvider (free, 30 RPM, default)
@@ -17,9 +17,10 @@ never via urllib / requests directly. See CLAUDE.md.
 The script caches intermediate state (S2 lookups, classified edges) so re-runs
 are fast and only fetch what's missing.
 
-Usage:
+Usage (default --conference iclr-2026):
   python paperpilot/scripts/build_lineage.py
-  python paperpilot/scripts/build_lineage.py --limit 3   # quick smoke test
+  python paperpilot/scripts/build_lineage.py --limit 3                  # smoke test
+  python paperpilot/scripts/build_lineage.py --conference neurips-2025  # other venues
 """
 
 from __future__ import annotations

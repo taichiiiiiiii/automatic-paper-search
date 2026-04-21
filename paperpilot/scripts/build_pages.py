@@ -1,11 +1,12 @@
 """Build static GitHub Pages site from summary.csv.
 
 Converts `output/<conference>/summary.csv` -> `docs/<conference>/papers.json`,
-which the static viewer (`docs/iclr-2026/index.html`) consumes.
+which the static viewer (`docs/<conference>/index.html`) consumes. Running
+without --conference rebuilds every conference directory that has a
+summary.csv.
 
 Run:
-    python paperpilot/scripts/build_pages.py
-    # or for a specific conference:
+    python paperpilot/scripts/build_pages.py                    # all conferences
     python paperpilot/scripts/build_pages.py --conference iclr-2026
 """
 
