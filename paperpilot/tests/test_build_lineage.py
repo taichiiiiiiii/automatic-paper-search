@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -364,6 +364,50 @@ def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
     result = build_lineage.build(limit=None)
     assert result == {"root": None, "nodes": [], "edges": []}
     assert provider.calls == []
+
+
+# ---- S2 helper (#25) ----
+
+
+def _mock_resp(status: int, body=None):
+    resp = MagicMock()
+    resp.status_code = status
+    resp.json.return_value = body if body is not None else {}
+    return resp
+
+
+def test_s2_get_uses_request_with_retry_and_parses_json():
+    """_s2_get must go through utils.http.request_with_retry, not urllib."""
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=_mock_resp(200, {"paperId": "abc", "title": "T"}),
+    ) as mock:
+        out = build_lineage._s2_get(
+            "https://api.semanticscholar.org/graph/v1/paper/arXiv:2404.00001"
+        )
+    assert out == {"paperId": "abc", "title": "T"}
+    # Helper hands off the URL + a paperpilot User-Agent
+    args = mock.call_args
+    assert args.args[0] == "GET"
+    assert "api.semanticscholar.org" in args.args[1]
+    assert args.kwargs["headers"]["User-Agent"].startswith("PaperPilot")
+
+
+def test_s2_get_returns_none_on_non_200():
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=_mock_resp(404),
+    ):
+        assert build_lineage._s2_get("https://x") is None
+
+
+def test_s2_get_returns_none_when_retry_helper_gives_up():
+    # request_with_retry returns None when overall_deadline hits
+    with patch(
+        "paperpilot.scripts.build_lineage.request_with_retry",
+        return_value=None,
+    ):
+        assert build_lineage._s2_get("https://x") is None
 
 
 # ---- conference parameterization (#21) ----
