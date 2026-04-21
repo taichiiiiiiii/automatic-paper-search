@@ -25,7 +25,13 @@ from ..models import Paper
 from ..utils.http import request_with_retry
 from ..utils.json_parser import parse_llm_response
 from ..utils.logger import get_logger
-from .base import AbstractLLMProvider, PaperEvaluation, build_evaluation_prompt
+from .base import (
+    AbstractLLMProvider,
+    PaperEvaluation,
+    RelationClassification,
+    build_classify_prompt,
+    build_evaluation_prompt,
+)
 
 logger = get_logger(__name__)
 
@@ -76,6 +82,21 @@ class GeminiProvider(AbstractLLMProvider):
             else:
                 evaluations.append(None)
         return evaluations
+
+    # ---- Lineage classification ----
+
+    def classify_relation(
+        self, a: dict, b: dict
+    ) -> RelationClassification | None:
+        system, user = build_classify_prompt(a, b)
+        # `responseMimeType: application/json` already forces the model to
+        # emit valid JSON; build_classify_prompt asks for a single object,
+        # which parse_llm_response handles via its object-extraction fallback.
+        text = self._generate(system, user)
+        if text is None:
+            return None
+        parsed = parse_llm_response(text)
+        return RelationClassification.from_dict(parsed)
 
     # ---- helpers ----
 
