@@ -149,8 +149,10 @@ def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypat
     papers_path = tmp_path / "papers.json"
     output_path = tmp_path / "lineage.json"
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
-    monkeypatch.setattr(build_lineage, "PAPERS_PATH", papers_path)
-    monkeypatch.setattr(build_lineage, "OUTPUT_PATH", output_path)
+    monkeypatch.setattr(
+        build_lineage, "resolve_paths",
+        lambda conf: (papers_path, output_path),
+    )
 
     papers_path.write_text(
         json.dumps(
@@ -230,7 +232,10 @@ def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
     cache_dir.mkdir()
     papers_path = tmp_path / "papers.json"
     monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
-    monkeypatch.setattr(build_lineage, "PAPERS_PATH", papers_path)
+    monkeypatch.setattr(
+        build_lineage, "resolve_paths",
+        lambda conf: (papers_path, tmp_path / "lineage.json"),
+    )
 
     papers_path.write_text(
         json.dumps(
@@ -253,3 +258,69 @@ def test_build_skips_papers_without_arxiv_id(tmp_path: Path, monkeypatch):
     result = build_lineage.build(limit=None)
     assert result == {"root": None, "nodes": [], "edges": []}
     assert provider.calls == []
+
+
+# ---- conference parameterization (#21) ----
+
+
+def test_resolve_paths_defaults_to_iclr_2026():
+    papers, output = build_lineage.resolve_paths("iclr-2026")
+    assert papers.name == "papers.json"
+    assert output.name == "lineage.json"
+    assert papers.parent.name == "iclr-2026"
+
+
+def test_resolve_paths_for_other_conference():
+    papers, output = build_lineage.resolve_paths("neurips-2025")
+    assert papers.parent.name == "neurips-2025"
+    assert output.parent.name == "neurips-2025"
+
+
+def test_derive_venue_label_turns_slug_into_pretty_name():
+    assert build_lineage.derive_venue_label("iclr-2026") == "ICLR 2026"
+    assert build_lineage.derive_venue_label("neurips-2025") == "NEURIPS 2025"
+
+
+def test_build_accepts_conference_argument(tmp_path: Path, monkeypatch):
+    """Conference parameter drives file paths and venue override for focus nodes."""
+    # Set up a NeurIPS 2025 conference in tmp_path
+    papers_dir = tmp_path / "docs" / "neurips-2025"
+    papers_dir.mkdir(parents=True)
+    papers_path = papers_dir / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "title": "NeurIPS Paper",
+                    "type": "Oral",
+                    "tags": ["RL"],
+                    "arxiv_url": "http://arxiv.org/abs/2501.00001",
+                }
+            ]
+        )
+    )
+    cache_dir = tmp_path / "lineage-cache"
+    cache_dir.mkdir()
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
+    monkeypatch.setattr(
+        build_lineage, "resolve_paths",
+        lambda conf: (papers_path, papers_dir / "lineage.json"),
+    )
+
+    focus = {
+        "paperId": "focus-id", "title": "NeurIPS Paper", "year": 2025,
+        "venue": "arXiv", "authors": [], "abstract": "abs", "citationCount": 5,
+    }
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
+
+    provider = _FakeProvider(return_value=None)
+    monkeypatch.setattr(
+        build_lineage, "build_provider", lambda: (provider, 0)
+    )
+
+    result = build_lineage.build(conference="neurips-2025")
+    # Focus node should have the conference-derived venue override, not
+    # the hardcoded "ICLR 2026".
+    focus_node = next(n for n in result["nodes"] if n.get("is_focus"))
+    assert focus_node["venue"] == "NEURIPS 2025"
