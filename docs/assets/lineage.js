@@ -44,7 +44,10 @@ function savePrefs() {
 const prefs = loadPrefs();
 const state = {
   data: null,
-  layout: VALID_LAYOUTS.has(prefs?.layout) ? prefs.layout : "tree",
+  // Default to Topics on first visit — it gives immediate bird's-eye context
+  // (which subfields dominate Oral?) before asking the user to pick a paper
+  // to center the tree on.
+  layout: VALID_LAYOUTS.has(prefs?.layout) ? prefs.layout : "topics",
   focusId: null,
   currentCluster: null,
   visibleRelations: new Set(
@@ -63,6 +66,36 @@ const els = {
   ttConf: document.getElementById("tt-conf"),
   filterBar: document.getElementById("relation-filter"),
   crumb: document.getElementById("lineage-crumb"),
+  legend: document.querySelector(".legend"),
+  footerHint: document.getElementById("footer-hint"),
+};
+
+// Copy surfaced in the footer per-mode — tells the user what clicking does.
+const FOOTER_HINT = {
+  topics: "カードをクリック → その論文の家系図に遷移",
+  tree: "カードをクリック → その論文を中心に家系図を再描画",
+  timeline: "カードをクリック → 家系図モードでその論文にフォーカス",
+};
+
+// Japanese subtitles for common primary-tag cluster labels. Falls through to
+// an empty string when unknown so the label stays on its own (not "LLM — ")
+// and so adding new kinds at Stage 2 doesn't need a JS change.
+const CLUSTER_SUBTITLE = {
+  LLM: "大規模言語モデル",
+  Vision: "コンピュータビジョン",
+  VLM: "視覚-言語モデル",
+  MLLM: "マルチモーダル LLM",
+  Diffusion: "拡散モデル",
+  RL: "強化学習",
+  SSL: "自己教師あり学習",
+  Transformer: "Transformer 系アーキテクチャ",
+  MoE: "Mixture of Experts",
+  Medical: "医療応用",
+  TimeSeries: "時系列",
+  Theory: "理論",
+  Optim: "最適化",
+  Eval: "評価・ベンチマーク",
+  uncategorized: "未分類",
 };
 
 function clusterForFocus(id) {
@@ -122,7 +155,12 @@ async function init() {
 function bindRootButton() {
   const btn = document.getElementById("btn-root");
   if (!btn) return;
-  btn.addEventListener("click", () => focusPaper(state.data.root));
+  btn.addEventListener("click", () => {
+    focusPaper(state.data.root);
+    // Ensures "home" always lands in the tree view — otherwise clicking it
+    // from Topics/Timeline would just update state.focusId invisibly.
+    if (state.layout !== "tree") setLayout("tree");
+  });
 }
 
 function bindLayoutButtons() {
@@ -214,6 +252,9 @@ function bindSearch() {
     if (!btn) return;
     const id = btn.dataset.id;
     focusPaper(id);
+    // Same rationale as bindRootButton — a search action that doesn't
+    // change what the user sees would feel broken.
+    if (state.layout !== "tree") setLayout("tree");
     input.value = "";
     results.classList.remove("is-open");
   });
@@ -256,6 +297,7 @@ function scrollToFocus(smooth) {
 }
 
 function render() {
+  applyModeUI();
   renderCrumb();
   if (state.layout === "topics") {
     renderTopicsGallery();
@@ -273,6 +315,15 @@ function render() {
   drawSvg(positioned, visibleEdges);
 }
 
+// Show/hide chrome that only makes sense for specific layouts. Keeps the
+// screen quieter in topics mode where edges + relation filters don't apply.
+function applyModeUI() {
+  const isGraph = state.layout === "tree" || state.layout === "timeline";
+  if (els.legend) els.legend.hidden = !isGraph;
+  if (els.filterBar) els.filterBar.hidden = !isGraph;
+  if (els.footerHint) els.footerHint.textContent = FOOTER_HINT[state.layout] || "";
+}
+
 function restoreCanvasForSvg() {
   const gallery = els.canvas.querySelector(".topics-gallery");
   if (gallery) gallery.remove();
@@ -288,7 +339,10 @@ function renderCrumb() {
     els.crumb.innerHTML = "";
     return;
   }
-  if (state.layout === "topics") {
+  // Hide in modes that don't center on a single focus:
+  // - topics: shows the gallery itself
+  // - timeline: shows all nodes chronologically (no "current focus")
+  if (state.layout === "topics" || state.layout === "timeline") {
     els.crumb.hidden = true;
     els.crumb.innerHTML = "";
     return;
@@ -359,6 +413,12 @@ function renderTopicsGallery() {
     return;
   }
 
+  const totalPapers = clusters.reduce((s, c) => s + c.focus_ids.length, 0);
+  const intro = document.createElement("p");
+  intro.className = "topics-gallery__intro";
+  intro.textContent = `${clusters.length} サブフィールド · Oral 採択 ${totalPapers} 本を primary tag でグループ化。カードをクリックすると家系図に切り替わります。`;
+  gallery.appendChild(intro);
+
   const nodesById = new Map(state.data.nodes.map((n) => [n.id, n]));
   for (const cluster of clusters) {
     const section = document.createElement("section");
@@ -367,8 +427,13 @@ function renderTopicsGallery() {
 
     const head = document.createElement("div");
     head.className = "topics-cluster__head";
+    const subtitle = CLUSTER_SUBTITLE[cluster.label] || "";
+    const subtitleHtml = subtitle
+      ? `<span class="topics-cluster__subtitle">${escapeHtml(subtitle)}</span>`
+      : "";
     head.innerHTML = `
       <h2 class="topics-cluster__label">${escapeHtml(cluster.label)}</h2>
+      ${subtitleHtml}
       <span class="topics-cluster__count">${cluster.focus_ids.length} 件</span>
     `;
     section.appendChild(head);
