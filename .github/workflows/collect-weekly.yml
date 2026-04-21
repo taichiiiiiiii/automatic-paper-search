@@ -80,7 +80,8 @@ jobs:
           git config user.name "PaperPilot Bot"
           git config user.email "bot@paperpilot.dev"
           # docs/ carries the viewer data (papers.json / lineage.json) that
-          # GitHub Pages serves, so it must be committed alongside the CSVs.
+          # Cloudflare Pages serves, so it must be committed alongside the CSVs
+          # (Cloudflare hooks the push and auto-deploys).
           git add paperpilot/output paperpilot/data docs || true
           git pull --rebase origin main || true
           if git diff --cached --quiet; then

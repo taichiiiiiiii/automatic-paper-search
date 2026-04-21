@@ -9,7 +9,7 @@
 ## プロジェクト概要
 
 - **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
-- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。補助出力として CSV / JSON / Slack / Email も維持
+- **主要な出力：** Cloudflare Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。補助出力として CSV / JSON / Slack / Email も維持
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
 - **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
 - **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
@@ -63,7 +63,8 @@ automatic-paper-search/
 ├── docs/
 │   ├── design/                          # 基本設計書 v2.1（markdown 正本）
 │   ├── research/                        # 市場調査レポート v2.0（markdown 正本）
-│   ├── iclr-2026/                       # GitHub Pages 論文ビューア（家系図ビュー本命）
+│   ├── _headers                         # Cloudflare Pages キャッシュ / セキュリティヘッダ
+│   ├── iclr-2026/                       # Cloudflare Pages 論文ビューア（家系図ビュー本命）
 │   │   ├── index.html                   # 採択論文一覧（papers.json を表示）
 │   │   ├── lineage.html                 # 家系図ビュー（lineage.json を表示）
 │   │   ├── papers.json                  # build_pages.py が生成
@@ -309,7 +310,7 @@ State                          → save_seen_ids + append_run_history
 
 ### Visualization 層（家系図ビュー）
 
-配信用 Exporter とは別に、GitHub Pages 上の家系図ビューを生成する **補助パイプライン** を `paperpilot/scripts/` に置く。通常ランの後に順に実行し、`docs/<conference>/` を更新する。
+配信用 Exporter とは別に、Cloudflare Pages 上の家系図ビューを生成する **補助パイプライン** を `paperpilot/scripts/` に置く。通常ランの後に順に実行し、`docs/<conference>/` を更新する（Cloudflare Pages が push をフックして自動デプロイ）。
 
 ```
 output/<conf>/papers_YYYY-MM-DD.csv

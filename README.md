@@ -2,7 +2,7 @@
 
 AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン。補助出力として CSV / JSON / Slack / Email にも配信できます。
 
-**主要な出力:** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。
+**主要な出力:** Cloudflare Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。
 LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に分類し、先行研究と後継研究を一枚の SVG で俯瞰できます。
 
 **2 つの自動実行モード**（GitHub Actions）：
@@ -118,7 +118,7 @@ python paperpilot/scripts/build_lineage.py --conference iclr-2026 --limit 1  # �
 python paperpilot/scripts/build_lineage.py --conference iclr-2026            # 全 Oral
 ```
 
-`docs/` 以下を GitHub Pages で公開すれば、ブラウザから `index.html` / `lineage.html` にアクセスできます。CI (`collect-weekly.yml`) ではこれら 3 スクリプトが順番に呼ばれ、docs/ ごと commit されます。
+`docs/` 以下は Cloudflare Pages が自動デプロイします（リポジトリの GitHub 連携経由。`collect-weekly.yml` が docs/ を push すると Cloudflare が push をフックしてデプロイ）。ブラウザから `index.html` / `lineage.html` にアクセスできます。キャッシュ / セキュリティヘッダは `docs/_headers` で制御。
 
 ### LLM プロバイダの優先順位
 
@@ -209,7 +209,8 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 ```
 automatic-paper-search/
 ├── docs/
-│   ├── iclr-2026/          # GitHub Pages 家系図ビュー（本命出力）
+│   ├── _headers            # Cloudflare Pages キャッシュ / セキュリティヘッダ
+│   ├── iclr-2026/          # Cloudflare Pages 家系図ビュー（本命出力）
 │   │   ├── index.html      # 論文一覧（papers.json）
 │   │   ├── lineage.html    # 家系図（lineage.json）
 │   │   └── {papers,lineage}.json
