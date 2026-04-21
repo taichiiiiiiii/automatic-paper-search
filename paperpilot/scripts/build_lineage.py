@@ -3,9 +3,16 @@
 For each Oral paper:
   1. Resolve to a Semantic Scholar paperId via arXiv ID.
   2. Fetch top-N references (parents) and citations (children) from S2.
-  3. Classify each (focus, related) pair with Gemini Flash-Lite into one of:
+  3. Classify each (focus, related) pair via an AbstractLLMProvider into one of:
      supersedes / successor / extends / ablation / baseline_only / contrasts / unrelated.
   4. Persist results to docs/iclr-2026/lineage.json.
+
+LLM providers are selected in this order (first key present wins):
+    PAPERPILOT_GROQ_API_KEY  → GroqProvider (free, 30 RPM, default)
+    PAPERPILOT_GEMINI_API_KEY → GeminiProvider (free tier 10 RPM)
+
+Per absolute rule §11, LLM calls MUST go through `AbstractLLMProvider` —
+never via urllib / requests directly. See CLAUDE.md.
 
 The script caches intermediate state (S2 lookups, classified edges) so re-runs
 are fast and only fetch what's missing.
@@ -28,7 +35,19 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+# Make `paperpilot.llm` importable when run as `python paperpilot/scripts/...`
+# without editable-install-on-path.
 ROOT = Path(__file__).resolve().parent.parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from paperpilot.llm import (  # noqa: E402
+    AbstractLLMProvider,
+    GeminiProvider,
+    GroqProvider,
+    RelationClassification,
+)
+
 PAPERS_PATH = ROOT / "docs" / "iclr-2026" / "papers.json"
 OUTPUT_PATH = ROOT / "docs" / "iclr-2026" / "lineage.json"
 CACHE_DIR = ROOT / "paperpilot" / "data" / "lineage-cache"
@@ -41,9 +60,14 @@ S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externa
 TOP_PARENTS = 15
 TOP_CHILDREN = 15
 S2_RATE_DELAY = 3.5   # unauth quota is harsh; stay well under
-GEMINI_RATE_DELAY = 7.0  # ~8 RPM for gemini-2.5-flash (free tier is 10 RPM)
-GROQ_RATE_DELAY = 2.2   # ~27 RPM (Groq free tier: 30 RPM)
-ABSTRACT_TRIM = 600
+
+# Per-provider cadence between classify calls. The provider itself already
+# handles 429 backoff via request_with_retry; this is a baseline RPM limiter
+# so we don't trigger retries in the first place.
+LLM_RATE_DELAY = {
+    "groq": 2.2,    # ~27 RPM (Groq free tier: 30 RPM)
+    "gemini": 7.0,  # ~8 RPM (Gemini 2.5-flash free tier: 10 RPM)
+}
 
 # Match on S2's full venue names as lowercase substrings.
 VENUE_TIER_MAP = [
@@ -72,6 +96,51 @@ VENUE_TIER_MAP = [
     ("tmlr", "A"), ("corl", "A"), ("sigir", "A"),
     ("www", "A"), ("ijcai", "A"),
 ]
+
+
+# ---------- Provider selection ----------
+
+def _load_env() -> None:
+    """Best-effort .env loader so keys flow from paperpilot/.env."""
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
+    env_path = ROOT / "paperpilot" / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+
+
+def build_provider() -> tuple[AbstractLLMProvider, float]:
+    """Pick the first available LLM provider and return (provider, rate_delay).
+
+    Groq takes precedence because it has the most generous free tier for
+    the classification workload (hundreds of calls per lineage build).
+    """
+    _load_env()
+    groq_key = os.environ.get("PAPERPILOT_GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
+    gemini_key = os.environ.get("PAPERPILOT_GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+
+    if groq_key:
+        model = os.environ.get("PAPERPILOT_GROQ_MODEL", "llama-3.3-70b-versatile")
+        provider = GroqProvider(
+            {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
+            api_key=groq_key,
+        )
+        return provider, LLM_RATE_DELAY["groq"]
+
+    if gemini_key:
+        model = os.environ.get("PAPERPILOT_GEMINI_MODEL", "gemini-2.5-flash")
+        provider = GeminiProvider(
+            {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
+            api_key=gemini_key,
+        )
+        return provider, LLM_RATE_DELAY["gemini"]
+
+    sys.exit(
+        "No LLM key found. Set PAPERPILOT_GROQ_API_KEY (preferred) "
+        "or PAPERPILOT_GEMINI_API_KEY."
+    )
 
 
 # ---------- S2 helpers ----------
@@ -137,152 +206,6 @@ def select_top(items: list[dict], n: int) -> list[dict]:
     return scored[:n]
 
 
-# ---------- Gemini classifier ----------
-
-GEMINI_KEY = os.environ.get("PAPERPILOT_GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL = os.environ.get("PAPERPILOT_GEMINI_MODEL", "gemini-2.5-flash")
-GEMINI_URL = (
-    f"https://generativelanguage.googleapis.com/v1beta/models/"
-    f"{GEMINI_MODEL}:generateContent?key={{key}}"
-)
-GROQ_KEY = os.environ.get("PAPERPILOT_GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
-GROQ_MODEL = os.environ.get("PAPERPILOT_GROQ_MODEL", "llama-3.3-70b-versatile")
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-
-# Pick provider based on availability. Groq takes precedence when both keys exist.
-LLM_PROVIDER = "groq" if GROQ_KEY else ("gemini" if GEMINI_KEY else None)
-
-CLASSIFY_PROMPT = """You are classifying the relationship between two AI/ML research papers.
-
-PAPER A (older / target):
-Title: {a_title}
-Year: {a_year}
-Abstract: {a_abstract}
-
-PAPER B (newer / candidate):
-Title: {b_title}
-Year: {b_year}
-Abstract: {b_abstract}
-
-Question: How does Paper B relate to Paper A?
-
-Choose ONE relation type from this list:
-- supersedes: B uses the same approach as A and demonstrates clearly improved results, replacing A as the new reference.
-- successor: B continues A's research line with a natural improvement or update (less dominant than supersedes).
-- extends: B applies A's method to a different domain, task, or scale.
-- ablation: B is an analysis/ablation study of A's components.
-- baseline_only: B merely cites A as a baseline for comparison without building on it.
-- contrasts: B argues for a fundamentally different approach to the same problem A addresses.
-- unrelated: B cites A only tangentially with no real intellectual link.
-
-Reply with ONLY a single JSON object on one line, no markdown fences, no commentary:
-{{"relation": "<one_of_above>", "confidence": <0.0-1.0>, "rationale": "<one short Japanese sentence>"}}
-"""
-
-
-def _build_prompt_text(a: dict, b: dict) -> str:
-    return CLASSIFY_PROMPT.format(
-        a_title=a.get("title", ""),
-        a_year=a.get("year", "?"),
-        a_abstract=(a.get("abstract") or "")[:ABSTRACT_TRIM],
-        b_title=b.get("title", ""),
-        b_year=b.get("year", "?"),
-        b_abstract=(b.get("abstract") or "")[:ABSTRACT_TRIM],
-    )
-
-
-def _parse_llm_json(text: str) -> dict | None:
-    # Strip common markdown fences / language hints
-    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
-    # If model wrapped in extra prose, find the first {...} block
-    if not text.startswith("{"):
-        m = re.search(r"\{[^{}]*\"relation\"[^{}]*\}", text, re.DOTALL)
-        if m:
-            text = m.group(0)
-    try:
-        parsed = json.loads(text)
-    except json.JSONDecodeError:
-        return None
-    if "relation" not in parsed:
-        return None
-    rationale = (parsed.get("rationale") or "").strip()
-    if not rationale:
-        return None  # Reject — tooltip would be empty
-    return {
-        "relation": parsed["relation"],
-        "confidence": float(parsed.get("confidence", 0.7)),
-        "rationale": rationale,
-    }
-
-
-def _llm_call(url: str, body: dict, headers: dict, extract_text,
-              label: str, retries: int = 3, backoff_base: int = 3) -> dict | None:
-    """Shared LLM request with retry/backoff. extract_text takes the parsed
-    response JSON and returns the raw model output string (provider-specific)."""
-    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers=headers)
-    for attempt in range(retries):
-        try:
-            with urllib.request.urlopen(req, timeout=30) as r:
-                data = json.loads(r.read())
-            return _parse_llm_json(extract_text(data))
-        except urllib.error.HTTPError as e:
-            if e.code in (429, 500, 502, 503, 504):
-                wait = (2 ** attempt) * backoff_base
-                print(f"  [{label}] {e.code} — wait {wait}s", file=sys.stderr)
-                time.sleep(wait)
-                continue
-            print(f"  [{label}] HTTP {e.code}", file=sys.stderr)
-            return None
-        except (urllib.error.URLError, TimeoutError):
-            time.sleep(5)
-            continue
-    return None
-
-
-def classify_gemini(a: dict, b: dict) -> dict | None:
-    return _llm_call(
-        url=GEMINI_URL.format(key=GEMINI_KEY),
-        body={
-            "contents": [{"parts": [{"text": _build_prompt_text(a, b)}]}],
-            "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"},
-        },
-        headers={"Content-Type": "application/json"},
-        extract_text=lambda d: d["candidates"][0]["content"]["parts"][0]["text"],
-        label="gemini", backoff_base=5,
-    )
-
-
-def classify_groq(a: dict, b: dict) -> dict | None:
-    return _llm_call(
-        url=GROQ_URL,
-        body={
-            "model": GROQ_MODEL,
-            "messages": [
-                {"role": "system", "content": "You classify research paper relationships. Reply with ONLY a single valid JSON object, no markdown, no prose."},
-                {"role": "user", "content": _build_prompt_text(a, b)},
-            ],
-            "temperature": 0.1,
-            "response_format": {"type": "json_object"},
-            "max_tokens": 400,
-        },
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {GROQ_KEY}",
-            "User-Agent": "Mozilla/5.0 (PaperPilot/0.1)",
-        },
-        extract_text=lambda d: d["choices"][0]["message"]["content"],
-        label="groq", backoff_base=3,
-    )
-
-
-def classify(a: dict, b: dict) -> dict | None:
-    if LLM_PROVIDER == "groq":
-        return classify_groq(a, b)
-    if LLM_PROVIDER == "gemini":
-        return classify_gemini(a, b)
-    return None
-
-
 # ---------- Build pipeline ----------
 
 def venue_tier_for(venue: str) -> str:
@@ -332,10 +255,37 @@ def extract_arxiv_id(arxiv_url: str) -> str | None:
     return m.group(1) if m else None
 
 
+def _classify_cached(
+    provider: AbstractLLMProvider,
+    a: dict,
+    b: dict,
+    *,
+    cache_key: str,
+    classifications: dict[str, dict],
+    cache_path: Path,
+    rate_delay: float,
+) -> dict | None:
+    """Classify via provider with persistent cache keyed by (src, dst)."""
+    if cache_key in classifications:
+        return classifications[cache_key]
+    rc: RelationClassification | None = provider.classify_relation(a, b)
+    if rc is not None:
+        entry = {
+            "relation": rc.relation,
+            "confidence": rc.confidence,
+            "rationale": rc.rationale,
+        }
+        classifications[cache_key] = entry
+        cache_path.write_text(
+            json.dumps(classifications, ensure_ascii=False, indent=2)
+        )
+    time.sleep(rate_delay)
+    return classifications.get(cache_key)
+
+
 def build(*, limit: int | None = None) -> dict:
-    if not LLM_PROVIDER:
-        sys.exit("No LLM key found. Set PAPERPILOT_GROQ_API_KEY or PAPERPILOT_GEMINI_API_KEY")
-    print(f"LLM provider: {LLM_PROVIDER}")
+    provider, rate_delay = build_provider()
+    print(f"LLM provider: {provider.name}")
 
     papers = json.loads(PAPERS_PATH.read_text())
     orals = [p for p in papers if p.get("type") == "Oral"]
@@ -348,7 +298,9 @@ def build(*, limit: int | None = None) -> dict:
     edges: list[dict] = []
     classification_cache_path = CACHE_DIR / "classifications.json"
     classifications: dict[str, dict] = (
-        json.loads(classification_cache_path.read_text()) if classification_cache_path.exists() else {}
+        json.loads(classification_cache_path.read_text())
+        if classification_cache_path.exists()
+        else {}
     )
 
     for idx, paper in enumerate(orals, 1):
@@ -383,14 +335,13 @@ def build(*, limit: int | None = None) -> dict:
             pid = parent["paperId"]
             if pid not in nodes:
                 nodes[pid] = to_node(parent)
-            cache_key = f"{pid}->{focus_id}"
-            if cache_key not in classifications:
-                cls = classify(parent, focus_paper)
-                if cls:
-                    classifications[cache_key] = cls
-                    classification_cache_path.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
-                time.sleep(GROQ_RATE_DELAY if LLM_PROVIDER == "groq" else GEMINI_RATE_DELAY)
-            cls = classifications.get(cache_key)
+            cls = _classify_cached(
+                provider, parent, focus_paper,
+                cache_key=f"{pid}->{focus_id}",
+                classifications=classifications,
+                cache_path=classification_cache_path,
+                rate_delay=rate_delay,
+            )
             if cls and cls["relation"] != "unrelated":
                 edges.append({
                     "src": pid, "dst": focus_id,
@@ -403,14 +354,13 @@ def build(*, limit: int | None = None) -> dict:
             cid = child["paperId"]
             if cid not in nodes:
                 nodes[cid] = to_node(child)
-            cache_key = f"{focus_id}->{cid}"
-            if cache_key not in classifications:
-                cls = classify(focus_paper, child)
-                if cls:
-                    classifications[cache_key] = cls
-                    classification_cache_path.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
-                time.sleep(GROQ_RATE_DELAY if LLM_PROVIDER == "groq" else GEMINI_RATE_DELAY)
-            cls = classifications.get(cache_key)
+            cls = _classify_cached(
+                provider, focus_paper, child,
+                cache_key=f"{focus_id}->{cid}",
+                classifications=classifications,
+                cache_path=classification_cache_path,
+                rate_delay=rate_delay,
+            )
             if cls and cls["relation"] != "unrelated":
                 edges.append({
                     "src": focus_id, "dst": cid,
@@ -431,6 +381,7 @@ def build(*, limit: int | None = None) -> dict:
     )
 
     # Drop edges without a rationale — a silent empty tooltip is worse than no edge.
+    # (RelationClassification.from_dict already rejects these, but belt-and-braces.)
     cleaned_edges = [e for e in edges if (e.get("rationale") or "").strip()]
     dropped = len(edges) - len(cleaned_edges)
     if dropped:
@@ -456,7 +407,7 @@ def main():
     print(f"✓ Wrote {OUTPUT_PATH}")
     print(f"  nodes: {len(result['nodes'])}")
     print(f"  edges: {len(result['edges'])}")
-    rels = {}
+    rels: dict[str, int] = {}
     for e in result["edges"]:
         rels[e["rel"]] = rels.get(e["rel"], 0) + 1
     for k, v in sorted(rels.items(), key=lambda x: -x[1]):

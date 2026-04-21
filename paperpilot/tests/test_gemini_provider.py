@@ -139,3 +139,47 @@ def test_evaluate_batch_missing_results_padded_with_none():
     assert evals[0] is not None
     assert evals[1] is None
     assert evals[2] is None
+
+
+# ---- classify_relation (lineage) ----
+
+
+def test_classify_relation_returns_parsed_object():
+    body = _gemini_body(
+        json.dumps({"relation": "successor", "confidence": 0.7, "rationale": "後続研究"})
+    )
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        rc = provider.classify_relation(
+            {"title": "A", "year": 2020, "abstract": "x"},
+            {"title": "B", "year": 2024, "abstract": "y"},
+        )
+    assert rc is not None
+    assert rc.relation == "successor"
+    assert rc.confidence == 0.7
+
+
+def test_classify_relation_api_failure_returns_none():
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(500),
+    ):
+        rc = provider.classify_relation({"title": "A"}, {"title": "B"})
+    assert rc is None
+
+
+def test_classify_relation_rejects_invalid_relation():
+    body = _gemini_body(
+        json.dumps({"relation": "nonsense", "confidence": 0.5, "rationale": "x"})
+    )
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        rc = provider.classify_relation({"title": "A"}, {"title": "B"})
+    assert rc is None
