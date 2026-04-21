@@ -1,23 +1,28 @@
 """Build a lightweight, human-friendly summary CSV from PaperPilot output.
 
-Input : output/iclr-2026/papers_2026-04-18.csv  (full pipeline output)
-Output: output/iclr-2026/summary.csv             (8 columns, sortable)
+Input : paperpilot/output/<conference>/papers_YYYY-MM-DD.csv  (pipeline output)
+Output: paperpilot/output/<conference>/summary.csv            (8 columns, sortable)
 
 Columns: title, type, tags, venue, authors, arxiv_url, pdf_url, abstract
-- type: Oral / Spotlight / Poster (matched by title against oral_summaries_ja.md)
+- type: Oral / Poster (matched by title against oral_summaries_ja.md if present)
 - tags: auto-classified topic labels (LLM/CV/RL/...) joined with " "
+
+The source CSV is auto-discovered (latest papers_*.csv in the conference
+directory) unless --input is given. This avoids the previous hardcoded
+"papers_2026-04-18.csv" that broke whenever the pipeline produced a new
+dated file.
 """
 
 from __future__ import annotations
 
+import argparse
 import csv
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-SRC_CSV = ROOT / "output" / "iclr-2026" / "papers_2026-04-18.csv"
-ORAL_MD = ROOT / "output" / "iclr-2026" / "oral_summaries_ja.md"
-DST_CSV = ROOT / "output" / "iclr-2026" / "summary.csv"
+PROJECT = Path(__file__).resolve().parents[1]
+_PAPERS_NAME_RE = re.compile(r"^papers_\d{4}-\d{2}-\d{2}\.csv$")
 
 
 TOPIC_RULES: dict[str, list[str]] = {
@@ -42,8 +47,44 @@ TOPIC_RULES: dict[str, list[str]] = {
 }
 
 
-def load_oral_titles() -> set[str]:
-    text = ORAL_MD.read_text(encoding="utf-8")
+@dataclass
+class BuildResult:
+    rows_written: int
+    oral_count: int
+    source_csv: Path
+    summary_csv: Path
+    tag_counts: dict[str, int]
+
+
+# ---- helpers ----
+
+
+def find_latest_csv(conference_dir: Path) -> Path:
+    """Pick the most recent `papers_YYYY-MM-DD.csv` under the given dir.
+
+    Date is parsed from the filename rather than mtime so the result is
+    deterministic across check-outs / CI re-clones.
+    """
+    candidates = sorted(
+        (p for p in conference_dir.iterdir() if p.is_file() and _PAPERS_NAME_RE.match(p.name)),
+        key=lambda p: p.name,  # YYYY-MM-DD is lexicographically sortable
+    )
+    if not candidates:
+        raise FileNotFoundError(
+            f"No papers_YYYY-MM-DD.csv found under {conference_dir}"
+        )
+    return candidates[-1]
+
+
+def load_oral_titles(oral_md: Path) -> set[str]:
+    """Extract paper titles from `oral_summaries_ja.md` (looking for `## 1. Title` headers).
+
+    Returns an empty set when the file is absent — the viewer still works,
+    all papers just get labeled Poster.
+    """
+    if not oral_md.exists():
+        return set()
+    text = oral_md.read_text(encoding="utf-8")
     titles = re.findall(r"^## \d+\.\s+(.+)$", text, flags=re.MULTILINE)
     return {normalize(t) for t in titles}
 
@@ -57,14 +98,26 @@ def classify_tags(title: str, abstract: str) -> list[str]:
     return [tag for tag, patterns in TOPIC_RULES.items() if any(re.search(p, text) for p in patterns)]
 
 
-def main() -> None:
-    oral_titles = load_oral_titles()
+# ---- main entry point ----
+
+
+def build(
+    *,
+    conference_dir: Path,
+    input_csv: Path | None = None,
+) -> BuildResult:
+    """Generate summary.csv for the given conference directory."""
+    src_csv = input_csv if input_csv is not None else find_latest_csv(conference_dir)
+    oral_md = conference_dir / "oral_summaries_ja.md"
+    dst_csv = conference_dir / "summary.csv"
+
+    oral_titles = load_oral_titles(oral_md)
     rows_out: list[dict[str, str]] = []
 
-    with SRC_CSV.open(encoding="utf-8-sig", newline="") as f:
+    with src_csv.open(encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            title = row.get("title", "").strip()
+            title = (row.get("title") or "").strip()
             if not title:
                 continue
             paper_type = "Oral" if normalize(title) in oral_titles else "Poster"
@@ -78,13 +131,14 @@ def main() -> None:
                     "authors": row.get("authors", ""),
                     "arxiv_url": row.get("url", ""),
                     "pdf_url": row.get("pdf_url", ""),
-                    "abstract": row.get("abstract", "").replace("\n", " ").strip(),
+                    "abstract": (row.get("abstract") or "").replace("\n", " ").strip(),
                 }
             )
 
     rows_out.sort(key=lambda r: (0 if r["type"] == "Oral" else 1, r["title"].lower()))
 
-    with DST_CSV.open("w", encoding="utf-8", newline="") as f:
+    dst_csv.parent.mkdir(parents=True, exist_ok=True)
+    with dst_csv.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(
             f,
             fieldnames=["title", "type", "tags", "venue", "authors", "arxiv_url", "pdf_url", "abstract"],
@@ -92,17 +146,45 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(rows_out)
 
-    oral_count = sum(1 for r in rows_out if r["type"] == "Oral")
-    print(f"Wrote {len(rows_out)} papers to {DST_CSV}")
-    print(f"  Oral: {oral_count}")
-    print(f"  Poster: {len(rows_out) - oral_count}")
-
     tag_counts: dict[str, int] = {}
     for r in rows_out:
         for t in r["tags"].split():
             tag_counts[t] = tag_counts.get(t, 0) + 1
+
+    oral_count = sum(1 for r in rows_out if r["type"] == "Oral")
+    return BuildResult(
+        rows_written=len(rows_out),
+        oral_count=oral_count,
+        source_csv=src_csv,
+        summary_csv=dst_csv,
+        tag_counts=tag_counts,
+    )
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument(
+        "--conference",
+        default="iclr-2026",
+        help="Conference directory name under paperpilot/output/ (default: iclr-2026)",
+    )
+    ap.add_argument(
+        "--input",
+        help="Explicit path to papers_*.csv (defaults to the latest one in the conference dir)",
+    )
+    args = ap.parse_args()
+
+    conf_dir = PROJECT / "output" / args.conference
+    input_csv = Path(args.input) if args.input else None
+
+    result = build(conference_dir=conf_dir, input_csv=input_csv)
+
+    print(f"Source: {result.source_csv}")
+    print(f"Wrote {result.rows_written} papers to {result.summary_csv}")
+    print(f"  Oral: {result.oral_count}")
+    print(f"  Poster: {result.rows_written - result.oral_count}")
     print("  Top tags:")
-    for tag, n in sorted(tag_counts.items(), key=lambda x: -x[1])[:10]:
+    for tag, n in sorted(result.tag_counts.items(), key=lambda x: -x[1])[:10]:
         print(f"    {tag}: {n}")
 
 
