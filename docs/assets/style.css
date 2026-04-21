@@ -7,6 +7,7 @@
   --color-surface: oklch(98% 0.006 80);
   --color-surface-2: oklch(96% 0.008 80);
   --color-surface-elevated: oklch(99.5% 0.004 80);
+  --color-bg: oklch(99% 0.004 80);             /* page background ~= surface, for contrast against --color-ink */
   --color-rule: oklch(85% 0.012 80);
   --color-rule-strong: oklch(72% 0.02 80);
 
@@ -94,8 +95,42 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-size: clamp(1rem, 0.92rem + 0.4vw, 1.18rem);
   color: var(--color-ink-muted);
   line-height: 1.55;
-  margin: 0 0 2.5rem;
+  margin: 0 0 1rem;
 }
+
+.hero__modes {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  counter-reset: mode;
+}
+.hero__modes li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.5rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  counter-increment: mode;
+}
+.hero__modes li::before {
+  content: counter(mode) ".";
+  font-weight: 600;
+  color: var(--color-ink-subtle);
+  margin-right: 0.1rem;
+}
+.hero__modes li strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.hero__mode-icon { font-size: 0.95rem; line-height: 1; }
 
 .stat-row {
   display: flex;
@@ -418,8 +453,14 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   border-color: var(--color-ink);
 }
 .hero__note {
-  opacity: 0.6;
+  max-width: 70ch;
+  margin: 0 0 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--color-ink-subtle);
+  line-height: 1.7;
 }
+.hero__note strong { color: var(--color-ink-muted); font-weight: 500; }
 
 :root {
   --rel-supersedes: oklch(55% 0.14 75);   /* deep gold — dominant inheritance */
@@ -556,6 +597,8 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 .chip__dot--ablation   { background: var(--rel-ablation); }
 .chip__dot--baseline   { background: var(--rel-baseline); }
 .chip__dot--contrasts  { background: var(--rel-contrasts); }
+
+.legend[hidden], .lineage-toolbar__group[hidden] { display: none !important; }
 
 .legend {
   display: flex;
@@ -1033,6 +1076,14 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   gap: 2.5rem;
 }
 
+.topics-gallery__intro {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  margin: 0;
+  padding-bottom: 0.5rem;
+}
+
 .topics-cluster {
   display: flex;
   flex-direction: column;
@@ -1055,10 +1106,22 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   color: var(--color-ink);
 }
 
-.topics-cluster__count {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+.topics-cluster__subtitle {
+  font-size: 0.85rem;
   color: var(--color-ink-muted);
+  font-style: normal;
+  margin-left: 0.15rem;
+}
+
+.topics-cluster__count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-muted);
+  padding: 0.15rem 0.5rem;
+  background: var(--color-surface-2);
+  border-radius: 3px;
 }
 
 .topics-cluster__grid {
@@ -1068,11 +1131,12 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 }
 
 .topics-card {
+  position: relative;
   text-align: left;
   background: var(--color-surface, white);
   border: 1px solid var(--color-rule);
   border-radius: 6px;
-  padding: 0.9rem 1rem;
+  padding: 0.9rem 1rem 2rem;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -1081,10 +1145,27 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font: inherit;
   color: inherit;
 }
+.topics-card::after {
+  content: "系譜を見る →";
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-ink-muted);
+  opacity: 0;
+  transition: opacity 120ms ease, transform 120ms ease;
+  transform: translateX(-4px);
+}
 .topics-card:hover {
   border-color: var(--color-ink);
   transform: translateY(-1px);
   box-shadow: 0 4px 14px oklch(20% 0 0 / 0.06);
+}
+.topics-card:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--color-ink);
 }
 .topics-card:focus-visible {
   outline: 2px solid var(--color-ink);
@@ -1105,6 +1186,13 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--color-ink-muted);
+}
+.topics-card__meta > span {
+  padding: 0.12rem 0.45rem;
+  background: var(--color-tag-bg);
+  color: var(--color-tag-ink);
+  border-radius: 3px;
+  letter-spacing: 0.02em;
 }
 
 .topics-card__authors {
