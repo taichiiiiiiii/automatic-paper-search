@@ -30,8 +30,6 @@ import os
 import re
 import sys
 import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +45,7 @@ from paperpilot.llm import (  # noqa: E402
     GroqProvider,
     RelationClassification,
 )
+from paperpilot.utils.http import request_with_retry  # noqa: E402
 
 DOCS_ROOT = ROOT / "docs"
 
@@ -166,24 +165,28 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
 
 # ---------- S2 helpers ----------
 
-def _s2_get(url: str, max_retries: int = 5) -> dict[str, Any] | None:
-    for attempt in range(max_retries):
+def _s2_get(url: str) -> dict[str, Any] | None:
+    """GET an S2 JSON endpoint, returning the parsed body or None.
+
+    Delegates retry / backoff to utils.http.request_with_retry so the
+    retry policy matches the rest of the pipeline (design doc §6.2
+    Table 17). 404 is treated as "not found" (None); any other non-200
+    is logged upstream and returned as None.
+    """
+    resp = request_with_retry(
+        "GET",
+        url,
+        headers={"User-Agent": "PaperPilot/0.1"},
+        timeout=20,
+    )
+    if resp is None:
+        return None
+    if resp.status_code == 200:
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "PaperPilot/0.1"})
-            with urllib.request.urlopen(req, timeout=20) as r:
-                return json.loads(r.read())
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                return None
-            if e.code in (429, 500, 502, 503):
-                wait = max(15, (2 ** attempt) * 5)  # 15, 20, 40, 80, 160 sec
-                print(f"  [s2] {e.code} — retry in {wait}s", file=sys.stderr)
-                time.sleep(wait)
-                continue
-            raise
-        except (urllib.error.URLError, TimeoutError):
-            time.sleep(5)
-            continue
+            return resp.json()
+        except ValueError:
+            return None
+    # 404 / 4xx / non-retryable → treat as "not found", silently skip.
     return None
 
 
