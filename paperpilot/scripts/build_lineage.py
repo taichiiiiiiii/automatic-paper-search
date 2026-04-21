@@ -32,7 +32,13 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
+
+
+class ClusterEntry(TypedDict):
+    id: str
+    label: str
+    focus_ids: list[str]
 
 # Make `paperpilot.llm` importable when run as `python paperpilot/scripts/...`
 # without editable-install-on-path.
@@ -77,6 +83,16 @@ S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externa
 TOP_PARENTS = 15
 TOP_CHILDREN = 15
 S2_RATE_DELAY = 3.5   # unauth quota is harsh; stay well under
+
+# Cluster (topics view) constants. Focus papers missing any kind tag are
+# bucketed into "uncategorized" so the gallery never hides them.
+_UNCATEGORIZED_ID = "uncategorized"
+_UNCATEGORIZED_LABEL = "その他"
+
+
+def _cluster_slug(label: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+    return slug or _UNCATEGORIZED_ID
 
 # Per-provider cadence between classify calls. The provider itself already
 # handles 429 backoff via request_with_retry; this is a baseline RPM limiter
@@ -446,11 +462,59 @@ def build(
     if dropped:
         print(f"  dropped {dropped} edges with empty rationale")
 
+    clusters = build_clusters(list(nodes.values()))
+
     return {
         "root": root_id,
         "nodes": list(nodes.values()),
         "edges": cleaned_edges,
+        "clusters": clusters,
     }
+
+
+# Why: the viewer groups focus papers by primary subfield so readers can drill
+# from "which areas dominate Oral" into individual per-paper family trees.
+# Focus papers with multiple tags are placed in their first tag's cluster only
+# to keep the taxonomy disjoint (simpler mental model than cross-listing).
+def build_clusters(nodes: list[dict]) -> list[ClusterEntry]:
+    """Group focus papers by their primary tag into subfield clusters.
+
+    Returns a list of `ClusterEntry` sorted by member count descending,
+    then alphabetically by label. Non-focus nodes are ignored — they
+    belong to whatever tree their focus owns.
+
+    Keyed internally by label (not slug) so labels that collapse to the
+    same slug (e.g., "A+" and "A-" both → "a") remain separate clusters.
+    Cluster `id`s are disambiguated with a numeric suffix on collision.
+    """
+    by_label: dict[str, list[str]] = {}
+    for n in nodes:
+        if not n.get("is_focus"):
+            continue
+        kinds = n.get("kinds") or []
+        label = kinds[0] if kinds else _UNCATEGORIZED_LABEL
+        by_label.setdefault(label, []).append(n["id"])
+
+    entries: list[ClusterEntry] = []
+    used_ids: set[str] = set()
+    # Visit labels in sort order so id disambiguation is deterministic even
+    # when focus_ids order varies between runs.
+    for label in sorted(by_label, key=lambda lbl: (-len(by_label[lbl]), lbl)):
+        base = _UNCATEGORIZED_ID if label == _UNCATEGORIZED_LABEL else _cluster_slug(label)
+        cid = base
+        suffix = 2
+        while cid in used_ids:
+            cid = f"{base}-{suffix}"
+            suffix += 1
+        used_ids.add(cid)
+        entries.append(
+            {
+                "id": cid,
+                "label": label,
+                "focus_ids": sorted(by_label[label]),
+            }
+        )
+    return entries
 
 
 def main():

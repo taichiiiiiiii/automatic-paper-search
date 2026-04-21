@@ -29,6 +29,7 @@
 
   <div class="lineage-toolbar">
     <div class="lineage-toolbar__group" role="group" aria-label="Layout">
+      <button class="layout-btn" data-layout="topics" aria-pressed="false">🗂️ トピック</button>
       <button class="layout-btn" data-layout="tree" aria-pressed="true">🌳 家系図</button>
       <button class="layout-btn" data-layout="timeline" aria-pressed="false">📅 時系列</button>
     </div>
@@ -39,6 +40,8 @@
     </div>
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
   </div>
+
+  <nav class="lineage-crumb" id="lineage-crumb" aria-label="Current cluster" hidden></nav>
 
   <div class="legend" aria-label="Relation type legend">
     <span class="legend__item"><span class="legend__swatch legend__swatch--supersedes"></span> Supersedes（置換）</span>
