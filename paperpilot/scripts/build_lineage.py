@@ -48,10 +48,31 @@ from paperpilot.llm import (  # noqa: E402
     RelationClassification,
 )
 
-PAPERS_PATH = ROOT / "docs" / "iclr-2026" / "papers.json"
-OUTPUT_PATH = ROOT / "docs" / "iclr-2026" / "lineage.json"
+DOCS_ROOT = ROOT / "docs"
+
+# Legacy default path constants — kept so existing test monkeypatches keep
+# working. New code should call resolve_paths(conference) instead.
+PAPERS_PATH = DOCS_ROOT / "iclr-2026" / "papers.json"
+OUTPUT_PATH = DOCS_ROOT / "iclr-2026" / "lineage.json"
 CACHE_DIR = ROOT / "paperpilot" / "data" / "lineage-cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def resolve_paths(conference: str) -> tuple[Path, Path]:
+    """Return (papers_json_path, lineage_json_path) for a conference slug."""
+    conf_dir = DOCS_ROOT / conference
+    return conf_dir / "papers.json", conf_dir / "lineage.json"
+
+
+def derive_venue_label(conference: str) -> str:
+    """Turn a conference slug ("iclr-2026") into a human-readable venue ("ICLR 2026").
+
+    Slugs use kebab-case and lowercase acronyms; the viewer expects the
+    upper-case year-separated form. Acronym casing is not preserved
+    (neurips-2025 → NEURIPS 2025) — callers that need cased names can
+    pass a --venue-override explicitly on the command line.
+    """
+    return conference.upper().replace("-", " ")
 
 S2_FIELDS_PAPER = "paperId,title,year,venue,citationCount,referenceCount,authors,abstract,externalIds"
 S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
@@ -283,16 +304,24 @@ def _classify_cached(
     return classifications.get(cache_key)
 
 
-def build(*, limit: int | None = None) -> dict:
+def build(
+    *,
+    limit: int | None = None,
+    conference: str = "iclr-2026",
+    venue_override: str | None = None,
+) -> dict:
     provider, rate_delay = build_provider()
     print(f"LLM provider: {provider.name}")
 
-    papers = json.loads(PAPERS_PATH.read_text())
+    papers_path, _ = resolve_paths(conference)
+    venue_label = venue_override or derive_venue_label(conference)
+
+    papers = json.loads(papers_path.read_text())
     orals = [p for p in papers if p.get("type") == "Oral"]
     if limit:
         orals = orals[:limit]
 
-    print(f"Building lineage for {len(orals)} Oral papers")
+    print(f"Building lineage for {len(orals)} Oral papers ({conference})")
 
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
@@ -323,7 +352,7 @@ def build(*, limit: int | None = None) -> dict:
             focus_paper,
             focus=True,
             kinds=catalog_kinds,
-            override_venue="ICLR 2026",
+            override_venue=venue_label,
             override_tier="A+",
         )
 
@@ -398,13 +427,24 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=None,
                         help="Process only first N Oral papers (smoke test)")
+    parser.add_argument("--conference", default="iclr-2026",
+                        help="Conference slug under docs/ (default: iclr-2026)")
+    parser.add_argument("--venue-override",
+                        help="Pretty venue label for focus nodes "
+                             "(default: upper-case slug, e.g. 'ICLR 2026')")
     args = parser.parse_args()
 
-    result = build(limit=args.limit)
-    OUTPUT_PATH.write_text(json.dumps(result, ensure_ascii=False, indent=2))
+    result = build(
+        limit=args.limit,
+        conference=args.conference,
+        venue_override=args.venue_override,
+    )
+    _, output_path = resolve_paths(args.conference)
+    output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2))
 
     print()
-    print(f"✓ Wrote {OUTPUT_PATH}")
+    print(f"✓ Wrote {output_path}")
+    print(f"  conference: {args.conference}")
     print(f"  nodes: {len(result['nodes'])}")
     print(f"  edges: {len(result['edges'])}")
     rels: dict[str, int] = {}

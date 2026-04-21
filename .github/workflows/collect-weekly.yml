@@ -67,7 +67,13 @@ jobs:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         continue-on-error: true   # viewer falls back to last good lineage.json
-        run: python paperpilot/scripts/build_lineage.py
+        run: |
+          shopt -s nullglob
+          for papers in docs/*/papers.json; do
+            name=$(basename "$(dirname "$papers")")
+            echo "--- lineage: $name ---"
+            python paperpilot/scripts/build_lineage.py --conference "$name"
+          done
 
       - name: Commit results
         run: |
