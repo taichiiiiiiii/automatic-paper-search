@@ -80,12 +80,20 @@ python paperpilot/scripts/sync_to_sheets.py \
 
 | 引数 | 環境変数 | デフォルト |
 |------|---------|----------|
-| `--csv` | — | `output/iclr-2026/summary.csv` |
+| `--conference` | — | `iclr-2026`（`--csv` / `--title` が未指定の時にここから派生） |
+| `--csv` | — | `output/<conference>/summary.csv` |
 | `--credentials` | `GOOGLE_APPLICATION_CREDENTIALS` | （必須） |
 | `--sheet-id` | `PAPERPILOT_SHEET_ID` | （未指定時は新規作成） |
 | `--tab` | — | `summary` |
-| `--title` | — | `PaperPilot — ICLR 2026 Summary` |
+| `--title` | — | `PaperPilot — <VENUE> Summary` |
 | `--share` | `PAPERPILOT_SHEET_SHARE_EMAIL` | （新規作成時のみ使用） |
+
+### 他学会の同期（例）
+
+```bash
+# NeurIPS 2025 の summary.csv を同期（ID は学会ごとに別 sheet を想定）
+python paperpilot/scripts/sync_to_sheets.py --conference neurips-2025
+```
 
 ### 自動書式
 

@@ -11,6 +11,22 @@ from unittest.mock import MagicMock
 
 from paperpilot.scripts import sync_to_sheets as s2s
 
+# ---- conference-based defaults (#27) ----
+
+
+def test_resolve_defaults_for_iclr_2026():
+    csv_path, title = s2s.resolve_defaults("iclr-2026")
+    assert csv_path.parent.name == "iclr-2026"
+    assert csv_path.name == "summary.csv"
+    assert "ICLR 2026" in title
+
+
+def test_resolve_defaults_for_other_conference():
+    csv_path, title = s2s.resolve_defaults("neurips-2025")
+    assert csv_path.parent.name == "neurips-2025"
+    # Human-readable venue label flows into the title for Google Sheet naming
+    assert "NEURIPS 2025" in title
+
 # ---- load_rows ----
 
 
