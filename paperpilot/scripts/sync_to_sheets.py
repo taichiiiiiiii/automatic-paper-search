@@ -25,6 +25,8 @@ import logging
 import os
 from pathlib import Path
 
+from paperpilot.scripts._common import slug_to_venue_label
+
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,13 +42,12 @@ SCOPES = [
 def resolve_defaults(conference: str) -> tuple[Path, str]:
     """Derive (csv_path, sheet_title) from a conference slug.
 
-    Mirrors build_lineage.derive_venue_label: acronym casing is imperfect
-    (neurips-2025 -> NEURIPS 2025); pass --title explicitly when you need
-    the cased form.
+    Shares slug_to_venue_label with build_lineage so the two scripts
+    can't drift in how they name ICLR vs NeurIPS. Pass --title
+    explicitly when you need preserved acronym casing.
     """
     csv_path = ROOT / "output" / conference / "summary.csv"
-    venue_label = conference.upper().replace("-", " ")
-    title = f"PaperPilot — {venue_label} Summary"
+    title = f"PaperPilot — {slug_to_venue_label(conference)} Summary"
     return csv_path, title
 
 

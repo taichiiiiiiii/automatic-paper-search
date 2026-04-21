@@ -45,6 +45,7 @@ from paperpilot.llm import (  # noqa: E402
     GroqProvider,
     RelationClassification,
 )
+from paperpilot.scripts._common import slug_to_venue_label  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 
 DOCS_ROOT = ROOT / "docs"
@@ -63,15 +64,10 @@ def resolve_paths(conference: str) -> tuple[Path, Path]:
     return conf_dir / "papers.json", conf_dir / "lineage.json"
 
 
-def derive_venue_label(conference: str) -> str:
-    """Turn a conference slug ("iclr-2026") into a human-readable venue ("ICLR 2026").
-
-    Slugs use kebab-case and lowercase acronyms; the viewer expects the
-    upper-case year-separated form. Acronym casing is not preserved
-    (neurips-2025 → NEURIPS 2025) — callers that need cased names can
-    pass a --venue-override explicitly on the command line.
-    """
-    return conference.upper().replace("-", " ")
+# Backwards compat: test_build_lineage imports derive_venue_label. Keep
+# the name as a thin alias to the shared helper so the public surface
+# of this module is unchanged.
+derive_venue_label = slug_to_venue_label
 
 S2_FIELDS_PAPER = "paperId,title,year,venue,citationCount,referenceCount,authors,abstract,externalIds"
 S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
