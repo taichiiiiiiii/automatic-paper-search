@@ -25,6 +25,10 @@ def _write_papers_csv(path: Path, rows: list[dict[str, str]]) -> None:
         "url",
         "pdf_url",
         "venue",
+        "arxiv_id",
+        "citation_count",
+        "venue_tier",
+        "github_stars",
     ]
     with path.open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -150,6 +154,71 @@ def test_build_with_explicit_input_csv(tmp_path: Path):
     )
     assert result.rows_written == 1
     assert result.oral_count == 0
+
+
+def test_build_preserves_structured_ids_from_pipeline_csv(tmp_path: Path):
+    """arxiv_id / citation_count / venue_tier / github_stars round-trip to summary.csv.
+
+    build_lineage.py relies on arxiv_id being present directly rather than
+    re-parsing it out of the URL, and the viewer uses citation_count / stars
+    for sizing node bubbles.
+    """
+    conf = tmp_path / "iclr-2026"
+    _write_papers_csv(
+        conf / "papers_2026-04-18.csv",
+        [
+            {
+                "title": "Paper With IDs",
+                "authors": "A",
+                "abstract": "x",
+                "url": "http://arxiv.org/abs/2404.00001",
+                "pdf_url": "p",
+                "venue": "ICLR",
+                "arxiv_id": "2404.00001",
+                "citation_count": "42",
+                "venue_tier": "3",
+                "github_stars": "120",
+            }
+        ],
+    )
+
+    bsc.build(conference_dir=conf)
+    with (conf / "summary.csv").open(encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    assert rows[0]["arxiv_id"] == "2404.00001"
+    assert rows[0]["citation_count"] == "42"
+    assert rows[0]["venue_tier"] == "3"
+    assert rows[0]["github_stars"] == "120"
+
+
+def test_build_handles_pipeline_csv_without_ids(tmp_path: Path):
+    """Old pipeline output without arxiv_id etc. still works — fields are empty."""
+    conf = tmp_path / "legacy"
+    # Write a CSV that only has the original columns, no arxiv_id.
+    conf.mkdir()
+    csv_path = conf / "papers_2024-01-01.csv"
+    with csv_path.open("w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=["title", "authors", "abstract", "url", "pdf_url", "venue"]
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "title": "Legacy Paper",
+                "authors": "Z",
+                "abstract": "abs",
+                "url": "u",
+                "pdf_url": "p",
+                "venue": "",
+            }
+        )
+
+    bsc.build(conference_dir=conf)
+    with (conf / "summary.csv").open(encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    assert rows[0]["title"] == "Legacy Paper"
+    assert rows[0]["arxiv_id"] == ""
+    assert rows[0]["citation_count"] == ""
 
 
 def test_build_tolerates_missing_oral_md(tmp_path: Path):

@@ -28,6 +28,10 @@ def _write_summary(path: Path, rows: list[dict[str, str]]) -> None:
         "arxiv_url",
         "pdf_url",
         "abstract",
+        "arxiv_id",
+        "citation_count",
+        "venue_tier",
+        "github_stars",
     ]
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -126,6 +130,64 @@ def test_build_conference_writes_papers_json(tmp_path: Path, monkeypatch):
     assert {p["title"] for p in data} == {"A", "B"}
     # tags column must round-trip as a list
     assert all(isinstance(p["tags"], list) for p in data)
+
+
+def test_load_summary_carries_structured_ids(tmp_path: Path):
+    """papers.json must keep arxiv_id / citation_count / venue_tier / github_stars
+
+    so the lineage builder can skip the S2 re-lookup (rule §12) and the
+    viewer can size nodes by citation count without another API call.
+    """
+    summary = tmp_path / "summary.csv"
+    _write_summary(
+        summary,
+        [
+            {
+                "title": "P",
+                "type": "Oral",
+                "tags": "LLM",
+                "authors": "X",
+                "arxiv_url": "http://arxiv.org/abs/2404.00001",
+                "pdf_url": "p",
+                "abstract": "a",
+                "arxiv_id": "2404.00001",
+                "citation_count": "17",
+                "venue_tier": "3",
+                "github_stars": "250",
+            }
+        ],
+    )
+
+    rows = build_pages.load_summary(summary)
+    assert rows[0]["arxiv_id"] == "2404.00001"
+    # Numeric fields are parsed as ints so the viewer can skip type coercion
+    assert rows[0]["citation_count"] == 17
+    assert rows[0]["venue_tier"] == 3
+    assert rows[0]["github_stars"] == 250
+
+
+def test_load_summary_numeric_fields_missing_become_none(tmp_path: Path):
+    summary = tmp_path / "summary.csv"
+    _write_summary(
+        summary,
+        [
+            {
+                "title": "Legacy",
+                "type": "Poster",
+                "tags": "",
+                "authors": "",
+                "arxiv_id": "",
+                "citation_count": "",
+                "venue_tier": "",
+                "github_stars": "",
+            }
+        ],
+    )
+    rows = build_pages.load_summary(summary)
+    assert rows[0]["arxiv_id"] == ""
+    assert rows[0]["citation_count"] is None
+    assert rows[0]["venue_tier"] is None
+    assert rows[0]["github_stars"] is None
 
 
 def test_build_conference_returns_none_when_summary_missing(tmp_path: Path, monkeypatch):

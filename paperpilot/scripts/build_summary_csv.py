@@ -1,11 +1,15 @@
 """Build a lightweight, human-friendly summary CSV from PaperPilot output.
 
 Input : paperpilot/output/<conference>/papers_YYYY-MM-DD.csv  (pipeline output)
-Output: paperpilot/output/<conference>/summary.csv            (8 columns, sortable)
+Output: paperpilot/output/<conference>/summary.csv            (12 columns, sortable)
 
-Columns: title, type, tags, venue, authors, arxiv_url, pdf_url, abstract
+Columns: title, type, tags, venue, authors, arxiv_url, pdf_url, abstract,
+         arxiv_id, citation_count, venue_tier, github_stars
 - type: Oral / Poster (matched by title against oral_summaries_ja.md if present)
 - tags: auto-classified topic labels (LLM/CV/RL/...) joined with " "
+- arxiv_id / citation_count / venue_tier / github_stars carry forward
+  Stage 2 signal output so build_lineage.py and the viewer don't need to
+  re-query S2 or GitHub (absolute rule §12).
 
 The source CSV is auto-discovered (latest papers_*.csv in the conference
 directory) unless --input is given. This avoids the previous hardcoded
@@ -132,6 +136,12 @@ def build(
                     "arxiv_url": row.get("url", ""),
                     "pdf_url": row.get("pdf_url", ""),
                     "abstract": (row.get("abstract") or "").replace("\n", " ").strip(),
+                    # Stage 2 signal outputs — empty string when the upstream
+                    # pipeline ran without them (legacy CSVs).
+                    "arxiv_id": row.get("arxiv_id", ""),
+                    "citation_count": row.get("citation_count", ""),
+                    "venue_tier": row.get("venue_tier", ""),
+                    "github_stars": row.get("github_stars", ""),
                 }
             )
 
@@ -141,7 +151,11 @@ def build(
     with dst_csv.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["title", "type", "tags", "venue", "authors", "arxiv_url", "pdf_url", "abstract"],
+            fieldnames=[
+                "title", "type", "tags", "venue", "authors",
+                "arxiv_url", "pdf_url", "abstract",
+                "arxiv_id", "citation_count", "venue_tier", "github_stars",
+            ],
         )
         writer.writeheader()
         writer.writerows(rows_out)
