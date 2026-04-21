@@ -28,8 +28,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CSV = ROOT / "output" / "iclr-2026" / "summary.csv"
-DEFAULT_TITLE = "PaperPilot — ICLR 2026 Summary"
+DEFAULT_CONFERENCE = "iclr-2026"
 DEFAULT_TAB = "summary"
 
 SCOPES = [
@@ -38,9 +37,29 @@ SCOPES = [
 ]
 
 
+def resolve_defaults(conference: str) -> tuple[Path, str]:
+    """Derive (csv_path, sheet_title) from a conference slug.
+
+    Mirrors build_lineage.derive_venue_label: acronym casing is imperfect
+    (neurips-2025 -> NEURIPS 2025); pass --title explicitly when you need
+    the cased form.
+    """
+    csv_path = ROOT / "output" / conference / "summary.csv"
+    venue_label = conference.upper().replace("-", " ")
+    title = f"PaperPilot — {venue_label} Summary"
+    return csv_path, title
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Sync summary.csv to Google Sheets")
-    p.add_argument("--csv", type=Path, default=DEFAULT_CSV, help="Source CSV path")
+    p.add_argument(
+        "--conference",
+        default=DEFAULT_CONFERENCE,
+        help=f"Conference slug under output/ (default: {DEFAULT_CONFERENCE}). "
+             f"Drives --csv and --title defaults when they aren't set explicitly.",
+    )
+    p.add_argument("--csv", type=Path, default=None,
+                   help="Source CSV path (default: output/<conference>/summary.csv)")
     p.add_argument(
         "--credentials",
         type=Path,
@@ -52,14 +71,23 @@ def parse_args() -> argparse.Namespace:
         default=os.environ.get("PAPERPILOT_SHEET_ID"),
         help="Existing spreadsheet ID to update (or $PAPERPILOT_SHEET_ID); creates new if omitted",
     )
-    p.add_argument("--title", default=DEFAULT_TITLE, help="Title for newly created spreadsheet")
+    p.add_argument("--title", default=None,
+                   help="Title for newly created spreadsheet (default derived from --conference)")
     p.add_argument("--tab", default=DEFAULT_TAB, help="Worksheet (tab) name to write into")
     p.add_argument(
         "--share",
         default=os.environ.get("PAPERPILOT_SHEET_SHARE_EMAIL"),
         help="Email to share the new sheet with (writer role)",
     )
-    return p.parse_args()
+    args = p.parse_args()
+
+    # Fill in conference-derived defaults only when the user didn't override.
+    default_csv, default_title = resolve_defaults(args.conference)
+    if args.csv is None:
+        args.csv = default_csv
+    if args.title is None:
+        args.title = default_title
+    return args
 
 
 def load_rows(csv_path: Path) -> tuple[list[str], list[list[str]]]:
