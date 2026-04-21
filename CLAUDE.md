@@ -8,10 +8,11 @@
 
 ## プロジェクト概要
 
-- **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んで CSV・JSON・Slack・Email で配信するパイプライン
+- **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
+- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。補助出力として CSV / JSON / Slack / Email も維持
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
-- **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM のみ有料オプション）
-- **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア
+- **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
+- **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
 - **参照仕様書：** [`docs/design/`](docs/design/)（v2.1、Round 2 レビュー25件反映版、原本は `archive/`）
 
 ---
@@ -62,8 +63,12 @@ automatic-paper-search/
 ├── docs/
 │   ├── design/                          # 基本設計書 v2.1（markdown 正本）
 │   ├── research/                        # 市場調査レポート v2.0（markdown 正本）
-│   ├── iclr-2026/                       # GitHub Pages 論文ビューア
-│   └── assets/                          # 共通 CSS/JS
+│   ├── iclr-2026/                       # GitHub Pages 論文ビューア（家系図ビュー本命）
+│   │   ├── index.html                   # 採択論文一覧（papers.json を表示）
+│   │   ├── lineage.html                 # 家系図ビュー（lineage.json を表示）
+│   │   ├── papers.json                  # build_pages.py が生成
+│   │   └── lineage.json                 # build_lineage.py が生成
+│   └── assets/                          # 共通 CSS/JS（app.js / lineage.js / style.css）
 ├── archive/                             # 原本 .docx の保管先（編集禁止）
 ├── .github/
 │   └── workflows/
@@ -104,11 +109,16 @@ automatic-paper-search/
     │   ├── json_exporter.py
     │   ├── slack_exporter.py
     │   └── email_exporter.py            # SMTP + STARTTLS, HTML/plain multipart
-    ├── llm/                             # Stage 4 LLM プロバイダ
-    │   ├── base.py                      # AbstractLLMProvider, PaperEvaluation
+    ├── llm/                             # Stage 4 LLM プロバイダ + 系譜関係分類
+    │   ├── base.py                      # AbstractLLMProvider, PaperEvaluation, RelationClassification
     │   ├── ollama_provider.py           # ローカル無料
     │   ├── gemini_provider.py           # Gemini (無料枠あり)
+    │   ├── groq_provider.py             # Groq Llama 3.3 (lineage 分類の無料第一候補)
     │   └── claude_provider.py           # Anthropic Claude（設計書の第一推奨）
+    ├── scripts/                         # ビューア生成スクリプト（補助ツール群）
+    │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
+    │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
+    │   └── build_lineage.py             # papers.json + S2 + LLM → lineage.json
     ├── models/
     │   └── paper.py                     # Paper データクラス
     ├── utils/
@@ -123,10 +133,16 @@ automatic-paper-search/
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
     ├── data/                            # 永続データ（CI でコミット）
-    │   ├── seen_ids.json                # 差分更新用
-    │   └── run_history.jsonl            # 実行履歴
+    │   ├── seen_ids.json                # 差分更新用（Stage 1）
+    │   ├── run_history.jsonl            # 実行履歴
+    │   └── lineage-cache/               # S2 メタ + LLM 関係分類キャッシュ
     ├── output/                          # 日次 CSV/JSON（CI でコミット）
-    │   └── papers_YYYY-MM-DD.{csv,json}
+    │   ├── daily/                       # 通常ランの出力
+    │   └── iclr-2026/                   # 学会別ランの出力
+    │       ├── papers_YYYY-MM-DD.{csv,json}
+    │       ├── summary.csv              # build_summary_csv.py の出力
+    │       ├── oral_summaries_ja.md     # Oral 判定の入力
+    │       └── run_history.jsonl
     └── logs/                            # ログ（ローカル専用）
         └── paperpilot.log*              # 日次ローテ
 ```
@@ -285,11 +301,35 @@ class Paper:
 Stage 0: collect (async 並列)  → dedup
 Stage 1: rule_filter           → category ∧ since_date ∧ exclude_words ∧ ¬seen_ids
 Stage 2: metric_score          → 各 signal.enrich_batch → total_score → top_n
-(Stage 3: embedding)           → 未実装（SPECTER2 予定）
+(Stage 3: embedding)           → Stage 3 有効時は Stage 2 結果に embedding 重みを加算
 Stage 4: llm_rank              → provider.evaluate_batch → relevance 降順 → top_n
 Export                         → CSVExporter / JSONExporter / SlackExporter / EmailExporter
 State                          → save_seen_ids + append_run_history
 ```
+
+### Visualization 層（家系図ビュー）
+
+配信用 Exporter とは別に、GitHub Pages 上の家系図ビューを生成する **補助パイプライン** を `paperpilot/scripts/` に置く。通常ランの後に順に実行し、`docs/<conference>/` を更新する。
+
+```
+output/<conf>/papers_YYYY-MM-DD.csv
+  │
+  ├─ build_summary_csv.py   → summary.csv（8 列 + 自動タグ）
+  │
+  └─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー用）
+       │
+       └─ build_lineage.py  → docs/<conf>/lineage.json
+            │                  - S2 から references/citations を取得
+            │                  - AbstractLLMProvider で関係種別を分類
+            │                  - lineage-cache/ にキャッシュして再開可能
+            │
+            ▼
+       docs/<conf>/lineage.html   （家系図 SVG レンダリング）
+```
+
+関係種別（LLM 分類出力）: `supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated` （`unrelated` はエッジから除外）。
+
+**重要：** scripts の LLM 呼び出しは、パイプラインと同じ `AbstractLLMProvider` 抽象を経由する（urllib 直叩き禁止、絶対ルール §11）。
 
 ### プラグイン追加手順
 
@@ -314,6 +354,9 @@ State                          → save_seen_ids + append_run_history
 8. **seen_ids は `{id: timestamp}` 形式。`max_age_days` でパージ**
 9. **run_history.jsonl には `finished_at` / `sources_status` / `errors` を含める**
 10. **Slack / Email 通知は webhook・SMTP 未設定時に no-op（pipeline を失敗させない）**
+11. **`paperpilot/scripts/` の LLM 呼び出しは `AbstractLLMProvider` を経由する。`urllib` / `requests` で Groq・Gemini・Claude を直叩きしない（二重実装を避ける）**
+12. **`paperpilot/scripts/` はパイプライン出力（`output/<conf>/papers_YYYY-MM-DD.csv`）のみを入力源とする。スクリプト側で arXiv / S2 を再クロールして venue / citation / authors を再取得しない（Stage 2 の成果物を信頼する）**
+13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
 
 ---
 
@@ -407,21 +450,25 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-## 実装ステータス（2026-04-17 時点）
+## 実装ステータス（2026-04-21 時点）
 
 | 仕様 | 状態 |
 |------|------|
 | Stage 0 (async 並列収集) | ✅ arXiv / S2 / OpenAlex |
 | Stage 1 (rule filter) | ✅ カテゴリ / 日付 / 除外 / seen_ids |
-| Stage 2 (metric scoring) | ✅ venue / citation / author / github / keyword |
-| Stage 3 (SPECTER2 embedding) | ❌ 未実装（torch 依存、将来拡張） |
+| Stage 2 (metric scoring) | ✅ venue / citation / author / github / keyword / follow |
+| Stage 3 (embedding) | ✅ MiniLM / backend=minilm（SPECTER2/BGE は将来拡張） |
 | Stage 4 (LLM rerank) | ✅ Ollama / Gemini / Claude |
 | Exporters | ✅ CSV / JSON / Slack / Email |
 | 差分更新 (seen_ids) | ✅ `{id: timestamp}` 日次パージ |
 | GitHub Actions | ⏸️ ワークフロー作成済み、PAT の workflow scope 追加待ち |
+| **ビューア一覧 (papers.json)** | ✅ `index.html` + `build_pages.py` で生成 |
+| **家系図ビュー (lineage.json)** | ⚠️ 動作するが `build_lineage.py` が LLM 抽象をバイパス（urllib 直叩き）。CI 未統合・手動実行 |
+| **Groq Provider (lineage 第一候補)** | ❌ `paperpilot/llm/groq_provider.py` 未作成 |
+| **scripts のテスト** | ❌ `paperpilot/scripts/` はカバレッジ対象外 |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
 | テストカバレッジ | ✅ 97% (272+ tests) |
 
 ---
 
-*最終更新：2026年4月17日*
+*最終更新：2026年4月21日（家系図ビューアを主要出力として明記・絶対ルール §11-13 追加）*
