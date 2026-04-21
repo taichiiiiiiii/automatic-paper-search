@@ -333,7 +333,11 @@ def build(
     )
 
     for idx, paper in enumerate(orals, 1):
-        arxiv_id = extract_arxiv_id(paper.get("arxiv_url", ""))
+        # Trust papers.json's structured arxiv_id (carried forward from
+        # Stage 2 in C4) before falling back to regex-extracting it from
+        # the URL — this keeps us resilient to URL format variations
+        # ("/pdf/2404.00001v3") and is cheaper.
+        arxiv_id = paper.get("arxiv_id") or extract_arxiv_id(paper.get("arxiv_url", ""))
         if not arxiv_id:
             print(f"[{idx}/{len(orals)}] SKIP (no arxiv_id): {paper['title'][:60]}")
             continue

@@ -281,6 +281,57 @@ def test_derive_venue_label_turns_slug_into_pretty_name():
     assert build_lineage.derive_venue_label("neurips-2025") == "NEURIPS 2025"
 
 
+def test_build_prefers_arxiv_id_from_papers_json(tmp_path: Path, monkeypatch):
+    """Issue #22: when papers.json already carries arxiv_id, skip the regex re-extraction."""
+    papers_dir = tmp_path / "docs" / "iclr-2026"
+    papers_dir.mkdir(parents=True)
+    papers_path = papers_dir / "papers.json"
+    # Note the URL is an odd format (pdf, with version) that the regex
+    # DOESN'T match — but arxiv_id is set directly. The script should
+    # succeed anyway by trusting the structured field.
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "title": "Direct ID Paper",
+                    "type": "Oral",
+                    "tags": [],
+                    "arxiv_url": "http://arxiv.org/pdf/2404.00001v3",
+                    "arxiv_id": "2404.00001",
+                }
+            ]
+        )
+    )
+    cache_dir = tmp_path / "lineage-cache"
+    cache_dir.mkdir()
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
+    monkeypatch.setattr(
+        build_lineage, "resolve_paths",
+        lambda conf: (papers_path, papers_dir / "lineage.json"),
+    )
+
+    called_with: list[str] = []
+
+    def fake_fetch_paper(arxiv_id: str):
+        called_with.append(arxiv_id)
+        return {
+            "paperId": "p1", "title": "Direct ID Paper", "year": 2024,
+            "venue": "arXiv", "authors": [], "abstract": "x", "citationCount": 0,
+        }
+
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", fake_fetch_paper)
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
+
+    provider = _FakeProvider(return_value=None)
+    monkeypatch.setattr(
+        build_lineage, "build_provider", lambda: (provider, 0)
+    )
+
+    result = build_lineage.build(conference="iclr-2026")
+    assert called_with == ["2404.00001"]
+    assert len(result["nodes"]) == 1
+
+
 def test_build_accepts_conference_argument(tmp_path: Path, monkeypatch):
     """Conference parameter drives file paths and venue override for focus nodes."""
     # Set up a NeurIPS 2025 conference in tmp_path
