@@ -141,6 +141,112 @@ def _focus_s2(paper_id: str, title: str) -> dict:
     }
 
 
+def test_focus_node_carries_catalog_citation_and_stars(tmp_path: Path, monkeypatch):
+    """Issue #23: focus nodes must expose Stage 2's citation_count / github_stars
+    so the viewer can size bubbles correctly."""
+    papers_dir = tmp_path / "docs" / "iclr-2026"
+    papers_dir.mkdir(parents=True)
+    papers_path = papers_dir / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "title": "Catalog Paper",
+                    "type": "Oral",
+                    "tags": ["LLM"],
+                    "arxiv_url": "http://arxiv.org/abs/2404.00001",
+                    "arxiv_id": "2404.00001",
+                    "citation_count": 128,
+                    "github_stars": 900,
+                }
+            ]
+        )
+    )
+    cache_dir = tmp_path / "lineage-cache"
+    cache_dir.mkdir()
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
+    monkeypatch.setattr(
+        build_lineage, "resolve_paths",
+        lambda conf: (papers_path, papers_dir / "lineage.json"),
+    )
+    focus = {
+        "paperId": "focus-id", "title": "Catalog Paper", "year": 2024,
+        "venue": "arXiv", "authors": [], "abstract": "x",
+        "citationCount": 50,  # S2's (lower / staler) count
+    }
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
+    monkeypatch.setattr(build_lineage, "fetch_related", lambda *a, **kw: [])
+
+    provider = _FakeProvider(return_value=None)
+    monkeypatch.setattr(
+        build_lineage, "build_provider", lambda: (provider, 0)
+    )
+
+    result = build_lineage.build(conference="iclr-2026")
+    focus_node = next(n for n in result["nodes"] if n.get("is_focus"))
+    # Catalog (Stage 2) values take precedence over S2's citationCount.
+    assert focus_node["citation_count"] == 128
+    assert focus_node["github_stars"] == 900
+
+
+def test_related_node_uses_s2_citation_count(tmp_path: Path, monkeypatch):
+    """Non-focus nodes fall through to S2's citationCount since the catalog
+    doesn't track them."""
+    papers_dir = tmp_path / "docs" / "iclr-2026"
+    papers_dir.mkdir(parents=True)
+    papers_path = papers_dir / "papers.json"
+    papers_path.write_text(
+        json.dumps(
+            [
+                {
+                    "title": "Focus",
+                    "type": "Oral",
+                    "tags": [],
+                    "arxiv_url": "http://arxiv.org/abs/2404.00001",
+                    "arxiv_id": "2404.00001",
+                }
+            ]
+        )
+    )
+    cache_dir = tmp_path / "lineage-cache"
+    cache_dir.mkdir()
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", cache_dir)
+    monkeypatch.setattr(
+        build_lineage, "resolve_paths",
+        lambda conf: (papers_path, papers_dir / "lineage.json"),
+    )
+
+    focus = {
+        "paperId": "focus-id", "title": "Focus", "year": 2024,
+        "venue": "arXiv", "authors": [], "abstract": "x", "citationCount": 0,
+    }
+    parent = {
+        "paperId": "parent-id", "title": "Parent", "year": 2020,
+        "venue": "NeurIPS", "authors": [], "abstract": "p",
+        "citationCount": 317,
+    }
+    monkeypatch.setattr(build_lineage, "fetch_paper_by_arxiv", lambda _: focus)
+    monkeypatch.setattr(
+        build_lineage, "fetch_related",
+        lambda sid, kind, limit: [parent] if kind == "references" else [],
+    )
+
+    provider = _FakeProvider(
+        return_value=RelationClassification(
+            relation="successor", confidence=0.8, rationale="xx"
+        )
+    )
+    monkeypatch.setattr(
+        build_lineage, "build_provider", lambda: (provider, 0)
+    )
+
+    result = build_lineage.build(conference="iclr-2026")
+    parent_node = next(n for n in result["nodes"] if n["id"] == "parent-id")
+    assert parent_node["citation_count"] == 317
+    # No catalog data for related papers → stars stays at 0
+    assert parent_node["github_stars"] == 0
+
+
 def test_build_drops_unrelated_edges_and_uses_provider(tmp_path: Path, monkeypatch):
     # Redirect both the cache and the IO paths into tmp_path so the test
     # leaves no trace in the real docs/ / data/ directories.
