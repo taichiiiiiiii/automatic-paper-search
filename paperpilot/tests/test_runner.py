@@ -155,6 +155,17 @@ def test_build_llm_provider_gemini(tmp_path: Path):
     assert runner.llm_provider.enabled  # api key wired through
 
 
+def test_build_llm_provider_groq(tmp_path: Path):
+    from paperpilot.llm.groq_provider import GroqProvider
+
+    config = _build_config(tmp_path)
+    config["llm"] = {"enabled": True, "provider": "groq"}
+    config["env"]["groq_api_key"] = "gsk_k"
+    runner = PipelineRunner(config)
+    assert isinstance(runner.llm_provider, GroqProvider)
+    assert runner.llm_provider.enabled
+
+
 def test_build_llm_provider_claude(tmp_path: Path):
     from paperpilot.llm.claude_provider import ClaudeProvider
 

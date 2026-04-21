@@ -45,6 +45,7 @@ def load_config(config_path: str | Path = "config.yaml") -> dict[str, Any]:
         "slack_webhook_url": os.getenv("PAPERPILOT_SLACK_WEBHOOK_URL"),
         "gemini_api_key": os.getenv("PAPERPILOT_GEMINI_API_KEY"),
         "claude_api_key": os.getenv("PAPERPILOT_CLAUDE_API_KEY"),
+        "groq_api_key": os.getenv("PAPERPILOT_GROQ_API_KEY"),
         "smtp": {
             "server": os.getenv("PAPERPILOT_SMTP_SERVER"),
             "port": smtp_port,

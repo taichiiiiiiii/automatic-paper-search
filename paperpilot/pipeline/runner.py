@@ -31,6 +31,7 @@ from ..llm import (
     AbstractLLMProvider,
     ClaudeProvider,
     GeminiProvider,
+    GroqProvider,
     OllamaProvider,
 )
 from ..signals import (
@@ -174,6 +175,8 @@ class PipelineRunner:
             return GeminiProvider(llm_cfg, api_key=env.get("gemini_api_key"))
         if provider_name == "claude":
             return ClaudeProvider(llm_cfg, api_key=env.get("claude_api_key"))
+        if provider_name == "groq":
+            return GroqProvider(llm_cfg, api_key=env.get("groq_api_key"))
         logger.warning("runner: unknown LLM provider '%s' — skipping Stage 4", provider_name)
         return None
 
