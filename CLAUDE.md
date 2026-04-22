@@ -119,7 +119,8 @@ automatic-paper-search/
     ├── scripts/                         # ビューア生成スクリプト（補助ツール群）
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
-    │   └── build_lineage.py             # papers.json + S2 + LLM → lineage.json
+    │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json
+    │   └── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
     ├── models/
     │   └── paper.py                     # Paper データクラス
     ├── utils/
@@ -437,13 +438,20 @@ output/<conf>/papers_YYYY-MM-DD.csv
   │
   └─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー用）
        │
-       └─ build_lineage.py  → docs/<conf>/lineage.json
-            │                  - S2 から references/citations を取得
-            │                  - AbstractLLMProvider で関係種別を分類
-            │                  - lineage-cache/ にキャッシュして再開可能
-            │
-            ▼
-       docs/<conf>/lineage.html   （家系図 SVG レンダリング）
+       ├─ build_lineage.py        → docs/<conf>/lineage.json
+       │     │                      - Oral 全 N 本 × depth 1 の浅い家系図集
+       │     │                      - S2 から references/citations 取得
+       │     │                      - AbstractLLMProvider で関係分類
+       │     │                      - lineage-cache/ にキャッシュして再開可能
+       │     ▼
+       │   docs/<conf>/lineage.html   （Topics/家系図/時系列の 3 モード切替）
+       │
+       └─ build_deep_lineage.py   → docs/<conf>/deep.json
+             │                      - 1 本 × depth N の BFS（祖先・子孫）
+             │                      - lenient classifier（rationale 空のときは
+             │                        テンプレで補完、弱いエッジも残す）
+             ▼
+           docs/<conf>/deep.html   （tree-only の 1 本集中ビュー）
 ```
 
 関係種別（LLM 分類出力）: `supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated` （`unrelated` はエッジから除外）。
