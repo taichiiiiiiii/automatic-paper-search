@@ -215,15 +215,133 @@ PAPERPILOT_SMTP_*            # Email 通知
 
 ---
 
-## 開発ワークフロー（TDD 必須）
+## 開発ワークフロー（プランレビュー → TDD → PR レビュー）
 
-**この順序を守ること。**
+**この順序を守ること。** 実装/レビューのタイミングで手戻りコストが 10〜100 倍変わる。
 
-1. **RED** — 先に `paperpilot/tests/test_<module>.py` を書き、テストが失敗することを確認
-2. **GREEN** — 最小の実装でテストを通す
+### フェーズ 0: 調査 (Research & Reuse)
+
+`gh search repos` / `gh search code` → Context7 でライブラリ docs → npm/PyPI/crates.io レジストリ → 最後に Exa。既存実装が 80% 以上をカバーするなら採用を優先。
+
+### フェーズ 1: プラン作成
+
+`planner` エージェントで以下を生成:
+- 変更ファイル一覧と見積もり行数
+- タスク分解（`TaskCreate` で追跡可能な粒度）
+- テスト計画（RED/GREEN、モック戦略、カバレッジ目標）
+- 依存・リスクの明示
+
+### フェーズ 1.5: プランレビュー（★ 着手前に必須 ★）
+
+**コードを書く前にプランを並列レビュー**。実装後の手戻りよりコストが桁違いに安い。
+
+走らせるエージェント（並列）:
+
+| エージェント | 観点 |
+|---|---|
+| `architect` | システム設計整合性、スケーラビリティ、拡張性 |
+| `code-architect` | 既存パターン遵守、ブループリントの現実性 |
+| `code-explorer` | 類似/重複機能の既存確認、再利用ポイント |
+| `security-reviewer` | 設計段階で混入しやすい脅威 |
+
+チェック 10 項目:
+1. 絶対ルール §1〜§13 に反していないか
+2. Stage インターフェース（入出力の型）を崩していないか
+3. スコアリング正規化式・重みを無断で変えていないか
+4. API キーが `.env` 分離か
+5. プラグインは基底クラス継承設計か
+6. Fail-Safe（外部 API 障害時の継続性）が設計に入っているか
+7. テスト計画の粒度・モック戦略・カバレッジ目標
+8. CLAUDE.md / 設計書 / README の同時更新計画
+9. `code-explorer` で既存実装と重複していないか確認済みか
+10. PR 1 本で完結するか、分割すべきか
+
+対応方針:
+- **CRITICAL / HIGH** → プランを修正して再レビュー（プラン段階ループ）
+- **MEDIUM** → プランに注記して TDD 開始、該当箇所で再確認
+- **LOW** → そのまま進行、後段レビューで拾う
+
+**ユーザー判断を仰ぐ**: "GO / プラン再作成 / スコープ縮小" のいずれか。
+
+### フェーズ 2: TDD 実装
+
+**強制サイクル**:
+
+1. **RED** — `paperpilot/tests/test_<module>.py` を先に書き、失敗を確認
+2. **GREEN** — 最小実装でテストを通す
 3. **REFACTOR** — 設計原則に沿って整える
 4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 97%）
-5. **コミット** — `develop` ブランチへ push、メインブランチはリリース時のみ
+
+独立した複数モジュールは専門エージェント（`source-agent` / `signal-agent` / `exporter-agent`）を並列起動。
+
+### フェーズ 3: コードレビュー（commit 前）
+
+commit する前に複数レビューアを **並列で** 起動:
+
+```
+code-reviewer        (一般品質・パターン)
+python-reviewer      (PEP 8 / mypy / pythonic)
+typescript-reviewer  (JS / TS、フロントエンド変更時)
+security-reviewer    (OWASP Top 10 / secrets)
+```
+
+対応方針:
+- **CRITICAL / HIGH** → commit 前に必ず修正
+- **MEDIUM** → できる範囲で修正、残りはフェーズ 7 で issue 化
+- **LOW** → 基本 issue 化（即時修正しない）
+
+### フェーズ 4: イテレーティブ修正
+
+CRITICAL / HIGH がゼロに収束するまで再レビュー → 修正を繰り返す。実績: 2〜6 イテレーションで収束。
+
+### フェーズ 5: commit & push
+
+Conventional Commits 形式で `closes #N` を含める:
+
+```bash
+git commit -m "<type>(<scope>): <subject> (closes #N)"
+git push
+```
+
+`type`: `feat` / `fix` / `refactor` / `docs` / `test` / `chore` / `perf` / `ci`
+
+### フェーズ 6: PR 前最終チェック
+
+`paperpilot-reviewer` で 10 項目判定（**全変更で MUST BE USED**）。
+
+### フェーズ 7: 残項目を issue 化
+
+フェーズ 3 / 6 で「ブロッキングではないが望ましい」と判定された項目を **バッチ投入**。[Issue 作成ワークフロー](#issue-作成ワークフロー) に従う。
+
+### フェーズ 8: PR 作成・CI・merge
+
+`develop` へ PR → CI（test / ruff / mypy）→ merge。merge 後は bug 発生時のみ再レビュー。
+
+### 全体タイミング図
+
+```
+[Research]
+    ↓
+[Plan]                     agent: planner
+    ↓
+[★ プランレビュー ★]       agents: architect / code-architect /
+    ↓        ↑                     code-explorer / security-reviewer
+    ├────────┘ findings > 0 なら再プラン
+    ↓
+[TDD: RED → GREEN → IMPROVE]
+    ↓
+[コードレビュー] ──────→   agents: code / python / ts / security
+    ↓        ↑
+    ├────────┘ ゼロ収束まで
+    ↓
+[commit (closes #N)]
+    ↓
+[paperpilot-reviewer 最終] 10 項目判定
+    ↓
+[残項目を issue 化]        バッチで gh issue create
+    ↓
+[PR → CI → merge]
+```
 
 ### テスト実行
 
@@ -379,6 +497,77 @@ output/<conf>/papers_YYYY-MM-DD.csv
 
 `.github/workflows/*.yml` を push するには PAT に **`workflow` scope が必要**。
 PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 → `workflow` にチェック。
+
+---
+
+## Issue 作成ワークフロー
+
+レビュー（プランレビュー / コードレビュー / paperpilot-reviewer）で検出された「ブロッキングではないが望ましい」項目を issue 化する標準手順。過去実績: 13 件を 23 分でバッチ投入 (#20〜#32)。
+
+### Step 1. 1 issue = 1 問題 に分解
+
+関連が強い複数指摘でも、別 issue に分けて本文でクロスリンク（`#21 の続き`）。
+
+### Step 2. タイトル
+
+`[<カテゴリ>] <日本語サマリ>` 形式。
+
+| 接頭辞 | GitHub ラベル |
+|---|---|
+| `[bug]` | `bug` |
+| `[docs]` | `documentation` |
+| `[refactor]` / `[consistency]` / `[lint]` | `refactor` |
+| `[tests]` / `[test-quality]` | `test` |
+| `[typing]` | `typing` |
+| `[scripts]` / `[spec-gap]` | `enhancement` |
+| `[infrastructure]` | `infrastructure` (blocked 時は `help wanted` 併用) |
+
+### Step 3. 本文テンプレート（5 セクション・順序厳守）
+
+```markdown
+## 概要
+（1-2 段落。何が起きていて、なぜ問題か）
+
+## 背景
+（該当 CLAUDE.md §N / 設計書 §N / 過去 incident を引用）
+
+## 該当
+（file:line とコードスニペット）
+
+## 提案 / あるべき記述
+（具体的な修正方針、before/after コード例）
+
+## タスク
+- [ ] 具体的アクション 1
+- [ ] 必要ならテスト追加
+- [ ] 必要ならドキュメント更新
+```
+
+### Step 4. 投入
+
+```bash
+gh issue create \
+  --title "[refactor] foo を bar に統一" \
+  --label "refactor" \
+  --body "$(cat <<'EOF'
+## 概要
+...
+EOF
+)"
+```
+
+関連 issue 群は **数分以内に連続投入** する。
+
+### Step 5. 解決時のコミット
+
+`closes #N` 節を含める:
+
+```
+fix(typing): resolve 7 mypy errors across scripts/ and tests/ (closes #32)
+refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
+```
+
+複数まとめて閉じる場合: `fix: resolve issues #1-#7, #10, #13, #15, #16`
 
 ---
 
