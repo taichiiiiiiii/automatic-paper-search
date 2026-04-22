@@ -82,9 +82,6 @@ def resolve_paths(conference: str) -> tuple[Path, Path]:
 # of this module is unchanged.
 derive_venue_label = slug_to_venue_label
 
-S2_FIELDS_PAPER = "paperId,title,year,venue,citationCount,referenceCount,authors,abstract,externalIds"
-S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
-
 # Knobs
 TOP_PARENTS = 15
 TOP_CHILDREN = 15
@@ -187,6 +184,15 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
 
 # ---------- S2 helpers ----------
 
+# Field lists sent to the S2 Graph API. Scoped to this block since they
+# are implementation details of the two fetch helpers below — callers
+# outside the module should never need them.
+_S2_FIELDS_PAPER = (
+    "paperId,title,year,venue,citationCount,referenceCount,authors,abstract,externalIds"
+)
+_S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
+
+
 def _s2_get(url: str) -> dict[str, Any] | None:
     """GET an S2 JSON endpoint, returning the parsed body or None.
 
@@ -221,7 +227,7 @@ def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
     if cache.exists():
         cached = json.loads(cache.read_text())
         return cached if isinstance(cached, dict) else None
-    url = f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={S2_FIELDS_PAPER}"
+    url = f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={_S2_FIELDS_PAPER}"
     data = _s2_get(url)
     if data:
         cache.write_text(json.dumps(data, ensure_ascii=False, indent=2))
@@ -237,7 +243,7 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
         return cached if isinstance(cached, list) else []
     url = (
         f"https://api.semanticscholar.org/graph/v1/paper/{s2_id}/{kind}"
-        f"?fields={S2_FIELDS_REL}&limit={min(limit * 4, 100)}"
+        f"?fields={_S2_FIELDS_REL}&limit={min(limit * 4, 100)}"
     )
     data = _s2_get(url) or {}
     items = []
