@@ -26,35 +26,63 @@ from paperpilot.scripts import build_lineage
 # ---- provider selection ----
 
 
+def _patch_env(monkeypatch, **values):
+    """Patch config_loader.load_env to return a fixed secrets dict.
+
+    Patching the function is more deterministic than monkeypatching the
+    environment: earlier versions of this test relied on dotenv being
+    a no-op, but dotenv re-reads paperpilot/.env and restored real keys
+    in developer environments, making the tests non-hermetic.
+    """
+    base = {
+        "github_token": None, "s2_api_key": None, "openalex_email": None,
+        "slack_webhook_url": None, "gemini_api_key": None, "claude_api_key": None,
+        "groq_api_key": None, "groq_model": None, "gemini_model": None,
+        "smtp": {},
+    }
+    base.update(values)
+    monkeypatch.setattr(
+        "paperpilot.utils.config_loader.load_env", lambda *a, **kw: base
+    )
+    # Belt and braces: clear the unprefixed fallbacks that build_provider
+    # also reads from os.environ.
+    for v in ("GROQ_API_KEY", "GEMINI_API_KEY"):
+        monkeypatch.delenv(v, raising=False)
+
+
 def test_build_provider_prefers_groq(monkeypatch):
-    monkeypatch.setenv("PAPERPILOT_GROQ_API_KEY", "gsk_x")
-    monkeypatch.setenv("PAPERPILOT_GEMINI_API_KEY", "gemini_y")
+    _patch_env(monkeypatch, groq_api_key="gsk_x", gemini_api_key="gemini_y")
     provider, delay = build_lineage.build_provider()
     assert provider.name == "groq"
     assert delay == build_lineage.LLM_RATE_DELAY["groq"]
 
 
 def test_build_provider_falls_back_to_gemini(monkeypatch):
-    monkeypatch.delenv("PAPERPILOT_GROQ_API_KEY", raising=False)
-    monkeypatch.delenv("GROQ_API_KEY", raising=False)
-    monkeypatch.setenv("PAPERPILOT_GEMINI_API_KEY", "gemini_y")
+    _patch_env(monkeypatch, gemini_api_key="gemini_y")  # no groq
     provider, delay = build_lineage.build_provider()
     assert provider.name == "gemini"
     assert delay == build_lineage.LLM_RATE_DELAY["gemini"]
 
 
 def test_build_provider_exits_without_any_key(monkeypatch):
-    for var in (
-        "PAPERPILOT_GROQ_API_KEY",
-        "GROQ_API_KEY",
-        "PAPERPILOT_GEMINI_API_KEY",
-        "GEMINI_API_KEY",
-    ):
-        monkeypatch.delenv(var, raising=False)
-    # Prevent dotenv from repopulating the environment from paperpilot/.env
-    monkeypatch.setattr(build_lineage, "_load_env", lambda: None)
+    _patch_env(monkeypatch)  # no keys at all
     with pytest.raises(SystemExit):
         build_lineage.build_provider()
+
+
+def test_build_provider_uses_model_override_from_env(monkeypatch):
+    """`PAPERPILOT_GROQ_MODEL` (via load_env) overrides the default model."""
+    _patch_env(monkeypatch, groq_api_key="gsk_x", groq_model="llama-4-800b")
+    provider, _ = build_lineage.build_provider()
+    assert provider.model == "llama-4-800b"
+
+
+def test_build_provider_accepts_unprefixed_fallback(monkeypatch):
+    """Ambient `GROQ_API_KEY` (no PAPERPILOT_ prefix) is still picked up."""
+    _patch_env(monkeypatch)  # clears load_env-sourced keys
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_ambient")
+    provider, _ = build_lineage.build_provider()
+    assert provider.name == "groq"
 
 
 # ---- _classify_cached ----
