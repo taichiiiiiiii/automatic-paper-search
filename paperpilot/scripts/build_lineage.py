@@ -136,32 +136,31 @@ VENUE_TIER_MAP = [
 
 # ---------- Provider selection ----------
 
-def _load_env() -> None:
-    """Best-effort .env loader so keys flow from paperpilot/.env."""
-    try:
-        from dotenv import load_dotenv
-    except ImportError:
-        return
-    env_path = ROOT / "paperpilot" / ".env"
-    if env_path.exists():
-        load_dotenv(env_path)
-
 
 def build_provider() -> tuple[AbstractLLMProvider, float]:
     """Pick the first available LLM provider and return (provider, rate_delay).
 
     Groq takes precedence because it has the most generous free tier for
     the classification workload (hundreds of calls per lineage build).
+
+    Env lookup goes through `utils.config_loader.load_env` so the pipeline
+    and scripts share one mapping from PAPERPILOT_* vars to the secrets
+    dict. Tests can patch `load_env` directly to avoid relying on the
+    ambient environment (and on whatever is in paperpilot/.env).
     """
-    _load_env()
-    groq_key = os.environ.get("PAPERPILOT_GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
-    gemini_key = os.environ.get("PAPERPILOT_GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    from paperpilot.utils.config_loader import load_env
+
+    env = load_env(ROOT / "paperpilot" / ".env")
+    # Unprefixed names are accepted as a convenience for users running
+    # one-off scripts with ambient credentials (e.g. `GROQ_API_KEY=... python ...`).
+    groq_key = env.get("groq_api_key") or os.environ.get("GROQ_API_KEY")
+    gemini_key = env.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
 
     # Annotate explicitly as the base class so mypy accepts either concrete
     # subclass on the way back out of the tuple.
     provider: AbstractLLMProvider
     if groq_key:
-        model = os.environ.get("PAPERPILOT_GROQ_MODEL", "llama-3.3-70b-versatile")
+        model = env.get("groq_model") or "llama-3.3-70b-versatile"
         provider = GroqProvider(
             {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
             api_key=groq_key,
@@ -169,7 +168,7 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
         return provider, LLM_RATE_DELAY["groq"]
 
     if gemini_key:
-        model = os.environ.get("PAPERPILOT_GEMINI_MODEL", "gemini-2.5-flash")
+        model = env.get("gemini_model") or "gemini-2.5-flash"
         provider = GeminiProvider(
             {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
             api_key=gemini_key,
