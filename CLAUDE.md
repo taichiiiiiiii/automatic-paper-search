@@ -483,6 +483,7 @@ output/<conf>/papers_YYYY-MM-DD.csv
 10. **Slack / Email 通知は webhook・SMTP 未設定時に no-op（pipeline を失敗させない）**
 11. **`paperpilot/scripts/` の LLM 呼び出しは `AbstractLLMProvider` を経由する。`urllib` / `requests` で Groq・Gemini・Claude を直叩きしない（二重実装を避ける）**
 12. **`paperpilot/scripts/` はパイプライン出力（`output/<conf>/papers_YYYY-MM-DD.csv`）のみを入力源とする。スクリプト側で arXiv / S2 を再クロールして venue / citation / authors を再取得しない（Stage 2 の成果物を信頼する）**
+    - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
 
 ---
@@ -669,4 +670,4 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-*最終更新：2026年4月21日（Groq Provider / classify_relation 抽象を追加、家系図ビューを週次 CI に統合、`paperpilot/scripts/*` に smoke test を追加）*
+*最終更新：2026年4月23日（deep viewer に `?arxiv=` URL パラメータ対応 / `generate_deep_manifest.py` を追加 / 絶対ルール §12 に家系図構築の例外条項を追記）*

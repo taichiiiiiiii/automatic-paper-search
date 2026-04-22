@@ -18,6 +18,11 @@ Usage:
 
 Reuses the cache directory at paperpilot/data/lineage-cache/ so re-runs
 after interruption resume from where they left off.
+
+Per absolute rule §12 (family-tree exception): this script fetches the
+S2 citation graph directly. It does NOT re-enrich the focus paper's
+Stage 2 fields (venue / citation_count / github_stars) — those come
+from the Stage 2 run that produced papers.json.
 """
 
 from __future__ import annotations
