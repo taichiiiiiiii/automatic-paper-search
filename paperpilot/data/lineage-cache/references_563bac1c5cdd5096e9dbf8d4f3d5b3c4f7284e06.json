@@ -1,0 +1,1964 @@
+[
+  {
+    "paperId": "ed4087f6e8d77452810979f58246c5b2ad846cf8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2202-07125",
+      "ArXiv": "2202.07125",
+      "DOI": "10.24963/ijcai.2023/759",
+      "CorpusId": 246863823
+    },
+    "title": "Transformers in Time Series: A Survey",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2022,
+    "citationCount": 1368,
+    "openAccessPdf": {
+      "url": "https://www.ijcai.org/proceedings/2023/0759.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.07125, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308963",
+        "name": "Qingsong Wen"
+      },
+      {
+        "authorId": "50018188",
+        "name": "Tian Zhou"
+      },
+      {
+        "authorId": "144677904",
+        "name": "Chao Zhang"
+      },
+      {
+        "authorId": "2109780096",
+        "name": "Weiqiu Chen"
+      },
+      {
+        "authorId": "1387898803",
+        "name": "Ziqing Ma"
+      },
+      {
+        "authorId": "3063894",
+        "name": "Junchi Yan"
+      },
+      {
+        "authorId": "2110940896",
+        "name": "Liang Sun"
+      }
+    ],
+    "abstract": "Transformers have achieved superior performances in many tasks in natural language processing and computer vision, which also triggered great interest in the time series community. Among multiple advantages of Transformers, the ability to capture long-range dependencies and interactions is especially attractive for time series modeling, leading to exciting progress in various time series applications. In this paper, we systematically review Transformer schemes for time series modeling by highlighting their strengths as well as limitations. In particular, we examine the development of time series Transformers in two perspectives. From the perspective of network structure, we summarize the adaptations and modifications that have been made to Transformers in order to accommodate the challenges in time series analysis. From the perspective of applications, we categorize time series Transformers based on common tasks including forecasting, anomaly detection, and classification. Empirically, we perform robust analysis, model size analysis, and seasonal-trend decomposition analysis to study how Transformers perform in time series. Finally, we discuss and suggest future directions to provide useful research guidance."
+  },
+  {
+    "paperId": "90457535d179af22c182bba257b07651903f014e",
+    "externalIds": {
+      "DBLP": "conf/nips/GuptaXB21",
+      "ArXiv": "2109.13459",
+      "CorpusId": 238198267
+    },
+    "title": "Multiwavelet-based Operator Learning for Differential Equations",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 286,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.13459, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2061294773",
+        "name": "Gaurav Gupta"
+      },
+      {
+        "authorId": "1845872944",
+        "name": "Xiongye Xiao"
+      },
+      {
+        "authorId": "1698286",
+        "name": "P. Bogdan"
+      }
+    ],
+    "abstract": "The solution of a partial differential equation can be obtained by computing the inverse operator map between the input and the solution space. Towards this end, we introduce a \\textit{multiwavelet-based neural operator learning scheme} that compresses the associated operator's kernel using fine-grained wavelets. By explicitly embedding the inverse multiwavelet filters, we learn the projection of the kernel onto fixed multiwavelet polynomial bases. The projected kernel is trained at multiple scales derived from using repeated computation of multiwavelet transform. This allows learning the complex dependencies at various scales and results in a resolution-independent scheme. Compare to the prior works, we exploit the fundamental properties of the operator's kernel which enable numerically efficient representation. We perform experiments on the Korteweg-de Vries (KdV) equation, Burgers' equation, Darcy Flow, and Navier-Stokes equation. Compared with the existing neural operator approaches, our model shows significantly higher accuracy and achieves state-of-the-art in a range of datasets. For the time-varying equations, the proposed method exhibits a ($2X-10X$) improvement ($0.0018$ ($0.0033$) relative $L2$ error for Burgers' (KdV) equation). By learning the mappings between function spaces, the proposed method has the ability to find the solution of a high-resolution input after learning from lower-resolution data."
+  },
+  {
+    "paperId": "dbf53ece1a6a8860e41ff5f721c72ceb0fb18dd6",
+    "externalIds": {
+      "DBLP": "conf/acl/ZhuS20",
+      "ArXiv": "2107.11906",
+      "ACL": "2021.acl-long.294",
+      "DOI": "10.18653/v1/2021.acl-long.294",
+      "CorpusId": 236428421
+    },
+    "title": "H-Transformer-1D: Fast One-Dimensional Hierarchical Attention for Sequences",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.acl-long.294.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.11906, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2062703",
+        "name": "Zhenhai Zhu"
+      },
+      {
+        "authorId": "1737285",
+        "name": "Radu Soricut"
+      }
+    ],
+    "abstract": "We describe an efficient hierarchical method to compute attention in the Transformer architecture. The proposed attention mechanism exploits a matrix structure similar to the Hierarchical Matrix (H-Matrix) developed by the numerical analysis community, and has linear run time and memory complexity. We perform extensive experiments to show that the inductive bias embodied by our hierarchical attention is effective in capturing the hierarchical structure in the sequences typical for natural language and vision tasks. Our method is superior to alternative sub-quadratic proposals by over +6 points on average on the Long Range Arena benchmark. It also sets a new SOTA test perplexity on One-Billion Word dataset with 5x fewer model parameters than that of the previous-best Transformer-based models."
+  },
+  {
+    "paperId": "9b6af0e358e76d22f209c75b1702c3e6ea7815b1",
+    "externalIds": {
+      "DBLP": "conf/nips/RaoZZLZ21",
+      "ArXiv": "2107.00645",
+      "CorpusId": 235694359
+    },
+    "title": "Global Filter Networks for Image Classification",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 657,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.00645, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39358728",
+        "name": "Yongming Rao"
+      },
+      {
+        "authorId": "2118223312",
+        "name": "Wenliang Zhao"
+      },
+      {
+        "authorId": "2118932732",
+        "name": "Zheng Zhu"
+      },
+      {
+        "authorId": "1697700",
+        "name": "Jiwen Lu"
+      },
+      {
+        "authorId": "49640256",
+        "name": "Jie Zhou"
+      }
+    ],
+    "abstract": "Recent advances in self-attention and pure multi-layer perceptrons (MLP) models for vision have shown great potential in achieving promising performance with fewer inductive biases. These models are generally based on learning interaction among spatial locations from raw data. The complexity of self-attention and MLP grows quadratically as the image size increases, which makes these models hard to scale up when high-resolution features are required. In this paper, we present the Global Filter Network (GFNet), a conceptually simple yet computationally efficient architecture, that learns long-term spatial dependencies in the frequency domain with log-linear complexity. Our architecture replaces the self-attention layer in vision transformers with three key operations: a 2D discrete Fourier transform, an element-wise multiplication between frequency-domain features and learnable global filters, and a 2D inverse Fourier transform. We exhibit favorable accuracy/complexity trade-offs of our models on both ImageNet and downstream tasks. Our results demonstrate that GFNet can be a very competitive alternative to transformer-style models and CNNs in efficiency, generalization ability and robustness. Code is available at https://github.com/raoyongming/GFNet"
+  },
+  {
+    "paperId": "fc46ccb83dc121c33de7ab6bdedab7d970780b2f",
+    "externalIds": {
+      "ArXiv": "2106.13008",
+      "DBLP": "conf/nips/WuXWL21",
+      "CorpusId": 235623791
+    },
+    "title": "Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 4373,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.13008, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2051867856",
+        "name": "Haixu Wu"
+      },
+      {
+        "authorId": "2111064536",
+        "name": "Jiehui Xu"
+      },
+      {
+        "authorId": "2144499343",
+        "name": "Jianmin Wang"
+      },
+      {
+        "authorId": "2054275000",
+        "name": "Mingsheng Long"
+      }
+    ],
+    "abstract": "Extending the forecasting time is a critical demand for real applications, such as extreme weather early warning and long-term energy consumption planning. This paper studies the long-term forecasting problem of time series. Prior Transformer-based models adopt various self-attention mechanisms to discover the long-range dependencies. However, intricate temporal patterns of the long-term future prohibit the model from finding reliable dependencies. Also, Transformers have to adopt the sparse versions of point-wise self-attentions for long series efficiency, resulting in the information utilization bottleneck. Going beyond Transformers, we design Autoformer as a novel decomposition architecture with an Auto-Correlation mechanism. We break with the pre-processing convention of series decomposition and renovate it as a basic inner block of deep models. This design empowers Autoformer with progressive decomposition capacities for complex time series. Further, inspired by the stochastic process theory, we design the Auto-Correlation mechanism based on the series periodicity, which conducts the dependencies discovery and representation aggregation at the sub-series level. Auto-Correlation outperforms self-attention in both efficiency and accuracy. In long-term forecasting, Autoformer yields state-of-the-art accuracy, with a 38% relative improvement on six benchmarks, covering five practical applications: energy, traffic, economics, weather and disease. Code is available at this repository: \\url{https://github.com/thuml/Autoformer}."
+  },
+  {
+    "paperId": "1f133158a8973fb33fea188f20517cd7e69bfe7f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-03824",
+      "ACL": "2022.naacl-main.319",
+      "ArXiv": "2105.03824",
+      "DOI": "10.18653/v1/2022.naacl-main.319",
+      "CorpusId": 234336004
+    },
+    "title": "FNet: Mixing Tokens with Fourier Transforms",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 690,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.naacl-main.319.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.03824, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1405626394",
+        "name": "J. Lee-Thorp"
+      },
+      {
+        "authorId": "1643737606",
+        "name": "J. Ainslie"
+      },
+      {
+        "authorId": "2085636189",
+        "name": "Ilya Eckstein"
+      },
+      {
+        "authorId": "1722671",
+        "name": "Santiago Ontañón"
+      }
+    ],
+    "abstract": "We show that Transformer encoder architectures can be sped up, with limited accuracy costs, by replacing the self-attention sublayers with simple linear transformations that “mix” input tokens. Most surprisingly, we find that replacing the self-attention sublayer in a Transformer encoder with a standard, unparameterized Fourier Transform achieves 92-97% of the accuracy of BERT counterparts on the GLUE benchmark, but trains 80% faster on GPUs and 70% faster on TPUs at standard 512 input lengths. At longer input lengths, our FNet model is significantly faster: when compared to the “efficient Transformers” on the Long Range Arena benchmark, FNet matches the accuracy of the most accurate models, while outpacing the fastest models across all sequence lengths on GPUs (and across relatively shorter lengths on TPUs). Finally, FNet has a light memory footprint and is particularly efficient at smaller model sizes; for a fixed speed and accuracy budget, small FNet models outperform Transformer counterparts."
+  },
+  {
+    "paperId": "6fa1cfc4f97f03a8485692418c7aa1a06c574a85",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-03902",
+      "ArXiv": "2102.03902",
+      "DOI": "10.1609/aaai.v35i16.17664",
+      "CorpusId": 231847231,
+      "PubMed": "34745767"
+    },
+    "title": "Nyströmformer: A Nyström-Based Algorithm for Approximating Self-Attention",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2021,
+    "citationCount": 667,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/17664/17471",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.03902, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2760194",
+        "name": "Yunyang Xiong"
+      },
+      {
+        "authorId": "35292426",
+        "name": "Zhanpeng Zeng"
+      },
+      {
+        "authorId": "39072588",
+        "name": "Rudrasis Chakraborty"
+      },
+      {
+        "authorId": "120805419",
+        "name": "Mingxing Tan"
+      },
+      {
+        "authorId": "2064481572",
+        "name": "G. Fung"
+      },
+      {
+        "authorId": "47002659",
+        "name": "Yin Li"
+      },
+      {
+        "authorId": "144711711",
+        "name": "Vikas Singh"
+      }
+    ],
+    "abstract": "Transformers have emerged as a powerful tool for a broad range of natural language processing tasks. A key component that drives the impressive performance of Transformers is the self-attention mechanism that encodes the influence or dependence of other tokens on each specific token. While beneficial, the quadratic complexity of self-attention on the input sequence length has limited its application to longer sequences - a topic being actively studied in the community. To address this limitation, we propose Nyströmformer - a model that exhibits favorable scalability as a function of sequence length. Our idea is based on adapting the Nyström method to approximate standard self-attention with O(n) complexity. The scalability of Nyströmformer enables application to longer sequences with thousands of tokens. We perform evaluations on multiple downstream tasks on the GLUE benchmark and IMDB reviews with standard sequence length, and find that our Nyströmformer performs comparably, or in a few cases, even slightly better, than standard self-attention. On longer sequence tasks in the Long Range Arena (LRA) benchmark, Nyströmformer performs favorably relative to other efficient self-attention methods. Our code is available at https://github.com/mlpen/Nystromformer."
+  },
+  {
+    "paperId": "5b9d8bcc46b766b47389c912a8e026f81b91b0d8",
+    "externalIds": {
+      "MAG": "3111507638",
+      "ArXiv": "2012.07436",
+      "DBLP": "conf/aaai/ZhouZPZLXZ21",
+      "DOI": "10.1609/aaai.v35i12.17325",
+      "CorpusId": 229156802
+    },
+    "title": "Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2020,
+    "citationCount": 7123,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/17325/17132",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.07436, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2395143",
+        "name": "Haoyi Zhou"
+      },
+      {
+        "authorId": "2437353",
+        "name": "Shanghang Zhang"
+      },
+      {
+        "authorId": "1752536568",
+        "name": "Jieqi Peng"
+      },
+      {
+        "authorId": "2108433304",
+        "name": "Shuai Zhang"
+      },
+      {
+        "authorId": "1492113939",
+        "name": "Jianxin Li"
+      },
+      {
+        "authorId": "144467554",
+        "name": "Hui Xiong"
+      },
+      {
+        "authorId": "2108278607",
+        "name": "Wan Zhang"
+      }
+    ],
+    "abstract": "Many real-world applications require the prediction of long sequence time-series, such as electricity consumption planning. Long sequence time-series forecasting (LSTF) demands a high prediction capacity of the model, which is the ability to capture precise long-range dependency coupling between output and input efficiently. Recent studies have shown the potential of Transformer to increase the prediction capacity. However, there are several severe issues with Transformer that prevent it from being directly applicable to LSTF, including quadratic time complexity, high memory usage, and inherent limitation of the encoder-decoder architecture. To address these issues, we design an efficient transformer-based model for LSTF, named Informer, with three distinctive characteristics: (i) a ProbSparse self-attention mechanism, which achieves O(L log L) in time complexity and memory usage, and has comparable performance on sequences' dependency alignment. (ii) the self-attention distilling highlights dominating attention by halving cascading layer input, and efficiently handles extreme long input sequences. (iii) the generative style decoder, while conceptually simple, predicts the long time-series sequences at one forward operation rather than a step-by-step way, which drastically improves the inference speed of long-sequence predictions. Extensive experiments on four large-scale datasets demonstrate that Informer significantly outperforms existing methods and provides a new solution to the LSTF problem."
+  },
+  {
+    "paperId": "191352d81f5053bcc90921823071f36fc95c77a2",
+    "externalIds": {
+      "DBLP": "conf/bigdataconf/HomayouniGRGDK20",
+      "DOI": "10.1109/BigData50022.2020.9378192",
+      "CorpusId": 232373720
+    },
+    "title": "An Autocorrelation-based LSTM-Autoencoder for Anomaly Detection on Time-Series Data",
+    "venue": "2020 IEEE International Conference on Big Data (Big Data)",
+    "year": 2020,
+    "citationCount": 48,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/BigData50022.2020.9378192?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/BigData50022.2020.9378192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51061436",
+        "name": "Hajar Homayouni"
+      },
+      {
+        "authorId": "1390855585",
+        "name": "Sudipto Ghosh"
+      },
+      {
+        "authorId": "144039860",
+        "name": "I. Ray"
+      },
+      {
+        "authorId": "2059023539",
+        "name": "Shlok Gondalia"
+      },
+      {
+        "authorId": "144898609",
+        "name": "Jerry Duggan"
+      },
+      {
+        "authorId": "1750266",
+        "name": "M. Kahn"
+      }
+    ],
+    "abstract": "Data quality significantly impacts the results of data analytics. Researchers have proposed machine learning based anomaly detection techniques to identify incorrect data. Existing approaches fail to (1) identify the underlying domain constraints violated by the anomalous data, and (2) generate explanations of these violations in a form comprehensible to domain experts. We propose IDEAL, which is an LSTM-Autoencoder based approach that detects anomalies in multivariate time-series data, generates domain constraints, and reports subsequences that violate the constraints as anomalies. We propose an automated autocorrelation-based windowing approach to adjust the network input size, thereby improving the correctness and performance of constraint discovery over manual and brute-force approaches. The anomalies are visualized in a manner comprehensible to domain experts in the form of decision trees extracted from a random forest classifier. Domain experts can then provide feedback to retrain the learning model and improve the accuracy of the process. We evaluate the effectiveness of IDEAL using datasets from Yahoo servers, NASA Shuttle, and Colorado State University Energy Institute. We demonstrate that IDEAL can detect previously known anomalies from these datasets. Using mutation analysis, we show that IDEAL can detect different types of injected faults. We also demonstrate that the accuracy improves after incorporating domain expert feedback."
+  },
+  {
+    "paperId": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+    "externalIds": {
+      "ArXiv": "2010.11929",
+      "MAG": "3119786062",
+      "DBLP": "conf/iclr/DosovitskiyB0WZ21",
+      "CorpusId": 225039882
+    },
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 60733,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "3319373",
+        "name": "Dirk Weissenborn"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "2274215058",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "46352821",
+        "name": "M. Minderer"
+      },
+      {
+        "authorId": "2280399",
+        "name": "G. Heigold"
+      },
+      {
+        "authorId": "1802148",
+        "name": "S. Gelly"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train."
+  },
+  {
+    "paperId": "2f7dc1ee85e9f6a97810c66016e09ffeed684f03",
+    "externalIds": {
+      "DBLP": "conf/iclr/LiKALBSA21",
+      "MAG": "3092923133",
+      "ArXiv": "2010.08895",
+      "CorpusId": 224705257
+    },
+    "title": "Fourier Neural Operator for Parametric Partial Differential Equations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 3826,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.08895, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1390750243",
+        "name": "Zong-Yi Li"
+      },
+      {
+        "authorId": "51219644",
+        "name": "Nikola B. Kovachki"
+      },
+      {
+        "authorId": "3371922",
+        "name": "K. Azizzadenesheli"
+      },
+      {
+        "authorId": "2048777595",
+        "name": "Burigede Liu"
+      },
+      {
+        "authorId": "144304264",
+        "name": "K. Bhattacharya"
+      },
+      {
+        "authorId": "2055700747",
+        "name": "Andrew M. Stuart"
+      },
+      {
+        "authorId": "2047844",
+        "name": "Anima Anandkumar"
+      }
+    ],
+    "abstract": "The classical development of neural networks has primarily focused on learning mappings between finite-dimensional Euclidean spaces. Recently, this has been generalized to neural operators that learn mappings between function spaces. For partial differential equations (PDEs), neural operators directly learn the mapping from any functional parametric dependence to the solution. Thus, they learn an entire family of PDEs, in contrast to classical methods which solve one instance of the equation. In this work, we formulate a new neural operator by parameterizing the integral kernel directly in Fourier space, allowing for an expressive and efficient architecture. We perform experiments on Burgers' equation, Darcy flow, and the Navier-Stokes equation (including the turbulent regime). Our Fourier neural operator shows state-of-the-art performance compared to existing neural network methodologies and it is up to three orders of magnitude faster compared to traditional PDE solvers."
+  },
+  {
+    "paperId": "3fbf6339273c50b04e886fa9bd4ad18c952a683d",
+    "externalIds": {
+      "DBLP": "conf/iclr/ChoromanskiLDSG21",
+      "ArXiv": "2009.14794",
+      "MAG": "3091156754",
+      "CorpusId": 222067132
+    },
+    "title": "Rethinking Attention with Performers",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 2153,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.14794, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1805203",
+        "name": "K. Choromanski"
+      },
+      {
+        "authorId": "52314889",
+        "name": "Valerii Likhosherstov"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "32725720",
+        "name": "Xingyou Song"
+      },
+      {
+        "authorId": "3071104",
+        "name": "Andreea Gane"
+      },
+      {
+        "authorId": "2227764",
+        "name": "Tamás Sarlós"
+      },
+      {
+        "authorId": "2052793706",
+        "name": "Peter G. Hawkins"
+      },
+      {
+        "authorId": "29827891",
+        "name": "Jared Davis"
+      },
+      {
+        "authorId": "1579862074",
+        "name": "Afroz Mohiuddin"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2636941",
+        "name": "David Belanger"
+      },
+      {
+        "authorId": "2654847",
+        "name": "Lucy J. Colwell"
+      },
+      {
+        "authorId": "145689461",
+        "name": "Adrian Weller"
+      }
+    ],
+    "abstract": "We introduce Performers, Transformer architectures which can estimate regular (softmax) full-rank-attention Transformers with provable accuracy, but using only linear (as opposed to quadratic) space and time complexity, without relying on any priors such as sparsity or low-rankness. To approximate softmax attention-kernels, Performers use a novel Fast Attention Via positive Orthogonal Random features approach (FAVOR+), which may be of independent interest for scalable kernel methods. FAVOR+ can be also used to efficiently model kernelizable attention mechanisms beyond softmax. This representational power is crucial to accurately compare softmax with other kernels for the first time on large-scale tasks, beyond the reach of regular Transformers, and investigate optimal attention-kernels. Performers are linear architectures fully compatible with regular Transformers and with strong theoretical guarantees: unbiased or nearly-unbiased estimation of the attention matrix, uniform convergence and low estimation variance. We tested Performers on a rich set of tasks stretching from pixel-prediction through text models to protein sequence modeling. We demonstrate competitive results with other examined efficient sparse and dense attention methods, showcasing effectiveness of the novel attention-learning paradigm leveraged by Performers."
+  },
+  {
+    "paperId": "044e13d7dd4e0655eb76f0bd00b2c1bdb44e2be3",
+    "externalIds": {
+      "ArXiv": "2007.14062",
+      "DBLP": "journals/corr/abs-2007-14062",
+      "MAG": "3045733172",
+      "CorpusId": 220831004
+    },
+    "title": "Big Bird: Transformers for Longer Sequences",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 2715,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.14062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1771307",
+        "name": "M. Zaheer"
+      },
+      {
+        "authorId": "1947314",
+        "name": "Guru Guruganesh"
+      },
+      {
+        "authorId": "89890133",
+        "name": "Kumar Avinava Dubey"
+      },
+      {
+        "authorId": "1643737606",
+        "name": "J. Ainslie"
+      },
+      {
+        "authorId": "114577307",
+        "name": "Chris Alberti"
+      },
+      {
+        "authorId": "1722671",
+        "name": "Santiago Ontañón"
+      },
+      {
+        "authorId": "38552691",
+        "name": "Philip Pham"
+      },
+      {
+        "authorId": "101210026",
+        "name": "Anirudh Ravula"
+      },
+      {
+        "authorId": "2401629861",
+        "name": "Qifan Wang"
+      },
+      {
+        "authorId": "113906155",
+        "name": "Li Yang"
+      },
+      {
+        "authorId": "143629707",
+        "name": "Amr Ahmed"
+      }
+    ],
+    "abstract": "Transformers-based models, such as BERT, have been one of the most successful deep learning models for NLP. Unfortunately, one of their core limitations is the quadratic dependency (mainly in terms of memory) on the sequence length due to their full attention mechanism. To remedy this, we propose, BigBird, a sparse attention mechanism that reduces this quadratic dependency to linear. We show that BigBird is a universal approximator of sequence functions and is Turing complete, thereby preserving these properties of the quadratic, full attention model. Along the way, our theoretical analysis reveals some of the benefits of having $O(1)$ global tokens (such as CLS), that attend to the entire sequence as part of the sparse attention mechanism. The proposed sparse attention can handle sequences of length up to 8x of what was previously possible using similar hardware. As a consequence of the capability to handle longer context, BigBird drastically improves performance on various NLP tasks such as question answering and summarization. We also propose novel applications to genomics data."
+  },
+  {
+    "paperId": "c0b79e6a5fd88ef13aa4780df5aae0aaa6b2be87",
+    "externalIds": {
+      "MAG": "3033529678",
+      "DBLP": "journals/corr/abs-2006-04768",
+      "ArXiv": "2006.04768",
+      "CorpusId": 219530577
+    },
+    "title": "Linformer: Self-Attention with Linear Complexity",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 2210,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.04768, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2096387",
+        "name": "Sinong Wang"
+      },
+      {
+        "authorId": "46708422",
+        "name": "Belinda Z. Li"
+      },
+      {
+        "authorId": "2072010",
+        "name": "Madian Khabsa"
+      },
+      {
+        "authorId": "2087117615",
+        "name": "Han Fang"
+      },
+      {
+        "authorId": "2110815489",
+        "name": "Hao Ma"
+      }
+    ],
+    "abstract": "Large transformer models have shown extraordinary success in achieving state-of-the-art results in many natural language processing applications. However, training and deploying these models can be prohibitively costly for long sequences, as the standard self-attention mechanism of the Transformer uses $O(n^2)$ time and space with respect to sequence length. In this paper, we demonstrate that the self-attention mechanism can be approximated by a low-rank matrix. We further exploit this finding to propose a new self-attention mechanism, which reduces the overall self-attention complexity from $O(n^2)$ to $O(n)$ in both time and space. The resulting linear transformer, the \\textit{Linformer}, performs on par with standard Transformer models, while being much more memory- and time-efficient."
+  },
+  {
+    "paperId": "925ad2897d1b5decbea320d07e99afa9110e09b2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2004-05150",
+      "MAG": "3015468748",
+      "ArXiv": "2004.05150",
+      "CorpusId": 215737171
+    },
+    "title": "Longformer: The Long-Document Transformer",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 5282,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.05150, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46181066",
+        "name": "Iz Beltagy"
+      },
+      {
+        "authorId": "39139825",
+        "name": "Matthew E. Peters"
+      },
+      {
+        "authorId": "2527954",
+        "name": "Arman Cohan"
+      }
+    ],
+    "abstract": "Transformer-based models are unable to process long sequences due to their self-attention operation, which scales quadratically with the sequence length. To address this limitation, we introduce the Longformer with an attention mechanism that scales linearly with sequence length, making it easy to process documents of thousands of tokens or longer. Longformer's attention mechanism is a drop-in replacement for the standard self-attention and combines a local windowed attention with a task motivated global attention. Following prior work on long-sequence transformers, we evaluate Longformer on character-level language modeling and achieve state-of-the-art results on text8 and enwik8. In contrast to most prior work, we also pretrain Longformer and finetune it on a variety of downstream tasks. Our pretrained Longformer consistently outperforms RoBERTa on long document tasks and sets new state-of-the-art results on WikiHop and TriviaQA. We finally introduce the Longformer-Encoder-Decoder (LED), a Longformer variant for supporting long document generative sequence-to-sequence tasks, and demonstrate its effectiveness on the arXiv summarization dataset."
+  },
+  {
+    "paperId": "34a4e6818d680875ff0bef9a76de0376118446d1",
+    "externalIds": {
+      "MAG": "3034609440",
+      "ArXiv": "2002.11296",
+      "DBLP": "journals/corr/abs-2002-11296",
+      "CorpusId": 211505992
+    },
+    "title": "Sparse Sinkhorn Attention",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 387,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.11296, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144447820",
+        "name": "Yi Tay"
+      },
+      {
+        "authorId": "11774695",
+        "name": "Dara Bahri"
+      },
+      {
+        "authorId": "1988888746",
+        "name": "Liu Yang"
+      },
+      {
+        "authorId": "1680617",
+        "name": "Donald Metzler"
+      },
+      {
+        "authorId": "50270386",
+        "name": "Da-Cheng Juan"
+      }
+    ],
+    "abstract": "We propose Sparse Sinkhorn Attention, a new efficient and sparse method for learning to attend. Our method is based on differentiable sorting of internal representations. Concretely, we introduce a meta sorting network that learns to generate latent permutations over sequences. Given sorted sequences, we are then able to compute quasi-global attention with only local windows, improving the memory efficiency of the attention module. To this end, we propose new algorithmic innovations such as Causal Sinkhorn Balancing and SortCut, a dynamic sequence truncation method for tailoring Sinkhorn Attention for encoding and/or decoding purposes. Via extensive experiments on algorithmic seq2seq sorting, language modeling, pixel-wise image generation, document classification and natural language inference, we demonstrate that our memory efficient Sinkhorn Attention method is competitive with vanilla attention and consistently outperforms recently proposed efficient Transformer models such as Sparse Transformers."
+  },
+  {
+    "paperId": "6c1eeab447252f5897209ca50abc863ad7e83f9e",
+    "externalIds": {
+      "ArXiv": "2002.09545",
+      "DBLP": "journals/corr/abs-2002-09545",
+      "MAG": "3007103823",
+      "CorpusId": 211258817
+    },
+    "title": "RobustTAD: Robust Time Series Anomaly Detection via Decomposition and Convolutional Neural Networks",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 153,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.09545, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115555634",
+        "name": "Jing Gao"
+      },
+      {
+        "authorId": "47684615",
+        "name": "Xiaomin Song"
+      },
+      {
+        "authorId": "3308963",
+        "name": "Qingsong Wen"
+      },
+      {
+        "authorId": "8120382",
+        "name": "Pichao Wang"
+      },
+      {
+        "authorId": "2110940896",
+        "name": "Liang Sun"
+      },
+      {
+        "authorId": "2124947593",
+        "name": "Huan Xu"
+      }
+    ],
+    "abstract": "The monitoring and management of numerous and diverse time series data at Alibaba Group calls for an effective and scalable time series anomaly detection service. In this paper, we propose RobustTAD, a Robust Time series Anomaly Detection framework by integrating robust seasonal-trend decomposition and convolutional neural network for time series data. The seasonal-trend decomposition can effectively handle complicated patterns in time series, and meanwhile significantly simplifies the architecture of the neural network, which is an encoder-decoder architecture with skip connections. This architecture can effectively capture the multi-scale information from time series, which is very useful in anomaly detection. Due to the limited labeled data in time series anomaly detection, we systematically investigate data augmentation methods in both time and frequency domains. We also introduce label-based weight and value-based weight in the loss function by utilizing the unbalanced nature of the time series anomaly detection problem. Compared with the widely used forecasting-based anomaly detection algorithms, decomposition-based algorithms, traditional statistical algorithms, as well as recent neural network based algorithms, RobustTAD performs significantly better on public benchmark datasets. It is deployed as a public online service and widely adopted in different business scenarios at Alibaba Group."
+  },
+  {
+    "paperId": "e70693e5c6aabf508a007d03ca9b3ada83148d91",
+    "externalIds": {
+      "ArXiv": "2002.09535",
+      "DBLP": "journals/corr/abs-2002-09535",
+      "CorpusId": 260538287
+    },
+    "title": "RobustPeriod: Time-Frequency Mining for Robust Multiple Periodicities Detection",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.09535, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308963",
+        "name": "Qingsong Wen"
+      },
+      {
+        "authorId": "2154619564",
+        "name": "Kai He"
+      },
+      {
+        "authorId": "2110940896",
+        "name": "Liang Sun"
+      },
+      {
+        "authorId": "1591141695",
+        "name": "Yingying Zhang"
+      },
+      {
+        "authorId": "117984452",
+        "name": "Minhui Ke"
+      },
+      {
+        "authorId": "2124947593",
+        "name": "Huan Xu"
+      }
+    ],
+    "abstract": "Periodicity detection is an important task in time series analysis as it plays a crucial role in many time series tasks such as classification, clustering, compression, anomaly detection, and forecasting. It is challenging due to the following reasons: 1, complicated non-stationary time series; 2, dynamic and complicated periodic patterns, including multiple interlaced periodic components; 3, outliers and noises. In this paper, we propose a robust periodicity detection algorithm to address these challenges. Our algorithm applies maximal overlap discrete wavelet transform to transform the time series into multiple temporal-frequency scales such that different periodicities can be isolated. We rank them by wavelet variance and then at each scale, and then propose Huber-periodogram by formulating the periodogram as the solution to M-estimator for introducing robustness. We rigorously prove the theoretical properties of Huber-periodogram and justify the use of Fisher's test on Huber-periodogram for periodicity detection. To further refine the detected periods, we compute unbiased autocorrelation function based on Wiener-Khinchin theorem from Huber-periodogram for improved robustness and efficiency. Experiments on synthetic and real-world datasets show that our algorithm outperforms other popular ones for both single and multiple periodicity detection. It is now implemented and provided as a public online service at Alibaba Group and has been used extensive in different business lines."
+  },
+  {
+    "paperId": "43f2ad297941db230c089ba353efc3f281ab678c",
+    "externalIds": {
+      "MAG": "3033156098",
+      "CorpusId": 226096901
+    },
+    "title": "5分で分かる!? 有名論文ナナメ読み：Jacob Devlin et al. : BERT : Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 13575,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "136309159",
+        "name": "知秀 柴田"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "055fd6a9f7293269f1b22c1470e63bd02d8d9500",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2001-04451",
+      "MAG": "2994673210",
+      "ArXiv": "2001.04451",
+      "CorpusId": 209315300
+    },
+    "title": "Reformer: The Efficient Transformer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 2844,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.04451, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143808231",
+        "name": "Nikita Kitaev"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "6639036",
+        "name": "Anselm Levskaya"
+      }
+    ],
+    "abstract": "Large Transformer models routinely achieve state-of-the-art results on a number of tasks but training these models can be prohibitively costly, especially on long sequences. We introduce two techniques to improve the efficiency of Transformers. For one, we replace dot-product attention by one that uses locality-sensitive hashing, changing its complexity from O($L^2$) to O($L\\log L$), where $L$ is the length of the sequence. Furthermore, we use reversible residual layers instead of the standard residuals, which allows storing activations only once in the training process instead of $N$ times, where $N$ is the number of layers. The resulting model, the Reformer, performs on par with Transformer models while being much more memory-efficient and much faster on long sequences."
+  },
+  {
+    "paperId": "3c8a456509e6c0805354bd40a35e3f2dbf8069b1",
+    "externalIds": {
+      "MAG": "2970971581",
+      "DBLP": "journals/corr/abs-1912-01703",
+      "ArXiv": "1912.01703",
+      "CorpusId": 202786778
+    },
+    "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 51177,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.01703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3407277",
+        "name": "Adam Paszke"
+      },
+      {
+        "authorId": "39793298",
+        "name": "Sam Gross"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "1977806",
+        "name": "Adam Lerer"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "114250963",
+        "name": "Gregory Chanan"
+      },
+      {
+        "authorId": "2059271276",
+        "name": "Trevor Killeen"
+      },
+      {
+        "authorId": "3370429",
+        "name": "Zeming Lin"
+      },
+      {
+        "authorId": "3365851",
+        "name": "N. Gimelshein"
+      },
+      {
+        "authorId": "3029482",
+        "name": "L. Antiga"
+      },
+      {
+        "authorId": "3050846",
+        "name": "Alban Desmaison"
+      },
+      {
+        "authorId": "1473151134",
+        "name": "Andreas Köpf"
+      },
+      {
+        "authorId": "2052812305",
+        "name": "E. Yang"
+      },
+      {
+        "authorId": "2253681376",
+        "name": "Zachary DeVito"
+      },
+      {
+        "authorId": "10707709",
+        "name": "Martin Raison"
+      },
+      {
+        "authorId": "41203992",
+        "name": "Alykhan Tejani"
+      },
+      {
+        "authorId": "22236100",
+        "name": "Sasank Chilamkurthy"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "152599430",
+        "name": "Lu Fang"
+      },
+      {
+        "authorId": "2113829116",
+        "name": "Junjie Bai"
+      },
+      {
+        "authorId": "2127604",
+        "name": "Soumith Chintala"
+      }
+    ],
+    "abstract": "Deep learning frameworks have often focused on either usability or speed, but not both. PyTorch is a machine learning library that shows that these two goals are in fact compatible: it was designed from first principles to support an imperative and Pythonic programming style that supports code as a model, makes debugging easy and is consistent with other popular scientific computing libraries, while remaining efficient and supporting hardware accelerators such as GPUs. In this paper, we detail the principles that drove the implementation of PyTorch and how they are reflected in its architecture. We emphasize that every aspect of PyTorch is a regular Python program under the full control of its user. We also explain how the careful and pragmatic implementation of the key components of its runtime enables them to work together to achieve compelling performance. We demonstrate the efficiency of individual subsystems, as well as the overall speed of PyTorch on several commonly used benchmarks."
+  },
+  {
+    "paperId": "2cf3bd0cc1382f35384e259d99e4f9744eeaed28",
+    "externalIds": {
+      "MAG": "3106298483",
+      "ArXiv": "1911.02972",
+      "ACL": "2020.findings-emnlp.232",
+      "DBLP": "journals/corr/abs-1911-02972",
+      "DOI": "10.18653/v1/2020.findings-emnlp.232",
+      "CorpusId": 207847640
+    },
+    "title": "Blockwise Self-Attention for Long Document Understanding",
+    "venue": "Findings",
+    "year": 2019,
+    "citationCount": 275,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.findings-emnlp.232.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.02972, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40125294",
+        "name": "J. Qiu"
+      },
+      {
+        "authorId": "2110815489",
+        "name": "Hao Ma"
+      },
+      {
+        "authorId": "39455775",
+        "name": "Omer Levy"
+      },
+      {
+        "authorId": "3156075",
+        "name": "S. Yih"
+      },
+      {
+        "authorId": "2096387",
+        "name": "Sinong Wang"
+      },
+      {
+        "authorId": "46199760",
+        "name": "Jie Tang"
+      }
+    ],
+    "abstract": "We present BlockBERT, a lightweight and efficient BERT model for better modeling long-distance dependencies. Our model extends BERT by introducing sparse block structures into the attention matrix to reduce both memory consumption and training/inference time, which also enables attention heads to capture either short- or long-range contextual information. We conduct experiments on language model pre-training and several benchmark question answering datasets with various paragraph lengths. BlockBERT uses 18.7-36.1% less memory and 12.0-25.1% less time to learn the model. During testing, BlockBERT saves 27.8% inference time, while having comparable and sometimes better prediction accuracy, compared to an advanced BERT-based model, RoBERTa."
+  },
+  {
+    "paperId": "2a687609ac1cecb9b20ba52d4f5d72ba14e0eaf2",
+    "externalIds": {
+      "MAG": "2962998615",
+      "ArXiv": "1907.10747",
+      "DBLP": "conf/nips/RawatCYSK19",
+      "CorpusId": 198897717
+    },
+    "title": "Sampled Softmax with Random Fourier Features",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 61,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.10747, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2241094",
+        "name": "A. Rawat"
+      },
+      {
+        "authorId": "2809410",
+        "name": "Jiecao Chen"
+      },
+      {
+        "authorId": "1815972",
+        "name": "Felix X. Yu"
+      },
+      {
+        "authorId": "9486035",
+        "name": "A. Suresh"
+      },
+      {
+        "authorId": "152663162",
+        "name": "Sanjiv Kumar"
+      }
+    ],
+    "abstract": "The computational cost of training with softmax cross entropy loss grows linearly with the number of classes. For the settings where a large number of classes are involved, a common method to speed up training is to sample a subset of classes and utilize an estimate of the loss gradient based on these classes, known as the sampled softmax method. However, the sampled softmax provides a biased estimate of the gradient unless the samples are drawn from the exact softmax distribution, which is again expensive to compute. Therefore, a widely employed practical approach involves sampling from a simpler distribution in the hope of approximating the exact softmax distribution. In this paper, we develop the first theoretical understanding of the role that different sampling distributions play in determining the quality of sampled softmax. Motivated by our analysis and the work on kernel-based sampling, we propose the Random Fourier Softmax (RF-softmax) method that utilizes the powerful Random Fourier Features to enable more efficient and accurate sampling from an approximate softmax distribution. We show that RF-softmax leads to low bias in estimation in terms of both the full softmax distribution and the full softmax gradient. Furthermore, the cost of RF-softmax scales only logarithmically with the number of classes."
+  },
+  {
+    "paperId": "36e30516683032634975c53e60f3737b6e35ff80",
+    "externalIds": {
+      "MAG": "2954731415",
+      "DBLP": "conf/nips/LiJXZCWY19",
+      "ArXiv": "1907.00235",
+      "CorpusId": 195766887
+    },
+    "title": "Enhancing the Locality and Breaking the Memory Bottleneck of Transformer on Time Series Forecasting",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 1876,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.00235, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50341591",
+        "name": "SHIYANG LI"
+      },
+      {
+        "authorId": "2149111126",
+        "name": "Xiaoyong Jin"
+      },
+      {
+        "authorId": "2067812849",
+        "name": "Yao Xuan"
+      },
+      {
+        "authorId": "3363593",
+        "name": "Xiyou Zhou"
+      },
+      {
+        "authorId": "2928777",
+        "name": "Wenhu Chen"
+      },
+      {
+        "authorId": "2040617",
+        "name": "Yu-Xiang Wang"
+      },
+      {
+        "authorId": "1740249",
+        "name": "Xifeng Yan"
+      }
+    ],
+    "abstract": "Time series forecasting is an important problem across many domains, including predictions of solar plant energy output, electricity consumption, and traffic jam situation. In this paper, we propose to tackle such forecasting problem with Transformer [1]. Although impressed by its performance in our preliminary study, we found its two major weaknesses: (1) locality-agnostics: the point-wise dot-product self-attention in canonical Transformer architecture is insensitive to local context, which can make the model prone to anomalies in time series; (2) memory bottleneck: space complexity of canonical Transformer grows quadratically with sequence length $L$, making directly modeling long time series infeasible. In order to solve these two issues, we first propose convolutional self-attention by producing queries and keys with causal convolution so that local context can be better incorporated into attention mechanism. Then, we propose LogSparse Transformer with only $O(L(\\log L)^{2})$ memory cost, improving forecasting accuracy for time series with fine granularity and strong long-term dependencies under constrained memory budget. Our experiments on both synthetic data and real-world datasets show that it compares favorably to the state-of-the-art."
+  },
+  {
+    "paperId": "13c185b8c461034af2634f25dd8a85889e8ee135",
+    "externalIds": {
+      "DBLP": "conf/iclr/OreshkinCCB20",
+      "MAG": "2996552856",
+      "ArXiv": "1905.10437",
+      "CorpusId": 166228758
+    },
+    "title": "N-BEATS: Neural basis expansion analysis for interpretable time series forecasting",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 1523,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.10437, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3313242",
+        "name": "Boris N. Oreshkin"
+      },
+      {
+        "authorId": "120982452",
+        "name": "Dmitri Carpov"
+      },
+      {
+        "authorId": "2748188",
+        "name": "Nicolas Chapados"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "We focus on solving the univariate times series point forecasting problem using deep learning. We propose a deep neural architecture based on backward and forward residual links and a very deep stack of fully-connected layers. The architecture has a number of desirable properties, being interpretable, applicable without modification to a wide array of target domains, and fast to train. We test the proposed architecture on several well-known datasets, including M3, M4 and TOURISM competition datasets containing time series from diverse domains. We demonstrate state-of-the-art performance for two configurations of N-BEATS for all the datasets, improving forecast accuracy by 11% over a statistical benchmark and by 3% over last year's winner of the M4 competition, a domain-adjusted hand-crafted hybrid between neural network and statistical time series models. The first configuration of our model does not employ any time-series-specific components and its performance on heterogeneous datasets strongly suggests that, contrarily to received wisdom, deep learning primitives such as residual blocks are by themselves sufficient to solve a wide range of forecasting problems. Finally, we demonstrate how the proposed architecture can be augmented to provide outputs that are interpretable without considerable loss in accuracy."
+  },
+  {
+    "paperId": "0983a173c5c5332f053dcea9bf0b7737a090e46c",
+    "externalIds": {
+      "ArXiv": "1905.03806",
+      "DBLP": "journals/corr/abs-1905-03806",
+      "MAG": "2944772978",
+      "CorpusId": 150373780
+    },
+    "title": "Think Globally, Act Locally: A Deep Neural Network Approach to High-Dimensional Time Series Forecasting",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 467,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.03806, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145897034",
+        "name": "Rajat Sen"
+      },
+      {
+        "authorId": "46185316",
+        "name": "Hsiang-Fu Yu"
+      },
+      {
+        "authorId": "1783667",
+        "name": "I. Dhillon"
+      }
+    ],
+    "abstract": "Forecasting high-dimensional time series plays a crucial role in many applications such as demand forecasting and financial predictions. Modern datasets can have millions of correlated time-series that evolve together, i.e they are extremely high dimensional (one dimension for each individual time-series). There is a need for exploiting global patterns and coupling them with local calibration for better prediction. However, most recent deep learning approaches in the literature are one-dimensional, i.e, even though they are trained on the whole dataset, during prediction, the future forecast for a single dimension mainly depends on past values from the same dimension. In this paper, we seek to correct this deficiency and propose DeepGLO, a deep forecasting model which thinks globally and acts locally. In particular, DeepGLO is a hybrid model that combines a global matrix factorization model regularized by a temporal convolution network, along with another temporal network that can capture local properties of each time-series and associated covariates. Our model can be trained effectively on high-dimensional but diverse time series, where different time series can have vastly different scales, without a priori normalization or rescaling. Empirical results demonstrate that DeepGLO can outperform state-of-the-art approaches; for example, we see more than 25% improvement in WAPE over other methods on a public dataset that contains more than 100K-dimensional time series."
+  },
+  {
+    "paperId": "ff454a661ade6321bb275b205159c84dc9729521",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1812-01767",
+      "ArXiv": "1812.01767",
+      "MAG": "2964758013",
+      "DOI": "10.1609/aaai.v33i01.33015409",
+      "CorpusId": 54458362
+    },
+    "title": "RobustSTL: A Robust Seasonal-Trend Decomposition Algorithm for Long Time Series",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2018,
+    "citationCount": 264,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/4480/4358",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.01767, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308963",
+        "name": "Qingsong Wen"
+      },
+      {
+        "authorId": "2115555634",
+        "name": "Jing Gao"
+      },
+      {
+        "authorId": "47684615",
+        "name": "Xiaomin Song"
+      },
+      {
+        "authorId": "2110940896",
+        "name": "Liang Sun"
+      },
+      {
+        "authorId": "2124947593",
+        "name": "Huan Xu"
+      },
+      {
+        "authorId": "1682028",
+        "name": "Shenghuo Zhu"
+      }
+    ],
+    "abstract": "Decomposing complex time series into trend, seasonality, and remainder components is an important task to facilitate time series anomaly detection and forecasting. Although numerous methods have been proposed, there are still many time series characteristics exhibiting in real-world data which are not addressed properly, including 1) ability to handle seasonality fluctuation and shift, and abrupt change in trend and reminder; 2) robustness on data with anomalies; 3) applicability on time series with long seasonality period. In the paper, we propose a novel and generic time series decomposition algorithm to address these challenges. Specifically, we extract the trend component robustly by solving a regression problem using the least absolute deviations loss with sparse regularization. Based on the extracted trend, we apply the the non-local seasonal filtering to extract the seasonality component. This process is repeated until accurate decomposition is obtained. Experiments on different synthetic and real-world time series datasets demonstrate that our method outperforms existing solutions."
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "MAG": "2963403868",
+      "ArXiv": "1706.03762",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 173461,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data."
+  },
+  {
+    "paperId": "4eebe0d12aefeedf3ca85256bc8aa3b4292d47d9",
+    "externalIds": {
+      "MAG": "2980994438",
+      "DBLP": "journals/corr/FlunkertSG17",
+      "ArXiv": "1704.04110",
+      "DOI": "10.1016/j.ijforecast.2019.07.001",
+      "CorpusId": 12199225
+    },
+    "title": "DeepAR: Probabilistic Forecasting with Autoregressive Recurrent Networks",
+    "venue": "International Journal of Forecasting",
+    "year": 2017,
+    "citationCount": 2780,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.ijforecast.2019.07.001",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.04110, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067154581",
+        "name": "Valentin Flunkert"
+      },
+      {
+        "authorId": "144607961",
+        "name": "David Salinas"
+      },
+      {
+        "authorId": "2113062",
+        "name": "Jan Gasthaus"
+      }
+    ],
+    "abstract": "Probabilistic forecasting, i.e. estimating the probability distribution of a time series' future given its past, is a key enabler for optimizing business processes. In retail businesses, for example, forecasting demand is crucial for having the right inventory available at the right time at the right place. In this paper we propose DeepAR, a methodology for producing accurate probabilistic forecasts, based on training an auto regressive recurrent network model on a large number of related time series. We demonstrate how by applying deep learning techniques to forecasting, one can overcome many of the challenges faced by widely-used classical approaches to the problem. We show through extensive empirical evaluation on several real-world forecasting data sets accuracy improvements of around 15% compared to state-of-the-art methods."
+  },
+  {
+    "paperId": "76624f8ff1391e942c3313b79ed08a335aa5077a",
+    "externalIds": {
+      "MAG": "2952042565",
+      "ArXiv": "1704.02971",
+      "DBLP": "conf/ijcai/QinSCCJC17",
+      "DOI": "10.24963/ijcai.2017/366",
+      "CorpusId": 4564012
+    },
+    "title": "A Dual-Stage Attention-Based Recurrent Neural Network for Time Series Prediction",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2017,
+    "citationCount": 1491,
+    "openAccessPdf": {
+      "url": "https://www.ijcai.org/proceedings/2017/0366.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.02971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145592705",
+        "name": "Yao Qin"
+      },
+      {
+        "authorId": "2451800",
+        "name": "Dongjin Song"
+      },
+      {
+        "authorId": "1825678210",
+        "name": "Haifeng Chen"
+      },
+      {
+        "authorId": "145859270",
+        "name": "Wei Cheng"
+      },
+      {
+        "authorId": "1791767",
+        "name": "Guofei Jiang"
+      },
+      {
+        "authorId": "48524582",
+        "name": "G. Cottrell"
+      }
+    ],
+    "abstract": "The Nonlinear autoregressive exogenous (NARX) model, which predicts the current value of a time series based upon its previous values as well as the current and past values of multiple driving (exogenous) series, has been studied for decades. Despite the fact that various NARX models have been developed, few of them can capture the long-term temporal dependencies appropriately and select the relevant driving series to make predictions. In this paper, we propose a dual-stage attention-based recurrent neural network (DA-RNN) to address these two issues. In the first stage, we introduce an input attention mechanism to adaptively extract relevant driving series (a.k.a., input features) at each time step by referring to the previous encoder hidden state. In the second stage, we use a temporal attention mechanism to select relevant encoder hidden states across all time steps. With this dual-stage attention scheme, our model can not only make predictions effectively, but can also be easily interpreted. Thorough empirical studies based upon the SML 2010 dataset and the NASDAQ 100 Stock dataset demonstrate that the DA-RNN can outperform state-of-the-art methods for time series prediction."
+  },
+  {
+    "paperId": "b4ebfebb47e7b61d674747e378fd8eb4516e7716",
+    "externalIds": {
+      "MAG": "2604847698",
+      "DBLP": "conf/sigir/LaiCYL18",
+      "ArXiv": "1703.07015",
+      "DOI": "10.1145/3209978.3210006",
+      "CorpusId": 4922476
+    },
+    "title": "Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks",
+    "venue": "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": 2017,
+    "citationCount": 2688,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1703.07015",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.07015, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1857734",
+        "name": "Guokun Lai"
+      },
+      {
+        "authorId": "1702500",
+        "name": "Wei-Cheng Chang"
+      },
+      {
+        "authorId": "35729970",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "2391802",
+        "name": "Hanxiao Liu"
+      }
+    ],
+    "abstract": "Multivariate time series forecasting is an important machine learning problem across many domains, including predictions of solar plant energy output, electricity consumption, and traffic jam situation. Temporal data arise in these real-world applications often involves a mixture of long-term and short-term patterns, for which traditional approaches such as Autoregressive models and Gaussian Process may fail. In this paper, we proposed a novel deep learning framework, namely Long- and Short-term Time-series network (LSTNet), to address this open challenge. LSTNet uses the Convolution Neural Network (CNN) and the Recurrent Neural Network (RNN) to extract short-term local dependency patterns among variables and to discover long-term patterns for time series trends. Furthermore, we leverage traditional autoregressive model to tackle the scale insensitive problem of the neural network model. In our evaluation on real-world data with complex mixtures of repetitive patterns, LSTNet achieved significant performance improvements over that of several state-of-the-art baseline methods. All the data and experiment codes are available online."
+  },
+  {
+    "paperId": "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "externalIds": {
+      "MAG": "2964121744",
+      "DBLP": "journals/corr/KingmaB14",
+      "ArXiv": "1412.6980",
+      "CorpusId": 6628106
+    },
+    "title": "Adam: A Method for Stochastic Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 165026,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm."
+  },
+  {
+    "paperId": "ac3ee98020251797c2b401e1389461df88e52e62",
+    "externalIds": {
+      "MAG": "1924770834",
+      "DBLP": "journals/corr/ChungGCB14",
+      "ArXiv": "1412.3555",
+      "CorpusId": 5201925
+    },
+    "title": "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling",
+    "venue": "arXiv.org",
+    "year": 2014,
+    "citationCount": 14480,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.3555, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8270717",
+        "name": "Junyoung Chung"
+      },
+      {
+        "authorId": "1854385",
+        "name": "Çaglar Gülçehre"
+      },
+      {
+        "authorId": "1979489",
+        "name": "Kyunghyun Cho"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "In this paper we compare different types of recurrent units in recurrent neural networks (RNNs). Especially, we focus on more sophisticated units that implement a gating mechanism, such as a long short-term memory (LSTM) unit and a recently proposed gated recurrent unit (GRU). We evaluate these recurrent units on the tasks of polyphonic music modeling and speech signal modeling. Our experiments revealed that these advanced recurrent units are indeed better than more traditional recurrent units such as tanh units. Also, we found GRU to be comparable to LSTM."
+  },
+  {
+    "paperId": "a7621b4ec18719b08f3a2a444b6d37a2e20227b7",
+    "externalIds": {
+      "MAG": "2963340555",
+      "ArXiv": "1312.5851",
+      "DBLP": "journals/corr/MathieuHL13",
+      "CorpusId": 18233038
+    },
+    "title": "Fast Training of Convolutional Networks through FFTs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2013,
+    "citationCount": 651,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1312.5851, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143949035",
+        "name": "Michaël Mathieu"
+      },
+      {
+        "authorId": "39713408",
+        "name": "Mikael Henaff"
+      },
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      }
+    ],
+    "abstract": "Convolutional networks are one of the most widely employed architectures in computer vision and machine learning. In order to leverage their ability to learn complex functions, large amounts of data are required for training. Training a large convolutional network to produce state-of-the-art results can take weeks, even when using modern GPUs. Producing labels using a trained network can also be costly when dealing with web-scale datasets. In this work, we present a simple algorithm which accelerates training and inference by a significant factor, and can yield improvements of over an order of magnitude compared to existing state-of-the-art implementations. This is done by computing convolutions as pointwise products in the Fourier domain while reusing the same transformed feature map many times. The algorithm is implemented on a GPU architecture and addresses a number of related challenges."
+  },
+  {
+    "paperId": "84069287da0a6b488b8c933f3cb5be759cb6237e",
+    "externalIds": {
+      "ArXiv": "1211.5063",
+      "DBLP": "conf/icml/PascanuMB13",
+      "MAG": "2949190276",
+      "CorpusId": 14650762
+    },
+    "title": "On the difficulty of training recurrent neural networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2012,
+    "citationCount": 5837,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1211.5063, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1996134",
+        "name": "Razvan Pascanu"
+      },
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "There are two widely known issues with properly training recurrent neural networks, the vanishing and the exploding gradient problems detailed in Bengio et al. (1994). In this paper we attempt to improve the understanding of the underlying issues by exploring these problems from an analytical, a geometric and a dynamical systems perspective. Our analysis is used to justify a simple yet effective solution. We propose a gradient norm clipping strategy to deal with exploding gradients and a soft constraint for the vanishing gradients problem. We validate empirically our hypothesis and proposed solutions in the experimental section."
+  },
+  {
+    "paperId": "7a59fde27461a3ef4a21a249cc403d0d96e4a0d7",
+    "externalIds": {
+      "MAG": "2144902422",
+      "DBLP": "conf/nips/RahimiR07",
+      "CorpusId": 877929
+    },
+    "title": "Random Features for Large-Scale Kernel Machines",
+    "venue": "Neural Information Processing Systems",
+    "year": 2007,
+    "citationCount": 4798,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "31558848",
+        "name": "A. Rahimi"
+      },
+      {
+        "authorId": "9229182",
+        "name": "B. Recht"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "7ab959ec1915f63bb91dd706f6b177cef0abde84",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-0708-3696",
+      "MAG": "2952337362",
+      "ArXiv": "0708.3696",
+      "DOI": "10.1137/07070471X",
+      "CorpusId": 58270
+    },
+    "title": "Relative-Error CUR Matrix Decompositions",
+    "venue": "SIAM Journal on Matrix Analysis and Applications",
+    "year": 2007,
+    "citationCount": 541,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/0708.3696",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/0708.3696, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1738441",
+        "name": "P. Drineas"
+      },
+      {
+        "authorId": "143884206",
+        "name": "Michael W. Mahoney"
+      },
+      {
+        "authorId": "144963537",
+        "name": "S. Muthukrishnan"
+      }
+    ],
+    "abstract": "Many data analysis applications deal with large matrices and involve approximating the matrix using a small number of “components.” Typically, these components are linear combinations of the rows and columns of the matrix, and are thus difficult to interpret in terms of the original features of the input data. In this paper, we propose and study matrix approximations that are explicitly expressed in terms of a small number of columns and/or rows of the data matrix, and thereby more amenable to interpretation in terms of the original data. Our main algorithmic results are two randomized algorithms which take as input an $m\\times n$ matrix $A$ and a rank parameter $k$. In our first algorithm, $C$ is chosen, and we let $A'=CC^+A$, where $C^+$ is the Moore-Penrose generalized inverse of $C$. In our second algorithm $C$, $U$, $R$ are chosen, and we let $A'=CUR$. ($C$ and $R$ are matrices that consist of actual columns and rows, respectively, of $A$, and $U$ is a generalized inverse of their intersection.) For each algorithm, we show that with probability at least $1-\\delta$, $\\|A-A'\\|_F\\leq(1+\\epsilon)\\,\\|A-A_k\\|_F$, where $A_k$ is the “best” rank-$k$ approximation provided by truncating the SVD of $A$, and where $\\|X\\|_F$ is the Frobenius norm of the matrix $X$. The number of columns of $C$ and rows of $R$ is a low-degree polynomial in $k$, $1/\\epsilon$, and $\\log(1/\\delta)$. Both the Numerical Linear Algebra community and the Theoretical Computer Science community have studied variants of these matrix decompositions over the last ten years. However, our two algorithms are the first polynomial time algorithms for such low-rank matrix approximations that come with relative-error guarantees; previously, in some cases, it was not even known whether such matrix decompositions exist. Both of our algorithms are simple and they take time of the order needed to approximately compute the top $k$ singular vectors of $A$. The technical crux of our analysis is a novel, intuitive sampling method we introduce in this paper called “subspace sampling.” In subspace sampling, the sampling probabilities depend on the Euclidean norms of the rows of the top singular vectors. This allows us to obtain provable relative-error guarantees by deconvoluting “subspace” information and “size-of-$A$” information in the input matrix. This technique is likely to be useful for other matrix approximation and data analysis problems."
+  },
+  {
+    "paperId": "048d02623d94cc30dfbe3bda8ba75100735f33d8",
+    "externalIds": {
+      "DBLP": "conf/focs/ArriagaV99",
+      "MAG": "1516726196",
+      "DOI": "10.1007/s10994-006-6265-7",
+      "CorpusId": 17741789
+    },
+    "title": "An algorithmic theory of learning: Robust concepts and random projection",
+    "venue": "40th Annual Symposium on Foundations of Computer Science (Cat. No.99CB37039)",
+    "year": 1999,
+    "citationCount": 425,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s10994-006-6265-7.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10994-006-6265-7?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10994-006-6265-7, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1752048",
+        "name": "R. Arriaga"
+      },
+      {
+        "authorId": "1737804",
+        "name": "S. Vempala"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "2e9d221c206e9503ceb452302d68d10e293f2a10",
+    "externalIds": {
+      "DBLP": "journals/neco/HochreiterS97",
+      "MAG": "2064675550",
+      "DOI": "10.1162/neco.1997.9.8.1735",
+      "CorpusId": 1915014,
+      "PubMed": "9377276"
+    },
+    "title": "Long Short-Term Memory",
+    "venue": "Neural Computation",
+    "year": 1997,
+    "citationCount": 103363,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco.1997.9.8.1735?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco.1997.9.8.1735, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "145341374",
+        "name": "J. Schmidhuber"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "7cd4e19b3eeecf086574969a2cc9d5a4b987275b",
+    "externalIds": {
+      "MAG": "2016287239",
+      "DOI": "10.2307/2284333",
+      "CorpusId": 17466161
+    },
+    "title": "Distribution of Residual Autocorrelations in Autoregressive-Integrated Moving Average Time Series Models",
+    "venue": "",
+    "year": 1970,
+    "citationCount": 3037,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2307/2284333?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2307/2284333, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2286251358",
+        "name": "G. Box"
+      },
+      {
+        "authorId": "145151972",
+        "name": "D. A. Pierce"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5b69af911774f667c212e24c2c891d5f91422cc9",
+    "externalIds": {
+      "MAG": "2797846142",
+      "DOI": "10.2307/2346997",
+      "CorpusId": 227323668
+    },
+    "title": "Some Recent Advances in Forecasting and Control",
+    "venue": "",
+    "year": 1968,
+    "citationCount": 489,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2307/2346997?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2307/2346997, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145948621",
+        "name": "G. Box"
+      },
+      {
+        "authorId": "143782658",
+        "name": "G. Jenkins"
+      },
+      {
+        "authorId": "144958900",
+        "name": "J. Macgregor"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "73b5c30c7cd689906d1b074e052e2a2cfc1f0675",
+    "externalIds": {
+      "DOI": "10.1007/978-3-030-58292-0_190319",
+      "CorpusId": 241894772
+    },
+    "title": "Section",
+    "venue": "Encyclopedic Dictionary of Archaeology",
+    "year": 2021,
+    "citationCount": 670,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.32388/jttkt3",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-030-58292-0_190319?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-030-58292-0_190319, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4008854",
+        "name": "E. Platz"
+      },
+      {
+        "authorId": "46515573",
+        "name": "S. Yegnasubramanian"
+      },
+      {
+        "authorId": "39819789",
+        "name": "Jun O. Liu"
+      },
+      {
+        "authorId": "2054750541",
+        "name": "Curtis R. Chong"
+      },
+      {
+        "authorId": "143798306",
+        "name": "J. Shim"
+      },
+      {
+        "authorId": "4423322",
+        "name": "S. Kenfield"
+      },
+      {
+        "authorId": "2068204980",
+        "name": "Meir J. Stampfer"
+      },
+      {
+        "authorId": "2059306715",
+        "name": "Walter C. Willett"
+      },
+      {
+        "authorId": "144786791",
+        "name": "E. Giovannucci"
+      },
+      {
+        "authorId": "2054870979",
+        "name": "William G. Nelson"
+      }
+    ],
+    "abstract": "Elizabeth A. Platz 1–3, * Srinivasan Yegnasubramanian 2, * Jun O. Liu 2, 4 Curtis R. Chong 4 Joong Sup Shim 4 Stacey A. Kenfield 5 Meir J. Stampfer 5 Walter C. Willett 5 Edward Giovannucci 5 William G. Nelson 2–4 a novel two-stage, transdisciplinary study identifies Digoxin as a Possible Drug for Prostate cancer treatment R seARCh ARtICLe Cancer Discovery Publish Ahead of Print, published on April 3, 2011 as doi:10.1158/2159-8274.CD-10-0020"
+  },
+  {
+    "paperId": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+    "externalIds": {
+      "MAG": "2951055169",
+      "ACL": "N19-1423",
+      "DBLP": "journals/corr/abs-1810-04805",
+      "ArXiv": "1810.04805",
+      "DOI": "10.18653/v1/N19-1423",
+      "CorpusId": 52967399
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 113258,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.04805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement)."
+  },
+  {
+    "paperId": "ae4df460a413f3b1d9a0dfa47917751af9db2597",
+    "externalIds": {
+      "DBLP": "conf/nips/RangapuramSGSWJ18",
+      "MAG": "2889928394",
+      "CorpusId": 53991169
+    },
+    "title": "Deep State Space Models for Time Series Forecasting",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 858,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "26320653",
+        "name": "Syama Sundar Rangapuram"
+      },
+      {
+        "authorId": "1680574",
+        "name": "M. Seeger"
+      },
+      {
+        "authorId": "2113062",
+        "name": "Jan Gasthaus"
+      },
+      {
+        "authorId": "2066263165",
+        "name": "Lorenzo Stella"
+      },
+      {
+        "authorId": "49416149",
+        "name": "Bernie Wang"
+      },
+      {
+        "authorId": "2166235",
+        "name": "Tim Januschowski"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "21abde3add4fafe3fa430a21da2219ec7d5907b8",
+    "externalIds": {
+      "MAG": "2509989723",
+      "CorpusId": 125405696
+    },
+    "title": "Distribution of Residual Autocorrelations in",
+    "venue": "",
+    "year": 2016,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "103713548",
+        "name": "Ratnam V. Chitturi"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "1d0635cda34b8af995313848a0c42bac6efe79ec",
+    "externalIds": {
+      "MAG": "2979473749",
+      "DOI": "10.1090/conm/026/737400",
+      "CorpusId": 117819162
+    },
+    "title": "Extensions of Lipschitz mappings into Hilbert space",
+    "venue": "",
+    "year": 1984,
+    "citationCount": 3217,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1090/conm/026/737400?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1090/conm/026/737400, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50537578",
+        "name": "W. Johnson"
+      },
+      {
+        "authorId": "1878215",
+        "name": "J. Lindenstrauss"
+      }
+    ],
+    "abstract": null
+  }
+]

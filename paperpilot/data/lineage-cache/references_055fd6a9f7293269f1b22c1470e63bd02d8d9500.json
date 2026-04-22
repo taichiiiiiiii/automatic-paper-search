@@ -1,0 +1,1128 @@
+[
+  {
+    "paperId": "bf442ab269074665a68e4dbbe19e4efc97862541",
+    "externalIds": {
+      "MAG": "2970401203",
+      "DBLP": "conf/nips/LampleSRDJ19",
+      "ArXiv": "1907.05242",
+      "CorpusId": 195886317
+    },
+    "title": "Large Memory Layers with Product Keys",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 164,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.05242, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      },
+      {
+        "authorId": "3469062",
+        "name": "Alexandre Sablayrolles"
+      },
+      {
+        "authorId": "1706809",
+        "name": "Marc'Aurelio Ranzato"
+      },
+      {
+        "authorId": "8905591",
+        "name": "Ludovic Denoyer"
+      },
+      {
+        "authorId": "1681054",
+        "name": "H. Jégou"
+      }
+    ],
+    "abstract": "This paper introduces a structured memory which can be easily integrated into a neural network. The memory is very large by design and significantly increases the capacity of the architecture, by up to a billion parameters with a negligible computational overhead. Its design and access pattern is based on product keys, which enable fast and exact nearest neighbor search. The ability to increase the number of parameters while keeping the same computational budget lets the overall system strike a better trade-off between prediction accuracy and computation efficiency both at training and test time. This memory layer allows us to tackle very large scale language modeling tasks. In our experiments we consider a dataset with up to 30 billion words, and we plug our memory layer in a state-of-the-art transformer-based architecture. In particular, we found that a memory augmented model with only 12 layers outperforms a baseline transformer model with 24 layers, while being twice faster at inference time. We release our code for reproducibility purposes."
+  },
+  {
+    "paperId": "830995ef17cc291c13f42dfd9f462137de1d2179",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1907-01470",
+      "ArXiv": "1907.01470",
+      "MAG": "2955227499",
+      "CorpusId": 195776151
+    },
+    "title": "Augmenting Self-attention with Persistent Memory",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 155,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.01470, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2265067",
+        "name": "Sainbayar Sukhbaatar"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      },
+      {
+        "authorId": "1681054",
+        "name": "H. Jégou"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      }
+    ],
+    "abstract": "Transformer networks have lead to important progress in language modeling and machine translation. These models include two consecutive modules, a feed-forward layer and a self-attention layer. The latter allows the network to capture long term dependencies and are often regarded as the key ingredient in the success of Transformers. Building upon this intuition, we propose a new model that solely consists of attention layers. More precisely, we augment the self-attention layers with persistent memory vectors that play a similar role as the feed-forward layer. Thanks to these vectors, we can remove the feed-forward layer without degrading the performance of a transformer. Our evaluation shows the benefits brought by our model on standard character and word level language modeling benchmarks."
+  },
+  {
+    "paperId": "d6dccb5d71fbb6f5765f89633ba3a8e6809a720d",
+    "externalIds": {
+      "MAG": "2970389371",
+      "DBLP": "conf/nips/ParmarRVBLS19",
+      "ArXiv": "1906.05909",
+      "CorpusId": 189897750
+    },
+    "title": "Stand-Alone Self-Attention in Vision Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 1348,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.05909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3377142",
+        "name": "Prajit Ramachandran"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "6639036",
+        "name": "Anselm Levskaya"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      }
+    ],
+    "abstract": "Convolutions are a fundamental building block of modern computer vision systems. Recent approaches have argued for going beyond convolutions in order to capture long-range dependencies. These efforts focus on augmenting convolutional models with content-based interactions, such as self-attention and non-local means, to achieve gains on a number of vision tasks. The natural question that arises is whether attention can be a stand-alone primitive for vision models instead of serving as just an augmentation on top of convolutions. In developing and testing a pure self-attention vision model, we verify that self-attention can indeed be an effective stand-alone layer. A simple procedure of replacing all instances of spatial convolutions with a form of self-attention applied to ResNet model produces a fully self-attentional model that outperforms the baseline on ImageNet classification with 12% fewer FLOPS and 29% fewer parameters. On COCO object detection, a pure self-attention model matches the mAP of a baseline RetinaNet while having 39% fewer FLOPS and 34% fewer parameters. Detailed ablation studies demonstrate that self-attention is especially impactful when used in later layers. These results establish that stand-alone self-attention is an important addition to the vision practitioner's toolbox."
+  },
+  {
+    "paperId": "f4238bd2385a52413ccbacfd9e409a650235bd13",
+    "externalIds": {
+      "ArXiv": "1905.07799",
+      "ACL": "P19-1032",
+      "DBLP": "conf/acl/SukhbaatarGBJ19",
+      "MAG": "2949680561",
+      "DOI": "10.18653/v1/P19-1032",
+      "CorpusId": 159041867
+    },
+    "title": "Adaptive Attention Span in Transformers",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 318,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1032.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.07799, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2265067",
+        "name": "Sainbayar Sukhbaatar"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "2329288",
+        "name": "Piotr Bojanowski"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      }
+    ],
+    "abstract": "We propose a novel self-attention mechanism that can learn its optimal attention span. This allows us to extend significantly the maximum context size used in Transformer, while maintaining control over their memory footprint and computational time. We show the effectiveness of our approach on the task of character level language modeling, where we achieve state-of-the-art performances on text8 and enwiki8 by using a maximum context of 8k characters."
+  },
+  {
+    "paperId": "0b5d7a79205b44952e24025ce5d46e9f3aa401a1",
+    "externalIds": {
+      "ArXiv": "1904.10631",
+      "MAG": "2941620283",
+      "DBLP": "journals/corr/abs-1904-10631",
+      "CorpusId": 129945164
+    },
+    "title": "Low-Memory Neural Network Training: A Technical Report",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 113,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.10631, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145193121",
+        "name": "N. Sohoni"
+      },
+      {
+        "authorId": "145284500",
+        "name": "Christopher R. Aberger"
+      },
+      {
+        "authorId": "37866790",
+        "name": "M. Leszczynski"
+      },
+      {
+        "authorId": "1679327",
+        "name": "Jian Zhang"
+      },
+      {
+        "authorId": "2114485554",
+        "name": "C. Ré"
+      }
+    ],
+    "abstract": "Memory is increasingly often the bottleneck when training neural network models. Despite this, techniques to lower the overall memory requirements of training have been less widely studied compared to the extensive literature on reducing the memory requirements of inference. In this paper we study a fundamental question: How much memory is actually needed to train a neural network? To answer this question, we profile the overall memory usage of training on two representative deep learning benchmarks -- the WideResNet model for image classification and the DynamicConv Transformer model for machine translation -- and comprehensively evaluate four standard techniques for reducing the training memory requirements: (1) imposing sparsity on the model, (2) using low precision, (3) microbatching, and (4) gradient checkpointing. We explore how each of these techniques in isolation affects both the peak memory usage of training and the quality of the end model, and explore the memory, accuracy, and computation tradeoffs incurred when combining these techniques. Using appropriate combinations of these techniques, we show that it is possible to the reduce the memory required to train a WideResNet-28-2 on CIFAR-10 by up to 60.7x with a 0.4% loss in accuracy, and reduce the memory required to train a DynamicConv model on IWSLT'14 German to English translation by up to 8.7x with a BLEU score drop of 0.15."
+  },
+  {
+    "paperId": "21da617a0f79aabf94272107184606cefe90ab75",
+    "externalIds": {
+      "ArXiv": "1904.10509",
+      "DBLP": "journals/corr/abs-1904-10509",
+      "MAG": "2940744433",
+      "CorpusId": 129945531
+    },
+    "title": "Generating Long Sequences with Sparse Transformers",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 2423,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.10509, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "Transformers are powerful sequence models, but require time and memory that grows quadratically with the sequence length. In this paper we introduce sparse factorizations of the attention matrix which reduce this to $O(n \\sqrt{n})$. We also introduce a) a variation on architecture and initialization to train deeper networks, b) the recomputation of attention matrices to save memory, and c) fast attention kernels for training. We call networks with these changes Sparse Transformers, and show they can model sequences tens of thousands of timesteps long using hundreds of layers. We use the same architecture to model images, audio, and text from raw bytes, setting a new state of the art for density modeling of Enwik8, CIFAR-10, and ImageNet-64. We generate unconditional samples that demonstrate global coherence and great diversity, and show it is possible in principle to use self-attention to model sequences of length one million or more."
+  },
+  {
+    "paperId": "2270b8628fd8ca67ae39d277f45bc3c38ac63d5f",
+    "externalIds": {
+      "ArXiv": "1811.02084",
+      "DBLP": "journals/corr/abs-1811-02084",
+      "MAG": "2963351145",
+      "CorpusId": 53236433
+    },
+    "title": "Mesh-TensorFlow: Deep Learning for Supercomputers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 431,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.02084, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "73416451",
+        "name": "Youlong Cheng"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "47497262",
+        "name": "Dustin Tran"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "3344182",
+        "name": "Penporn Koanantakool"
+      },
+      {
+        "authorId": "2052793706",
+        "name": "Peter G. Hawkins"
+      },
+      {
+        "authorId": "34946720",
+        "name": "HyoukJoong Lee"
+      },
+      {
+        "authorId": "2069751443",
+        "name": "Mingsheng Hong"
+      },
+      {
+        "authorId": "39660914",
+        "name": "C. Young"
+      },
+      {
+        "authorId": "35474601",
+        "name": "Ryan Sepassi"
+      },
+      {
+        "authorId": "3135881",
+        "name": "Blake A. Hechtman"
+      }
+    ],
+    "abstract": "Batch-splitting (data-parallelism) is the dominant distributed Deep Neural Network (DNN) training strategy, due to its universal applicability and its amenability to Single-Program-Multiple-Data (SPMD) programming. However, batch-splitting suffers from problems including the inability to train very large models (due to memory constraints), high latency, and inefficiency at small batch sizes. All of these can be solved by more general distribution strategies (model-parallelism). Unfortunately, efficient model-parallel algorithms tend to be complicated to discover, describe, and to implement, particularly on large clusters. We introduce Mesh-TensorFlow, a language for specifying a general class of distributed tensor computations. Where data-parallelism can be viewed as splitting tensors and operations along the \"batch\" dimension, in Mesh-TensorFlow, the user can specify any tensor-dimensions to be split across any dimensions of a multi-dimensional mesh of processors. A Mesh-TensorFlow graph compiles into a SPMD program consisting of parallel operations coupled with collective communication primitives such as Allreduce. We use Mesh-TensorFlow to implement an efficient data-parallel, model-parallel version of the Transformer sequence-to-sequence model. Using TPU meshes of up to 512 cores, we train Transformer models with up to 5 billion parameters, surpassing state of the art results on WMT'14 English-to-French translation task and the one-billion-word language modeling benchmark. Mesh-Tensorflow is available at this https URL ."
+  },
+  {
+    "paperId": "fb507ada871d1e8c29e376dbf7b7879689aa89f9",
+    "externalIds": {
+      "MAG": "2896197082",
+      "ArXiv": "1809.04281",
+      "DBLP": "conf/iclr/HuangVUSHSDHDE19",
+      "CorpusId": 54477714
+    },
+    "title": "Music Transformer: Generating Music with Long-Term Structure",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 562,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.04281, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7900665",
+        "name": "Cheng-Zhi Anna Huang"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "35577716",
+        "name": "Ian Simon"
+      },
+      {
+        "authorId": "41231781",
+        "name": "Curtis Hawthorne"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "28552618",
+        "name": "M. Hoffman"
+      },
+      {
+        "authorId": "47153176",
+        "name": "Monica Dinculescu"
+      },
+      {
+        "authorId": "2396681",
+        "name": "D. Eck"
+      }
+    ],
+    "abstract": "Music relies heavily on repetition to build structure and meaning. Self-reference occurs on multiple timescales, from motifs to phrases to reusing of entire sections of music, such as in pieces with ABA structure. The Transformer (Vaswani et al., 2017), a sequence model based on self-attention, has achieved compelling results in many generation tasks that require maintaining long-range coherence. This suggests that self-attention might also be well-suited to modeling music. In musical composition and performance, however, relative timing is critically important. Existing approaches for representing relative positional information in the Transformer modulate attention based on pairwise distance (Shaw et al., 2018). This is impractical for long sequences such as musical compositions since their memory complexity for intermediate relative information is quadratic in the sequence length. We propose an algorithm that reduces their intermediate memory requirement to linear in the sequence length. This enables us to demonstrate that a Transformer with our modified relative attention mechanism can generate minute-long compositions (thousands of steps, four times the length modeled in Oore et al., 2018) with compelling structure, generate continuations that coherently elaborate on a given motif, and in a seq2seq setup generate accompaniments conditioned on melodies. We evaluate the Transformer with our relative attention mechanism on two datasets, JSB Chorales and Piano-e-Competition, and obtain state-of-the-art results on the latter."
+  },
+  {
+    "paperId": "b9de9599d7241459db9213b5cdd7059696f5ef8d",
+    "externalIds": {
+      "MAG": "2886490473",
+      "DBLP": "conf/aaai/Al-RfouCCGJ19",
+      "ArXiv": "1808.04444",
+      "DOI": "10.1609/aaai.v33i01.33013159",
+      "CorpusId": 52004855
+    },
+    "title": "Character-Level Language Modeling with Deeper Self-Attention",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2018,
+    "citationCount": 416,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/4182/4060",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.04444, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1388360943",
+        "name": "Rami Al-Rfou"
+      },
+      {
+        "authorId": "51221461",
+        "name": "Dokook Choe"
+      },
+      {
+        "authorId": "40832517",
+        "name": "Noah Constant"
+      },
+      {
+        "authorId": "51150315",
+        "name": "Mandy Guo"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      }
+    ],
+    "abstract": "LSTMs and other RNN variants have shown strong performance on character-level language modeling. These models are typically trained using truncated backpropagation through time, and it is common to assume that their success stems from their ability to remember long-term contexts. In this paper, we show that a deep (64-layer) transformer model (Vaswani et al. 2017) with fixed context outperforms RNN variants by a large margin, achieving state of the art on two popular benchmarks: 1.13 bits per character on text8 and 1.06 on enwik8. To get good results at this depth, we show that it is important to add auxiliary losses, both at intermediate network layers and intermediate sequence positions."
+  },
+  {
+    "paperId": "bf8fe437f779f2098f9af82b534aa51dc9edb06f",
+    "externalIds": {
+      "ACL": "W18-6301",
+      "ArXiv": "1806.00187",
+      "MAG": "2806311723",
+      "DBLP": "journals/corr/abs-1806-00187",
+      "DOI": "10.18653/v1/W18-6301",
+      "CorpusId": 44131019
+    },
+    "title": "Scaling Neural Machine Translation",
+    "venue": "Conference on Machine Translation",
+    "year": 2018,
+    "citationCount": 641,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/W18-6301.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.00187, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40511414",
+        "name": "Myle Ott"
+      },
+      {
+        "authorId": "2068070",
+        "name": "Sergey Edunov"
+      },
+      {
+        "authorId": "2529182",
+        "name": "David Grangier"
+      },
+      {
+        "authorId": "2325985",
+        "name": "Michael Auli"
+      }
+    ],
+    "abstract": "Sequence to sequence learning models still require several days to reach state of the art performance on large benchmark datasets using a single machine. This paper shows that reduced precision and large batch training can speedup training by nearly 5x on a single 8-GPU machine with careful tuning and implementation. On WMT’14 English-German translation, we match the accuracy of Vaswani et al. (2017) in under 5 hours when training on 8 GPUs and we obtain a new state of the art of 29.3 BLEU after training for 85 minutes on 128 GPUs. We further improve these results to 29.8 BLEU by training on the much larger Paracrawl dataset. On the WMT’14 English-French task, we obtain a state-of-the-art BLEU of 43.2 in 8.5 hours on 128 GPUs."
+  },
+  {
+    "paperId": "b4bfadfca9742bb3ee98a0cd322d5ce4e59a3ceb",
+    "externalIds": {
+      "ArXiv": "1804.08771",
+      "DBLP": "journals/corr/abs-1804-08771",
+      "ACL": "W18-6319",
+      "MAG": "2953186183",
+      "DOI": "10.18653/v1/W18-6319",
+      "CorpusId": 13751870
+    },
+    "title": "A Call for Clarity in Reporting BLEU Scores",
+    "venue": "Conference on Machine Translation",
+    "year": 2018,
+    "citationCount": 3424,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/W18-6319.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.08771, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38842528",
+        "name": "Matt Post"
+      }
+    ],
+    "abstract": "The field of machine translation faces an under-recognized problem because of inconsistency in the reporting of scores from its dominant metric. Although people refer to “the” BLEU score, BLEU is in fact a parameterized metric whose values can vary wildly with changes to these parameters. These parameters are often not reported or are hard to find, and consequently, BLEU scores between papers cannot be directly compared. I quantify this variation, finding differences as high as 1.8 between commonly used configurations. The main culprit is different tokenization and normalization schemes applied to the reference. Pointing to the success of the parsing community, I suggest machine translation researchers settle upon the BLEU scheme used by the annual Conference on Machine Translation (WMT), which does not allow for user-supplied reference processing, and provide a new tool, SACREBLEU, to facilitate this."
+  },
+  {
+    "paperId": "54a13bcc9613dcaa76fb25fbe96572f376cfcca9",
+    "externalIds": {
+      "MAG": "2949215200",
+      "ArXiv": "1804.04235",
+      "DBLP": "conf/icml/ShazeerS18",
+      "CorpusId": 4786918
+    },
+    "title": "Adafactor: Adaptive Learning Rates with Sublinear Memory Cost",
+    "venue": "International Conference on Machine Learning",
+    "year": 2018,
+    "citationCount": 1249,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.04235, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "144872294",
+        "name": "Mitchell Stern"
+      }
+    ],
+    "abstract": "In several recently proposed stochastic optimization methods (e.g. RMSProp, Adam, Adadelta), parameter updates are scaled by the inverse square roots of exponential moving averages of squared past gradients. Maintaining these per-parameter second-moment estimators requires memory equal to the number of parameters. For the case of neural network weight matrices, we propose maintaining only the per-row and per-column sums of these moving averages, and estimating the per-parameter second moments based on these sums. We demonstrate empirically that this method produces similar results to the baseline. Secondly, we show that adaptive methods can produce larger-than-desired updates when the decay rate of the second moment accumulator is too slow. We propose update clipping and a gradually increasing decay rate scheme as remedies. Combining these methods and dropping momentum, we achieve comparable results to the published Adam regime in training the Transformer model on the WMT 2014 English-German machine translation task, while using very little auxiliary storage in the optimizer. Finally, we propose scaling the parameter updates based on the scale of the parameters themselves."
+  },
+  {
+    "paperId": "1db9bd18681b96473f3c82b21edc9240b44dc329",
+    "externalIds": {
+      "ArXiv": "1802.05751",
+      "DBLP": "conf/icml/ParmarVUKSKT18",
+      "MAG": "2950739196",
+      "CorpusId": 3353110
+    },
+    "title": "Image Transformer",
+    "venue": "International Conference on Machine Learning",
+    "year": 2018,
+    "citationCount": 1885,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.05751, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "31702389",
+        "name": "Alexander Ku"
+      },
+      {
+        "authorId": "47497262",
+        "name": "Dustin Tran"
+      }
+    ],
+    "abstract": "Image generation has been successfully cast as an autoregressive sequence generation or transformation problem. Recent work has shown that self-attention is an effective way of modeling textual sequences. In this work, we generalize a recently proposed model architecture based on self-attention, the Transformer, to a sequence modeling formulation of image generation with a tractable likelihood. By restricting the self-attention mechanism to attend to local neighborhoods we significantly increase the size of images the model can process in practice, despite maintaining significantly larger receptive fields per layer than typical convolutional neural networks. We propose another extension of self-attention allowing it to efficiently take advantage of the two-dimensional nature of images. While conceptually simple, our generative models trained on two image data sets are competitive with or significantly outperform the current state of the art in autoregressive image generation on two different data sets, CIFAR-10 and ImageNet. We also present results on image super-resolution with a large magnification ratio, applying an encoder-decoder configuration of our architecture. In a human evaluation study, we show that our super-resolution models improve significantly over previously published autoregressive super-resolution models. Images they generate fool human observers three times more often than the previous state of the art."
+  },
+  {
+    "paperId": "8691706ad0cf5e83969658b2e6bfffdc379440c9",
+    "externalIds": {
+      "ArXiv": "1801.10198",
+      "MAG": "2950355077",
+      "DBLP": "conf/iclr/LiuSPGSKS18",
+      "CorpusId": 3608234
+    },
+    "title": "Generating Wikipedia by Summarizing Long Sequences",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 862,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.10198, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      },
+      {
+        "authorId": "144413479",
+        "name": "Mohammad Saleh"
+      },
+      {
+        "authorId": "38627717",
+        "name": "Etienne Pot"
+      },
+      {
+        "authorId": "2065067542",
+        "name": "Ben Goodrich"
+      },
+      {
+        "authorId": "35474601",
+        "name": "Ryan Sepassi"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "We show that generating English Wikipedia articles can be approached as a multi- document summarization of source documents. We use extractive summarization to coarsely identify salient information and a neural abstractive model to generate the article. For the abstractive model, we introduce a decoder-only architecture that can scalably attend to very long sequences, much longer than typical encoder- decoder architectures used in sequence transduction. We show that this model can generate fluent, coherent multi-sentence paragraphs and even whole Wikipedia articles. When given reference documents, we show it can extract relevant factual information as reflected in perplexity, ROUGE scores and human evaluations."
+  },
+  {
+    "paperId": "3a6d4cd0768ae8768e733280d362bdb4d25924e7",
+    "externalIds": {
+      "DBLP": "journals/corr/GomezRUG17",
+      "MAG": "2963684275",
+      "ArXiv": "1707.04585",
+      "CorpusId": 8869447
+    },
+    "title": "The Reversible Residual Network: Backpropagation Without Storing Activations",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 641,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.04585, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "2540599",
+        "name": "Mengye Ren"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      },
+      {
+        "authorId": "1785346",
+        "name": "R. Grosse"
+      }
+    ],
+    "abstract": "Deep residual networks (ResNets) have significantly pushed forward the state-of-the-art on image classification, increasing in performance as networks grow both deeper and wider. However, memory consumption becomes a bottleneck, as one needs to store the activations in order to calculate gradients using backpropagation. We present the Reversible Residual Network (RevNet), a variant of ResNets where each layer's activations can be reconstructed exactly from the next layer's. Therefore, the activations for most layers need not be stored in memory during backpropagation. We demonstrate the effectiveness of RevNets on CIFAR-10, CIFAR-100, and ImageNet, establishing nearly identical classification accuracy to equally-sized ResNets, even though the activation storage requirements are independent of depth."
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "MAG": "2963403868",
+      "ArXiv": "1706.03762",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 173461,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data."
+  },
+  {
+    "paperId": "be8c6c69f3e357bfad2987e45b62cff7e7474378",
+    "externalIds": {
+      "ArXiv": "1610.09027",
+      "MAG": "2952556884",
+      "DBLP": "journals/corr/RaeHHDSWGL16",
+      "CorpusId": 11792642
+    },
+    "title": "Scaling Memory-Augmented Neural Networks with Sparse Reads and Writes",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 168,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.09027, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34269227",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "2323922",
+        "name": "Jonathan J. Hunt"
+      },
+      {
+        "authorId": "1841008",
+        "name": "Ivo Danihelka"
+      },
+      {
+        "authorId": "3367786",
+        "name": "Tim Harley"
+      },
+      {
+        "authorId": "33666044",
+        "name": "A. Senior"
+      },
+      {
+        "authorId": "89504302",
+        "name": "Greg Wayne"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      }
+    ],
+    "abstract": "Neural networks augmented with external memory have the ability to learn algorithmic solutions to complex tasks. These models appear promising for applications such as language modeling and machine translation. However, they scale poorly in both space and time as the amount of memory grows — limiting their applicability to real-world domains. Here, we present an end-to-end differentiable memory access scheme, which we call Sparse Access Memory (SAM), that retains the representational power of the original approaches whilst training efficiently with very large memories. We show that SAM achieves asymptotic lower bounds in space and time complexity, and find that an implementation runs 1,000 x faster and with 3,000x less physical memory than non-sparse models. SAM learns with comparable data efficiency to existing models on a range of synthetic tasks and one-shot Omniglot character recognition, and can scale to tasks requiring 100,000s of time steps and memories. As well, we show how our approach can be adapted for models that maintain temporal associations between memories, as with the recently introduced Differentiable Neural Computer."
+  },
+  {
+    "paperId": "97fb4e3d45bb098e27e0071448b6152217bd35a5",
+    "externalIds": {
+      "MAG": "3037932933",
+      "ArXiv": "1607.06450",
+      "DBLP": "journals/corr/BaKH16",
+      "CorpusId": 8236317
+    },
+    "title": "Layer Normalization",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 12313,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1607.06450, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      },
+      {
+        "authorId": "51131802",
+        "name": "J. Kiros"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "Training state-of-the-art, deep neural networks is computationally expensive. One way to reduce the training time is to normalize the activities of the neurons. A recently introduced technique called batch normalization uses the distribution of the summed input to a neuron over a mini-batch of training cases to compute a mean and variance which are then used to normalize the summed input to that neuron on each training case. This significantly reduces the training time in feed-forward neural networks. However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks. In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case. Like batch normalization, we also give each neuron its own adaptive bias and gain which are applied after the normalization but before the non-linearity. Unlike batch normalization, layer normalization performs exactly the same computation at training and test times. It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step. Layer normalization is very effective at stabilizing the hidden state dynamics in recurrent networks. Empirically, we show that layer normalization can substantially reduce the training time compared with previously published techniques."
+  },
+  {
+    "paperId": "c17b6f2d9614878e3f860c187f72a18ffb5aabb6",
+    "externalIds": {
+      "MAG": "2400680200",
+      "DBLP": "journals/corr/ChandarALVTB16",
+      "ArXiv": "1605.07427",
+      "CorpusId": 18813614
+    },
+    "title": "Hierarchical Memory Networks",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 88,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.07427, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144631588",
+        "name": "A. Chandar"
+      },
+      {
+        "authorId": "3103594",
+        "name": "Sungjin Ahn"
+      },
+      {
+        "authorId": "1777528",
+        "name": "H. Larochelle"
+      },
+      {
+        "authorId": "145467703",
+        "name": "P. Vincent"
+      },
+      {
+        "authorId": "1699108",
+        "name": "G. Tesauro"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "Memory networks are neural networks with an explicit memory component that can be both read and written to by the network. The memory is often addressed in a soft way using a softmax function, making end-to-end training with backpropagation possible. However, this is not computationally scalable for applications which require the network to read from extremely large memories. On the other hand, it is well known that hard attention mechanisms based on reinforcement learning are challenging to train successfully. In this paper, we explore a form of hierarchical memory network, which can be considered as a hybrid between hard and soft attention memory networks. The memory is organized in a hierarchical structure such that reading from it is done with less computation than soft attention over a flat memory, while also being easier to train than hard attention over a flat memory. Specifically, we propose to incorporate Maximum Inner Product Search (MIPS) in the training and inference procedures for our hierarchical memory network. We explore the use of various state-of-the art approximate MIPS techniques and report results on SimpleQuestions, a challenging large scale factoid question answering task."
+  },
+  {
+    "paperId": "bbd0e204f48a45735e1065c8b90b298077b73192",
+    "externalIds": {
+      "ArXiv": "1605.06065",
+      "MAG": "2399033357",
+      "DBLP": "journals/corr/SantoroBBWL16",
+      "CorpusId": 16660179
+    },
+    "title": "One-shot Learning with Memory-Augmented Neural Networks",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 537,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.06065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35030998",
+        "name": "Adam Santoro"
+      },
+      {
+        "authorId": "2258504",
+        "name": "Sergey Bartunov"
+      },
+      {
+        "authorId": "46378362",
+        "name": "M. Botvinick"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      }
+    ],
+    "abstract": "Despite recent breakthroughs in the applications of deep neural networks, one setting that presents a persistent challenge is that of “one-shot learning.” Traditional gradient-based networks require a lot of data to learn, often through extensive iterative training. When new data is encountered, the models must inefficiently relearn their parameters to adequately incorporate the new information without catastrophic interference. Architectures with augmented memory capacities, such as Neural Turing Machines (NTMs), offer the ability to quickly encode and retrieve new information, and hence can potentially obviate the downsides of conventional models. Here, we demonstrate the ability of a memory-augmented neural network to rapidly assimilate new data, and leverage this data to make accurate predictions after only a few samples. We also introduce a new method for accessing an external memory that focuses on memory content, unlike previous methods that additionally use memory locationbased focusing mechanisms."
+  },
+  {
+    "paperId": "35b91b365ceb016fb3e022577cec96fb9b445dc5",
+    "externalIds": {
+      "MAG": "2953040645",
+      "DBLP": "journals/corr/HillBCW15",
+      "ArXiv": "1511.02301",
+      "CorpusId": 14915449
+    },
+    "title": "The Goldilocks Principle: Reading Children's Books with Explicit Memory Representations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 649,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.02301, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145783676",
+        "name": "Felix Hill"
+      },
+      {
+        "authorId": "1713934",
+        "name": "Antoine Bordes"
+      },
+      {
+        "authorId": "3295092",
+        "name": "S. Chopra"
+      },
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      }
+    ],
+    "abstract": "We introduce a new test of how well language models capture meaning in children's books. Unlike standard language modelling benchmarks, it distinguishes the task of predicting syntactic function words from that of predicting lower-frequency words, which carry greater semantic content. We compare a range of state-of-the-art models, each with a different way of encoding what has been previously read. We show that models which store explicit representations of long-term contexts outperform state-of-the-art neural language models at predicting semantic content words, although this advantage is not observed for syntactic function words. Interestingly, we find that the amount of text encoded in a single memory representation is highly influential to the performance: there is a sweet-spot, not too big and not too small, between single words and full sentences that allows the most meaningful information in a text to be effectively retained and recalled. Further, the attention over such window-based memories can be trained effectively through self-supervision. We then assess the generality of this principle by applying it to the CNN QA benchmark, which involves identifying named entities in paraphrased summaries of news articles, and achieve state-of-the-art performance."
+  },
+  {
+    "paperId": "50645e3dc912d597e89d59bffb96ccc0f8e1aefa",
+    "externalIds": {
+      "MAG": "2949388608",
+      "DBLP": "conf/nips/AndoniILRS15",
+      "ArXiv": "1509.02897",
+      "CorpusId": 9222460
+    },
+    "title": "Practical and Optimal LSH for Angular Distance",
+    "venue": "Neural Information Processing Systems",
+    "year": 2015,
+    "citationCount": 534,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1509.02897, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1738395",
+        "name": "Alexandr Andoni"
+      },
+      {
+        "authorId": "1688317",
+        "name": "P. Indyk"
+      },
+      {
+        "authorId": "1728281",
+        "name": "Thijs Laarhoven"
+      },
+      {
+        "authorId": "2111443",
+        "name": "Ilya P. Razenshteyn"
+      },
+      {
+        "authorId": "152772922",
+        "name": "Ludwig Schmidt"
+      }
+    ],
+    "abstract": "We show the existence of a Locality-Sensitive Hashing (LSH) family for the angular distance that yields an approximate Near Neighbor Search algorithm with the asymptotically optimal running time exponent. Unlike earlier algorithms with this property (e.g., Spherical LSH [1, 2]), our algorithm is also practical, improving upon the well-studied hyperplane LSH [3] in practice. We also introduce a multiprobe version of this algorithm and conduct an experimental evaluation on real and synthetic data sets. \n \nWe complement the above positive results with a fine-grained lower bound for the quality of any LSH family for angular distance. Our lower bound implies that the above LSH family exhibits a trade-off between evaluation time and quality that is close to optimal for a natural class of LSH functions."
+  },
+  {
+    "paperId": "6e565308c8081e807709cb4a917443b737e6cdb4",
+    "externalIds": {
+      "MAG": "580074167",
+      "DBLP": "journals/corr/BordesUCW15",
+      "ArXiv": "1506.02075",
+      "CorpusId": 9605730
+    },
+    "title": "Large-scale Simple Question Answering with Memory Networks",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 733,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.02075, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1713934",
+        "name": "Antoine Bordes"
+      },
+      {
+        "authorId": "1746841",
+        "name": "Nicolas Usunier"
+      },
+      {
+        "authorId": "3295092",
+        "name": "S. Chopra"
+      },
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      }
+    ],
+    "abstract": "Training large-scale question answering systems is complicated because training sources usually cover a small portion of the range of possible questions. This paper studies the impact of multitask and transfer learning for simple question answering; a setting for which the reasoning required to answer is quite easy, as long as one can retrieve the correct evidence given a question, which can be difficult in large-scale conditions. To this end, we introduce a new dataset of 100k questions that we use in conjunction with existing benchmarks. We conduct our study within the framework of Memory Networks (Weston et al., 2015) because this perspective allows us to eventually scale up to more complex reasoning, and show that Memory Networks can be successfully trained to achieve excellent performance."
+  },
+  {
+    "paperId": "71ae756c75ac89e2d731c9c79649562b5768ff39",
+    "externalIds": {
+      "ArXiv": "1410.3916",
+      "MAG": "2584341106",
+      "DBLP": "journals/corr/WestonCB14",
+      "CorpusId": 2926851
+    },
+    "title": "Memory Networks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 1831,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1410.3916, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      },
+      {
+        "authorId": "3295092",
+        "name": "S. Chopra"
+      },
+      {
+        "authorId": "1713934",
+        "name": "Antoine Bordes"
+      }
+    ],
+    "abstract": "Abstract: We describe a new class of learning models called memory networks. Memory networks reason with inference components combined with a long-term memory component; they learn how to use these jointly. The long-term memory can be read and written to, with the goal of using it for prediction. We investigate these models in the context of question answering (QA) where the long-term memory effectively acts as a (dynamic) knowledge base, and the output is a textual response. We evaluate them on a large-scale QA task, and a smaller, but more complex, toy task generated from a simulated world. In the latter, we show the reasoning power of such models by chaining multiple supporting sentences to answer questions that require understanding the intension of verbs."
+  },
+  {
+    "paperId": "9405cc0d6169988371b2755e573cc28650d14dfe",
+    "externalIds": {
+      "MAG": "2955855238",
+      "CorpusId": 160025533
+    },
+    "title": "Language Models are Unsupervised Multitask Learners",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 28133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "150970919",
+        "name": "D. Luan"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+    "externalIds": {
+      "MAG": "2951055169",
+      "ACL": "N19-1423",
+      "DBLP": "journals/corr/abs-1810-04805",
+      "ArXiv": "1810.04805",
+      "DOI": "10.18653/v1/N19-1423",
+      "CorpusId": 52967399
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 113258,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.04805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement)."
+  }
+]
