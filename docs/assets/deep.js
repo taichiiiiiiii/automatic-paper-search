@@ -8,6 +8,10 @@
 //   - No clustering
 const { escapeHtml, formatStars, loadLineage } = window.PP;
 
+// arXiv id format with optional version suffix. Enforced so user-supplied
+// ?arxiv= values can't be spliced into a fetch URL as path traversal.
+const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
+
 const NODE_W = 240;
 const NODE_H = 180;
 const LEVEL_GAP = 100;
@@ -45,6 +49,8 @@ const prefs = loadPrefs();
 const state = {
   data: null,
   focusId: null,
+  manifest: [],
+  currentArxivId: null,
   visibleRelations: new Set(
     Array.isArray(prefs?.visibleRelations) && prefs.visibleRelations.length > 0
       ? prefs.visibleRelations.filter((r) => ALL_RELATIONS.includes(r))
@@ -60,29 +66,94 @@ const els = {
   ttRationale: document.getElementById("tt-rationale"),
   ttConf: document.getElementById("tt-conf"),
   filterBar: document.getElementById("relation-filter"),
+  picker: document.getElementById("paper-picker"),
 };
+
+async function loadManifest() {
+  try {
+    const res = await fetch("deep-manifest.json", { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.filter((e) => ARXIV_RE.test(e?.arxiv_id));
+  } catch {
+    return [];
+  }
+}
+
+function arxivIdFromLocation() {
+  const raw = new URLSearchParams(window.location.search).get("arxiv");
+  return raw && ARXIV_RE.test(raw) ? raw : null;
+}
+
+function renderPicker() {
+  if (!els.picker) return;
+  if (state.manifest.length === 0) {
+    els.picker.hidden = true;
+    return;
+  }
+  els.picker.hidden = false;
+  els.picker.innerHTML = state.manifest
+    .map((e) => {
+      const label = `${e.arxiv_id} — ${e.title || "(untitled)"}`;
+      const selected = e.arxiv_id === state.currentArxivId ? " selected" : "";
+      return `<option value="${escapeHtml(e.arxiv_id)}"${selected}>${escapeHtml(label)}</option>`;
+    })
+    .join("");
+}
+
+// Split from renderPicker() so re-rendering the options doesn't stack
+// duplicate change listeners — init() should be the only place this runs.
+function bindPicker() {
+  if (!els.picker) return;
+  els.picker.addEventListener("change", () => {
+    const id = els.picker.value;
+    if (!ARXIV_RE.test(id)) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("arxiv", id);
+    window.location.href = url.toString();
+  });
+}
+
+function showError(html) {
+  els.canvas.insertAdjacentHTML("beforeend", `<div class="empty-state">${html}</div>`);
+}
 
 async function init() {
   els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state" id="loading-msg">データ読み込み中...</p>`);
-  state.data = await loadLineage("deep.json");
+
+  state.manifest = await loadManifest();
+  const requested = arxivIdFromLocation();
+  const known = new Set(state.manifest.map((e) => e.arxiv_id));
+  // If URL param is valid AND present in manifest, honor it. Else pick
+  // the manifest's first entry. If manifest is empty, fall back to the
+  // legacy docs/<conf>/deep.json path for backward compatibility.
+  let targetId = requested && known.has(requested) ? requested : state.manifest[0]?.arxiv_id ?? null;
+  state.currentArxivId = targetId;
+
+  const jsonName = targetId ? `deep-${targetId}.json` : "deep.json";
+  state.data = await loadLineage(jsonName);
   document.getElementById("loading-msg")?.remove();
 
   if (!state.data) {
-    els.canvas.insertAdjacentHTML("beforeend", `
-      <div class="empty-state">
-        <p>deep.json の読み込みに失敗しました。<br>
-        <code>python paperpilot/scripts/build_deep_lineage.py --arxiv-id &lt;id&gt;</code> で生成してください。</p>
-      </div>`);
+    renderPicker();
+    showError(`
+      <p><code>${escapeHtml(jsonName)}</code> の読み込みに失敗しました。</p>
+      <p><code>python paperpilot/scripts/build_deep_lineage.py --arxiv-id &lt;id&gt;</code>
+      を実行してから <code>python paperpilot/scripts/generate_deep_manifest.py --docs-dir docs/iclr-2026</code> を実行してください。</p>
+    `);
     return;
   }
 
   // Focus = the data root (what build_deep_lineage.py marked).
   state.focusId = state.data.root || state.data.nodes[0]?.id;
   if (!state.focusId) {
-    els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state">表示可能なノードがありません</p>`);
+    showError(`<p>表示可能なノードがありません</p>`);
     return;
   }
 
+  renderPicker();
+  bindPicker();
   renderFilterChips();
   bindSearch();
   render();

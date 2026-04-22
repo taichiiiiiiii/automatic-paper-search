@@ -32,17 +32,16 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from paperpilot.llm.base import RelationClassification  # noqa: E402
+from paperpilot.llm.base import RelationClassification, build_classify_prompt  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
     build_provider,
-    extract_arxiv_id,
     fetch_paper_by_arxiv,
     fetch_related,
     select_top,
     to_node,
-    venue_tier_for,
 )
+from paperpilot.utils.json_parser import parse_llm_response  # noqa: E402
 
 # Llama 3.3 70B on Groq has a habit of returning `"rationale": ""` for weak
 # (depth-2+) edges — those get rejected by RelationClassification.from_dict
@@ -61,7 +60,10 @@ _FALLBACK_RATIONALE = {
 
 def _classify_cached_lenient(
     provider, a: dict, b: dict, *,
-    cache_key: str, classifications: dict, cache_path: Path, rate_delay: float,
+    cache_key: str,
+    classifications: dict[str, dict],
+    cache_path: Path,
+    rate_delay: float,
 ) -> dict | None:
     """classify_relation + cache, but synthesize a rationale fallback when
     the LLM returns a non-unrelated relation with an empty rationale.
@@ -70,27 +72,24 @@ def _classify_cached_lenient(
     ("empty rationale → drop edge"): at depth 2+ we'd rather show a weak
     edge with a templated tooltip than lose the entire deeper tree.
     """
-    if cache_key in classifications:
-        return classifications[cache_key]
+    cached = classifications.get(cache_key)
+    if cached is not None:
+        return cached
 
     # Call LLM directly so we can inspect the raw relation before
     # `from_dict` kills it for an empty rationale.
-    system, user = __import__(
-        "paperpilot.llm.base", fromlist=["build_classify_prompt"]
-    ).build_classify_prompt(a, b)
+    system, user = build_classify_prompt(a, b)
     text = provider._chat(system, user, json_mode=True)
     time.sleep(rate_delay)
     if text is None:
         return None
 
+    parsed: dict
     try:
-        parsed = __import__("json").loads(text)
-    except Exception:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
         # Fall back to base parser + from_dict (handles fenced markdown etc).
-        rc = RelationClassification.from_dict(
-            __import__("paperpilot.utils.json_parser", fromlist=["parse_llm_response"])
-            .parse_llm_response(text)
-        )
+        rc = RelationClassification.from_dict(parse_llm_response(text))
         if rc is None:
             return None
         parsed = {"relation": rc.relation, "confidence": rc.confidence, "rationale": rc.rationale}
@@ -257,8 +256,8 @@ def main() -> int:
                     help="Pretty venue label for the focus node")
     ap.add_argument("--tier-override", default="A+",
                     help="Venue tier override for the focus node")
-    ap.add_argument("--output", default="docs/iclr-2026/deep.json",
-                    help="Output JSON path")
+    ap.add_argument("--output", default=None,
+                    help="Output JSON path (default: docs/iclr-2026/deep-<arxiv_id>.json)")
     args = ap.parse_args()
 
     result = build_deep(
@@ -270,7 +269,8 @@ def main() -> int:
         tier_override=args.tier_override,
     )
 
-    out = ROOT / args.output
+    output = args.output or f"docs/iclr-2026/deep-{args.arxiv_id}.json"
+    out = ROOT / output
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2))
     print()
