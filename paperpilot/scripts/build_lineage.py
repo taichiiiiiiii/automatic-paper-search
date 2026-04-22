@@ -14,6 +14,12 @@ LLM providers are selected in this order (first key present wins):
 Per absolute rule §11, LLM calls MUST go through `AbstractLLMProvider` —
 never via urllib / requests directly. See CLAUDE.md.
 
+Per absolute rule §12 (family-tree exception): S2 `references` / `citations`
+fetches are allowed here because the citation graph is not in Stage 2
+output. The focus paper's `venue` / `citation_count` / `github_stars`
+still come from `papers.json` — we only use S2 for edge structure plus
+neighbour titles/authors.
+
 The script caches intermediate state (S2 lookups, classified edges) so re-runs
 are fast and only fetch what's missing.
 
