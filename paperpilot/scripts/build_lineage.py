@@ -60,6 +60,9 @@ from paperpilot.llm import (  # noqa: E402
 )
 from paperpilot.scripts._common import slug_to_venue_label  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
+from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
+
+logger = get_logger(__name__)
 
 DOCS_ROOT = ROOT / "docs"
 
@@ -361,7 +364,7 @@ def build(
     venue_override: str | None = None,
 ) -> dict:
     provider, rate_delay = build_provider()
-    print(f"LLM provider: {provider.name}")
+    logger.info("LLM provider: %s", provider.name)
 
     papers_path, _ = resolve_paths(conference)
     venue_label = venue_override or derive_venue_label(conference)
@@ -371,7 +374,7 @@ def build(
     if limit:
         orals = orals[:limit]
 
-    print(f"Building lineage for {len(orals)} Oral papers ({conference})")
+    logger.info("Building lineage for %d Oral papers (%s)", len(orals), conference)
 
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
@@ -389,13 +392,19 @@ def build(
         # ("/pdf/2404.00001v3") and is cheaper.
         arxiv_id = paper.get("arxiv_id") or extract_arxiv_id(paper.get("arxiv_url", ""))
         if not arxiv_id:
-            print(f"[{idx}/{len(orals)}] SKIP (no arxiv_id): {paper['title'][:60]}")
+            logger.warning(
+                "[%d/%d] SKIP (no arxiv_id): %s",
+                idx, len(orals), paper["title"][:60],
+            )
             continue
 
-        print(f"[{idx}/{len(orals)}] {arxiv_id}: {paper['title'][:60]}")
+        logger.info(
+            "[%d/%d] %s: %s",
+            idx, len(orals), arxiv_id, paper["title"][:60],
+        )
         focus_paper = fetch_paper_by_arxiv(arxiv_id)
         if not focus_paper:
-            print("  ⚠ S2 lookup failed")
+            logger.warning("  S2 lookup failed for %s", arxiv_id)
             continue
 
         focus_id = focus_paper["paperId"]
@@ -418,7 +427,7 @@ def build(
 
         parents = select_top(fetch_related(focus_id, "references", TOP_PARENTS * 4), TOP_PARENTS)
         children = select_top(fetch_related(focus_id, "citations", TOP_CHILDREN * 4), TOP_CHILDREN)
-        print(f"  parents={len(parents)}, children={len(children)}")
+        logger.info("  parents=%d children=%d", len(parents), len(children))
 
         for parent in parents:
             pid = parent["paperId"]
@@ -474,7 +483,7 @@ def build(
     cleaned_edges = [e for e in edges if (e.get("rationale") or "").strip()]
     dropped = len(edges) - len(cleaned_edges)
     if dropped:
-        print(f"  dropped {dropped} edges with empty rationale")
+        logger.warning("dropped %d edges with empty rationale", dropped)
 
     clusters = build_clusters(list(nodes.values()))
 
@@ -541,6 +550,8 @@ def main():
                         help="Pretty venue label for focus nodes "
                              "(default: upper-case slug, e.g. 'ICLR 2026')")
     args = parser.parse_args()
+
+    setup_logging()  # CLI mode: surface logger.info to stderr.
 
     result = build(
         limit=args.limit,
