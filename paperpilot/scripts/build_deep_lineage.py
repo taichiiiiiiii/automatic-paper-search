@@ -47,6 +47,9 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     to_node,
 )
 from paperpilot.utils.json_parser import parse_llm_response  # noqa: E402
+from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
+
+logger = get_logger(__name__)
 
 # Llama 3.3 70B on Groq has a habit of returning `"rationale": ""` for weak
 # (depth-2+) edges — those get rejected by RelationClassification.from_dict
@@ -138,14 +141,15 @@ def build_deep(
 ) -> dict:
     """BFS from focus paper up to `depth` hops in each direction."""
     provider, rate_delay = build_provider()
-    print(f"LLM provider: {provider.name}")
-    print(f"Focus arxiv: {arxiv_id} (depth={depth})")
+    logger.info(
+        "LLM provider: %s; focus arxiv=%s depth=%d", provider.name, arxiv_id, depth
+    )
 
     focus = fetch_paper_by_arxiv(arxiv_id)
     if focus is None:
         sys.exit(f"S2 lookup failed for arXiv:{arxiv_id}")
     focus_id = focus["paperId"]
-    print(f"Focus resolved: {focus_id} — {focus.get('title', '')[:80]}")
+    logger.info("Focus resolved: %s — %s", focus_id, focus.get("title", "")[:80])
 
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
@@ -168,7 +172,10 @@ def build_deep(
         s2_id = src_paper["paperId"]
         kind = "references" if direction == "up" else "citations"
         related = fetch_related_by_id(s2_id, kind, top_n)
-        print(f"  {src_paper.get('title','')[:60]:<60s} {direction} → {len(related)} {kind}")
+        logger.info(
+            "  %-60s %s → %d %s",
+            src_paper.get("title", "")[:60], direction, len(related), kind,
+        )
         out: list[tuple[dict, dict]] = []
         for rel in related:
             rel_id = rel["paperId"]
@@ -200,7 +207,7 @@ def build_deep(
     # Ancestor BFS
     frontier_up = [focus]
     for d in range(1, depth + 1):
-        print(f"\n== Ancestor depth {d} ({len(frontier_up)} seed nodes) ==")
+        logger.info("== Ancestor depth %d (%d seed nodes) ==", d, len(frontier_up))
         next_frontier: list[dict] = []
         for seed in frontier_up:
             # Narrower fetch for deeper levels to control cost.
@@ -218,7 +225,7 @@ def build_deep(
     # Descendant BFS
     frontier_down = [focus]
     for d in range(1, depth + 1):
-        print(f"\n== Descendant depth {d} ({len(frontier_down)} seed nodes) ==")
+        logger.info("== Descendant depth %d (%d seed nodes) ==", d, len(frontier_down))
         next_frontier = []
         for seed in frontier_down:
             width = top_children if d == 1 else max(top_children // 2, 6)
@@ -264,6 +271,8 @@ def main() -> int:
     ap.add_argument("--output", default=None,
                     help="Output JSON path (default: docs/iclr-2026/deep-<arxiv_id>.json)")
     args = ap.parse_args()
+
+    setup_logging()  # CLI mode: surface logger.info to stderr.
 
     result = build_deep(
         args.arxiv_id,
