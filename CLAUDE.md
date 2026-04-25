@@ -503,7 +503,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **出力 path は `theme_slug()` の戻り値のみで構成**。生 `--theme` 文字列を `Path()` 構築に渡してはならない（path traversal 防止）。
     - **`docs/themes/<slug>/lineage.json` のスキーマは conference 版 `lineage.json` と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.source = "build_theme_lineage.py"`、`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を含む。
     - **`docs/themes/themes-manifest.json` は `generate_themes_manifest.py` のみが生成**。`build_theme_lineage.py` 内では生成しない（並列実行時の race 回避）。マニフェスト生成時に `rel` 値が許可 enum (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に該当しないテーマは skip する（cache poisoning 抑止）。
-    - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。並列書込の race は既存問題で、別 issue で対処予定。
+    - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。`_classify_cached` が書込前に on-disk cache を再読込してマージし、`os.replace` でアトミックに書き出すため、並列ランでも他プロセスのエントリを上書きしない。
 
 ---
 
