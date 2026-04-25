@@ -339,20 +339,43 @@ def _classify_cached(
     cache_path: Path,
     rate_delay: float,
 ) -> dict | None:
-    """Classify via provider with persistent cache keyed by (src, dst)."""
+    """Classify via provider with persistent cache keyed by (src, dst).
+
+    The cache file (``classifications.json``) is shared between the
+    conference, deep, and theme lineage scripts (CLAUDE.md §14). To
+    avoid the lost-update race when two scripts run concurrently we:
+
+      1. Re-read the on-disk cache before each write and merge entries
+         we don't already have in our in-memory snapshot.
+      2. Write atomically via temp file + ``os.replace`` so a reader can
+         never observe a half-written JSON.
+    """
     if cache_key in classifications:
         return classifications[cache_key]
     rc: RelationClassification | None = provider.classify_relation(a, b)
     if rc is not None:
+        # (1) Merge anything another writer added since our snapshot.
+        # Our existing keys take precedence — we keep the freshest copy
+        # we just produced; disk supplies only entries we don't have.
+        if cache_path.exists():
+            try:
+                disk_obj = json.loads(cache_path.read_text())
+            except json.JSONDecodeError:
+                disk_obj = None
+            if isinstance(disk_obj, dict):
+                for k, v in disk_obj.items():
+                    classifications.setdefault(k, v)
         entry = {
             "relation": rc.relation,
             "confidence": rc.confidence,
             "rationale": rc.rationale,
         }
         classifications[cache_key] = entry
-        cache_path.write_text(
-            json.dumps(classifications, ensure_ascii=False, indent=2)
-        )
+        # (2) Atomic write — temp filename includes the PID so concurrent
+        # processes don't fight over the same scratch file.
+        tmp = cache_path.with_suffix(cache_path.suffix + f".tmp.{os.getpid()}")
+        tmp.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
+        os.replace(tmp, cache_path)
     time.sleep(rate_delay)
     return classifications.get(cache_key)
 
