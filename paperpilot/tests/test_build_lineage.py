@@ -144,6 +144,85 @@ def test_classify_cached_writes_cache_and_skips_on_hit(tmp_path: Path):
     assert provider_fail.calls == []  # cache hit; provider never invoked
 
 
+def test_classify_cached_merges_concurrent_writes(tmp_path: Path):
+    """Two pipelines sharing classifications.json must not lose each other's
+    additions. Simulate the race: we hold a stale in-memory snapshot while a
+    "concurrent" writer adds a new entry to disk; our subsequent classify
+    call must merge that entry rather than overwrite it.
+    """
+    cache_path = tmp_path / "cls.json"
+    # Snapshot held by "process A" (initially empty).
+    classifications: dict[str, dict] = {}
+
+    # Process B writes a different entry to disk between A's reads.
+    cache_path.write_text(
+        json.dumps(
+            {
+                "B->C": {
+                    "relation": "successor",
+                    "confidence": 0.7,
+                    "rationale": "B made by another writer",
+                }
+            }
+        )
+    )
+
+    # Process A now classifies its own pair; the on-disk JSON must end up
+    # containing both A's new entry AND B's pre-existing one.
+    rc = RelationClassification(relation="extends", confidence=0.9, rationale="A new")
+    provider = _FakeProvider(return_value=rc)
+    build_lineage._classify_cached(
+        provider,
+        {"title": "X"}, {"title": "Y"},
+        cache_key="X->Y",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+
+    on_disk = json.loads(cache_path.read_text())
+    assert "X->Y" in on_disk, "process A's new entry persisted"
+    assert "B->C" in on_disk, "process B's concurrent entry must be preserved"
+
+
+def test_classify_cached_atomic_write_no_temp_leftover(tmp_path: Path):
+    """The atomic rename must clean up — no stray .tmp.* files left behind."""
+    cache_path = tmp_path / "cls.json"
+    classifications: dict[str, dict] = {}
+    rc = RelationClassification(relation="extends", confidence=0.9, rationale="x")
+    provider = _FakeProvider(return_value=rc)
+    build_lineage._classify_cached(
+        provider,
+        {"title": "A"}, {"title": "B"},
+        cache_key="A->B",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+    leftovers = list(tmp_path.glob("cls.json.tmp*"))
+    assert leftovers == [], f"unexpected temp files: {leftovers}"
+
+
+def test_classify_cached_tolerates_corrupt_disk_cache(tmp_path: Path):
+    """If a previous writer left a corrupt JSON, treat as empty and proceed —
+    the next successful write will replace it."""
+    cache_path = tmp_path / "cls.json"
+    cache_path.write_text("{not valid json")
+    classifications: dict[str, dict] = {}
+    rc = RelationClassification(relation="extends", confidence=0.8, rationale="x")
+    provider = _FakeProvider(return_value=rc)
+    build_lineage._classify_cached(
+        provider,
+        {"title": "A"}, {"title": "B"},
+        cache_key="A->B",
+        classifications=classifications,
+        cache_path=cache_path,
+        rate_delay=0,
+    )
+    on_disk = json.loads(cache_path.read_text())
+    assert on_disk == {"A->B": {"relation": "extends", "confidence": 0.8, "rationale": "x"}}
+
+
 def test_classify_cached_returns_none_on_failure(tmp_path: Path):
     cache_path = tmp_path / "cls.json"
     classifications: dict[str, dict] = {}
