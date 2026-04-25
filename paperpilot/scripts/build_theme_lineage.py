@@ -51,6 +51,9 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
 )
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.keyword_expand import expand_keywords  # noqa: E402
+from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
+
+logger = get_logger(__name__)
 
 DOCS_ROOT = ROOT / "docs"
 
@@ -197,21 +200,23 @@ def build_theme_lineage(
     slug = theme_slug(sanitised)
 
     provider, rate_delay = build_provider()
-    print(f"theme: {sanitised}")
-    print(f"slug:  {slug}")
-    print(f"provider: {provider.name}")
+    logger.info("theme=%r slug=%r provider=%s", sanitised, slug, provider.name)
 
     # Stage 1: keyword expansion (returns originals if provider unavailable).
     keywords = expand_keywords(
         [sanitised], provider, max_expansions=_KEYWORD_EXPANSIONS
     )
-    print(f"keywords ({len(keywords)}): {keywords}")
+    logger.info("expanded to %d keywords: %s", len(keywords), keywords)
 
     # Stage 2: discover seeds.
     seeds = discover_seeds(
         keywords=keywords, top_n=seeds_count, since_year=since_year
     )
-    print(f"seeds ({len(seeds)}): {[s.get('paperId') for s in seeds]}")
+    logger.info(
+        "discovered %d seeds: %s",
+        len(seeds),
+        [s.get("paperId") for s in seeds],
+    )
 
     # Stage 3: BFS ancestors via fetch_related (build_lineage's cache reused).
     nodes: dict[str, dict] = {}
@@ -277,7 +282,7 @@ def build_theme_lineage(
     cleaned_edges = [e for e in edges if (e.get("rationale") or "").strip()]
     dropped = len(edges) - len(cleaned_edges)
     if dropped:
-        print(f"  dropped {dropped} edges with empty rationale")
+        logger.warning("dropped %d edges with empty rationale", dropped)
 
     # Stage 5: pick root = focus seed with most relations.
     root_id: str | None
@@ -360,6 +365,11 @@ def main(argv: list[str] | None = None) -> int:
              "not use with untrusted input.",
     )
     args = ap.parse_args(argv)
+
+    # CLI invocations need an explicit setup_logging() call (collector.py
+    # does the same in its main); without it Python's root defaults to
+    # WARNING and our logger.info progress messages would silently drop.
+    setup_logging()
 
     # Validate theme up-front so a bad CLI value fails fast with a clear
     # message — long pipelines that error out half-way are a bad UX.
