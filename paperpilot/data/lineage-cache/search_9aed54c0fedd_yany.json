@@ -1,0 +1,2095 @@
+[
+  {
+    "paperId": "ec1d708ba44060eeb6f0f62ee8d342d857522b09",
+    "externalIds": {
+      "DOI": "10.1109/JBHI.2025.3607904",
+      "CorpusId": 281250909,
+      "PubMed": "40928909"
+    },
+    "title": "Enhancing Protein Structure Learning Using a Size-Guided Conditional Mixture-of-Experts",
+    "venue": "IEEE journal of biomedical and health informatics",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/JBHI.2025.3607904?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/JBHI.2025.3607904, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2159272207",
+        "name": "Mingzhi Yuan"
+      },
+      {
+        "authorId": "2268740541",
+        "name": "Ao Shen"
+      },
+      {
+        "authorId": "2190526806",
+        "name": "Siqi Yin"
+      },
+      {
+        "authorId": "2221127461",
+        "name": "Yingfan Ma"
+      },
+      {
+        "authorId": "2332328852",
+        "name": "Qiao Huang"
+      },
+      {
+        "authorId": "2361918870",
+        "name": "Manning Wang"
+      }
+    ],
+    "abstract": "In recent years, deep learning on protein structures has attracted widespread attention, as structures determine proteins’ function. A series of structure-based protein property prediction methods have been proposed, achieving remarkable performance. However, these methods often neglect the importance of the protein size and fail to fully leverage it, leading to biases toward certain sizes and suboptimal overall performance. To address this issue, we propose a protein size-guided conditional mixture-of-experts for improving deep learning on protein structures. It can adaptively activate the sub-networks with the guidance of protein sizes and network features. Its flexible combinations of sub-networks help mitigate biases toward certain protein sizes, while the deliberate incorporation of protein size guidance enables the network to effectively capture both universal and size-specific characteristics, resulting in more accurate predictive performance. Based on it, we propose a framework for protein property prediction and benchmark it on eight tasks with two representation forms of proteins and three different dataset splits, a total of forty-eight tests. Experiments show that our method can be seamlessly integrated into numerous existing models and achieve performance improvement across tasks under almost all settings. More importantly, our experiments reveal that although often overlooked, protein size serves as an important prior knowledge in deep learning on protein structures."
+  },
+  {
+    "paperId": "b0b948a01d21026283970e03eed2fbee73303979",
+    "externalIds": {
+      "DBLP": "conf/miccai/NovosadCK24",
+      "DOI": "10.1007/978-3-031-72114-4_4",
+      "CorpusId": 273232516
+    },
+    "title": "A Task-Conditional Mixture-of-Experts Model for Missing Modality Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2024,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-031-72114-4_4?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-031-72114-4_4, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31097333",
+        "name": "P. Novosad"
+      },
+      {
+        "authorId": "144288196",
+        "name": "R. Carano"
+      },
+      {
+        "authorId": "2032551387",
+        "name": "Anithapriya Krishnan"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+    "externalIds": {
+      "DBLP": "journals/corr/ShazeerMMDLHD17",
+      "MAG": "2952339051",
+      "ArXiv": "1701.06538",
+      "CorpusId": 12462234
+    },
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 4373,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.06538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "1861312",
+        "name": "Azalia Mirhoseini"
+      },
+      {
+        "authorId": "2275364713",
+        "name": "Krzysztof Maziarz"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational efficiency on modern GPU clusters. We introduce a Sparsely-Gated Mixture-of-Experts layer (MoE), consisting of up to thousands of feed-forward sub-networks. A trainable gating network determines a sparse combination of these experts to use for each example. We apply the MoE to the tasks of language modeling and machine translation, where model capacity is critical for absorbing the vast quantities of knowledge available in the training corpora. We present model architectures in which a MoE with up to 137 billion parameters is applied convolutionally between stacked LSTM layers. On large language modeling and machine translation benchmarks, these models achieve significantly better results than state-of-the-art at lower computational cost."
+  },
+  {
+    "paperId": "0f07eb668a320e990dda8cf6406e9a54066453de",
+    "externalIds": {
+      "DOI": "10.3390/electronics14142773",
+      "CorpusId": 280138666
+    },
+    "title": "Color-Guided Mixture-of-Experts Conditional GAN for Realistic Biomedical Image Synthesis in Data-Scarce Diagnostics",
+    "venue": "Electronics",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/electronics14142773?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/electronics14142773, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2314459979",
+        "name": "Patrycja Kwiek"
+      },
+      {
+        "authorId": "10123495",
+        "name": "Filip Ciepiela"
+      },
+      {
+        "authorId": "2248877812",
+        "name": "Małgorzata Jakubowska"
+      }
+    ],
+    "abstract": "Background: Limited availability of high-quality labeled biomedical image datasets presents a significant challenge for training deep learning models in medical diagnostics. This study proposes a novel image generation framework combining conditional generative adversarial networks (cGANs) with a Mixture-of-Experts (MoE) architecture and color histogram-aware loss functions to enhance synthetic blood cell image quality. Methods: RGB microscopic images from the BloodMNIST dataset (eight blood cell types, resolution 3 × 128 × 128) underwent preprocessing with k-means clustering to extract the dominant colors and UMAP for visualizing class similarity. Spearman correlation-based distance matrices were used to evaluate the discriminative power of each RGB channel. A MoE–cGAN architecture was developed with residual blocks and LeakyReLU activations. Expert generators were conditioned on cell type, and the generator’s loss was augmented with a Wasserstein distance-based term comparing red and green channel histograms, which were found most relevant for class separation. Results: The red and green channels contributed most to class discrimination; the blue channel had minimal impact. The proposed model achieved 0.97 classification accuracy on generated images (ResNet50), with 0.96 precision, 0.97 recall, and a 0.96 F1-score. The best Fréchet Inception Distance (FID) was 52.1. Misclassifications occurred mainly among visually similar cell types. Conclusions: Integrating histogram alignment into the MoE–cGAN training significantly improves the realism and class-specific variability of synthetic images, supporting robust model development under data scarcity in hematological imaging."
+  },
+  {
+    "paperId": "103861667b9ec9ac492ef7b821c546bed1a869ea",
+    "externalIds": {
+      "DBLP": "journals/ncs/BuchelVSBTBCFGRNS25",
+      "DOI": "10.1038/s43588-024-00753-x",
+      "CorpusId": 275416806,
+      "PubMed": "39779828"
+    },
+    "title": "Efficient scaling of large language models with mixture of experts and 3D analog in-memory computing",
+    "venue": "Nature Computational Science",
+    "year": 2025,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/s43588-024-00753-x?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/s43588-024-00753-x, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258280656",
+        "name": "J. Büchel"
+      },
+      {
+        "authorId": "2258027144",
+        "name": "A. Vasilopoulos"
+      },
+      {
+        "authorId": "2339342126",
+        "name": "W. Simon"
+      },
+      {
+        "authorId": "2911515",
+        "name": "I. Boybat"
+      },
+      {
+        "authorId": "13030074",
+        "name": "H. Tsai"
+      },
+      {
+        "authorId": "2262827571",
+        "name": "Geoffrey W. Burr"
+      },
+      {
+        "authorId": "2339349227",
+        "name": "Hernan Castro"
+      },
+      {
+        "authorId": "2339349019",
+        "name": "Bill Filipiak"
+      },
+      {
+        "authorId": "8696815",
+        "name": "M. Le Gallo"
+      },
+      {
+        "authorId": "2259963752",
+        "name": "Abbas Rahimi"
+      },
+      {
+        "authorId": "2238039991",
+        "name": "Vijay Narayanan"
+      },
+      {
+        "authorId": "2205454736",
+        "name": "A. Sebastian"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "fd2c0671b2a50fb4dfcea5f9f473fd0b7793757a",
+    "externalIds": {
+      "MAG": "3110783207",
+      "ArXiv": "2012.02385",
+      "DOI": "10.1186/s40488-021-00125-0",
+      "CorpusId": 227305934
+    },
+    "title": "Approximations of conditional probability density functions in Lebesgue spaces via mixture of experts models",
+    "venue": "Journal of Statistical Distributions and Applications",
+    "year": 2020,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "https://jsdajournal.springeropen.com/track/pdf/10.1186/s40488-021-00125-0",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.02385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153609534",
+        "name": "H. Nguyen"
+      },
+      {
+        "authorId": "1899270520",
+        "name": "TrungTin Nguyen"
+      },
+      {
+        "authorId": "1953117",
+        "name": "Faicel Chamroukhi"
+      },
+      {
+        "authorId": "1690163",
+        "name": "G. McLachlan"
+      }
+    ],
+    "abstract": "Mixture of experts (MoE) models are widely applied for conditional probability density estimation problems. We demonstrate the richness of the class of MoE models by proving denseness results in Lebesgue spaces, when inputs and outputs variables are both compactly supported. We further prove an almost uniform convergence result when the input is univariate. Auxiliary lemmas are proved regarding the richness of the soft-max gating function class, and their relationships to the class of Gaussian gating functions."
+  },
+  {
+    "paperId": "18ccf9bababf1795c96f67ba6879ea12c045d3f6",
+    "externalIds": {
+      "DBLP": "journals/pr/BiciciA21",
+      "DOI": "10.1016/j.patcog.2021.108151",
+      "CorpusId": 237417807
+    },
+    "title": "Conditional information gain networks as sparse mixture of experts",
+    "venue": "Pattern Recognition",
+    "year": 2021,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.patcog.2021.108151?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.patcog.2021.108151, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51153070",
+        "name": "Ufuk Can Biçici"
+      },
+      {
+        "authorId": "1694599",
+        "name": "L. Akarun"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "025c76e135c2cf2b40561dd9f6d0e3337f078999",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-05382",
+      "ArXiv": "2402.05382",
+      "DOI": "10.48550/arXiv.2402.05382",
+      "CorpusId": 259298822
+    },
+    "title": "Task-customized Masked Autoencoder via Mixture of Cluster-conditional Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.05382, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109097628",
+        "name": "Zhili Liu"
+      },
+      {
+        "authorId": "38644044",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "47180442",
+        "name": "Jianhua Han"
+      },
+      {
+        "authorId": "2150203873",
+        "name": "Lanqing Hong"
+      },
+      {
+        "authorId": "47995165",
+        "name": "Hang Xu"
+      },
+      {
+        "authorId": "7718952",
+        "name": "Zhenguo Li"
+      },
+      {
+        "authorId": "145193332",
+        "name": "J. Kwok"
+      }
+    ],
+    "abstract": "Masked Autoencoder~(MAE) is a prevailing self-supervised learning method that achieves promising results in model pre-training. However, when the various downstream tasks have data distributions different from the pre-training data, the semantically irrelevant pre-training information might result in negative transfer, impeding MAE's scalability. To address this issue, we propose a novel MAE-based pre-training paradigm, Mixture of Cluster-conditional Experts (MoCE), which can be trained once but provides customized pre-training models for diverse downstream tasks. Different from the mixture of experts (MoE), our MoCE trains each expert only with semantically relevant images by using cluster-conditional gates. Thus, each downstream task can be allocated to its customized model pre-trained with data most similar to the downstream data. Experiments on a collection of 11 downstream tasks show that MoCE outperforms the vanilla MAE by 2.45\\% on average. It also obtains new state-of-the-art self-supervised learning results on detection and segmentation."
+  },
+  {
+    "paperId": "ad46c815860cc5e93a0f991ae86970307a5aa6a8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-03293",
+      "ArXiv": "2510.03293",
+      "DOI": "10.48550/arXiv.2510.03293",
+      "CorpusId": 281844162
+    },
+    "title": "From Score Distributions to Balance: Plug-and-Play Mixture-of-Experts Routing",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.03293, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2282961160",
+        "name": "Rana Shahout"
+      },
+      {
+        "authorId": "2298889205",
+        "name": "Colin Cai"
+      },
+      {
+        "authorId": "2383299859",
+        "name": "Yilun Du"
+      },
+      {
+        "authorId": "2360462861",
+        "name": "Minlan Yu"
+      },
+      {
+        "authorId": "2248428849",
+        "name": "Michael Mitzenmacher"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models can scale parameter capacity by routing each token to a subset of experts through a learned gate function. While conditional routing reduces training costs, it shifts the burden on inference memory: expert parameters and activations consume memory, limiting the number of experts per device. As tokens are routed, some experts become overloaded while others are underutilized. Because experts are mapped to GPUs, this imbalance translates directly into degraded system performance in terms of latency, throughput, and cost. We present LASER, a plug-and-play, inference-time routing algorithm that balances load while preserving accuracy. LASER adapts to the shape of the gate's score distribution. When scores provide a clear preference, it routes to the strongest experts; when scores are more uniform, it broadens the set of viable experts and routes to the least-loaded among them. Because LASER relies only on gate scores from a trained model, it integrates directly into existing MoE inference pipelines without retraining or finetuning. We evaluate LASER on Mixtral-8x7B and DeepSeek-MoE-16b-chat across four datasets (ARC-Easy, ARC-Challenge, MMLU, and GSM8K). LASER improves load balancing, translating into lower latency and higher throughput, while keeping the accuracy changes negligible."
+  },
+  {
+    "paperId": "d4debb7699141eb2cd7bc3a911720ffe593ffc46",
+    "externalIds": {
+      "ArXiv": "2503.09504",
+      "DBLP": "journals/corr/abs-2503-09504",
+      "DOI": "10.48550/arXiv.2503.09504",
+      "CorpusId": 276937878
+    },
+    "title": "Double-Stage Feature-Level Clustering-Based Mixture of Experts Framework",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.09504, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2173086720",
+        "name": "Bakary Badjie"
+      },
+      {
+        "authorId": "2349639941",
+        "name": "Jos'e Cec'ilio"
+      },
+      {
+        "authorId": "2305422233",
+        "name": "António Casimiro"
+      }
+    ],
+    "abstract": "The Mixture-of-Experts (MoE) model has succeeded in deep learning (DL). However, its complex architecture and advantages over dense models in image classification remain unclear. In previous studies, MoE performance has often been affected by noise and outliers in the input space. Some approaches incorporate input clustering for training MoE models, but most clustering algorithms lack access to labeled data, limiting their effectiveness. This paper introduces the Double-stage Feature-level Clustering and Pseudo-labeling-based Mixture of Experts (DFCP-MoE) framework, which consists of input feature extraction, feature-level clustering, and a computationally efficient pseudo-labeling strategy. This approach reduces the impact of noise and outliers while leveraging a small subset of labeled data to label a large portion of unlabeled inputs. We propose a conditional end-to-end joint training method that improves expert specialization by training the MoE model on well-labeled, clustered inputs. Unlike traditional MoE and dense models, the DFCP-MoE framework effectively captures input space diversity, leading to competitive inference results. We validate our approach on three benchmark datasets for multi-class classification tasks."
+  },
+  {
+    "paperId": "8db1c443595e76befc31c3879fcac854db1c6773",
+    "externalIds": {
+      "ArXiv": "2511.11460",
+      "DBLP": "journals/corr/abs-2511-11460",
+      "DOI": "10.48550/arXiv.2511.11460",
+      "CorpusId": 283055256
+    },
+    "title": "Rethinking Efficient Mixture-of-Experts for Remote Sensing Modality-Missing Classification",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.11460, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2397441919",
+        "name": "Qinghao Gao"
+      },
+      {
+        "authorId": "2242187569",
+        "name": "J. Qu"
+      },
+      {
+        "authorId": "2262443218",
+        "name": "Yunsong Li"
+      },
+      {
+        "authorId": "98834915",
+        "name": "Weiqian Dong"
+      }
+    ],
+    "abstract": "Multimodal remote sensing classification often suffers from missing modalities caused by sensor failures and environmental interference, leading to severe performance degradation. In this work, we rethink missing-modality learning from a conditional computation perspective and investigate whether Mixture-of-Experts (MoE) models can inherently adapt to diverse modality-missing scenarios. We first conduct a systematic study of representative MoE paradigms under various missing-modality settings, revealing both their potential and limitations. Building on these insights, we propose a Missing-aware Mixture-of-LoRAs (MaMOL), a parameter-efficient MoE framework that unifies multiple modality-missing cases within a single model. MaMOL introduces a dual-routing mechanism to decouple modality-invariant shared experts and modality-aware dynamic experts, enabling automatic expert activation conditioned on available modalities. Extensive experiments on multiple remote sensing benchmarks demonstrate that MaMOL significantly improves robustness and generalization under diverse missing-modality scenarios with minimal computational overhead. Transfer experiments on natural image datasets further validate its scalability and cross-domain applicability."
+  },
+  {
+    "paperId": "a2813abf9666f2f3f578863735a7ccb23a6da6d7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-20213",
+      "ArXiv": "2502.20213",
+      "DOI": "10.48550/arXiv.2502.20213",
+      "CorpusId": 276647225
+    },
+    "title": "Mixture of Experts for Recognizing Depression from Interview and Reading Tasks",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.20213, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2087402132",
+        "name": "Loukas Ilias"
+      },
+      {
+        "authorId": "2243591474",
+        "name": "Dimitris Askounis"
+      }
+    ],
+    "abstract": "Depression is a mental disorder and can cause a variety of symptoms, including psychological, physical, and social. Speech has been proved an objective marker for the early recognition of depression. For this reason, many studies have been developed aiming to recognize depression through speech. However, existing methods rely on the usage of only the spontaneous speech neglecting information obtained via read speech, use transcripts which are often difficult to obtain (manual) or come with high word-error rates (automatic), and do not focus on input-conditional computation methods. To resolve these limitations, this is the first study in depression recognition task obtaining representations of both spontaneous and read speech, utilizing multimodal fusion methods, and employing Mixture of Experts (MoE) models in a single deep neural network. Specifically, we use audio files corresponding to both interview and reading tasks and convert each audio file into log-Mel spectrogram, delta, and delta-delta. Next, the image representations of the two tasks pass through shared AlexNet models. The outputs of the AlexNet models are given as input to a multimodal fusion method. The resulting vector is passed through a MoE module. In this study, we employ three variants of MoE, namely sparsely-gated MoE and multilinear MoE based on factorization. Findings suggest that our proposed approach yields an Accuracy and F1-score of 87.00% and 86.66% respectively on the Androids corpus."
+  },
+  {
+    "paperId": "e1b7120cc4c9409da93f9ef29c4c80d6c9034335",
+    "externalIds": {
+      "ArXiv": "2510.12744",
+      "DBLP": "journals/corr/abs-2510-12744",
+      "DOI": "10.48550/arXiv.2510.12744",
+      "CorpusId": 282064747
+    },
+    "title": "Dendrograms of Mixing Measures for Softmax-Gated Gaussian Mixture of Experts: Consistency without Model Sweeps",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.12744, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2385561191",
+        "name": "Do Tien Hai"
+      },
+      {
+        "authorId": "2385565984",
+        "name": "Trung Nguyen Mai"
+      },
+      {
+        "authorId": "2310561917",
+        "name": "T. Nguyen"
+      },
+      {
+        "authorId": "2362305482",
+        "name": "N. Ho"
+      },
+      {
+        "authorId": "2273568874",
+        "name": "Binh Nguyen"
+      },
+      {
+        "authorId": "2362308015",
+        "name": "Christopher C. Drovandi"
+      }
+    ],
+    "abstract": "We develop a unified statistical framework for softmax-gated Gaussian mixture of experts (SGMoE) that addresses three long-standing obstacles in parameter estimation and model selection: (i) non-identifiability of gating parameters up to common translations, (ii) intrinsic gate-expert interactions that induce coupled differential relations in the likelihood, and (iii) the tight numerator-denominator coupling in the softmax-induced conditional density. Our approach introduces Voronoi-type loss functions aligned with the gate-partition geometry and establishes finite-sample convergence rates for the maximum likelihood estimator (MLE). In over-specified models, we reveal a link between the MLE's convergence rate and the solvability of an associated system of polynomial equations characterizing near-nonidentifiable directions. For model selection, we adapt dendrograms of mixing measures to SGMoE, yielding a consistent, sweep-free selector of the number of experts that attains pointwise-optimal parameter rates under overfitting while avoiding multi-size training. Simulations on synthetic data corroborate the theory, accurately recovering the expert count and achieving the predicted rates for parameter estimation while closely approximating the regression function. Under model misspecification (e.g., $\\epsilon$-contamination), the dendrogram selection criterion is robust, recovering the true number of mixture components, while the Akaike information criterion, the Bayesian information criterion, and the integrated completed likelihood tend to overselect as sample size grows. On a maize proteomics dataset of drought-responsive traits, our dendrogram-guided SGMoE selects two experts, exposes a clear mixing-measure hierarchy, stabilizes the likelihood early, and yields interpretable genotype-phenotype maps, outperforming standard criteria without multi-size training."
+  },
+  {
+    "paperId": "890150872cbeeb69d149ca3ff701cd80b75ed8b8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-04923",
+      "ArXiv": "2510.04923",
+      "DOI": "10.48550/arXiv.2510.04923",
+      "CorpusId": 281844182
+    },
+    "title": "REN: Anatomically-Informed Mixture-of-Experts for Interstitial Lung Disease Diagnosis",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.04923, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2219625809",
+        "name": "Alec K Peltekian"
+      },
+      {
+        "authorId": "2327049418",
+        "name": "Halil Ertugrul Aktas"
+      },
+      {
+        "authorId": "2275241127",
+        "name": "Gorkem Durak"
+      },
+      {
+        "authorId": "2302302782",
+        "name": "Kevin M Grudzinski"
+      },
+      {
+        "authorId": "2310302377",
+        "name": "B. Bemiss"
+      },
+      {
+        "authorId": "2364973747",
+        "name": "Carrie Richardson"
+      },
+      {
+        "authorId": "2299245967",
+        "name": "J. Dematte"
+      },
+      {
+        "authorId": "2254705106",
+        "name": "G. Budinger"
+      },
+      {
+        "authorId": "2253512024",
+        "name": "Anthony J. Esposito"
+      },
+      {
+        "authorId": "2342252469",
+        "name": "A. Misharin"
+      },
+      {
+        "authorId": "2254309592",
+        "name": "Alok N. Choudhary"
+      },
+      {
+        "authorId": "2342254607",
+        "name": "Ankit Agrawal"
+      },
+      {
+        "authorId": "2373725797",
+        "name": "Ulas Bagci"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures achieve scalable learning by routing inputs to specialized subnetworks through conditional computation. However, conventional MoE designs assume homogeneous expert capability and domain-agnostic routing-assumptions that are fundamentally misaligned with medical imaging, where anatomical structure and regional disease heterogeneity govern pathological patterns. We introduce Regional Expert Networks (REN), the first anatomically-informed MoE framework for medical image classification. REN encodes anatomical priors by training seven specialized experts, each dedicated to a distinct lung lobe or bilateral lung combination, enabling precise modeling of region-specific pathological variation. Multi-modal gating mechanisms dynamically integrate radiomics biomarkers with deep learning (DL) features extracted by convolutional (CNN), Transformer (ViT), and state-space (Mamba) architectures to weight expert contributions at inference. Applied to interstitial lung disease (ILD) classification on a 597-patient, 1,898-scan longitudinal cohort, REN achieves consistently superior performance: the radiomics-guided ensemble attains an average AUC of 0.8646 +- 0.0467, a +12.5 % improvement over the SwinUNETR single-model baseline (AUC 0.7685, p=0.031). Lower-lobe experts reach AUCs of 0.88-0.90, outperforming DL baselines (CNN: 0.76-0.79) and mirroring known patterns of basal ILD progression. Evaluated under rigorous patient-level cross-validation, REN demonstrates strong generalizability and clinical interpretability, establishing a scalable, anatomically-guided framework potentially extensible to other structured medical imaging tasks. Code is available on our GitHub https://github.com/NUBagciLab/MoE-REN."
+  },
+  {
+    "paperId": "478d0ed708e62d9bb4da0d1c29d5b780d797d358",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2512-20291",
+      "ArXiv": "2512.20291",
+      "DOI": "10.48550/arXiv.2512.20291",
+      "CorpusId": 284133081
+    },
+    "title": "Mixture-of-Experts with Gradient Conflict-Driven Subspace Topology Pruning for Emergent Modularity",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.20291, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324056256",
+        "name": "Yu Gan"
+      },
+      {
+        "authorId": "2113457540",
+        "name": "Ziyu Lei"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures achieve parameter efficiency through conditional computation, yet contemporary designs suffer from two fundamental limitations: structural parameter isolation that causes catastrophic forgetting, and instruction-overfitting that degrades performance in instruction-free scenarios. We propose CDSP-MoE (Conflict-Driven Subspace Pruning MoE), a framework that addresses these issues through a paradigm shift from isolated expert containers to dynamic expert instantiation within a shared physical subspace. Grounded in the Universal Weight Subspace Hypothesis, CDSP-MoE maintains a super-complete parameter backbone where logical experts are carved out via learnable topology masks. Unlike prior work that uses gradient conflict for token reassignment or optimization surgery, we leverage it as a structural supervisory signal: a Lagged Gradient Game penalizes interfering connections in the shared manifold, enabling the topology to spontaneously prune conflicting pathways and evolve interpretable modular structures. Experimental results demonstrate that CDSP-MoE achieves robust content-driven routing without human-defined task labels, maintaining semantic specialization even under strict blind inference protocols where explicit instructions are absent. Code is available at: https://github.com/konodiodaaaaa1/Conflict-Driven-Subspace-Pruning-Mixture-of-Experts"
+  },
+  {
+    "paperId": "ad82ba4ce47672e2d30890e1c684cf8efbe3bb07",
+    "externalIds": {
+      "DOI": "10.70924/f83n6wqz/vboj68ls",
+      "CorpusId": 280058593
+    },
+    "title": "Infrastructure Economics of Sparse Mixture-of-Experts in Cloud-Native NLP: Benchmarking Cost, Accuracy, and Performance",
+    "venue": "Global Business &amp; Economics Journal",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.70924/f83n6wqz/vboj68ls?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.70924/f83n6wqz/vboj68ls, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2273676791",
+        "name": "Piyush Patel"
+      }
+    ],
+    "abstract": "As natural language processing (NLP) models grow in size and complexity, the cost and infrastructure demands of training and serving dense transformer architectures have become a significant barrier. Sparse Mixture-of-Experts (MoE) architectures offer a promising alternative by enabling conditional computation—activating only a subset of model parameters per input—thereby dramatically improving computational efficiency without compromising model quality. This paper investigates the infrastructure economics of sparse MoE architectures in cloud-native environments, with a focus on benchmarking their cost, performance, and accuracy across major platforms such as AWS, Google Cloud, and Microsoft Azure. It presents a comparative analysis of leading MoE models including Switch Transformer, GLaM, DeepSpeed-MoE, and Mixtral-8x7B, highlighting their ability to achieve state-of-the-art results at a fraction of the resource consumption. The study also explores deployment challenges, such as load balancing, memory constraints, and software tooling, and discusses optimizations that enable scalable, cost-effective NLP systems. Through empirical benchmarks and real-world case studies, this paper illustrates how MoE architectures are reshaping the economics of large-scale NLP and paving the way for more sustainable and accessible AI development in the cloud."
+  },
+  {
+    "paperId": "f75d4149a9498d5cb158ca58d08e66685ed6f911",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2512-04476",
+      "ArXiv": "2512.04476",
+      "DOI": "10.48550/arXiv.2512.04476",
+      "CorpusId": 283556947
+    },
+    "title": "Context-Aware Mixture-of-Experts Inference on CXL-Enabled GPU-NDP Systems",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.04476, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2362650133",
+        "name": "Zehao Fan"
+      },
+      {
+        "authorId": "2283193681",
+        "name": "Zhenyu Liu"
+      },
+      {
+        "authorId": "2396489481",
+        "name": "Yunzhen Liu"
+      },
+      {
+        "authorId": "2363494888",
+        "name": "Yayue Hou"
+      },
+      {
+        "authorId": "2047307832",
+        "name": "Hadjer Benmeziane"
+      },
+      {
+        "authorId": "1930409",
+        "name": "K. E. Maghraoui"
+      },
+      {
+        "authorId": "2392994222",
+        "name": "Liu Liu"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models scale large language models through conditional computation, but inference becomes memory-bound once expert weights exceed the capacity of GPU memory. In this case, weights must be offloaded to external memory, and fetching them incurs costly and repeated transfers. We address this by adopting CXL-attached near-data processing (CXL-NDP) as the offloading tier to execute cold experts in place, converting expensive parameter movement into cheaper activation movement. Unlike prior GPU-NDP systems that are largely context-agnostic and reactive, we develop a context-aware MoE system that uses prefill-stage activation statistics to guide decoding-stage expert placement, dynamically pins hot experts in GPU-side HBM, and maps the remainder to CXL-NDP. To meet NDP's limited compute throughput, we introduce context-aware mixed-precision quantization that allocates per-expert bitwidths (1-4 bit) based on prefill stage. The resulting MoE inference system overlaps GPU and NDP execution while minimizing cross-device movement. The evaluation on the GPU-NDP system shows that our approach achieves up to an 8.7-fold decoding throughput improvement over the state-of-the-art method, while incurring only a 0.13% average accuracy drop."
+  },
+  {
+    "paperId": "c86c7fe8cbdd01e11d5ab0d25cf5815a45a5805c",
+    "externalIds": {
+      "ArXiv": "2512.23070",
+      "DBLP": "journals/corr/abs-2512-23070",
+      "DOI": "10.48550/arXiv.2512.23070",
+      "CorpusId": 284311035
+    },
+    "title": "FLEX-MoE: Federated Mixture-of-Experts with Load-balanced Expert Assignment",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.23070, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2373577333",
+        "name": "Boyang Zhang"
+      },
+      {
+        "authorId": "2308916628",
+        "name": "Xiaobing Chen"
+      },
+      {
+        "authorId": "2336785618",
+        "name": "Songyang Zhang"
+      },
+      {
+        "authorId": "2300403265",
+        "name": "Shuai Zhang"
+      },
+      {
+        "authorId": "2286295629",
+        "name": "Xiangwei Zhou"
+      },
+      {
+        "authorId": "2311080557",
+        "name": "Mingxuan Sun"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models enable scalable neural networks through conditional computation. However, their deployment with federated learning (FL) faces two critical challenges: 1) resource-constrained edge devices cannot store full expert sets, and 2) non-IID data distributions cause severe expert load imbalance that degrades model performance. To this end, we propose \\textbf{FLEX-MoE}, a novel federated MoE framework that jointly optimizes expert assignment and load balancing under limited client capacity. Specifically, our approach introduces client-expert fitness scores that quantify the expert suitability for local datasets through training feedback, and employs an optimization-based algorithm to maximize client-expert specialization while enforcing balanced expert utilization system-wide. Unlike existing greedy methods that focus solely on personalization while ignoring load imbalance, our FLEX-MoE is capable of addressing the expert utilization skew, which is particularly severe in FL settings with heterogeneous data. Our comprehensive experiments on three different datasets demonstrate the superior performance of the proposed FLEX-MoE, together with its ability to maintain balanced expert utilization across diverse resource-constrained scenarios."
+  },
+  {
+    "paperId": "4c0216303dcc32a07cf60c638bdd1353b3cf6163",
+    "externalIds": {
+      "DBLP": "conf/icmcs/HuangL25",
+      "DOI": "10.1109/ICME59968.2025.11209284",
+      "CorpusId": 282613815
+    },
+    "title": "Human-MoE: Multimodal Full-Body Human Image Synthesis with Component-driven Mixture of Experts",
+    "venue": "IEEE International Conference on Multimedia and Expo",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICME59968.2025.11209284?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICME59968.2025.11209284, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2389351821",
+        "name": "Yu-Jiu Huang"
+      },
+      {
+        "authorId": "2189365888",
+        "name": "I-Chen Lin"
+      }
+    ],
+    "abstract": "Conditional full-body human synthesis is to generate and edit realistic images based on given conditions. Previous methods lay a solid foundation but may have limitations in adjusting human poses and appearance. They usually adopt a monolithic design, and the details of generated images are prone to be indistinct or distorted due to the high variation of human appearances. To tackle the above-mentioned challenges, we propose Human-MoE for multi-modal full-body human synthesis. Users can control the image generation through three types of input representations: parsing maps for geometry, text descriptions for appearance attributes, and pose maps to distinguish postures. Our framework specifically designs a mixture-of-experts module to capture and synthesize details in specific regions with high fidelity. These synthesized details are then applied to refine the appearance. Our method achieves top scores in experiments by multiple metrics, especially FID and SSIM, demonstrating its advance in visual quality and controllability."
+  },
+  {
+    "paperId": "99cb2faca044a9b98ba637591a37116d9ff3ad78",
+    "externalIds": {
+      "DOI": "10.1109/UPINLBS68186.2025.11468397",
+      "CorpusId": 287484529
+    },
+    "title": "MoE-HARNet: A Multimodal Mixture-of-Experts Network for Robust Smartphone Behavior Recognition in Complex Indoor Scenarios",
+    "venue": "Ubiquitous Positioning, Indoor Navigation, and Location Based Service",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/UPINLBS68186.2025.11468397?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/UPINLBS68186.2025.11468397, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2352992361",
+        "name": "Bing Yu"
+      },
+      {
+        "authorId": "2310188970",
+        "name": "Qianhao Zhang"
+      },
+      {
+        "authorId": "2304713053",
+        "name": "Jianhua Liu"
+      }
+    ],
+    "abstract": "Pedestrian Dead Reckoning (PDR) systems relying on smartphone Inertial Measurement Units (IMU) are fundamentally constrained by accumulated positioning errors, primarily due to the lack of robust context-aware capabilities. Specifically, the coupled variations in user motion states and phone holding postures generate various highly heterogeneous joint behavior categories. This phenomenon results in severe domain shift, significantly weakening the generalization performance of conventional dense deep learning models in cross-user scenarios. To overcome this challenge, we propose a novel Multimodal Mixture-of-Experts Network (MoE-HARNet) for high-precision joint behavior recognition. MoE-HARNet utilizes a Conv1D-Transformer encoder architecture integrated with a Sparse Mixture-of-Experts (MoE) layer. This conditional computation mechanism leverages expert specialization to efficiently decompose the complex feature space, thereby substantially enhancing the model's robustness against cross-subject variations. Evaluated under the Leave-One-Subject-Out Cross-Validation (LOSO CV) protocol, MoE-HARNet achieves significant performance improvements over existing advanced dense models in the joint behavior recognition task. This offers critical and stable context-aware support essential for enhancing the stability and precision of next-generation adaptive PDR systems."
+  },
+  {
+    "paperId": "92b37aca150d10d6ee766a69d4bf20f29120a038",
+    "externalIds": {
+      "ArXiv": "2602.08019",
+      "DBLP": "journals/corr/abs-2602-08019",
+      "DOI": "10.54097/bvpfjj49",
+      "CorpusId": 283989715
+    },
+    "title": "The Rise of Sparse Mixture-of-Experts: A Survey from Algorithmic Foundations to Decentralized Architectures and Vertical Domain Applications",
+    "venue": "Journal of Computer Science and Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.08019, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2340528770",
+        "name": "Dong Pan"
+      },
+      {
+        "authorId": "2340913915",
+        "name": "Bingtao Li"
+      },
+      {
+        "authorId": "2340545295",
+        "name": "Yongsheng Zheng"
+      },
+      {
+        "authorId": "2340544000",
+        "name": "Jiren Ma"
+      },
+      {
+        "authorId": "2399451091",
+        "name": "Victor Fei"
+      }
+    ],
+    "abstract": "The sparse Mixture of Experts (MoE) architecture has evolved as a powerful approach for scaling deep learning models to more parameters with comparable computation cost. As an important branch of large language model (LLM), MoE model only activate a subset of experts based on a routing network. This sparse conditional computation mechanism significantly improves computational efficiency, paving a promising path for greater scalability and cost-efficiency. It not only enhance downstream applications such as natural language processing, computer vision, and multimodal in various horizontal domains, but also exhibit broad applicability across vertical domains including medical diagnosis, autonomous driving, financial analysis, and business intelligence. Despite the growing popularity and application of MoE models across various domains, there lacks a systematic exploration of recent advancements of MoE in many important fields. Existing surveys on MoE suffer from limitations such as lack coverage or not extensively exploration of key areas. This survey seeks to fill these gaps. In this paper, Firstly, we examine the foundational principles of MoE, with an in-depth exploration of its core components—the routing network and expert network. Subsequently, we extend beyond the centralized paradigm to the decentralized paradigm, which unlocks the immense untapped potential of decentralized infrastructure, enables democratization of MoE development for broader communities, and delivers greater scalability and cost-efficiency. Furthermore we focus on exploring its vertical domain applications. Finally, we also identify key challenges and promising future research directions. To the best of our knowledge, this survey is currently the most comprehensive review in the field of MoE. We aim for this article to serve as a valuable resource for both researchers and practitioners, enabling them to navigate and stay up-to-date with the latest advancements."
+  },
+  {
+    "paperId": "edfb9db6d086bb08bb8ccc4313e738cf1b85ffdf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-14219",
+      "ArXiv": "2412.14219",
+      "DOI": "10.48550/arXiv.2412.14219",
+      "CorpusId": 274859865
+    },
+    "title": "A Survey on Inference Optimization Techniques for Mixture of Experts Models",
+    "venue": "ACM Computing Surveys",
+    "year": 2024,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.14219, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2319414678",
+        "name": "Jiacheng Liu"
+      },
+      {
+        "authorId": "2283158213",
+        "name": "Peng Tang"
+      },
+      {
+        "authorId": "2336249851",
+        "name": "Wenfeng Wang"
+      },
+      {
+        "authorId": "2305460079",
+        "name": "Yuhang Ren"
+      },
+      {
+        "authorId": "2260331102",
+        "name": "Xiaofeng Hou"
+      },
+      {
+        "authorId": "2317312860",
+        "name": "P. Heng"
+      },
+      {
+        "authorId": "2323332373",
+        "name": "Minyi Guo"
+      },
+      {
+        "authorId": "2257175537",
+        "name": "Chao Li"
+      }
+    ],
+    "abstract": "The emergence of large-scale Mixture of Experts (MoE) models represents a significant advancement in artificial intelligence, offering larger model capacity and computational efficiency through conditional computation. However, deploying and running inference on these models presents significant challenges in computational resources, latency, and energy efficiency. This comprehensive survey analyzes optimization techniques for MoE models across the entire system stack. We first establish a taxonomical framework that categorizes optimization approaches into model-level, system-level, and hardware-level optimizations. At the model level, we examine architectural innovations including efficient expert design, attention mechanisms, various compression techniques such as pruning, quantization, and knowledge distillation, as well as algorithm improvement including dynamic routing strategies and expert merging methods. At the system level, we investigate distributed computing approaches, load balancing mechanisms, and efficient scheduling algorithms that enable scalable deployment. Furthermore, we delve into hardware-specific optimizations and co-design strategies that maximize throughput and energy efficiency. This survey provides both a structured overview of existing solutions and identifies key challenges and promising research directions in MoE inference optimization. To facilitate ongoing updates and the sharing of cutting-edge advances in MoE inference optimization research, we have established a repository accessible at https://github.com/MoE-Inf/awesome-moe-inference/."
+  },
+  {
+    "paperId": "54c752fba82502c5ba0b475b98ce15ebf4ea6bee",
+    "externalIds": {
+      "DBLP": "journals/fini/JK25",
+      "PubMedCentral": "12673485",
+      "DOI": "10.3389/fninf.2025.1679196",
+      "CorpusId": 283212301,
+      "PubMed": "41346493"
+    },
+    "title": "Cross-modal privacy-preserving synthesis and mixture-of-experts ensemble for robust ASD prediction",
+    "venue": "Frontiers Neuroinformatics",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC12673485, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2393766028",
+        "name": "J. Revathy"
+      },
+      {
+        "authorId": "2276223486",
+        "name": "Maryam Naseri"
+      },
+      {
+        "authorId": "2335531006",
+        "name": "M. Anar"
+      }
+    ],
+    "abstract": "Introduction Autism Spectrum Disorder (ASD) diagnosis remains complex due to limited access to large-scale multimodal datasets and privacy concerns surrounding clinical data. Traditional methods rely heavily on resource-intensive clinical assessments and are constrained by unimodal or non-adaptive learning models. To address these limitations, this study introduces AutismSynthGen, a privacy-preserving framework for synthesizing multimodal ASD data and enhancing prediction accuracy. Materials and methods The proposed system integrates a Multimodal Autism Data Synthesis Network (MADSN), which employs transformer-based encoders and cross-modal attention within a conditional GAN to generate synthetic data across structural MRI, EEG, behavioral vectors, and severity scores. Differential privacy is enforced via DP-SGD (ε ≤ 1.0). A complementary Adaptive Multimodal Ensemble Learning (AMEL) module, consisting of five heterogeneous experts and a gating network, is trained on both real and synthetic data. Evaluation is conducted on the ABIDE, NDAR, and SSC datasets using metrics such as AUC, F1 score, MMD, KS statistic, and BLEU. Results Synthetic augmentation improved model performance, yielding validation AUC gains of ≥ 0.04. AMEL achieved an AUC of 0.98 and an F1 score of 0.99 on real data and approached near-perfect internal performance (AUC ≈ 1.00, F1 ≈ 1.00) when synthetic data were included. Distributional metrics (MMD = 0.04; KS = 0.03) and text similarity (BLEU = 0.70) demonstrated high fidelity between the real and synthetic samples. Ablation studies confirmed the importance of cross-modal attention and entropy-regularized expert gating. Discussion AutismSynthGen offers a scalable, privacy-compliant solution for augmenting limited multimodal datasets and enhancing ASD prediction. Future directions include semi-supervised learning, explainable AI for clinical trust, and deployment in federated environments to broaden accessibility while maintaining privacy."
+  },
+  {
+    "paperId": "b552b050de3c6defeab551b6d099b4bf71945cd0",
+    "externalIds": {
+      "DBLP": "conf/emnlp/WuWLCHWX25",
+      "ArXiv": "2509.02499",
+      "DOI": "10.48550/arXiv.2509.02499",
+      "CorpusId": 281080124
+    },
+    "title": "MoSEs: Uncertainty-Aware AI-Generated Text Detection via Mixture of Stylistics Experts with Conditional Thresholds",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.02499, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2344834707",
+        "name": "Junxi Wu"
+      },
+      {
+        "authorId": "2110174485",
+        "name": "Jinpeng Wang"
+      },
+      {
+        "authorId": "2363380431",
+        "name": "Zhengyang Liu"
+      },
+      {
+        "authorId": "2375814816",
+        "name": "Bin Chen"
+      },
+      {
+        "authorId": "2343697952",
+        "name": "Dongjian Hu"
+      },
+      {
+        "authorId": "2305043877",
+        "name": "Hao Wu"
+      },
+      {
+        "authorId": "2378706644",
+        "name": "Shu-Tao Xiu"
+      }
+    ],
+    "abstract": "The rapid advancement of large language models has intensified public concerns about the potential misuse. Therefore, it is important to build trustworthy AI-generated text detection systems. Existing methods neglect stylistic modeling and mostly rely on static thresholds, which greatly limits the detection performance. In this paper, we propose the Mixture of Stylistic Experts (MoSEs) framework that enables stylistics-aware uncertainty quantification through conditional threshold estimation. MoSEs contain three core components, namely, the Stylistics Reference Repository (SRR), the Stylistics-Aware Router (SAR), and the Conditional Threshold Estimator (CTE). For input text, SRR can activate the appropriate reference data in SRR and provide them to CTE. Subsequently, CTE jointly models the linguistic statistical properties and semantic features to dynamically determine the optimal threshold. With a discrimination score, MoSEs yields prediction labels with the corresponding confidence level. Our framework achieves an average improvement 11.34% in detection performance compared to baselines. More inspiringly, MoSEs shows a more evident improvement 39.15% in the low-resource case. Our code is available at https://github.com/creator-xi/MoSEs."
+  },
+  {
+    "paperId": "92658eaf0eaf6665c1bfc2bb3c57755e82926bf8",
+    "externalIds": {
+      "DBLP": "conf/emnlp/WangASC25",
+      "ArXiv": "2504.04653",
+      "DOI": "10.48550/arXiv.2504.04653",
+      "CorpusId": 277621186
+    },
+    "title": "LEO-MINI: An Efficient Multimodal Large Language Model using Conditional Token Reduction and Mixture of Multi-Modal Experts",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.04653, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2259866135",
+        "name": "Yimu Wang"
+      },
+      {
+        "authorId": "9244695",
+        "name": "Mozhgan Nasr Azadani"
+      },
+      {
+        "authorId": "1824281",
+        "name": "Sean Sedwards"
+      },
+      {
+        "authorId": "2269776117",
+        "name": "Krzysztof Czarnecki"
+      }
+    ],
+    "abstract": "Redundancy of visual tokens in multi-modal large language models (MLLMs) significantly reduces their computational efficiency. Recent approaches, such as resamplers and summarizers, have sought to reduce the number of visual tokens, but at the cost of visual reasoning ability. To address this, we propose LEO-MINI, a novel MLLM that significantly reduces the number of visual tokens and simultaneously boosts visual reasoning capabilities. For efficiency, LEO-MINI incorporates CoTR, a novel token reduction module to consolidate a large number of visual tokens into a smaller set of tokens, using the similarity between visual tokens, text tokens, and a compact learnable query. For effectiveness, to scale up the model's ability with minimal computational overhead, LEO-MINI employs MMoE, a novel mixture of multi-modal experts module. MMOE employs a set of LoRA experts with a novel router to switch between them based on the input text and visual tokens instead of only using the input hidden state. MMoE also includes a general LoRA expert that is always activated to learn general knowledge for LLM reasoning. For extracting richer visual features, MMOE employs a set of vision experts trained on diverse domain-specific data. To demonstrate LEO-MINI's improved efficiency and performance, we evaluate it against existing efficient MLLMs on various benchmark vision-language tasks."
+  },
+  {
+    "paperId": "fff7d2efd071870db8b2e52fae3a2050ffb3588c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2512-21788",
+      "ArXiv": "2512.21788",
+      "DOI": "10.48550/arXiv.2512.21788",
+      "CorpusId": 284275275
+    },
+    "title": "InstructMoLE: Instruction-Guided Mixture of Low-rank Experts for Multi-Conditional Image Generation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.21788, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2196307128",
+        "name": "Jinqi Xiao"
+      },
+      {
+        "authorId": "2332700084",
+        "name": "Qing Yan"
+      },
+      {
+        "authorId": "2331690053",
+        "name": "Liming Jiang"
+      },
+      {
+        "authorId": "2308229493",
+        "name": "Zichuan Liu"
+      },
+      {
+        "authorId": "2351222789",
+        "name": "Hao Kang"
+      },
+      {
+        "authorId": "2313731540",
+        "name": "Shen Sang"
+      },
+      {
+        "authorId": "2331614761",
+        "name": "Tiancheng Zhi"
+      },
+      {
+        "authorId": "2153468093",
+        "name": "Jing Liu"
+      },
+      {
+        "authorId": "2279899528",
+        "name": "Chen Yang"
+      },
+      {
+        "authorId": "2401114514",
+        "name": "Xin Lu"
+      },
+      {
+        "authorId": "2345928616",
+        "name": "Bo Yuan"
+      }
+    ],
+    "abstract": "Parameter-Efficient Fine-Tuning of Diffusion Transformers (DiTs) for diverse, multi-conditional tasks often suffers from task interference when using monolithic adapters like LoRA. The Mixture of Low-rank Experts (MoLE) architecture offers a modular solution, but its potential is usually limited by routing policies that operate at a token level. Such local routing can conflict with the global nature of user instructions, leading to artifacts like spatial fragmentation and semantic drift in complex image generation tasks. To address these limitations, we introduce InstructMoLE, a novel framework that employs an Instruction-Guided Mixture of Low-Rank Experts. Instead of per-token routing, InstructMoLE utilizes a global routing signal, Instruction-Guided Routing (IGR), derived from the user's comprehensive instruction. This ensures that a single, coherently chosen expert council is applied uniformly across all input tokens, preserving the global semantics and structural integrity of the generation process. To complement this, we introduce an output-space orthogonality loss, which promotes expert functional diversity and mitigates representational collapse. Extensive experiments demonstrate that InstructMoLE significantly outperforms existing LoRA adapters and MoLE variants across challenging multi-conditional generation benchmarks. Our work presents a robust and generalizable framework for instruction-driven fine-tuning of generative models, enabling superior compositional control and fidelity to user intent."
+  },
+  {
+    "paperId": "656e997ccef0db210acf3f09df65b68fdc6641a9",
+    "externalIds": {
+      "DBLP": "conf/iclr/SwamyMBFJK25",
+      "ArXiv": "2402.02933",
+      "CorpusId": 270068062
+    },
+    "title": "Intrinsic User-Centric Interpretability through Global Mixture of Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.02933, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50822485",
+        "name": "Vinitra Swamy"
+      },
+      {
+        "authorId": "2261392096",
+        "name": "Syrielle Montariol"
+      },
+      {
+        "authorId": "2282532383",
+        "name": "Julian Blackwell"
+      },
+      {
+        "authorId": "35342746",
+        "name": "Jibril Frej"
+      },
+      {
+        "authorId": "2256984280",
+        "name": "Martin Jaggi"
+      },
+      {
+        "authorId": "2328280555",
+        "name": "Tanja Käser"
+      }
+    ],
+    "abstract": "In human-centric settings like education or healthcare, model accuracy and model explainability are key factors for user adoption. Towards these two goals, intrinsically interpretable deep learning models have gained popularity, focusing on accurate predictions alongside faithful explanations. However, there exists a gap in the human-centeredness of these approaches, which often produce nuanced and complex explanations that are not easily actionable for downstream users. We present InterpretCC (interpretable conditional computation), a family of intrinsically interpretable neural networks at a unique point in the design space that optimizes for ease of human understanding and explanation faithfulness, while maintaining comparable performance to state-of-the-art models. InterpretCC achieves this through adaptive sparse activation of features before prediction, allowing the model to use a different, minimal set of features for each instance. We extend this idea into an interpretable, global mixture-of-experts (MoE) model that allows users to specify topics of interest, discretely separates the feature space for each data point into topical subnetworks, and adaptively and sparsely activates these topical subnetworks for prediction. We apply InterpretCC for text, time series and tabular data across several real-world datasets, demonstrating comparable performance with non-interpretable baselines and outperforming intrinsically interpretable baselines. Through a user study involving 56 teachers, InterpretCC explanations are found to have higher actionability and usefulness over other intrinsically interpretable approaches."
+  },
+  {
+    "paperId": "2d4a853affeb0b164fc1134df612aea658f36459",
+    "externalIds": {
+      "ArXiv": "2312.12379",
+      "DBLP": "journals/corr/abs-2312-12379",
+      "DOI": "10.1109/TIP.2026.3678087",
+      "CorpusId": 266362594
+    },
+    "title": "Mixture of Cluster-Conditional LoRA Experts for Vision-Language Instruction Tuning",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2023,
+    "citationCount": 109,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.12379, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2132286026",
+        "name": "Yunhao Gou"
+      },
+      {
+        "authorId": "2261667816",
+        "name": "Zhili Liu"
+      },
+      {
+        "authorId": "2253440088",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "2269432206",
+        "name": "Lanqing Hong"
+      },
+      {
+        "authorId": "2257092965",
+        "name": "Hang Xu"
+      },
+      {
+        "authorId": "2258555980",
+        "name": "Aoxue Li"
+      },
+      {
+        "authorId": "66427434",
+        "name": "Dit-Yan Yeung"
+      },
+      {
+        "authorId": "2243335442",
+        "name": "James T. Kwok"
+      },
+      {
+        "authorId": "2276130589",
+        "name": "Yu Zhang"
+      }
+    ],
+    "abstract": "Instruction tuning of Large Vision-language Models (LVLMs) has revolutionized the development of versatile models with zero-shot generalization across a wide range of downstream vision-language tasks. However, the diversity of different training tasks from various sources and formats would lead to inevitable task conflicts, where different tasks conflict for the same set of model parameters, resulting in sub-optimal instruction-following abilities. To address that, we propose the Mixture of Cluster-conditional LoRA Experts (MoCLE), a novel Mixture of Experts (MoE) architecture designed to activate task-customized model parameters based on instruction clusters. A separate universal expert is further incorporated to improve generalization abilities of MoCLE for novel instructions. Extensive experiments on InstructBLIP and LLaVA demonstrate the effectiveness of MoCLE."
+  },
+  {
+    "paperId": "0790f66f56948017b66b4ee10279e35d641d9ba9",
+    "externalIds": {
+      "DBLP": "journals/tmlr/SkliarRLBBNWB25",
+      "ArXiv": "2412.00099",
+      "DOI": "10.48550/arXiv.2412.00099",
+      "CorpusId": 274436794
+    },
+    "title": "Mixture of Cache-Conditional Experts for Efficient Mobile Device Inference",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2024,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.00099, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "66777364",
+        "name": "Andrii Skliar"
+      },
+      {
+        "authorId": "1388073495",
+        "name": "T. V. Rozendaal"
+      },
+      {
+        "authorId": "66060212",
+        "name": "Romain Lepert"
+      },
+      {
+        "authorId": "2333357950",
+        "name": "Todor Boinovski"
+      },
+      {
+        "authorId": "147409784",
+        "name": "M. V. Baalen"
+      },
+      {
+        "authorId": "2307469363",
+        "name": "Markus Nagel"
+      },
+      {
+        "authorId": "2286297878",
+        "name": "Paul N. Whatmough"
+      },
+      {
+        "authorId": "2954103",
+        "name": "B. Bejnordi"
+      }
+    ],
+    "abstract": "Mixture of Experts (MoE) LLMs have recently gained attention for their ability to enhance performance by selectively engaging specialized subnetworks or\"experts\"for each input. However, deploying MoEs on memory-constrained devices remains challenging, particularly when generating tokens sequentially with a batch size of one, as opposed to typical high-throughput settings involving long sequences or large batches. In this work, we optimize MoE on memory-constrained devices where only a subset of expert weights fit in DRAM. We introduce a novel cache-aware routing strategy that leverages expert reuse during token generation to improve cache locality. We evaluate our approach on language modeling, MMLU, and GSM8K benchmarks and present on-device results demonstrating 2$\\times$ speedups on mobile devices, offering a flexible, training-free solution to extend MoE's applicability across real-world applications."
+  },
+  {
+    "paperId": "c814eb8684f2ce07a4f21a7ed4c06c75d63fea23",
+    "externalIds": {
+      "ArXiv": "2408.15901",
+      "DBLP": "journals/corr/abs-2408-15901",
+      "DOI": "10.48550/arXiv.2408.15901",
+      "CorpusId": 271974671
+    },
+    "title": "Nexus: Specialization meets Adaptability for Efficiently Training Mixture of Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.15901, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153302934",
+        "name": "Nikolas Gritsch"
+      },
+      {
+        "authorId": "2283437085",
+        "name": "Qizhen Zhang"
+      },
+      {
+        "authorId": "153563548",
+        "name": "Acyr F. Locatelli"
+      },
+      {
+        "authorId": "2261493078",
+        "name": "Sara Hooker"
+      },
+      {
+        "authorId": "82290814",
+        "name": "A. Ustun"
+      }
+    ],
+    "abstract": "Efficiency, specialization, and adaptability to new data distributions are qualities that are hard to combine in current Large Language Models. The Mixture of Experts (MoE) architecture has been the focus of significant research because its inherent conditional computation enables such desirable properties. In this work, we focus on\"upcycling\"dense expert models into an MoE, aiming to improve specialization while also adding the ability to adapt to new tasks easily. We introduce Nexus, an enhanced MoE architecture with adaptive routing where the model learns to project expert embeddings from domain representations. This approach allows Nexus to flexibly add new experts after the initial upcycling through separately trained dense models, without requiring large-scale MoE training for unseen data domains. Our experiments show that Nexus achieves a relative gain of up to 2.1% over the baseline for initial upcycling, and a 18.8% relative gain for extending the MoE with a new expert by using limited finetuning data. This flexibility of Nexus is crucial to enable an open-source ecosystem where every user continuously assembles their own MoE-mix according to their needs."
+  },
+  {
+    "paperId": "99888c4a5c54bf26cb2cb702eb2a195c86b5cf45",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-05540",
+      "ArXiv": "2412.05540",
+      "DOI": "10.48550/arXiv.2412.05540",
+      "CorpusId": 274597794
+    },
+    "title": "Towards 3D Acceleration for low-power Mixture-of-Experts and Multi-Head Attention Spiking Transformers",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.05540, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256588063",
+        "name": "Boxun Xu"
+      },
+      {
+        "authorId": "2330583867",
+        "name": "Junyoung Hwang"
+      },
+      {
+        "authorId": "2029348101",
+        "name": "Pruek Vanna-iampikul"
+      },
+      {
+        "authorId": "2261094546",
+        "name": "Yuxuan Yin"
+      },
+      {
+        "authorId": "2330377703",
+        "name": "S. Lim"
+      },
+      {
+        "authorId": "2255345254",
+        "name": "Peng Li"
+      }
+    ],
+    "abstract": "Spiking Neural Networks(SNNs) provide a brain-inspired and event-driven mechanism that is believed to be critical to unlock energy-efficient deep learning. The mixture-of-experts approach mirrors the parallel distributed processing of nervous systems, introducing conditional computation policies and expanding model capacity without scaling up the number of computational operations. Additionally, spiking mixture-of-experts self-attention mechanisms enhance representation capacity, effectively capturing diverse patterns of entities and dependencies between visual or linguistic tokens. However, there is currently a lack of hardware support for highly parallel distributed processing needed by spiking transformers, which embody a brain-inspired computation. This paper introduces the first 3D hardware architecture and design methodology for Mixture-of-Experts and Multi-Head Attention spiking transformers. By leveraging 3D integration with memory-on-logic and logic-on-logic stacking, we explore such brain-inspired accelerators with spatially stackable circuitry, demonstrating significant optimization of energy efficiency and latency compared to conventional 2D CMOS integration."
+  },
+  {
+    "paperId": "eee36971c307d7c9952d2da25e033bc107cf5b40",
+    "externalIds": {
+      "ArXiv": "2411.07834",
+      "DBLP": "journals/corr/abs-2411-07834",
+      "DOI": "10.48550/arXiv.2411.07834",
+      "CorpusId": 273969940
+    },
+    "title": "Towards Vision Mixture of Experts for Wildlife Monitoring on the Edge",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.07834, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2120794680",
+        "name": "Emmanuel Azuh Mensah"
+      },
+      {
+        "authorId": "2188867114",
+        "name": "Anderson Lee"
+      },
+      {
+        "authorId": "2290148643",
+        "name": "Haoran Zhang"
+      },
+      {
+        "authorId": "2143689293",
+        "name": "Yi Shan"
+      },
+      {
+        "authorId": "2469884",
+        "name": "Kurtis Heimerl"
+      }
+    ],
+    "abstract": "The explosion of IoT sensors in industrial, consumer and remote sensing use cases has come with unprecedented demand for computing infrastructure to transmit and to analyze petabytes of data. Concurrently, the world is slowly shifting its focus towards more sustainable computing. For these reasons, there has been a recent effort to reduce the footprint of related computing infrastructure, especially by deep learning algorithms, for advanced insight generation. The `TinyML' community is actively proposing methods to save communication bandwidth and excessive cloud storage costs while reducing algorithm inference latency and promoting data privacy. Such proposed approaches should ideally process multiple types of data, including time series, audio, satellite images, and video, near the network edge as multiple data streams has been shown to improve the discriminative ability of learning algorithms, especially for generating fine grained results. Incidentally, there has been recent work on data driven conditional computation of subnetworks that has shown real progress in using a single model to share parameters among very different types of inputs such as images and text, reducing the computation requirement of multi-tower multimodal networks. Inspired by such line of work, we explore similar per patch conditional computation for the first time for mobile vision transformers (vision only case), that will eventually be used for single-tower multimodal edge models. We evaluate the model on Cornell Sap Sucker Woods 60, a fine grained bird species discrimination dataset. Our initial experiments uses $4X$ fewer parameters compared to MobileViTV2-1.0 with a $1$% accuracy drop on the iNaturalist '21 birds test data provided as part of the SSW60 dataset."
+  },
+  {
+    "paperId": "f02d9cd70f3e6d53796a47c0b4efefd0a81f826f",
+    "externalIds": {
+      "ArXiv": "2305.03288",
+      "DBLP": "conf/nips/NguyenNH23",
+      "DOI": "10.52202/075280-0206",
+      "CorpusId": 258547231
+    },
+    "title": "Demystifying Softmax Gating Function in Gaussian Mixture of Experts",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.03288, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144810262",
+        "name": "Huy Nguyen"
+      },
+      {
+        "authorId": "1899270520",
+        "name": "TrungTin Nguyen"
+      },
+      {
+        "authorId": "3526349",
+        "name": "Nhat Ho"
+      }
+    ],
+    "abstract": "Understanding the parameter estimation of softmax gating Gaussian mixture of experts has remained a long-standing open problem in the literature. It is mainly due to three fundamental theoretical challenges associated with the softmax gating function: (i) the identifiability only up to the translation of parameters; (ii) the intrinsic interaction via partial differential equations between the softmax gating and the expert functions in the Gaussian density; (iii) the complex dependence between the numerator and denominator of the conditional density of softmax gating Gaussian mixture of experts. We resolve these challenges by proposing novel Voronoi loss functions among parameters and establishing the convergence rates of maximum likelihood estimator (MLE) for solving parameter estimation in these models. When the true number of experts is unknown and over-specified, our findings show a connection between the convergence rate of the MLE and a solvability problem of a system of polynomial equations."
+  },
+  {
+    "paperId": "6039c36d05dfd022f176362c799aaf347418a8bf",
+    "externalIds": {
+      "DBLP": "journals/wcl/TianHQZJF26",
+      "DOI": "10.1109/LWC.2025.3633574",
+      "CorpusId": 283136156
+    },
+    "title": "DiffMoECom: Diffusion Mixture of Experts for Channel-Adaptive Semantic Image Communications",
+    "venue": "IEEE Wireless Communications Letters",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/LWC.2025.3633574?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/LWC.2025.3633574, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2284765038",
+        "name": "Xiangdong Tian"
+      },
+      {
+        "authorId": "2338055776",
+        "name": "Danlan Huang"
+      },
+      {
+        "authorId": "2331665109",
+        "name": "Zhixin Qi"
+      },
+      {
+        "authorId": "2331369332",
+        "name": "Xinyi Zhou"
+      },
+      {
+        "authorId": "2309788433",
+        "name": "Ting Jiang"
+      },
+      {
+        "authorId": "2296472961",
+        "name": "Zhiyong Feng"
+      }
+    ],
+    "abstract": "This letter presents a novel generative semantic communications framework for wireless image transmission, designed to excel in dynamic channel conditions and at low signal-to-noise ratios (SNRs). The proposed framework, dubbed DiffMoECom (Diffusion Mixture-of-Experts Communications), leverages a Mixture-of-Experts (MoE) architecture integrated with prompt learning to dynamically select optimal channel adaptation strategies by activating the most relevant prompt experts. A Joint Source and Channel Coding (JSCC) backbone is employed to transmit the low-frequency components of the source image. Furthermore, we introduce a range-space inversion mechanism, which projects the coarse JSCC output into a noisy latent space. This facilitates faithful semantic reconstruction of high-frequency details through conditional diffusion-based null space compensation. Extensive experiments across various fading channels and SNR conditions demonstrate that our method consistently surpasses state-of-the-art DeepJSCC and generative approaches, achieving superior performance in distortion metrics with competitive inference efficiency."
+  },
+  {
+    "paperId": "3e9c5f265a813e6656d4c48ef36705c509a7a7c2",
+    "externalIds": {
+      "DOI": "10.3390/app16052417",
+      "CorpusId": 286270108
+    },
+    "title": "PhysGMM-MoE: A Physics-Aware GMM-Mixture-of-Experts Framework for Small-Sample Engine Fault Classification",
+    "venue": "Applied Sciences",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/app16052417?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/app16052417, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2358054466",
+        "name": "Qingang Xu"
+      },
+      {
+        "authorId": "2108987428",
+        "name": "Hongwei Wang"
+      },
+      {
+        "authorId": "2357856382",
+        "name": "Yunhang Wang"
+      },
+      {
+        "authorId": "2357853285",
+        "name": "Xicong Chen"
+      }
+    ],
+    "abstract": "Accurate engine fault classification with limited labeled data is critical for the safety and reliability of rotating machinery. This task is challenging because operating regimes are time-varying, and key variables must satisfy physical constraints, under which traditional feature classifier pipelines degrade and deep networks tend to overfit. We propose PhysGMM-MoE, a physics-aware Gaussian Mixture Model (GMM)-Mixture-of-Experts (MoE) framework for small-sample engine fault classification. At the data level, PhysGMM-MoE fits class-conditional, regime-aware GMMs and performs physically constrained, distance-based quality control to selectively augment minority classes while preserving engine operating semantics. At the model level, a heterogeneous pool of lightweight statistical experts and a lightweight Transformer-based deep expert (ECFT-Transformer) capture complementary neighborhood cues and high order multi-sensor correlations, and an L2-regularized logistic regression meta-learner fuses expert outputs via stacking. We evaluate fault classification on the 3500-DEFault diesel-engine dataset using the adopted eight-class cylinder-fault labeling (H, F1–F7) built from in-cylinder pressure statistics and torsional-vibration harmonics; although severity levels exist in the dataset, this study focuses on classification rather than severity estimation. With 40 training samples per class, PhysGMM-MoE achieves a mean accuracy of 0.9875, exceeding SMOTE+XGBoost by 0.0086, and attains the best macro precision/recall/F1 of 0.9878/0.9826/0.9889, demonstrating strong performance under the adopted small-sample setting."
+  },
+  {
+    "paperId": "2acf08ec145d6437c75c8609395f17fa7814e151",
+    "externalIds": {
+      "ArXiv": "2603.11114",
+      "CorpusId": 286488994
+    },
+    "title": "Task-Conditioned Routing Signatures in Sparse Mixture-of-Experts Transformers",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.11114, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2341526842",
+        "name": "M. Avinash"
+      }
+    ],
+    "abstract": "Sparse Mixture-of-Experts (MoE) architectures enable efficient scaling of large language models through conditional computation, yet the routing mechanisms responsible for expert selection remain poorly understood. In this work, we introduce routing signatures, a vector representation summarizing expert activation patterns across layers for a given prompt, and use them to study whether MoE routing exhibits task-conditioned structure. Using OLMoE-1B-7B-0125-Instruct as an empirical testbed, we show that prompts from the same task category induce highly similar routing signatures, while prompts from different categories exhibit substantially lower similarity. Within-category routing similarity (0.8435 +/- 0.0879) significantly exceeds across-category similarity (0.6225 +/- 0.1687), corresponding to Cohen's d = 1.44. A logistic regression classifier trained solely on routing signatures achieves 92.5% +/- 6.1% cross-validated accuracy on four-way task classification. To ensure statistical validity, we introduce permutation and load-balancing baselines and show that the observed separation is not explained by sparsity or balancing constraints alone. We further analyze layer-wise signal strength and low-dimensional projections of routing signatures, finding that task structure becomes increasingly apparent in deeper layers. These results suggest that routing in sparse transformers is not merely a balancing mechanism, but a measurable task-sensitive component of conditional computation. We release MOE-XRAY, a lightweight toolkit for routing telemetry and analysis."
+  },
+  {
+    "paperId": "c44f2cd09eaa10a4d8619488f5ded8db65dd594b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2601-15021",
+      "ArXiv": "2601.15021",
+      "DOI": "10.48550/arXiv.2601.15021",
+      "CorpusId": 284917376
+    },
+    "title": "Mixture-of-Experts Models in Vision: Routing, Optimization, and Generalization",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.15021, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2405888305",
+        "name": "Adam Rokah"
+      },
+      {
+        "authorId": "1999115899",
+        "name": "Daniel S. Veress"
+      },
+      {
+        "authorId": "2405886946",
+        "name": "Caleb Caulk"
+      },
+      {
+        "authorId": "2332349722",
+        "name": "S. Sharan"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures enable conditional computation by routing inputs to multiple expert subnetworks and are often motivated as a mechanism for scaling large language models. In this project, we instead study MoE behavior in an image classification setting, focusing on predictive performance, expert utilization, and generalization. We compare dense, SoftMoE, and SparseMoE classifier heads on the CIFAR10 dataset under comparable model capacity. Both MoE variants achieve slightly higher validation accuracy than the dense baseline while maintaining balanced expert utilization through regularization, avoiding expert collapse. To analyze generalization, we compute Hessian-based sharpness metrics at convergence, including the largest eigenvalue and trace of the loss Hessian, evaluated on both training and test data. We find that SoftMoE exhibits higher sharpness by these metrics, while Dense and SparseMoE lie in a similar curvature regime, despite all models achieving comparable generalization performance. Complementary loss surface perturbation analyses reveal qualitative differences in non-local behavior under finite parameter perturbations between dense and MoE models, which help contextualize curvature-based measurements without directly explaining validation accuracy. We further evaluate empirical inference efficiency and show that naively implemented conditional routing does not yield inference speedups on modern hardware at this scale, highlighting the gap between theoretical and realized efficiency in sparse MoE models."
+  },
+  {
+    "paperId": "1dbce654c9d0050c132e7fae8163ec1e046a3596",
+    "externalIds": {
+      "ArXiv": "2602.09258",
+      "DBLP": "journals/corr/abs-2602-09258",
+      "DOI": "10.48550/arXiv.2602.09258",
+      "CorpusId": 285462469
+    },
+    "title": "Generalizing GNNs with Tokenized Mixture of Experts",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.09258, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2408379349",
+        "name": "Xiaoguang Guo"
+      },
+      {
+        "authorId": "2284578810",
+        "name": "Zehong Wang"
+      },
+      {
+        "authorId": "2260817933",
+        "name": "Jiazheng Li"
+      },
+      {
+        "authorId": "2409928317",
+        "name": "Shawn Spitzel"
+      },
+      {
+        "authorId": "2408345682",
+        "name": "Qi Yang"
+      },
+      {
+        "authorId": "2261590627",
+        "name": "Kaize Ding"
+      },
+      {
+        "authorId": "2262510869",
+        "name": "Jundong Li"
+      },
+      {
+        "authorId": "2363113402",
+        "name": "Chuxu Zhang"
+      }
+    ],
+    "abstract": "Deployed graph neural networks (GNNs) are frozen at deployment yet must fit clean data, generalize under distribution shifts, and remain stable to perturbations. We show that static inference induces a fundamental tradeoff: improving stability requires reducing reliance on shift-sensitive features, leaving an irreducible worst-case generalization floor. Instance-conditional routing can break this ceiling, but is fragile because shifts can mislead routing and perturbations can make routing fluctuate. We capture these effects via two decompositions separating coverage vs selection, and base sensitivity vs fluctuation amplification. Based on these insights, we propose STEM-GNN, a pretrain-then-finetune framework with a mixture-of-experts encoder for diverse computation paths, a vector-quantized token interface to stabilize encoder-to-head signals, and a Lipschitz-regularized head to bound output amplification. Across nine node, link, and graph benchmarks, STEM-GNN achieves a stronger three-way balance, improving robustness to degree/homophily shifts and to feature/edge corruptions while remaining competitive on clean graphs."
+  },
+  {
+    "paperId": "063767dd2d293d34a4aad1b35dbe08154b0b5496",
+    "externalIds": {
+      "DBLP": "journals/itsm/HaoZWDG26",
+      "DOI": "10.1109/MITS.2025.3614710",
+      "CorpusId": 282259430
+    },
+    "title": "Spatiotemporal Graph Mixture of Experts for Highway Traffic Flow Prediction",
+    "venue": "IEEE Intelligent Transportation Systems Magazine",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/MITS.2025.3614710?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/MITS.2025.3614710, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2387882765",
+        "name": "Sheng Hao"
+      },
+      {
+        "authorId": "2290658021",
+        "name": "Xiangmo Zhao"
+      },
+      {
+        "authorId": "2347684132",
+        "name": "Jingcheng Wang"
+      },
+      {
+        "authorId": "22200602",
+        "name": "Xingyuan Dai"
+      },
+      {
+        "authorId": "2350147937",
+        "name": "Xiaoyan Gong"
+      }
+    ],
+    "abstract": "With excellent learning ability, the pretrained large model is challenging the mainstream traffic prediction paradigm. However, the pretraining process of large spatiotemporal models still faces the problems of high training cost and fixed graph size limitation, which hinders the practical application of more flexible prediction models in intelligent transportation systems. To address these challenges, this article proposes the Spatiotemporal Graph Mixture of Experts (STGMoE), a novel framework that integrates dynamic graph message passing with an MoE mechanism. The proposed STGMoE framework takes multivariate time-series data as input and enables efficient conditional computation and flexible topological adaptation, ultimately facilitating accurate spatiotemporal feature extraction for downstream traffic prediction tasks. Experiments on the California PeMS and Beijing datasets demonstrate that the model outperforms mainstream methods in fully supervised prediction and zero-shot prediction, validating its generalization capability in complex and dynamic traffic environments."
+  },
+  {
+    "paperId": "e483cb6a95db6a823614200bcad4e87a5865a36e",
+    "externalIds": {
+      "ArXiv": "2604.04908",
+      "CorpusId": 287202539
+    },
+    "title": "HI-MoE: Hierarchical Instance-Conditioned Mixture-of-Experts for Object Detection",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.04908, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3221112",
+        "name": "V. Vashkelis"
+      },
+      {
+        "authorId": "2381643394",
+        "name": "Natalia Trukhina"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures enable conditional computation by activating only a subset of model parameters for each input. Although sparse routing has been highly effective in language models and has also shown promise in vision, most vision MoE methods operate at the image or patch level. This granularity is poorly aligned with object detection, where the fundamental unit of reasoning is an object query corresponding to a candidate instance. We propose Hierarchical Instance-Conditioned Mixture-of-Experts (HI-MoE), a DETR-style detection architecture that performs routing in two stages: a lightweight scene router first selects a scene-consistent expert subset, and an instance router then assigns each object query to a small number of experts within that subset. This design aims to preserve sparse computation while better matching the heterogeneous, instance-centric structure of detection. In the current draft, experiments are concentrated on COCO with preliminary specialization analysis on LVIS. Under these settings, HI-MoE improves over a dense DINO baseline and over simpler token-level or instance-only routing variants, with especially strong gains on small objects. We also provide an initial visualization of expert specialization patterns. We present the method, ablations, and current limitations in a form intended to support further experimental validation."
+  },
+  {
+    "paperId": "d4b62dbd7e092638a3baf0b5b8decf92704c8a0a",
+    "externalIds": {
+      "ArXiv": "2602.07997",
+      "DBLP": "journals/corr/abs-2602-07997",
+      "DOI": "10.48550/arXiv.2602.07997",
+      "CorpusId": 285453205
+    },
+    "title": "Fast Model Selection and Stable Optimization for Softmax-Gated Multinomial-Logistic Mixture of Experts Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.07997, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2407151458",
+        "name": "T. Tran"
+      },
+      {
+        "authorId": "2273675699",
+        "name": "TrungTin Nguyen"
+      },
+      {
+        "authorId": "2330115455",
+        "name": "Md. Abul Bashar"
+      },
+      {
+        "authorId": "2362305482",
+        "name": "N. Ho"
+      },
+      {
+        "authorId": "2244724262",
+        "name": "Richi Nayak"
+      },
+      {
+        "authorId": "2362308015",
+        "name": "Christopher C. Drovandi"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures combine specialized predictors through a learned gate and are effective across regression and classification, but for classification with softmax multinomial-logistic gating, rigorous guarantees for stable maximum-likelihood training and principled model selection remain limited. We address both issues in the full-data (batch) regime. First, we derive a batch minorization-maximization (MM) algorithm for softmax-gated multinomial-logistic MoE using an explicit quadratic minorizer, yielding coordinate-wise closed-form updates that guarantee monotone ascent of the objective and global convergence to a stationary point (in the standard MM sense), avoiding approximate M-steps common in EM-type implementations. Second, we prove finite-sample rates for conditional density estimation and parameter recovery, and we adapt dendrograms of mixing measures to the classification setting to obtain a sweep-free selector of the number of experts that achieves near-parametric optimal rates after merging redundant fitted atoms. Experiments on biological protein--protein interaction prediction validate the full pipeline, delivering improved accuracy and better-calibrated probabilities than strong statistical and machine-learning baselines."
+  },
+  {
+    "paperId": "f0c6c94697ea78a780b505d5ba04c0d0f10888ac",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2601-11616",
+      "ArXiv": "2601.11616",
+      "DOI": "10.48550/arXiv.2601.11616",
+      "CorpusId": 284912278
+    },
+    "title": "Mixture-of-Experts as Soft Clustering: A Dual Jacobian-PCA Spectral Geometry Perspective",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.11616, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2352574321",
+        "name": "Feilong Liu"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures are widely used for efficiency and conditional computation, but their effect on the geometry of learned functions and representations remains poorly understood. We study MoEs through a geometric lens, interpreting routing as soft partitioning into overlapping expert-local charts. We introduce a Dual Jacobian-PCA spectral probe that analyzes local function geometry via Jacobian singular value spectra and representation geometry via weighted PCA of routed hidden states. Using a controlled MLP-MoE setting with exact Jacobian computation, we compare dense, Top-k, and fully soft routing under matched capacity. Across random seeds, MoE routing consistently reduces local sensitivity: expert-local Jacobians show smaller leading singular values and faster spectral decay than dense baselines. Weighted PCA reveals that expert-local representations distribute variance across more principal directions, indicating higher effective rank. We further observe low alignment among expert Jacobians, suggesting decomposition into low-overlap expert-specific transformations. Routing sharpness modulates these effects: Top-k routing yields more concentrated, lower-rank expert structure, while fully soft routing produces broader, higher-rank representations. Experiments on a 3-layer transformer with WikiText confirm curvature reduction on natural language and show lower cross-expert alignment for Top-k routing. These findings support interpreting MoEs as soft partitionings of function space that flatten local curvature while redistributing representation variance, yielding testable predictions for expert scaling, hallucination reduction, and ensemble diversity."
+  },
+  {
+    "paperId": "ae0f03571042ad9e492ed43cd82781a96cf2f25d",
+    "externalIds": {
+      "ArXiv": "2302.14703",
+      "DBLP": "journals/corr/abs-2302-14703",
+      "DOI": "10.48550/arXiv.2302.14703",
+      "CorpusId": 257232540
+    },
+    "title": "Improving Expert Specialization in Mixture of Experts",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.14703",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.14703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2756087",
+        "name": "Yamuna Krishnamurthy"
+      },
+      {
+        "authorId": "2065449255",
+        "name": "C. Watkins"
+      },
+      {
+        "authorId": "2059125011",
+        "name": "Thomas Gaertner"
+      }
+    ],
+    "abstract": "Mixture of experts (MoE), introduced over 20 years ago, is the simplest gated modular neural network architecture. There is renewed interest in MoE because the conditional computation allows only parts of the network to be used during each inference, as was recently demonstrated in large scale natural language processing models. MoE is also of potential interest for continual learning, as experts may be reused for new tasks, and new experts introduced. The gate in the MoE architecture learns task decompositions and individual experts learn simpler functions appropriate to the gate's decomposition. In this paper: (1) we show that the original MoE architecture and its training method do not guarantee intuitive task decompositions and good expert utilization, indeed they can fail spectacularly even for simple data such as MNIST and FashionMNIST; (2) we introduce a novel gating architecture, similar to attention, that improves performance and results in a lower entropy task decomposition; and (3) we introduce a novel data-driven regularization that improves expert specialization. We empirically validate our methods on MNIST, FashionMNIST and CIFAR-100 datasets."
+  },
+  {
+    "paperId": "74fa0bd6aa84a523afef7b7612fae2d6e0cf8c56",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2601-14797",
+      "ArXiv": "2601.14797",
+      "DOI": "10.48550/arXiv.2601.14797",
+      "CorpusId": 284917691
+    },
+    "title": "UniRoute: Unified Routing Mixture-of-Experts for Modality-Adaptive Remote Sensing Change Detection",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.14797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2309955750",
+        "name": "Qing-Ling Shu"
+      },
+      {
+        "authorId": "2370797548",
+        "name": "Sibao Chen"
+      },
+      {
+        "authorId": "2322593644",
+        "name": "Wei Lu"
+      },
+      {
+        "authorId": "2174899656",
+        "name": "Zhi-Hui You"
+      },
+      {
+        "authorId": "2406488162",
+        "name": "Chengzhuang Liu"
+      }
+    ],
+    "abstract": "Current remote sensing change detection (CD) methods mainly rely on specialized models, which limits the scalability toward modality-adaptive Earth observation. For homogeneous CD, precise boundary delineation relies on fine-grained spatial cues and local pixel interactions, whereas heterogeneous CD instead requires broader contextual information to suppress speckle noise and geometric distortions. Moreover, difference operator (e.g., subtraction) works well for aligned homogeneous images but introduces artifacts in cross-modal or geometrically misaligned scenarios. Across different modality settings, specialized models based on static backbones or fixed difference operations often prove insufficient. To address this challenge, we propose UniRoute, a unified framework for modality-adaptive learning by reformulating feature extraction and fusion as conditional routing problems. We introduce an Adaptive Receptive Field Routing MoE (AR2-MoE) module to disentangle local spatial details from global semantic context, and a Modality-Aware Difference Routing MoE (MDR-MoE) module to adaptively select the most suitable fusion primitive at each pixel. In addition, we propose a Consistency-Aware Self-Distillation (CASD) strategy that stabilizes unified training under data-scarce heterogeneous settings by enforcing multi-level consistency. Extensive experiments on five public datasets demonstrate that UniRoute achieves strong overall performance, with a favorable accuracy-efficiency trade-off under a unified deployment setting."
+  },
+  {
+    "paperId": "893faa70f4ea5ebb3b2c1978bf28388fbc513e40",
+    "externalIds": {
+      "DOI": "10.1080/10920277.2021.2013896",
+      "CorpusId": 233766721
+    },
+    "title": "Fitting Censored and Truncated Regression Data Using the Mixture of Experts Models",
+    "venue": "Social Science Research Network",
+    "year": 2022,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1080/10920277.2021.2013896?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/10920277.2021.2013896, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1741100719",
+        "name": "Tsz Chai Fung"
+      },
+      {
+        "authorId": "3313297",
+        "name": "A. Badescu"
+      },
+      {
+        "authorId": "2411465490",
+        "name": "Xiaodong Lin"
+      }
+    ],
+    "abstract": "The logit-weighted reduced mixture of experts model (LRMoE) is a flexible yet analytically tractable non-linear regression model. Though it has shown usefulness in modeling insurance loss frequencies and severities, model calibration becomes challenging when censored and truncated data are involved, which is common in actuarial practice. In this article, we present an extended expectation–conditional maximization (ECM) algorithm that efficiently fits the LRMoE to random censored and random truncated regression data. The effectiveness of the proposed algorithm is empirically examined through a simulation study. Using real automobile insurance data sets, the usefulness and importance of the proposed algorithm are demonstrated through two actuarial applications: individual claim reserving and deductible ratemaking."
+  },
+  {
+    "paperId": "70f136afc8b409406001dea7cf49224f378edb83",
+    "externalIds": {
+      "ArXiv": "2408.16429",
+      "DBLP": "journals/corr/abs-2408-16429",
+      "DOI": "10.48550/arXiv.2408.16429",
+      "CorpusId": 272146276
+    },
+    "title": "Gradient-free variational learning with conditional mixture networks",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.16429, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2075155698",
+        "name": "Conor Heins"
+      },
+      {
+        "authorId": "2303839221",
+        "name": "Hao Wu"
+      },
+      {
+        "authorId": "2267240546",
+        "name": "Dimitrije Markovic"
+      },
+      {
+        "authorId": "1391776846",
+        "name": "Alexander Tschantz"
+      },
+      {
+        "authorId": "2317984433",
+        "name": "Jeff Beck"
+      },
+      {
+        "authorId": "2267243501",
+        "name": "Christopher L. Buckley"
+      }
+    ],
+    "abstract": "Balancing computational efficiency with robust predictive performance is crucial in supervised learning, especially for critical applications. Standard deep learning models, while accurate and scalable, often lack probabilistic features like calibrated predictions and uncertainty quantification. Bayesian methods address these issues but can be computationally expensive as model and data complexity increase. Previous work shows that fast variational methods can reduce the compute requirements of Bayesian methods by eliminating the need for gradient computation or sampling, but are often limited to simple models. We introduce CAVI-CMN, a fast, gradient-free variational method for training conditional mixture networks (CMNs), a probabilistic variant of the mixture-of-experts (MoE) model. CMNs are composed of linear experts and a softmax gating network. By exploiting conditional conjugacy and P\\'olya-Gamma augmentation, we furnish Gaussian likelihoods for the weights of both the linear layers and the gating network. This enables efficient variational updates using coordinate ascent variational inference (CAVI), avoiding traditional gradient-based optimization. We validate this approach by training two-layer CMNs on standard classification benchmarks from the UCI repository. CAVI-CMN achieves competitive and often superior predictive accuracy compared to maximum likelihood estimation (MLE) with backpropagation, while maintaining competitive runtime and full posterior distributions over all model parameters. Moreover, as input size or the number of experts increases, computation time scales competitively with MLE and other gradient-based solutions like black-box variational inference (BBVI), making CAVI-CMN a promising tool for deep, fast, and gradient-free Bayesian networks."
+  },
+  {
+    "paperId": "83f2656487f05a5677a8b7711b0c1963cb49a02d",
+    "externalIds": {
+      "ArXiv": "2410.21086",
+      "DBLP": "journals/corr/abs-2410-21086",
+      "DOI": "10.48550/arXiv.2410.21086",
+      "CorpusId": 273654091
+    },
+    "title": "Efficient Mixture-of-Expert for Video-based Driver State and Physiological Multi-task Estimation in Conditional Autonomous Driving",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.21086, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2142934779",
+        "name": "Jiyao Wang"
+      },
+      {
+        "authorId": "2301070840",
+        "name": "Xiao Yang"
+      },
+      {
+        "authorId": "2318912574",
+        "name": "Zhenyu Wang"
+      },
+      {
+        "authorId": "2313181177",
+        "name": "Ximeng Wei"
+      },
+      {
+        "authorId": "2276015757",
+        "name": "Ange Wang"
+      },
+      {
+        "authorId": "2291477834",
+        "name": "Dengbo He"
+      },
+      {
+        "authorId": "2300340294",
+        "name": "Kaishun Wu"
+      }
+    ],
+    "abstract": "Road safety remains a critical challenge worldwide, with approximately 1.35 million fatalities annually attributed to traffic accidents, often due to human errors. As we advance towards higher levels of vehicle automation, challenges still exist, as driving with automation can cognitively over-demand drivers if they engage in non-driving-related tasks (NDRTs), or lead to drowsiness if driving was the sole task. This calls for the urgent need for an effective Driver Monitoring System (DMS) that can evaluate cognitive load and drowsiness in SAE Level-2/3 autonomous driving contexts. In this study, we propose a novel multi-task DMS, termed VDMoE, which leverages RGB video input to monitor driver states non-invasively. By utilizing key facial features to minimize computational load and integrating remote Photoplethysmography (rPPG) for physiological insights, our approach enhances detection accuracy while maintaining efficiency. Additionally, we optimize the Mixture-of-Experts (MoE) framework to accommodate multi-modal inputs and improve performance across different tasks. A novel prior-inclusive regularization method is introduced to align model outputs with statistical priors, thus accelerating convergence and mitigating overfitting risks. We validate our method with the creation of a new dataset (MCDD), which comprises RGB video and physiological indicators from 42 participants, and two public datasets. Our findings demonstrate the effectiveness of VDMoE in monitoring driver states, contributing to safer autonomous driving systems. The code and data will be released."
+  },
+  {
+    "paperId": "797a70fc5cdb2bd69fd8f1491aa8155327518a9f",
+    "externalIds": {
+      "ArXiv": "2209.15212",
+      "CorpusId": 252668745
+    },
+    "title": "A Posteriori Risk Classification and Ratemaking with Random Effects in the Mixture-of-Experts Model",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.15212, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2087589682",
+        "name": "Spark C. Tseung"
+      },
+      {
+        "authorId": "2186740852",
+        "name": "I. Chan"
+      },
+      {
+        "authorId": "1741100719",
+        "name": "Tsz Chai Fung"
+      },
+      {
+        "authorId": "3313297",
+        "name": "A. Badescu"
+      },
+      {
+        "authorId": "2218041428",
+        "name": "X. Lin"
+      }
+    ],
+    "abstract": "A well-designed framework for risk classification and ratemaking in automobile insurance is key to insurers' profitability and risk management, while also ensuring that policyholders are charged a fair premium according to their risk profile. In this paper, we propose to adapt a flexible regression model, called the Mixed LRMoE, to the problem of a posteriori risk classification and ratemaking, where policyholder-level random effects are incorporated to better infer their risk profile reflected by the claim history. We also develop a stochastic variational Expectation-Conditional-Maximization algorithm for estimating model parameters and inferring the posterior distribution of random effects, which is numerically efficient and scalable to large insurance portfolios. We then apply the Mixed LRMoE model to a real, multiyear automobile insurance dataset, where the proposed framework is shown to offer better fit to data and produce posterior premium which accurately reflects policyholders' claim history."
+  },
+  {
+    "paperId": "3667e707ea4b5ca594b66830d3f0c90876ec11ed",
+    "externalIds": {
+      "DBLP": "journals/technometrics/MunezeroVK23",
+      "ArXiv": "2109.11449",
+      "DOI": "10.1080/00401706.2022.2146755",
+      "CorpusId": 237605408
+    },
+    "title": "Dynamic Mixture of Experts Models for Online Prediction",
+    "venue": "Technometrics",
+    "year": 2021,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2109.11449",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.11449, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "79764811",
+        "name": "Parfait Munezero"
+      },
+      {
+        "authorId": "1764448",
+        "name": "M. Villani"
+      },
+      {
+        "authorId": "144402257",
+        "name": "R. Kohn"
+      }
+    ],
+    "abstract": "Abstract A mixture of experts models the conditional density of a response variable using a mixture of regression models with covariate-dependent mixture weights. We extend the finite mixture of experts model by allowing the parameters in both the mixture components and the weights to evolve in time by following random walk processes. Inference for time-varying parameters in richly parameterized mixture of experts models is challenging. We propose a sequential Monte Carlo algorithm for online inference based on a tailored proposal distribution built on ideas from linear Bayes methods and the EM algorithm. The method gives a unified treatment for mixtures with time-varying parameters, including the special case of static parameters. We assess the properties of the method on simulated data and on industrial data where the aim is to predict software faults in a continuously upgraded large-scale software project."
+  },
+  {
+    "paperId": "0edf0e47fa643a478c4560e0d8df79a1c23a36a6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-07535",
+      "ArXiv": "2108.07535",
+      "CorpusId": 237142462
+    },
+    "title": "SPMoE: Generate Multiple Pattern-Aware Outputs with Sparse Pattern Mixture of Experts",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.07535, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49569784",
+        "name": "Shaobo Cui"
+      },
+      {
+        "authorId": "19245984",
+        "name": "Xintong Bao"
+      },
+      {
+        "authorId": "32168879",
+        "name": "Xuming Lin"
+      },
+      {
+        "authorId": "41019706",
+        "name": "Zhongzhou Zhao"
+      },
+      {
+        "authorId": "2116921824",
+        "name": "Ji Zhang"
+      },
+      {
+        "authorId": "101829183",
+        "name": "Wei Zhou"
+      },
+      {
+        "authorId": "2765043",
+        "name": "Haiqing Chen"
+      }
+    ],
+    "abstract": "Many generation tasks follow a one-to-many mapping relationship: each input could be associated with multiple outputs. Existing methods like Conditional Variational AutoEncoder(CVAE) employ a latent variable to model this one-to-many relationship. However, this high-dimensional and dense latent variable lacks explainability and usually leads to poor and uncontrollable generations. In this paper, we innovatively introduce the linguistic concept of pattern to decompose the one-to-many mapping into multiple one-to-one mappings and further propose a model named Sparse Pattern Mixture of Experts(SPMoE). Each one-to-one mapping is associated with a conditional generation pattern and is modeled with an expert in SPMoE. To ensure each language pattern can be exclusively handled with an expert model for better explainability and diversity, a sparse mechanism is employed to coordinate all the expert models in SPMoE. We assess the performance of our SPMoE on the paraphrase generation task and the experiment results prove that SPMoE can achieve a good balance in terms of quality, pattern-level diversity, and corpus-level diversity."
+  }
+]

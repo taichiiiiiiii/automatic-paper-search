@@ -247,7 +247,10 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
     data = _s2_get(url) or {}
     items = []
     inner_key = "citedPaper" if kind == "references" else "citingPaper"
-    for entry in data.get("data", []):
+    # `or []` not just default arg: S2 occasionally returns {"data": null}
+    # for papers whose neighbour list is empty — `.get("data", [])` would
+    # then yield None and crash the loop.
+    for entry in data.get("data") or []:
         p = entry.get(inner_key)
         if p and p.get("paperId") and p.get("title"):
             items.append(p)
