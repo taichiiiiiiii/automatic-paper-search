@@ -120,7 +120,10 @@ automatic-paper-search/
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
     │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json
-    │   └── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
+    │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
+    │   ├── build_theme_lineage.py       # テーマ文字列 + S2 + LLM → docs/themes/<slug>/lineage.json
+    │   ├── generate_deep_manifest.py    # docs/<conf>/deep-*.json → deep-manifest.json
+    │   └── generate_themes_manifest.py  # docs/themes/<slug>/lineage.json → themes-manifest.json
     ├── models/
     │   └── paper.py                     # Paper データクラス
     ├── utils/
@@ -452,6 +455,15 @@ output/<conf>/papers_YYYY-MM-DD.csv
              │                        テンプレで補完、弱いエッジも残す）
              ▼
            docs/<conf>/deep.html   （tree-only の 1 本集中ビュー）
+
+[テーマ文字列] → build_theme_lineage.py → docs/themes/<slug>/lineage.json
+                  - keyword_expand → S2 /paper/search → top-N seeds
+                  - 各 seed から BFS depth-N（祖先方向）
+                  - AbstractLLMProvider で関係分類
+generate_themes_manifest.py → docs/themes/themes-manifest.json
+                  ▼
+           docs/themes/index.html   （テーマピッカー + 年軸 chronological tree、
+                                     Y 軸 rank-based 等間隔）
 ```
 
 関係種別（LLM 分類出力）: `supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated` （`unrelated` はエッジから除外）。
@@ -485,6 +497,13 @@ output/<conf>/papers_YYYY-MM-DD.csv
 12. **`paperpilot/scripts/` はパイプライン出力（`output/<conf>/papers_YYYY-MM-DD.csv`）のみを入力源とする。スクリプト側で arXiv / S2 を再クロールして venue / citation / authors を再取得しない（Stage 2 の成果物を信頼する）**
     - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
+14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
+    - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
+    - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。
+    - **出力 path は `theme_slug()` の戻り値のみで構成**。生 `--theme` 文字列を `Path()` 構築に渡してはならない（path traversal 防止）。
+    - **`docs/themes/<slug>/lineage.json` のスキーマは conference 版 `lineage.json` と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.source = "build_theme_lineage.py"`、`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を含む。
+    - **`docs/themes/themes-manifest.json` は `generate_themes_manifest.py` のみが生成**。`build_theme_lineage.py` 内では生成しない（並列実行時の race 回避）。マニフェスト生成時に `rel` 値が許可 enum (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に該当しないテーマは skip する（cache poisoning 抑止）。
+    - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。並列書込の race は既存問題で、別 issue で対処予定。
 
 ---
 
