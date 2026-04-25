@@ -83,3 +83,131 @@ def test_expand_keywords_provider_returns_invalid_json():
 
 def test_expand_keywords_empty_input():
     assert expand_keywords([], provider=None, max_expansions=5) == []
+
+
+# --------------------------- Error / edge paths ----------------------------
+
+
+def test_expand_keywords_provider_raises_returns_original():
+    """If _call_provider raises, we Fail-Safe to the input list."""
+    def _boom(*_args, **_kwargs):
+        raise RuntimeError("LLM exploded")
+
+    with patch("paperpilot.utils.keyword_expand._call_provider", side_effect=_boom):
+        out = expand_keywords(
+            keywords=["rag"],
+            provider=SimpleNamespace(name="fake", enabled=True),
+            max_expansions=5,
+        )
+    assert out == ["rag"]
+
+
+def test_expand_keywords_empty_llm_response_returns_original():
+    """LLM returning None (or empty string) is treated as no expansion."""
+    with patch("paperpilot.utils.keyword_expand._call_provider", return_value=None):
+        out = expand_keywords(
+            keywords=["rag"],
+            provider=SimpleNamespace(name="fake", enabled=True),
+            max_expansions=5,
+        )
+    assert out == ["rag"]
+
+
+def test_expand_keywords_json_non_list_returns_original():
+    """parse_llm_response yielding a dict (not a list) is rejected cleanly."""
+    with patch(
+        "paperpilot.utils.keyword_expand._call_provider",
+        return_value='{"not": "a list"}',
+    ):
+        out = expand_keywords(
+            keywords=["rag"],
+            provider=SimpleNamespace(name="fake", enabled=True),
+            max_expansions=5,
+        )
+    assert out == ["rag"]
+
+
+def test_expand_keywords_skips_non_string_and_empty_items():
+    """Non-string items and whitespace-only strings in the LLM list are dropped."""
+    # Mix: valid string, int, None, empty string, whitespace, duplicate, valid
+    response = '["retrieval", 42, null, "", "   ", "retrieval", "dense"]'
+    with patch("paperpilot.utils.keyword_expand._call_provider", return_value=response):
+        out = expand_keywords(
+            keywords=["rag"],
+            provider=SimpleNamespace(name="fake", enabled=True),
+            max_expansions=10,
+        )
+    assert out == ["rag", "retrieval", "dense"]
+
+
+# --------------------------- _call_provider ---------------------------------
+
+
+def test_call_provider_uses_chat_first():
+    """_call_provider prefers `_chat` when present."""
+    from paperpilot.utils.keyword_expand import _call_provider
+
+    class _P:
+        def _chat(self, system: str, user: str) -> str:
+            assert "同義語" in system  # system prompt reached the provider
+            assert "rag" in user
+            return '["retrieval"]'
+
+    assert _call_provider(_P(), ["rag"], "AI") == '["retrieval"]'
+
+
+def test_call_provider_falls_through_to_messages():
+    """If `_chat` is missing, `_messages` is tried next."""
+    from paperpilot.utils.keyword_expand import _call_provider
+
+    class _P:
+        def _messages(self, system: str, user: str) -> str:
+            return '["x"]'
+
+    assert _call_provider(_P(), ["rag"], "AI") == '["x"]'
+
+
+def test_call_provider_falls_through_to_generate():
+    """If `_chat` and `_messages` are missing, `_generate` is tried."""
+    from paperpilot.utils.keyword_expand import _call_provider
+
+    class _P:
+        def _generate(self, system: str, user: str) -> str:
+            return '["y"]'
+
+    assert _call_provider(_P(), ["rag"], "AI") == '["y"]'
+
+
+def test_call_provider_returns_none_when_no_method():
+    """If provider exposes none of _chat/_messages/_generate, bail out."""
+    from paperpilot.utils.keyword_expand import _call_provider
+
+    class _P:
+        pass  # no chat-like method at all
+
+    assert _call_provider(_P(), ["rag"], "AI") is None
+
+
+def test_call_provider_skips_method_with_wrong_signature():
+    """A method whose signature rejects (system, user) is skipped, not crashed on."""
+    from paperpilot.utils.keyword_expand import _call_provider
+
+    class _P:
+        def _chat(self):  # wrong signature — takes no args beyond self
+            return "nope"
+
+        def _messages(self, system: str, user: str) -> str:
+            return '["ok"]'
+
+    assert _call_provider(_P(), ["rag"], "AI") == '["ok"]'
+
+
+def test_call_provider_accepts_none_return():
+    """A method that returns None is considered a valid (empty) answer."""
+    from paperpilot.utils.keyword_expand import _call_provider
+
+    class _P:
+        def _chat(self, system: str, user: str) -> None:
+            return None
+
+    assert _call_provider(_P(), ["rag"], "AI") is None

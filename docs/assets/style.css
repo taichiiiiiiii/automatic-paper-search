@@ -7,6 +7,7 @@
   --color-surface: oklch(98% 0.006 80);
   --color-surface-2: oklch(96% 0.008 80);
   --color-surface-elevated: oklch(99.5% 0.004 80);
+  --color-bg: oklch(99% 0.004 80);             /* page background ~= surface, for contrast against --color-ink */
   --color-rule: oklch(85% 0.012 80);
   --color-rule-strong: oklch(72% 0.02 80);
 
@@ -94,8 +95,42 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-size: clamp(1rem, 0.92rem + 0.4vw, 1.18rem);
   color: var(--color-ink-muted);
   line-height: 1.55;
-  margin: 0 0 2.5rem;
+  margin: 0 0 1rem;
 }
+
+.hero__modes {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  counter-reset: mode;
+}
+.hero__modes li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.5rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  counter-increment: mode;
+}
+.hero__modes li::before {
+  content: counter(mode) ".";
+  font-weight: 600;
+  color: var(--color-ink-subtle);
+  margin-right: 0.1rem;
+}
+.hero__modes li strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.hero__mode-icon { font-size: 0.95rem; line-height: 1; }
 
 .stat-row {
   display: flex;
@@ -418,8 +453,14 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   border-color: var(--color-ink);
 }
 .hero__note {
-  opacity: 0.6;
+  max-width: 70ch;
+  margin: 0 0 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--color-ink-subtle);
+  line-height: 1.7;
 }
+.hero__note strong { color: var(--color-ink-muted); font-weight: 500; }
 
 :root {
   --rel-supersedes: oklch(55% 0.14 75);   /* deep gold — dominant inheritance */
@@ -458,6 +499,31 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   color: var(--color-bg);
   border-color: var(--color-ink);
 }
+
+.deep-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+}
+.deep-picker__select {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  max-width: 28rem;
+  cursor: pointer;
+}
+.deep-picker__select:focus-visible {
+  outline: 2px solid var(--color-accent, var(--color-ink));
+  outline-offset: 1px;
+}
+.deep-picker[hidden] { display: none !important; }
 
 .lineage-search {
   position: relative;
@@ -556,6 +622,8 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 .chip__dot--ablation   { background: var(--rel-ablation); }
 .chip__dot--baseline   { background: var(--rel-baseline); }
 .chip__dot--contrasts  { background: var(--rel-contrasts); }
+
+.legend[hidden], .lineage-toolbar__group[hidden] { display: none !important; }
 
 .legend {
   display: flex;
@@ -990,4 +1058,318 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   color: var(--color-ink);
   border-color: var(--color-ink-muted);
   background: oklch(98% 0.002 270);
+}
+
+/* ---------- Topics layout (cluster gallery) ---------- */
+
+.lineage-crumb {
+  padding: 0.5rem var(--space-edge);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-ink-muted);
+  background: var(--color-surface-alt, oklch(98% 0.005 270));
+  border-bottom: 1px solid var(--color-rule);
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.lineage-crumb[hidden] { display: none; }
+.lineage-crumb__link {
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  border: 0;
+  border-bottom: 1px dashed transparent;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.lineage-crumb__link:hover {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-ink-muted);
+}
+.lineage-crumb__sep { opacity: 0.5; }
+.lineage-crumb__current {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.topics-gallery {
+  padding: 1.5rem var(--space-edge) 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.topics-gallery__intro {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  margin: 0;
+  padding-bottom: 0.5rem;
+}
+
+.topics-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.topics-cluster__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 0.4rem;
+}
+
+.topics-cluster__label {
+  font-family: var(--font-serif, Newsreader, serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--color-ink);
+}
+
+.topics-cluster__subtitle {
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+  font-style: normal;
+  margin-left: 0.15rem;
+}
+
+.topics-cluster__count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-muted);
+  padding: 0.15rem 0.5rem;
+  background: var(--color-surface-2);
+  border-radius: 3px;
+}
+
+.topics-cluster__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.topics-card {
+  position: relative;
+  text-align: left;
+  background: var(--color-surface, white);
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+  padding: 0.9rem 1rem 2rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+  font: inherit;
+  color: inherit;
+}
+.topics-card::after {
+  content: "系譜を見る →";
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-ink-muted);
+  opacity: 0;
+  transition: opacity 120ms ease, transform 120ms ease;
+  transform: translateX(-4px);
+}
+.topics-card:hover {
+  border-color: var(--color-ink);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px oklch(20% 0 0 / 0.06);
+}
+.topics-card:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--color-ink);
+}
+.topics-card:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.topics-card__title {
+  font-size: 0.95rem;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.topics-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-ink-muted);
+}
+.topics-card__meta > span {
+  padding: 0.12rem 0.45rem;
+  background: var(--color-tag-bg);
+  color: var(--color-tag-ink);
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+}
+
+.topics-card__authors {
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  font-style: italic;
+}
+
+.topics-card__tldr {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.topics-gallery .empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-ink-muted);
+}
+
+/* ---------- Deep lineage viewer: richer node cards ---------- */
+
+.node-card--deep {
+  min-height: 160px;
+  padding: 0.75rem 0.9rem;
+}
+
+.node-card--deep .node-card__title {
+  font-size: 0.95rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--color-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.node-card--deep .node-card__tldr {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--color-ink-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.node-card--deep .node-card__meta {
+  display: flex;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-ink-muted);
+}
+
+.node-card__cit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+
+
+/* ---------- Theme lineage viewer: chronological tree ---------- */
+
+/* Theme picker shares deep-picker visual style; apply same selectors. */
+#theme-picker.deep-picker__select {
+  max-width: 22rem;
+}
+
+.theme-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-ink-muted);
+}
+
+.theme-meta__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--color-bg-soft, var(--color-bg));
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.year-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  fill: var(--color-ink);
+  dominant-baseline: middle;
+}
+.year-label--unknown {
+  fill: var(--color-ink-muted);
+  font-style: italic;
+}
+
+.year-tick {
+  stroke: var(--color-rule);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+  opacity: 0.6;
+}
+
+.chrono-axis text {
+  pointer-events: none;
+}
+
+/* Theme nodes: slightly more compact than deep cards (no TLDR) so the
+   chronological grid stays scannable across many year rows. */
+.node-card--theme {
+  min-height: 116px;
+  padding: 0.6rem 0.75rem;
+}
+
+.node-card--theme .node-card__title {
+  font-size: 0.9rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--color-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.node-card--theme .node-card__authors {
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: var(--color-ink-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.node-card--theme .node-card__meta {
+  display: flex;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-ink-muted);
+  margin-top: 0.25rem;
 }

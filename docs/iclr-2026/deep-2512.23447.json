@@ -1,0 +1,108 @@
+{
+  "root": "1c0fa60913a15bdc6106f451cd835be943692ce4",
+  "nodes": [
+    {
+      "id": "1c0fa60913a15bdc6106f451cd835be943692ce4",
+      "title": "Coupling Experts and Routers in Mixture-of-Experts via an Auxiliary Loss",
+      "year": 2025,
+      "venue": "ICLR 2026",
+      "venue_tier": "A+",
+      "authors": [
+        "Ang Lv",
+        "Jin Ma",
+        "Yiyuan Ma",
+        "Siyuan Qiao"
+      ],
+      "kinds": [
+        "focus"
+      ],
+      "citation_count": 3,
+      "github_stars": 0,
+      "tldr": "Mixture-of-Experts (MoE) models lack explicit constraints to ensure the router's decisions align well with the experts'capabilities, which…",
+      "is_focus": true
+    },
+    {
+      "id": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+      "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+      "year": 2017,
+      "venue": "International Conference on Learning Representations",
+      "venue_tier": "A+",
+      "authors": [
+        "Noam Shazeer",
+        "Azalia Mirhoseini",
+        "Krzysztof Maziarz",
+        "Andy Davis",
+        "Quoc V. Le"
+      ],
+      "kinds": [],
+      "citation_count": 4314,
+      "github_stars": 0,
+      "tldr": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the…"
+    },
+    {
+      "id": "5e58e6371a6d34b887162ba3f34da1266deac02f",
+      "title": "Symbiotic-MoE: Unlocking the Synergy between Generation and Understanding",
+      "year": 2026,
+      "venue": "arXiv",
+      "venue_tier": "preprint",
+      "authors": [
+        "Xiangyue Liu",
+        "Zijian Zhang",
+        "Miles Yang",
+        "Zhao Zhong",
+        "Liefeng Bo"
+      ],
+      "kinds": [],
+      "citation_count": 0,
+      "github_stars": 0,
+      "tldr": "Empowering Large Multimodal Models (LMMs) with image generation often leads to catastrophic forgetting in understanding tasks due to…"
+    },
+    {
+      "id": "3b5e9c898d266545579c93eeaea5055be8d3bbe4",
+      "title": "MoE Routing Testbed: Studying Expert Specialization and Routing Behavior at Small Scale",
+      "year": 2026,
+      "venue": "arXiv",
+      "venue_tier": "preprint",
+      "authors": [
+        "T. Falke",
+        "Nicolas Anastassacos",
+        "Samson Tan",
+        "Chankrisna Richy Meas",
+        "C. Prakash"
+      ],
+      "kinds": [],
+      "citation_count": 0,
+      "github_stars": 0,
+      "tldr": "Sparse Mixture-of-Experts (MoE) architectures are increasingly popular for frontier large language models (LLM) but they introduce…"
+    }
+  ],
+  "edges": [
+    {
+      "src": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+      "dst": "1c0fa60913a15bdc6106f451cd835be943692ce4",
+      "rel": "successor",
+      "conf": 0.8,
+      "rationale": "ペーパーBはペーパーAのMixture-of-Expertsのアイデアを改良・拡張しています。"
+    },
+    {
+      "src": "1c0fa60913a15bdc6106f451cd835be943692ce4",
+      "dst": "5e58e6371a6d34b887162ba3f34da1266deac02f",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文Bは論文AのMixture-of-Expertsの枠組みを拡張し、異なるタスク間での協調を改善しようとしている。"
+    },
+    {
+      "src": "1c0fa60913a15bdc6106f451cd835be943692ce4",
+      "dst": "3b5e9c898d266545579c93eeaea5055be8d3bbe4",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文Bは論文Aの研究ラインを、小規模でのルーティングの挙動を研究することで引き継いでいる。"
+    }
+  ],
+  "meta": {
+    "source": "build_deep_lineage.py",
+    "arxiv_id": "2512.23447",
+    "depth": 1,
+    "generated_at": "2026-04-22T17:02:13Z"
+  }
+}

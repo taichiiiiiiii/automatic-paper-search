@@ -124,6 +124,35 @@ python paperpilot/scripts/build_lineage.py --conference iclr-2026            # �
 
 `build_lineage.py` は `PAPERPILOT_GROQ_API_KEY` を優先し、無ければ `PAPERPILOT_GEMINI_API_KEY` にフォールバックします。1 Oral 論文あたり最大 30 件の引用関係を分類するため、無料枠を考えると Groq 推奨です。
 
+### テーマで時系列家系図を生成（任意）
+
+学会単位ではなく **任意の研究テーマ**（例: `Mixture of Experts`, `RAG`, `Direct Preference Optimization`）から、時系列を Y 軸にした家系図を生成できます。出力は `docs/themes/<slug>/lineage.json` に置かれ、`docs/themes/index.html` のピッカーから切り替えられます。
+
+```bash
+# 1. テーマから家系図 JSON を生成（CLI 事前生成、再実行は cache 経由で高速）
+uv run python -m paperpilot.scripts.build_theme_lineage \
+    --theme "Mixture of Experts" --depth 2 --seeds 8
+
+uv run python -m paperpilot.scripts.build_theme_lineage \
+    --theme "Direct Preference Optimization" --depth 2 --seeds 8
+
+# 2. ピッカー用マニフェストを再生成
+uv run python -m paperpilot.scripts.generate_themes_manifest \
+    --themes-dir docs/themes
+```
+
+主なフラグ:
+
+| フラグ | 既定 | 説明 |
+|---|---|---|
+| `--theme STR` | (必須) | 自由文字列。500 字以内、制御文字は除去される |
+| `--depth N` | 2 | 各 seed から祖先方向の BFS 深さ |
+| `--seeds N` | 8 | テーマ検索結果から焦点とする論文数 |
+| `--width N` | 8 | 1 hop あたり保持する親論文数（cost 制御） |
+| `--since-year YYYY` | なし | この年以降の論文のみ採用 |
+
+ビューアは Y 軸が「年（rank-based 等間隔: 出現年だけが等間隔で並ぶ）」、X 軸が引用数順の chronological tree です。エッジ色は `supersedes / successor / extends / ablation / baseline / contrasts` の関係種別ごとに分かれます。
+
 ## 設定（`paperpilot/config.yaml`）
 
 ```yaml
@@ -224,7 +253,8 @@ automatic-paper-search/
     ├── signals/            # venue / citation / author / github / keyword / follow
     ├── exporters/          # CSV / JSON / Slack / Email
     ├── llm/                # Ollama / Gemini / Claude / Groq
-    ├── scripts/            # build_summary_csv / build_pages / build_lineage / sync_to_sheets
+    ├── scripts/            # build_summary_csv / build_pages / build_lineage{,_deep,_theme} /
+    │                       # generate_{deep,themes}_manifest / sync_to_sheets
     ├── models/paper.py     # 論文データモデル
     ├── utils/              # config_loader, dedup, http, rate_limiter, logger
     ├── data/               # seen_ids.json, run_history.jsonl, lineage-cache/

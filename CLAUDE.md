@@ -119,7 +119,11 @@ automatic-paper-search/
     ├── scripts/                         # ビューア生成スクリプト（補助ツール群）
     │   ├── build_summary_csv.py         # full CSV → summary.csv (8 列 + 自動タグ)
     │   ├── build_pages.py               # summary.csv → docs/<conf>/papers.json
-    │   └── build_lineage.py             # papers.json + S2 + LLM → lineage.json
+    │   ├── build_lineage.py             # papers.json + S2 + LLM → lineage.json
+    │   ├── build_deep_lineage.py        # 1 論文 × N hop BFS → docs/<conf>/deep.json
+    │   ├── build_theme_lineage.py       # テーマ文字列 + S2 + LLM → docs/themes/<slug>/lineage.json
+    │   ├── generate_deep_manifest.py    # docs/<conf>/deep-*.json → deep-manifest.json
+    │   └── generate_themes_manifest.py  # docs/themes/<slug>/lineage.json → themes-manifest.json
     ├── models/
     │   └── paper.py                     # Paper データクラス
     ├── utils/
@@ -215,15 +219,133 @@ PAPERPILOT_SMTP_*            # Email 通知
 
 ---
 
-## 開発ワークフロー（TDD 必須）
+## 開発ワークフロー（プランレビュー → TDD → PR レビュー）
 
-**この順序を守ること。**
+**この順序を守ること。** 実装/レビューのタイミングで手戻りコストが 10〜100 倍変わる。
 
-1. **RED** — 先に `paperpilot/tests/test_<module>.py` を書き、テストが失敗することを確認
-2. **GREEN** — 最小の実装でテストを通す
+### フェーズ 0: 調査 (Research & Reuse)
+
+`gh search repos` / `gh search code` → Context7 でライブラリ docs → npm/PyPI/crates.io レジストリ → 最後に Exa。既存実装が 80% 以上をカバーするなら採用を優先。
+
+### フェーズ 1: プラン作成
+
+`planner` エージェントで以下を生成:
+- 変更ファイル一覧と見積もり行数
+- タスク分解（`TaskCreate` で追跡可能な粒度）
+- テスト計画（RED/GREEN、モック戦略、カバレッジ目標）
+- 依存・リスクの明示
+
+### フェーズ 1.5: プランレビュー（★ 着手前に必須 ★）
+
+**コードを書く前にプランを並列レビュー**。実装後の手戻りよりコストが桁違いに安い。
+
+走らせるエージェント（並列）:
+
+| エージェント | 観点 |
+|---|---|
+| `architect` | システム設計整合性、スケーラビリティ、拡張性 |
+| `code-architect` | 既存パターン遵守、ブループリントの現実性 |
+| `code-explorer` | 類似/重複機能の既存確認、再利用ポイント |
+| `security-reviewer` | 設計段階で混入しやすい脅威 |
+
+チェック 10 項目:
+1. 絶対ルール §1〜§13 に反していないか
+2. Stage インターフェース（入出力の型）を崩していないか
+3. スコアリング正規化式・重みを無断で変えていないか
+4. API キーが `.env` 分離か
+5. プラグインは基底クラス継承設計か
+6. Fail-Safe（外部 API 障害時の継続性）が設計に入っているか
+7. テスト計画の粒度・モック戦略・カバレッジ目標
+8. CLAUDE.md / 設計書 / README の同時更新計画
+9. `code-explorer` で既存実装と重複していないか確認済みか
+10. PR 1 本で完結するか、分割すべきか
+
+対応方針:
+- **CRITICAL / HIGH** → プランを修正して再レビュー（プラン段階ループ）
+- **MEDIUM** → プランに注記して TDD 開始、該当箇所で再確認
+- **LOW** → そのまま進行、後段レビューで拾う
+
+**ユーザー判断を仰ぐ**: "GO / プラン再作成 / スコープ縮小" のいずれか。
+
+### フェーズ 2: TDD 実装
+
+**強制サイクル**:
+
+1. **RED** — `paperpilot/tests/test_<module>.py` を先に書き、失敗を確認
+2. **GREEN** — 最小実装でテストを通す
 3. **REFACTOR** — 設計原則に沿って整える
 4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 97%）
-5. **コミット** — `develop` ブランチへ push、メインブランチはリリース時のみ
+
+独立した複数モジュールは専門エージェント（`source-agent` / `signal-agent` / `exporter-agent`）を並列起動。
+
+### フェーズ 3: コードレビュー（commit 前）
+
+commit する前に複数レビューアを **並列で** 起動:
+
+```
+code-reviewer        (一般品質・パターン)
+python-reviewer      (PEP 8 / mypy / pythonic)
+typescript-reviewer  (JS / TS、フロントエンド変更時)
+security-reviewer    (OWASP Top 10 / secrets)
+```
+
+対応方針:
+- **CRITICAL / HIGH** → commit 前に必ず修正
+- **MEDIUM** → できる範囲で修正、残りはフェーズ 7 で issue 化
+- **LOW** → 基本 issue 化（即時修正しない）
+
+### フェーズ 4: イテレーティブ修正
+
+CRITICAL / HIGH がゼロに収束するまで再レビュー → 修正を繰り返す。実績: 2〜6 イテレーションで収束。
+
+### フェーズ 5: commit & push
+
+Conventional Commits 形式で `closes #N` を含める:
+
+```bash
+git commit -m "<type>(<scope>): <subject> (closes #N)"
+git push
+```
+
+`type`: `feat` / `fix` / `refactor` / `docs` / `test` / `chore` / `perf` / `ci`
+
+### フェーズ 6: PR 前最終チェック
+
+`paperpilot-reviewer` で 10 項目判定（**全変更で MUST BE USED**）。
+
+### フェーズ 7: 残項目を issue 化
+
+フェーズ 3 / 6 で「ブロッキングではないが望ましい」と判定された項目を **バッチ投入**。[Issue 作成ワークフロー](#issue-作成ワークフロー) に従う。
+
+### フェーズ 8: PR 作成・CI・merge
+
+`develop` へ PR → CI（test / ruff / mypy）→ merge。merge 後は bug 発生時のみ再レビュー。
+
+### 全体タイミング図
+
+```
+[Research]
+    ↓
+[Plan]                     agent: planner
+    ↓
+[★ プランレビュー ★]       agents: architect / code-architect /
+    ↓        ↑                     code-explorer / security-reviewer
+    ├────────┘ findings > 0 なら再プラン
+    ↓
+[TDD: RED → GREEN → IMPROVE]
+    ↓
+[コードレビュー] ──────→   agents: code / python / ts / security
+    ↓        ↑
+    ├────────┘ ゼロ収束まで
+    ↓
+[commit (closes #N)]
+    ↓
+[paperpilot-reviewer 最終] 10 項目判定
+    ↓
+[残項目を issue 化]        バッチで gh issue create
+    ↓
+[PR → CI → merge]
+```
 
 ### テスト実行
 
@@ -319,13 +441,29 @@ output/<conf>/papers_YYYY-MM-DD.csv
   │
   └─ build_pages.py         → docs/<conf>/papers.json（一覧ビュー用）
        │
-       └─ build_lineage.py  → docs/<conf>/lineage.json
-            │                  - S2 から references/citations を取得
-            │                  - AbstractLLMProvider で関係種別を分類
-            │                  - lineage-cache/ にキャッシュして再開可能
-            │
-            ▼
-       docs/<conf>/lineage.html   （家系図 SVG レンダリング）
+       ├─ build_lineage.py        → docs/<conf>/lineage.json
+       │     │                      - Oral 全 N 本 × depth 1 の浅い家系図集
+       │     │                      - S2 から references/citations 取得
+       │     │                      - AbstractLLMProvider で関係分類
+       │     │                      - lineage-cache/ にキャッシュして再開可能
+       │     ▼
+       │   docs/<conf>/lineage.html   （Topics/家系図/時系列の 3 モード切替）
+       │
+       └─ build_deep_lineage.py   → docs/<conf>/deep.json
+             │                      - 1 本 × depth N の BFS（祖先・子孫）
+             │                      - lenient classifier（rationale 空のときは
+             │                        テンプレで補完、弱いエッジも残す）
+             ▼
+           docs/<conf>/deep.html   （tree-only の 1 本集中ビュー）
+
+[テーマ文字列] → build_theme_lineage.py → docs/themes/<slug>/lineage.json
+                  - keyword_expand → S2 /paper/search → top-N seeds
+                  - 各 seed から BFS depth-N（祖先方向）
+                  - AbstractLLMProvider で関係分類
+generate_themes_manifest.py → docs/themes/themes-manifest.json
+                  ▼
+           docs/themes/index.html   （テーマピッカー + 年軸 chronological tree、
+                                     Y 軸 rank-based 等間隔）
 ```
 
 関係種別（LLM 分類出力）: `supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated` （`unrelated` はエッジから除外）。
@@ -357,7 +495,15 @@ output/<conf>/papers_YYYY-MM-DD.csv
 10. **Slack / Email 通知は webhook・SMTP 未設定時に no-op（pipeline を失敗させない）**
 11. **`paperpilot/scripts/` の LLM 呼び出しは `AbstractLLMProvider` を経由する。`urllib` / `requests` で Groq・Gemini・Claude を直叩きしない（二重実装を避ける）**
 12. **`paperpilot/scripts/` はパイプライン出力（`output/<conf>/papers_YYYY-MM-DD.csv`）のみを入力源とする。スクリプト側で arXiv / S2 を再クロールして venue / citation / authors を再取得しない（Stage 2 の成果物を信頼する）**
+    - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
+14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
+    - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
+    - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。
+    - **出力 path は `theme_slug()` の戻り値のみで構成**。生 `--theme` 文字列を `Path()` 構築に渡してはならない（path traversal 防止）。
+    - **`docs/themes/<slug>/lineage.json` のスキーマは conference 版 `lineage.json` と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.source = "build_theme_lineage.py"`、`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を含む。
+    - **`docs/themes/themes-manifest.json` は `generate_themes_manifest.py` のみが生成**。`build_theme_lineage.py` 内では生成しない（並列実行時の race 回避）。マニフェスト生成時に `rel` 値が許可 enum (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に該当しないテーマは skip する（cache poisoning 抑止）。
+    - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。並列書込の race は既存問題で、別 issue で対処予定。
 
 ---
 
@@ -379,6 +525,77 @@ output/<conf>/papers_YYYY-MM-DD.csv
 
 `.github/workflows/*.yml` を push するには PAT に **`workflow` scope が必要**。
 PAT 更新手順: <https://github.com/settings/tokens> → 既存 PAT を編集 → `workflow` にチェック。
+
+---
+
+## Issue 作成ワークフロー
+
+レビュー（プランレビュー / コードレビュー / paperpilot-reviewer）で検出された「ブロッキングではないが望ましい」項目を issue 化する標準手順。過去実績: 13 件を 23 分でバッチ投入 (#20〜#32)。
+
+### Step 1. 1 issue = 1 問題 に分解
+
+関連が強い複数指摘でも、別 issue に分けて本文でクロスリンク（`#21 の続き`）。
+
+### Step 2. タイトル
+
+`[<カテゴリ>] <日本語サマリ>` 形式。
+
+| 接頭辞 | GitHub ラベル |
+|---|---|
+| `[bug]` | `bug` |
+| `[docs]` | `documentation` |
+| `[refactor]` / `[consistency]` / `[lint]` | `refactor` |
+| `[tests]` / `[test-quality]` | `test` |
+| `[typing]` | `typing` |
+| `[scripts]` / `[spec-gap]` | `enhancement` |
+| `[infrastructure]` | `infrastructure` (blocked 時は `help wanted` 併用) |
+
+### Step 3. 本文テンプレート（5 セクション・順序厳守）
+
+```markdown
+## 概要
+（1-2 段落。何が起きていて、なぜ問題か）
+
+## 背景
+（該当 CLAUDE.md §N / 設計書 §N / 過去 incident を引用）
+
+## 該当
+（file:line とコードスニペット）
+
+## 提案 / あるべき記述
+（具体的な修正方針、before/after コード例）
+
+## タスク
+- [ ] 具体的アクション 1
+- [ ] 必要ならテスト追加
+- [ ] 必要ならドキュメント更新
+```
+
+### Step 4. 投入
+
+```bash
+gh issue create \
+  --title "[refactor] foo を bar に統一" \
+  --label "refactor" \
+  --body "$(cat <<'EOF'
+## 概要
+...
+EOF
+)"
+```
+
+関連 issue 群は **数分以内に連続投入** する。
+
+### Step 5. 解決時のコミット
+
+`closes #N` 節を含める:
+
+```
+fix(typing): resolve 7 mypy errors across scripts/ and tests/ (closes #32)
+refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
+```
+
+複数まとめて閉じる場合: `fix: resolve issues #1-#7, #10, #13, #15, #16`
 
 ---
 
@@ -472,4 +689,4 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-*最終更新：2026年4月21日（Groq Provider / classify_relation 抽象を追加、家系図ビューを週次 CI に統合、`paperpilot/scripts/*` に smoke test を追加）*
+*最終更新：2026年4月23日（deep viewer に `?arxiv=` URL パラメータ対応 / `generate_deep_manifest.py` を追加 / 絶対ルール §12 に家系図構築の例外条項を追記）*
