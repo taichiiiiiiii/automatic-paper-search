@@ -22,6 +22,7 @@ const RELATION_LABEL_JA = {
 
 const STORAGE_KEY = "pp.lineage.prefs";
 const DEFAULT_RELATIONS = ["supersedes", "successor", "extends", "ablation", "contrasts"];
+const VALID_LAYOUTS = new Set(["tree", "timeline", "topics"]);
 
 function loadPrefs() {
   try {
@@ -43,8 +44,12 @@ function savePrefs() {
 const prefs = loadPrefs();
 const state = {
   data: null,
-  layout: prefs?.layout === "timeline" ? "timeline" : "tree",
+  // Default to Topics on first visit — it gives immediate bird's-eye context
+  // (which subfields dominate Oral?) before asking the user to pick a paper
+  // to center the tree on.
+  layout: VALID_LAYOUTS.has(prefs?.layout) ? prefs.layout : "topics",
   focusId: null,
+  currentCluster: null,
   visibleRelations: new Set(
     Array.isArray(prefs?.visibleRelations) && prefs.visibleRelations.length > 0
       ? prefs.visibleRelations.filter((r) => ALL_RELATIONS.includes(r))
@@ -60,9 +65,53 @@ const els = {
   ttRationale: document.getElementById("tt-rationale"),
   ttConf: document.getElementById("tt-conf"),
   filterBar: document.getElementById("relation-filter"),
+  crumb: document.getElementById("lineage-crumb"),
+  legend: document.querySelector(".legend"),
+  footerHint: document.getElementById("footer-hint"),
 };
 
+// Copy surfaced in the footer per-mode — tells the user what clicking does.
+const FOOTER_HINT = {
+  topics: "カードをクリック → その論文の家系図に遷移",
+  tree: "カードをクリック → その論文を中心に家系図を再描画",
+  timeline: "カードをクリック → 家系図モードでその論文にフォーカス",
+};
+
+// Japanese subtitles for common primary-tag cluster labels. Falls through to
+// an empty string when unknown so the label stays on its own (not "LLM — ")
+// and so adding new kinds at Stage 2 doesn't need a JS change.
+const CLUSTER_SUBTITLE = {
+  LLM: "大規模言語モデル",
+  Vision: "コンピュータビジョン",
+  VLM: "視覚-言語モデル",
+  MLLM: "マルチモーダル LLM",
+  Diffusion: "拡散モデル",
+  RL: "強化学習",
+  SSL: "自己教師あり学習",
+  Transformer: "Transformer 系アーキテクチャ",
+  MoE: "Mixture of Experts",
+  Medical: "医療応用",
+  TimeSeries: "時系列",
+  Theory: "理論",
+  Optim: "最適化",
+  Eval: "評価・ベンチマーク",
+  uncategorized: "未分類",
+};
+
+function clusterForFocus(id) {
+  for (const c of state.data?.clusters || []) {
+    if (c.focus_ids.includes(id)) return c;
+  }
+  return null;
+}
+
 async function init() {
+  // Bind sync controls immediately so aria-pressed + click handlers reflect
+  // the restored state.layout before the data-load await — otherwise the
+  // hardcoded HTML `aria-pressed` flashes wrong when prefs = "topics".
+  bindLayoutButtons();
+  bindCrumb();
+
   els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state" id="loading-msg">データ読み込み中...</p>`);
   state.data = await loadLineage();
   const loadingMsg = document.getElementById("loading-msg");
@@ -88,7 +137,6 @@ async function init() {
   const known = new Set(state.data.nodes.map((n) => n.id));
   state.focusId = requested && known.has(requested) ? requested : state.data.root;
 
-  bindLayoutButtons();
   bindRootButton();
   bindSearch();
   renderFilterChips();
@@ -107,19 +155,17 @@ async function init() {
 function bindRootButton() {
   const btn = document.getElementById("btn-root");
   if (!btn) return;
-  btn.addEventListener("click", () => focusPaper(state.data.root));
+  btn.addEventListener("click", () => {
+    focusPaper(state.data.root);
+    // Ensures "home" always lands in the tree view — otherwise clicking it
+    // from Topics/Timeline would just update state.focusId invisibly.
+    if (state.layout !== "tree") setLayout("tree");
+  });
 }
 
 function bindLayoutButtons() {
   for (const btn of document.querySelectorAll(".layout-btn[data-layout]")) {
-    btn.addEventListener("click", () => {
-      state.layout = btn.dataset.layout;
-      for (const b of document.querySelectorAll(".layout-btn[data-layout]")) {
-        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
-      }
-      savePrefs();
-      render();
-    });
+    btn.addEventListener("click", () => setLayout(btn.dataset.layout));
     btn.setAttribute("aria-pressed", btn.dataset.layout === state.layout ? "true" : "false");
   }
 }
@@ -206,6 +252,9 @@ function bindSearch() {
     if (!btn) return;
     const id = btn.dataset.id;
     focusPaper(id);
+    // Same rationale as bindRootButton — a search action that doesn't
+    // change what the user sees would feel broken.
+    if (state.layout !== "tree") setLayout("tree");
     input.value = "";
     results.classList.remove("is-open");
   });
@@ -248,6 +297,14 @@ function scrollToFocus(smooth) {
 }
 
 function render() {
+  applyModeUI();
+  renderCrumb();
+  if (state.layout === "topics") {
+    renderTopicsGallery();
+    return;
+  }
+  // SVG layouts (tree / timeline) share the canvas; topics view replaces it.
+  restoreCanvasForSvg();
   const { nodes, edges } = state.data;
   const visibleEdges = edges.filter((e) => state.visibleRelations.has(e.rel));
 
@@ -256,6 +313,172 @@ function render() {
     : layoutTimeline(nodes);
 
   drawSvg(positioned, visibleEdges);
+}
+
+// Show/hide chrome that only makes sense for specific layouts. Keeps the
+// screen quieter in topics mode where edges + relation filters don't apply.
+function applyModeUI() {
+  const isGraph = state.layout === "tree" || state.layout === "timeline";
+  if (els.legend) els.legend.hidden = !isGraph;
+  if (els.filterBar) els.filterBar.hidden = !isGraph;
+  if (els.footerHint) els.footerHint.textContent = FOOTER_HINT[state.layout] || "";
+}
+
+function restoreCanvasForSvg() {
+  const gallery = els.canvas.querySelector(".topics-gallery");
+  if (gallery) gallery.remove();
+  if (els.svg) els.svg.style.display = "";
+}
+
+function renderCrumb() {
+  if (!els.crumb) return;
+  const clusters = state.data?.clusters || [];
+  // No clusters data → keep crumb hidden (back-compat with older lineage.json).
+  if (clusters.length === 0) {
+    els.crumb.hidden = true;
+    els.crumb.innerHTML = "";
+    return;
+  }
+  // Hide in modes that don't center on a single focus:
+  // - topics: shows the gallery itself
+  // - timeline: shows all nodes chronologically (no "current focus")
+  if (state.layout === "topics" || state.layout === "timeline") {
+    els.crumb.hidden = true;
+    els.crumb.innerHTML = "";
+    return;
+  }
+  const cluster = state.currentCluster
+    ? clusters.find((c) => c.id === state.currentCluster)
+    : clusterForFocus(state.focusId);
+  if (!cluster) {
+    els.crumb.hidden = true;
+    els.crumb.innerHTML = "";
+    return;
+  }
+  const focusNode = state.data.nodes.find((n) => n.id === state.focusId);
+  const titleFragment = focusNode
+    ? `<span class="lineage-crumb__sep">/</span><span class="lineage-crumb__current">${escapeHtml(
+        focusNode.title.slice(0, 80)
+      )}</span>`
+    : "";
+  els.crumb.hidden = false;
+  els.crumb.innerHTML = `
+    <button type="button" class="lineage-crumb__link" data-action="topics">🗂️ トピック</button>
+    <span class="lineage-crumb__sep">/</span>
+    <button type="button" class="lineage-crumb__link" data-action="cluster" data-cluster="${escapeHtml(cluster.id)}">${escapeHtml(cluster.label)}</button>
+    ${titleFragment}
+  `;
+}
+
+// Event delegation — bound once from init() so re-renders never accumulate
+// listeners on stale DOM nodes.
+function bindCrumb() {
+  if (!els.crumb) return;
+  els.crumb.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn || !els.crumb.contains(btn)) return;
+    if (btn.dataset.action === "topics") {
+      state.currentCluster = null;
+      setLayout("topics");
+    } else if (btn.dataset.action === "cluster") {
+      state.currentCluster = btn.dataset.cluster || null;
+      setLayout("topics");
+    }
+  });
+}
+
+function setLayout(layout) {
+  if (!VALID_LAYOUTS.has(layout) || state.layout === layout) return;
+  state.layout = layout;
+  for (const b of document.querySelectorAll(".layout-btn[data-layout]")) {
+    b.setAttribute("aria-pressed", b.dataset.layout === layout ? "true" : "false");
+  }
+  savePrefs();
+  render();
+}
+
+// ---------------- Topics layout (cluster gallery) ----------------
+
+function renderTopicsGallery() {
+  if (els.svg) els.svg.style.display = "none";
+  els.canvas.querySelector(".topics-gallery")?.remove();
+
+  const clusters = state.data?.clusters || [];
+  const gallery = document.createElement("div");
+  gallery.className = "topics-gallery";
+
+  if (clusters.length === 0) {
+    gallery.innerHTML = `<p class="empty-state">クラスタ情報がありません。lineage.json を再生成してください。</p>`;
+    els.canvas.appendChild(gallery);
+    return;
+  }
+
+  const totalPapers = clusters.reduce((s, c) => s + c.focus_ids.length, 0);
+  const intro = document.createElement("p");
+  intro.className = "topics-gallery__intro";
+  intro.textContent = `${clusters.length} サブフィールド · Oral 採択 ${totalPapers} 本を primary tag でグループ化。カードをクリックすると家系図に切り替わります。`;
+  gallery.appendChild(intro);
+
+  const nodesById = new Map(state.data.nodes.map((n) => [n.id, n]));
+  for (const cluster of clusters) {
+    const section = document.createElement("section");
+    section.className = "topics-cluster";
+    section.setAttribute("data-cluster-id", cluster.id);
+
+    const head = document.createElement("div");
+    head.className = "topics-cluster__head";
+    const subtitle = CLUSTER_SUBTITLE[cluster.label] || "";
+    const subtitleHtml = subtitle
+      ? `<span class="topics-cluster__subtitle">${escapeHtml(subtitle)}</span>`
+      : "";
+    head.innerHTML = `
+      <h2 class="topics-cluster__label">${escapeHtml(cluster.label)}</h2>
+      ${subtitleHtml}
+      <span class="topics-cluster__count">${cluster.focus_ids.length} 件</span>
+    `;
+    section.appendChild(head);
+
+    const grid = document.createElement("div");
+    grid.className = "topics-cluster__grid";
+    for (const fid of cluster.focus_ids) {
+      const n = nodesById.get(fid);
+      if (!n) continue;
+      grid.appendChild(buildTopicsCard(n, cluster.id));
+    }
+    section.appendChild(grid);
+    gallery.appendChild(section);
+  }
+  els.canvas.appendChild(gallery);
+}
+
+function buildTopicsCard(node, clusterId) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "topics-card";
+  btn.setAttribute("data-focus-id", node.id);
+
+  const authors =
+    (node.authors || []).slice(0, 3).join(", ") +
+    ((node.authors || []).length > 3 ? ` +${node.authors.length - 3}` : "");
+  const kinds = (node.kinds || [])
+    .slice(0, 4)
+    .map((k) => `<span>#${escapeHtml(k)}</span>`)
+    .join("");
+  const starStr = formatStars(node.github_stars);
+  const stars = starStr ? `<span>⭐${starStr}</span>` : "";
+
+  btn.innerHTML = `
+    <div class="topics-card__title">${escapeHtml(node.title || "")}</div>
+    <div class="topics-card__authors">${escapeHtml(authors)}</div>
+    <div class="topics-card__tldr">${escapeHtml(node.tldr || "")}</div>
+    <div class="topics-card__meta">${kinds}${stars}</div>
+  `;
+  btn.addEventListener("click", () => {
+    state.currentCluster = clusterId;
+    focusPaper(node.id);
+    setLayout("tree");
+  });
+  return btn;
 }
 
 // ---------------- Tree layout with pruning + grouping ----------------

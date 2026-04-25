@@ -105,7 +105,7 @@ class GroqProvider(AbstractLLMProvider):
 
     # ---- helpers ----
 
-    def _chat(self, system: str, user: str, *, json_mode: bool) -> str | None:
+    def _chat(self, system: str, user: str, *, json_mode: bool = False) -> str | None:
         body: dict = {
             "model": self.model,
             "messages": [

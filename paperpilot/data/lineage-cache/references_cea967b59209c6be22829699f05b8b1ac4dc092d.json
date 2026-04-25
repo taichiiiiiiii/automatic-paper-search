@@ -1,0 +1,1365 @@
+[
+  {
+    "paperId": "6122c95ac6475e965bf4e120f7a588d29bb00ecc",
+    "externalIds": {
+      "MAG": "2949089960",
+      "ArXiv": "1409.1257",
+      "DBLP": "conf/ssst/Pouget-AbadieBM14",
+      "ACL": "W14-4009",
+      "DOI": "10.3115/v1/W14-4009",
+      "CorpusId": 353451
+    },
+    "title": "Overcoming the Curse of Sentence Length for Neural Machine Translation using Automatic Segmentation",
+    "venue": "SSST@EMNLP",
+    "year": 2014,
+    "citationCount": 84,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/W14-4009.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.1257, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1403025868",
+        "name": "Jean Pouget-Abadie"
+      },
+      {
+        "authorId": "3335364",
+        "name": "Dzmitry Bahdanau"
+      },
+      {
+        "authorId": "3158246",
+        "name": "B. V. Merrienboer"
+      },
+      {
+        "authorId": "1979489",
+        "name": "Kyunghyun Cho"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "The authors of (Cho et al., 2014a) have shown that the recently introduced neural network translation systems suffer from a significant drop in translation quality when translating long sentences, unlike existing phrase-based translation systems. In this paper, we propose a way to address this issue by automatically segmenting an input sentence into phrases that can be easily translated by the neural network translation model. Once each segment has been independently translated by the neural machine translation model, the translated clauses are concatenated to form a final translation. Empirical results show a significant improvement in translation quality for long sentences."
+  },
+  {
+    "paperId": "fa72afa9b2cbc8f0d7b05d52548906610ffbb9c5",
+    "externalIds": {
+      "MAG": "2133564696",
+      "ArXiv": "1409.0473",
+      "DBLP": "journals/corr/BahdanauCB14",
+      "CorpusId": 11212020
+    },
+    "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 29218,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.0473, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3335364",
+        "name": "Dzmitry Bahdanau"
+      },
+      {
+        "authorId": "1979489",
+        "name": "Kyunghyun Cho"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "Neural machine translation is a recently proposed approach to machine translation. Unlike the traditional statistical machine translation, the neural machine translation aims at building a single neural network that can be jointly tuned to maximize the translation performance. The models proposed recently for neural machine translation often belong to a family of encoder-decoders and consists of an encoder that encodes a source sentence into a fixed-length vector from which a decoder generates a translation. In this paper, we conjecture that the use of a fixed-length vector is a bottleneck in improving the performance of this basic encoder-decoder architecture, and propose to extend this by allowing a model to automatically (soft-)search for parts of a source sentence that are relevant to predicting a target word, without having to form these parts as a hard segment explicitly. With this new approach, we achieve a translation performance comparable to the existing state-of-the-art phrase-based system on the task of English-to-French translation. Furthermore, qualitative analysis reveals that the (soft-)alignments found by the model agree well with our intuition."
+  },
+  {
+    "paperId": "0b544dfe355a5070b60986319a3f51fb45d1348e",
+    "externalIds": {
+      "MAG": "2950635152",
+      "DBLP": "conf/emnlp/ChoMGBBSB14",
+      "ACL": "D14-1179",
+      "ArXiv": "1406.1078",
+      "DOI": "10.3115/v1/D14-1179",
+      "CorpusId": 5590763
+    },
+    "title": "Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2014,
+    "citationCount": 26017,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/D14-1179.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1406.1078, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1979489",
+        "name": "Kyunghyun Cho"
+      },
+      {
+        "authorId": "3158246",
+        "name": "B. V. Merrienboer"
+      },
+      {
+        "authorId": "1854385",
+        "name": "Çaglar Gülçehre"
+      },
+      {
+        "authorId": "3335364",
+        "name": "Dzmitry Bahdanau"
+      },
+      {
+        "authorId": "2076086",
+        "name": "Fethi Bougares"
+      },
+      {
+        "authorId": "144518416",
+        "name": "Holger Schwenk"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "In this paper, we propose a novel neural network model called RNN Encoder‐ Decoder that consists of two recurrent neural networks (RNN). One RNN encodes a sequence of symbols into a fixedlength vector representation, and the other decodes the representation into another sequence of symbols. The encoder and decoder of the proposed model are jointly trained to maximize the conditional probability of a target sequence given a source sequence. The performance of a statistical machine translation system is empirically found to improve by using the conditional probabilities of phrase pairs computed by the RNN Encoder‐Decoder as an additional feature in the existing log-linear model. Qualitatively, we show that the proposed model learns a semantically and syntactically meaningful representation of linguistic phrases."
+  },
+  {
+    "paperId": "0894b06cff1cd0903574acaa7fcf071b144ae775",
+    "externalIds": {
+      "DBLP": "conf/acl/DevlinZHLSM14",
+      "MAG": "2251682575",
+      "ACL": "P14-1129",
+      "DOI": "10.3115/v1/P14-1129",
+      "CorpusId": 7417943
+    },
+    "title": "Fast and Robust Neural Network Joint Models for Statistical Machine Translation",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2014,
+    "citationCount": 589,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/P14-1129.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/P14-1129, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "3327459",
+        "name": "Rabih Zbib"
+      },
+      {
+        "authorId": "34227637",
+        "name": "Zhongqiang Huang"
+      },
+      {
+        "authorId": "2889416",
+        "name": "Thomas Lamar"
+      },
+      {
+        "authorId": "35442155",
+        "name": "R. Schwartz"
+      },
+      {
+        "authorId": "10080270",
+        "name": "J. Makhoul"
+      }
+    ],
+    "abstract": "Recent work has shown success in using neural network language models (NNLMs) as features in MT systems. Here, we present a novel formulation for a neural network joint model (NNJM), which augments the NNLM with a source context window. Our model is purely lexicalized and can be integrated into any MT decoder. We also present several variations of the NNJM which provide significant additive improvements."
+  },
+  {
+    "paperId": "97cedf99252026f58e8154bc61d49cf885d42030",
+    "externalIds": {
+      "DBLP": "conf/wmt/DurraniHKH14",
+      "MAG": "2316776689",
+      "ACL": "W14-3309",
+      "DOI": "10.3115/v1/W14-3309",
+      "CorpusId": 5028232
+    },
+    "title": "Edinburgh’s Phrase-based Machine Translation Systems for WMT-14",
+    "venue": "WMT@ACL",
+    "year": 2014,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "https://www.pure.ed.ac.uk/ws/files/19111988/Durrani_Haddow_ET_AL_2014_Edinburgh_s_Phrase_based_Machine_Translation_Systems_for_WMT_14.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/W14-3309, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145938140",
+        "name": "Nadir Durrani"
+      },
+      {
+        "authorId": "2259100",
+        "name": "B. Haddow"
+      },
+      {
+        "authorId": "1755162",
+        "name": "Philipp Koehn"
+      },
+      {
+        "authorId": "1702066",
+        "name": "Kenneth Heafield"
+      }
+    ],
+    "abstract": "This paper describes the University of Edinburgh’s (UEDIN) phrase-based submissions to the translation and medical translation shared tasks of the 2014 Workshop on Statistical Machine Translation (WMT). We participated in all language pairs. We have improved upon our 2013 system by i) using generalized representations, specifically automatic word clusters for translations out of English, ii) using unsupervised character-based models to translate unknown words in RussianEnglish and Hindi-English pairs, iii) synthesizing Hindi data from closely-related Urdu data, and iv) building huge language on the common crawl corpus."
+  },
+  {
+    "paperId": "9f2efadf66817f1b38f58b3f50c7c8f34c69d89a",
+    "externalIds": {
+      "MAG": "2145287260",
+      "DBLP": "conf/cvpr/TaigmanYRW14",
+      "DOI": "10.1109/CVPR.2014.220",
+      "CorpusId": 2814088
+    },
+    "title": "DeepFace: Closing the Gap to Human-Level Performance in Face Verification",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 6484,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.220?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.220, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2188620",
+        "name": "Yaniv Taigman"
+      },
+      {
+        "authorId": "41216159",
+        "name": "Ming Yang"
+      },
+      {
+        "authorId": "1706809",
+        "name": "Marc'Aurelio Ranzato"
+      },
+      {
+        "authorId": "145128145",
+        "name": "Lior Wolf"
+      }
+    ],
+    "abstract": "In modern face recognition, the conventional pipeline consists of four stages: detect => align => represent => classify. We revisit both the alignment step and the representation step by employing explicit 3D face modeling in order to apply a piecewise affine transformation, and derive a face representation from a nine-layer deep neural network. This deep network involves more than 120 million parameters using several locally connected layers without weight sharing, rather than the standard convolutional layers. Thus we trained it on the largest facial dataset to-date, an identity labeled dataset of four million facial images belonging to more than 4, 000 identities. The learned representations coupling the accurate model-based alignment with the large facial database generalize remarkably well to faces in unconstrained environments, even with a simple classifier. Our method reaches an accuracy of 97.35% on the Labeled Faces in the Wild (LFW) dataset, reducing the error of the current state of the art by more than 27%, closely approaching human-level performance."
+  },
+  {
+    "paperId": "c20ed3a1600122e6cf03b8ed74d3d2920ad0a8c6",
+    "externalIds": {
+      "ArXiv": "1312.6173",
+      "MAG": "1562955078",
+      "CorpusId": 13805769
+    },
+    "title": "Multilingual Distributed Representations without Word Alignment",
+    "venue": "International Conference on Learning Representations",
+    "year": 2013,
+    "citationCount": 161,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1312.6173, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2910877",
+        "name": "Karl Moritz Hermann"
+      },
+      {
+        "authorId": "1685771",
+        "name": "Phil Blunsom"
+      }
+    ],
+    "abstract": "Distributed representations of meaning are a natural way to encode covariance relationships between words and phrases in NLP. By overcoming data sparsity problems, as well as providing information about semantic relatedness which is not available in discrete representations, distributed representations have proven useful in many NLP tasks. Recent work has shown how compositional semantic representations can successfully be applied to a number of monolingual applications such as sentiment analysis. At the same time, there has been some initial success in work on learning shared word-level representations across languages. We combine these two approaches by proposing a method for learning distributed representations in a multilingual setup. Our model learns to assign similar embeddings to aligned sentences and dissimilar ones to sentence which are not aligned while not requiring word alignments. We show that our representations are semantically informative and apply them to a cross-lingual document classification task where we outperform the previous state of the art. Further, by employing parallel corpora of multiple language pairs we find that our model learns representations that capture semantic relationships across languages for which no parallel data was used."
+  },
+  {
+    "paperId": "944a1cfd79dbfb6fef460360a0765ba790f4027a",
+    "externalIds": {
+      "MAG": "1753482797",
+      "ACL": "D13-1176",
+      "DBLP": "conf/emnlp/KalchbrennerB13",
+      "DOI": "10.18653/v1/d13-1176",
+      "CorpusId": 12639289
+    },
+    "title": "Recurrent Continuous Translation Models",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2013,
+    "citationCount": 1469,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/D13-1176, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2583391",
+        "name": "Nal Kalchbrenner"
+      },
+      {
+        "authorId": "1685771",
+        "name": "Phil Blunsom"
+      }
+    ],
+    "abstract": "We introduce a class of probabilistic continuous translation models called Recurrent Continuous Translation Models that are purely based on continuous representations for words, phrases and sentences and do not rely on alignments or phrasal translation units. The models have a generation and a conditioning aspect. The generation of the translation is modelled with a target Recurrent Language Model, whereas the conditioning on the source sentence is modelled with a Convolutional Sentence Model. Through various experiments, we show first that our models obtain a perplexity with respect to gold translations that is > 43% lower than that of stateof-the-art alignment-based translation models. Secondly, we show that they are remarkably sensitive to the word order, syntax, and meaning of the source sentence despite lacking alignments. Finally we show that they match a state-of-the-art system when rescoring n-best lists of translations."
+  },
+  {
+    "paperId": "167ad306d84cca2455bc50eb833454de9f2dcd02",
+    "externalIds": {
+      "ACL": "D13-1106",
+      "MAG": "2250489405",
+      "DBLP": "conf/emnlp/AuliGQZ13",
+      "DOI": "10.18653/v1/d13-1106",
+      "CorpusId": 5552894
+    },
+    "title": "Joint Language and Translation Modeling with Recurrent Neural Networks",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2013,
+    "citationCount": 295,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/D13-1106, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325985",
+        "name": "Michael Auli"
+      },
+      {
+        "authorId": "1947267",
+        "name": "Michel Galley"
+      },
+      {
+        "authorId": "2596310",
+        "name": "Chris Quirk"
+      },
+      {
+        "authorId": "1681543",
+        "name": "G. Zweig"
+      }
+    ],
+    "abstract": "We present a joint language and translation model based on a recurrent neural network which predicts target words based on an unbounded history of both source and target words. The weaker independence assumptions of this model result in a vastly larger search space compared to related feedforward-based language or translation models. We tackle this issue with a new lattice rescoring algorithm and demonstrate its effectiveness empirically. Our joint model builds on a well known recurrent neural network language model (Mikolov, 2012) augmented by a layer of additional inputs from the source language. We show competitive accuracy compared to the traditional channel model features. Our best results improve the output of a system trained on WMT 2012 French-English data by up to 1.5 BLEU, and by 1.1 BLEU on average across several test sets."
+  },
+  {
+    "paperId": "6471fd1cbc081fb3b7b5b14d6ab9eaaba02b5c17",
+    "externalIds": {
+      "DBLP": "journals/corr/Graves13",
+      "ArXiv": "1308.0850",
+      "MAG": "1810943226",
+      "CorpusId": 1697424
+    },
+    "title": "Generating Sequences With Recurrent Neural Networks",
+    "venue": "arXiv.org",
+    "year": 2013,
+    "citationCount": 4270,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1308.0850, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      }
+    ],
+    "abstract": "This paper shows how Long Short-term Memory recurrent neural networks can be used to generate complex sequences with long-range structure, simply by predicting one data point at a time. The approach is demonstrated for text (where the data are discrete) and online handwriting (where the data are real-valued). It is then extended to handwriting synthesis by allowing the network to condition its predictions on a text sequence. The resulting system is able to generate highly realistic cursive handwriting in a wide variety of styles."
+  },
+  {
+    "paperId": "f6b51c8753a871dc94ff32152c00c01e94f90f09",
+    "externalIds": {
+      "MAG": "2950577311",
+      "DBLP": "journals/corr/abs-1301-3781",
+      "ArXiv": "1301.3781",
+      "CorpusId": 5959482
+    },
+    "title": "Efficient Estimation of Word Representations in Vector Space",
+    "venue": "International Conference on Learning Representations",
+    "year": 2013,
+    "citationCount": 34096,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1301.3781, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      },
+      {
+        "authorId": "2118440152",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "We propose two novel model architectures for computing continuous vector\nrepresentations of words from very large data sets. The quality of these\nrepresentations is measured in a word similarity task, and the results are\ncompared to the previously best performing techniques based on different types\nof neural networks. We observe large improvements in accuracy at much lower\ncomputational cost, i.e. it takes less than a day to learn high quality word\nvectors from a 1.6 billion words data set. Furthermore, we show that these\nvectors provide state-of-the-art performance on our test set for measuring\nsyntactic and semantic word similarities."
+  },
+  {
+    "paperId": "abd1c342495432171beb7ca8fd9551ef13cbd0ff",
+    "externalIds": {
+      "DBLP": "conf/nips/KrizhevskySH12",
+      "MAG": "2618530766",
+      "DOI": "10.1145/3065386",
+      "CorpusId": 195908774
+    },
+    "title": "ImageNet classification with deep convolutional neural networks",
+    "venue": "Communications of the ACM",
+    "year": 2012,
+    "citationCount": 128250,
+    "openAccessPdf": {
+      "url": "http://dl.acm.org/ft_gateway.cfm?id=3065386&type=pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3065386?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3065386, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "84069287da0a6b488b8c933f3cb5be759cb6237e",
+    "externalIds": {
+      "ArXiv": "1211.5063",
+      "DBLP": "conf/icml/PascanuMB13",
+      "MAG": "2949190276",
+      "CorpusId": 14650762
+    },
+    "title": "On the difficulty of training recurrent neural networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2012,
+    "citationCount": 5838,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1211.5063, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1996134",
+        "name": "Razvan Pascanu"
+      },
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": "There are two widely known issues with properly training recurrent neural networks, the vanishing and the exploding gradient problems detailed in Bengio et al. (1994). In this paper we attempt to improve the understanding of the underlying issues by exploring these problems from an analytical, a geometric and a dynamical systems perspective. Our analysis is used to justify a simple yet effective solution. We propose a gradient norm clipping strategy to deal with exploding gradients and a soft constraint for the vanishing gradients problem. We validate empirically our hypothesis and proposed solutions in the experimental section."
+  },
+  {
+    "paperId": "7b4f3d0e4e2486a8d5d3f8e00549cf9a117bf88f",
+    "externalIds": {
+      "ArXiv": "1211.3711",
+      "DBLP": "journals/corr/abs-1211-3711",
+      "MAG": "1828163288",
+      "CorpusId": 17194112
+    },
+    "title": "Sequence Transduction with Recurrent Neural Networks",
+    "venue": "arXiv.org",
+    "year": 2012,
+    "citationCount": 2069,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1211.3711, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      }
+    ],
+    "abstract": "Many machine learning tasks can be expressed as the transformation---or \\emph{transduction}---of input sequences into output sequences: speech recognition, machine translation, protein secondary structure prediction and text-to-speech to name but a few. One of the key challenges in sequence transduction is learning to represent both the input and output sequences in a way that is invariant to sequential distortions such as shrinking, stretching and translating. Recurrent neural networks (RNNs) are a powerful sequence learning architecture that has proven capable of learning such representations. However RNNs traditionally require a pre-defined alignment between the input and output sequences to perform transduction. This is a severe limitation since \\emph{finding} the alignment is the most difficult aspect of many sequence transduction problems. Indeed, even determining the length of the output sequence is often challenging. This paper introduces an end-to-end, probabilistic sequence transduction system, based entirely on RNNs, that is in principle able to transform any input sequence into any finite, discrete output sequence. Experimental results for phoneme recognition are provided on the TIMIT speech corpus."
+  },
+  {
+    "paperId": "e33cbb25a8c7390aec6a398e36381f4f7770c283",
+    "externalIds": {
+      "MAG": "2184045248",
+      "CorpusId": 7230302
+    },
+    "title": "Deep Neural Networks for Acoustic Modeling in Speech Recognition",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 2530,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "144718788",
+        "name": "L. Deng"
+      },
+      {
+        "authorId": "144580027",
+        "name": "Dong Yu"
+      },
+      {
+        "authorId": "35188630",
+        "name": "George E. Dahl"
+      },
+      {
+        "authorId": "40360972",
+        "name": "Abdel-rahman Mohamed"
+      },
+      {
+        "authorId": "3111912",
+        "name": "N. Jaitly"
+      },
+      {
+        "authorId": "33666044",
+        "name": "A. Senior"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "14902530",
+        "name": "Patrick Nguyen"
+      },
+      {
+        "authorId": "1784851",
+        "name": "Tara N. Sainath"
+      },
+      {
+        "authorId": "144707379",
+        "name": "Brian Kingsbury"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "77b73697c8b5295a718ffef0d63a1afd489de915",
+    "externalIds": {
+      "MAG": "3025338153",
+      "DBLP": "conf/wmt/ServanLRSB12",
+      "ACL": "W12-3147",
+      "CorpusId": 15010710
+    },
+    "title": "LIUM’s SMT Machine Translation Systems for WMT 2012",
+    "venue": "WMT@NAACL-HLT",
+    "year": 2012,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://aclanthology.org/W12-3147, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1890220",
+        "name": "Christophe Servan"
+      },
+      {
+        "authorId": "40010027",
+        "name": "Patrik Lambert"
+      },
+      {
+        "authorId": "34812618",
+        "name": "A. Rousseau"
+      },
+      {
+        "authorId": "144518416",
+        "name": "Holger Schwenk"
+      },
+      {
+        "authorId": "2934336",
+        "name": "Loïc Barrault"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "398c296d0cc7f9d180f84969f8937e6d3a413796",
+    "externalIds": {
+      "MAG": "2141125852",
+      "DBLP": "conf/cvpr/CiresanMS12",
+      "ArXiv": "1202.2745",
+      "DOI": "10.1109/CVPR.2012.6248110",
+      "CorpusId": 2161592
+    },
+    "title": "Multi-column deep neural networks for image classification",
+    "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2012,
+    "citationCount": 4038,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1202.2745",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1202.2745, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1895356",
+        "name": "D. Ciresan"
+      },
+      {
+        "authorId": "2514691",
+        "name": "U. Meier"
+      },
+      {
+        "authorId": "145341374",
+        "name": "J. Schmidhuber"
+      }
+    ],
+    "abstract": "Traditional methods of computer vision and machine learning cannot match human performance on tasks such as the recognition of handwritten digits or traffic signs. Our biologically plausible, wide and deep artificial neural network architectures can. Small (often minimal) receptive fields of convolutional winner-take-all neurons yield large network depth, resulting in roughly as many sparsely connected neural layers as found in mammals between retina and visual cortex. Only winner neurons are trained. Several deep neural columns become experts on inputs preprocessed in different ways; their predictions are averaged. Graphics cards allow for fast training. On the very competitive MNIST handwriting benchmark, our method is the first to achieve near-human performance. On a traffic sign recognition benchmark it outperforms humans by a factor of two. We also improve the state-of-the-art on a plethora of common image classification benchmarks."
+  },
+  {
+    "paperId": "6658bbf68995731b2083195054ff45b4eca38b3a",
+    "externalIds": {
+      "MAG": "2147768505",
+      "DBLP": "journals/taslp/DahlYDA12",
+      "DOI": "10.1109/TASL.2011.2134090",
+      "CorpusId": 14862572
+    },
+    "title": "Context-Dependent Pre-Trained Deep Neural Networks for Large-Vocabulary Speech Recognition",
+    "venue": "IEEE Transactions on Audio, Speech, and Language Processing",
+    "year": 2012,
+    "citationCount": 3080,
+    "openAccessPdf": {
+      "url": "http://www.cs.toronto.edu/%7Egdahl/papers/DRAFT_DBN4LVCSR-TransASLP.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TASL.2011.2134090?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TASL.2011.2134090, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35188630",
+        "name": "George E. Dahl"
+      },
+      {
+        "authorId": "144580027",
+        "name": "Dong Yu"
+      },
+      {
+        "authorId": "144718788",
+        "name": "L. Deng"
+      },
+      {
+        "authorId": "1723644",
+        "name": "A. Acero"
+      }
+    ],
+    "abstract": "We propose a novel context-dependent (CD) model for large-vocabulary speech recognition (LVSR) that leverages recent advances in using deep belief networks for phone recognition. We describe a pre-trained deep neural network hidden Markov model (DNN-HMM) hybrid architecture that trains the DNN to produce a distribution over senones (tied triphone states) as its output. The deep belief network pre-training algorithm is a robust and often helpful way to initialize deep neural networks generatively that can aid in optimization and reduce generalization error. We illustrate the key components of our model, describe the procedure for applying CD-DNN-HMMs to LVSR, and analyze the effects of various modeling choices on performance. Experiments on a challenging business search dataset demonstrate that CD-DNN-HMMs can significantly outperform the conventional context-dependent Gaussian mixture model (GMM)-HMMs, with an absolute sentence accuracy improvement of 5.8% and 9.2% (or relative error reduction of 16.0% and 23.2%) over the CD-GMM-HMMs trained using the minimum phone error rate (MPE) and maximum-likelihood (ML) criteria, respectively."
+  },
+  {
+    "paperId": "72e93aa6767ee683de7f001fa72f1314e40a8f35",
+    "externalIds": {
+      "DBLP": "conf/icassp/Le13",
+      "MAG": "2253807446",
+      "ArXiv": "1112.6209",
+      "DOI": "10.1109/ICASSP.2013.6639343",
+      "CorpusId": 206741597
+    },
+    "title": "Building high-level features using large scale unsupervised learning",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2011,
+    "citationCount": 2308,
+    "openAccessPdf": {
+      "url": "http://www.robotics.stanford.edu/%7Eang/papers/icml12-HighLevelFeaturesUsingUnsupervisedLearning.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1112.6209, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1706809",
+        "name": "Marc'Aurelio Ranzato"
+      },
+      {
+        "authorId": "3089272",
+        "name": "R. Monga"
+      },
+      {
+        "authorId": "145139947",
+        "name": "M. Devin"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "2118440152",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "34699434",
+        "name": "A. Ng"
+      }
+    ],
+    "abstract": "We consider the problem of building high-level, class-specific feature detectors from only unlabeled data. For example, is it possible to learn a face detector using only unlabeled images? To answer this, we train a deep sparse autoencoder on a large dataset of images (the model has 1 billion connections, the dataset has 10 million 200×200 pixel images downloaded from the Internet). We train this network using model parallelism and asynchronous SGD on a cluster with 1,000 machines (16,000 cores) for three days. Contrary to what appears to be a widely-held intuition, our experimental results reveal that it is possible to train a face detector without having to label images as containing a face or not. Control experiments show that this feature detector is robust not only to translation but also to scaling and out-of-plane rotation. We also find that the same network is sensitive to other high-level concepts such as cat faces and human bodies. Starting from these learned features, we trained our network to recognize 22,000 object categories from ImageNet and achieve a leap of 70% relative improvement over the previous state-of-the-art."
+  },
+  {
+    "paperId": "4b36221c0b78c68cb696c64fd6032613c63f65ac",
+    "externalIds": {
+      "DBLP": "conf/wmt/SchwenkLBSAAS11",
+      "ACL": "W11-2158",
+      "MAG": "2161772046",
+      "CorpusId": 52853512
+    },
+    "title": "LIUM’s SMT Machine Translation Systems for WMT 2011",
+    "venue": "WMT@EMNLP",
+    "year": 2011,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://aclanthology.org/W11-2158, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1890220",
+        "name": "Christophe Servan"
+      },
+      {
+        "authorId": "40010027",
+        "name": "Patrik Lambert"
+      },
+      {
+        "authorId": "34812618",
+        "name": "A. Rousseau"
+      },
+      {
+        "authorId": "144518416",
+        "name": "Holger Schwenk"
+      },
+      {
+        "authorId": "2934336",
+        "name": "Loïc Barrault"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "261a056f8b21918e8616a429b2df6e1d5d33be41",
+    "externalIds": {
+      "DBLP": "conf/icml/GravesFGS06",
+      "MAG": "2127141656",
+      "DOI": "10.1145/1143844.1143891",
+      "CorpusId": 9901844
+    },
+    "title": "Connectionist temporal classification: labelling unsegmented sequence data with recurrent neural networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2006,
+    "citationCount": 5066,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1143844.1143891?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1143844.1143891, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2251771699",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "143913738",
+        "name": "Santiago Fernández"
+      },
+      {
+        "authorId": "145842938",
+        "name": "Faustino J. Gomez"
+      },
+      {
+        "authorId": "2260653300",
+        "name": "Jürgen Schmidhuber"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "6c2b28f9354f667cd5bd07afc0471d8334430da7",
+    "externalIds": {
+      "MAG": "2140679639",
+      "DBLP": "conf/nips/BengioDV00",
+      "CorpusId": 221275765
+    },
+    "title": "A Neural Probabilistic Language Model",
+    "venue": "Journal of machine learning research",
+    "year": 2003,
+    "citationCount": 7747,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      },
+      {
+        "authorId": "36037226",
+        "name": "Réjean Ducharme"
+      },
+      {
+        "authorId": "120247189",
+        "name": "Pascal Vincent"
+      },
+      {
+        "authorId": "1909943744",
+        "name": "Christian Janvin"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d7da009f457917aa381619facfa5ffae9329a6e9",
+    "externalIds": {
+      "DBLP": "conf/acl/PapineniRWZ02",
+      "MAG": "2101105183",
+      "ACL": "P02-1040",
+      "DOI": "10.3115/1073083.1073135",
+      "CorpusId": 11080756
+    },
+    "title": "Bleu: a Method for Automatic Evaluation of Machine Translation",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2002,
+    "citationCount": 32717,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.3115/1073083.1073135",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/P02-1040, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3323275",
+        "name": "Kishore Papineni"
+      },
+      {
+        "authorId": "46924970",
+        "name": "Salim Roukos"
+      },
+      {
+        "authorId": "144582029",
+        "name": "T. Ward"
+      },
+      {
+        "authorId": "2587983",
+        "name": "Wei-Jing Zhu"
+      }
+    ],
+    "abstract": "Human evaluations of machine translation are extensive but expensive. Human evaluations can take months to finish and involve human labor that can not be reused. We propose a method of automatic machine translation evaluation that is quick, inexpensive, and language-independent, that correlates highly with human evaluation, and that has little marginal cost per run. We present this method as an automated understudy to skilled human judges which substitutes for them when there is need for quick or frequent evaluations."
+  },
+  {
+    "paperId": "2e9d221c206e9503ceb452302d68d10e293f2a10",
+    "externalIds": {
+      "DBLP": "journals/neco/HochreiterS97",
+      "MAG": "2064675550",
+      "DOI": "10.1162/neco.1997.9.8.1735",
+      "CorpusId": 1915014,
+      "PubMed": "9377276"
+    },
+    "title": "Long Short-Term Memory",
+    "venue": "Neural Computation",
+    "year": 1997,
+    "citationCount": 103370,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco.1997.9.8.1735?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco.1997.9.8.1735, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "145341374",
+        "name": "J. Schmidhuber"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "b158a006bebb619e2ea7bf0a22c27d45c5d19004",
+    "externalIds": {
+      "MAG": "2136939460",
+      "DBLP": "conf/nips/HochreiterS96",
+      "CorpusId": 7452865
+    },
+    "title": "LSTM can Solve Hard Long Time Lag Problems",
+    "venue": "Neural Information Processing Systems",
+    "year": 1996,
+    "citationCount": 1063,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "145341374",
+        "name": "J. Schmidhuber"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d0be39ee052d246ae99c082a565aba25b811be2d",
+    "externalIds": {
+      "MAG": "2107878631",
+      "DBLP": "journals/tnn/BengioSF94",
+      "DOI": "10.1109/72.279181",
+      "CorpusId": 206457500,
+      "PubMed": "18267787"
+    },
+    "title": "Learning long-term dependencies with gradient descent is difficult",
+    "venue": "IEEE Trans. Neural Networks",
+    "year": 1994,
+    "citationCount": 8947,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/72.279181?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/72.279181, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      },
+      {
+        "authorId": "2812486",
+        "name": "P. Simard"
+      },
+      {
+        "authorId": "1688235",
+        "name": "P. Frasconi"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "06342ba4480526574a8d864a3c3c1719450e2463",
+    "externalIds": {
+      "DBLP": "conf/swat/Razborov92",
+      "MAG": "1578042930",
+      "DOI": "10.1007/3-540-55706-7_4",
+      "CorpusId": 60692538
+    },
+    "title": "On Small Depth Threshold Circuits",
+    "venue": "Scandinavian Workshop on Algorithm Theory",
+    "year": 1992,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/3-540-55706-7_4?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/3-540-55706-7_4, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1791067",
+        "name": "A. Razborov"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "1a3d22599028a05669e884f3eaf19a342e190a87",
+    "externalIds": {
+      "MAG": "2150355110",
+      "DBLP": "journals/pieee/Werbos90",
+      "DOI": "10.1109/5.58337",
+      "CorpusId": 18470994
+    },
+    "title": "Backpropagation Through Time: What It Does and How to Do It",
+    "venue": "Proceedings of the IEEE",
+    "year": 1990,
+    "citationCount": 5232,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/5.58337?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/5.58337, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47055692",
+        "name": "P. Werbos"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "052b1d8ce63b07fec3de9dbb583772d860b7c769",
+    "externalIds": {
+      "MAG": "1498436455",
+      "DOI": "10.1038/323533a0",
+      "CorpusId": 205001834
+    },
+    "title": "Learning representations by back-propagating errors",
+    "venue": "Nature",
+    "year": 1986,
+    "citationCount": 30819,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/323533a0?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/323533a0, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2681887",
+        "name": "D. Rumelhart"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "2116648700",
+        "name": "Ronald J. Williams"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "845ee9838c1f5bf63b7db2c95ec5d27af14a4e02",
+    "externalIds": {
+      "CorpusId": 264252063
+    },
+    "title": "Connectionist Temporal Classiﬁcation: Labelling Unsegmented Sequences with Recurrent Neural Networks",
+    "venue": "",
+    "year": 2016,
+    "citationCount": 880,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3082019",
+        "name": "Alex Auvolat"
+      },
+      {
+        "authorId": "2366631930",
+        "name": "Thomas Mesnard"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "f9a1b3850dfd837793743565a8af95973d395a4e",
+    "externalIds": {
+      "DBLP": "conf/interspeech/SundermeyerSN12",
+      "MAG": "2402268235",
+      "DOI": "10.21437/Interspeech.2012-65",
+      "CorpusId": 18939716
+    },
+    "title": "LSTM Neural Networks for Language Modeling",
+    "venue": "Interspeech",
+    "year": 2012,
+    "citationCount": 2006,
+    "openAccessPdf": {
+      "url": "http://www-i6.informatik.rwth-aachen.de/publications/downloader.php?id=820&row=pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.21437/Interspeech.2012-65?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.21437/Interspeech.2012-65, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2748591",
+        "name": "M. Sundermeyer"
+      },
+      {
+        "authorId": "144490010",
+        "name": "Ralf Schlüter"
+      },
+      {
+        "authorId": "145322333",
+        "name": "H. Ney"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "96364af2d208ea75ca3aeb71892d2f7ce7326b55",
+    "externalIds": {
+      "MAG": "2908906764",
+      "CorpusId": 68116583
+    },
+    "title": "Statistical Language Models Based on Neural Networks",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 656,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "70910366",
+        "name": "Vysoké Učení"
+      },
+      {
+        "authorId": "70952562",
+        "name": "Technické V Brně"
+      },
+      {
+        "authorId": "74555031",
+        "name": "Grafiky A Multimédií"
+      },
+      {
+        "authorId": "74393604",
+        "name": "Disertační Práce"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "3d2218b17e7898a222e5fc2079a3f1531990708f",
+    "externalIds": {
+      "MAG": "2496191913",
+      "DOI": "10.1017/CBO9781139207249.009",
+      "CorpusId": 124633341
+    },
+    "title": "I and J",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 168859,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1017/CBO9781139207249.009?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1017/CBO9781139207249.009, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "67162290",
+        "name": "W. Marsden"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "9819b600a828a57e1cde047bbe710d3446b30da5",
+    "externalIds": {
+      "MAG": "179875071",
+      "DBLP": "conf/interspeech/MikolovKBCK10",
+      "DOI": "10.21437/Interspeech.2010-343",
+      "CorpusId": 17048224
+    },
+    "title": "Recurrent neural network based language model",
+    "venue": "Interspeech",
+    "year": 2010,
+    "citationCount": 6087,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.21437/Interspeech.2010-343?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.21437/Interspeech.2010-343, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      },
+      {
+        "authorId": "2245567",
+        "name": "M. Karafiát"
+      },
+      {
+        "authorId": "1816892",
+        "name": "Lukáš Burget"
+      },
+      {
+        "authorId": "1899242",
+        "name": "J. Černocký"
+      },
+      {
+        "authorId": "2803071",
+        "name": "S. Khudanpur"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "2e5f2b57f4c476dd69dc22ccdf547e48f40a994c",
+    "externalIds": {
+      "MAG": "1525783482",
+      "CorpusId": 17278462
+    },
+    "title": "Gradient Flow in Recurrent Nets: the Difficulty of Learning Long-Term Dependencies",
+    "venue": "",
+    "year": 2001,
+    "citationCount": 2068,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "9eb458fa2e754ba1b927272aa389115c95fc55f4",
+    "externalIds": {
+      "MAG": "158427027",
+      "CorpusId": 268081888
+    },
+    "title": "IBM Research Report Bleu: a Method for Automatic Evaluation of Machine Translation",
+    "venue": "",
+    "year": 2001,
+    "citationCount": 253,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3323275",
+        "name": "Kishore Papineni"
+      },
+      {
+        "authorId": "1781292",
+        "name": "S. Roukos"
+      },
+      {
+        "authorId": "145950787",
+        "name": "T. Ward"
+      },
+      {
+        "authorId": "3263817",
+        "name": "Wujie Zhu"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "162d958ff885f1462aeda91cd72582323fd6a1f4",
+    "externalIds": {
+      "MAG": "2112796928",
+      "DBLP": "journals/pieee/LeCunBBH98",
+      "DOI": "10.1109/5.726791",
+      "CorpusId": 14542261
+    },
+    "title": "Gradient-based learning applied to document recognition",
+    "venue": "Proceedings of the IEEE",
+    "year": 1998,
+    "citationCount": 59979,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/5.726791?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/5.726791, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      },
+      {
+        "authorId": "52184096",
+        "name": "L. Bottou"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      },
+      {
+        "authorId": "1721248",
+        "name": "P. Haffner"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "3f3d13e95c25a8f6a753e38dfce88885097cbd43",
+    "externalIds": {
+      "MAG": "194249466",
+      "CorpusId": 60091947
+    },
+    "title": "Untersuchungen zu dynamischen neuronalen Netzen",
+    "venue": "",
+    "year": 1991,
+    "citationCount": 823,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2066667188",
+        "name": "Sepp Hochreiter"
+      }
+    ],
+    "abstract": null
+  }
+]

@@ -14,6 +14,12 @@ LLM providers are selected in this order (first key present wins):
 Per absolute rule §11, LLM calls MUST go through `AbstractLLMProvider` —
 never via urllib / requests directly. See CLAUDE.md.
 
+Per absolute rule §12 (family-tree exception): S2 `references` / `citations`
+fetches are allowed here because the citation graph is not in Stage 2
+output. The focus paper's `venue` / `citation_count` / `github_stars`
+still come from `papers.json` — we only use S2 for edge structure plus
+neighbour titles/authors.
+
 The script caches intermediate state (S2 lookups, classified edges) so re-runs
 are fast and only fetch what's missing.
 
@@ -32,7 +38,13 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
+
+
+class ClusterEntry(TypedDict):
+    id: str
+    label: str
+    focus_ids: list[str]
 
 # Make `paperpilot.llm` importable when run as `python paperpilot/scripts/...`
 # without editable-install-on-path.
@@ -70,13 +82,20 @@ def resolve_paths(conference: str) -> tuple[Path, Path]:
 # of this module is unchanged.
 derive_venue_label = slug_to_venue_label
 
-S2_FIELDS_PAPER = "paperId,title,year,venue,citationCount,referenceCount,authors,abstract,externalIds"
-S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
-
 # Knobs
 TOP_PARENTS = 15
 TOP_CHILDREN = 15
 S2_RATE_DELAY = 3.5   # unauth quota is harsh; stay well under
+
+# Cluster (topics view) constants. Focus papers missing any kind tag are
+# bucketed into "uncategorized" so the gallery never hides them.
+_UNCATEGORIZED_ID = "uncategorized"
+_UNCATEGORIZED_LABEL = "その他"
+
+
+def _cluster_slug(label: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+    return slug or _UNCATEGORIZED_ID
 
 # Per-provider cadence between classify calls. The provider itself already
 # handles 429 backoff via request_with_retry; this is a baseline RPM limiter
@@ -117,32 +136,31 @@ VENUE_TIER_MAP = [
 
 # ---------- Provider selection ----------
 
-def _load_env() -> None:
-    """Best-effort .env loader so keys flow from paperpilot/.env."""
-    try:
-        from dotenv import load_dotenv
-    except ImportError:
-        return
-    env_path = ROOT / "paperpilot" / ".env"
-    if env_path.exists():
-        load_dotenv(env_path)
-
 
 def build_provider() -> tuple[AbstractLLMProvider, float]:
     """Pick the first available LLM provider and return (provider, rate_delay).
 
     Groq takes precedence because it has the most generous free tier for
     the classification workload (hundreds of calls per lineage build).
+
+    Env lookup goes through `utils.config_loader.load_env` so the pipeline
+    and scripts share one mapping from PAPERPILOT_* vars to the secrets
+    dict. Tests can patch `load_env` directly to avoid relying on the
+    ambient environment (and on whatever is in paperpilot/.env).
     """
-    _load_env()
-    groq_key = os.environ.get("PAPERPILOT_GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
-    gemini_key = os.environ.get("PAPERPILOT_GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    from paperpilot.utils.config_loader import load_env
+
+    env = load_env(ROOT / "paperpilot" / ".env")
+    # Unprefixed names are accepted as a convenience for users running
+    # one-off scripts with ambient credentials (e.g. `GROQ_API_KEY=... python ...`).
+    groq_key = env.get("groq_api_key") or os.environ.get("GROQ_API_KEY")
+    gemini_key = env.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
 
     # Annotate explicitly as the base class so mypy accepts either concrete
     # subclass on the way back out of the tuple.
     provider: AbstractLLMProvider
     if groq_key:
-        model = os.environ.get("PAPERPILOT_GROQ_MODEL", "llama-3.3-70b-versatile")
+        model = env.get("groq_model") or "llama-3.3-70b-versatile"
         provider = GroqProvider(
             {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
             api_key=groq_key,
@@ -150,7 +168,7 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
         return provider, LLM_RATE_DELAY["groq"]
 
     if gemini_key:
-        model = os.environ.get("PAPERPILOT_GEMINI_MODEL", "gemini-2.5-flash")
+        model = env.get("gemini_model") or "gemini-2.5-flash"
         provider = GeminiProvider(
             {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
             api_key=gemini_key,
@@ -164,6 +182,15 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
 
 
 # ---------- S2 helpers ----------
+
+# Field lists sent to the S2 Graph API. Scoped to this block since they
+# are implementation details of the two fetch helpers below — callers
+# outside the module should never need them.
+_S2_FIELDS_PAPER = (
+    "paperId,title,year,venue,citationCount,referenceCount,authors,abstract,externalIds"
+)
+_S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
+
 
 def _s2_get(url: str) -> dict[str, Any] | None:
     """GET an S2 JSON endpoint, returning the parsed body or None.
@@ -199,7 +226,7 @@ def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
     if cache.exists():
         cached = json.loads(cache.read_text())
         return cached if isinstance(cached, dict) else None
-    url = f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={S2_FIELDS_PAPER}"
+    url = f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}?fields={_S2_FIELDS_PAPER}"
     data = _s2_get(url)
     if data:
         cache.write_text(json.dumps(data, ensure_ascii=False, indent=2))
@@ -215,12 +242,15 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
         return cached if isinstance(cached, list) else []
     url = (
         f"https://api.semanticscholar.org/graph/v1/paper/{s2_id}/{kind}"
-        f"?fields={S2_FIELDS_REL}&limit={min(limit * 4, 100)}"
+        f"?fields={_S2_FIELDS_REL}&limit={min(limit * 4, 100)}"
     )
     data = _s2_get(url) or {}
     items = []
     inner_key = "citedPaper" if kind == "references" else "citingPaper"
-    for entry in data.get("data", []):
+    # `or []` not just default arg: S2 occasionally returns {"data": null}
+    # for papers whose neighbour list is empty — `.get("data", [])` would
+    # then yield None and crash the loop.
+    for entry in data.get("data") or []:
         p = entry.get(inner_key)
         if p and p.get("paperId") and p.get("title"):
             items.append(p)
@@ -446,11 +476,59 @@ def build(
     if dropped:
         print(f"  dropped {dropped} edges with empty rationale")
 
+    clusters = build_clusters(list(nodes.values()))
+
     return {
         "root": root_id,
         "nodes": list(nodes.values()),
         "edges": cleaned_edges,
+        "clusters": clusters,
     }
+
+
+# Why: the viewer groups focus papers by primary subfield so readers can drill
+# from "which areas dominate Oral" into individual per-paper family trees.
+# Focus papers with multiple tags are placed in their first tag's cluster only
+# to keep the taxonomy disjoint (simpler mental model than cross-listing).
+def build_clusters(nodes: list[dict]) -> list[ClusterEntry]:
+    """Group focus papers by their primary tag into subfield clusters.
+
+    Returns a list of `ClusterEntry` sorted by member count descending,
+    then alphabetically by label. Non-focus nodes are ignored — they
+    belong to whatever tree their focus owns.
+
+    Keyed internally by label (not slug) so labels that collapse to the
+    same slug (e.g., "A+" and "A-" both → "a") remain separate clusters.
+    Cluster `id`s are disambiguated with a numeric suffix on collision.
+    """
+    by_label: dict[str, list[str]] = {}
+    for n in nodes:
+        if not n.get("is_focus"):
+            continue
+        kinds = n.get("kinds") or []
+        label = kinds[0] if kinds else _UNCATEGORIZED_LABEL
+        by_label.setdefault(label, []).append(n["id"])
+
+    entries: list[ClusterEntry] = []
+    used_ids: set[str] = set()
+    # Visit labels in sort order so id disambiguation is deterministic even
+    # when focus_ids order varies between runs.
+    for label in sorted(by_label, key=lambda lbl: (-len(by_label[lbl]), lbl)):
+        base = _UNCATEGORIZED_ID if label == _UNCATEGORIZED_LABEL else _cluster_slug(label)
+        cid = base
+        suffix = 2
+        while cid in used_ids:
+            cid = f"{base}-{suffix}"
+            suffix += 1
+        used_ids.add(cid)
+        entries.append(
+            {
+                "id": cid,
+                "label": label,
+                "focus_ids": sorted(by_label[label]),
+            }
+        )
+    return entries
 
 
 def main():
