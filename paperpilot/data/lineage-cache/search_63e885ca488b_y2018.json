@@ -1,0 +1,2831 @@
+[
+  {
+    "paperId": "2cb3044ef42c7ee022a988864028b80ce977072c",
+    "externalIds": {
+      "ArXiv": "2409.16040",
+      "DBLP": "journals/corr/abs-2409-16040",
+      "DOI": "10.48550/arXiv.2409.16040",
+      "CorpusId": 272832214
+    },
+    "title": "Time-MoE: Billion-Scale Time Series Foundation Models with Mixture of Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 241,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.16040, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119204984",
+        "name": "X. Shi"
+      },
+      {
+        "authorId": "2255363760",
+        "name": "Shiyu Wang"
+      },
+      {
+        "authorId": "2300149940",
+        "name": "Yuqi Nie"
+      },
+      {
+        "authorId": "2322812784",
+        "name": "Dianqi Li"
+      },
+      {
+        "authorId": "2323439377",
+        "name": "Zhou Ye"
+      },
+      {
+        "authorId": "2312901184",
+        "name": "Qingsong Wen"
+      },
+      {
+        "authorId": "2254096428",
+        "name": "Ming Jin"
+      }
+    ],
+    "abstract": "Deep learning for time series forecasting has seen significant advancements over the past decades. However, despite the success of large-scale pre-training in language and vision domains, pre-trained time series models remain limited in scale and operate at a high cost, hindering the development of larger capable forecasting models in real-world applications. In response, we introduce Time-MoE, a scalable and unified architecture designed to pre-train larger, more capable forecasting foundation models while reducing inference costs. By leveraging a sparse mixture-of-experts (MoE) design, Time-MoE enhances computational efficiency by activating only a subset of networks for each prediction, reducing computational load while maintaining high model capacity. This allows Time-MoE to scale effectively without a corresponding increase in inference costs. Time-MoE comprises a family of decoder-only transformer models that operate in an auto-regressive manner and support flexible forecasting horizons with varying input context lengths. We pre-trained these models on our newly introduced large-scale data Time-300B, which spans over 9 domains and encompassing over 300 billion time points. For the first time, we scaled a time series foundation model up to 2.4 billion parameters, achieving significantly improved forecasting precision. Our results validate the applicability of scaling laws for training tokens and model size in the context of time series forecasting. Compared to dense models with the same number of activated parameters or equivalent computation budgets, our models consistently outperform them by large margin. These advancements position Time-MoE as a state-of-the-art solution for tackling real-world time series forecasting challenges with superior capability, efficiency, and flexibility."
+  },
+  {
+    "paperId": "cd1d7f5c4ce2d31ce9ee72db165a8272624da7d3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-15947",
+      "ArXiv": "2401.15947",
+      "DOI": "10.48550/arXiv.2401.15947",
+      "CorpusId": 267311517
+    },
+    "title": "MoE-LLaVA: Mixture of Experts for Large Vision-Language Models",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2024,
+    "citationCount": 314,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.15947, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2254329478",
+        "name": "Bin Lin"
+      },
+      {
+        "authorId": "2275126715",
+        "name": "Zhenyu Tang"
+      },
+      {
+        "authorId": "2267264117",
+        "name": "Yang Ye"
+      },
+      {
+        "authorId": "2220852923",
+        "name": "Jiaxi Cui"
+      },
+      {
+        "authorId": "2256419313",
+        "name": "Bin Zhu"
+      },
+      {
+        "authorId": "2185571736",
+        "name": "Peng Jin"
+      },
+      {
+        "authorId": "2000011573",
+        "name": "Jinfa Huang"
+      },
+      {
+        "authorId": "2253845661",
+        "name": "Junwu Zhang"
+      },
+      {
+        "authorId": "2253434320",
+        "name": "Munan Ning"
+      },
+      {
+        "authorId": "2266507381",
+        "name": "Li Yuan"
+      }
+    ],
+    "abstract": "Recent advances demonstrate that scaling Large Vision-Language Models (LVLMs) effectively improves downstream task performances. However, existing scaling methods enable all model parameters to be active for each token in the calculation, which brings massive training and inferring costs. In this work, we propose a simple yet effective training strategy MoE-Tuning for LVLMs. This strategy innovatively addresses the common issue of performance degradation in multi-modal sparsity learning, consequently constructing a sparse model with an outrageous number of parameters but a constant computational cost. Furthermore, we present the MoE-LLaVA, a MoE-based sparse LVLM architecture, which uniquely activates only the top-k experts through routers during deployment, keeping the remaining experts inactive. Extensive experiments show the significant performance of MoE-LLaVA in a variety of visual understanding and object hallucination benchmarks. Remarkably, with only approximately 3B sparsely activated parameters, MoE-LLaVA demonstrates performance comparable to the LLaVA-1.5-7B on various visual understanding datasets and even surpasses the LLaVA-1.5-13B in object hallucination benchmark. Through MoE-LLaVA, we aim to establish a baseline for sparse LVLMs and provide valuable insights for future research in developing more efficient and effective multi-modal learning systems. Code is released at https://github.com/PKU-YuanGroup/MoE-LLaVA."
+  },
+  {
+    "paperId": "668f545fa8133b629ee3463c52c10b02190a2496",
+    "externalIds": {
+      "ArXiv": "2502.17298",
+      "DBLP": "conf/icml/GuL0ZLS0G25",
+      "DOI": "10.48550/arXiv.2502.17298",
+      "CorpusId": 276575054
+    },
+    "title": "Delta Decompression for MoE-based LLMs Compression",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 34,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.17298, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2347571185",
+        "name": "Hao Gu"
+      },
+      {
+        "authorId": "2331681523",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "2331723310",
+        "name": "Lujun Li"
+      },
+      {
+        "authorId": "2313367125",
+        "name": "Qi Zhu"
+      },
+      {
+        "authorId": "2331702843",
+        "name": "Mark G. Lee"
+      },
+      {
+        "authorId": "2331691577",
+        "name": "Shengjie Sun"
+      },
+      {
+        "authorId": "2239201089",
+        "name": "Wei Xue"
+      },
+      {
+        "authorId": "2118270918",
+        "name": "Yi-Ting Guo"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures in large language models (LLMs) achieve exceptional performance, but face prohibitive storage and memory requirements. To address these challenges, we present $D^2$-MoE, a new delta decompression compressor for reducing the parameters of MoE LLMs. Based on observations of expert diversity, we decompose their weights into a shared base weight and unique delta weights. Specifically, our method first merges each expert's weight into the base weight using the Fisher information matrix to capture shared components. Then, we compress delta weights through Singular Value Decomposition (SVD) by exploiting their low-rank properties. Finally, we introduce a semi-dynamical structured pruning strategy for the base weights, combining static and dynamic redundancy analysis to achieve further parameter reduction while maintaining input adaptivity. In this way, our $D^2$-MoE successfully compact MoE LLMs to high compression ratios without additional training. Extensive experiments highlight the superiority of our approach, with over 13% performance gains than other compressors on Mixtral|Phi-3.5|DeepSeek|Qwen2 MoE LLMs at 40$\\sim$60% compression rates. Codes are available in https://github.com/lliai/D2MoE."
+  },
+  {
+    "paperId": "05830547cfd19b734777b8546f4d606fd79ebd2b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2406-16554",
+      "ArXiv": "2406.16554",
+      "ACL": "2024.emnlp-main.890",
+      "DOI": "10.48550/arXiv.2406.16554",
+      "CorpusId": 270703371
+    },
+    "title": "LLaMA-MoE: Building Mixture-of-Experts from LLaMA with Continual Pre-Training",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 147,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.16554, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1914586128",
+        "name": "Tong Zhu"
+      },
+      {
+        "authorId": "2262446609",
+        "name": "Xiaoye Qu"
+      },
+      {
+        "authorId": "2187286687",
+        "name": "Daize Dong"
+      },
+      {
+        "authorId": "2307000468",
+        "name": "Jiacheng Ruan"
+      },
+      {
+        "authorId": "2301150359",
+        "name": "Jingqi Tong"
+      },
+      {
+        "authorId": "2346476781",
+        "name": "Conghui He"
+      },
+      {
+        "authorId": "2307325455",
+        "name": "Yu Cheng"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) has gained increasing popularity as a promising framework for scaling up large language models (LLMs). However, training MoE from scratch in a large-scale setting still suffers from data-hungry and instability problems. Motivated by this limit, we investigate building MoE models from existing dense large language models. Specifically, based on the well-known LLaMA-2 7B model, we obtain an MoE model by: (1) Expert Construction, which partitions the parameters of original Feed-Forward Networks (FFNs) into multiple experts; (2) Continual pre-training, which further trains the transformed MoE model and additional gate networks. In this paper, we comprehensively explore different methods for expert construction and various data sampling strategies for continual pre-training. After these stages, our LLaMA-MoE models could maintain language abilities and route the input tokens to specific experts with part of the parameters activated. Empirically, by training 200B tokens, LLaMA-MoE-3.5B models significantly outperform dense models that contain similar activation parameters."
+  },
+  {
+    "paperId": "bcd66bb7b611fa67d215288d0255300008b17d17",
+    "externalIds": {
+      "ArXiv": "2505.22159",
+      "DBLP": "journals/corr/abs-2505-22159",
+      "DOI": "10.48550/arXiv.2505.22159",
+      "CorpusId": 278960084
+    },
+    "title": "ForceVLA: Enhancing VLA Models with a Force-aware MoE for Contact-rich Manipulation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.22159, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277144624",
+        "name": "Jiawen Yu"
+      },
+      {
+        "authorId": "2364015850",
+        "name": "Hairuo Liu"
+      },
+      {
+        "authorId": "2153795608",
+        "name": "Qiaojun Yu"
+      },
+      {
+        "authorId": "2364840092",
+        "name": "Jieji Ren"
+      },
+      {
+        "authorId": "2247914643",
+        "name": "Ce Hao"
+      },
+      {
+        "authorId": "2381803017",
+        "name": "Haitong Ding"
+      },
+      {
+        "authorId": "2256954306",
+        "name": "Guan Huang"
+      },
+      {
+        "authorId": "2328259146",
+        "name": "Guofan Huang"
+      },
+      {
+        "authorId": "2364074345",
+        "name": "Yan Song"
+      },
+      {
+        "authorId": "2323565504",
+        "name": "Panpan Cai"
+      },
+      {
+        "authorId": "2323718989",
+        "name": "Cewu Lu"
+      },
+      {
+        "authorId": "2363877464",
+        "name": "Wenqiang Zhang"
+      }
+    ],
+    "abstract": "Vision-Language-Action (VLA) models have advanced general-purpose robotic manipulation by leveraging pretrained visual and linguistic representations. However, they struggle with contact-rich tasks that require fine-grained control involving force, especially under visual occlusion or dynamic uncertainty. To address these limitations, we propose ForceVLA, a novel end-to-end manipulation framework that treats external force sensing as a first-class modality within VLA systems. ForceVLA introduces FVLMoE, a force-aware Mixture-of-Experts fusion module that dynamically integrates pretrained visual-language embeddings with real-time 6-axis force feedback during action decoding. This enables context-aware routing across modality-specific experts, enhancing the robot's ability to adapt to subtle contact dynamics. We also introduce \\textbf{ForceVLA-Data}, a new dataset comprising synchronized vision, proprioception, and force-torque signals across five contact-rich manipulation tasks. ForceVLA improves average task success by 23.2% over strong pi_0-based baselines, achieving up to 80% success in tasks such as plug insertion. Our approach highlights the importance of multimodal integration for dexterous manipulation and sets a new benchmark for physically intelligent robotic control. Code and data will be released at https://sites.google.com/view/forcevla2025."
+  },
+  {
+    "paperId": "b44b63dfb75a12bebbb98904d0cc4250bf4ba8a0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-11370",
+      "ArXiv": "2510.11370",
+      "DOI": "10.48550/arXiv.2510.11370",
+      "CorpusId": 282058241
+    },
+    "title": "Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.11370, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2349408014",
+        "name": "Wenhan Ma"
+      },
+      {
+        "authorId": "2309193043",
+        "name": "Hailin Zhang"
+      },
+      {
+        "authorId": "2385516513",
+        "name": "Liang Zhao"
+      },
+      {
+        "authorId": "2326819505",
+        "name": "Yi-Hao Song"
+      },
+      {
+        "authorId": "2136932082",
+        "name": "Yudong Wang"
+      },
+      {
+        "authorId": "2287829088",
+        "name": "Zhifang Sui"
+      },
+      {
+        "authorId": "2278218736",
+        "name": "Fuli Luo"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) has emerged as a crucial approach for enhancing the capabilities of large language models. However, in Mixture-of-Experts (MoE) models, the routing mechanism often introduces instability, even leading to catastrophic RL training collapse. We analyze the training-inference consistency of MoE models and identify a notable discrepancy in routing behaviors between the two phases. Moreover, even under identical conditions, the routing framework can yield divergent expert selections across repeated forward passes. To address this foundational inconsistency, we propose Rollout Routing Replay (R3), a method that records routing distributions from the inference engine and replays them during training. R3 significantly reduces training-inference policy KL divergence and mitigates extreme discrepancies without compromising training speed. Extensive experiments on various settings confirm that R3 succeeds in stabilizing RL training, preventing collapse and outperforming methods such as GSPO and TIS. We believe this work can offer a new solution for stabilizing RL in MoE models."
+  },
+  {
+    "paperId": "d4e4685d1f4b490e0e35479f6350a9743673541e",
+    "externalIds": {
+      "DBLP": "conf/acl/DouZLGSXZWXFPZZ24",
+      "DOI": "10.18653/v1/2024.acl-long.106",
+      "CorpusId": 271915471
+    },
+    "title": "LoRAMoE: Alleviating World Knowledge Forgetting in Large Language Models via MoE-Style Plugin",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 133,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.18653/v1/2024.acl-long.106?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.18653/v1/2024.acl-long.106, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2042683163",
+        "name": "Shihan Dou"
+      },
+      {
+        "authorId": "2240446306",
+        "name": "Enyu Zhou"
+      },
+      {
+        "authorId": "2275033850",
+        "name": "Yan Liu"
+      },
+      {
+        "authorId": "2181306462",
+        "name": "Songyang Gao"
+      },
+      {
+        "authorId": "2248291262",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "2222630539",
+        "name": "Limao Xiong"
+      },
+      {
+        "authorId": "2212175381",
+        "name": "Yuhao Zhou"
+      },
+      {
+        "authorId": "2118451107",
+        "name": "Xiao Wang"
+      },
+      {
+        "authorId": "2218237934",
+        "name": "Zhiheng Xi"
+      },
+      {
+        "authorId": "2241140630",
+        "name": "Xiaoran Fan"
+      },
+      {
+        "authorId": "2274941422",
+        "name": "Shiliang Pu"
+      },
+      {
+        "authorId": "2277702055",
+        "name": "Jiang Zhu"
+      },
+      {
+        "authorId": "2058585152",
+        "name": "Rui Zheng"
+      },
+      {
+        "authorId": "2067331064",
+        "name": "Tao Gui"
+      },
+      {
+        "authorId": "2256972399",
+        "name": "Qi Zhang"
+      },
+      {
+        "authorId": "2257129989",
+        "name": "Xuanjing Huang"
+      }
+    ],
+    "abstract": "Supervised fine-tuning (SFT) is a crucial step for large language models (LLMs), enabling them to align with human instructions and enhance their capabilities in downstream tasks. Substantially increasing instruction data is a direct solution to align the model with a broader range of downstream tasks or notably improve its performance on a specific task. However, we find that large-scale increases in instruction data can damage the world knowledge previously stored in LLMs. To address this challenge, we propose LoRAMoE, a novel framework that introduces several low-rank adapters (LoRA) and integrates them by us-ing a router network, like a plugin version of Mixture of Experts (MoE). It freezes the backbone model and forces a portion of Lo-RAs to focus on leveraging world knowledge to solve downstream tasks, to alleviate world knowledge forgetting. Experimental results show that, as the instruction data increases, Lo-RAMoE can significantly improve the ability to process downstream tasks, while maintaining the world knowledge stored in the LLM. Our code is available at https://github.com/ Ablustrund/LoRAMoE ."
+  },
+  {
+    "paperId": "47bcd99521b23e6a9749f64913edf6fa213347dc",
+    "externalIds": {
+      "ArXiv": "2509.24389",
+      "DBLP": "journals/corr/abs-2509-24389",
+      "DOI": "10.48550/arXiv.2509.24389",
+      "CorpusId": 281676141
+    },
+    "title": "LLaDA-MoE: A Sparse MoE Diffusion Language Model",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.24389, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2305318534",
+        "name": "Fengqi Zhu"
+      },
+      {
+        "authorId": "2208959924",
+        "name": "Zebin You"
+      },
+      {
+        "authorId": "2384414697",
+        "name": "Yipeng Xing"
+      },
+      {
+        "authorId": "2280371627",
+        "name": "Zenan Huang"
+      },
+      {
+        "authorId": "2377882748",
+        "name": "Lin Liu"
+      },
+      {
+        "authorId": "2372327661",
+        "name": "Yihong Zhuang"
+      },
+      {
+        "authorId": "1491631001",
+        "name": "Guoshan Lu"
+      },
+      {
+        "authorId": "2376143224",
+        "name": "Kangyu Wang"
+      },
+      {
+        "authorId": "2320517339",
+        "name": "Xudong Wang"
+      },
+      {
+        "authorId": "2337843897",
+        "name": "Lanning Wei"
+      },
+      {
+        "authorId": "2324778075",
+        "name": "Hongrui Guo"
+      },
+      {
+        "authorId": "2302332408",
+        "name": "Jiaqi Hu"
+      },
+      {
+        "authorId": "2052980502",
+        "name": "Wen-song Ye"
+      },
+      {
+        "authorId": "2375723846",
+        "name": "Tieyuan Chen"
+      },
+      {
+        "authorId": "2276666873",
+        "name": "Chenchen Li"
+      },
+      {
+        "authorId": "2321400140",
+        "name": "Chengfu Tang"
+      },
+      {
+        "authorId": "2387130693",
+        "name": "Haibo Feng"
+      },
+      {
+        "authorId": "2281126193",
+        "name": "Jun Hu"
+      },
+      {
+        "authorId": "2344081478",
+        "name": "Jun Zhou"
+      },
+      {
+        "authorId": "2370186970",
+        "name": "Xiaolu Zhang"
+      },
+      {
+        "authorId": "2375141958",
+        "name": "Zhenzhong Lan"
+      },
+      {
+        "authorId": "2373715092",
+        "name": "Junbo Zhao"
+      },
+      {
+        "authorId": "2378132697",
+        "name": "Da Zheng"
+      },
+      {
+        "authorId": "2302816706",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2375693664",
+        "name": "Jianguo Li"
+      },
+      {
+        "authorId": "2198666753",
+        "name": "Jiamei Wen"
+      }
+    ],
+    "abstract": "We introduce LLaDA-MoE, a large language diffusion model with the Mixture-of-Experts (MoE) architecture, trained from scratch on approximately 20T tokens. LLaDA-MoE achieves competitive performance with significantly reduced computational overhead by maintaining a 7B-parameter capacity while activating only 1.4B parameters during inference. Our empirical evaluation reveals that LLaDA-MoE achieves state-of-the-art performance among diffusion language models with larger parameters, surpassing previous diffusion language models LLaDA, LLaDA 1.5, and Dream across multiple benchmarks. The instruct-tuned model LLaDA-MoE-7B-A1B-Instruct demonstrates capabilities comparable to Qwen2.5-3B-Instruct in knowledge understanding, code generation, mathematical reasoning, agent and alignment tasks, despite using fewer active parameters. Our results show that integrating a sparse MoE architecture into the training objective of masked diffusion language models still brings out MoE's strengths under efficient inference with few active parameters, and opens ample room for further exploration of diffusion language models. LLaDA-MoE models are available at Huggingface."
+  },
+  {
+    "paperId": "a7401a78effe175c7d9dbb999c130b36d9ef92a7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-16352",
+      "ArXiv": "2501.16352",
+      "DOI": "10.48550/arXiv.2501.16352",
+      "CorpusId": 275931854
+    },
+    "title": "Mixture of Experts (MoE): A Big Data Perspective",
+    "venue": "Information Fusion",
+    "year": 2025,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.16352, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2248178756",
+        "name": "Wensheng Gan"
+      },
+      {
+        "authorId": "2342503240",
+        "name": "Zhenyao Ning"
+      },
+      {
+        "authorId": "2181671526",
+        "name": "Zhenlian Qi"
+      },
+      {
+        "authorId": "2261463959",
+        "name": "Philip S. Yu"
+      }
+    ],
+    "abstract": "As the era of big data arrives, traditional artificial intelligence algorithms have difficulty processing the demands of massive and diverse data. Mixture of experts (MoE) has shown excellent performance and broad application prospects. This paper provides an in-depth review and analysis of the latest progress in this field from multiple perspectives, including the basic principles, algorithmic models, key technical challenges, and application practices of MoE. First, we introduce the basic concept of MoE and its core idea and elaborate on its advantages over traditional single models. Then, we discuss the basic architecture of MoE and its main components, including the gating network, expert networks, and learning algorithms. Next, we review the applications of MoE in addressing key technical issues in big data. For each challenge, we provide specific MoE solutions and their innovations. Furthermore, we summarize the typical use cases of MoE in various application domains. This fully demonstrates the powerful capability of MoE in big data processing. We also analyze the advantages of MoE in big data environments. Finally, we explore the future development trends of MoE. We believe that MoE will become an important paradigm of artificial intelligence in the era of big data. In summary, this paper systematically elaborates on the principles, techniques, and applications of MoE in big data processing, providing theoretical and practical references to further promote the application of MoE in real scenarios."
+  },
+  {
+    "paperId": "fc6e70bf459eb0d7340dd47940a27e97ce3cbe8d",
+    "externalIds": {
+      "ArXiv": "2503.08564",
+      "DBLP": "conf/iros/HuangZDZ25",
+      "DOI": "10.1109/IROS60139.2025.11246585",
+      "CorpusId": 276928111
+    },
+    "title": "MoE-Loco: Mixture of Experts for Multitask Locomotion",
+    "venue": "IEEE/RJS International Conference on Intelligent RObots and Systems",
+    "year": 2025,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.08564, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2320821094",
+        "name": "R. Huang"
+      },
+      {
+        "authorId": "2216251632",
+        "name": "Shaoting Zhu"
+      },
+      {
+        "authorId": "2343697678",
+        "name": "Yilun Du"
+      },
+      {
+        "authorId": "2312396784",
+        "name": "Hang Zhao"
+      }
+    ],
+    "abstract": "We present MoE-Loco, a Mixture of Experts (MoE) framework for multitask locomotion for legged robots. Our method enables a single policy to handle diverse terrains, including bars, pits, stairs, slopes, and baffles, while supporting quadrupedal and bipedal gaits. Using MoE, we mitigate the gradient conflicts that typically arise in multitask reinforcement learning, improving both training efficiency and performance. Our experiments demonstrate that different experts naturally specialize in distinct locomotion behaviors, which can be leveraged for task migration and skill composition. We further validate our approach in both simulation and real-world deployment, showcasing its robustness and adaptability."
+  },
+  {
+    "paperId": "a1467bd0b11e96f1aac74a91d4842433fd2a9541",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-22323",
+      "ArXiv": "2505.22323",
+      "DOI": "10.48550/arXiv.2505.22323",
+      "CorpusId": 278959367
+    },
+    "title": "Advancing Expert Specialization for Better MoE",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.22323, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355274982",
+        "name": "Hongcan Guo"
+      },
+      {
+        "authorId": "2308303348",
+        "name": "Haolang Lu"
+      },
+      {
+        "authorId": "2308273962",
+        "name": "Guoshun Nan"
+      },
+      {
+        "authorId": "2363875114",
+        "name": "Bolun Chu"
+      },
+      {
+        "authorId": "2363877105",
+        "name": "Jialin Zhuang"
+      },
+      {
+        "authorId": "2363828380",
+        "name": "Yuan Yang"
+      },
+      {
+        "authorId": "2363877449",
+        "name": "Wenhao Che"
+      },
+      {
+        "authorId": "2113966687",
+        "name": "Sicong Leng"
+      },
+      {
+        "authorId": "2293485367",
+        "name": "Qimei Cui"
+      },
+      {
+        "authorId": "2276487516",
+        "name": "Xudong Jiang"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models enable efficient scaling of large language models (LLMs) by activating only a subset of experts per input. However, we observe that the commonly used auxiliary load balancing loss often leads to expert overlap and overly uniform routing, which hinders expert specialization and degrades overall performance during post-training. To address this, we propose a simple yet effective solution that introduces two complementary objectives: (1) an orthogonality loss to encourage experts to process distinct types of tokens, and (2) a variance loss to encourage more discriminative routing decisions. Gradient-level analysis demonstrates that these objectives are compatible with the existing auxiliary loss and contribute to optimizing the training process. Experimental results over various model architectures and across multiple benchmarks show that our method significantly enhances expert specialization. Notably, our method improves classic MoE baselines with auxiliary loss by up to 23.79%, while also maintaining load balancing in downstream tasks, without any architectural modifications or additional components. We will release our code to contribute to the community."
+  },
+  {
+    "paperId": "7d1e512888a2fa4e838c12a02ae7fce867d322a8",
+    "externalIds": {
+      "DBLP": "conf/icml/RajbhandariLYZA22",
+      "ArXiv": "2201.05596",
+      "CorpusId": 245986500
+    },
+    "title": "DeepSpeed-MoE: Advancing Mixture-of-Experts Inference and Training to Power Next-Generation AI Scale",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 509,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.05596, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32817044",
+        "name": "Samyam Rajbhandari"
+      },
+      {
+        "authorId": "2609325",
+        "name": "Conglong Li"
+      },
+      {
+        "authorId": "9088433",
+        "name": "Z. Yao"
+      },
+      {
+        "authorId": "2112111675",
+        "name": "Minjia Zhang"
+      },
+      {
+        "authorId": "3394222",
+        "name": "Reza Yazdani Aminabadi"
+      },
+      {
+        "authorId": "2942686",
+        "name": "A. A. Awan"
+      },
+      {
+        "authorId": "3299496",
+        "name": "Jeff Rasley"
+      },
+      {
+        "authorId": "2300208615",
+        "name": "Yuxiong He"
+      }
+    ],
+    "abstract": "As the training of giant dense models hits the boundary on the availability and capability of the hardware resources today, Mixture-of-Experts (MoE) models become one of the most promising model architectures due to their significant training cost reduction compared to a quality-equivalent dense model. Its training cost saving is demonstrated from encoder-decoder models (prior works) to a 5x saving for auto-aggressive language models (this work along with parallel explorations). However, due to the much larger model size and unique architecture, how to provide fast MoE model inference remains challenging and unsolved, limiting its practical usage. To tackle this, we present DeepSpeed-MoE, an end-to-end MoE training and inference solution as part of the DeepSpeed library, including novel MoE architecture designs and model compression techniques that reduce MoE model size by up to 3.7x, and a highly optimized inference system that provides 7.3x better latency and cost compared to existing MoE inference solutions. DeepSpeed-MoE offers an unprecedented scale and efficiency to serve massive MoE models with up to 4.5x faster and 9x cheaper inference compared to quality-equivalent dense models. We hope our innovations and systems help open a promising path to new directions in the large model landscape, a shift from dense to sparse MoE models, where training and deploying higher-quality models with fewer resources becomes more widely possible."
+  },
+  {
+    "paperId": "b1531bbddcf6205c749a09b330b4e5342f5ff88c",
+    "externalIds": {
+      "ArXiv": "2502.05172",
+      "DBLP": "journals/corr/abs-2502-05172",
+      "DOI": "10.48550/arXiv.2502.05172",
+      "CorpusId": 276235972
+    },
+    "title": "Joint MoE Scaling Laws: Mixture of Experts Can Be Memory Efficient",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 21,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.05172, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261391884",
+        "name": "Jan Ludziejewski"
+      },
+      {
+        "authorId": "2261392151",
+        "name": "Maciej Pi'oro"
+      },
+      {
+        "authorId": "2261391307",
+        "name": "Jakub Krajewski"
+      },
+      {
+        "authorId": "2344621744",
+        "name": "Maciej Stefaniak"
+      },
+      {
+        "authorId": "2261391303",
+        "name": "Michal Krutul"
+      },
+      {
+        "authorId": "2344621662",
+        "name": "Jan Mala'snicki"
+      },
+      {
+        "authorId": "2261392232",
+        "name": "Marek Cygan"
+      },
+      {
+        "authorId": "2268495134",
+        "name": "Piotr Sankowski"
+      },
+      {
+        "authorId": "2287756379",
+        "name": "Kamil Adamczewski"
+      },
+      {
+        "authorId": "2344618497",
+        "name": "Piotr Milo's"
+      },
+      {
+        "authorId": "25898662",
+        "name": "Sebastian Jaszczur"
+      }
+    ],
+    "abstract": "Mixture of Experts (MoE) architectures have significantly increased computational efficiency in both research and real-world applications of large-scale machine learning models. However, their scalability and efficiency under memory constraints remain relatively underexplored. In this work, we present joint scaling laws for dense and MoE models, incorporating key factors such as the number of active parameters, dataset size, and the number of experts. Our findings provide a principled framework for selecting the optimal MoE configuration under fixed memory and compute budgets. Surprisingly, we show that MoE models can be more memory-efficient than dense models, contradicting conventional wisdom. To derive and validate the theoretical predictions of our scaling laws, we conduct over 280 experiments with up to 2.7B active parameters and up to 5B total parameters. These results offer actionable insights for designing and deploying MoE models in practical large-scale training scenarios."
+  },
+  {
+    "paperId": "f01a9f38d99adf4cf11c7c0425caf2f2ad5c6eac",
+    "externalIds": {
+      "ArXiv": "2505.11432",
+      "DBLP": "journals/corr/abs-2505-11432",
+      "DOI": "10.48550/arXiv.2505.11432",
+      "CorpusId": 278715063
+    },
+    "title": "MegaScale-MoE: Large-Scale Communication-Efficient Training of Mixture-of-Experts Models in Production",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.11432, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2356577477",
+        "name": "Chao Jin"
+      },
+      {
+        "authorId": "2287104163",
+        "name": "Ziheng Jiang"
+      },
+      {
+        "authorId": "66318775",
+        "name": "Zhihao Bai"
+      },
+      {
+        "authorId": "2358777666",
+        "name": "Zheng Zhong"
+      },
+      {
+        "authorId": "2354129374",
+        "name": "Juncai Liu"
+      },
+      {
+        "authorId": "2286959876",
+        "name": "Xiang Li"
+      },
+      {
+        "authorId": "2305682698",
+        "name": "Ningxin Zheng"
+      },
+      {
+        "authorId": "2356797829",
+        "name": "Xi Wang"
+      },
+      {
+        "authorId": "2288872668",
+        "name": "Cong Xie"
+      },
+      {
+        "authorId": "2286915972",
+        "name": "Qi Huang"
+      },
+      {
+        "authorId": "2356587938",
+        "name": "Wen Heng"
+      },
+      {
+        "authorId": "2348864553",
+        "name": "Yiyuan Ma"
+      },
+      {
+        "authorId": "2305683890",
+        "name": "Wenlei Bao"
+      },
+      {
+        "authorId": "2329057567",
+        "name": "Size Zheng"
+      },
+      {
+        "authorId": "2352219020",
+        "name": "Xuegui Zheng"
+      },
+      {
+        "authorId": "2356941574",
+        "name": "Yanghua Peng"
+      },
+      {
+        "authorId": "2257447831",
+        "name": "Haibin Lin"
+      },
+      {
+        "authorId": null,
+        "name": "Xuanzhe Liu"
+      },
+      {
+        "authorId": "2273637128",
+        "name": "Xin Jin"
+      },
+      {
+        "authorId": null,
+        "name": "Xin Liu"
+      }
+    ],
+    "abstract": "We present MegaScale-MoE, a production system tailored for the efficient training of large-scale mixture-of-experts (MoE) models. MoE emerges as a promising architecture to scale large language models (LLMs) to unprecedented sizes, thereby enhancing model performance. However, existing MoE training systems experience a degradation in training efficiency, exacerbated by the escalating scale of MoE models and the continuous evolution of hardware. Recognizing the pivotal role of efficient communication in enhancing MoE training, MegaScale-MoE customizes communication-efficient parallelism strategies for attention and FFNs in each MoE layer and adopts a holistic approach to overlap communication with computation at both inter- and intra-operator levels. Additionally, MegaScale-MoE applies communication compression with adjusted communication patterns to lower precision, further improving training efficiency. When training a 352B MoE model on 1,440 NVIDIA Hopper GPUs, MegaScale-MoE achieves a training throughput of 1.41M tokens/s, improving the efficiency by 1.88X compared to Megatron-LM. We share our operational experience in accelerating MoE training and hope that by offering our insights in system design, this work will motivate future research in MoE systems."
+  },
+  {
+    "paperId": "57ed7527c45f6b685eeefc65abe083dd350cd579",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-11273",
+      "ArXiv": "2405.11273",
+      "DOI": "10.1109/TPAMI.2025.3532688",
+      "CorpusId": 269921303,
+      "PubMed": "40031848"
+    },
+    "title": "Uni-MoE: Scaling Unified Multimodal LLMs With Mixture of Experts",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2024,
+    "citationCount": 127,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2405.11273",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.11273, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118046679",
+        "name": "Yunxin Li"
+      },
+      {
+        "authorId": "2302405323",
+        "name": "Shenyuan Jiang"
+      },
+      {
+        "authorId": "33968873",
+        "name": "Baotian Hu"
+      },
+      {
+        "authorId": "2300330615",
+        "name": "Longyue Wang"
+      },
+      {
+        "authorId": "2266437328",
+        "name": "Wanqi Zhong"
+      },
+      {
+        "authorId": "2287969058",
+        "name": "Wenhan Luo"
+      },
+      {
+        "authorId": "2152343740",
+        "name": "Lin Ma"
+      },
+      {
+        "authorId": "2284915404",
+        "name": "Min Zhang"
+      }
+    ],
+    "abstract": "Recent advancements in Multimodal Large Language Models (MLLMs) underscore the significance of scalable models and data to boost performance, yet this often incurs substantial computational costs. Although the Mixture of Experts (MoE) architecture has been employed to scale large language or visual-language models efficiently, these efforts typically involve fewer experts and limited modalities. To address this, our work presents the pioneering attempt to develop a unified MLLM with the MoE architecture, named Uni-MoE that can handle a wide array of modalities. Specifically, it features modality-specific encoders with connectors for a unified multimodal representation. We also implement a sparse MoE architecture within the LLMs to enable efficient training and inference through modality-level data parallelism and expert-level model parallelism. To enhance the multi-expert collaboration and generalization, we present a progressive training strategy: 1) Cross-modality alignment using various connectors with different cross-modality data, 2) Training modality-specific experts with cross-modality instruction data to activate experts’ preferences, and 3) Tuning the whole Uni-MoE framework utilizing Low-Rank Adaptation (LoRA) on mixed multimodal instruction data. We evaluate the instruction-tuned Uni-MoE on a comprehensive set of multimodal datasets. The extensive experimental results demonstrate Uni-MoE's principal advantage of significantly reducing performance bias in handling mixed multimodal datasets, alongside improved multi-expert collaboration and generalization."
+  },
+  {
+    "paperId": "745594bd0dc3e9dc86f74e100cd2c98ed36256c0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-04081",
+      "ArXiv": "2401.04081",
+      "DOI": "10.48550/arXiv.2401.04081",
+      "CorpusId": 266844147
+    },
+    "title": "MoE-Mamba: Efficient Selective State Space Models with Mixture of Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 91,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04081, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261392151",
+        "name": "Maciej Pi'oro"
+      },
+      {
+        "authorId": "2278427988",
+        "name": "Kamil Ciebiera"
+      },
+      {
+        "authorId": "2278427725",
+        "name": "Krystian Kr'ol"
+      },
+      {
+        "authorId": "2261391884",
+        "name": "Jan Ludziejewski"
+      },
+      {
+        "authorId": "25898662",
+        "name": "Sebastian Jaszczur"
+      }
+    ],
+    "abstract": "State Space Models (SSMs) have become serious contenders in the field of sequential modeling, challenging the dominance of Transformers. At the same time, Mixture of Experts (MoE) has significantly improved Transformer-based Large Language Models, including recent state-of-the-art open models. We propose that to unlock the potential of SSMs for scaling, they should be combined with MoE. We showcase this on Mamba, a recent SSM-based model that achieves remarkable performance. Our model, MoE-Mamba, outperforms both Mamba and baseline Transformer-MoE. In particular, MoE-Mamba reaches the same performance as Mamba in $2.35\\times$ fewer training steps while preserving the inference performance gains of Mamba against Transformer."
+  },
+  {
+    "paperId": "5370fed735af6aabb0360513793875e512ad4a7b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-07652",
+      "ArXiv": "2403.07652",
+      "DOI": "10.48550/arXiv.2403.07652",
+      "CorpusId": 268363693
+    },
+    "title": "Harder Tasks Need More Experts: Dynamic Routing in MoE Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 74,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.07652, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2007771781",
+        "name": "Quzhe Huang"
+      },
+      {
+        "authorId": "1961228",
+        "name": "Zhenwei An"
+      },
+      {
+        "authorId": "2290907777",
+        "name": "Zhuang Nan"
+      },
+      {
+        "authorId": "2053641126",
+        "name": "Mingxu Tao"
+      },
+      {
+        "authorId": "2111574159",
+        "name": "Chen Zhang"
+      },
+      {
+        "authorId": "2239056878",
+        "name": "Yang Jin"
+      },
+      {
+        "authorId": "2266735757",
+        "name": "Kun Xu"
+      },
+      {
+        "authorId": "2266419021",
+        "name": "Liwei Chen"
+      },
+      {
+        "authorId": "2290972467",
+        "name": "Songfang Huang"
+      },
+      {
+        "authorId": "2115387922",
+        "name": "Yansong Feng"
+      }
+    ],
+    "abstract": "In this paper, we introduce a novel dynamic expert selection framework for Mixture of Experts (MoE) models, aiming to enhance computational efficiency and model performance by adjusting the number of activated experts based on input difficulty. Unlike traditional MoE approaches that rely on fixed Top-K routing, which activates a predetermined number of experts regardless of the input's complexity, our method dynamically selects experts based on the confidence level in expert selection for each input. This allows for a more efficient utilization of computational resources, activating more experts for complex tasks requiring advanced reasoning and fewer for simpler tasks. Through extensive evaluations, our dynamic routing method demonstrates substantial improvements over conventional Top-2 routing across various benchmarks, achieving an average improvement of 0.7% with less than 90% activated parameters. Further analysis shows our model dispatches more experts to tasks requiring complex reasoning skills, like BBH, confirming its ability to dynamically allocate computational resources in alignment with the input's complexity. Our findings also highlight a variation in the number of experts needed across different layers of the transformer model, offering insights into the potential for designing heterogeneous MoE frameworks. The code and models are available at https://github.com/ZhenweiAn/Dynamic_MoE."
+  },
+  {
+    "paperId": "0ad412319d4e186c26f423ccc94d560bcaffd997",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2308-15030",
+      "DOI": "10.1109/TC.2025.3575905",
+      "CorpusId": 278664711
+    },
+    "title": "Serving MoE Models on Resource-Constrained Edge Devices via Dynamic Expert Swapping",
+    "venue": "IEEE transactions on computers",
+    "year": 2025,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TC.2025.3575905?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TC.2025.3575905, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2279022002",
+        "name": "Rui Kong"
+      },
+      {
+        "authorId": "2144416765",
+        "name": "Yuanchun Li"
+      },
+      {
+        "authorId": "2235256501",
+        "name": "Weijun Wang"
+      },
+      {
+        "authorId": "2303975471",
+        "name": "Linghe Kong"
+      },
+      {
+        "authorId": "2276471113",
+        "name": "Yunxin Liu"
+      }
+    ],
+    "abstract": "Mixture of experts (MoE) is a popular technique in deep learning that improves model capacity with conditionally-activated parallel neural network modules (experts). However, serving MoE models in resource-constrained latency-critical edge scenarios is challenging due to the significantly increased model size and complexity. In this paper, we first analyze the behavior pattern of MoE models in continuous inference scenarios, which leads to three key observations about the expert activations, including temporal locality, exchangeability, and skippable computation. Based on these observations, we introduce PC-MoE, an inference framework for resource-constrained continuous MoE model serving. The core of PC-MoE is a new data structure, Parameter Committee, that intelligently maintains a subset of important experts in use to reduce resource consumption. To evaluate the effectiveness of PC-MoE, we conduct experiments using state-of-the-art MoE models on common computer vision and natural language processing tasks. The results demonstrate optimal trade-offs between resource consumption and model accuracy achieved by PC-MoE. For instance, on object detection tasks with the Swin-MoE model, our approach can reduce memory usage and latency by 42.34% and 18.63% with only 0.10% accuracy degradation."
+  },
+  {
+    "paperId": "3c75c242a8a2d15448d0911da4349791f224a776",
+    "externalIds": {
+      "ArXiv": "2511.12609",
+      "DBLP": "journals/corr/abs-2511-12609",
+      "DOI": "10.48550/arXiv.2511.12609",
+      "CorpusId": 283071820
+    },
+    "title": "Uni-MoE-2.0-Omni: Scaling Language-Centric Omnimodal Large Model with Advanced MoE, Training and Data",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.12609, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118046679",
+        "name": "Yunxin Li"
+      },
+      {
+        "authorId": "2266425853",
+        "name": "Xinyu Chen"
+      },
+      {
+        "authorId": "2302405323",
+        "name": "Shenyuan Jiang"
+      },
+      {
+        "authorId": "2285182534",
+        "name": "Haoyuan Shi"
+      },
+      {
+        "authorId": "2230018369",
+        "name": "Zhenyu Liu"
+      },
+      {
+        "authorId": "2359774396",
+        "name": "Xuanyu Zhang"
+      },
+      {
+        "authorId": "2392867077",
+        "name": "Nanhao Deng"
+      },
+      {
+        "authorId": "2149238600",
+        "name": "Zhenran Xu"
+      },
+      {
+        "authorId": "2292035671",
+        "name": "Yi Ma"
+      },
+      {
+        "authorId": "2257796182",
+        "name": "Meishan Zhang"
+      },
+      {
+        "authorId": "2142726660",
+        "name": "Baotian Hu"
+      },
+      {
+        "authorId": "2284915404",
+        "name": "Min Zhang"
+      }
+    ],
+    "abstract": "We present Uni-MoE 2.0 from the Lychee family. As a fully open-source omnimodal large model (OLM), it substantially advances Lychee's Uni-MoE series in language-centric multimodal understanding, reasoning, and generating. Based on the dense LLM, we build Uni-MoE-2.0-Omni from scratch through three core contributions: dynamic-capacity Mixture-of-Experts (MoE) design, a progressive training strategy enhanced with an iterative reinforcement strategy, and a carefully curated multimodal data matching technique. It is capable of omnimodal understanding, as well as generating images, text, and speech. Architecturally, our new MoE framework balances computational efficiency and capability for 10 cross-modal inputs using shared, routed, and null experts, while our Omni-Modality 3D RoPE ensures spatio-temporal cross-modality alignment in the self-attention layer. For training, following cross-modal pretraining, we use a progressive supervised fine-tuning strategy that activates modality-specific experts and is enhanced by balanced data composition and an iterative GSPO-DPO method to stabilise RL training and improve reasoning. Data-wise, the base model, trained on approximately 75B tokens of open-source multimodal data, is equipped with special speech and image generation tokens, allowing it to learn these generative tasks by conditioning its outputs on linguistic cues. Extensive evaluation across 85 benchmarks demonstrates that our model achieves SOTA or highly competitive performance against leading OLMs, surpassing Qwen2.5-Omni (trained with 1.2T tokens) on over 50 of 76 benchmarks. Key strengths include video understanding (+7% avg. of 8), omnimodallity understanding (+7% avg. of 4), and audiovisual reasoning (+4%). It also advances long-form speech processing (reducing WER by 4.2%) and leads in low-level image processing and controllable generation across 5 metrics."
+  },
+  {
+    "paperId": "3b600f989e35ffa15f8cca9439240ef1cbf09df5",
+    "externalIds": {
+      "DBLP": "conf/nips/YunCPWBZXLC24",
+      "ArXiv": "2410.08245",
+      "DOI": "10.48550/arXiv.2410.08245",
+      "CorpusId": 273323898
+    },
+    "title": "Flex-MoE: Modeling Arbitrary Modality Combination via the Flexible Mixture-of-Experts",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.08245, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324246676",
+        "name": "Sukwon Yun"
+      },
+      {
+        "authorId": "2300139561",
+        "name": "Inyoung Choi"
+      },
+      {
+        "authorId": "2290878135",
+        "name": "Jie Peng"
+      },
+      {
+        "authorId": "2274987784",
+        "name": "Yangfan Wu"
+      },
+      {
+        "authorId": "2325781133",
+        "name": "Jingxuan Bao"
+      },
+      {
+        "authorId": "2017756871",
+        "name": "Qiyiwen Zhang"
+      },
+      {
+        "authorId": "2325731874",
+        "name": "Jiayi Xin"
+      },
+      {
+        "authorId": "2325731619",
+        "name": "Qi Long"
+      },
+      {
+        "authorId": "2282507790",
+        "name": "Tianlong Chen"
+      }
+    ],
+    "abstract": "Multimodal learning has gained increasing importance across various fields, offering the ability to integrate data from diverse sources such as images, text, and personalized records, which are frequently observed in medical domains. However, in scenarios where some modalities are missing, many existing frameworks struggle to accommodate arbitrary modality combinations, often relying heavily on a single modality or complete data. This oversight of potential modality combinations limits their applicability in real-world situations. To address this challenge, we propose Flex-MoE (Flexible Mixture-of-Experts), a new framework designed to flexibly incorporate arbitrary modality combinations while maintaining robustness to missing data. The core idea of Flex-MoE is to first address missing modalities using a new missing modality bank that integrates observed modality combinations with the corresponding missing ones. This is followed by a uniquely designed Sparse MoE framework. Specifically, Flex-MoE first trains experts using samples with all modalities to inject generalized knowledge through the generalized router ($\\mathcal{G}$-Router). The $\\mathcal{S}$-Router then specializes in handling fewer modality combinations by assigning the top-1 gate to the expert corresponding to the observed modality combination. We evaluate Flex-MoE on the ADNI dataset, which encompasses four modalities in the Alzheimer's Disease domain, as well as on the MIMIC-IV dataset. The results demonstrate the effectiveness of Flex-MoE highlighting its ability to model arbitrary modality combinations in diverse missing modality scenarios. Code is available at https://github.com/UNITES-Lab/flex-moe."
+  },
+  {
+    "paperId": "07f1fbd2a036d3e75a9fb00b30a413981b7ff17e",
+    "externalIds": {
+      "DBLP": "conf/asplos/CaoLGSL0GZS25",
+      "ArXiv": "2411.11217",
+      "DOI": "10.1145/3669940.3707267",
+      "CorpusId": 274131566
+    },
+    "title": "MoE-Lightning: High-Throughput MoE Inference on Memory-constrained GPUs",
+    "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+    "year": 2024,
+    "citationCount": 58,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.11217, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2265490669",
+        "name": "Shiyi Cao"
+      },
+      {
+        "authorId": "2290853114",
+        "name": "Shu Liu"
+      },
+      {
+        "authorId": "2297848196",
+        "name": "Tyler Griggs"
+      },
+      {
+        "authorId": "2077592405",
+        "name": "Peter Schafhalter"
+      },
+      {
+        "authorId": "2238885972",
+        "name": "Xiaoxuan Liu"
+      },
+      {
+        "authorId": "2209360681",
+        "name": "Ying Sheng"
+      },
+      {
+        "authorId": "2254681613",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "143834867",
+        "name": "M. Zaharia"
+      },
+      {
+        "authorId": "2316149874",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": "Efficient deployment of large language models, particularly Mixture of Experts (MoE) models, on resource-constrained platforms presents significant challenges in terms of computational efficiency and memory utilization. The MoE architecture, renowned for its ability to increase model capacity without a proportional increase in inference cost, greatly reduces the token generation latency compared with dense models. However, the large model size makes MoE models inaccessible to individuals without high-end GPUs. In this paper, we propose a high-throughput MoE batch inference system, MoE-Lightning, that significantly outperforms past work. MoE-Lightning introduces a novel CPU-GPU-I/O pipelining schedule, CGOPipe, with paged weights to achieve high resource utilization, and a performance model, HRM, based on a Hierarchical Roofline Model we introduce to help find policies with higher throughput than existing systems. MoE-Lightning can achieve up to (10.3x) higher throughput than state-of-the-art offloading-enabled LLM inference systems for Mixtral 8x7B on a single T4 GPU (16GB). When the theoretical system throughput is bounded by the GPU memory, MoE-Lightning can reach the throughput upper bound with 2-3x less CPU memory, significantly increasing resource utilization. MoE-Lightning also supports efficient batch inference for much larger MoEs (e.g., Mixtral 8x22B and DBRX) on multiple low-cost GPUs (e.g., 2--4 T4s)."
+  },
+  {
+    "paperId": "2b3fdda4f5ace23ded018ce9fddd03c8fa5ef731",
+    "externalIds": {
+      "ArXiv": "2406.06563",
+      "DBLP": "journals/corr/abs-2406-06563",
+      "DOI": "10.48550/arXiv.2406.06563",
+      "CorpusId": 270379962
+    },
+    "title": "Skywork-MoE: A Deep Dive into Training Techniques for Mixture-of-Experts Language Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.06563, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2263421000",
+        "name": "Tianwen Wei"
+      },
+      {
+        "authorId": "2264387465",
+        "name": "Bo Zhu"
+      },
+      {
+        "authorId": "2263759170",
+        "name": "Liang Zhao"
+      },
+      {
+        "authorId": "2263934201",
+        "name": "Cheng Cheng"
+      },
+      {
+        "authorId": "2264501869",
+        "name": "Biye Li"
+      },
+      {
+        "authorId": "2264120205",
+        "name": "Weiwei Lü"
+      },
+      {
+        "authorId": "2263436071",
+        "name": "Peng Cheng"
+      },
+      {
+        "authorId": "2263534340",
+        "name": "Jianhao Zhang"
+      },
+      {
+        "authorId": "2213848720",
+        "name": "Xiaoyu Zhang"
+      },
+      {
+        "authorId": "2304645914",
+        "name": "Liang Zeng"
+      },
+      {
+        "authorId": "2264407156",
+        "name": "Xiaokun Wang"
+      },
+      {
+        "authorId": "2263715028",
+        "name": "Yutuan Ma"
+      },
+      {
+        "authorId": "2263413652",
+        "name": "Rui Hu"
+      },
+      {
+        "authorId": "2264103352",
+        "name": "Shuicheng Yan"
+      },
+      {
+        "authorId": "2293095227",
+        "name": "Han Fang"
+      },
+      {
+        "authorId": "2263493641",
+        "name": "Yahui Zhou"
+      }
+    ],
+    "abstract": "In this technical report, we introduce the training methodologies implemented in the development of Skywork-MoE, a high-performance mixture-of-experts (MoE) large language model (LLM) with 146 billion parameters and 16 experts. It is initialized from the pre-existing dense checkpoints of our Skywork-13B model. We explore the comparative effectiveness of upcycling versus training from scratch initializations. Our findings suggest that the choice between these two approaches should consider both the performance of the existing dense checkpoints and the MoE training budget. We highlight two innovative techniques: gating logit normalization, which improves expert diversification, and adaptive auxiliary loss coefficients, allowing for layer-specific adjustment of auxiliary loss coefficients. Our experimental results validate the effectiveness of these methods. Leveraging these techniques and insights, we trained our upcycled Skywork-MoE on a condensed subset of our SkyPile corpus. The evaluation results demonstrate that our model delivers strong performance across a wide range of benchmarks."
+  },
+  {
+    "paperId": "5c0a82558db7a885bf6b174c2ed4e52de558a000",
+    "externalIds": {
+      "DBLP": "conf/emnlp/JiangZZJYL24",
+      "ArXiv": "2404.10237",
+      "DOI": "10.18653/v1/2024.findings-emnlp.221",
+      "CorpusId": 269157636
+    },
+    "title": "Med-MoE: Mixture of Domain-Specific Experts for Lightweight Medical Vision-Language Models",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 74,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.10237, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2295676633",
+        "name": "Songtao Jiang"
+      },
+      {
+        "authorId": "2296791307",
+        "name": "Tuo Zheng"
+      },
+      {
+        "authorId": "2258787781",
+        "name": "Yan Zhang"
+      },
+      {
+        "authorId": "2295678698",
+        "name": "Yeying Jin"
+      },
+      {
+        "authorId": "2310203238",
+        "name": "Li Yuan"
+      },
+      {
+        "authorId": "2258784763",
+        "name": "Zuozhu Liu"
+      }
+    ],
+    "abstract": "Recent advancements in general-purpose or domain-specific multimodal large language models (LLMs) have witnessed remarkable progress for medical decision-making. However, they are designated for specific classification or generative tasks, and require model training or finetuning on large-scale datasets with sizeable parameters and tremendous computing, hindering their clinical utility across diverse resource-constrained scenarios in practice. In this paper, we propose a novel and lightweight framework Med-MoE (Mixture-of-Experts) that tackles both discriminative and generative multimodal medical tasks. The learning of Med-MoE consists of three steps: multimodal medical alignment, instruction tuning and routing, and domain-specific MoE tuning. After aligning multimodal medical images with LLM tokens, we then enable the model for different multimodal medical tasks with instruction tuning, together with a trainable router tailored for expert selection across input modalities. Finally, the model is tuned by integrating the router with multiple domain-specific experts, which are selectively activated and further empowered by meta expert. Comprehensive experiments on both open- and close-end medical question answering (Med-VQA) and image classification tasks across datasets such as VQA-RAD, SLAKE and Path-VQA demonstrate that our model can achieve performance superior to or on par with state-of-the-art baselines, while only requiring approximately 30\\%-50\\% of activated model parameters. Extensive analysis and ablations corroborate the effectiveness and practical utility of our method."
+  },
+  {
+    "paperId": "59b4b5b1e2198f264536d83e33d96b0a45ed3bac",
+    "externalIds": {
+      "ArXiv": "2402.11260",
+      "DBLP": "journals/corr/abs-2402-11260",
+      "DOI": "10.48550/arXiv.2402.11260",
+      "CorpusId": 267751418
+    },
+    "title": "MoRAL: MoE Augmented LoRA for LLMs' Lifelong Learning",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 71,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.11260, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2284694841",
+        "name": "Shu Yang"
+      },
+      {
+        "authorId": "2260606436",
+        "name": "M. Ali"
+      },
+      {
+        "authorId": "2257398718",
+        "name": "Cheng-Long Wang"
+      },
+      {
+        "authorId": "2153121378",
+        "name": "Lijie Hu"
+      },
+      {
+        "authorId": "2260640875",
+        "name": "Di Wang"
+      }
+    ],
+    "abstract": "Adapting large language models (LLMs) to new domains/tasks and enabling them to be efficient lifelong learners is a pivotal challenge. In this paper, we propose MoRAL, i.e., Mixture-of-Experts augmented Low-Rank Adaptation for Lifelong Learning. MoRAL combines the multi-tasking abilities of MoE with the fine-tuning abilities of LoRA for effective life-long learning of LLMs. In contrast to the conventional approaches that use factual triplets as inputs MoRAL relies on simple question-answer pairs, which is a more practical and effective strategy for robust and efficient learning. Owing to new data settings, we introduce a new evaluation benchmark namely: Life Long Learning of LLM (5L-bench) encompassing a newly curated dataset of question-answer pairs, and a set of evaluation metrics for rigorous evaluation of MoRAL in open-book and closed-book settings. Experimental evaluation shows (i) LLMs learn fast in open-book settings with up to 30.15% improvement in\"RA\"for Phi-2-2.7B compared to closed-book (for models fine-tuned with MoRAL); (ii) MoRAL shows higher performance improvement for models with a greater number of parameters; (iii) MoRAL is robust to catastrophic forgetting offering better knowledge retention compared to baselines."
+  },
+  {
+    "paperId": "7a944dc164895d923498347894c7ed780d944066",
+    "externalIds": {
+      "ArXiv": "2410.10469",
+      "DBLP": "journals/corr/abs-2410-10469",
+      "DOI": "10.48550/arXiv.2410.10469",
+      "CorpusId": 273345306
+    },
+    "title": "Moirai-MoE: Empowering Time Series Foundation Models with Sparse Mixture of Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 78,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.10469, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325895586",
+        "name": "Xu Liu"
+      },
+      {
+        "authorId": "2325898537",
+        "name": "Juncheng Liu"
+      },
+      {
+        "authorId": "151488390",
+        "name": "Gerald Woo"
+      },
+      {
+        "authorId": "2051712707",
+        "name": "Taha İbrahim Aksu"
+      },
+      {
+        "authorId": "2258794428",
+        "name": "Yuxuan Liang"
+      },
+      {
+        "authorId": "2249532794",
+        "name": "Roger Zimmermann"
+      },
+      {
+        "authorId": "2257133300",
+        "name": "Chenghao Liu"
+      },
+      {
+        "authorId": "2238207181",
+        "name": "Silvio Savarese"
+      },
+      {
+        "authorId": "2292439981",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "36187119",
+        "name": "Doyen Sahoo"
+      }
+    ],
+    "abstract": "Time series foundation models have demonstrated impressive performance as zero-shot forecasters. However, achieving effectively unified training on time series remains an open challenge. Existing approaches introduce some level of model specialization to account for the highly heterogeneous nature of time series data. For instance, Moirai pursues unified training by employing multiple input/output projection layers, each tailored to handle time series at a specific frequency. Similarly, TimesFM maintains a frequency embedding dictionary for this purpose. We identify two major drawbacks to this human-imposed frequency-level model specialization: (1) Frequency is not a reliable indicator of the underlying patterns in time series. For example, time series with different frequencies can display similar patterns, while those with the same frequency may exhibit varied patterns. (2) Non-stationarity is an inherent property of real-world time series, leading to varied distributions even within a short context window of a single time series. Frequency-level specialization is too coarse-grained to capture this level of diversity. To address these limitations, this paper introduces Moirai-MoE, using a single input/output projection layer while delegating the modeling of diverse time series patterns to the sparse mixture of experts (MoE) within Transformers. With these designs, Moirai-MoE reduces reliance on human-defined heuristics and enables automatic token-level specialization. Extensive experiments on 39 datasets demonstrate the superiority of Moirai-MoE over existing foundation models in both in-distribution and zero-shot scenarios. Furthermore, this study conducts comprehensive model analyses to explore the inner workings of time series MoE foundation models and provides valuable insights for future research."
+  },
+  {
+    "paperId": "32b8ec099d9d4e42a7912930243dc80a8e717a89",
+    "externalIds": {
+      "DBLP": "conf/iclr/0001Z0Y25",
+      "ArXiv": "2410.07348",
+      "DOI": "10.48550/arXiv.2410.07348",
+      "CorpusId": 273233844
+    },
+    "title": "MoE++: Accelerating Mixture-of-Experts Methods with Zero-Computation Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.07348, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2185571736",
+        "name": "Peng Jin"
+      },
+      {
+        "authorId": "2326254303",
+        "name": "Bo Zhu"
+      },
+      {
+        "authorId": "2326448562",
+        "name": "Li Yuan"
+      },
+      {
+        "authorId": "2277903531",
+        "name": "Shuicheng Yan"
+      }
+    ],
+    "abstract": "In this work, we aim to simultaneously enhance the effectiveness and efficiency of Mixture-of-Experts (MoE) methods. To achieve this, we propose MoE++, a general and heterogeneous MoE framework that integrates both Feed-Forward Network~(FFN) and zero-computation experts. Specifically, we introduce three types of zero-computation experts: the zero expert, copy expert, and constant expert, which correspond to discard, skip, and replace operations, respectively. This design offers three key advantages: (i) Low Computing Overhead: Unlike the uniform mixing mechanism for all tokens within vanilla MoE, MoE++ allows each token to engage with a dynamic number of FFNs, be adjusted by constant vectors, or even skip the MoE layer entirely. (ii) High Performance: By enabling simple tokens to utilize fewer FFN experts, MoE++ allows more experts to focus on challenging tokens, thereby unlocking greater performance potential than vanilla MoE. (iii) Deployment Friendly: Given that zero-computation experts have negligible parameters, we can deploy all zero-computation experts on each GPU, eliminating the significant communication overhead and expert load imbalance associated with FFN experts distributed across different GPUs. Moreover, we leverage gating residuals, enabling each token to consider the pathway taken in the previous layer when selecting the appropriate experts. Extensive experimental results demonstrate that MoE++ achieves better performance while delivering 1.1-2.1x expert forward throughput compared to a vanilla MoE model of the same size, which lays a solid foundation for developing advanced and efficient MoE-related models."
+  },
+  {
+    "paperId": "51c507cdbf0825c558f0792eecd8d0912a38803b",
+    "externalIds": {
+      "DBLP": "conf/iccad/ZhongLWW0024",
+      "ArXiv": "2408.10284",
+      "DOI": "10.1145/3676536.3676741",
+      "CorpusId": 271909199
+    },
+    "title": "AdapMoE: Adaptive Sensitivity-Based Expert Gating and Management for Efficient MoE Inference",
+    "venue": "International Conference on Computer Aided Design",
+    "year": 2024,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.10284, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2152247696",
+        "name": "Shuzhang Zhong"
+      },
+      {
+        "authorId": "2316484067",
+        "name": "Ling Liang"
+      },
+      {
+        "authorId": "2283503122",
+        "name": "Yuan Wang"
+      },
+      {
+        "authorId": "2156024611",
+        "name": "Runsheng Wang"
+      },
+      {
+        "authorId": "2241633995",
+        "name": "Ru Huang"
+      },
+      {
+        "authorId": "2265418123",
+        "name": "Meng Li"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models are designed to enhance the efficiency of large language models (LLMs) without proportionally increasing the computational demands. However, their deployment on edge devices still faces significant challenges due to high on-demand loading overheads from managing sparsely activated experts. This paper introduces AdapMoE, an algorithm-system co-design framework for efficient MoE inference. AdapMoE features adaptive expert gating and management to reduce the on-demand loading overheads. We observe the heterogeneity of experts loading across layers and tokens, based on which we propose a sensitivity-based strategy to adjust the number of activated experts dynamically. Meanwhile, we also integrate advanced prefetching and cache management techniques to further reduce the loading latency. Through comprehensive evaluations on various platforms, we demonstrate AdapMoE consistently outperforms existing techniques, reducing the average number of activated experts by 25% and achieving a 1.35× speedup without accuracy degradation. Code is available at: https://github.com/PKU-SEC-Lab/AdapMoE."
+  },
+  {
+    "paperId": "5e612ce3f2fdde6906aba85f1e7ab5113add1212",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-14361",
+      "DOI": "10.48550/arXiv.2401.14361",
+      "CorpusId": 267211688
+    },
+    "title": "MoE-Infinity: Activation-Aware Expert Offloading for Efficient MoE Serving",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2401.14361?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2401.14361, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2239273279",
+        "name": "Leyang Xue"
+      },
+      {
+        "authorId": "2281075036",
+        "name": "Yao Fu"
+      },
+      {
+        "authorId": "2281044305",
+        "name": "Zhan Lu"
+      },
+      {
+        "authorId": "2275153068",
+        "name": "Luo Mai"
+      },
+      {
+        "authorId": "2281034882",
+        "name": "Mahesh K. Marina"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "bf01278f323c023bbf83f5b9bdbca7eca29b76b9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2408-15881",
+      "ArXiv": "2408.15881",
+      "DOI": "10.48550/arXiv.2408.15881",
+      "CorpusId": 271974282
+    },
+    "title": "LLaVA-MoD: Making LLaVA Tiny via MoE Knowledge Distillation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.15881, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2273645084",
+        "name": "Fangxun Shu"
+      },
+      {
+        "authorId": "47303356",
+        "name": "Yue Liao"
+      },
+      {
+        "authorId": "2300371391",
+        "name": "Le Zhuo"
+      },
+      {
+        "authorId": "2317892093",
+        "name": "Chenning Xu"
+      },
+      {
+        "authorId": "2317156788",
+        "name": "Guanghao Zhang"
+      },
+      {
+        "authorId": "2350286273",
+        "name": "Haonan Shi"
+      },
+      {
+        "authorId": "2326998845",
+        "name": "Long Chen"
+      },
+      {
+        "authorId": "2317108517",
+        "name": "Tao Zhong"
+      },
+      {
+        "authorId": "2266409364",
+        "name": "Wanggui He"
+      },
+      {
+        "authorId": "2266441102",
+        "name": "Siming Fu"
+      },
+      {
+        "authorId": "2382824285",
+        "name": "Haoyuan Li"
+      },
+      {
+        "authorId": "2318175722",
+        "name": "Bolin Li"
+      },
+      {
+        "authorId": "2266420226",
+        "name": "Zhelun Yu"
+      },
+      {
+        "authorId": "2274864015",
+        "name": "Si Liu"
+      },
+      {
+        "authorId": "2274921216",
+        "name": "Hongsheng Li"
+      },
+      {
+        "authorId": "2266552062",
+        "name": "Hao Jiang"
+      }
+    ],
+    "abstract": "We introduce LLaVA-MoD, a novel framework designed to enable the efficient training of small-scale Multimodal Language Models (s-MLLM) by distilling knowledge from large-scale MLLM (l-MLLM). Our approach tackles two fundamental challenges in MLLM distillation. First, we optimize the network structure of s-MLLM by integrating a sparse Mixture of Experts (MoE) architecture into the language model, striking a balance between computational efficiency and model expressiveness. Second, we propose a progressive knowledge transfer strategy to ensure comprehensive knowledge migration. This strategy begins with mimic distillation, where we minimize the Kullback-Leibler (KL) divergence between output distributions to enable the student model to emulate the teacher network's understanding. Following this, we introduce preference distillation via Direct Preference Optimization (DPO), where the key lies in treating l-MLLM as the reference model. During this phase, the s-MLLM's ability to discriminate between superior and inferior examples is significantly enhanced beyond l-MLLM, leading to a better student that surpasses its teacher, particularly in hallucination benchmarks. Extensive experiments demonstrate that LLaVA-MoD outperforms existing models across various multimodal benchmarks while maintaining a minimal number of activated parameters and low computational costs. Remarkably, LLaVA-MoD, with only 2B activated parameters, surpasses Qwen-VL-Chat-7B by an average of 8.8% across benchmarks, using merely 0.3% of the training data and 23% trainable parameters. These results underscore LLaVA-MoD's ability to effectively distill comprehensive knowledge from its teacher model, paving the way for the development of more efficient MLLMs. The code will be available on: https://github.com/shufangxun/LLaVA-MoD."
+  },
+  {
+    "paperId": "01c0aa81249038e75f6e0df7aff718646388b2ad",
+    "externalIds": {
+      "ArXiv": "2404.08452",
+      "DBLP": "journals/corr/abs-2404-08452",
+      "DOI": "10.1109/TDSC.2025.3604443",
+      "CorpusId": 269137085
+    },
+    "title": "MoE-FFD: Mixture of Experts for Generalized and Parameter-Efficient Face Forgery Detection",
+    "venue": "IEEE Transactions on Dependable and Secure Computing",
+    "year": 2024,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.08452, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2249761297",
+        "name": "Chenqi Kong"
+      },
+      {
+        "authorId": "2118613498",
+        "name": "Anwei Luo"
+      },
+      {
+        "authorId": "2316861911",
+        "name": "Peijun Bao"
+      },
+      {
+        "authorId": "2296837197",
+        "name": "Yi Yu"
+      },
+      {
+        "authorId": "2261079305",
+        "name": "Haoliang Li"
+      },
+      {
+        "authorId": "2316892625",
+        "name": "Zengwei Zheng"
+      },
+      {
+        "authorId": "2283201042",
+        "name": "Shiqi Wang"
+      },
+      {
+        "authorId": "2238620441",
+        "name": "A. Kot"
+      }
+    ],
+    "abstract": "Deepfakes have recently raised significant trust issues and security concerns among the public. Compared to CNN-based face forgery detectors, ViT-based methods take advantage of the expressivity of transformers, achieving superior detection performance. However, these approaches still exhibit the following limitations: (1) Fully fine-tuning ViT-based models from ImageNet weights demands substantial computational and storage resources; (2) ViT-based methods struggle to capture local forgery clues, leading to model bias; (3) These methods limit their scope on only one or few face forgery features, resulting in limited generalizability. To tackle these challenges, this work introduces Mixture-of-Experts modules for Face Forgery Detection (MoE-FFD), a generalized yet parameter-efficient ViT-based approach. MoE-FFD only updates lightweight Low-Rank Adaptation (LoRA) and Adapter layers while keeping the ViT backbone frozen, thereby achieving parameter-efficient training. Moreover, MoE-FFD leverages the expressivity of transformers and local priors of CNNs to simultaneously extract global and local forgery clues. Additionally, novel MoE modules are designed to scale the model’s capacity and smartly select optimal forgery experts, further enhancing forgery detection performance. Our proposed learning scheme can be seamlessly adapted to various transformer backbones in a plug-and-play manner. Extensive experimental results demonstrate that the proposed method achieves state-of-the-art face forgery detection performance with significantly reduced parameter overhead in cross-dataset, cross-manipulation, and robustness evaluations. Our ablation studies further validate the effectiveness of the designed components and the proposed learning scheme."
+  },
+  {
+    "paperId": "1bc9865ebf52b59abac7f5ee4456ff2ac37fcff3",
+    "externalIds": {
+      "ArXiv": "2202.08906",
+      "CorpusId": 248496391
+    },
+    "title": "ST-MoE: Designing Stable and Transferable Sparse Expert Models",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 354,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.08906, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "49596195",
+        "name": "Sameer Kumar"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      }
+    ],
+    "abstract": "Scale has opened new frontiers in natural language processing -- but at a high cost. In response, Mixture-of-Experts (MoE) and Switch Transformers have been proposed as an energy efficient path to even larger and more capable language models. But advancing the state-of-the-art across a broad set of natural language tasks has been hindered by training instabilities and uncertain quality during fine-tuning. Our work focuses on these issues and acts as a design guide. We conclude by scaling a sparse model to 269B parameters, with a computational cost comparable to a 32B dense encoder-decoder Transformer (Stable and Transferable Mixture-of-Experts or ST-MoE-32B). For the first time, a sparse model achieves state-of-the-art performance in transfer learning, across a diverse set of tasks including reasoning (SuperGLUE, ARC Easy, ARC Challenge), summarization (XSum, CNN-DM), closed book question answering (WebQA, Natural Questions), and adversarially constructed tasks (Winogrande, ANLI R3)."
+  },
+  {
+    "paperId": "c772554f4d3a7dbcb1c28ed7fc90e305822fb138",
+    "externalIds": {
+      "DBLP": "conf/acl/HuangAZTZJXCHF24",
+      "DOI": "10.18653/v1/2024.acl-long.696",
+      "CorpusId": 271895204
+    },
+    "title": "Harder Task Needs More Experts: Dynamic Routing in MoE Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.18653/v1/2024.acl-long.696?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.18653/v1/2024.acl-long.696, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2007771781",
+        "name": "Quzhe Huang"
+      },
+      {
+        "authorId": "1961228",
+        "name": "Zhenwei An"
+      },
+      {
+        "authorId": "2290907777",
+        "name": "Zhuang Nan"
+      },
+      {
+        "authorId": "2053641126",
+        "name": "Mingxu Tao"
+      },
+      {
+        "authorId": "2111574159",
+        "name": "Chen Zhang"
+      },
+      {
+        "authorId": "2239056878",
+        "name": "Yang Jin"
+      },
+      {
+        "authorId": "2266735757",
+        "name": "Kun Xu"
+      },
+      {
+        "authorId": "2266419021",
+        "name": "Liwei Chen"
+      },
+      {
+        "authorId": "2290972467",
+        "name": "Songfang Huang"
+      },
+      {
+        "authorId": "2115387922",
+        "name": "Yansong Feng"
+      }
+    ],
+    "abstract": "In this paper, we introduce a novel dynamic expert selection framework for Mixture of Experts (MoE) models, aiming to enhance computational efficiency and model performance by adjusting the number of activated experts based on input difficulty. Unlike existing MoE approaches that rely on fixed TopK Routing, which activates a predetermined number of experts regardless of the input’s complexity, our method dynamically allocates experts based on the confidence level in expert selection for each input. This allows for more efficient utilization of computational resources, activating more experts for complex tasks requiring advanced reasoning and fewer for simpler tasks. Through extensive evaluations, our dynamic routing method demonstrates substantial improvements over Top2 Routing across various benchmarks, achieving an average improvement of 0.7% with less than 90% activated parameters. Further analysis shows our model dispatches more experts to tasks requiring complex reasoning skills, like BBH, confirming its ability to dynamically allocate computational resources in alignment with the input’s complexity. Our findings also highlight a variation in the number of experts needed across different layers of the transformer model, offering insights into the potential for designing heterogeneous MoE frameworks. The code and models are available at https://github.com/ZhenweiAn/Dynamic_MoE."
+  },
+  {
+    "paperId": "86f014f66e484f477fe729023ee5d30537a299d6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-22134",
+      "ArXiv": "2410.22134",
+      "DOI": "10.48550/arXiv.2410.22134",
+      "CorpusId": 273661769
+    },
+    "title": "ProMoE: Fast MoE-based LLM Serving using Proactive Caching",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.22134, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2160597550",
+        "name": "Xiaoniu Song"
+      },
+      {
+        "authorId": "2282383088",
+        "name": "Zihan Zhong"
+      },
+      {
+        "authorId": "2328158633",
+        "name": "Rong Chen"
+      }
+    ],
+    "abstract": "The promising applications of large language models are often limited by the constrained GPU memory capacity available on edge devices. Mixture-of-Experts (MoE) models help address this issue by activating only a subset of the model's parameters during computation. This approach allows the unused parameters to be offloaded to host memory, thereby reducing the overall GPU memory demand. However, existing cache-based offloading solutions handle cache misses reactively, which significantly impacts system performance. In this paper, we introduce ProMoE, a novel proactive caching system that utilizes intermediate results to predict subsequent expert usage. By proactively fetching experts in advance, ProMoE eliminates passive cache misses, removes loading time from the critical path, and reduces the performance overhead associated with offloading. Our evaluations demonstrate that ProMoE achieves an average speedup of 2.20x (up to 3.21x) and 2.07x (up to 5.02x) in the prefill and decode stages, respectively, compared to existing offloading solutions."
+  },
+  {
+    "paperId": "300f45605c373826bf7d1800749bc85305276a7f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2411-01433",
+      "ArXiv": "2411.01433",
+      "DOI": "10.48550/arXiv.2411.01433",
+      "CorpusId": 273812295
+    },
+    "title": "HOBBIT: A Mixed Precision Expert Offloading System for Fast MoE Inference",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.01433, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283158213",
+        "name": "Peng Tang"
+      },
+      {
+        "authorId": "2319414678",
+        "name": "Jiacheng Liu"
+      },
+      {
+        "authorId": "2260331102",
+        "name": "Xiaofeng Hou"
+      },
+      {
+        "authorId": "2323677255",
+        "name": "Yifei Pu"
+      },
+      {
+        "authorId": "2152447086",
+        "name": "Jing Wang"
+      },
+      {
+        "authorId": "2274486861",
+        "name": "Pheng-Ann Heng"
+      },
+      {
+        "authorId": "2257175537",
+        "name": "Chao Li"
+      },
+      {
+        "authorId": "2323332373",
+        "name": "Minyi Guo"
+      }
+    ],
+    "abstract": "The Mixture-of-Experts (MoE) architecture has demonstrated significant advantages in the era of Large Language Models (LLMs), offering enhanced capabilities with reduced inference costs. However, deploying MoE-based LLMs on memoryconstrained edge devices remains challenging due to their substantial memory requirements. While existing expertoffloading methods alleviate the memory requirements, they often incur significant expert-loading costs or compromise model accuracy. We present HOBBIT, a mixed precision expert offloading system to enable flexible and efficient MoE inference. Our key insight is that dynamically replacing less critical cache-miss experts with low precision versions can substantially reduce expert-loading latency while preserving model accuracy. HOBBIT introduces three innovative techniques that map the natural hierarchy of MoE computation: (1) a token-level dynamic expert loading mechanism, (2) a layer-level adaptive expert prefetching technique, and (3) a sequence-level multidimensional expert caching policy. These innovations fully leverage the benefits of mixedprecision expert inference. By implementing HOBBIT on top of the renowned LLM inference framework Llama.cpp, we evaluate its performance across different edge devices with representative MoE models. The results demonstrate that HOBBIT achieves up to a 9.93x speedup in decoding compared to state-of-the-art MoE offloading systems."
+  },
+  {
+    "paperId": "a2781a5583ca624d569783850d035de8a58ecf13",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-06270",
+      "ArXiv": "2410.06270",
+      "DOI": "10.48550/arXiv.2410.06270",
+      "CorpusId": 273228208
+    },
+    "title": "MC-MoE: Mixture Compressor for Mixture-of-Experts LLMs Gains More",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.06270, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238025837",
+        "name": "Wei Huang"
+      },
+      {
+        "authorId": "2325825544",
+        "name": "Yue Liao"
+      },
+      {
+        "authorId": "2331871803",
+        "name": "Jianhui Liu"
+      },
+      {
+        "authorId": "2053865518",
+        "name": "Ruifei He"
+      },
+      {
+        "authorId": "2261330517",
+        "name": "Haoru Tan"
+      },
+      {
+        "authorId": "2283311183",
+        "name": "Shiming Zhang"
+      },
+      {
+        "authorId": "2274921216",
+        "name": "Hongsheng Li"
+      },
+      {
+        "authorId": "2325537006",
+        "name": "Si Liu"
+      },
+      {
+        "authorId": "2283520395",
+        "name": "Xiaojuan Qi"
+      }
+    ],
+    "abstract": "Mixture-of-Experts large language models (MoE-LLMs) marks a significant step forward of language models, however, they encounter two critical challenges in practice: 1) expert parameters lead to considerable memory consumption and loading latency; and 2) the current activated experts are redundant, as many tokens may only require a single expert. Motivated by these issues, we investigate the MoE-LLMs and make two key observations: a) different experts exhibit varying behaviors on activation reconstruction error, routing scores, and activated frequencies, highlighting their differing importance, and b) not all tokens are equally important -- only a small subset is critical. Building on these insights, we propose MC, a training-free Mixture-Compressor for MoE-LLMs, which leverages the significance of both experts and tokens to achieve an extreme compression. First, to mitigate storage and loading overheads, we introduce Pre-Loading Mixed-Precision Quantization, which formulates the adaptive bit-width allocation as a Linear Programming problem, where the objective function balances multi-factors reflecting the importance of each expert. Additionally, we develop Online Dynamic Pruning, which identifies important tokens to retain and dynamically select activated experts for other tokens during inference to optimize efficiency while maintaining performance. Our MC integrates static quantization and dynamic pruning to collaboratively achieve extreme compression for MoE-LLMs with less accuracy loss, ensuring an optimal trade-off between performance and efficiency. Extensive experiments confirm the effectiveness of our approach. For instance, at 2.54 bits, MC compresses 76.6% of the model, with only a 3.8% average accuracy loss. During dynamic inference, we further reduce activated parameters by 15%, with a performance drop of less than 0.6%."
+  },
+  {
+    "paperId": "00814e5631c20bec502838a1e8040b3f5f258971",
+    "externalIds": {
+      "DBLP": "conf/emnlp/YangSXHGD0YC024",
+      "ArXiv": "2411.01016",
+      "DOI": "10.18653/v1/2024.findings-emnlp.612",
+      "CorpusId": 273811289
+    },
+    "title": "MoE-I²: Compressing Mixture of Experts Models through Inter-Expert Pruning and Intra-Expert Low-Rank Decomposition",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2411.01016",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.01016, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2329224758",
+        "name": "Cheng Yang"
+      },
+      {
+        "authorId": "2117517225",
+        "name": "Yang Sui"
+      },
+      {
+        "authorId": "2196307128",
+        "name": "Jinqi Xiao"
+      },
+      {
+        "authorId": "2152279863",
+        "name": "Lingyi Huang"
+      },
+      {
+        "authorId": "2168502148",
+        "name": "Yu Gong"
+      },
+      {
+        "authorId": "2329727095",
+        "name": "Yuanlin Duan"
+      },
+      {
+        "authorId": "2297818320",
+        "name": "Wenqi Jia"
+      },
+      {
+        "authorId": "1471722186",
+        "name": "Miao Yin"
+      },
+      {
+        "authorId": "2275615387",
+        "name": "Yu Cheng"
+      },
+      {
+        "authorId": "2241581494",
+        "name": "Bo Yuan"
+      }
+    ],
+    "abstract": "The emergence of Mixture of Experts (MoE) LLMs has significantly advanced the development of language models. Compared to traditional LLMs, MoE LLMs outperform traditional LLMs by achieving higher performance with considerably fewer activated parameters. Despite this efficiency, their enormous parameter size still leads to high deployment costs. In this paper, we introduce a two-stage compression method tailored for MoE to reduce the model size and decrease the computational cost. First, in the inter-expert pruning stage, we analyze the importance of each layer and propose the Layer-wise Genetic Search and Block-wise KT-Reception Field with the non-uniform pruning ratio to prune the individual expert. Second, in the intra-expert decomposition stage, we apply the low-rank decomposition to further compress the parameters within the remaining experts. Extensive experiments on Qwen1.5-MoE-A2.7B, DeepSeek-V2-Lite, and Mixtral-8$\\times$7B demonstrate that our proposed methods can both reduce the model size and enhance inference efficiency while maintaining performance in various zero-shot tasks. The code will be available at \\url{https://github.com/xiaochengsky/MoEI-2.git}"
+  },
+  {
+    "paperId": "3f89a1d552c2271640d352c860282fabf5694960",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-12013",
+      "ArXiv": "2410.12013",
+      "DOI": "10.48550/arXiv.2410.12013",
+      "CorpusId": 273375561
+    },
+    "title": "MoE-Pruner: Pruning Mixture-of-Experts Large Language Model using the Hints from Its Router",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.12013, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2154871174",
+        "name": "Yanyue Xie"
+      },
+      {
+        "authorId": "2287236091",
+        "name": "Zhi Zhang"
+      },
+      {
+        "authorId": "2327299791",
+        "name": "Ding Zhou"
+      },
+      {
+        "authorId": "2326256882",
+        "name": "Cong Xie"
+      },
+      {
+        "authorId": "2114792194",
+        "name": "Ziang Song"
+      },
+      {
+        "authorId": "2327164167",
+        "name": "Xin Liu"
+      },
+      {
+        "authorId": "2290628977",
+        "name": "Yanzhi Wang"
+      },
+      {
+        "authorId": "2322988586",
+        "name": "Xue Lin"
+      },
+      {
+        "authorId": "2326119631",
+        "name": "An Xu"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) architectures face challenges such as high memory consumption and redundancy in experts. Pruning MoE can reduce network weights while maintaining model performance. Motivated by the recent observation of emergent large magnitude features in Large Language Models (LLM) and MoE routing policy, we propose MoE-Pruner, a method that prunes weights with the smallest magnitudes multiplied by the corresponding input activations and router weights, on each output neuron. Our pruning method is one-shot, requiring no retraining or weight updates. We evaluate our method on Mixtral-8x7B and Mixtral-8x22B across multiple language benchmarks. Experimental results show that our pruning method significantly outperforms state-of-the-art LLM pruning methods. Furthermore, our pruned MoE models can benefit from a pretrained teacher model through expert-wise knowledge distillation, improving performance post-pruning. Experimental results demonstrate that the Mixtral-8x7B model with 50% sparsity maintains 99% of the performance of the original model after the expert-wise knowledge distillation."
+  },
+  {
+    "paperId": "a5001fd96ee93464791072904818d90f739a4662",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-13920",
+      "ArXiv": "2401.13920",
+      "DOI": "10.48550/arXiv.2401.13920",
+      "CorpusId": 267212059
+    },
+    "title": "LocMoE: A Low-overhead MoE for Large Language Model Training",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.13920, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281080618",
+        "name": "Jing Li"
+      },
+      {
+        "authorId": "2281088111",
+        "name": "Zhijie Sun"
+      },
+      {
+        "authorId": "2281097319",
+        "name": "Xuan He"
+      },
+      {
+        "authorId": "2281290604",
+        "name": "Li Zeng"
+      },
+      {
+        "authorId": "2419213961",
+        "name": "Yi Lin"
+      },
+      {
+        "authorId": "2281036901",
+        "name": "Entong Li"
+      },
+      {
+        "authorId": "2281089110",
+        "name": "Binfan Zheng"
+      },
+      {
+        "authorId": "2163791567",
+        "name": "Rongqian Zhao"
+      },
+      {
+        "authorId": "2281303940",
+        "name": "Xin Chen"
+      }
+    ],
+    "abstract": "The Mixtures-of-Experts (MoE) model is a widespread distributed and integrated learning method for large language models (LLM), which is favored due to its ability to sparsify and expand models efficiently. However, the performance of MoE is limited by load imbalance and high latency of All-to-All communication, along with relatively redundant computation owing to large expert capacity. Load imbalance may result from existing routing policies that consistently tend to select certain experts. The frequent inter-node communication in the All-to-All procedure also significantly prolongs the training time. To alleviate the above performance problems, we propose a novel routing strategy that combines load balance and locality by converting partial inter-node communication to that of intra-node. Notably, we elucidate that there is a minimum threshold for expert capacity, calculated through the maximal angular deviation between the gating weights of the experts and the assigned tokens. We port these modifications on the PanGu-Σ model based on the MindSpore framework with multi-level routing and conduct experiments on Ascend clusters. The experiment results demonstrate that the proposed LocMoE reduces training time per epoch by 12.68% to 22.24% compared to classical routers, such as hash router and switch router, without impacting the model accuracy."
+  },
+  {
+    "paperId": "a3e291672dc00d380d9bcdeb72bbaebe80e743e8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2504-14960",
+      "ArXiv": "2504.14960",
+      "DOI": "10.48550/arXiv.2504.14960",
+      "CorpusId": 277955066
+    },
+    "title": "MoE Parallel Folding: Heterogeneous Parallelism Mappings for Efficient Large-Scale MoE Model Training with Megatron Core",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.14960, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109071684",
+        "name": "Zhenhuan Liu"
+      },
+      {
+        "authorId": "2325199465",
+        "name": "Zijie Yan"
+      },
+      {
+        "authorId": "2305064257",
+        "name": "Xinhao Yao"
+      },
+      {
+        "authorId": "2325200012",
+        "name": "Tong Liu"
+      },
+      {
+        "authorId": "3111334",
+        "name": "V. Korthikanti"
+      },
+      {
+        "authorId": "2356549763",
+        "name": "Evan Wu"
+      },
+      {
+        "authorId": "2325206494",
+        "name": "Shiqing Fan"
+      },
+      {
+        "authorId": "2356545983",
+        "name": "Gao Deng"
+      },
+      {
+        "authorId": "51133532",
+        "name": "Hongxiao Bai"
+      },
+      {
+        "authorId": "1491319211",
+        "name": "Ashwath Aithal"
+      },
+      {
+        "authorId": "47304697",
+        "name": "M. Andersch"
+      },
+      {
+        "authorId": "1911755",
+        "name": "M. Shoeybi"
+      },
+      {
+        "authorId": "2256816253",
+        "name": "Jiajie Yao"
+      },
+      {
+        "authorId": "2233226468",
+        "name": "Chandler Zhou"
+      },
+      {
+        "authorId": "2321728269",
+        "name": "David Wu"
+      },
+      {
+        "authorId": "2963446",
+        "name": "Xipeng Li"
+      },
+      {
+        "authorId": "2004057395",
+        "name": "J. Yang"
+      }
+    ],
+    "abstract": "Mixture of Experts (MoE) models enhance neural network scalability by dynamically selecting relevant experts per input token, enabling larger model sizes while maintaining manageable computation costs. However, efficient training of large-scale MoE models across thousands of GPUs presents significant challenges due to limitations in existing parallelism strategies. We introduce an end-to-end training framework for large-scale MoE models that utilizes five-dimensional hybrid parallelism: Tensor Parallelism, Expert Parallelism, Context Parallelism, Data Parallelism, and Pipeline Parallelism. Central to our approach is MoE Parallel Folding, a novel strategy that decouples the parallelization of attention and MoE layers in Transformer models, allowing each layer type to adopt optimal parallel configurations. Additionally, we develop a flexible token-level dispatcher that supports both token-dropping and token-dropless MoE training across all five dimensions of parallelism. This dispatcher accommodates dynamic tensor shapes and coordinates different parallelism schemes for Attention and MoE layers, facilitating complex parallelism implementations. Our experiments demonstrate significant improvements in training efficiency and scalability. We achieve up to 49.3% Model Flops Utilization (MFU) for the Mixtral 8x22B model and 39.0% MFU for the Qwen2-57B-A14B model on H100 GPUs, outperforming existing methods. The framework scales efficiently up to 1,024 GPUs and maintains high performance with sequence lengths up to 128K tokens, validating its effectiveness for large-scale MoE model training. The code is available in Megatron-Core."
+  },
+  {
+    "paperId": "5aae7d84f8eaa55f3386cee41d94769e7ab01e9d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2309-05444",
+      "ArXiv": "2309.05444",
+      "DOI": "10.48550/arXiv.2309.05444",
+      "CorpusId": 261697072
+    },
+    "title": "Pushing Mixture of Experts to the Limit: Extremely Parameter Efficient MoE for Instruction Tuning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 164,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.05444",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.05444, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2212363034",
+        "name": "Ted Zadouri"
+      },
+      {
+        "authorId": "82290814",
+        "name": "A. Ustun"
+      },
+      {
+        "authorId": "2186822213",
+        "name": "Arash Ahmadian"
+      },
+      {
+        "authorId": "2239102266",
+        "name": "Beyza Ermics"
+      },
+      {
+        "authorId": "153563548",
+        "name": "Acyr F. Locatelli"
+      },
+      {
+        "authorId": "2261493078",
+        "name": "Sara Hooker"
+      }
+    ],
+    "abstract": "The Mixture of Experts (MoE) is a widely known neural architecture where an ensemble of specialized sub-models optimizes overall performance with a constant computational cost. However, conventional MoEs pose challenges at scale due to the need to store all experts in memory. In this paper, we push MoE to the limit. We propose extremely parameter-efficient MoE by uniquely combining MoE architecture with lightweight experts.Our MoE architecture outperforms standard parameter-efficient fine-tuning (PEFT) methods and is on par with full fine-tuning by only updating the lightweight experts -- less than 1% of an 11B parameters model. Furthermore, our method generalizes to unseen tasks as it does not depend on any prior task knowledge. Our research underscores the versatility of the mixture of experts architecture, showcasing its ability to deliver robust performance even when subjected to rigorous parameter constraints. Our code used in all the experiments is publicly available here: https://github.com/for-ai/parameter-efficient-moe."
+  },
+  {
+    "paperId": "2bc796d5aff8e4323ebb7b2d62da34384f765e32",
+    "externalIds": {
+      "ArXiv": "2310.18339",
+      "DBLP": "conf/sigir/Liu00ZX0024",
+      "DOI": "10.1145/3626772.3657722",
+      "CorpusId": 264590549
+    },
+    "title": "When MOE Meets LLMs: Parameter Efficient Fine-tuning for Multi-task Medical Applications",
+    "venue": "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": 2023,
+    "citationCount": 154,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.18339, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2240559309",
+        "name": "Qidong Liu"
+      },
+      {
+        "authorId": "2258675923",
+        "name": "Xian Wu"
+      },
+      {
+        "authorId": "2261673614",
+        "name": "Xiangyu Zhao"
+      },
+      {
+        "authorId": "2051691467",
+        "name": "Yuanshao Zhu"
+      },
+      {
+        "authorId": "2262514619",
+        "name": "Derong Xu"
+      },
+      {
+        "authorId": "2244621655",
+        "name": "Feng Tian"
+      },
+      {
+        "authorId": "2179980880",
+        "name": "Yefeng Zheng"
+      }
+    ],
+    "abstract": "The recent surge in Large Language Models (LLMs) has garnered significant attention across numerous fields. Fine-tuning is often required to fit general LLMs for a specific domain, like the web-based healthcare system. However, two problems arise during fine-tuning LLMs for medical applications. One is the task variety problem, which involves distinct tasks in real-world medical scenarios. The variety often leads to sub-optimal fine-tuning for data imbalance and seesaw problems. Besides, the large amount of parameters in LLMs leads to huge time and computation consumption by fine-tuning. To address these two problems, we propose a novel parameter efficient fine-tuning framework for multi-task medical applications, dubbed as MOELoRA. The designed framework aims to absorb both the benefits of mixture-of-expert (MOE) for multi-task learning and low-rank adaptation (LoRA) for parameter efficient fine-tuning. For unifying MOE and LoRA, we devise multiple experts as the trainable parameters, where each expert consists of a pair of low-rank matrices to retain the small size of trainable parameters. Then, a task-motivated gate function for all MOELoRA layers is proposed, which can control the contributions of each expert and produce distinct parameters for various tasks. We conduct experiments on a multi-task medical dataset, indicating MOELoRA outperforms the existing parameter efficient fine-tuning methods. The code is available online."
+  },
+  {
+    "paperId": "8fd651ee196a73dfb7f3c5e9b83fca54a04d9e81",
+    "externalIds": {
+      "ArXiv": "2411.01595",
+      "DBLP": "journals/tgrs/LinHGLJJW25",
+      "DOI": "10.1109/TGRS.2025.3547988",
+      "CorpusId": 273812125
+    },
+    "title": "RS-MoE: A Vision–Language Model With Mixture of Experts for Remote Sensing Image Captioning and Visual Question Answering",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.01595, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2329230774",
+        "name": "Hui Lin"
+      },
+      {
+        "authorId": "2329103506",
+        "name": "Danfeng Hong"
+      },
+      {
+        "authorId": "2329104840",
+        "name": "Shuhang Ge"
+      },
+      {
+        "authorId": "30436383",
+        "name": "Chuyao Luo"
+      },
+      {
+        "authorId": "2382441001",
+        "name": "Kai Jiang"
+      },
+      {
+        "authorId": "2330358904",
+        "name": "Hao Jin"
+      },
+      {
+        "authorId": "2329165106",
+        "name": "Congcong Wen"
+      }
+    ],
+    "abstract": "Remote sensing image captioning (RSIC) presents unique challenges and plays a critical role in applications such as environmental monitoring, urban planning, and disaster management. Traditional RSIC methods often struggle to produce rich and diverse descriptions. Recently, with significant advancements in vision-language models (VLMs), efforts have emerged to integrate these models into the remote sensing domain and to introduce richly descriptive datasets specifically designed to enhance VLM training. However, most current RSIC models generally apply only fine-tuning to these datasets without developing models tailored to the unique characteristics of remote sensing imagery. This article proposes RS-MoE, the first mixture of expert (MoE)-based VLM specifically customized for remote sensing domain. Unlike traditional MoE models, the core of RS-MoE is the MoE block, which incorporates a novel instruction router and multiple lightweight large language models (LLMs) as expert models. The instruction router is designed to generate specific prompts tailored for each corresponding LLM, guiding them to focus on distinct aspects of the RSIC task. This design not only allows each expert LLM to concentrate on a specific subset of the task, thereby enhancing the specificity and accuracy of the generated captions, but also improves the scalability of the model by facilitating parallel processing of subtasks. In addition, we present a two-stage training strategy for tuning our RS-MoE model to prevent performance degradation due to sparsity. We fine-tuned our model on the RSICap dataset using our proposed training strategy. Experimental results on the RSICap dataset, along with evaluations on other traditional datasets where no additional fine-tuning was applied, demonstrate that our model achieves state-of-the-art performance in generating precise and contextually relevant captions. Notably, our RS-MoE-1B variant achieves performance comparable to 13B VLMs, demonstrating the efficiency of our model design. Moreover, our model demonstrates promising generalization capabilities by consistently achieving state-of-the-art performance on the remote sensing visual question answering (RSVQA) task."
+  },
+  {
+    "paperId": "394ff691966b419e0a6f24c661aa3c7d45b66bd2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-05089",
+      "ArXiv": "2404.05089",
+      "DOI": "10.48550/arXiv.2404.05089",
+      "CorpusId": 269005367
+    },
+    "title": "SEER-MoE: Sparse Expert Efficiency through Regularization for Mixture-of-Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.05089, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2294360330",
+        "name": "Alex Muzio"
+      },
+      {
+        "authorId": "2182888796",
+        "name": "A. Sun"
+      },
+      {
+        "authorId": "2047010823",
+        "name": "Churan He"
+      }
+    ],
+    "abstract": "The advancement of deep learning has led to the emergence of Mixture-of-Experts (MoEs) models, known for their dynamic allocation of computational resources based on input. Despite their promise, MoEs face challenges, particularly in terms of memory requirements. To address this, our work introduces SEER-MoE, a novel two-stage framework for reducing both the memory footprint and compute requirements of pre-trained MoE models. The first stage involves pruning the total number of experts using a heavy-hitters counting guidance, while the second stage employs a regularization-based fine-tuning strategy to recover accuracy loss and reduce the number of activated experts during inference. Our empirical studies demonstrate the effectiveness of our method, resulting in a sparse MoEs model optimized for inference efficiency with minimal accuracy trade-offs."
+  },
+  {
+    "paperId": "773597e8acb8c9ee2a4603e0bd40bb74b7fba871",
+    "externalIds": {
+      "DBLP": "journals/tpds/ZhangXWYHZC24",
+      "DOI": "10.1109/TPDS.2024.3385639",
+      "CorpusId": 269024443
+    },
+    "title": "MPMoE: Memory Efficient MoE for Pre-Trained Models With Adaptive Pipeline Parallelism",
+    "venue": "IEEE Transactions on Parallel and Distributed Systems",
+    "year": 2024,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPDS.2024.3385639?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPDS.2024.3385639, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2274734490",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "2111131052",
+        "name": "Yaqi Xia"
+      },
+      {
+        "authorId": "2295845990",
+        "name": "Hulin Wang"
+      },
+      {
+        "authorId": "2007708782",
+        "name": "Donglin Yang"
+      },
+      {
+        "authorId": "2110276046",
+        "name": "Chuang Hu"
+      },
+      {
+        "authorId": "2278825938",
+        "name": "Xiaobo Zhou"
+      },
+      {
+        "authorId": "1778706",
+        "name": "Dazhao Cheng"
+      }
+    ],
+    "abstract": "In recent years, the Mixture-of-Experts (MoE) technique has gained widespread popularity as a means to scale pre-trained models to exceptionally large sizes. Dynamic activation of experts allows for conditional computation, increasing the number of parameters of neural networks, which is critical for absorbing the vast amounts of knowledge available in many deep learning areas. However, despite the existing system and algorithm optimizations, there are significant challenges to be tackled when it comes to the inefficiencies of communication and memory consumption. In this paper, we present the design and implementation of MPMoE, a high-performance library that accelerates MoE training with adaptive and memory-efficient pipeline parallelism. Inspired by that the MoE training procedure can be divided into multiple independent sub-stages. We design a pipeline parallelism method for reducing communication latency by overlapping with computation operations. Further, we analyze the memory footprint breakdown of MoE training and identify that activations and temporary buffers are the primary contributors to the overall memory footprint. Toward memory efficiency, we propose memory reuse strategies to reduce memory requirements by eliminating memory redundancies. Finally, to optimize pipeline granularity and memory reuse strategies jointly, we propose a profile-based algorithm and a performance model to determine the configurations of MPMoE at runtime. We implement MPMoE upon PyTorch and evaluate it with common MoE models in two physical clusters, including 64 NVIDIA A100 GPU cards and 16 NVIDIA V100 GPU cards. Compared with the state-of-art approach, MPMoE achieves up to 2.3× speedup while reducing more than 30% memory footprint for training large models."
+  },
+  {
+    "paperId": "c1a290ca505f4b30222cd2de9d8c984d8af351c5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-04938",
+      "ArXiv": "2407.04938",
+      "DOI": "10.48550/arXiv.2407.04938",
+      "CorpusId": 271051538
+    },
+    "title": "SAM-Med3D-MoE: Towards a Non-Forgetting Segment Anything Model via Mixture of Experts for 3D Medical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2024,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.04938, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2279318397",
+        "name": "Guoan Wang"
+      },
+      {
+        "authorId": "2276055870",
+        "name": "Jin Ye"
+      },
+      {
+        "authorId": "2237743184",
+        "name": "Junlong Cheng"
+      },
+      {
+        "authorId": "2118911039",
+        "name": "Tian-Xin Li"
+      },
+      {
+        "authorId": "2310507788",
+        "name": "Zhaolin Chen"
+      },
+      {
+        "authorId": "2249720327",
+        "name": "Jianfei Cai"
+      },
+      {
+        "authorId": "2310574751",
+        "name": "Junjun He"
+      },
+      {
+        "authorId": "3194022",
+        "name": "Bohan Zhuang"
+      }
+    ],
+    "abstract": "Volumetric medical image segmentation is pivotal in enhancing disease diagnosis, treatment planning, and advancing medical research. While existing volumetric foundation models for medical image segmentation, such as SAM-Med3D and SegVol, have shown remarkable performance on general organs and tumors, their ability to segment certain categories in clinical downstream tasks remains limited. Supervised Finetuning (SFT) serves as an effective way to adapt such foundation models for task-specific downstream tasks but at the cost of degrading the general knowledge previously stored in the original foundation model.To address this, we propose SAM-Med3D-MoE, a novel framework that seamlessly integrates task-specific finetuned models with the foundational model, creating a unified model at minimal additional training expense for an extra gating network. This gating network, in conjunction with a selection strategy, allows the unified model to achieve comparable performance of the original models in their respective tasks both general and specialized without updating any parameters of them.Our comprehensive experiments demonstrate the efficacy of SAM-Med3D-MoE, with an average Dice performance increase from 53 to 56.4 on 15 specific classes. It especially gets remarkable gains of 29.6, 8.5, 11.2 on the spinal cord, esophagus, and right hip, respectively. Additionally, it achieves 48.9 Dice on the challenging SPPIN2023 Challenge, significantly surpassing the general expert's performance of 32.3. We anticipate that SAM-Med3D-MoE can serve as a new framework for adapting the foundation model to specific areas in medical image analysis. Codes and datasets will be publicly available."
+  },
+  {
+    "paperId": "f67fc0ac665d7b999ce4d67866688f564fd0f55f",
+    "externalIds": {
+      "ArXiv": "2411.15708",
+      "DBLP": "journals/corr/abs-2411-15708",
+      "DOI": "10.48550/arXiv.2411.15708",
+      "CorpusId": 274234365
+    },
+    "title": "LLaMA-MoE v2: Exploring Sparsity of LLaMA from Perspective of Mixture-of-Experts with Post-Training",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.15708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2265753258",
+        "name": "Xiaoye Qu"
+      },
+      {
+        "authorId": "2187286687",
+        "name": "Daize Dong"
+      },
+      {
+        "authorId": "2332306988",
+        "name": "Xuyang Hu"
+      },
+      {
+        "authorId": "1914586128",
+        "name": "Tong Zhu"
+      },
+      {
+        "authorId": "2225238340",
+        "name": "Weigao Sun"
+      },
+      {
+        "authorId": "2307325455",
+        "name": "Yu Cheng"
+      }
+    ],
+    "abstract": "Recently, inspired by the concept of sparsity, Mixture-of-Experts (MoE) models have gained increasing popularity for scaling model size while keeping the number of activated parameters constant. In this study, we thoroughly investigate the sparsity of the dense LLaMA model by constructing MoE for both the attention (i.e., Attention MoE) and MLP (i.e., MLP MoE) modules in the transformer blocks. Specifically, we investigate different expert construction methods and granularities under the same activation conditions to analyze the impact of sparsifying the model. Additionally, to comprehensively evaluate the model's capabilities across various domains (e.g., conversation, code, math) after sparsification, we apply sparsity to the instructed large language models (LLMs) and construct instructed MoE models. To counteract the performance degradation resulting from increased sparsity, we design a two-stage post-training strategy to enhance model performance. Experiments on the LLaMA3 model demonstrate the potential effectiveness of this approach for future developments of instructed MoE models. The source codes and models are available at: \\url{https://github.com/OpenSparseLLMs/LLaMA-MoE-v2}."
+  },
+  {
+    "paperId": "13e82959431a5109b826511f9f5bb2430367923a",
+    "externalIds": {
+      "ArXiv": "2412.11557",
+      "DBLP": "journals/corr/abs-2412-11557",
+      "DOI": "10.48550/arXiv.2412.11557",
+      "CorpusId": 274777418
+    },
+    "title": "Enhancing Healthcare Recommendation Systems with a Multimodal LLMs-based MOE Architecture",
+    "venue": "IET Conference Proceedings",
+    "year": 2024,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.11557, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2336399286",
+        "name": "Jingyu Xu"
+      },
+      {
+        "authorId": "2335559756",
+        "name": "Yang Wang"
+      }
+    ],
+    "abstract": "With the increasing availability of multimodal data, many fields urgently require advanced architectures capable of effectively integrating these diverse data sources to address specific problems. This study proposes a hybrid recommendation model that combines the Mixture of Experts (MOE) framework with large language models to enhance the performance of recommendation systems in the healthcare domain. We built a small dataset for recommending healthy food based on patient descriptions and evaluated the model's performance on several key metrics, including Precision, Recall, NDCG, and MAP@5. The experimental results show that the hybrid model outperforms the baseline models, which use MOE or large language models individually, in terms of both accuracy and personalized recommendation effectiveness. The paper finds image data provided relatively limited improvement in the performance of the personalized recommendation system, particularly in addressing the cold start problem. Then, the issue of reclassification of images also affected the recommendation results, especially when dealing with low-quality images or changes in the appearance of items, leading to suboptimal performance. The findings provide valuable insights into the development of powerful, scalable, and high-performance recommendation systems, advancing the application of personalized recommendation technologies in real-world domains such as healthcare."
+  },
+  {
+    "paperId": "3ed178316be914658a80e561bf00576577f34389",
+    "externalIds": {
+      "DBLP": "conf/isca/HwangWCHTCY24",
+      "ArXiv": "2308.12066",
+      "DOI": "10.1109/ISCA59077.2024.00078",
+      "CorpusId": 261076133
+    },
+    "title": "Pre-gated MoE: An Algorithm-System Co-Design for Fast and Scalable Mixture-of-Expert Inference",
+    "venue": "International Symposium on Computer Architecture",
+    "year": 2023,
+    "citationCount": 116,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.12066, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1693977395",
+        "name": "Ranggi Hwang"
+      },
+      {
+        "authorId": "2141318960",
+        "name": "Jianyu Wei"
+      },
+      {
+        "authorId": "2072595192",
+        "name": "Shijie Cao"
+      },
+      {
+        "authorId": "9767431",
+        "name": "Changho Hwang"
+      },
+      {
+        "authorId": "2118488028",
+        "name": "Xiaohu Tang"
+      },
+      {
+        "authorId": "2069445596",
+        "name": "Ting Cao"
+      },
+      {
+        "authorId": "2168609907",
+        "name": "Mao Yang"
+      }
+    ],
+    "abstract": "Large language models (LLMs) based on transformers have made significant strides in recent years, the success of which is driven by scaling up their model size. Despite their high algorithmic performance, the computational and memory requirements of LLMs present unprecedented challenges. To tackle the high compute requirements of LLMs, the Mixture-ofExperts (MoE) architecture was introduced which is able to scale its model size without proportionally scaling up its computational requirements. Unfortunately, MoE’s high memory demands and dynamic activation of sparse experts restrict its applicability to real-world problems. Previous solutions that offload MoE’s memory-hungry expert parameters to CPU memory fall short because the latency to migrate activated experts from CPU to GPU incurs high performance overhead. Our proposed Pre-gated MoE system effectively tackles the compute and memory challenges of conventional MoE architectures using our algorithm-system codesign. Pre-gated MoE employs our novel pre-gating function which alleviates the dynamic nature of sparse expert activation, allowing our proposed system to address the large memory footprint of MoEs while also achieving high performance. We demonstrate that Pre-gated MoE is able to improve performance, reduce GPU memory consumption, while also maintaining the same level of model quality. These features allow our Pre-gated MoE system to cost-effectively deploy large-scale LLMs using just a single GPU with high performance."
+  },
+  {
+    "paperId": "a4382a9b1edba07e0af4df2ff6a4bce22f4e55b5",
+    "externalIds": {
+      "DBLP": "conf/iccv/ChenCDRYCWL23",
+      "DOI": "10.1109/ICCV51070.2023.01591",
+      "CorpusId": 265408230
+    },
+    "title": "AdaMV-MoE: Adaptive Multi-Task Vision Mixture-of-Experts",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 115,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV51070.2023.01591?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV51070.2023.01591, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2034263179",
+        "name": "Tianlong Chen"
+      },
+      {
+        "authorId": "1753619492",
+        "name": "Xuxi Chen"
+      },
+      {
+        "authorId": "2349763923",
+        "name": "Xianzhi Du"
+      },
+      {
+        "authorId": "2268087840",
+        "name": "Abdullah Rashwan"
+      },
+      {
+        "authorId": "2266048669",
+        "name": "Fan Yang"
+      },
+      {
+        "authorId": "2266066105",
+        "name": "Huizhong Chen"
+      },
+      {
+        "authorId": "2266111379",
+        "name": "Zhangyang Wang"
+      },
+      {
+        "authorId": "2268099755",
+        "name": "Yeqing Li"
+      }
+    ],
+    "abstract": "Sparsely activated Mixture-of-Experts (MoE) is becoming a promising paradigm for multi-task learning (MTL). Instead of compressing multiple tasks’ knowledge into a single model, MoE separates the parameter space and only utilizes the relevant model pieces given task type and its input, which provides stabilized MTL training and ultra-efficient inference. However, current MoE approaches adopt a fixed network capacity (e.g., two experts in usual) for all tasks. It potentially results in the over-fitting of simple tasks or the under-fitting of challenging scenarios, especially when tasks are significantly distinctive in their complexity. In this paper, we propose an adaptive MoE framework for multi-task vision recognition, dubbed AdaMV-MoE. Based on the training dynamics, it automatically determines the number of activated experts for each task, avoiding the laborious manual tuning of optimal model size. To validate our proposal, we benchmark it on ImageNet classification and COCO object detection & instance segmentation which are notoriously difficult to learn in concert, due to their discrepancy. Extensive experiments across a variety of vision transformers demonstrate a superior performance of AdaMV-MoE, compared to MTL with a shared backbone and the recent state-of-the-art (SoTA) MTL MoE approach. Codes are available online: https://github.com/google-research/google-research/tree/master/moe_mtl."
+  },
+  {
+    "paperId": "edd6ab58eebeb551130a127ea34b265b27d22da6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2411-14519",
+      "ArXiv": "2411.14519",
+      "DOI": "10.1109/CVPR52734.2025.00653",
+      "CorpusId": 274192822
+    },
+    "title": "Tra-MoE: Learning Trajectory Prediction Model from Multiple Domains for Adaptive Policy Conditioning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2024,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.14519, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2220590629",
+        "name": "Jiange Yang"
+      },
+      {
+        "authorId": "2331578393",
+        "name": "Haoyi Zhu"
+      },
+      {
+        "authorId": "2282545307",
+        "name": "Yating Wang"
+      },
+      {
+        "authorId": "2249716237",
+        "name": "Gangshan Wu"
+      },
+      {
+        "authorId": "2325202989",
+        "name": "Tong He"
+      },
+      {
+        "authorId": "2290519814",
+        "name": "Limin Wang"
+      }
+    ],
+    "abstract": "Learning from multiple domains is a primary factor that influences the generalization of a single unified robot system. In this paper, we aim to learn the trajectory prediction model by using broad out-of-domain data to improve its performance and generalization ability. Trajectory model is designed to predict any-point trajectories in the current frame given an instruction and can provide detailed control guidance for robotic policy learning. To handle the diverse out-of-domain data distribution, we propose a sparsely-gated MoE (Top-1 gating strategy) architecture for trajectory model, coined as Tra-MoE. The sparse activation design enables good balance between parameter cooperation and specialization, effectively benefiting from large-scale out-of-domain data while maintaining constant FLOPs per token. In addition, we further introduce an adaptive policy conditioning technique by learning 2D mask representations for predicted trajectories, which is explicitly aligned with image observations to guide action prediction more flexibly. We perform extensive experiments on both simulation and real-world scenarios to verify the effectiveness of Tra-MoE and adaptive policy conditioning technique. We also conduct a comprehensive empirical study to train Tra-MoE, demonstrating that our Tra-MoE consistently exhibits superior performance compared to the dense baseline model, even when the latter is scaled to match Tra-MoE’s parameter count."
+  }
+]

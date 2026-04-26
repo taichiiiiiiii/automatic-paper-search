@@ -1,0 +1,43 @@
+{
+  "paperId": "bb91890813c63d833cbfd0bf1ce9c4d618c19b40",
+  "externalIds": {
+    "ArXiv": "2603.01491",
+    "DBLP": "journals/corr/abs-2603-01491",
+    "DOI": "10.48550/arXiv.2603.01491",
+    "CorpusId": 286223088
+  },
+  "title": "Radiometrically Consistent Gaussian Surfels for Inverse Rendering",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "referenceCount": 45,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.01491, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2260322068",
+      "name": "Kyujin Han"
+    },
+    {
+      "authorId": "2268288089",
+      "name": "Jaeyoon Kim"
+    },
+    {
+      "authorId": "2160554256",
+      "name": "W. Kim"
+    },
+    {
+      "authorId": "115026943",
+      "name": "Jinhwan Seo"
+    },
+    {
+      "authorId": "2331463016",
+      "name": "Sung-eui Yoon"
+    }
+  ],
+  "abstract": "Inverse rendering with Gaussian Splatting has advanced rapidly, but accurately disentangling material properties from complex global illumination effects, particularly indirect illumination, remains a major challenge. Existing methods often query indirect radiance from Gaussian primitives pre-trained for novel-view synthesis. However, these pre-trained Gaussian primitives are supervised only towards limited training viewpoints, thus lack supervision for modeling indirect radiances from unobserved views. To address this issue, we introduce radiometric consistency, a novel physically-based constraint that provides supervision towards unobserved views by minimizing the residual between each Gaussian primitive's learned radiance and its physically-based rendered counterpart. Minimizing the residual for unobserved views establishes a self-correcting feedback loop that provides supervision from both physically-based rendering and novel-view synthesis, enabling accurate modeling of inter-reflection. We then propose Radiometrically Consistent Gaussian Surfels (RadioGS), an inverse rendering framework built upon our principle by efficiently integrating radiometric consistency by utilizing Gaussian surfels and 2D Gaussian ray tracing. We further propose a finetuning-based relighting strategy that adapts Gaussian surfel radiances to new illuminations within minutes, achieving low rendering cost (<10ms). Extensive experiments on existing inverse rendering benchmarks show that RadioGS outperforms existing Gaussian-based methods in inverse rendering, while retaining the computational efficiency."
+}

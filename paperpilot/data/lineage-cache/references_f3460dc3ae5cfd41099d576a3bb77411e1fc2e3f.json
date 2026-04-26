@@ -1,0 +1,894 @@
+[
+  {
+    "paperId": "0d1c76d45afa012ded7ab741194baf142117c495",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18290",
+      "ArXiv": "2305.18290",
+      "DOI": "10.52202/075280-2338",
+      "CorpusId": 258959321
+    },
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8193,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "50465276",
+        "name": "Archit Sharma"
+      },
+      {
+        "authorId": "49688913",
+        "name": "E. Mitchell"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train."
+  },
+  {
+    "paperId": "58af2d4fcca54c14334d1efd975554b4eb78cd4d",
+    "externalIds": {
+      "ArXiv": "2305.10425",
+      "DBLP": "journals/corr/abs-2305-10425",
+      "DOI": "10.48550/arXiv.2305.10425",
+      "CorpusId": 258741082
+    },
+    "title": "SLiC-HF: Sequence Likelihood Calibration with Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 393,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.10425",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.10425, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143397386",
+        "name": "Yao Zhao"
+      },
+      {
+        "authorId": "51468278",
+        "name": "Rishabh Joshi"
+      },
+      {
+        "authorId": "2115346248",
+        "name": "Tianqi Liu"
+      },
+      {
+        "authorId": "2140488873",
+        "name": "Misha Khalman"
+      },
+      {
+        "authorId": "144413479",
+        "name": "Mohammad Saleh"
+      },
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      }
+    ],
+    "abstract": "Learning from human feedback has been shown to be effective at aligning language models with human preferences. Past work has often relied on Reinforcement Learning from Human Feedback (RLHF), which optimizes the language model using reward scores assigned from a reward model trained on human preference data. In this work we show how the recently introduced Sequence Likelihood Calibration (SLiC), can also be used to effectively learn from human preferences (SLiC-HF). Furthermore, we demonstrate this can be done with human feedback data collected for a different model, similar to off-policy, offline RL data. Automatic and human evaluation experiments on the TL;DR summarization task show that SLiC-HF significantly improves supervised fine-tuning baselines. Furthermore, SLiC-HF presents a competitive alternative to the PPO RLHF implementation used in past work while being much simpler to implement, easier to tune and more computationally efficient in practice."
+  },
+  {
+    "paperId": "38e064fefd4e215e6a1fd3e69da2f77d2bee8aaa",
+    "externalIds": {
+      "DBLP": "conf/aistats/BertrandCG23",
+      "ArXiv": "2206.12301",
+      "DOI": "10.48550/arXiv.2206.12301",
+      "CorpusId": 250048392
+    },
+    "title": "On the Limitations of Elo: Real-World Games, are Transitive, not Additive",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2022,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.12301",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.12301, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2249757559",
+        "name": "Q. Bertrand"
+      },
+      {
+        "authorId": "144792148",
+        "name": "Wojciech M. Czarnecki"
+      },
+      {
+        "authorId": "8150760",
+        "name": "G. Gidel"
+      }
+    ],
+    "abstract": "Real-world competitive games, such as chess, go, or StarCraft II, rely on Elo models to measure the strength of their players. Since these games are not fully transitive, using Elo implicitly assumes they have a strong transitive component that can correctly be identified and extracted. In this study, we investigate the challenge of identifying the strength of the transitive component in games. First, we show that Elo models can fail to extract this transitive component, even in elementary transitive games. Then, based on this observation, we propose an extension of the Elo score: we end up with a disc ranking system that assigns each player two scores, which we refer to as skill and consistency. Finally, we propose an empirical validation on payoff matrices coming from real-world games played by bots and humans."
+  },
+  {
+    "paperId": "b1362b8a11b1984378b91162195e10e369f6b012",
+    "externalIds": {
+      "ArXiv": "2205.11140",
+      "DBLP": "journals/corr/abs-2205-11140",
+      "DOI": "10.48550/arXiv.2205.11140",
+      "CorpusId": 248987080
+    },
+    "title": "Human-in-the-loop: Provably Efficient Preference-based Reinforcement Learning with General Function Approximation",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 89,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.11140",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.11140, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Xiaoyu Chen"
+      },
+      {
+        "authorId": "2064919742",
+        "name": "Han Zhong"
+      },
+      {
+        "authorId": "150358650",
+        "name": "Zhuoran Yang"
+      },
+      {
+        "authorId": "50218397",
+        "name": "Zhaoran Wang"
+      },
+      {
+        "authorId": "39060743",
+        "name": "Liwei Wang"
+      }
+    ],
+    "abstract": "We study human-in-the-loop reinforcement learning (RL) with trajectory preferences, where instead of receiving a numeric reward at each step, the agent only receives preferences over trajectory pairs from a human overseer. The goal of the agent is to learn the optimal policy which is most preferred by the human overseer. Despite the empirical successes, the theoretical understanding of preference-based RL (PbRL) is only limited to the tabular case. In this paper, we propose the first optimistic model-based algorithm for PbRL with general function approximation, which estimates the model using value-targeted regression and calculates the exploratory policies by solving an optimistic planning problem. Our algorithm achieves the regret of $\\tilde{O} (\\operatorname{poly}(d H) \\sqrt{K} )$, where $d$ is the complexity measure of the transition and preference model depending on the Eluder dimension and log-covering numbers, $H$ is the planning horizon, $K$ is the number of episodes, and $\\tilde O(\\cdot)$ omits logarithmic terms. Our lower bound indicates that our algorithm is near-optimal when specialized to the linear setting. Furthermore, we extend the PbRL problem by formulating a novel problem called RL with $n$-wise comparisons, and provide the first sample-efficient algorithm for this new setting. To the best of our knowledge, this is the first theoretical result for PbRL with (general) function approximation."
+  },
+  {
+    "paperId": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+    "externalIds": {
+      "ArXiv": "2203.02155",
+      "DBLP": "journals/corr/abs-2203-02155",
+      "DOI": "10.52202/068431-2011",
+      "CorpusId": 246426909
+    },
+    "title": "Training language models to follow instructions with human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20046,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "2061137049",
+        "name": "Diogo Almeida"
+      },
+      {
+        "authorId": "2064084601",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": null,
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2151735262",
+        "name": "Fraser Kelton"
+      },
+      {
+        "authorId": "2142365973",
+        "name": "Luke E. Miller"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      }
+    ],
+    "abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent."
+  },
+  {
+    "paperId": "3986ea25ab5a428f66c816e16164b519b9ec7231",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2111-04850",
+      "ArXiv": "2111.04850",
+      "CorpusId": 243860719
+    },
+    "title": "Dueling RL: Reinforcement Learning with Trajectory Preferences",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2021,
+    "citationCount": 110,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.04850, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3124110",
+        "name": "Aldo Pacchiano"
+      },
+      {
+        "authorId": "2892691",
+        "name": "Aadirupa Saha"
+      },
+      {
+        "authorId": "120703894",
+        "name": "Jonathan Lee"
+      }
+    ],
+    "abstract": "We consider the problem of preference based reinforcement learning (PbRL), where, unlike traditional reinforcement learning, an agent receives feedback only in terms of a 1 bit (0/1) preference over a trajectory pair instead of absolute rewards for them. The success of the traditional RL framework crucially relies on the underlying agent-reward model, which, however, depends on how accurately a system designer can express an appropriate reward function and often a non-trivial task. The main novelty of our framework is the ability to learn from preference-based trajectory feedback that eliminates the need to hand-craft numeric reward models. This paper sets up a formal framework for the PbRL problem with non-markovian rewards, where the trajectory preferences are encoded by a generalized linear model of dimension $d$. Assuming the transition model is known, we then propose an algorithm with almost optimal regret guarantee of $\\tilde {\\mathcal{O}}\\left( SH d \\log (T / \\delta) \\sqrt{T} \\right)$. We further, extend the above algorithm to the case of unknown transition dynamics, and provide an algorithm with near optimal regret guarantee $\\widetilde{\\mathcal{O}}((\\sqrt{d} + H^2 + |\\mathcal{S}|)\\sqrt{dT} +\\sqrt{|\\mathcal{S}||\\mathcal{A}|TH} )$. To the best of our knowledge, our work is one of the first to give tight regret guarantees for preference based RL problems with trajectory preferences."
+  },
+  {
+    "paperId": "ff0b2681d7b05e16c46dfb71d980cc2f605907cd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-01652",
+      "ArXiv": "2109.01652",
+      "CorpusId": 237416585
+    },
+    "title": "Finetuned Language Models Are Zero-Shot Learners",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 4938,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.01652, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144026731",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "2286156826",
+        "name": "Vincent Y. Zhao"
+      },
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "40625240",
+        "name": "Adams Wei Yu"
+      },
+      {
+        "authorId": "144104130",
+        "name": "Brian Lester"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "This paper explores a simple method for improving the zero-shot learning abilities of language models. We show that instruction tuning -- finetuning language models on a collection of tasks described via instructions -- substantially improves zero-shot performance on unseen tasks. We take a 137B parameter pretrained language model and instruction-tune it on over 60 NLP tasks verbalized via natural language instruction templates. We evaluate this instruction-tuned model, which we call FLAN, on unseen task types. FLAN substantially improves the performance of its unmodified counterpart and surpasses zero-shot 175B GPT-3 on 20 of 25 tasks that we evaluate. FLAN even outperforms few-shot GPT-3 by a large margin on ANLI, RTE, BoolQ, AI2-ARC, OpenbookQA, and StoryCloze. Ablation studies reveal that number of finetuning datasets, model scale, and natural language instructions are key to the success of instruction tuning."
+  },
+  {
+    "paperId": "053b1d7b97eb2c91fc3921d589c160b0923c70b1",
+    "externalIds": {
+      "MAG": "3082115681",
+      "DBLP": "journals/corr/abs-2009-01325",
+      "ArXiv": "2009.01325",
+      "CorpusId": 221665105
+    },
+    "title": "Learning to summarize from human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 3038,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.01325, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1387983862",
+        "name": "Nisan Stiennon"
+      },
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      },
+      {
+        "authorId": "153387869",
+        "name": "Chelsea Voss"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "145370786",
+        "name": "Paul Christiano"
+      }
+    ],
+    "abstract": "As language models become more powerful, training and evaluation are increasingly bottlenecked by the data and metrics used for a particular task. For example, summarization models are often trained to predict human reference summaries and evaluated using ROUGE, but both of these metrics are rough proxies for what we really care about---summary quality. In this work, we show that it is possible to significantly improve summary quality by training a model to optimize for human preferences. We collect a large, high-quality dataset of human comparisons between summaries, train a model to predict the human-preferred summary, and use that model as a reward function to fine-tune a summarization policy using reinforcement learning. We apply our method to a version of the TL;DR dataset of Reddit posts and find that our models significantly outperform both human reference summaries and much larger models fine-tuned with supervised learning alone. Our models also transfer to CNN/DM news articles, producing summaries nearly as good as the human reference without any news-specific fine-tuning. We conduct extensive analyses to understand our human feedback dataset and fine-tuned models We establish that our reward model generalizes to new datasets, and that optimizing our reward model results in better summaries than optimizing ROUGE according to humans. We hope the evidence from our paper motivates machine learning researchers to pay closer attention to how their training loss affects the model behavior they actually want."
+  },
+  {
+    "paperId": "dff700e9d4602ecc62ba68a2f7efd7c692343f9e",
+    "externalIds": {
+      "DBLP": "conf/acl/LazaridouPT20",
+      "MAG": "3024893463",
+      "ACL": "2020.acl-main.685",
+      "ArXiv": "2005.07064",
+      "DOI": "10.18653/v1/2020.acl-main.685",
+      "CorpusId": 218630199
+    },
+    "title": "Multi-agent Communication meets Natural Language: Synergies between Functional and Structural Language Learning",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2020,
+    "citationCount": 113,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.acl-main.685.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.07064, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2672644",
+        "name": "Angeliki Lazaridou"
+      },
+      {
+        "authorId": "13759734",
+        "name": "Anna Potapenko"
+      },
+      {
+        "authorId": "13667364",
+        "name": "O. Tieleman"
+      }
+    ],
+    "abstract": "We present a method for combining multi-agent communication and traditional data-driven approaches to natural language learning, with an end goal of teaching agents to communicate with humans in natural language. Our starting point is a language model that has been trained on generic, not task-specific language data. We then place this model in a multi-agent self-play environment that generates task-specific rewards used to adapt or modulate the model, turning it into a task-conditional language model. We introduce a new way for combining the two types of learning based on the idea of reranking language model samples, and show that this method outperforms others in communicating with humans in a visual referential communication task. Finally, we present a taxonomy of different types of language drift that can occur alongside a set of measures to detect them."
+  },
+  {
+    "paperId": "81fdd50a55efe384817c0a18c928fd866c48745c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2003-12694",
+      "ArXiv": "2003.12694",
+      "MAG": "3034714314",
+      "CorpusId": 214713859
+    },
+    "title": "Countering Language Drift with Seeded Iterated Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 84,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.12694, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "12016940",
+        "name": "Yuchen Lu"
+      },
+      {
+        "authorId": "1466543874",
+        "name": "Soumye Singhal"
+      },
+      {
+        "authorId": "3367628",
+        "name": "Florian Strub"
+      },
+      {
+        "authorId": "1721354",
+        "name": "O. Pietquin"
+      },
+      {
+        "authorId": "1760871",
+        "name": "Aaron C. Courville"
+      }
+    ],
+    "abstract": "Pretraining on human corpus and then finetuning in a simulator has become a standard pipeline for training a goal-oriented dialogue agent. Nevertheless, as soon as the agents are finetuned to maximize task completion, they suffer from the so-called language drift phenomenon: they slowly lose syntactic and semantic properties of language as they only focus on solving the task. In this paper, we propose a generic approach to counter language drift called Seeded iterated learning (SIL). We periodically refine a pretrained student agent by imitating data sampled from a newly generated teacher agent. At each time step, the teacher is created by copying the student agent, before being finetuned to maximize task completion. SIL does not require external syntactic constraint nor semantic knowledge, making it a valuable task-agnostic finetuning protocol. We evaluate SIL in a toy-setting Lewis Game, and then scale it up to the translation game with natural language. In both settings, SIL helps counter language drift as well as it improves the task completion compared to baselines."
+  },
+  {
+    "paperId": "6379c473d44c63a69f0f980266376d8cd96b3ba9",
+    "externalIds": {
+      "DBLP": "conf/uai/NovosellerWSYB20",
+      "ArXiv": "1908.01289",
+      "MAG": "2965175271",
+      "CorpusId": 198944898
+    },
+    "title": "Dueling Posterior Sampling for Preference-Based Reinforcement Learning",
+    "venue": "Conference on Uncertainty in Artificial Intelligence",
+    "year": 2019,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.01289, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151479011",
+        "name": "Ellen R. Novoseller"
+      },
+      {
+        "authorId": "3285568",
+        "name": "Yanan Sui"
+      },
+      {
+        "authorId": "1740159",
+        "name": "Yisong Yue"
+      },
+      {
+        "authorId": "144751617",
+        "name": "J. Burdick"
+      }
+    ],
+    "abstract": "In preference-based reinforcement learning (RL), an agent interacts with the environment while receiving preferences instead of absolute feedback. While there is increasing research activity in preference-based RL, the design of formal frameworks that admit tractable theoretical analysis remains an open challenge. Building upon ideas from preference-based bandit learning and posterior sampling in RL, we present DUELING POSTERIOR SAMPLING (DPS), which employs preference-based posterior sampling to learn both the system dynamics and the underlying utility function that governs the preference feedback. As preference feedback is provided on trajectories rather than individual state-action pairs, we develop a Bayesian approach for the credit assignment problem, translating preferences to a posterior distribution over state-action reward models. We prove an asymptotic Bayesian no-regret rate for DPS with a Bayesian linear regression credit assignment model. This is the first regret guarantee for preference-based RL to our knowledge. We also discuss possible avenues for extending the proof methodology to other credit assignment models. Finally, we evaluate the approach empirically, showing competitive performance against existing baselines."
+  },
+  {
+    "paperId": "b3b3d1d6d36ac203cd06c00bb37e66c000430275",
+    "externalIds": {
+      "MAG": "2914920107",
+      "DBLP": "conf/icml/GeistSP19",
+      "ArXiv": "1901.11275",
+      "CorpusId": 59523693
+    },
+    "title": "A Theory of Regularized Markov Decision Processes",
+    "venue": "International Conference on Machine Learning",
+    "year": 2019,
+    "citationCount": 392,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.11275, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1737555",
+        "name": "M. Geist"
+      },
+      {
+        "authorId": "1689774",
+        "name": "B. Scherrer"
+      },
+      {
+        "authorId": "1721354",
+        "name": "O. Pietquin"
+      }
+    ],
+    "abstract": "Many recent successful (deep) reinforcement learning algorithms make use of regularization, generally based on entropy or Kullback-Leibler divergence. We propose a general theory of regularized Markov Decision Processes that generalizes these approaches in two directions: we consider a larger class of regularizers, and we consider the general modified policy iteration approach, encompassing both policy iteration and value iteration. The core building blocks of this theory are a notion of regularized Bellman operator and the Legendre-Fenchel transform, a classical tool of convex optimization. This approach allows for error propagation analyses of general algorithmic schemes of which (possibly variants of) classical algorithms such as Trust Region Policy Optimization, Soft Q-learning, Stochastic Actor Critic or Dynamic Policy Programming are special cases. This also draws connections to proximal convex optimization, especially to Mirror Descent."
+  },
+  {
+    "paperId": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+    "externalIds": {
+      "MAG": "2736601468",
+      "DBLP": "journals/corr/SchulmanWDRK17",
+      "ArXiv": "1707.06347",
+      "CorpusId": 28695052
+    },
+    "title": "Proximal Policy Optimization Algorithms",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 26816,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.06347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "143909660",
+        "name": "Filip Wolski"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2067138712",
+        "name": "Oleg Klimov"
+      }
+    ],
+    "abstract": "We propose a new family of policy gradient methods for reinforcement learning, which alternate between sampling data through interaction with the environment, and optimizing a \"surrogate\" objective function using stochastic gradient ascent. Whereas standard policy gradient methods perform one gradient update per data sample, we propose a novel objective function that enables multiple epochs of minibatch updates. The new methods, which we call proximal policy optimization (PPO), have some of the benefits of trust region policy optimization (TRPO), but they are much simpler to implement, more general, and have better sample complexity (empirically). Our experiments test PPO on a collection of benchmark tasks, including simulated robotic locomotion and Atari game playing, and we show that PPO outperforms other online policy gradient methods, and overall strikes a favorable balance between sample complexity, simplicity, and wall-time."
+  },
+  {
+    "paperId": "5bbb6f9a8204eb13070b6f033e61c84ef8ee68dd",
+    "externalIds": {
+      "MAG": "2626804490",
+      "DBLP": "journals/corr/abs-1706-03741",
+      "ArXiv": "1706.03741",
+      "CorpusId": 4787508
+    },
+    "title": "Deep Reinforcement Learning from Human Preferences",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 5000,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03741, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "26890260",
+        "name": "Miljan Martic"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "2330246606",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "For sophisticated reinforcement learning (RL) systems to interact usefully with real-world environments, we need to communicate complex goals to these systems. In this work, we explore goals defined in terms of (non-expert) human preferences between pairs of trajectory segments. We show that this approach can effectively solve complex RL tasks without access to the reward function, including Atari games and simulated robot locomotion, while providing feedback on less than one percent of our agent's interactions with the environment. This reduces the cost of human oversight far enough that it can be practically applied to state-of-the-art RL systems. To demonstrate the flexibility of our approach, we show that we can successfully train complex novel behaviors with about an hour of human time. These behaviors and environments are considerably more complex than any that have been previously learned from human feedback."
+  },
+  {
+    "paperId": "85f94d8098322f8130512b4c6c4627548ce4a6cc",
+    "externalIds": {
+      "DBLP": "journals/corr/RamachandranLL16",
+      "ArXiv": "1611.02683",
+      "ACL": "D17-1039",
+      "MAG": "2951991713",
+      "DOI": "10.18653/v1/D17-1039",
+      "CorpusId": 3488076
+    },
+    "title": "Unsupervised Pretraining for Sequence to Sequence Learning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2016,
+    "citationCount": 290,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D17-1039.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.02683, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3377142",
+        "name": "Prajit Ramachandran"
+      },
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "This work presents a general unsupervised learning method to improve the accuracy of sequence to sequence (seq2seq) models. In our method, the weights of the encoder and decoder of a seq2seq model are initialized with the pretrained weights of two language models and then fine-tuned with labeled data. We apply this method to challenging benchmarks in machine translation and abstractive summarization and find that it significantly improves the subsequent supervised models. Our main result is that pretraining improves the generalization of seq2seq models. We achieve state-of-the-art results on the WMT English→German task, surpassing a range of methods using both phrase-based machine translation and neural machine translation. Our method achieves a significant improvement of 1.3 BLEU from th previous best models on both WMT’14 and WMT’15 English→German. We also conduct human evaluations on abstractive summarization and find that our method outperforms a purely supervised learning baseline in a statistically significant manner."
+  },
+  {
+    "paperId": "cc2e61e06917238ca745155d9f1f0e679e63866e",
+    "externalIds": {
+      "MAG": "2032950725",
+      "DBLP": "journals/ml/Busa-FeketeSWCH14",
+      "DOI": "10.1007/s10994-014-5458-8",
+      "CorpusId": 4751379
+    },
+    "title": "Preference-based reinforcement learning: evolutionary direct policy search using a preference-based racing algorithm",
+    "venue": "Machine-mediated learning",
+    "year": 2014,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2Fs10994-014-5458-8.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10994-014-5458-8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10994-014-5458-8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1398396696",
+        "name": "R. Busa-Fekete"
+      },
+      {
+        "authorId": "2206023",
+        "name": "Balázs Szörényi"
+      },
+      {
+        "authorId": "144834415",
+        "name": "Paul Weng"
+      },
+      {
+        "authorId": "49767752",
+        "name": "Weiwei Cheng"
+      },
+      {
+        "authorId": "1691955",
+        "name": "Eyke Hüllermeier"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "dc29bcdda1e3525283b768bb9cbdc1906dd25466",
+    "externalIds": {
+      "MAG": "2974377482",
+      "CorpusId": 267824
+    },
+    "title": "Preference-based Evolutionary Direct Policy Search",
+    "venue": "",
+    "year": 2013,
+    "citationCount": 21,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1398396696",
+        "name": "R. Busa-Fekete"
+      },
+      {
+        "authorId": "2206023",
+        "name": "Balázs Szörényi"
+      },
+      {
+        "authorId": "144834415",
+        "name": "Paul Weng"
+      },
+      {
+        "authorId": "49767752",
+        "name": "Weiwei Cheng"
+      },
+      {
+        "authorId": "1691955",
+        "name": "Eyke Hüllermeier"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "b2dece1eb593c189a5f81a93ff2c26439d123c45",
+    "externalIds": {
+      "MAG": "2606032926",
+      "DBLP": "journals/jmlr/LuPP10",
+      "CorpusId": 15848401
+    },
+    "title": "Contextual Multi-Armed Bandits",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2010,
+    "citationCount": 281,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2409297",
+        "name": "Tyler Lu"
+      },
+      {
+        "authorId": "2153912",
+        "name": "Dávid Pál"
+      },
+      {
+        "authorId": "2659979",
+        "name": "Martin Pál"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "0b14178e7d79ac426d0a39700e1ac8b2c6f2e752",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-01946",
+      "MAG": "2913411363",
+      "ArXiv": "2106.01946",
+      "DOI": "10.1007/978-1-4614-5257-7_6",
+      "CorpusId": 37925315
+    },
+    "title": "Convex optimization",
+    "venue": "Computer Vision",
+    "year": 2010,
+    "citationCount": 39418,
+    "openAccessPdf": {
+      "url": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/9781119295952.app1",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.01946, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1843103",
+        "name": "Stephen P. Boyd"
+      },
+      {
+        "authorId": "2014414",
+        "name": "L. Vandenberghe"
+      }
+    ],
+    "abstract": "This textbook is based on lectures given by the authors at MIPT (Moscow), HSE (Moscow), FEFU (Vladivostok), V.I. Vernadsky KFU (Simferopol), ASU (Republic of Adygea), and the University of Grenoble-Alpes (Grenoble, France). First of all, the authors focused on the program of a two-semester course of lectures on convex optimization, which is given to students of MIPT. The first chapter of this book contains the materials of the first semester (\"Fundamentals of convex analysis and optimization\"), the second and third chapters contain the materials of the second semester (\"Numerical methods of convex optimization\"). The textbook has a number of features. First, in contrast to the classic manuals, this book does not provide proofs of all the theorems mentioned. This allowed, on one side, to describe more themes, but on the other side, made the presentation less self-sufficient. The second important point is that part of the material is advanced and is published in the Russian educational literature, apparently for the first time. Third, the accents that are given do not always coincide with the generally accepted accents in the textbooks that are now popular. First of all, we talk about a sufficiently advanced presentation of conic optimization, including robust optimization, as a vivid demonstration of the capabilities of modern convex analysis."
+  },
+  {
+    "paperId": "7d47ee5f84103529f84297c98c21dadb4742e3ff",
+    "externalIds": {
+      "MAG": "2013784666",
+      "DOI": "10.1093/BIOMET/39.3-4.324",
+      "CorpusId": 121987403
+    },
+    "title": "RANK ANALYSIS OF INCOMPLETE BLOCK DESIGNS THE METHOD OF PAIRED COMPARISONS",
+    "venue": "",
+    "year": 1952,
+    "citationCount": 4100,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1093/BIOMET/39.3-4.324?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1093/BIOMET/39.3-4.324, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "69566971",
+        "name": "R. Bradley"
+      },
+      {
+        "authorId": "49491973",
+        "name": "M. E. Terry"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "cd18800a0fe0b668a1cc19f2ec95b5003d0a5035",
+    "externalIds": {
+      "MAG": "2965425874",
+      "CorpusId": 49313245
+    },
+    "title": "Improving Language Understanding by Generative Pre-Training",
+    "venue": "",
+    "year": 2018,
+    "citationCount": 14605,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "144958935",
+        "name": "Karthik Narasimhan"
+      }
+    ],
+    "abstract": null
+  }
+]

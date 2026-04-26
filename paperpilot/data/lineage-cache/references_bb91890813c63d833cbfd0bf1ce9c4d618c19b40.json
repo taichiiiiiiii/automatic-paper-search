@@ -1,0 +1,1816 @@
+[
+  {
+    "paperId": "ef42a97cc86608cbf17abd2abb4a8ad49265125a",
+    "externalIds": {
+      "ArXiv": "2504.06815",
+      "DBLP": "journals/corr/abs-2504-06815",
+      "DOI": "10.1109/CVPR52734.2025.01505",
+      "CorpusId": 277633931
+    },
+    "title": "SVG-IR: Spatially-Varying Gaussian Splatting for Inverse Rendering",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.06815, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2320839511",
+        "name": "Hanxiao Sun"
+      },
+      {
+        "authorId": "2334891927",
+        "name": "Yupeng Gao"
+      },
+      {
+        "authorId": "2350298376",
+        "name": "Jin Xie"
+      },
+      {
+        "authorId": "2295123006",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "2281787212",
+        "name": "Beibei Wang"
+      }
+    ],
+    "abstract": "Reconstructing 3D assets from images, known as inverse rendering (IR), remains a challenging task due to its ill-posed nature. 3D Gaussian Splatting (3DGS) has demonstrated impressive capabilities for novel view synthesis (NVS) tasks. Methods apply it to relighting by separating radiance into BRDF parameters and lighting, yet produce inferior relighting quality with artifacts and unnatural indirect illumination due to the limited capability of each Gaussian, which has constant material parameters and normal, alongside the absence of physical constraints for indirect lighting. In this paper, we present a novel framework called Spatially-vayring Gaussian Inverse Rendering (SVG-IR), aimed at enhancing both NVS and relighting quality. To this end, we propose a new representation—Spatially-varying Gaussian (SVG)—that allows per-Gaussian spatially varying parameters. This enhanced representation is complemented by a SVG splatting scheme akin to vertex/fragment shading in traditional graphics pipelines. Furthermore, we integrate a physically-based indirect lighting model, enabling more realistic relighting. The proposed SVG-IR framework significantly improves rendering quality, outperforming state-of-the-art NeRF-based methods by 2.5 dB in peak signal-to-noise ratio (PSNR) and surpassing existing Gaussian-based techniques by 3.5 dB in relighting tasks, all while maintaining a real-time rendering speed. The source code is available at https://github.com/learner-shx/SVG-IR."
+  },
+  {
+    "paperId": "37447a06775da20ea00136f5cb3d18f828f4f0b6",
+    "externalIds": {
+      "ArXiv": "2412.15867",
+      "DBLP": "journals/corr/abs-2412-15867",
+      "DOI": "10.48550/arXiv.2412.15867",
+      "CorpusId": 274965221
+    },
+    "title": "IRGS: Inter-Reflective Gaussian Splatting with 2D Gaussian Ray Tracing",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 40,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.15867, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268399619",
+        "name": "Chun Gu"
+      },
+      {
+        "authorId": "2336742061",
+        "name": "Xiaofei Wei"
+      },
+      {
+        "authorId": "2337338229",
+        "name": "Zixuan Zeng"
+      },
+      {
+        "authorId": "2336746606",
+        "name": "Yuxuan Yao"
+      },
+      {
+        "authorId": "2265652138",
+        "name": "Li Zhang"
+      }
+    ],
+    "abstract": "In inverse rendering, accurately modeling visibility and indirect radiance for incident light is essential for capturing secondary effects. Due to the absence of a powerful Gaussian ray tracer, previous 3DGS-based methods have either adopted a simplified rendering equation or used learnable parameters to approximate incident light, resulting in inaccurate material and lighting estimations. To this end, we introduce inter-reflective Gaussian splatting (IRGS) for inverse rendering. To capture inter-reflection, we apply the full rendering equation without simplification and compute incident radiance on the fly using the proposed differentiable 2D Gaussian ray tracing. Additionally, we present an efficient optimization scheme to handle the computational demands of Monte Carlo sampling for rendering equation evaluation. Furthermore, we introduce a novel strategy for querying the indirect radiance of incident light when relighting the optimized scenes. Extensive experiments on multiple standard benchmarks validate the effectiveness of IRGS, demonstrating its capability to accurately model complex inter-reflection effects."
+  },
+  {
+    "paperId": "f3c39ed9ba33b939901cc0f508ac411e44e87603",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XieCXXJSPBZ25",
+      "ArXiv": "2412.15215",
+      "DOI": "10.1109/CVPR52734.2025.00539",
+      "CorpusId": 274859989
+    },
+    "title": "EnvGS: Modeling View-Dependent Appearance with Environment Gaussian",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2024,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.15215, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2257346128",
+        "name": "Tao Xie"
+      },
+      {
+        "authorId": "2298505990",
+        "name": "Xi Chen"
+      },
+      {
+        "authorId": "2257421985",
+        "name": "Zhen Xu"
+      },
+      {
+        "authorId": "2303477045",
+        "name": "Yiman Xie"
+      },
+      {
+        "authorId": "2336180963",
+        "name": "Yudong Jin"
+      },
+      {
+        "authorId": "2259478633",
+        "name": "Yujun Shen"
+      },
+      {
+        "authorId": "2072712025",
+        "name": "Sida Peng"
+      },
+      {
+        "authorId": "2253405497",
+        "name": "Hujun Bao"
+      },
+      {
+        "authorId": "2238207469",
+        "name": "Xiaowei Zhou"
+      }
+    ],
+    "abstract": "Reconstructing complex reflections in real-world scenes from 2D images is essential for achieving photorealistic novel view synthesis. Existing methods that utilize environment maps to model reflections from distant lighting often struggle with high-frequency reflection details and fail to account for near-field reflections. In this work, we introduce EnvGS, a novel approach that employs a set of Gaussian primitives as an explicit 3D representation for capturing reflections of environments. These environment Gaussian primitives are incorporated with base Gaussian primitives to model the appearance of the whole scene. To efficiently render these environment Gaussian primitives, we developed a ray-tracing-based renderer that leverages the GPU’s RT core for fast rendering. This allows us to jointly optimize our model for high-quality reconstruction while maintaining real-time rendering speeds. Results from multiple real-world and synthetic datasets demonstrate that our method produces significantly more detailed reflections, achieving the best rendering quality in real-time novel view synthesis. The code is available at https://zju3dv.github.io/envgs."
+  },
+  {
+    "paperId": "f901a2d3ce9bafaa9685692e8a632036daca2efb",
+    "externalIds": {
+      "ArXiv": "2410.24204",
+      "DBLP": "journals/corr/abs-2410-24204",
+      "DOI": "10.48550/arXiv.2410.24204",
+      "CorpusId": 273707771
+    },
+    "title": "GeoSplatting: Towards Geometry Guided Gaussian Splatting for Physically-based Inverse Rendering",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.24204, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2328409839",
+        "name": "Kai Ye"
+      },
+      {
+        "authorId": "2328624239",
+        "name": "Chong Gao"
+      },
+      {
+        "authorId": "2260625220",
+        "name": "Guanbin Li"
+      },
+      {
+        "authorId": "2282541780",
+        "name": "Wenzheng Chen"
+      },
+      {
+        "authorId": "2282563846",
+        "name": "Baoquan Chen"
+      }
+    ],
+    "abstract": "Recent 3D Gaussian Splatting (3DGS) representations have demonstrated remarkable performance in novel view synthesis; further, material-lighting disentanglement on 3DGS warrants relighting capabilities and its adaptability to broader applications. While the general approach to the latter operation lies in integrating differentiable physically-based rendering (PBR) techniques to jointly recover BRDF materials and environment lighting, achieving a precise disentanglement remains an inherently difficult task due to the challenge of accurately modeling light transport. Existing approaches typically approximate Gaussian points'normals, which constitute an implicit geometric constraint. However, they usually suffer from inaccuracies in normal estimation that subsequently degrade light transport, resulting in noisy material decomposition and flawed relighting results. To address this, we propose GeoSplatting, a novel approach that augments 3DGS with explicit geometry guidance for precise light transport modeling. By differentiably constructing a surface-grounded 3DGS from an optimizable mesh, our approach leverages well-defined mesh normals and the opaque mesh surface, and additionally facilitates the use of mesh-based ray tracing techniques for efficient, occlusion-aware light transport calculations. This enhancement ensures precise material decomposition while preserving the efficiency and high-quality rendering capabilities of 3DGS. Comprehensive evaluations across diverse datasets demonstrate the effectiveness of GeoSplatting, highlighting its superior efficiency and state-of-the-art inverse rendering performance. The project page can be found at https://pku-vcl-geometry.github.io/GeoSplatting/."
+  },
+  {
+    "paperId": "9e4c3c49d16df91895c57afca19cd11cb3e1a681",
+    "externalIds": {
+      "DBLP": "conf/siggrapha/Bi00PF0W24",
+      "ArXiv": "2410.11419",
+      "DOI": "10.1145/3680528.3687576",
+      "CorpusId": 273351309
+    },
+    "title": "GS3: Efficient Relighting with Triple Gaussian Splatting",
+    "venue": "ACM SIGGRAPH Conference and Exhibition on Computer Graphics and Interactive Techniques in Asia",
+    "year": 2024,
+    "citationCount": 47,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3680528.3687576",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.11419, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2273694362",
+        "name": "Zoubin Bi"
+      },
+      {
+        "authorId": "2238901079",
+        "name": "Yixin Zeng"
+      },
+      {
+        "authorId": "2223946708",
+        "name": "Chong Zeng"
+      },
+      {
+        "authorId": "2229255638",
+        "name": "Fan Pei"
+      },
+      {
+        "authorId": "2274025188",
+        "name": "Xiang Feng"
+      },
+      {
+        "authorId": "2269757386",
+        "name": "Kun Zhou"
+      },
+      {
+        "authorId": "2281864286",
+        "name": "Hongzhi Wu"
+      }
+    ],
+    "abstract": "We present a spatial and angular Gaussian based representation and a triple splatting process, for real-time, high-quality novel lighting-and-view synthesis from multi-view point-lit input images. To describe complex appearance, we employ a Lambertian plus a mixture of angular Gaussians as an effective reflectance function for each spatial Gaussian. To generate self-shadow, we splat all spatial Gaussians towards the light source to obtain shadow values, which are further refined by a small multi-layer perceptron. To compensate for other effects like global illumination, another network is trained to compute and add a per-spatial-Gaussian RGB tuple. The effectiveness of our representation is demonstrated on 30 samples with a wide variation in geometry (from solid to fluffy) and appearance (from translucent to anisotropic), as well as using different forms of input data, including rendered images of synthetic/reconstructed objects, photographs captured with a handheld camera and a flash, or from a professional lightstage. We achieve a training time of 40-70 minutes and a rendering speed of 90 fps on a single commodity GPU. Our results compare favorably with state-of-the-art techniques in terms of quality/performance."
+  },
+  {
+    "paperId": "c11ebaeab221583387047a8eab765760f94c302d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-02619",
+      "ArXiv": "2410.02619",
+      "DOI": "10.48550/arXiv.2410.02619",
+      "CorpusId": 273098648
+    },
+    "title": "GI-GS: Global Illumination Decomposition on Gaussian Splatting for Inverse Rendering",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.02619, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324069011",
+        "name": "Hongze Chen"
+      },
+      {
+        "authorId": "2112335060",
+        "name": "Zehong Lin"
+      },
+      {
+        "authorId": "2324106114",
+        "name": "Jun Zhang"
+      }
+    ],
+    "abstract": "We present GI-GS, a novel inverse rendering framework that leverages 3D Gaussian Splatting (3DGS) and deferred shading to achieve photo-realistic novel view synthesis and relighting. In inverse rendering, accurately modeling the shading processes of objects is essential for achieving high-fidelity results. Therefore, it is critical to incorporate global illumination to account for indirect lighting that reaches an object after multiple bounces across the scene. Previous 3DGS-based methods have attempted to model indirect lighting by characterizing indirect illumination as learnable lighting volumes or additional attributes of each Gaussian, while using baked occlusion to represent shadow effects. These methods, however, fail to accurately model the complex physical interactions between light and objects, making it impossible to construct realistic indirect illumination during relighting. To address this limitation, we propose to calculate indirect lighting using efficient path tracing with deferred shading. In our framework, we first render a G-buffer to capture the detailed geometry and material properties of the scene. Then, we perform physically-based rendering (PBR) only for direct lighting. With the G-buffer and previous rendering results, the indirect lighting can be calculated through a lightweight path tracing. Our method effectively models indirect lighting under any given lighting conditions, thereby achieving better novel view synthesis and competitive relighting. Quantitative and qualitative results show that our GI-GS outperforms existing baselines in both rendering quality and efficiency."
+  },
+  {
+    "paperId": "e8ab2b908f029fae9fbefcb59d459107e32a0ad2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2409-05867",
+      "ArXiv": "2409.05867",
+      "DOI": "10.48550/arXiv.2409.05867",
+      "CorpusId": 272513021
+    },
+    "title": "Flash Cache: Reducing Bias in Radiance Cache Based Inverse Rendering",
+    "venue": "European Conference on Computer Vision",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.05867, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1380233567",
+        "name": "Benjamin Attal"
+      },
+      {
+        "authorId": "8497474",
+        "name": "Dor Verbin"
+      },
+      {
+        "authorId": "2577533",
+        "name": "B. Mildenhall"
+      },
+      {
+        "authorId": "33810877",
+        "name": "Peter Hedman"
+      },
+      {
+        "authorId": "2273656337",
+        "name": "Jonathan T. Barron"
+      },
+      {
+        "authorId": "2279741352",
+        "name": "Matthew O'Toole"
+      },
+      {
+        "authorId": "2179732",
+        "name": "P. Srinivasan"
+      }
+    ],
+    "abstract": "State-of-the-art techniques for 3D reconstruction are largely based on volumetric scene representations, which require sampling multiple points to compute the color arriving along a ray. Using these representations for more general inverse rendering -- reconstructing geometry, materials, and lighting from observed images -- is challenging because recursively path-tracing such volumetric representations is expensive. Recent works alleviate this issue through the use of radiance caches: data structures that store the steady-state, infinite-bounce radiance arriving at any point from any direction. However, these solutions rely on approximations that introduce bias into the renderings and, more importantly, into the gradients used for optimization. We present a method that avoids these approximations while remaining computationally efficient. In particular, we leverage two techniques to reduce variance for unbiased estimators of the rendering equation: (1) an occlusion-aware importance sampler for incoming illumination and (2) a fast cache architecture that can be used as a control variate for the radiance from a high-quality, but more expensive, volumetric cache. We show that by removing these biases our approach improves the generality of radiance cache based inverse rendering, as well as increasing quality in the presence of challenging light transport effects such as specular reflections."
+  },
+  {
+    "paperId": "a8a52bdc831e57bbb306ced5a4a52bc408e4119e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2408-13370",
+      "ArXiv": "2408.13370",
+      "DOI": "10.48550/arXiv.2408.13370",
+      "CorpusId": 271956889
+    },
+    "title": "BiGS: Bidirectional Gaussian Primitives for Relightable 3D Gaussian Splatting",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.13370, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2316957942",
+        "name": "Zhenyuan Liu"
+      },
+      {
+        "authorId": "2304015319",
+        "name": "Yu Guo"
+      },
+      {
+        "authorId": "2186279627",
+        "name": "Xinyuan Li"
+      },
+      {
+        "authorId": "2316949802",
+        "name": "Bernd Bickel"
+      },
+      {
+        "authorId": "2316956514",
+        "name": "Ran Zhang"
+      }
+    ],
+    "abstract": "We present Bidirectional Gaussian Primitives, an image-based novel view synthesis technique designed to represent and render 3D objects with surface and volumetric materials under dynamic illumination. Our approach integrates light intrinsic decomposition into the Gaussian splatting framework, enabling real-time relighting of 3D objects. To unify surface and volumetric material within a cohesive appearance model, we adopt a light- and view-dependent scattering representation via bidirectional spherical harmonics. Our model does not use a specific surface normal-related reflectance function, making it more compatible with volumetric representations like Gaussian splatting, where the normals are undefined. We demonstrate our method by reconstructing and rendering objects with complex materials. Using One-Light-At-a-Time (OLAT) data as input, we can reproduce photorealistic appearances under novel lighting conditions in real time."
+  },
+  {
+    "paperId": "96f86c48fe9af57ad0a55505fe1d54d9a455ca23",
+    "externalIds": {
+      "ArXiv": "2408.03538",
+      "DBLP": "conf/mm/GuoBHGLC0024",
+      "DOI": "10.1145/3664647.3680893",
+      "CorpusId": 271744939
+    },
+    "title": "PRTGS: Precomputed Radiance Transfer of Gaussian Splats for Real-Time High-Quality Relighting",
+    "venue": "ACM Multimedia",
+    "year": 2024,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2408.03538",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.03538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293553313",
+        "name": "Yijia Guo"
+      },
+      {
+        "authorId": "2293359213",
+        "name": "Yuanxi Bai"
+      },
+      {
+        "authorId": "2314688038",
+        "name": "Liwen Hu"
+      },
+      {
+        "authorId": "2293409809",
+        "name": "Ziyi Guo"
+      },
+      {
+        "authorId": "2280099206",
+        "name": "Mianzhi Liu"
+      },
+      {
+        "authorId": "2315127274",
+        "name": "Yu Cai"
+      },
+      {
+        "authorId": "2280289818",
+        "name": "Tiejun Huang"
+      },
+      {
+        "authorId": "2261069627",
+        "name": "Lei Ma"
+      }
+    ],
+    "abstract": "We proposed Precomputed Radiance Transfer of Gaussian Splats (PRTGS), a real-time high-quality relighting method for Gaussian splats in low-frequency lighting environments that captures soft shadows and interreflections by precomputing 3D Gaussian splats' radiance transfer. Existing studies have demonstrated that 3D Gaussian splatting (3DGS) outperforms neural fields in efficiency for dynamic lighting scenarios. However, the current relighting method based on 3DGS is still struggling to compute high-quality shadow and indirect illumination in real time for dynamic light, leading to unrealistic rendering results. We solve this problem by precomputing the expensive transport simulations required for complex transfer functions like shadowing, the resulting transfer functions are represented as dense sets of vectors or matrices for every Gaussian splat. We introduce distinct precomputing methods tailored for training and rendering stages, along with unique ray tracing and indirect lighting precomputation techniques for 3D Gaussian splats to accelerate training speed and compute accurate indirect lighting related to environment light. Experimental analyses demonstrate that our approach achieves state-of-the-art visual quality while maintaining competitive training times and importantly allows high-quality real-time (30+ fps) relighting for dynamic light and relatively complex scenes at 1080p resolution."
+  },
+  {
+    "paperId": "2afcaa7fa2d2b19b5287b4ee8ea2b4e34b1a936d",
+    "externalIds": {
+      "ArXiv": "2407.07090",
+      "DBLP": "journals/corr/abs-2407-07090",
+      "DOI": "10.48550/arXiv.2407.07090",
+      "CorpusId": 271064938
+    },
+    "title": "3D Gaussian Ray Tracing: Fast Tracing of Particle Scenes",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2024,
+    "citationCount": 152,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.07090, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1452611383",
+        "name": "Nicolas Moenne-Loccoz"
+      },
+      {
+        "authorId": "2174737496",
+        "name": "Ashkan Mirzaei"
+      },
+      {
+        "authorId": "1413023605",
+        "name": "Or Perel"
+      },
+      {
+        "authorId": "2151802830",
+        "name": "Riccardo de Lutio"
+      },
+      {
+        "authorId": "2360507392",
+        "name": "Janick Martinez Esturo"
+      },
+      {
+        "authorId": "82261827",
+        "name": "Gavriel State"
+      },
+      {
+        "authorId": "2293950523",
+        "name": "Sanja Fidler"
+      },
+      {
+        "authorId": "2261282148",
+        "name": "Nicholas Sharp"
+      },
+      {
+        "authorId": "51950738",
+        "name": "Zan Gojcic"
+      }
+    ],
+    "abstract": "Particle-based representations of radiance fields such as 3D Gaussian Splatting have found great success for reconstructing and re-rendering of complex scenes. Most existing methods render particles via rasterization, projecting them to screen space tiles for processing in a sorted order. This work instead considers ray tracing the particles, building a bounding volume hierarchy and casting a ray for each pixel using high-performance GPU ray tracing hardware. To efficiently handle large numbers of semi-transparent particles, we describe a specialized rendering algorithm which encapsulates particles with bounding meshes to leverage fast ray-triangle intersections, and shades batches of intersections in depth-order. The benefits of ray tracing are well-known in computer graphics: processing incoherent rays for secondary lighting effects such as shadows and reflections, rendering from highly-distorted cameras common in robotics, stochastically sampling rays, and more. With our renderer, this flexibility comes at little cost compared to rasterization. Experiments demonstrate the speed and accuracy of our approach, as well as several applications in computer graphics and vision. We further propose related improvements to the basic Gaussian representation, including a simple use of generalized kernel functions which significantly reduces particle hit counts."
+  },
+  {
+    "paperId": "9c0d40f01ced7d425cb6145e9f961c6e44a478a8",
+    "externalIds": {
+      "ArXiv": "2403.17888",
+      "DBLP": "journals/corr/abs-2403-17888",
+      "DOI": "10.1145/3641519.3657428",
+      "CorpusId": 268692234
+    },
+    "title": "2D Gaussian Splatting for Geometrically Accurate Radiance Fields",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 2024,
+    "citationCount": 1200,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2403.17888",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.17888, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110783866",
+        "name": "Binbin Huang"
+      },
+      {
+        "authorId": "22265339",
+        "name": "Zehao Yu"
+      },
+      {
+        "authorId": "2268728872",
+        "name": "Anpei Chen"
+      },
+      {
+        "authorId": "47237027",
+        "name": "Andreas Geiger"
+      },
+      {
+        "authorId": "2293761050",
+        "name": "Shenghua Gao"
+      }
+    ],
+    "abstract": "3D Gaussian Splatting (3DGS) has recently revolutionized radiance field reconstruction, achieving high quality novel view synthesis and fast rendering speed. However, 3DGS fails to accurately represent surfaces due to the multi-view inconsistent nature of 3D Gaussians. We present 2D Gaussian Splatting (2DGS), a novel approach to model and reconstruct geometrically accurate radiance fields from multi-view images. Our key idea is to collapse the 3D volume into a set of 2D oriented planar Gaussian disks. Unlike 3D Gaussians, 2D Gaussians provide view-consistent geometry while modeling surfaces intrinsically. To accurately recover thin surfaces and achieve stable optimization, we introduce a perspective-accurate 2D splatting process utilizing ray-splat intersection and rasterization. Additionally, we incorporate depth distortion and normal consistency terms to further enhance the quality of the reconstructions. We demonstrate that our differentiable renderer allows for noise-free and detailed geometry reconstruction while maintaining competitive appearance quality, fast training speed, and real-time rendering. Project page at https://surfsplatting.github.io."
+  },
+  {
+    "paperId": "d8e03ca3fb17f80e31c0f9010a52a761fb70c6fe",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-02771",
+      "ArXiv": "2402.02771",
+      "DOI": "10.1145/3658211",
+      "CorpusId": 267411906
+    },
+    "title": "TensoSDF: Roughness-aware Tensorial Representation for Robust Geometry and Material Reconstruction",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2024,
+    "citationCount": 30,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2402.02771",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.02771, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268290590",
+        "name": "Jia Li"
+      },
+      {
+        "authorId": "2265156736",
+        "name": "Lu Wang"
+      },
+      {
+        "authorId": "2256830851",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2254437122",
+        "name": "Beibei Wang"
+      }
+    ],
+    "abstract": "Reconstructing objects with realistic materials from multi-view images is problematic, since it is highly ill-posed. Although the neural reconstruction approaches have exhibited impressive reconstruction ability, they are designed for objects with specific materials (e.g., diffuse or specular materials). To this end, we propose a novel framework for robust geometry and material reconstruction, where the geometry is expressed with the implicit signed distance field (SDF) encoded by a tensorial representation, namely TensoSDF. At the core of our method is the roughness-aware incorporation of the radiance and reflectance fields, which enables a robust reconstruction of objects with arbitrary reflective materials. Furthermore, the tensorial representation enhances geometry details in the reconstructed surface and reduces the training time. Finally, we estimate the materials using an explicit mesh for efficient intersection computation and an implicit SDF for accurate representation. Consequently, our method can achieve more robust geometry reconstruction, outperform the previous works in terms of relighting quality, and reduce 50% training times and 70% inference time. Codes and datasets are available at https://github.com/Riga2/TensoSDF."
+  },
+  {
+    "paperId": "e9efe9e01680c539ebf2581dc6cc8a10711df670",
+    "externalIds": {
+      "ArXiv": "2312.05133",
+      "DBLP": "journals/corr/abs-2312-05133",
+      "DOI": "10.48550/arXiv.2312.05133",
+      "CorpusId": 266149844,
+      "PubMed": "40498620"
+    },
+    "title": "GIR: 3D Gaussian Inverse Rendering for Relightable Scene Factorization",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2023,
+    "citationCount": 92,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.05133, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2202448544",
+        "name": "Yahao Shi"
+      },
+      {
+        "authorId": "2040798755",
+        "name": "Yanmin Wu"
+      },
+      {
+        "authorId": "2151103674",
+        "name": "Chenming Wu"
+      },
+      {
+        "authorId": "2273298945",
+        "name": "Xing Liu"
+      },
+      {
+        "authorId": "2273075553",
+        "name": "Chen Zhao"
+      },
+      {
+        "authorId": "2104451945",
+        "name": "Haocheng Feng"
+      },
+      {
+        "authorId": "2272123",
+        "name": "Jingtuo Liu"
+      },
+      {
+        "authorId": "2268745041",
+        "name": "Liangjun Zhang"
+      },
+      {
+        "authorId": "2275312839",
+        "name": "Jian Zhang"
+      },
+      {
+        "authorId": "2274216872",
+        "name": "Bin Zhou"
+      },
+      {
+        "authorId": "12081764",
+        "name": "Errui Ding"
+      },
+      {
+        "authorId": "2237593465",
+        "name": "Jingdong Wang"
+      }
+    ],
+    "abstract": "This paper presents a 3D Gaussian Inverse Rendering (GIR) method, employing 3D Gaussian representations to effectively factorize the scene into material properties, light, and geometry. The key contributions are three-fold. We compute the normal of each 3D Gaussian using the shortest eigenvector, with a directional masking scheme forcing accurate normal estimation without external supervision. We adopt an efficient voxel-based indirect illumination tracing scheme that stores direction-aware outgoing radiance in each 3D Gaussian to disentangle secondary illumination for approximating multi-bounce light transport. To further enhance the illumination disentanglement, we represent a high-resolution environmental map with a learnable low-resolution map and a lightweight, fully convolutional network. Our method achieves state-of-the-art performance in both relighting and novel view synthesis tasks among the recently proposed inverse rendering methods while achieving real-time rendering. This substantiates our proposed method's efficacy and broad applicability, highlighting its potential as an influential tool in various real-time interactive graphics applications such as material editing and relighting."
+  },
+  {
+    "paperId": "2ff9dcf78753079d02e5ef6f57da0232200d01eb",
+    "externalIds": {
+      "ArXiv": "2311.16043",
+      "DBLP": "conf/eccv/GaoGLLZCZY24",
+      "DOI": "10.1007/978-3-031-72995-9_5",
+      "CorpusId": 265455916
+    },
+    "title": "Relightable 3D Gaussians: Realistic Point Cloud Relighting with BRDF Decomposition and Ray Tracing",
+    "venue": "European Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 142,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.16043, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149258535",
+        "name": "Jian Gao"
+      },
+      {
+        "authorId": "2268399619",
+        "name": "Chun Gu"
+      },
+      {
+        "authorId": "2268430574",
+        "name": "Youtian Lin"
+      },
+      {
+        "authorId": "2243329585",
+        "name": "Hao Zhu"
+      },
+      {
+        "authorId": "2268453713",
+        "name": "Xun Cao"
+      },
+      {
+        "authorId": "2265652138",
+        "name": "Li Zhang"
+      },
+      {
+        "authorId": "2265522585",
+        "name": "Yao Yao"
+      }
+    ],
+    "abstract": "In this paper, we present a novel differentiable point-based rendering framework to achieve photo-realistic relighting. To make the reconstructed scene relightable, we enhance vanilla 3D Gaussians by associating extra properties, including normal vectors, BRDF parameters, and incident lighting from various directions. From a collection of multi-view images, the 3D scene is optimized through 3D Gaussian Splatting while BRDF and lighting are decomposed by physically based differentiable rendering. To produce plausible shadow effects in photo-realistic relighting, we introduce an innovative point-based ray tracing with the bounding volume hierarchies for efficient visibility pre-computation. Extensive experiments demonstrate our improved BRDF estimation, novel view synthesis and relighting results compared to state-of-the-art approaches. The proposed framework showcases the potential to revolutionize the mesh-based graphics pipeline with a point-based pipeline enabling editing, tracing, and relighting."
+  },
+  {
+    "paperId": "51b93b9a5e5e51d0846f45f54875698ccdd6c231",
+    "externalIds": {
+      "ArXiv": "2311.16473",
+      "DBLP": "conf/cvpr/LiangZFSJ24",
+      "DOI": "10.1109/CVPR52733.2024.02045",
+      "CorpusId": 265466404
+    },
+    "title": "GS-IR: 3D Gaussian Splatting for Inverse Rendering",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 228,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2311.16473",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.16473, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268762641",
+        "name": "Zhihao Liang"
+      },
+      {
+        "authorId": "2268718715",
+        "name": "Qi Zhang"
+      },
+      {
+        "authorId": "2051781739",
+        "name": "Yingfa Feng"
+      },
+      {
+        "authorId": "2268490605",
+        "name": "Ying Shan"
+      },
+      {
+        "authorId": "2270662328",
+        "name": "Kui Jia"
+      }
+    ],
+    "abstract": "We propose GS-IR, a novel inverse rendering approach based on 3D Gaussian Splatting (3DGS) that leverages forward mapping volume rendering to achieve photorealistic novel view synthesis and relighting results. Unlike previous works that use implicit neural representations and volume rendering (e.g. NeRF), which suffer from low expressive power and high computational complexity, we extend 3DGS, a top-performance representation for novel view synthesis, to estimate scene geometry, surface material, and environment illumination from multi-view images captured under unknown lighting conditions. There are two main problems when introducing 3DGS to inverse rendering: 1) 3DGS does not support producing plausible normal natively; 2) forward mapping (e.g. rasterization and splatting) cannot trace the occlusion like backward mapping (e.g. ray tracing). To address these challenges, our GS-IR proposes an efficient optimization scheme incorporating a depth-derivation-based regularization for normal estimation and a baking-based occlusion to model indirect lighting. The flexible and expressive 3DGS representation allows us to achieve fast and compact geometry reconstruction, photore-alistic novel view synthesis, and effective physically-based rendering. We demonstrate the superiority of our method over baseline methods through qualitative and quantitative evaluations of various challenging scenes. The source code is available at https://github.com/lzhnb/GS-IR."
+  },
+  {
+    "paperId": "1747b9f13b483c19910a3441262ebeb8984fc8b0",
+    "externalIds": {
+      "ArXiv": "2310.16044",
+      "DBLP": "journals/corr/abs-2310-16044",
+      "DOI": "10.48550/arXiv.2310.16044",
+      "CorpusId": 264438842
+    },
+    "title": "Stanford-ORB: A Real-World 3D Object Inverse Rendering Benchmark",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.16044, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2066470405",
+        "name": "Zhengfei Kuang"
+      },
+      {
+        "authorId": "2261420360",
+        "name": "Yunzhi Zhang"
+      },
+      {
+        "authorId": "2239448099",
+        "name": "Hong-Xing Yu"
+      },
+      {
+        "authorId": "2146212296",
+        "name": "Samir Agarwala"
+      },
+      {
+        "authorId": "2112538311",
+        "name": "Shangzhe Wu"
+      },
+      {
+        "authorId": "3045089",
+        "name": "Jiajun Wu"
+      }
+    ],
+    "abstract": "We introduce Stanford-ORB, a new real-world 3D Object inverse Rendering Benchmark. Recent advances in inverse rendering have enabled a wide range of real-world applications in 3D content generation, moving rapidly from research and commercial use cases to consumer devices. While the results continue to improve, there is no real-world benchmark that can quantitatively assess and compare the performance of various inverse rendering methods. Existing real-world datasets typically only consist of the shape and multi-view images of objects, which are not sufficient for evaluating the quality of material recovery and object relighting. Methods capable of recovering material and lighting often resort to synthetic data for quantitative evaluation, which on the other hand does not guarantee generalization to complex real-world environments. We introduce a new dataset of real-world objects captured under a variety of natural scenes with ground-truth 3D scans, multi-view images, and environment lighting. Using this dataset, we establish the first comprehensive real-world evaluation benchmark for object inverse rendering tasks from in-the-wild scenes, and compare the performance of various existing methods."
+  },
+  {
+    "paperId": "2cc1d857e86d5152ba7fe6a8355c2a0150cc280a",
+    "externalIds": {
+      "DBLP": "journals/tog/KerblKLD23",
+      "ArXiv": "2308.04079",
+      "DOI": "10.1145/3592433",
+      "CorpusId": 259267917
+    },
+    "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2023,
+    "citationCount": 8070,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3592433",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.04079, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2454128",
+        "name": "Bernhard Kerbl"
+      },
+      {
+        "authorId": "72209802",
+        "name": "Georgios Kopanas"
+      },
+      {
+        "authorId": "41015873",
+        "name": "Thomas Leimkuehler"
+      },
+      {
+        "authorId": "1721779",
+        "name": "G. Drettakis"
+      }
+    ],
+    "abstract": "Radiance Field methods have recently revolutionized novel-view synthesis of scenes captured with multiple photos or videos. However, achieving high visual quality still requires neural networks that are costly to train and render, while recent faster methods inevitably trade off speed for quality. For unbounded and complete scenes (rather than isolated objects) and 1080p resolution rendering, no current method can achieve real-time display rates. We introduce three key elements that allow us to achieve state-of-the-art visual quality while maintaining competitive training times and importantly allow high-quality real-time (≥ 30 fps) novel-view synthesis at 1080p resolution. First, starting from sparse points produced during camera calibration, we represent the scene with 3D Gaussians that preserve desirable properties of continuous volumetric radiance fields for scene optimization while avoiding unnecessary computation in empty space; Second, we perform interleaved optimization/density control of the 3D Gaussians, notably optimizing anisotropic covariance to achieve an accurate representation of the scene; Third, we develop a fast visibility-aware rendering algorithm that supports anisotropic splatting and both accelerates training and allows realtime rendering. We demonstrate state-of-the-art visual quality and real-time rendering on several established datasets."
+  },
+  {
+    "paperId": "68728e5d31b6ef66e15233753f1f17d49c8ca81e",
+    "externalIds": {
+      "DBLP": "journals/tog/LiuWLLWLKW23",
+      "ArXiv": "2305.17398",
+      "DOI": "10.1145/3592134",
+      "CorpusId": 258960520
+    },
+    "title": "NeRO: Neural Geometry and BRDF Reconstruction of Reflective Objects from Multiview Images",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2023,
+    "citationCount": 205,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.17398",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.17398, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143861796",
+        "name": "Yuan Liu"
+      },
+      {
+        "authorId": "144282672",
+        "name": "Peng Wang"
+      },
+      {
+        "authorId": "144428897",
+        "name": "Cheng Lin"
+      },
+      {
+        "authorId": "1606258913",
+        "name": "Xiaoxiao Long"
+      },
+      {
+        "authorId": "2157329405",
+        "name": "Jie-Chao Wang"
+      },
+      {
+        "authorId": "46458089",
+        "name": "Lingjie Liu"
+      },
+      {
+        "authorId": "2254293",
+        "name": "T. Komura"
+      },
+      {
+        "authorId": "2108349527",
+        "name": "Wenping Wang"
+      }
+    ],
+    "abstract": "We present a neural rendering-based method called NeRO for reconstructing the geometry and the BRDF of reflective objects from multiview images captured in an unknown environment. Multiview reconstruction of reflective objects is extremely challenging because specular reflections are view-dependent and thus violate the multiview consistency, which is the cornerstone for most multiview reconstruction methods. Recent neural rendering techniques can model the interaction between environment lights and the object surfaces to fit the view-dependent reflections, thus making it possible to reconstruct reflective objects from multiview images. However, accurately modeling environment lights in the neural rendering is intractable, especially when the geometry is unknown. Most existing neural rendering methods, which can model environment lights, only consider direct lights and rely on object masks to reconstruct objects with weak specular reflections. Therefore, these methods fail to reconstruct reflective objects, especially when the object mask is not available and the object is illuminated by indirect lights. We propose a two-step approach to tackle this problem. First, by applying the split-sum approximation and the integrated directional encoding to approximate the shading effects of both direct and indirect lights, we are able to accurately reconstruct the geometry of reflective objects without any object masks. Then, with the object geometry fixed, we use more accurate sampling to recover the environment lights and the BRDF of the object. Extensive experiments demonstrate that our method is capable of accurately reconstructing the geometry and the BRDF of reflective objects from only posed RGB images without knowing the environment lights and the object masks. Codes and datasets are available at https://github.com/liuyuan-pal/NeRO."
+  },
+  {
+    "paperId": "373fa812147e5a333a7f84c42f12bbf9de56f4a1",
+    "externalIds": {
+      "DBLP": "conf/siggraph/HadadanLNRZ23",
+      "ArXiv": "2305.02192",
+      "DOI": "10.1145/3588432.3591553",
+      "CorpusId": 262316889
+    },
+    "title": "Inverse Global Illumination using a Neural Radiometric Prior",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 2023,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3588432.3591553",
+      "status": "HYBRID",
+      "license": "CCBYND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.02192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2105605679",
+        "name": "Saeed Hadadan"
+      },
+      {
+        "authorId": "2240617257",
+        "name": "Geng Lin"
+      },
+      {
+        "authorId": "2052127348",
+        "name": "Jan Novák"
+      },
+      {
+        "authorId": "1801097",
+        "name": "Fabrice Rousselle"
+      },
+      {
+        "authorId": "1796846",
+        "name": "Matthias Zwicker"
+      }
+    ],
+    "abstract": "Inverse rendering methods that account for global illumination are becoming more popular, but current methods require evaluating and automatically differentiating millions of path integrals by tracing multiple light bounces, which remains expensive and prone to noise. Instead, this paper proposes a radiometric prior as a simple alternative to building complete path integrals in a traditional differentiable path tracer, while still correctly accounting for global illumination. Inspired by the Neural Radiosity technique, we use a neural network as a radiance function, and we introduce a prior consisting of the norm of the residual of the rendering equation in the inverse rendering loss. We train our radiance network and optimize scene parameters simultaneously using a loss consisting of both a photometric term between renderings and the multi-view input images, and our radiometric prior (the residual term). This residual term enforces a physical constraint on the optimization that ensures that the radiance field accounts for global illumination. We compare our method to a vanilla differentiable path tracer, and more advanced techniques such as Path Replay Backpropagation. Despite the simplicity of our approach, we can recover scene parameters with comparable and in some cases better quality, at considerably lower computation times."
+  },
+  {
+    "paperId": "073b30f4604c0869231eea08b776f02414b19fce",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-12461",
+      "ArXiv": "2304.12461",
+      "DOI": "10.1109/CVPR52729.2023.00024",
+      "CorpusId": 258309233
+    },
+    "title": "TensoIR: Tensorial Inverse Rendering",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 183,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.12461",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.12461, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107097305",
+        "name": "Haian Jin"
+      },
+      {
+        "authorId": "2143196595",
+        "name": "Isabella Liu"
+      },
+      {
+        "authorId": "2215305473",
+        "name": "Peijia Xu"
+      },
+      {
+        "authorId": "2108056752",
+        "name": "Xiaoshuai Zhang"
+      },
+      {
+        "authorId": "47595511",
+        "name": "Songfang Han"
+      },
+      {
+        "authorId": "2065972099",
+        "name": "Sai Bi"
+      },
+      {
+        "authorId": "145453113",
+        "name": "Xiaowei Zhou"
+      },
+      {
+        "authorId": "2615346",
+        "name": "Zexiang Xu"
+      },
+      {
+        "authorId": "1423723631",
+        "name": "Hao Su"
+      }
+    ],
+    "abstract": "We propose TensoIR, a novel inverse rendering approach based on tensor factorization and neural fields. Unlike previous works that use purely MLP-based neural fields, thus suffering from low capacity and high computation costs, we extend TensoRF, a state-of-the-art approach for radiance field modeling, to estimate scene geometry, surface reflectance, and environment illumination from multi-view images captured under unknown lighting conditions. Our approach jointly achieves radiance field reconstruction and physically-based model estimation, leading to photo-realistic novel view synthesis and relighting results. Benefiting from the efficiency and extensibility of the TensoRF-based representation, our method can accurately model secondary shading effects (like shadows and indirect lighting) and generally support input images captured under single or multiple unknown lighting conditions. The low-rank tensor representation allows us to not only achieve fast and compact reconstruction but also better exploit shared information under an arbitrary number of capturing lighting conditions. We demonstrate the superiority of our method to baseline methods qualitatively and quantitatively on various challenging synthetic and real-world scenes."
+  },
+  {
+    "paperId": "d78648b71047a03f8b5812d581209ccfa53aa84f",
+    "externalIds": {
+      "DBLP": "conf/iccv/Zhang0LLFMTQ23",
+      "ArXiv": "2303.17147",
+      "DOI": "10.1109/ICCV51070.2023.00333",
+      "CorpusId": 257834129
+    },
+    "title": "NeILF++: Inter-Reflectable Light Fields for Geometry and Material Estimation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 90,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.17147",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.17147, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144192969",
+        "name": "Jingyang Zhang"
+      },
+      {
+        "authorId": "145923104",
+        "name": "Yao Yao"
+      },
+      {
+        "authorId": "144013684",
+        "name": "Shiwei Li"
+      },
+      {
+        "authorId": "2129843063",
+        "name": "Jingbo Liu"
+      },
+      {
+        "authorId": "3406486",
+        "name": "Tian Fang"
+      },
+      {
+        "authorId": "50260995",
+        "name": "D. McKinnon"
+      },
+      {
+        "authorId": "1683980",
+        "name": "Yanghai Tsin"
+      },
+      {
+        "authorId": "144645904",
+        "name": "Long Quan"
+      }
+    ],
+    "abstract": "We present a novel differentiable rendering framework for joint geometry, material, and lighting estimation from multi-view images. In contrast to previous methods which assume a simplified environment map or co-located flashlights, in this work, we formulate the lighting of a static scene as one neural incident light field (NeILF) and one outgoing neural radiance field (NeRF). The key insight of the proposed method is the union of the incident and outgoing light fields through physically-based rendering and inter-reflections between surfaces, making it possible to disentangle the scene geometry, material, and lighting from image observations in a physically-based manner. The proposed incident light and inter-reflection framework can be easily applied to other NeRF systems. We show that our method can not only decompose the outgoing radiance into incident lights and surface materials, but also serve as a surface refinement module that further improves the reconstruction detail of the neural surface. We demonstrate on several datasets that the proposed method is able to achieve state-of-the-art results in terms of geometry reconstruction quality, material estimation accuracy, and the fidelity of novel view rendering."
+  },
+  {
+    "paperId": "5fb8ae5391505091b5c7c985b2f9079331bd61b0",
+    "externalIds": {
+      "DBLP": "conf/cvpr/WuHLZF023",
+      "ArXiv": "2303.16617",
+      "DOI": "10.1109/CVPR52729.2023.00418",
+      "CorpusId": 257805012
+    },
+    "title": "NeFII: Inverse Rendering for Reflectance Decomposition with Near-Field Indirect Illumination",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.16617",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.16617, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1484389076",
+        "name": "Haoqian Wu"
+      },
+      {
+        "authorId": "2111297060",
+        "name": "Zhipeng Hu"
+      },
+      {
+        "authorId": "2141830553",
+        "name": "Lincheng Li"
+      },
+      {
+        "authorId": "2136629431",
+        "name": "Yongqiang Zhang"
+      },
+      {
+        "authorId": "3120655",
+        "name": "Changjie Fan"
+      },
+      {
+        "authorId": "2151420175",
+        "name": "Xin Yu"
+      }
+    ],
+    "abstract": "Inverse rendering methods aim to estimate geometry, materials and illumination from multi-view RGB images. In order to achieve better decomposition, recent approaches attempt to model indirect illuminations reflected from different materials via Spherical Gaussians (SG), which, however, tends to blur the high-frequency reflection details. In this paper, we propose an end-to-end inverse rendering pipeline that decomposes materials and illumination from multi-view images, while considering near-field indirect illumination. In a nutshell, we introduce the Monte Carlo sampling based path tracing and cache the indirect illumination as neural radiance, enabling a physics-faithful and easy-to-optimize inverse rendering method. To enhance efficiency and practicality, we leverage SG to represent the smooth environment illuminations and apply importance sampling techniques. To supervise indirect illuminations from unobserved directions, we develop a novel radiance consistency constraint between implicit neural radiance and path tracing results of unobserved rays along with the joint optimization of materials and illuminations, thus significantly improving the decomposition performance. Extensive experiments demonstrate that our method outperforms the state-of-the-art on multiple synthetic and real datasets, especially in terms of inter-reflection decomposition."
+  },
+  {
+    "paperId": "d752e422b7e0f55259cb546a690dd391b315f95a",
+    "externalIds": {
+      "DBLP": "conf/iccv/LiangC0CPV23",
+      "ArXiv": "2303.13022",
+      "DOI": "10.1109/ICCV51070.2023.00014",
+      "CorpusId": 257687610
+    },
+    "title": "ENVIDR: Implicit Differentiable Renderer with Neural Environment Lighting",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 71,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.13022",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.13022, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151471987",
+        "name": "Ruofan Liang"
+      },
+      {
+        "authorId": "50688509",
+        "name": "Hui-Hsia Chen"
+      },
+      {
+        "authorId": "2109499090",
+        "name": "Chunlin Li"
+      },
+      {
+        "authorId": "2213739625",
+        "name": "Fan Chen"
+      },
+      {
+        "authorId": "32799230",
+        "name": "Selvakumar Panneer"
+      },
+      {
+        "authorId": "1920997",
+        "name": "Nandita Vijaykumar"
+      }
+    ],
+    "abstract": "Recent advances in neural rendering have shown great potential for reconstructing scenes from multiview images. However, accurately representing objects with glossy surfaces remains a challenge for existing methods. In this work, we introduce ENVIDR, a rendering and modeling framework for high-quality rendering and reconstruction of surfaces with challenging specular reflections. To achieve this, we first propose a novel neural renderer with decomposed rendering components to learn the interaction between surface and environment lighting. This renderer is trained using existing physically based renderers and is decoupled from actual scene representations. We then propose an SDF-based neural surface model that leverages this learned neural renderer to represent general scenes. Our model additionally synthesizes indirect illuminations caused by inter-reflections from shiny surfaces by marching surface-reflected rays. We demonstrate that our method outperforms state-of-art methods on challenging shiny scenes, providing high-quality rendering of specular reflections while also enabling material editing and scene relighting."
+  },
+  {
+    "paperId": "ae352757fae3bf360a3db1c00be587d8c25bf3ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2204-06837",
+      "ArXiv": "2204.06837",
+      "DOI": "10.1109/CVPR52688.2022.01809",
+      "CorpusId": 248177748
+    },
+    "title": "Modeling Indirect Illumination for Inverse Rendering",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 211,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2204.06837",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.06837, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2145782988",
+        "name": "Yuanqing Zhang"
+      },
+      {
+        "authorId": "153552118",
+        "name": "Jiaming Sun"
+      },
+      {
+        "authorId": "2166417327",
+        "name": "Xingyi He He"
+      },
+      {
+        "authorId": "145150876",
+        "name": "Huan Fu"
+      },
+      {
+        "authorId": "46754870",
+        "name": "Rongfei Jia"
+      },
+      {
+        "authorId": "145453113",
+        "name": "Xiaowei Zhou"
+      }
+    ],
+    "abstract": "Recent advances in implicit neural representations and differentiable rendering make it possible to simultaneously recover the geometry and materials of an object from multi-view RGB images captured under unknown static illumination. Despite the promising results achieved, indirect illumination is rarely modeled in previous methods, as it requires expensive recursive path tracing which makes the inverse rendering computationally intractable. In this paper, we propose a novel approach to efficiently recovering spatially-varying indirect illumination. The key insight is that indirect illumination can be conveniently derived from the neural radiance field learned from input images instead of being estimated jointly with direct illumination and materials. By properly modeling the indirect illumination and visibility of direct illumination, interreflection- and shadow-free albedo can be recovered. The experiments on both synthetic and real data demonstrate the superior performance of our approach compared to previous work and its capambility to synthesize realistic renderings under novel view-points and illumination. Our code and data are available at https://zju3dv.github.io/invrender/."
+  },
+  {
+    "paperId": "737b591e7fcaf90c74ee4a5bb64ad807bc017ea6",
+    "externalIds": {
+      "ArXiv": "2203.07182",
+      "DBLP": "conf/eccv/YaoZLQFMTQ22",
+      "DOI": "10.48550/arXiv.2203.07182",
+      "CorpusId": 247447583
+    },
+    "title": "NeILF: Neural Incident Light Field for Physically-based Material Estimation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 133,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.07182",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.07182, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145923104",
+        "name": "Yao Yao"
+      },
+      {
+        "authorId": "2144192969",
+        "name": "Jingyang Zhang"
+      },
+      {
+        "authorId": "2129843063",
+        "name": "Jingbo Liu"
+      },
+      {
+        "authorId": "2158817324",
+        "name": "Yihang Qu"
+      },
+      {
+        "authorId": "3406486",
+        "name": "Tian Fang"
+      },
+      {
+        "authorId": "50260995",
+        "name": "D. McKinnon"
+      },
+      {
+        "authorId": "1683980",
+        "name": "Yanghai Tsin"
+      },
+      {
+        "authorId": "144645904",
+        "name": "Long Quan"
+      }
+    ],
+    "abstract": "We present a differentiable rendering framework for material and lighting estimation from multi-view images and a reconstructed geometry. In the framework, we represent scene lightings as the Neural Incident Light Field (NeILF) and material properties as the surface BRDF modelled by multi-layer perceptrons. Compared with recent approaches that approximate scene lightings as the 2D environment map, NeILF is a fully 5D light field that is capable of modelling illuminations of any static scenes. In addition, occlusions and indirect lights can be handled naturally by the NeILF representation without requiring multiple bounces of ray tracing, making it possible to estimate material properties even for scenes with complex lightings and geometries. We also propose a smoothness regularization and a Lambertian assumption to reduce the material-lighting ambiguity during the optimization. Our method strictly follows the physically-based rendering equation, and jointly optimizes material and lighting through the differentiable rendering process. We have intensively evaluated the proposed method on our in-house synthetic dataset, the DTU MVS dataset, and real-world BlendedMVS scenes. Our method is able to outperform previous methods by a significant margin in terms of novel view rendering quality, setting a new state-of-the-art for image-based material and lighting estimation."
+  },
+  {
+    "paperId": "5d277f165a108d585262955c648ff2224955d9c0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2111-12503",
+      "ArXiv": "2111.12503",
+      "DOI": "10.1109/CVPR52688.2022.00810",
+      "CorpusId": 244527221
+    },
+    "title": "Extracting Triangular 3D Models, Materials, and Lighting From Images",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 485,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2111.12503",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.12503, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1762967",
+        "name": "Jacob Munkberg"
+      },
+      {
+        "authorId": "2266452",
+        "name": "J. Hasselgren"
+      },
+      {
+        "authorId": "2057973992",
+        "name": "Tianchang Shen"
+      },
+      {
+        "authorId": "145200206",
+        "name": "Jun Gao"
+      },
+      {
+        "authorId": "47483054",
+        "name": "Wenzheng Chen"
+      },
+      {
+        "authorId": "2114739960",
+        "name": "Alex Evans"
+      },
+      {
+        "authorId": "2228259568",
+        "name": "T. Müller"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      }
+    ],
+    "abstract": "We present an efficient method for joint optimization of topology, materials and lighting from multi-view image observations. Unlike recent multi-view reconstruction approaches, which typically produce entangled 3D representations encoded in neural networks, we output triangle meshes with spatially-varying materials and environment lighting that can be deployed in any traditional graphics engine unmodified. We leverage recent work in differentiable rendering, coordinate-based networks to compactly represent volumetric texturing, alongside differentiable marching tetrahedrons to enable gradient-based optimization directly on the surface mesh. Finally, we introduce a differentiable formulation of the split sum approximation of environment lighting to efficiently recover all-frequency lighting. Experiments show our extracted models used in advanced scene editing, material decomposition, and high quality view interpolation, all running at interactive rates in triangle-based renderers (rasterizers and path tracers)."
+  },
+  {
+    "paperId": "ec90ffa017a2cc6a51342509ce42b81b478aefb3",
+    "externalIds": {
+      "DBLP": "conf/cvpr/BarronMVSH22",
+      "ArXiv": "2111.12077",
+      "DOI": "10.1109/CVPR52688.2022.00539",
+      "CorpusId": 244488448
+    },
+    "title": "Mip-NeRF 360: Unbounded Anti-Aliased Neural Radiance Fields",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 2503,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2111.12077",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.12077, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50329510",
+        "name": "J. Barron"
+      },
+      {
+        "authorId": "2577533",
+        "name": "B. Mildenhall"
+      },
+      {
+        "authorId": "8497474",
+        "name": "Dor Verbin"
+      },
+      {
+        "authorId": "2179732",
+        "name": "P. Srinivasan"
+      },
+      {
+        "authorId": "33810877",
+        "name": "Peter Hedman"
+      }
+    ],
+    "abstract": "Though neural radiance fields (NeRF) have demon-strated impressive view synthesis results on objects and small bounded regions of space, they struggle on “un-bounded” scenes, where the camera may point in any di-rection and content may exist at any distance. In this set-ting, existing NeRF-like models often produce blurry or low-resolution renderings (due to the unbalanced detail and scale of nearby and distant objects), are slow to train, and may exhibit artifacts due to the inherent ambiguity of the task of reconstructing a large scene from a small set of images. We present an extension of mip-NeRF (a NeRF variant that addresses sampling and aliasing) that uses a non-linear scene parameterization, online distillation, and a novel distortion-based regularizer to overcome the chal-lenges presented by unbounded scenes. Our model, which we dub “mip-NeRF 360” as we target scenes in which the camera rotates 360 degrees around a point, reduces mean-squared error by 57% compared to mip-NeRF, and is able to produce realistic synthesized views and detailed depth maps for highly intricate, unbounded real-world scenes."
+  },
+  {
+    "paperId": "1115d5d022c3c15246463a0bc684bb789bfc82dd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-12372",
+      "ArXiv": "2106.12372",
+      "DOI": "10.1145/3476576.3476579",
+      "CorpusId": 235606372
+    },
+    "title": "Real-time neural radiance caching for path tracing",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2021,
+    "citationCount": 215,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2106.12372",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.12372, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2228259568",
+        "name": "T. Müller"
+      },
+      {
+        "authorId": "1801097",
+        "name": "Fabrice Rousselle"
+      },
+      {
+        "authorId": "144086164",
+        "name": "J. Nov'ak"
+      },
+      {
+        "authorId": "145661463",
+        "name": "A. Keller"
+      }
+    ],
+    "abstract": "We present a real-time neural radiance caching method for path-traced global illumination. Our system is designed to handle fully dynamic scenes, and makes no assumptions about the lighting, geometry, and materials. The data-driven nature of our approach sidesteps many difficulties of caching algorithms, such as locating, interpolating, and updating cache points. Since pretraining neural networks to handle novel, dynamic scenes is a formidable generalization challenge, we do away with pretraining and instead achieve generalization via adaptation, i.e. we opt for training the radiance cache while rendering. We employ self-training to provide low-noise training targets and simulate infinite-bounce transport by merely iterating few-bounce training updates. The updates and cache queries incur a mild overhead---about 2.6ms on full HD resolution---thanks to a streaming implementation of the neural network that fully exploits modern hardware. We demonstrate significant noise reduction at the cost of little induced bias, and report state-of-the-art, real-time performance on a number of challenging scenarios."
+  },
+  {
+    "paperId": "489602c03ee394bf8626077a10575bca4f6a72b5",
+    "externalIds": {
+      "ArXiv": "2105.12319",
+      "DBLP": "journals/tog/HadadanCZ21",
+      "DOI": "10.1145/3478513.3480569",
+      "CorpusId": 235195683
+    },
+    "title": "Neural radiosity",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2021,
+    "citationCount": 68,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3478513.3480569",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.12319, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2105605679",
+        "name": "Saeed Hadadan"
+      },
+      {
+        "authorId": "2107947276",
+        "name": "Shuhong Chen"
+      },
+      {
+        "authorId": "1796846",
+        "name": "Matthias Zwicker"
+      }
+    ],
+    "abstract": "We introduce Neural Radiosity, an algorithm to solve the rendering equation by minimizing the norm of its residual, similar as in classical radiosity techniques. Traditional basis functions used in radiosity, such as piecewise polynomials or meshless basis functions are typically limited to representing isotropic scattering from diffuse surfaces. Instead, we propose to leverage neural networks to represent the full four-dimensional radiance distribution, directly optimizing network parameters to minimize the norm of the residual. Our approach decouples solving the rendering equation from rendering (perspective) images similar as in traditional radiosity techniques, and allows us to efficiently synthesize arbitrary views of a scene. In addition, we propose a network architecture using geometric learnable features that improves convergence of our solver compared to previous techniques. Our approach leads to an algorithm that is simple to implement, and we demonstrate its effectiveness on a variety of scenes with diffuse and non-diffuse surfaces."
+  },
+  {
+    "paperId": "50bca2632e973fc6a60cdd7da1d64f3fc5ddd9b1",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ZhangLWBS21",
+      "ArXiv": "2104.00674",
+      "DOI": "10.1109/CVPR46437.2021.00541",
+      "CorpusId": 232478349
+    },
+    "title": "PhySG: Inverse Rendering with Spherical Gaussians for Physics-based Material Editing and Relighting",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 428,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2104.00674",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.00674, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2158521200",
+        "name": "Kai Zhang"
+      },
+      {
+        "authorId": "13981526",
+        "name": "Fujun Luan"
+      },
+      {
+        "authorId": "2144298123",
+        "name": "Qianqian Wang"
+      },
+      {
+        "authorId": "144374926",
+        "name": "Kavita Bala"
+      },
+      {
+        "authorId": "1830653",
+        "name": "Noah Snavely"
+      }
+    ],
+    "abstract": "We present PhySG, an end-to-end inverse rendering pipeline that includes a fully differentiable renderer, and can reconstruct geometry, materials, and illumination from scratch from a set of images. Our framework represents specular BRDFs and environmental illumination using mixtures of spherical Gaussians, and represents geometry as a signed distance function parameterized as a Multi-Layer Perceptron. The use of spherical Gaussians allows us to efficiently solve for approximate light transport, and our method works on scenes with challenging non-Lambertian reflectance captured under natural, static illumination. We demonstrate, with both synthetic and real data, that our reconstructions not only enable rendering of novel viewpoints, but also physics-based appearance editing of materials and illumination."
+  },
+  {
+    "paperId": "aa91b25cf28e4ef58aeba19e72b233fb5f97d4ba",
+    "externalIds": {
+      "ArXiv": "2012.03918",
+      "MAG": "3113347918",
+      "DBLP": "journals/corr/abs-2012-03918",
+      "DOI": "10.1109/ICCV48922.2021.01245",
+      "CorpusId": 227351877
+    },
+    "title": "NeRD: Neural Reflectance Decomposition from Image Collections",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 606,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2012.03918",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.03918, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2063102428",
+        "name": "Mark Boss"
+      },
+      {
+        "authorId": "2056204078",
+        "name": "Raphael Braun"
+      },
+      {
+        "authorId": "2745026",
+        "name": "V. Jampani"
+      },
+      {
+        "authorId": "50329510",
+        "name": "J. Barron"
+      },
+      {
+        "authorId": "2107890439",
+        "name": "Ce Liu"
+      },
+      {
+        "authorId": "1809190",
+        "name": "H. Lensch"
+      }
+    ],
+    "abstract": "Decomposing a scene into its shape, reflectance, and illumination is a challenging but important problem in computer vision and graphics. This problem is inherently more challenging when the illumination is not a single light source under laboratory conditions but is instead an unconstrained environmental illumination. Though recent work has shown that implicit representations can be used to model the radiance field of an object, most of these techniques only enable view synthesis and not relighting. Additionally, evaluating these radiance fields is resource and time-intensive. We propose a neural reflectance decomposition (NeRD) technique that uses physically-based rendering to decompose the scene into spatially varying BRDF material properties. In contrast to existing techniques, our input images can be captured under different illumination conditions. In addition, we also propose techniques to convert the learned reflectance volume into a relightable textured mesh enabling fast real-time rendering with novel illuminations. We demonstrate the potential of the proposed approach with experiments on both synthetic and real datasets, where we are able to obtain high-quality relightable 3D assets from image collections. The datasets and code are available at the project page: https://markboss.me/publication/2021-nerd/."
+  },
+  {
+    "paperId": "4b266567253da27b2cbdb6bb7e450565032a35ab",
+    "externalIds": {
+      "MAG": "3113005628",
+      "DBLP": "journals/corr/abs-2012-03927",
+      "ArXiv": "2012.03927",
+      "DOI": "10.1109/CVPR46437.2021.00741",
+      "CorpusId": 227348246
+    },
+    "title": "NeRV: Neural Reflectance and Visibility Fields for Relighting and View Synthesis",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 688,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2012.03927",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.03927, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2179732",
+        "name": "P. Srinivasan"
+      },
+      {
+        "authorId": "22257166",
+        "name": "Boyang Deng"
+      },
+      {
+        "authorId": "2108764358",
+        "name": "Xiuming Zhang"
+      },
+      {
+        "authorId": "7638730",
+        "name": "Matthew Tancik"
+      },
+      {
+        "authorId": "2577533",
+        "name": "B. Mildenhall"
+      },
+      {
+        "authorId": "50329510",
+        "name": "J. Barron"
+      }
+    ],
+    "abstract": "We present a method that takes as input a set of images of a scene illuminated by unconstrained known lighting, and produces as output a 3D representation that can be rendered from novel viewpoints under arbitrary lighting conditions. Our method represents the scene as a continuous volumetric function parameterized as MLPs whose inputs are a 3D location and whose outputs are the following scene properties at that input location: volume density, surface normal, material parameters, distance to the first surface intersection in any direction, and visibility of the external environment in any direction. Together, these allow us to render novel views of the object under arbitrary lighting, including indirect illumination effects. The predicted visibility and surface intersection fields are critical to our model’s ability to simulate direct and indirect illumination during training, because the brute-force techniques used by prior work are intractable for lighting conditions outside of controlled setups with a single light. Our method outperforms alternative approaches for recovering relightable 3D scene representations, and performs well in complex lighting settings that have posed a significant challenge to prior work."
+  },
+  {
+    "paperId": "aa88eb88dbe1a24e92b85e66c4e8059192aa2aee",
+    "externalIds": {
+      "DBLP": "journals/tog/ParkerBDFHLMMMRS10",
+      "MAG": "2050513283",
+      "DOI": "10.1145/1833349.1778803",
+      "CorpusId": 5947188
+    },
+    "title": "OptiX: a general purpose ray tracing engine",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2010,
+    "citationCount": 893,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1833349.1778803?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1833349.1778803, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2245031920",
+        "name": "S. Parker"
+      },
+      {
+        "authorId": "39403895",
+        "name": "James Bigler"
+      },
+      {
+        "authorId": "2655803",
+        "name": "Andreas Dietrich"
+      },
+      {
+        "authorId": "3272003",
+        "name": "Heiko Friedrich"
+      },
+      {
+        "authorId": "2657469",
+        "name": "Jared Hoberock"
+      },
+      {
+        "authorId": "10127169",
+        "name": "D. Luebke"
+      },
+      {
+        "authorId": "7326982",
+        "name": "David K. McAllister"
+      },
+      {
+        "authorId": "143822881",
+        "name": "M. McGuire"
+      },
+      {
+        "authorId": "2229365756",
+        "name": "Keith Morley"
+      },
+      {
+        "authorId": "31749474",
+        "name": "Austin Robison"
+      },
+      {
+        "authorId": "3065491",
+        "name": "Martin Stich"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "e5e921184ac27fb8d1da2a5d1404c6c814685b04",
+    "externalIds": {
+      "MAG": "2138624212",
+      "DBLP": "conf/siggraph/Kajiya86",
+      "DOI": "10.1145/15922.15902",
+      "CorpusId": 9226468
+    },
+    "title": "The rendering equation",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 1986,
+    "citationCount": 3325,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/15886.15902",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/15922.15902?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/15922.15902, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2446022",
+        "name": "J. Kajiya"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "8ff431442f137f9826bd94246270bfd786df2bbd",
+    "externalIds": {
+      "DBLP": "conf/siggraph/ImmelCG86",
+      "MAG": "1993594485",
+      "DOI": "10.1145/15922.15901",
+      "CorpusId": 7384510
+    },
+    "title": "A radiosity method for non-diffuse environments",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 1986,
+    "citationCount": 418,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/15886.15901",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/15922.15901?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/15922.15901, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46426868",
+        "name": "David S. Immel"
+      },
+      {
+        "authorId": "1400248273",
+        "name": "Michael F. Cohen"
+      },
+      {
+        "authorId": "1748054",
+        "name": "D. Greenberg"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d0d85c3dd0a5fbf6ba31484bf0860930fb311716",
+    "externalIds": {
+      "DBLP": "conf/siggraph/GoralTGB84",
+      "MAG": "2978789969",
+      "DOI": "10.1145/800031.808601",
+      "CorpusId": 844241
+    },
+    "title": "Modeling the interaction of light between diffuse surfaces",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 1984,
+    "citationCount": 1184,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/964965.808601",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/800031.808601?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/800031.808601, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50340620",
+        "name": "Cindy M. Goral"
+      },
+      {
+        "authorId": "2369829",
+        "name": "K. Torrance"
+      },
+      {
+        "authorId": "1748054",
+        "name": "D. Greenberg"
+      },
+      {
+        "authorId": "15166923",
+        "name": "B. Battaile"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "9d3af1c5fd5f7fb51467b4308952bc4da8285396",
+    "externalIds": {
+      "MAG": "2206047865",
+      "DOI": "10.1177/003591577707000909",
+      "CorpusId": 28208293
+    },
+    "title": "Paper",
+    "venue": "",
+    "year": 1977,
+    "citationCount": 5091,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1177/003591577707000909",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1177/003591577707000909?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1177/003591577707000909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32057228",
+        "name": "N. Cambridge"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "2ea5d59b1bc485b4d6206a69286bd53dba447633",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2406-16360",
+      "DOI": "10.48550/arXiv.2406.16360",
+      "CorpusId": 281333347
+    },
+    "title": "MIRReS: Multi-bounce Inverse Rendering using Reservoir Sampling",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2406.16360?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2406.16360, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2225388691",
+        "name": "Y. Dai"
+      },
+      {
+        "authorId": "2297225462",
+        "name": "Qi Wang"
+      },
+      {
+        "authorId": "2190105155",
+        "name": "Jingsen Zhu"
+      },
+      {
+        "authorId": "2190109518",
+        "name": "Dianbing Xi"
+      },
+      {
+        "authorId": "2276606100",
+        "name": "Yuchi Huo"
+      },
+      {
+        "authorId": "2271706675",
+        "name": "Chen Qian"
+      },
+      {
+        "authorId": "2271572437",
+        "name": "Ying He"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "3f4b29a0cc51f1ba8baaf99ac008f3acf18d04df",
+    "externalIds": {
+      "CorpusId": 7260137
+    },
+    "title": "Physically-Based Shading at Disney",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 521,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144124289",
+        "name": "Brent Burley"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "232b323d0af0d267ff3ed26b6050d2e022b15cff",
+    "externalIds": {
+      "CorpusId": 8313850
+    },
+    "title": "Ieee Transactions on Visualization and Computer Graphics Radiance Caching for Efficient Global Illumination Computation",
+    "venue": "",
+    "year": null,
+    "citationCount": 192,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "39369855",
+        "name": "Jaroslav Křivánek"
+      },
+      {
+        "authorId": "3181538",
+        "name": "Pascal Gautron"
+      },
+      {
+        "authorId": "5206263",
+        "name": "S. Pattanaik"
+      },
+      {
+        "authorId": "1767919",
+        "name": "K. Bouatouch"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5410086e3c7cb4cc48f73f75e843b4109befe092",
+    "externalIds": {
+      "CorpusId": 282134003
+    },
+    "title": "Representing Scenes as Neural Radiance Fields for View Synthesis",
+    "venue": "",
+    "year": null,
+    "citationCount": 7933,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [],
+    "abstract": null
+  }
+]
