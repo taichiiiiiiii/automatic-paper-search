@@ -1,0 +1,1973 @@
+[
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29680,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL"
+  },
+  {
+    "paperId": "de18baa4964804cf471d85a5a090498242d2e79f",
+    "externalIds": {
+      "ArXiv": "2102.09672",
+      "DBLP": "conf/icml/NicholD21",
+      "CorpusId": 231979499
+    },
+    "title": "Improved Denoising Diffusion Probabilistic Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 5190,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.09672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPM) are a class of generative models which have recently been shown to produce excellent samples. We show that with a few simple modifications, DDPMs can also achieve competitive log-likelihoods while maintaining high sample quality. Additionally, we find that learning variances of the reverse diffusion process allows sampling with an order of magnitude fewer forward passes with a negligible difference in sample quality, which is important for the practical deployment of these models. We additionally use precision and recall to compare how well DDPMs and GANs cover the target distribution. Finally, we show that the sample quality and likelihood of these models scale smoothly with model capacity and training compute, making them easily scalable. We release our code at https://github.com/openai/improved-diffusion"
+  },
+  {
+    "paperId": "1e91fa21b890a8f5d615578f4ddf46c3cb394691",
+    "externalIds": {
+      "ArXiv": "2201.09865",
+      "DBLP": "journals/corr/abs-2201-09865",
+      "DOI": "10.1109/CVPR52688.2022.01117",
+      "CorpusId": 246240274
+    },
+    "title": "RePaint: Inpainting using Denoising Diffusion Probabilistic Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 2008,
+    "openAccessPdf": {
+      "url": "https://lirias.kuleuven.be/bitstream/20.500.12942/728757/2/Lugmayr_RePaint_Inpainting_Using_Denoising_Diffusion_Probabilistic_Models_CVPR_2022_paper.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.09865, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1387970700",
+        "name": "Andreas Lugmayr"
+      },
+      {
+        "authorId": "2129520569",
+        "name": "Martin Danelljan"
+      },
+      {
+        "authorId": "145848547",
+        "name": "Andrés Romero"
+      },
+      {
+        "authorId": "1807197",
+        "name": "F. Yu"
+      },
+      {
+        "authorId": "1732855",
+        "name": "R. Timofte"
+      },
+      {
+        "authorId": "1681236",
+        "name": "L. Gool"
+      }
+    ],
+    "abstract": "Free-form inpainting is the task of adding new content to an image in the regions specified by an arbitrary binary mask. Most existing approaches train for a certain distribution of masks, which limits their generalization capabilities to unseen mask types. Furthermore, training with pixel-wise and perceptual losses often leads to simple textural extensions towards the missing areas instead of semantically meaningful generation. In this work, we propose RePaint: A Denoising Diffusion Probabilistic Model (DDPM) based inpainting approach that is applicable to even extreme masks. We employ a pretrained unconditional DDPM as the generative prior. To condition the generation process, we only alter the reverse diffusion iterations by sampling the unmasked regions using the given image infor-mation. Since this technique does not modify or condition the original DDPM network itself, the model produces high-quality and diverse output images for any inpainting form. We validate our method for both faces and general-purpose image inpainting using standard and extreme masks. Re-Paint outperforms state-of-the-art Autoregressive, and GAN approaches for at least five out of six mask distributions. Github Repository: git.io/RePaint"
+  },
+  {
+    "paperId": "f4ba954b0412773d047dc41231c733de0c1f4926",
+    "externalIds": {
+      "DBLP": "conf/icml/LaffertyMP01",
+      "MAG": "2147880316",
+      "CorpusId": 219683473
+    },
+    "title": "Conditional Random Fields: Probabilistic Models for Segmenting and Labeling Sequence Data",
+    "venue": "International Conference on Machine Learning",
+    "year": 2001,
+    "citationCount": 15504,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at http://repository.upenn.edu/cgi/viewcontent.cgi?article=1162&context=cis_papers, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1739581",
+        "name": "J. Lafferty"
+      },
+      {
+        "authorId": "143753639",
+        "name": "A. McCallum"
+      },
+      {
+        "authorId": "113414328",
+        "name": "Fernando Pereira"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "baa4f95081e9663fb045d145acc70049ace16ac9",
+    "externalIds": {
+      "DBLP": "journals/ijautcomp/LuZBCLZ25",
+      "ArXiv": "2211.01095",
+      "DOI": "10.1007/s11633-025-1562-4",
+      "CorpusId": 253254916
+    },
+    "title": "DPM-Solver++: Fast Solver for Guided Sampling of Diffusion Probabilistic Models",
+    "venue": "Machine Intelligence Research",
+    "year": 2022,
+    "citationCount": 959,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.01095, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102517285",
+        "name": "Cheng Lu"
+      },
+      {
+        "authorId": "2120327644",
+        "name": "Yuhao Zhou"
+      },
+      {
+        "authorId": "2071898125",
+        "name": "Fan Bao"
+      },
+      {
+        "authorId": "2276707",
+        "name": "Jianfei Chen"
+      },
+      {
+        "authorId": "2399563",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2155220672",
+        "name": "Jun Zhu"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) have achieved impressive success in high-resolution image synthesis, especially in recent large-scale text-to-image generation applications. An essential technique for improving the sample quality of DPMs is guided sampling, which usually needs a large guidance scale to obtain the best sample quality. The commonly-used fast sampler for guided sampling is denoising diffusion implicit models (DDIM), a first-order diffusion ordinary differential equation (ODE) solver that generally needs 100 to 250 steps for high-quality samples. Although recent works propose dedicated high-order solvers and achieve a further speedup for sampling without guidance, their effectiveness for guided sampling has not been well-tested before. In this work, we demonstrate that previous high-order fast samplers suffer from instability issues, and they even become slower than DDIM when the guidance scale grows larger. To further speed up guided sampling, we propose DPM-Solver++, a high-order solver for the guided sampling of DPMs. DPM-Solver++ solves the diffusion ODE with the data prediction model and adopts thresholding methods to keep the solution matches training data distribution. We further propose a multistep variant of DPM-Solver++ to address the instability issue by reducing the effective step size. Experiments show that DPM-Solver++ can generate high-quality samples within only 15 to 20 steps for guided sampling by pixel-space and latent-space DPMs."
+  },
+  {
+    "paperId": "d30cf4154da4dc8c8073c2f59cc35b1e7d453a65",
+    "externalIds": {
+      "DBLP": "books/cu/DurbinEK98",
+      "MAG": "2009570821",
+      "DOI": "10.1017/CBO9780511790492",
+      "CorpusId": 2852254
+    },
+    "title": "Biological Sequence Analysis: Probabilistic Models of Proteins and Nucleic Acids",
+    "venue": "",
+    "year": 1998,
+    "citationCount": 4668,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1017/CBO9780511790492?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1017/CBO9780511790492, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144187514",
+        "name": "R. Durbin"
+      },
+      {
+        "authorId": "1708077",
+        "name": "S. Eddy"
+      },
+      {
+        "authorId": "144197258",
+        "name": "A. Krogh"
+      },
+      {
+        "authorId": "145666307",
+        "name": "G. Mitchison"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "20f6fce7726e7b3ab4ca45ef40d92b79f093f825",
+    "externalIds": {
+      "DBLP": "conf/cvpr/WyattLSW22",
+      "DOI": "10.1109/CVPRW56347.2022.00080",
+      "CorpusId": 251020113
+    },
+    "title": "AnoDDPM: Anomaly Detection with Denoising Diffusion Probabilistic Models using Simplex Noise",
+    "venue": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2022,
+    "citationCount": 436,
+    "openAccessPdf": {
+      "url": "https://durham-repository.worktribe.com/preview/1136728/36134.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPRW56347.2022.00080?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPRW56347.2022.00080, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2311112841",
+        "name": "Julian Wyatt"
+      },
+      {
+        "authorId": "2038533343",
+        "name": "Adam Leach"
+      },
+      {
+        "authorId": "90958313",
+        "name": "Sebastian M. Schmon"
+      },
+      {
+        "authorId": "2240006",
+        "name": "Chris G. Willcocks"
+      }
+    ],
+    "abstract": "Generative models have been shown to provide a powerful mechanism for anomaly detection by learning to model healthy or normal reference data which can subsequently be used as a baseline for scoring anomalies. In this work we consider denoising diffusion probabilistic models (DDPMs) for unsupervised anomaly detection. DDPMs have superior mode coverage over generative adversarial networks (GANs) and higher sample quality than variational autoencoders (VAEs). However, this comes at the expense of poor scalability and increased sampling times due to the long Markov chain sequences required. We observe that within reconstruction-based anomaly detection a full-length Markov chain diffusion is not required. This leads us to develop a novel partial diffusion anomaly detection strategy that scales to high-resolution imagery, named AnoDDPM. A secondary problem is that Gaussian diffusion fails to capture larger anomalies; therefore we develop a multi-scale simplex noise diffusion process that gives control over the target anomaly size. AnoDDPM with simplex noise is shown to significantly outperform both f-AnoGAN and Gaussian diffusion for the tumorous dataset of 22 T1-weighted MRI scans (CCBS Edinburgh) qualitatively and quantitatively (improvement of +25.5% Sørensen–Dice coefficient, +17.6% IoU and +7.4% AUC)."
+  },
+  {
+    "paperId": "30af33fe1e5345a93217a363873b297ffa06e44f",
+    "externalIds": {
+      "ArXiv": "2404.15121",
+      "DBLP": "conf/siggraph/ChenSHTKC24",
+      "DOI": "10.1145/3641519.3657440",
+      "CorpusId": 269302504
+    },
+    "title": "Taming Diffusion Probabilistic Models for Character Control",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 2024,
+    "citationCount": 63,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.15121",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.15121, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2255346681",
+        "name": "Rui Chen"
+      },
+      {
+        "authorId": "2279663306",
+        "name": "Mingyi Shi"
+      },
+      {
+        "authorId": "2298097374",
+        "name": "Shaoli Huang"
+      },
+      {
+        "authorId": "2292189585",
+        "name": "Ping Tan"
+      },
+      {
+        "authorId": "2279646840",
+        "name": "Taku Komura"
+      },
+      {
+        "authorId": "2255133364",
+        "name": "Xuelin Chen"
+      }
+    ],
+    "abstract": "We present a novel character control framework that effectively utilizes motion diffusion probabilistic models to generate high-quality and diverse character animations, responding in real-time to a variety of dynamic user-supplied control signals. At the heart of our method lies a transformer-based Conditional Autoregressive Motion Diffusion Model (CAMDM), which takes as input the character’s historical motion and can generate a range of diverse potential future motions conditioned on high-level, coarse user control. To meet the demands for diversity, controllability, and computational efficiency required by a real-time controller, we incorporate several key algorithmic designs. These include separate condition tokenization, classifier-free guidance on past motion, and heuristic future trajectory extension, all designed to address the challenges associated with taming motion diffusion probabilistic models for character control. As a result, our work represents the first model that enables real-time generation of high-quality, diverse character animations based on user interactive control, supporting animating the character in multiple styles with a single unified model. We evaluate our method on a diverse set of locomotion skills, demonstrating the merits of our method over existing character controllers. The code and model are available at https://aiganimation.github.io/CAMDM/."
+  },
+  {
+    "paperId": "cda3fbbac6734b603bee363b0938e9baa924aa78",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-02938",
+      "ArXiv": "2108.02938",
+      "DOI": "10.1109/iccv48922.2021.01410",
+      "CorpusId": 236950721
+    },
+    "title": "ILVR: Conditioning Method for Denoising Diffusion Probabilistic Models",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 925,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2108.02938",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.02938, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2155367203",
+        "name": "Jooyoung Choi"
+      },
+      {
+        "authorId": "2109687230",
+        "name": "Sungwon Kim"
+      },
+      {
+        "authorId": "112953122",
+        "name": "Yonghyun Jeong"
+      },
+      {
+        "authorId": "2163133",
+        "name": "Youngjune Gwon"
+      },
+      {
+        "authorId": "2999019",
+        "name": "Sungroh Yoon"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPM) have shown remarkable performance in unconditional image generation. However, due to the stochasticity of the generative process in DDPM, it is challenging to generate images with the desired semantics. In this work, we propose Iterative Latent Variable Refinement (ILVR), a method to guide the generative process in DDPM to generate high-quality images based on a given reference image. Here, the refinement of the generative process in DDPM enables a single DDPM to sample images from various sets directed by the reference image. The proposed ILVR method generates high-quality images while controlling the generation. The controllability of our method allows adaptation of a single DDPM without any additional learning in various image generation tasks, such as generation from various downsampling factors, multi-domain image translation, paint-to-image, and editing with scribbles."
+  },
+  {
+    "paperId": "9b7b218b0f4e14f97260b6192add37da5e9ae2c5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2201-06503",
+      "ArXiv": "2201.06503",
+      "CorpusId": 246016304
+    },
+    "title": "Analytic-DPM: an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 400,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.06503, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2071898125",
+        "name": "Fan Bao"
+      },
+      {
+        "authorId": "2399563",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2155220672",
+        "name": "Jun Zhu"
+      },
+      {
+        "authorId": null,
+        "name": "Bo Zhang"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) represent a class of powerful generative models. Despite their success, the inference of DPMs is expensive since it generally needs to iterate over thousands of timesteps. A key problem in the inference is to estimate the variance in each timestep of the reverse process. In this work, we present a surprising result that both the optimal reverse variance and the corresponding optimal KL divergence of a DPM have analytic forms w.r.t. its score function. Building upon it, we propose Analytic-DPM, a training-free inference framework that estimates the analytic forms of the variance and KL divergence using the Monte Carlo method and a pretrained score-based model. Further, to correct the potential bias caused by the score-based model, we derive both lower and upper bounds of the optimal variance and clip the estimate for a better result. Empirically, our analytic-DPM improves the log-likelihood of various DPMs, produces high-quality samples, and meanwhile enjoys a 20x to 80x speed up."
+  },
+  {
+    "paperId": "c32fd8ea1b3f2df410410fb18d569dede102c53a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-01458",
+      "ArXiv": "2103.01458",
+      "DOI": "10.1109/CVPR46437.2021.00286",
+      "CorpusId": 232092778
+    },
+    "title": "Diffusion Probabilistic Models for 3D Point Cloud Generation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 987,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.01458",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.01458, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35518638",
+        "name": "Shitong Luo"
+      },
+      {
+        "authorId": "1486300471",
+        "name": "Wei Hu"
+      }
+    ],
+    "abstract": "We present a probabilistic model for point cloud generation, which is fundamental for various 3D vision tasks such as shape completion, upsampling, synthesis and data augmentation. Inspired by the diffusion process in non-equilibrium thermodynamics, we view points in point clouds as particles in a thermodynamic system in contact with a heat bath, which diffuse from the original distribution to a noise distribution. Point cloud generation thus amounts to learning the reverse diffusion process that transforms the noise distribution to the distribution of a desired shape. Specifically, we propose to model the reverse diffusion process for point clouds as a Markov chain conditioned on certain shape latent. We derive the variational bound in closed form for training and provide implementations of the model. Experimental results demonstrate that our model achieves competitive performance in point cloud generation and auto-encoding. The code is available at https://github.com/luost26/diffusion-point-cloud."
+  },
+  {
+    "paperId": "7803024f80343ae7b042080252fb353ce0744328",
+    "externalIds": {
+      "PubMedCentral": "10163245",
+      "DOI": "10.1038/s41598-023-34341-2",
+      "CorpusId": 253384524,
+      "PubMed": "37147413"
+    },
+    "title": "Denoising diffusion probabilistic models for 3D medical image generation",
+    "venue": "Scientific Reports",
+    "year": 2023,
+    "citationCount": 293,
+    "openAccessPdf": {
+      "url": "https://www.nature.com/articles/s41598-023-34341-2.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC10163245, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2047524297",
+        "name": "Firas Khader"
+      },
+      {
+        "authorId": "2179698320",
+        "name": "G. Mueller-Franzes"
+      },
+      {
+        "authorId": "150291268",
+        "name": "Soroosh Tayebi Arasteh"
+      },
+      {
+        "authorId": "2031129360",
+        "name": "T. Han"
+      },
+      {
+        "authorId": "1731835",
+        "name": "Christoph Haarburger"
+      },
+      {
+        "authorId": "1403931899",
+        "name": "M. Schulze-Hagen"
+      },
+      {
+        "authorId": "1581907759",
+        "name": "P. Schad"
+      },
+      {
+        "authorId": "10805740",
+        "name": "S. Engelhardt"
+      },
+      {
+        "authorId": "1924789",
+        "name": "B. Baessler"
+      },
+      {
+        "authorId": "6234552",
+        "name": "S. Foersch"
+      },
+      {
+        "authorId": "3011220",
+        "name": "J. Stegmaier"
+      },
+      {
+        "authorId": "2064331880",
+        "name": "C. Kuhl"
+      },
+      {
+        "authorId": "6280924",
+        "name": "S. Nebelung"
+      },
+      {
+        "authorId": "3955759",
+        "name": "Jakob Nikolas Kather"
+      },
+      {
+        "authorId": "3228050",
+        "name": "D. Truhn"
+      }
+    ],
+    "abstract": "Recent advances in computer vision have shown promising results in image generation. Diffusion probabilistic models have generated realistic images from textual input, as demonstrated by DALL-E 2, Imagen, and Stable Diffusion. However, their use in medicine, where imaging data typically comprises three-dimensional volumes, has not been systematically evaluated. Synthetic images may play a crucial role in privacy-preserving artificial intelligence and can also be used to augment small datasets. We show that diffusion probabilistic models can synthesize high-quality medical data for magnetic resonance imaging (MRI) and computed tomography (CT). For quantitative evaluation, two radiologists rated the quality of the synthesized images regarding \"realistic image appearance\", \"anatomical correctness\", and \"consistency between slices\". Furthermore, we demonstrate that synthetic images can be used in self-supervised pre-training and improve the performance of breast segmentation models when data is scarce (Dice scores, 0.91 [without synthetic data], 0.95 [with synthetic data])."
+  },
+  {
+    "paperId": "36eb6fea39ce06e2807f074fa3d5e79ed0f2bcef",
+    "externalIds": {
+      "MAG": "2803316390",
+      "DBLP": "books/daglib/0023091",
+      "CorpusId": 14995779
+    },
+    "title": "Probabilistic Graphical Models - Principles and Techniques",
+    "venue": "",
+    "year": 2009,
+    "citationCount": 8256,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at http://mitpress.mit.edu/catalog/item/default.asp?tid=11886&ttype=2, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1736370",
+        "name": "D. Koller"
+      },
+      {
+        "authorId": "50785579",
+        "name": "N. Friedman"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d0cefc4621a55540c77e8ade9b8ae1bfeb530f42",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2104-14951",
+      "ArXiv": "2104.14951",
+      "DOI": "10.1016/j.neucom.2022.01.029",
+      "CorpusId": 233476433
+    },
+    "title": "SRDiff: Single Image Super-Resolution with Diffusion Probabilistic Models",
+    "venue": "Neurocomputing",
+    "year": 2021,
+    "citationCount": 837,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2104.14951",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.14951, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "13032398",
+        "name": "Haoying Li"
+      },
+      {
+        "authorId": null,
+        "name": "Yifan Yang"
+      },
+      {
+        "authorId": "144405454",
+        "name": "Meng Chang"
+      },
+      {
+        "authorId": "46854729",
+        "name": "H. Feng"
+      },
+      {
+        "authorId": "48559708",
+        "name": "Zhi-hai Xu"
+      },
+      {
+        "authorId": "40422449",
+        "name": "Qi Li"
+      },
+      {
+        "authorId": "51511855",
+        "name": "Yue-ting Chen"
+      }
+    ],
+    "abstract": "Single image super-resolution (SISR) aims to reconstruct high-resolution (HR) images from the given low-resolution (LR) ones, which is an ill-posed problem because one LR image corresponds to multiple HR images. Recently, learning-based SISR methods have greatly outperformed traditional ones, while suffering from over-smoothing, mode collapse or large model footprint issues for PSNR-oriented, GAN-driven and flow-based methods respectively. To solve these problems, we propose a novel single image super-resolution diffusion probabilistic model (SRDiff), which is the first diffusion-based model for SISR. SRDiff is optimized with a variant of the variational bound on the data likelihood and can provide diverse and realistic SR predictions by gradually transforming the Gaussian noise into a super-resolution (SR) image conditioned on an LR input through a Markov chain. In addition, we introduce residual prediction to the whole framework to speed up convergence. Our extensive experiments on facial and general benchmarks (CelebA and DIV2K datasets) show that 1) SRDiff can generate diverse SR results in rich details with state-of-the-art performance, given only one LR input; 2) SRDiff is easy to train with a small footprint; and 3) SRDiff can perform flexible image manipulation including latent space interpolation and content fusion."
+  },
+  {
+    "paperId": "1c1cc65908dd5ca3d0103d650de896e053e0e7d7",
+    "externalIds": {
+      "ArXiv": "2112.00390",
+      "DBLP": "journals/corr/abs-2112-00390",
+      "CorpusId": 244773420
+    },
+    "title": "SegDiff: Image Segmentation with Diffusion Probabilistic Models",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 421,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.00390, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2070821779",
+        "name": "Tomer Amit"
+      },
+      {
+        "authorId": "3436681",
+        "name": "Eliya Nachmani"
+      },
+      {
+        "authorId": "2142732317",
+        "name": "Tal Shaharbany"
+      },
+      {
+        "authorId": "145128145",
+        "name": "Lior Wolf"
+      }
+    ],
+    "abstract": "Diffusion Probabilistic Methods are employed for state-of-the-art image generation. In this work, we present a method for extending such models for performing image segmentation. The method learns end-to-end, without relying on a pre-trained backbone. The information in the input image and in the current estimation of the segmentation map is merged by summing the output of two encoders. Additional encoding layers and a decoder are then used to iteratively refine the segmentation map, using a diffusion model. Since the diffusion model is probabilistic, it is applied multiple times, and the results are merged into a final segmentation map. The new method produces state-of-the-art results on the Cityscapes validation set, the Vaihingen building segmentation benchmark, and the MoNuSeg dataset."
+  },
+  {
+    "paperId": "0b6eea72dcbe3257cac62afb0db9ec28505ede0b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-00148",
+      "ArXiv": "2306.00148",
+      "DOI": "10.48550/arXiv.2306.00148",
+      "CorpusId": 259000023
+    },
+    "title": "SafeDiffuser: Safe Planning with Diffusion Probabilistic Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 74,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.00148",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.00148, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2023861131",
+        "name": "Wei Xiao"
+      },
+      {
+        "authorId": "40897201",
+        "name": "Tsun-Hsuan Wang"
+      },
+      {
+        "authorId": "2056157586",
+        "name": "Chuang Gan"
+      },
+      {
+        "authorId": "2064605577",
+        "name": "Daniela Rus"
+      }
+    ],
+    "abstract": "Diffusion model-based approaches have shown promise in data-driven planning, but there are no safety guarantees, thus making it hard to be applied for safety-critical applications. To address these challenges, we propose a new method, called SafeDiffuser, to ensure diffusion probabilistic models satisfy specifications by using a class of control barrier functions. The key idea of our approach is to embed the proposed finite-time diffusion invariance into the denoising diffusion procedure, which enables trustworthy diffusion data generation. Moreover, we demonstrate that our finite-time diffusion invariance method through generative models not only maintains generalization performance but also creates robustness in safe data generation. We test our method on a series of safe planning tasks, including maze path generation, legged robot locomotion, and 3D space manipulation, with results showing the advantages of robustness and guarantees over vanilla diffusion models."
+  },
+  {
+    "paperId": "f8110d834fcc9a3a1c4416d4b165984219fe26f4",
+    "externalIds": {
+      "MAG": "2577537660",
+      "DOI": "10.18637/JSS.V076.I01",
+      "CorpusId": 7314923,
+      "PubMed": "36568334"
+    },
+    "title": "Stan: A Probabilistic Programming Language.",
+    "venue": "Journal of Statistical Software",
+    "year": 2017,
+    "citationCount": 7271,
+    "openAccessPdf": {
+      "url": "https://www.jstatsoft.org/index.php/jss/article/view/v076i01/v76i01.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.18637/JSS.V076.I01?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.18637/JSS.V076.I01, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2579894",
+        "name": "Bob Carpenter"
+      },
+      {
+        "authorId": "144389145",
+        "name": "A. Gelman"
+      },
+      {
+        "authorId": "28552618",
+        "name": "M. Hoffman"
+      },
+      {
+        "authorId": "50403658",
+        "name": "Daniel Lee"
+      },
+      {
+        "authorId": "51024469",
+        "name": "Ben Goodrich"
+      },
+      {
+        "authorId": "144227038",
+        "name": "M. Betancourt"
+      },
+      {
+        "authorId": "2575536",
+        "name": "Marcus A. Brubaker"
+      },
+      {
+        "authorId": "2192564",
+        "name": "Jiqiang Guo"
+      },
+      {
+        "authorId": "48982216",
+        "name": "Peter Li"
+      },
+      {
+        "authorId": "47078183",
+        "name": "A. Riddell"
+      }
+    ],
+    "abstract": "Stan is a probabilistic programming language for specifying statistical models. A Stan program imperatively defines a log probability function over parameters conditioned on specified data and constants. As of version 2.14.0, Stan provides full Bayesian inference for continuous-variable models through Markov chain Monte Carlo methods such as the No-U-Turn sampler, an adaptive form of Hamiltonian Monte Carlo sampling. Penalized maximum likelihood estimates are calculated using optimization methods such as the limited memory Broyden-Fletcher-Goldfarb-Shanno algorithm. Stan is also a platform for computing log densities and their gradients and Hessians, which can be used in alternative algorithms such as variational Bayes, expectation propagation, and marginal inference using approximate integration. To this end, Stan is set up so that the densities, gradients, and Hessians, along with intermediate quantities of the algorithm such as acceptance probabilities, are easily accessible. Stan can be called from the command line using the cmdstan package, through R using the rstan package, and through Python using the pystan package. All three interfaces support sampling and optimization-based inference with diagnostics and posterior analysis. rstan and pystan also provide access to log probabilities, gradients, Hessians, parameter transforms, and specialized plotting."
+  },
+  {
+    "paperId": "2a43f920e4f1f869a9db402a50135f9f8df06f32",
+    "externalIds": {
+      "PubMedCentral": "10372018",
+      "ArXiv": "2212.07501",
+      "DOI": "10.1038/s41598-023-39278-0",
+      "CorpusId": 254685566,
+      "PubMed": "37495660"
+    },
+    "title": "A multimodal comparison of latent denoising diffusion probabilistic models and generative adversarial networks for medical image synthesis",
+    "venue": "Scientific Reports",
+    "year": 2022,
+    "citationCount": 190,
+    "openAccessPdf": {
+      "url": "https://www.nature.com/articles/s41598-023-39278-0.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.07501, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1840484052",
+        "name": "Gustav Müller-Franzes"
+      },
+      {
+        "authorId": "48627286",
+        "name": "J. Niehues"
+      },
+      {
+        "authorId": "2047524297",
+        "name": "Firas Khader"
+      },
+      {
+        "authorId": "150291268",
+        "name": "Soroosh Tayebi Arasteh"
+      },
+      {
+        "authorId": "1731835",
+        "name": "Christoph Haarburger"
+      },
+      {
+        "authorId": "2064331880",
+        "name": "C. Kuhl"
+      },
+      {
+        "authorId": "2187873077",
+        "name": "Tian Wang"
+      },
+      {
+        "authorId": "2031129360",
+        "name": "T. Han"
+      },
+      {
+        "authorId": "6280924",
+        "name": "S. Nebelung"
+      },
+      {
+        "authorId": "3955759",
+        "name": "Jakob Nikolas Kather"
+      },
+      {
+        "authorId": "3228050",
+        "name": "D. Truhn"
+      }
+    ],
+    "abstract": "Although generative adversarial networks (GANs) can produce large datasets, their limited diversity and fidelity have been recently addressed by denoising diffusion probabilistic models, which have demonstrated superiority in natural image synthesis. In this study, we introduce Medfusion, a conditional latent DDPM designed for medical image generation, and evaluate its performance against GANs, which currently represent the state-of-the-art. Medfusion was trained and compared with StyleGAN-3 using fundoscopy images from the AIROGS dataset, radiographs from the CheXpert dataset, and histopathology images from the CRCDX dataset. Based on previous studies, Progressively Growing GAN (ProGAN) and Conditional GAN (cGAN) were used as additional baselines on the CheXpert and CRCDX datasets, respectively. Medfusion exceeded GANs in terms of diversity (recall), achieving better scores of 0.40 compared to 0.19 in the AIROGS dataset, 0.41 compared to 0.02 (cGAN) and 0.24 (StyleGAN-3) in the CRMDX dataset, and 0.32 compared to 0.17 (ProGAN) and 0.08 (StyleGAN-3) in the CheXpert dataset. Furthermore, Medfusion exhibited equal or higher fidelity (precision) across all three datasets. Our study shows that Medfusion constitutes a promising alternative to GAN-based models for generating high-quality medical images, leading to improved diversity and less artifacts in the generated images."
+  },
+  {
+    "paperId": "3a324038c2d6cbee701ee6216f8995b713e87f2f",
+    "externalIds": {
+      "DBLP": "conf/icra/AhnML23",
+      "ArXiv": "2302.14503",
+      "DOI": "10.1109/ICRA48891.2023.10160722",
+      "CorpusId": 257232489
+    },
+    "title": "Can We Use Diffusion Probabilistic Models for 3D Motion Prediction?",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2023,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2302.14503",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.14503, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7289061",
+        "name": "Hyemin Ahn"
+      },
+      {
+        "authorId": "2179106150",
+        "name": "Esteve Valls Mascaro"
+      },
+      {
+        "authorId": "1690977",
+        "name": "Dongheui Lee"
+      }
+    ],
+    "abstract": "After many researchers observed fruitfulness from the recent diffusion probabilistic model, its effectiveness in image generation is actively studied these days. In this paper, our objective is to evaluate the potential of diffusion probabilistic models for 3D human motion-related tasks. To this end, this pa-per presents a study of employing diffusion probabilistic models to predict future 3D human motion(s) from the previously observed motion. Based on the Human 3.6M and HumanEva-I datasets, our results show that diffusion probabilistic models are competitive for both single (deterministic) and multiple (stochastic) 3D motion prediction tasks, after finishing a single training process. In addition, we find out that diffusion probabilistic models can offer an attractive compromise, since they can strike the right balance between the likelihood and diversity of the predicted future motions. Our code is publicly available on the project website: https://sites.google.com/view/diffusion-motion-prediction."
+  },
+  {
+    "paperId": "674c396ce3826db093ca1d621ad3603ec6418fc5",
+    "externalIds": {
+      "ArXiv": "2106.00132",
+      "DBLP": "journals/corr/abs-2106-00132",
+      "CorpusId": 235265701
+    },
+    "title": "On Fast Sampling of Diffusion Probabilistic Models",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 222,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.00132, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33470361",
+        "name": "Zhifeng Kong"
+      },
+      {
+        "authorId": "2056440915",
+        "name": "Wei Ping"
+      }
+    ],
+    "abstract": "In this work, we propose FastDPM, a unified framework for fast sampling in diffusion probabilistic models. FastDPM generalizes previous methods and gives rise to new algorithms with improved sample quality. We systematically investigate the fast sampling methods under this framework across different domains, on different datasets, and with different amount of conditional information provided for generation. We find the performance of a particular method depends on data domains (e.g., image or audio), the trade-off between sampling speed and sample quality, and the amount of conditional information. We further provide insights and recipes on the choice of methods for practitioners."
+  },
+  {
+    "paperId": "e793a1c2b98c655eb20a1fe253b5eb2971e48917",
+    "externalIds": {
+      "CorpusId": 249535354
+    },
+    "title": "Three-Dimensional Medical Image Synthesis with Denoising Diffusion Probabilistic Models",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 108,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://openreview.net/pdf?id=Oz7lKWVh45H, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2169508223",
+        "name": "Zolnamar Dorjsembe"
+      },
+      {
+        "authorId": "7839387",
+        "name": "Furen Xiao"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "bc5b3be970609bf44d8fd51db199406e1aa69473",
+    "externalIds": {
+      "ArXiv": "2104.05358",
+      "DBLP": "journals/corr/abs-2104-05358",
+      "CorpusId": 233210328
+    },
+    "title": "UNIT-DDPM: UNpaired Image Translation with Denoising Diffusion Probabilistic Models",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.05358, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2072856977",
+        "name": "Hiroshi Sasaki"
+      },
+      {
+        "authorId": "2240006",
+        "name": "Chris G. Willcocks"
+      },
+      {
+        "authorId": "1803808",
+        "name": "T. Breckon"
+      }
+    ],
+    "abstract": "We propose a novel unpaired image-to-image translation method that uses denoising diffusion probabilistic models without requiring adversarial training. Our method, UNpaired Image Translation with Denoising Diffusion Probabilistic Models (UNIT-DDPM), trains a generative model to infer the joint distribution of images over both domains as a Markov chain by minimising a denoising score matching objective conditioned on the other domain. In particular, we update both domain translation models simultaneously, and we generate target domain images by a denoising Markov Chain Monte Carlo approach that is conditioned on the input source domain images, based on Langevin dynamics. Our approach provides stable model training for image-to-image translation and generates high-quality image outputs. This enables state-of-the-art Fr\\'echet Inception Distance (FID) performance on several public datasets, including both colour and multispectral imagery, significantly outperforming the contemporary adversarial image-to-image translation methods."
+  },
+  {
+    "paperId": "4616d468f2ec5b78206f2d00d0c6704b4bda19b4",
+    "externalIds": {
+      "ArXiv": "2211.03364",
+      "CorpusId": 260444528
+    },
+    "title": "Medical Diffusion: Denoising Diffusion Probabilistic Models for 3D Medical Image Generation",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 84,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.03364, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2047524297",
+        "name": "Firas Khader"
+      },
+      {
+        "authorId": "2179698320",
+        "name": "G. Mueller-Franzes"
+      },
+      {
+        "authorId": "150291268",
+        "name": "Soroosh Tayebi Arasteh"
+      },
+      {
+        "authorId": "2031129360",
+        "name": "T. Han"
+      },
+      {
+        "authorId": "1731835",
+        "name": "Christoph Haarburger"
+      },
+      {
+        "authorId": "1403931899",
+        "name": "M. Schulze-Hagen"
+      },
+      {
+        "authorId": "1581907759",
+        "name": "P. Schad"
+      },
+      {
+        "authorId": "10805740",
+        "name": "S. Engelhardt"
+      },
+      {
+        "authorId": "1924789",
+        "name": "B. Baessler"
+      },
+      {
+        "authorId": "6234552",
+        "name": "S. Foersch"
+      },
+      {
+        "authorId": "3011220",
+        "name": "J. Stegmaier"
+      },
+      {
+        "authorId": "2064331880",
+        "name": "C. Kuhl"
+      },
+      {
+        "authorId": "6280924",
+        "name": "S. Nebelung"
+      },
+      {
+        "authorId": "3955759",
+        "name": "Jakob Nikolas Kather"
+      },
+      {
+        "authorId": "3228050",
+        "name": "D. Truhn"
+      }
+    ],
+    "abstract": "Recent advances in computer vision have shown promising results in image generation. Diffusion probabilistic models in particular have generated realistic images from textual input, as demonstrated by DALL-E 2, Imagen and Stable Diffusion. However, their use in medicine, where image data typically comprises three-dimensional volumes, has not been systematically evaluated. Synthetic images may play a crucial role in privacy preserving artificial intelligence and can also be used to augment small datasets. Here we show that diffusion probabilistic models can synthesize high quality medical imaging data, which we show for Magnetic Resonance Images (MRI) and Computed Tomography (CT) images. We provide quantitative measurements of their performance through a reader study with two medical experts who rated the quality of the synthesized images in three categories: Realistic image appearance, anatomical correctness and consistency between slices. Furthermore, we demonstrate that synthetic images can be used in a self-supervised pre-training and improve the performance of breast segmentation models when data is scarce (dice score 0.91 vs. 0.95 without vs. with synthetic data). The code is publicly available on GitHub: https://github.com/FirasGit/medicaldiffusion."
+  },
+  {
+    "paperId": "95f5bafba97beb9b4f8c1fe607f04ec28efab7f9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-03802",
+      "ArXiv": "2106.03802",
+      "CorpusId": 235363972
+    },
+    "title": "Learning to Efficiently Sample from Diffusion Probabilistic Models",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 158,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.03802, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2065080158",
+        "name": "Daniel Watson"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      }
+    ],
+    "abstract": "Denoising Diffusion Probabilistic Models (DDPMs) have emerged as a powerful family of generative models that can yield high-fidelity samples and competitive log-likelihoods across a range of domains, including image and speech synthesis. Key advantages of DDPMs include ease of training, in contrast to generative adversarial networks, and speed of generation, in contrast to autoregressive models. However, DDPMs typically require hundreds-to-thousands of steps to generate a high fidelity sample, making them prohibitively expensive for high dimensional problems. Fortunately, DDPMs allow trading generation speed for sample quality through adjusting the number of refinement steps as a post process. Prior work has been successful in improving generation speed through handcrafting the time schedule by trial and error. We instead view the selection of the inference time schedules as an optimization problem, and introduce an exact dynamic programming algorithm that finds the optimal discrete time schedules for any pre-trained DDPM. Our method exploits the fact that ELBO can be decomposed into separate KL terms, and given any computation budget, discovers the time schedule that maximizes the training ELBO exactly. Our method is efficient, has no hyper-parameters of its own, and can be applied to any pre-trained DDPM with no retraining. We discover inference time schedules requiring as few as 32 refinement steps, while sacrificing less than 0.1 bits per dimension compared to the default 4,000 steps used on ImageNet 64x64 [Ho et al., 2020; Nichol and Dhariwal, 2021]."
+  },
+  {
+    "paperId": "8deeb6091710caab295d66a1d9fa2485a83b7eac",
+    "externalIds": {
+      "DBLP": "journals/cacm/Blei12",
+      "MAG": "2174706414",
+      "DOI": "10.1145/2133806.2133826",
+      "CorpusId": 753304
+    },
+    "title": "Probabilistic topic models",
+    "venue": "Communications of the ACM",
+    "year": 2012,
+    "citationCount": 6557,
+    "openAccessPdf": {
+      "url": "http://dl.acm.org/ft_gateway.cfm?id=2133826&type=pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/2133806.2133826?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/2133806.2133826, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1796335",
+        "name": "D. Blei"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "014576b866078524286802b1d0e18628520aa886",
+    "externalIds": {
+      "ArXiv": "2010.02502",
+      "DBLP": "journals/corr/abs-2010-02502",
+      "MAG": "3092442149",
+      "CorpusId": 222140788
+    },
+    "title": "Denoising Diffusion Implicit Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 11592,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.02502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51453887",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "2057110631",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "2066211828",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPMs) have achieved high quality image generation without adversarial training, yet they require simulating a Markov chain for many steps to produce a sample. To accelerate sampling, we present denoising diffusion implicit models (DDIMs), a more efficient class of iterative implicit probabilistic models with the same training procedure as DDPMs. In DDPMs, the generative process is defined as the reverse of a Markovian diffusion process. We construct a class of non-Markovian diffusion processes that lead to the same training objective, but whose reverse process can be much faster to sample from. We empirically demonstrate that DDIMs can produce high quality samples $10 \\times$ to $50 \\times$ faster in terms of wall-clock time compared to DDPMs, allow us to trade off computation for sample quality, and can perform semantically meaningful image interpolation directly in the latent space."
+  },
+  {
+    "paperId": "55b717812e5d1c4eb80b621732c357399357f9bf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2202-09671",
+      "ArXiv": "2202.09671",
+      "CorpusId": 247011082
+    },
+    "title": "Truncated Diffusion Probabilistic Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.09671, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8158616",
+        "name": "Huangjie Zheng"
+      },
+      {
+        "authorId": "50462546",
+        "name": "Pengcheng He"
+      },
+      {
+        "authorId": "2109136147",
+        "name": "Weizhu Chen"
+      },
+      {
+        "authorId": "38026572",
+        "name": "Mingyuan Zhou"
+      }
+    ],
+    "abstract": "Employing a forward diffusion chain to gradually map the data to a noise distribution, diffusion-based generative models learn how to generate the data by inferring a reverse diffusion chain. However, this approach is slow and costly because it needs many forward and reverse steps. We propose a faster and cheaper approach that adds noise not until the data become pure random noise, but until they reach a hidden noisy data distribution that we can confidently learn. Then, we use fewer reverse steps to generate data by starting from this hidden distribution that is made similar to the noisy data. We reveal that the proposed model can be cast as an adversarial auto-encoder empowered by both the diffusion process and a learnable implicit prior. Experimental results show even with a significantly smaller number of reverse diffusion steps, the proposed truncated diffusion probabilistic models can provide consistent improvements over the non-truncated ones in terms of performance in both unconditional and text-guided image generations."
+  },
+  {
+    "paperId": "e2a47945ddf51fae6fe4c4f3ff2868873addcf76",
+    "externalIds": {
+      "CorpusId": 221997880
+    },
+    "title": "Probabilistic Circuits: A Unifying Framework for Tractable Probabilistic Models∗",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 215,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at http://starai.cs.ucla.edu/papers/ProbCirc20.pdf, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50657677",
+        "name": "YooJung Choi"
+      },
+      {
+        "authorId": "14341992",
+        "name": "Antonio Vergari"
+      },
+      {
+        "authorId": "1749506",
+        "name": "Guy Van den Broeck"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "b7e257197e70b5979992fe7c69a7746bae0e184d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2209-10584",
+      "ArXiv": "2209.10584",
+      "DOI": "10.1609/aaai.v37i6.25883",
+      "CorpusId": 252438589
+    },
+    "title": "Continuous Mixtures of Tractable Probabilistic Models",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2022,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/25883/25655",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.10584, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51007117",
+        "name": "Alvaro H. C. Correia"
+      },
+      {
+        "authorId": "2008152720",
+        "name": "G. Gala"
+      },
+      {
+        "authorId": "1808625",
+        "name": "Erik Quaeghebeur"
+      },
+      {
+        "authorId": "2185709633",
+        "name": "Cassio P. de Campos"
+      },
+      {
+        "authorId": "1809285",
+        "name": "Robert Peharz"
+      }
+    ],
+    "abstract": "Probabilistic models based on continuous latent spaces, such as variational autoencoders, can be understood as uncountable mixture models where components depend continuously on the latent code. They have proven to be expressive tools for generative and probabilistic modelling, but are at odds with tractable probabilistic inference, that is, computing marginals and conditionals of the represented probability distribution. Meanwhile, tractable probabilistic models such as probabilistic circuits (PCs) can be understood as hierarchical discrete mixture models, and thus are capable of performing exact inference efficiently but often show subpar performance in comparison to continuous latent-space models. In this paper, we investigate a hybrid approach, namely continuous mixtures of tractable models with a small latent dimension. While these models are analytically intractable, they are well amenable to numerical integration schemes based on a finite set of integration points. With a large enough number of integration points the approximation becomes de-facto exact. Moreover, for a finite set of integration points, the integration method effectively compiles the continuous mixture into a standard PC. In experiments, we show that this simple scheme proves remarkably effective, as PCs learnt this way set new state of the art for tractable models on many standard density estimation benchmarks."
+  },
+  {
+    "paperId": "8982bb695dcebdacbfd079c62cd7acca8a8b48dc",
+    "externalIds": {
+      "DBLP": "conf/nips/TashiroSSE21",
+      "ArXiv": "2107.03502",
+      "CorpusId": 235765577
+    },
+    "title": "CSDI: Conditional Score-based Diffusion Models for Probabilistic Time Series Imputation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 956,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.03502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3799923",
+        "name": "Y. Tashiro"
+      },
+      {
+        "authorId": "2112626470",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "2157995251",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "The imputation of missing values in time series has many applications in healthcare and finance. While autoregressive models are natural candidates for time series imputation, score-based diffusion models have recently outperformed existing counterparts including autoregressive models in many tasks such as image generation and audio synthesis, and would be promising for time series imputation. In this paper, we propose Conditional Score-based Diffusion models for Imputation (CSDI), a novel time series imputation method that utilizes score-based diffusion models conditioned on observed data. Unlike existing score-based approaches, the conditional diffusion model is explicitly trained for imputation and can exploit correlations between observed values. On healthcare and environmental data, CSDI improves by 40-65% over existing probabilistic imputation methods on popular performance metrics. In addition, deterministic imputation by CSDI reduces the error by 5-20% compared to the state-of-the-art deterministic imputation methods. Furthermore, CSDI can also be applied to time series interpolation and probabilistic forecasting, and is competitive with existing baselines. The code is available at https://github.com/ermongroup/CSDI."
+  },
+  {
+    "paperId": "2ec659c6699933567a0924053de48359ae0eb00e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2101-12072",
+      "ArXiv": "2101.12072",
+      "CorpusId": 231719657
+    },
+    "title": "Autoregressive Denoising Diffusion Models for Multivariate Probabilistic Time Series Forecasting",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 495,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.12072, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4565995",
+        "name": "Kashif Rasul"
+      },
+      {
+        "authorId": "49972304",
+        "name": "C. Seward"
+      },
+      {
+        "authorId": "32362019",
+        "name": "I. Schuster"
+      },
+      {
+        "authorId": "2742129",
+        "name": "Roland Vollgraf"
+      }
+    ],
+    "abstract": "In this work, we propose \\texttt{TimeGrad}, an autoregressive model for multivariate probabilistic time series forecasting which samples from the data distribution at each time step by estimating its gradient. To this end, we use diffusion probabilistic models, a class of latent variable models closely connected to score matching and energy-based methods. Our model learns gradients by optimizing a variational bound on the data likelihood and at inference time converts white noise into a sample of the distribution of interest through a Markov chain using Langevin sampling. We demonstrate experimentally that the proposed autoregressive denoising diffusion model is the new state-of-the-art multivariate probabilistic forecasting method on real-world data sets with thousands of correlated dimensions. We hope that this method is a useful tool for practitioners and lays the foundation for future research in this area."
+  },
+  {
+    "paperId": "d9151aa03c800882e647d1d91bcef77d68976b43",
+    "externalIds": {
+      "ArXiv": "2201.09866",
+      "DOI": "10.1038/s41567-023-02042-2",
+      "CorpusId": 246240218
+    },
+    "title": "Probabilistic error cancellation with sparse Pauli–Lindblad models on noisy quantum processors",
+    "venue": "Nature Physics",
+    "year": 2022,
+    "citationCount": 400,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2201.09866",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.09866, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115850808",
+        "name": "Ewout van den Berg"
+      },
+      {
+        "authorId": "14139302",
+        "name": "Z. Minev"
+      },
+      {
+        "authorId": "5817392",
+        "name": "A. Kandala"
+      },
+      {
+        "authorId": "1882551",
+        "name": "K. Temme"
+      }
+    ],
+    "abstract": "Noise in quantum computers can result in biased estimates of physical observables. Accurate bias-free estimates can be obtained using probabilistic error cancellation, an error-mitigation technique that effectively inverts well-characterized noise channels. Learning correlated noise channels in large quantum circuits, however, has been a major challenge and has severely hampered experimental realizations. Our work presents a practical protocol for learning and inverting a sparse noise model that is able to capture correlated noise and scales to large quantum devices. These advances allow us to demonstrate probabilistic error cancellation on a superconducting quantum processor, thereby providing a way to measure noise-free observables at larger circuit volumes. Probabilistic error cancellation could improve the performance of quantum computers without the prohibitive overhead of fault-tolerant error correction. The method has now been demonstrated on a device with 20 qubits."
+  },
+  {
+    "paperId": "3c7582bf1a6682f6d33c47fa0c911e55823a3c44",
+    "externalIds": {
+      "DBLP": "conf/cvpr/YuSKS23",
+      "ArXiv": "2302.07685",
+      "DOI": "10.1109/CVPR52729.2023.01770",
+      "CorpusId": 256868405
+    },
+    "title": "Video Probabilistic Diffusion Models in Projected Latent Space",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 218,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2302.07685",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.07685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052088734",
+        "name": "Sihyun Yu"
+      },
+      {
+        "authorId": "1729571",
+        "name": "Kihyuk Sohn"
+      },
+      {
+        "authorId": "2138995567",
+        "name": "Subin Kim"
+      },
+      {
+        "authorId": "143720148",
+        "name": "Jinwoo Shin"
+      }
+    ],
+    "abstract": "Despite the remarkable progress in deep generative models, synthesizing high-resolution and temporally coherent videos still remains a challenge due to their high-dimensionality and complex temporal dynamics along with large spatial variations. Recent works on diffusion models have shown their potential to solve this challenge, yet they suffer from severe computation and memory-inefficiency that limit the scalability. To handle this issue, we propose a novel generative model for videos, coined projected latent video diffusion model (PVDM), a probabilistic diffusion model which learns a video distribution in a low-dimensional latent space and thus can be efficiently trained with high-resolution videos under limited resources. Specifically, PVDM is composed of two components: (a) an autoencoder that projects a given video as 2D-shaped latent vectors that factorize the complex cubic structure of video pixels and (b) a diffusion model architecture specialized for our new factorized latent space and the training/sampling procedure to synthesize videos of arbitrary length with a single model. Experiments on popular video generation datasets demonstrate the superiority of PVDM compared with previous video synthesis methods; e.g., PVDM obtains the FVD score of 639.7 on the UCF-101 long video (128 frames) generation benchmark, which improves 1773.4 of the prior state-of-the-art."
+  },
+  {
+    "paperId": "4530c25da949bb2185c50663158ef19d52e3c6b5",
+    "externalIds": {
+      "DBLP": "conf/nips/0011ZB0L022",
+      "ArXiv": "2206.00927",
+      "DOI": "10.48550/arXiv.2206.00927",
+      "CorpusId": 249282317
+    },
+    "title": "DPM-Solver: A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 2229,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.00927",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.00927, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102517285",
+        "name": "Cheng Lu"
+      },
+      {
+        "authorId": "2120327644",
+        "name": "Yuhao Zhou"
+      },
+      {
+        "authorId": "2071898125",
+        "name": "Fan Bao"
+      },
+      {
+        "authorId": "2276707",
+        "name": "Jianfei Chen"
+      },
+      {
+        "authorId": "2399563",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2155220672",
+        "name": "Jun Zhu"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) are emerging powerful generative models. Despite their high-quality generation performance, DPMs still suffer from their slow sampling as they generally need hundreds or thousands of sequential function evaluations (steps) of large neural networks to draw a sample. Sampling from DPMs can be viewed alternatively as solving the corresponding diffusion ordinary differential equations (ODEs). In this work, we propose an exact formulation of the solution of diffusion ODEs. The formulation analytically computes the linear part of the solution, rather than leaving all terms to black-box ODE solvers as adopted in previous works. By applying change-of-variable, the solution can be equivalently simplified to an exponentially weighted integral of the neural network. Based on our formulation, we propose DPM-Solver, a fast dedicated high-order solver for diffusion ODEs with the convergence order guarantee. DPM-Solver is suitable for both discrete-time and continuous-time DPMs without any further training. Experimental results show that DPM-Solver can generate high-quality samples in only 10 to 20 function evaluations on various datasets. We achieve 4.70 FID in 10 function evaluations and 2.87 FID in 20 function evaluations on the CIFAR10 dataset, and a $4\\sim 16\\times$ speedup compared with previous state-of-the-art training-free samplers on various datasets."
+  },
+  {
+    "paperId": "b32902b67674c6e77fa20052cb01b696bdc142a8",
+    "externalIds": {
+      "MAG": "2995354748",
+      "DOI": "10.1016/j.cub.2019.11.026",
+      "CorpusId": 209422108,
+      "PubMed": "31866367"
+    },
+    "title": "Probabilistic Models of Larval Zebrafish Behavior Reveal Structure on Many Scales.",
+    "venue": "Current Biology",
+    "year": 2019,
+    "citationCount": 137,
+    "openAccessPdf": {
+      "url": "http://www.cell.com/article/S0960982219314654/pdf",
+      "status": "BRONZE",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.cub.2019.11.026?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.cub.2019.11.026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1388717669",
+        "name": "Robert Johnson"
+      },
+      {
+        "authorId": "2342841",
+        "name": "Scott W. Linderman"
+      },
+      {
+        "authorId": "5038686",
+        "name": "T. Panier"
+      },
+      {
+        "authorId": "1379961778",
+        "name": "C. Wee"
+      },
+      {
+        "authorId": "49227517",
+        "name": "E. Song"
+      },
+      {
+        "authorId": "2068829034",
+        "name": "K. Herrera"
+      },
+      {
+        "authorId": "2115894737",
+        "name": "Andrew Miller"
+      },
+      {
+        "authorId": "5478027",
+        "name": "F. Engert"
+      }
+    ],
+    "abstract": "Nervous systems have evolved to combine environmental information with internal state to select and generate adaptive behavioral sequences. To better understand these computations and their implementation in neural circuits, natural behavior must be carefully measured and quantified. Here, we collect high spatial resolution video of single zebrafish larvae swimming in a naturalistic environment and develop models of their action selection across exploration and hunting. Zebrafish larvae swim in punctuated bouts separated by longer periods of rest called interbout intervals. We take advantage of this structure by categorizing bouts into discrete types and representing their behavior as labeled sequences of bout types emitted over time. We then construct probabilistic models-specifically, marked renewal processes-to evaluate how bout types and interbout intervals are selected by the fish as a function of its internal hunger state, behavioral history, and the locations and properties of nearby prey. Finally, we evaluate the models by their predictive likelihood and their ability to generate realistic trajectories of virtual fish swimming through simulated environments. Our simulations capture multiple timescales of structure in larval zebrafish behavior and expose many ways in which hunger state influences their action selection to promote food seeking during hunger and safety during satiety."
+  },
+  {
+    "paperId": "56136aa0b2c347cbcf3d50821f310c4253155026",
+    "externalIds": {
+      "MAG": "2963960193",
+      "ArXiv": "1805.12114",
+      "DBLP": "conf/nips/ChuaCML18",
+      "CorpusId": 44177328
+    },
+    "title": "Deep Reinforcement Learning in a Handful of Trials using Probabilistic Dynamics Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 1458,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.12114, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46224156",
+        "name": "Kurtland Chua"
+      },
+      {
+        "authorId": "35159852",
+        "name": "R. Calandra"
+      },
+      {
+        "authorId": "49686609",
+        "name": "R. McAllister"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Model-based reinforcement learning (RL) algorithms can attain excellent sample efficiency, but often lag behind the best model-free algorithms in terms of asymptotic performance. This is especially true with high-capacity parametric function approximators, such as deep networks. In this paper, we study how to bridge this gap, by employing uncertainty-aware dynamics models. We propose a new algorithm called probabilistic ensembles with trajectory sampling (PETS) that combines uncertainty-aware deep network dynamics models with sampling-based uncertainty propagation. Our comparison to state-of-the-art model-based and model-free deep RL algorithms shows that our approach matches the asymptotic performance of model-free algorithms on several challenging benchmark tasks, while requiring significantly fewer samples (e.g., 8 and 125 times fewer samples than Soft Actor Critic and Proximal Policy Optimization respectively on the half-cheetah task)."
+  },
+  {
+    "paperId": "00b0644abb7bd23a9a8a68332fabd5f96faad5f1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2007-09240",
+      "MAG": "3043047935",
+      "ArXiv": "2007.09240",
+      "CorpusId": 15550051
+    },
+    "title": "A new method for parameter estimation in probabilistic models: Minimum probability flow",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 62,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.09240, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "2362991099",
+        "name": "Peter Battaglino"
+      },
+      {
+        "authorId": "49488190",
+        "name": "M. DeWeese"
+      }
+    ],
+    "abstract": "Fitting probabilistic models to data is often difficult, due to the general intractability of the partition function. We propose a new parameter fitting method, Minimum Probability Flow (MPF), which is applicable to any parametric model. We demonstrate parameter estimation using MPF in two cases: a continuous state space model, and an Ising spin glass. In the latter case it outperforms current techniques by at least an order of magnitude in convergence time with lower error in the recovered coupling parameters."
+  },
+  {
+    "paperId": "17d648a0a8ec8a9b30c7bedccbc38b3ed0a5cdda",
+    "externalIds": {
+      "ArXiv": "2306.12672",
+      "DBLP": "journals/corr/abs-2306-12672",
+      "DOI": "10.48550/arXiv.2306.12672",
+      "CorpusId": 259224900
+    },
+    "title": "From Word Models to World Models: Translating from Natural Language to the Probabilistic Language of Thought",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 142,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.12672",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.12672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2147199509",
+        "name": "L. Wong"
+      },
+      {
+        "authorId": "35748708",
+        "name": "Gabriel Grand"
+      },
+      {
+        "authorId": "1393982589",
+        "name": "Alexander K. Lew"
+      },
+      {
+        "authorId": "144002017",
+        "name": "Noah D. Goodman"
+      },
+      {
+        "authorId": "1735083",
+        "name": "Vikash K. Mansinghka"
+      },
+      {
+        "authorId": "2112400",
+        "name": "Jacob Andreas"
+      },
+      {
+        "authorId": "1763295",
+        "name": "J. Tenenbaum"
+      }
+    ],
+    "abstract": "How does language inform our downstream thinking? In particular, how do humans make meaning from language--and how can we leverage a theory of linguistic meaning to build machines that think in more human-like ways? In this paper, we propose rational meaning construction, a computational framework for language-informed thinking that combines neural language models with probabilistic models for rational inference. We frame linguistic meaning as a context-sensitive mapping from natural language into a probabilistic language of thought (PLoT)--a general-purpose symbolic substrate for generative world modeling. Our architecture integrates two computational tools that have not previously come together: we model thinking with probabilistic programs, an expressive representation for commonsense reasoning; and we model meaning construction with large language models (LLMs), which support broad-coverage translation from natural language utterances to code expressions in a probabilistic programming language. We illustrate our framework through examples covering four core domains from cognitive science: probabilistic reasoning, logical and relational reasoning, visual and physical reasoning, and social reasoning. In each, we show that LLMs can generate context-sensitive translations that capture pragmatically-appropriate linguistic meanings, while Bayesian inference with the generated programs supports coherent and robust commonsense reasoning. We extend our framework to integrate cognitively-motivated symbolic modules (physics simulators, graphics engines, and planning algorithms) to provide a unified commonsense thinking interface from language. Finally, we explore how language can drive the construction of world models themselves. We hope this work will provide a roadmap towards cognitive models and AI systems that synthesize the insights of both modern and classical computational perspectives."
+  },
+  {
+    "paperId": "bc0e194f78ae73a401fdf951f6197f5d9cf9c972",
+    "externalIds": {
+      "DBLP": "journals/mlc/ZhangLLW21",
+      "MAG": "3103993493",
+      "DOI": "10.1007/s13042-020-01230-3",
+      "CorpusId": 228898766
+    },
+    "title": "MAGDM-oriented dual hesitant fuzzy multigranulation probabilistic models based on MULTIMOORA",
+    "venue": "International Journal of Machine Learning and Cybernetics",
+    "year": 2020,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s13042-020-01230-3?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s13042-020-01230-3, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2152736989",
+        "name": "Chao Zhang"
+      },
+      {
+        "authorId": "49620984",
+        "name": "Deyu Li"
+      },
+      {
+        "authorId": "3300112",
+        "name": "Jiye Liang"
+      },
+      {
+        "authorId": "2118639800",
+        "name": "Baoli Wang"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "3e1553f28d9db1f964b245b97be58589090d88e8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-01574",
+      "ArXiv": "2306.01574",
+      "DOI": "10.48550/arXiv.2306.01574",
+      "CorpusId": 259063823
+    },
+    "title": "Probabilistic Concept Bottleneck Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 107,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.01574",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.01574, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145567647",
+        "name": "Eunji Kim"
+      },
+      {
+        "authorId": "51152160",
+        "name": "Dahuin Jung"
+      },
+      {
+        "authorId": "2200716255",
+        "name": "Sangha Park"
+      },
+      {
+        "authorId": "48388878",
+        "name": "Siwon Kim"
+      },
+      {
+        "authorId": "2152497729",
+        "name": "Sung-Hoon Yoon"
+      }
+    ],
+    "abstract": "Interpretable models are designed to make decisions in a human-interpretable manner. Representatively, Concept Bottleneck Models (CBM) follow a two-step process of concept prediction and class prediction based on the predicted concepts. CBM provides explanations with high-level concepts derived from concept predictions; thus, reliable concept predictions are important for trustworthiness. In this study, we address the ambiguity issue that can harm reliability. While the existence of a concept can often be ambiguous in the data, CBM predicts concepts deterministically without considering this ambiguity. To provide a reliable interpretation against this ambiguity, we propose Probabilistic Concept Bottleneck Models (ProbCBM). By leveraging probabilistic concept embeddings, ProbCBM models uncertainty in concept prediction and provides explanations based on the concept and its corresponding uncertainty. This uncertainty enhances the reliability of the explanations. Furthermore, as class uncertainty is derived from concept uncertainty in ProbCBM, we can explain class uncertainty by means of concept uncertainty. Code is publicly available at https://github.com/ejkim47/prob-cbm."
+  },
+  {
+    "paperId": "8be58591f13c9123624fbdb1e9d1481b52bb8d00",
+    "externalIds": {
+      "MAG": "2946004347",
+      "DBLP": "conf/icml/StelznerPK19",
+      "CorpusId": 174799627
+    },
+    "title": "Faster Attend-Infer-Repeat with Tractable Probabilistic Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2019,
+    "citationCount": 61,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://icml.cc/media/Slides/icml/2019/grandball(13-16-00)-13-17-10-4573-faster_attend-i.pdf, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51027152",
+        "name": "Karl Stelzner"
+      },
+      {
+        "authorId": "1809285",
+        "name": "Robert Peharz"
+      },
+      {
+        "authorId": "1746871",
+        "name": "K. Kersting"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "0f39222034ecb53aae8a6ee71687986679b3b17f",
+    "externalIds": {
+      "MAG": "3033073991",
+      "DOI": "10.1016/j.strusafe.2020.101981",
+      "CorpusId": 219934573
+    },
+    "title": "Physics-based probabilistic models: Integrating differential equations and observational data",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.strusafe.2020.101981?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.strusafe.2020.101981, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "16792069",
+        "name": "Armin Tabandeh"
+      },
+      {
+        "authorId": "118350883",
+        "name": "P. Asem"
+      },
+      {
+        "authorId": "1789031",
+        "name": "P. Gardoni"
+      }
+    ],
+    "abstract": "Abstract This paper proposes a general formulation for physics-based probabilistic models that are computationally convenient for uncertainty quantification and reliability analysis of complex systems while integrating the governing physical laws. The proposed formulation starts with the prediction of the quantities of interest using differential equations that represent the governing physical laws. For computational efficiency, the solution of the governing differential equations might be approximated. The predictions from the differential equations are then improved by introducing analytical correction terms that capture those physical characteristics of the phenomenon not fully captured by the differential equations. The paper also presents nested probabilistic models for uncertain physical characteristics that are difficult to measure. Observational data are required to calibrate the nested probabilistic models and correction terms. To provide context, the paper discusses physics-based probabilistic models for a class of boundary value problems that includes as a special case, the steady advection–diffusion–reaction equation, governing a diverse range of physical, chemical, and biological phenomena. Using the Bayesian approach, the differential equations are combined with observational data and any prior information to estimate the unknown model parameters and uncertain system characteristics. The paper then formulates the reliability problem for the computation of failure probability of physical and engineering systems using the proposed physics-based probabilistic models. To illustrate, the paper considers the reliability analysis of axially loaded rock socketed drilled shafts."
+  },
+  {
+    "paperId": "dc6cd1c7983fd9f54a9dbcc697146a9f1cdf5350",
+    "externalIds": {
+      "DOI": "10.1002/9781118574454.part1",
+      "CorpusId": 454234
+    },
+    "title": "Probabilistic Models",
+    "venue": "Mathematical Modeling in the Age of a Pandemic",
+    "year": 2019,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1002/9781118574454.part1?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1002/9781118574454.part1, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2240925896",
+        "name": "William P. Fox"
+      }
+    ],
+    "abstract": ". We present PASS , a tool that analyzes concurrent probabilistic programs, which map to potentially inﬁnite Markov decision processes. PASS is based on predicate abstraction and abstraction reﬁnement and scales to programs far beyond the reach of numerical methods which operate on the full state space of the model. The computational engines we use are SMT solvers to compute ﬁnite abstractions, numerical meth-ods to compute probabilities and interpolation as part of abstraction reﬁnement. PASS has been successfully applied to network protocols and serves as a test platform for diﬀerent reﬁnement methods."
+  },
+  {
+    "paperId": "d3203958e1b9c007d06340aad11d41f088875f3e",
+    "externalIds": {
+      "MAG": "2127374659",
+      "DOI": "10.2307/2287805",
+      "CorpusId": 61203382
+    },
+    "title": "Probabilistic Models for Some Intelligence and Attainment Tests",
+    "venue": "The SAGE Encyclopedia of Research Design",
+    "year": 1981,
+    "citationCount": 2767,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.2307/2287805?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2307/2287805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "72964796",
+        "name": "G. Rasch"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "cb4f701aa5d1f598a60acc8c81f8e27b446e6a74",
+    "externalIds": {
+      "MAG": "3193622617",
+      "DOI": "10.1017/9781108642989.018",
+      "CorpusId": 2145169
+    },
+    "title": "Probabilistic Graphical Models",
+    "venue": "Machine-mediated learning",
+    "year": 2020,
+    "citationCount": 588,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1017/9781108642989.018?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1017/9781108642989.018, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2240991573",
+        "name": "Zhi-Hua Zhou"
+      }
+    ],
+    "abstract": "Probabilistic graphical models provide a flexible framework for modeling large, complex, heterogeneous collections of random variables. Graphs are used to decompose multivariate, joint distributions into a set of local interactions among small subsets of variables. These local relationships produce conditional independencies which lead to efficient learning and inference algorithms. Moreover, their modular structure provides an intuitive language for expressing domain-specific knowledge, and facilitates the transfer of modeling advances to new applications. After a brief introduction to their representational power, this course will provide a comprehensive survey of state-of-the-art methods for statistical learning and inference in graphical models. Our primary focus will be variational methods, which adapt tools from optimization theory to develop efficient, possibly approximate, inference algorithms. We will also discuss a complementary family of Monte Carlo methods, based on stochastic simulation. Many course readings will be drawn from the draft textbook An Introduction to Probabilistic Graphical Models, in preparation by Michael Jordan. Advanced topics will be supported by tutorial and survey articles, and illustrated with state-of-the-art research results and applications. Overall grades will be assigned based on homework assignments combining statistical analysis and implementation of learning algorithms, as well as a final research project involving probabilistic graphical models. Students who took CSCI 2950-P in the Fall of 2011 may repeat for credit, as the topic has changed."
+  },
+  {
+    "paperId": "62fb54f5736be4a55b2da17010a115cee701d72c",
+    "externalIds": {
+      "MAG": "2798628553",
+      "DBLP": "conf/pldi/LeeHAN18",
+      "DOI": "10.1145/3192366.3192410",
+      "CorpusId": 21666824
+    },
+    "title": "Accelerating search-based program synthesis using learned probabilistic models",
+    "venue": "ACM-SIGPLAN Symposium on Programming Language Design and Implementation",
+    "year": 2018,
+    "citationCount": 125,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3296979.3192410",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3192366.3192410?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3192366.3192410, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2860847",
+        "name": "Woosuk Lee"
+      },
+      {
+        "authorId": "2647251",
+        "name": "K. Heo"
+      },
+      {
+        "authorId": "1710176",
+        "name": "R. Alur"
+      },
+      {
+        "authorId": "145835621",
+        "name": "M. Naik"
+      }
+    ],
+    "abstract": "A key challenge in program synthesis concerns how to efficiently search for the desired program in the space of possible programs. We propose a general approach to accelerate search-based program synthesis by biasing the search towards likely programs. Our approach targets a standard formulation, syntax-guided synthesis (SyGuS), by extending the grammar of possible programs with a probabilistic model dictating the likelihood of each program. We develop a weighted search algorithm to efficiently enumerate programs in order of their likelihood. We also propose a method based on transfer learning that enables to effectively learn a powerful model, called probabilistic higher-order grammar, from known solutions in a domain. We have implemented our approach in a tool called Euphony and evaluate it on SyGuS benchmark problems from a variety of domains. We show that Euphony can learn good models using easily obtainable solutions, and achieves significant performance gains over existing general-purpose as well as domain-specific synthesizers."
+  },
+  {
+    "paperId": "c2293c3e2206f19d3b28db028898c0463578be63",
+    "externalIds": {
+      "MAG": "2803413084",
+      "DBLP": "journals/ase/GerasimouCT18",
+      "DOI": "10.1007/s10515-018-0235-8",
+      "CorpusId": 49247633
+    },
+    "title": "Synthesis of probabilistic models for quality-of-service software engineering",
+    "venue": "International Conference on Automated Software Engineering",
+    "year": 2018,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s10515-018-0235-8.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10515-018-0235-8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10515-018-0235-8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268198",
+        "name": "Simos Gerasimou"
+      },
+      {
+        "authorId": "143665272",
+        "name": "R. Calinescu"
+      },
+      {
+        "authorId": "1741358",
+        "name": "Giordano Tamburrelli"
+      }
+    ],
+    "abstract": "An increasingly used method for the engineering of software systems with strict quality-of-service (QoS) requirements involves the synthesis and verification of probabilistic models for many alternative architectures and instantiations of system parameters. Using manual trial-and-error or simple heuristics for this task often produces suboptimal models, while the exhaustive synthesis of all possible models is typically intractable. The EvoChecker search-based software engineering approach presented in our paper addresses these limitations by employing evolutionary algorithms to automate the model synthesis process and to significantly improve its outcome. EvoChecker can be used to synthesise the Pareto-optimal set of probabilistic models associated with the QoS requirements of a system under design, and to support the selection of a suitable system architecture and configuration. EvoChecker can also be used at runtime, to drive the efficient reconfiguration of a self-adaptive software system. We evaluate EvoChecker on several variants of three systems from different application domains, and show its effectiveness and applicability."
+  },
+  {
+    "paperId": "96f32a00ccd4252aa7193f4916bce000a4d6ee1c",
+    "externalIds": {
+      "MAG": "2510244936",
+      "DBLP": "journals/tit/ScarlettC17",
+      "DOI": "10.1109/TIT.2016.2606605",
+      "CorpusId": 5687133
+    },
+    "title": "Limits on Support Recovery With Probabilistic Models: An Information-Theoretic Framework",
+    "venue": "IEEE Transactions on Information Theory",
+    "year": 2017,
+    "citationCount": 100,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1501.07440",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TIT.2016.2606605?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TIT.2016.2606605, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1784491",
+        "name": "J. Scarlett"
+      },
+      {
+        "authorId": "1678641",
+        "name": "V. Cevher"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "58c22899af553a611bbd3acfd8d2b43f86d2b3fe",
+    "externalIds": {
+      "PubMedCentral": "7829634",
+      "MAG": "3103853875",
+      "DOI": "10.15252/msb.20209620",
+      "CorpusId": 92846475,
+      "PubMed": "33491336"
+    },
+    "title": "Probabilistic harmonization and annotation of single‐cell transcriptomics data with deep generative models",
+    "venue": "bioRxiv",
+    "year": 2019,
+    "citationCount": 520,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.15252/msb.20209620",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC7829634, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40941212",
+        "name": "Chenling A. Xu"
+      },
+      {
+        "authorId": "39848341",
+        "name": "Romain Lopez"
+      },
+      {
+        "authorId": "50467842",
+        "name": "Edouard Mehlman"
+      },
+      {
+        "authorId": "39967607",
+        "name": "J. Regier"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "2163873",
+        "name": "N. Yosef"
+      }
+    ],
+    "abstract": "As single-cell transcriptomics becomes a mainstream technology, the natural next step is to integrate the accumulating data in order to achieve a common ontology of cell types and states. However, owing to various nuisance factors of variation, it is not straightforward how to compare gene expression levels across data sets and how to automatically assign cell type labels in a new data set based on existing annotations. In this manuscript, we demonstrate that our previously developed method, scVI, provides an effective and fully probabilistic approach for joint representation and analysis of cohorts of single-cell RNA-seq data sets, while accounting for uncertainty caused by biological and measurement noise. We also introduce single-cell ANnotation using Variational Inference (scANVI), a semi-supervised variant of scVI designed to leverage any available cell state annotations — for instance when only one data set in a cohort is annotated, or when only a few cells in a single data set can be labeled using marker genes. We demonstrate that scVI and scANVI compare favorably to the existing methods for data integration and cell state annotation in terms of accuracy, scalability, and adaptability to challenging settings such as a hierarchical structure of cell state labels. We further show that different from existing methods, scVI and scANVI represent the integrated datasets with a single generative model that can be directly used for any probabilistic decision making task, using differential expression as our case study. scVI and scANVI are available as open source software and can be readily used to facilitate cell state annotation and help ensure consistency and reproducibility across studies."
+  },
+  {
+    "paperId": "7c6123cd7052c9c8bb2ed5e11818b2ba7f06e79c",
+    "externalIds": {
+      "ArXiv": "1812.02795",
+      "MAG": "2904810222",
+      "DBLP": "journals/corr/abs-1812-02795",
+      "CorpusId": 54457280
+    },
+    "title": "Verification of deep probabilistic models",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.02795, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1729912",
+        "name": "K. Dvijotham"
+      },
+      {
+        "authorId": "3468254",
+        "name": "M. Garnelo"
+      },
+      {
+        "authorId": "33054064",
+        "name": "Alhussein Fawzi"
+      },
+      {
+        "authorId": "143967473",
+        "name": "Pushmeet Kohli"
+      }
+    ],
+    "abstract": "Probabilistic models are a critical part of the modern deep learning toolbox - ranging from generative models (VAEs, GANs), sequence to sequence models used in machine translation and speech processing to models over functional spaces (conditional neural processes, neural processes). Given the size and complexity of these models, safely deploying them in applications requires the development of tools to analyze their behavior rigorously and provide some guarantees that these models are consistent with a list of desirable properties or specifications. For example, a machine translation model should produce semantically equivalent outputs for innocuous changes in the input to the model. A functional regression model that is learning a distribution over monotonic functions should predict a larger value at a larger input. Verification of these properties requires a new framework that goes beyond notions of verification studied in deterministic feedforward networks, since requiring worst-case guarantees in probabilistic models is likely to produce conservative or vacuous results. We propose a novel formulation of verification for deep probabilistic models that take in conditioning inputs and sample latent variables in the course of producing an output: We require that the output of the model satisfies a linear constraint with high probability over the sampling of latent variables and for every choice of conditioning input to the model. We show that rigorous lower bounds on the probability that the constraint is satisfied can be obtained efficiently. Experiments with neural processes show that several properties of interest while modeling functional spaces can be modeled within this framework (monotonicity, convexity) and verified efficiently using our algorithms"
+  }
+]

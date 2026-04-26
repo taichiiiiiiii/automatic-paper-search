@@ -1,0 +1,2377 @@
+[
+  {
+    "paperId": "0d1c76d45afa012ded7ab741194baf142117c495",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18290",
+      "ArXiv": "2305.18290",
+      "DOI": "10.52202/075280-2338",
+      "CorpusId": 258959321
+    },
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8193,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "50465276",
+        "name": "Archit Sharma"
+      },
+      {
+        "authorId": "49688913",
+        "name": "E. Mitchell"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train."
+  },
+  {
+    "paperId": "f5275c61736781d236abe6700b822f1ea62f982e",
+    "externalIds": {
+      "ArXiv": "2311.12908",
+      "DBLP": "conf/cvpr/WallaceDRZLPEXJ24",
+      "DOI": "10.1109/CVPR52733.2024.00786",
+      "CorpusId": 265352136
+    },
+    "title": "Diffusion Model Alignment Using Direct Preference Optimization",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 660,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2311.12908",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.12908, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152823401",
+        "name": "Bram Wallace"
+      },
+      {
+        "authorId": "2267728871",
+        "name": "Meihua Dang"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "2249592181",
+        "name": "Linqi Zhou"
+      },
+      {
+        "authorId": "2261494043",
+        "name": "Aaron Lou"
+      },
+      {
+        "authorId": "3234247",
+        "name": "Senthil Purushwalkam"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2267728986",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "2708940",
+        "name": "Shafiq R. Joty"
+      },
+      {
+        "authorId": "2265756339",
+        "name": "Nikhil Naik"
+      }
+    ],
+    "abstract": "Large language models (LLMs) are fine-tuned using human comparison data with Reinforcement Learning from Human Feedback (RLHF) methods to make them better aligned with users' preferences. In contrast to LLMs, human preference learning has not been widely explored in text-to-image diffusion models; the best existing approach is to fine-tune a pretrained model using carefully curated high quality images and captions to improve visual appeal and text alignment. We propose Diffusion-DPO, a method to align diffusion models to human preferences by directly optimizing on human comparison data. Diffusion-DPO is adapted from the recently developed Direct Preference Optimization (DPO) [36], a simpler alternative to RLHF which directly optimizes a policy that best satisfies human preferences under a classification objective. We re-formulate DPO to account for a diffusion model notion of likelihood, utilizing the evidence lower bound to derive a differentiable objective. Using the Pick-a-Pic dataset of 851K crowdsourced pairwise preferences, we fine-tune the base model of the state-of-the-art Stable Diffusion XL (SDXL)-1.0 model with Diffusion-DPO. Our fine-tuned base model significantly outperforms both base SDXL-1.0 and the larger SDXL-1.0 model consisting of an additional refinement model in human evaluation, improving visual appeal and prompt alignment. We also develop a variant that uses AI feedback and has comparable performance to training on human preferences, opening the door for scaling of diffusion model alignment methods."
+  },
+  {
+    "paperId": "bfc223b002401f42b44bca725da6ed6d1b953cff",
+    "externalIds": {
+      "DBLP": "conf/acl/ParkREF24",
+      "ArXiv": "2403.19159",
+      "DOI": "10.48550/arXiv.2403.19159",
+      "CorpusId": 268733207
+    },
+    "title": "Disentangling Length from Quality in Direct Preference Optimization",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 197,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.19159, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293725656",
+        "name": "Ryan Park"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "2282987268",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2284774407",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) has been a crucial component in the recent success of Large Language Models. However, RLHF is know to exploit biases in human preferences, such as verbosity. A well-formatted and eloquent answer is often more highly rated by users, even when it is less helpful and objective. A number of approaches have been developed to control those biases in the classical RLHF literature, but the problem remains relatively under-explored for Direct Alignment Algorithms such as Direct Preference Optimization (DPO). Unlike classical RLHF, DPO does not train a separate reward model or use reinforcement learning directly, so previous approaches developed to control verbosity cannot be directly applied to this setting. Our work makes several contributions. For the first time, we study the length problem in the DPO setting, showing significant exploitation in DPO and linking it to out-of-distribution bootstrapping. We then develop a principled but simple regularization strategy that prevents length exploitation, while still maintaining improvements in model quality. We demonstrate these effects across datasets on summarization and dialogue, where we achieve up to 20\\% improvement in win rates when controlling for length, despite the GPT4 judge's well-known verbosity bias."
+  },
+  {
+    "paperId": "0ab3959ce362b4ed01f0dcff590f26a8a487b940",
+    "externalIds": {
+      "ArXiv": "2501.16629",
+      "DBLP": "conf/iclr/Fuh0SHQN25",
+      "DOI": "10.48550/arXiv.2501.16629",
+      "CorpusId": 275932245
+    },
+    "title": "CHiP: Cross-modal Hierarchical Direct Preference Optimization for Multimodal LLMs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.16629, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2243662006",
+        "name": "Jinlan Fu"
+      },
+      {
+        "authorId": "2284985640",
+        "name": "Shenzhen Huangfu"
+      },
+      {
+        "authorId": "2342504726",
+        "name": "Hao Fei"
+      },
+      {
+        "authorId": "2312845925",
+        "name": "Xiaoyu Shen"
+      },
+      {
+        "authorId": "2258715976",
+        "name": "Bryan Hooi"
+      },
+      {
+        "authorId": "2350155100",
+        "name": "Xipeng Qiu"
+      },
+      {
+        "authorId": "2242887615",
+        "name": "See-Kiong Ng"
+      }
+    ],
+    "abstract": "Multimodal Large Language Models (MLLMs) still struggle with hallucinations despite their impressive capabilities. Recent studies have attempted to mitigate this by applying Direct Preference Optimization (DPO) to multimodal scenarios using preference pairs from text-based responses. However, our analysis of representation distributions reveals that multimodal DPO struggles to align image and text representations and to distinguish between hallucinated and non-hallucinated descriptions. To address these challenges, in this work, we propose a Cross-modal Hierarchical Direct Preference Optimization (CHiP) to address these limitations. We introduce a visual preference optimization module within the DPO framework, enabling MLLMs to learn from both textual and visual preferences simultaneously. Furthermore, we propose a hierarchical textual preference optimization module that allows the model to capture preferences at multiple granular levels, including response, segment, and token levels. We evaluate CHiP through both quantitative and qualitative analyses, with results across multiple benchmarks demonstrating its effectiveness in reducing hallucinations. On the Object HalBench dataset, CHiP outperforms DPO in hallucination reduction, achieving improvements of 52.7% and 55.5% relative points based on the base model Muffin and LLaVA models, respectively. We make all our datasets and code publicly available: https://github.com/LVUGAI/CHiP."
+  },
+  {
+    "paperId": "f6ceaa899b85a978020f534c587adabaf9a694d1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-04370",
+      "ArXiv": "2502.04370",
+      "DOI": "10.48550/arXiv.2502.04370",
+      "CorpusId": 276236069
+    },
+    "title": "DreamDPO: Aligning Text-to-3D Generation with Human Preferences via Direct Preference Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.04370, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2271381551",
+        "name": "Zhen Zhou"
+      },
+      {
+        "authorId": "2337234877",
+        "name": "Xiaobo Xia"
+      },
+      {
+        "authorId": "2283456376",
+        "name": "Fan Ma"
+      },
+      {
+        "authorId": "2332780684",
+        "name": "Hehe Fan"
+      },
+      {
+        "authorId": "2283816709",
+        "name": "Yi Yang"
+      },
+      {
+        "authorId": "2336954823",
+        "name": "Tat-Seng Chua"
+      }
+    ],
+    "abstract": "Text-to-3D generation automates 3D content creation from textual descriptions, which offers transformative potential across various fields. However, existing methods often struggle to align generated content with human preferences, limiting their applicability and flexibility. To address these limitations, in this paper, we propose DreamDPO, an optimization-based framework that integrates human preferences into the 3D generation process, through direct preference optimization. Practically, DreamDPO first constructs pairwise examples, then compare their alignment with human preferences using reward or large multimodal models, and lastly optimizes the 3D representation with a preference-driven loss function. By leveraging pairwise comparison to reflect preferences, DreamDPO reduces reliance on precise pointwise quality evaluations while enabling fine-grained controllability through preference-guided optimization. Experiments demonstrate that DreamDPO achieves competitive results, and provides higher-quality and more controllable 3D content compared to existing methods. The code and models will be open-sourced."
+  },
+  {
+    "paperId": "2baf63dede1a96cae314c4be99bd3cf9f49b148e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2311-16839",
+      "ArXiv": "2311.16839",
+      "DOI": "10.48550/arXiv.2311.16839",
+      "CorpusId": 265466428
+    },
+    "title": "Beyond Hallucinations: Enhancing LVLMs through Hallucination-Aware Direct Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 221,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.16839, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2246944115",
+        "name": "Zhiyuan Zhao"
+      },
+      {
+        "authorId": "2256857728",
+        "name": "Bin Wang"
+      },
+      {
+        "authorId": "2161162356",
+        "name": "Linke Ouyang"
+      },
+      {
+        "authorId": "2118187561",
+        "name": "Xiao-wen Dong"
+      },
+      {
+        "authorId": "2267494294",
+        "name": "Jiaqi Wang"
+      },
+      {
+        "authorId": "2267889334",
+        "name": "Conghui He"
+      }
+    ],
+    "abstract": "Multimodal large language models have made significant advancements in recent years, yet they still suffer from a common issue known as the\"hallucination problem\", in which the models generate textual descriptions that inaccurately depict or entirely fabricate content from associated images. This paper introduces a novel solution, Hallucination-Aware Direct Preference Optimization (HA-DPO), which reframes the hallucination problem as a preference selection task. The model is trained to favor the non-hallucinating response when presented with two responses of the same image (one accurate and one hallucinatory). Furthermore, this paper proposes an efficient pipeline for constructing positive~(non-hallucinatory) and negative~(hallucinatory) sample pairs, ensuring a high-quality, style-consistent dataset for robust preference learning. When applied to three mainstream multimodal models, HA-DPO significantly reduced hallucination issues and amplified the models' generalization capabilities. Notably, the MiniGPT-4 model, when enhanced with HA-DPO, demonstrated a substantial improvement: POPE accuracy rose from 51.13% to 86.13% (an absolute improvement of 35%), and the MME score surged from 932.00 to 1326.46 (a relative improvement of 42.32%). The codes, models, and datasets are made accessible at https://opendatalab.github.io/HA-DPO."
+  },
+  {
+    "paperId": "c119bc07d5e9e2bc4e99b9d48c4a9bc7f49763ae",
+    "externalIds": {
+      "ArXiv": "2404.01258",
+      "DBLP": "journals/corr/abs-2404-01258",
+      "DOI": "10.48550/arXiv.2404.01258",
+      "CorpusId": 268819166
+    },
+    "title": "Direct Preference Optimization of Video Large Multimodal Models from Language Model Reward",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 144,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.01258, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46752970",
+        "name": "Ruohong Zhang"
+      },
+      {
+        "authorId": "2337691659",
+        "name": "Liangke Gui"
+      },
+      {
+        "authorId": "48064856",
+        "name": "Zhiqing Sun"
+      },
+      {
+        "authorId": "2284730919",
+        "name": "Yihao Feng"
+      },
+      {
+        "authorId": "2117101011",
+        "name": "Keyang Xu"
+      },
+      {
+        "authorId": "2145784327",
+        "name": "Yuanhan Zhang"
+      },
+      {
+        "authorId": "2061347623",
+        "name": "Di Fu"
+      },
+      {
+        "authorId": "2264692022",
+        "name": "Chunyuan Li"
+      },
+      {
+        "authorId": "2286172731",
+        "name": "Alexander Hauptmann"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "2257099254",
+        "name": "Yiming Yang"
+      }
+    ],
+    "abstract": "Preference modeling techniques, such as direct preference optimization (DPO), has shown effective in enhancing the generalization abilities of large language model (LLM). However, in tasks involving video instruction-following, providing informative feedback, especially for detecting hallucinations in generated responses, remains a significant challenge. Previous studies have explored using large large multimodal models (LMMs) as reward models to guide preference modeling, but their ability to accurately assess the factuality of generated responses compared to corresponding videos has not been conclusively established. This paper introduces a novel framework that utilizes detailed video captions as a proxy of video content, enabling language models to incorporate this information as supporting evidence for scoring video Question Answering (QA) predictions. Our approach demonstrates robust alignment with OpenAI GPT-4V model's reward mechanism, which directly takes video frames as input. Furthermore, we show that applying this tailored reward through DPO significantly improves the performance of video LMMs on video QA tasks."
+  },
+  {
+    "paperId": "a5558a4a7d24d6083a26fe287fa2e2d2337114f0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-11701",
+      "ArXiv": "2503.11701",
+      "DOI": "10.48550/arXiv.2503.11701",
+      "CorpusId": 277066295
+    },
+    "title": "A Survey of Direct Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.11701, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2337077326",
+        "name": "Shunyu Liu"
+      },
+      {
+        "authorId": "2312376339",
+        "name": "Wenkai Fang"
+      },
+      {
+        "authorId": "2289374142",
+        "name": "Zetian Hu"
+      },
+      {
+        "authorId": "2350521366",
+        "name": "Junjie Zhang"
+      },
+      {
+        "authorId": "2350583417",
+        "name": "Yang Zhou"
+      },
+      {
+        "authorId": "2312343845",
+        "name": "Kongcheng Zhang"
+      },
+      {
+        "authorId": "2350516059",
+        "name": "Rongcheng Tu"
+      },
+      {
+        "authorId": "31255666",
+        "name": "Ting-En Lin"
+      },
+      {
+        "authorId": "2331376953",
+        "name": "Fei Huang"
+      },
+      {
+        "authorId": "2265590192",
+        "name": "Mingli Song"
+      },
+      {
+        "authorId": "2237932828",
+        "name": "Yongbin Li"
+      },
+      {
+        "authorId": "2276069056",
+        "name": "Dacheng Tao"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) have demonstrated unprecedented generative capabilities, yet their alignment with human values remains critical for ensuring helpful and harmless deployments. While Reinforcement Learning from Human Feedback (RLHF) has emerged as a powerful paradigm for aligning LLMs with human preferences, its reliance on complex reward modeling introduces inherent trade-offs in computational efficiency and training stability. In this context, Direct Preference Optimization (DPO) has recently gained prominence as a streamlined alternative that directly optimizes LLMs using human preferences, thereby circumventing the need for explicit reward modeling. Owing to its theoretical elegance and computational efficiency, DPO has rapidly attracted substantial research efforts exploring its various implementations and applications. However, this field currently lacks systematic organization and comparative analysis. In this survey, we conduct a comprehensive overview of DPO and introduce a novel taxonomy, categorizing previous works into four key dimensions: data strategy, learning framework, constraint mechanism, and model property. We further present a rigorous empirical analysis of DPO variants across standardized benchmarks. Additionally, we discuss real-world applications, open challenges, and future directions for DPO. This work delivers both a conceptual framework for understanding DPO and practical guidance for practitioners, aiming to advance robust and generalizable alignment paradigms. All collected resources are available and will be continuously updated at https://github.com/liushunyu/awesome-direct-preference-optimization."
+  },
+  {
+    "paperId": "2a49f6cd8059911b254995acd8f17b5e285f8e19",
+    "externalIds": {
+      "DBLP": "conf/emnlp/XingLWBWHQYT25",
+      "ArXiv": "2502.13146",
+      "DOI": "10.48550/arXiv.2502.13146",
+      "CorpusId": 276421683
+    },
+    "title": "Re-Align: Aligning Vision Language Models via Retrieval-Augmented Direct Preference Optimization",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.13146, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334356497",
+        "name": "Shuo Xing"
+      },
+      {
+        "authorId": "2336248720",
+        "name": "Yuping Wang"
+      },
+      {
+        "authorId": "2346115879",
+        "name": "Peiran Li"
+      },
+      {
+        "authorId": "2332351821",
+        "name": "Ruizheng Bai"
+      },
+      {
+        "authorId": "2346258869",
+        "name": "Yueqi Wang"
+      },
+      {
+        "authorId": "2316541657",
+        "name": "Chengxuan Qian"
+      },
+      {
+        "authorId": "2336766851",
+        "name": "Huaxiu Yao"
+      },
+      {
+        "authorId": "2336092412",
+        "name": "Zhengzhong Tu"
+      }
+    ],
+    "abstract": "The emergence of large Vision Language Models (VLMs) has broadened the scope and capabilities of single-modal Large Language Models (LLMs) by integrating visual modalities, thereby unlocking transformative cross-modal applications in a variety of real-world scenarios. Despite their impressive performance, VLMs are prone to significant hallucinations, particularly in the form of cross-modal inconsistencies. Building on the success of Reinforcement Learning from Human Feedback (RLHF) in aligning LLMs, recent advancements have focused on applying direct preference optimization (DPO) on carefully curated datasets to mitigate these issues. Yet, such approaches typically introduce preference signals in a brute-force manner, neglecting the crucial role of visual information in the alignment process. In this paper, we introduce Re-Align, a novel alignment framework that leverages image retrieval to construct a dual-preference dataset, effectively incorporating both textual and visual preference signals. We further introduce rDPO, an extension of the standard direct preference optimization that incorporates an additional visual preference objective during fine-tuning. Our experimental results demonstrate that Re-Align not only mitigates hallucinations more effectively than previous methods but also yields significant performance gains in general visual question-answering (VQA) tasks. Moreover, we show that Re-Align maintains robustness and scalability across a wide range of VLM sizes and architectures. This work represents a significant step forward in aligning multimodal LLMs, paving the way for more reliable and effective cross-modal applications. We release all the code in https://github.com/taco-group/Re-Align."
+  },
+  {
+    "paperId": "dcd7e42e655713402207acecb842e0b6424bfb8c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-01821",
+      "ArXiv": "2501.01821",
+      "DOI": "10.48550/arXiv.2501.01821",
+      "CorpusId": 275323920
+    },
+    "title": "SDPO: Segment-Level Direct Preference Optimization for Social Agents",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.01821, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2216561498",
+        "name": "Aobo Kong"
+      },
+      {
+        "authorId": "2111665725",
+        "name": "Wen-Cheng Ma"
+      },
+      {
+        "authorId": "2275765829",
+        "name": "Shiwan Zhao"
+      },
+      {
+        "authorId": "2237932828",
+        "name": "Yongbin Li"
+      },
+      {
+        "authorId": "2142637404",
+        "name": "Yuchuan Wu"
+      },
+      {
+        "authorId": "2294320241",
+        "name": "Ke Wang"
+      },
+      {
+        "authorId": "2338724782",
+        "name": "Xiaoqian Liu"
+      },
+      {
+        "authorId": "2311304336",
+        "name": "Qicheng Li"
+      },
+      {
+        "authorId": "2275736194",
+        "name": "Yong Qin"
+      },
+      {
+        "authorId": "2331376953",
+        "name": "Fei Huang"
+      }
+    ],
+    "abstract": "Social agents powered by large language models (LLMs) can simulate human social behaviors but fall short in handling complex social dialogues. Direct Preference Optimization (DPO) has proven effective in aligning LLM behavior with human preferences across various agent tasks. However, standard DPO focuses solely on individual turns, which limits its effectiveness in multi-turn social interactions. Several DPO-based multi-turn alignment methods with session-level data have shown potential in addressing this problem.While these methods consider multiple turns across entire sessions, they are often overly coarse-grained, introducing training noise, and lack robust theoretical support. To resolve these limitations, we propose Segment-Level Direct Preference Optimization (SDPO), which dynamically select key segments within interactions to optimize multi-turn agent behavior. SDPO minimizes training noise and is grounded in a rigorous theoretical framework. Evaluations on the SOTOPIA benchmark demonstrate that SDPO-tuned agents consistently outperform both existing DPO-based methods and proprietary LLMs like GPT-4o, underscoring SDPO's potential to advance the social intelligence of LLM-based agents. We release our code and data at https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/SDPO."
+  },
+  {
+    "paperId": "f967cc75253a1f28837d213dbd878c91cd819a23",
+    "externalIds": {
+      "ArXiv": "2503.08619",
+      "DBLP": "journals/corr/abs-2503-08619",
+      "DOI": "10.48550/arXiv.2503.08619",
+      "CorpusId": 276928692
+    },
+    "title": "LightGen: Efficient Image Generation through Knowledge Distillation and Direct Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.08619, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2336327923",
+        "name": "Xianfeng Wu"
+      },
+      {
+        "authorId": "2290970888",
+        "name": "Yajing Bai"
+      },
+      {
+        "authorId": "2349798388",
+        "name": "Haoze Zheng"
+      },
+      {
+        "authorId": "2349548799",
+        "name": "Harold Haodong Chen"
+      },
+      {
+        "authorId": "2333525417",
+        "name": "Yexin Liu"
+      },
+      {
+        "authorId": "2349545877",
+        "name": "Zihao Wang"
+      },
+      {
+        "authorId": "2333531678",
+        "name": "Xuran Ma"
+      },
+      {
+        "authorId": "2333423998",
+        "name": "Wenjie Shu"
+      },
+      {
+        "authorId": "2321880276",
+        "name": "Xianzu Wu"
+      },
+      {
+        "authorId": "2335818252",
+        "name": "Harry Yang"
+      },
+      {
+        "authorId": "2333528016",
+        "name": "Ser-Nam Lim"
+      }
+    ],
+    "abstract": "Recent advances in text-to-image generation have primarily relied on extensive datasets and parameter-heavy architectures. These requirements severely limit accessibility for researchers and practitioners who lack substantial computational resources. In this paper, we introduce \\model, an efficient training paradigm for image generation models that uses knowledge distillation (KD) and Direct Preference Optimization (DPO). Drawing inspiration from the success of data KD techniques widely adopted in Multi-Modal Large Language Models (MLLMs), LightGen distills knowledge from state-of-the-art (SOTA) text-to-image models into a compact Masked Autoregressive (MAR) architecture with only $0.7B$ parameters. Using a compact synthetic dataset of just $2M$ high-quality images generated from varied captions, we demonstrate that data diversity significantly outweighs data volume in determining model performance. This strategy dramatically reduces computational demands and reduces pre-training time from potentially thousands of GPU-days to merely 88 GPU-days. Furthermore, to address the inherent shortcomings of synthetic data, particularly poor high-frequency details and spatial inaccuracies, we integrate the DPO technique that refines image fidelity and positional accuracy. Comprehensive experiments confirm that LightGen achieves image generation quality comparable to SOTA models while significantly reducing computational resources and expanding accessibility for resource-constrained environments. Code is available at https://github.com/XianfengWu01/LightGen"
+  },
+  {
+    "paperId": "ed81c644692ec88f59e287366c8cba619948295a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-10571",
+      "ArXiv": "2402.10571",
+      "DOI": "10.48550/arXiv.2402.10571",
+      "CorpusId": 267740352
+    },
+    "title": "Direct Preference Optimization with an Offset",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 113,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.10571, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1820796225",
+        "name": "Afra Amini"
+      },
+      {
+        "authorId": "2396787",
+        "name": "Tim Vieira"
+      },
+      {
+        "authorId": "2295665129",
+        "name": "Ryan Cotterell"
+      }
+    ],
+    "abstract": "Direct preference optimization (DPO) is a successful fine-tuning strategy for aligning large language models with human preferences without the need to train a reward model or employ reinforcement learning. DPO, as originally formulated, relies on binary preference data and fine-tunes a language model to increase the likelihood of a preferred response over a dispreferred response. However, not all preference pairs are equal. Sometimes, the preferred response is only slightly better than the dispreferred one. In other cases, the preference is much stronger. For instance, if a response contains harmful or toxic content, the annotator will have a strong preference for that response. In this paper, we propose a generalization of DPO, termed DPO with an offset (ODPO), that does not treat every preference pair equally during fine-tuning. Intuitively, ODPO requires the difference between the likelihood of the preferred and dispreferred response to be greater than an offset value. The offset is determined based on the extent to which one response is preferred over another. Our experiments on various tasks suggest that ODPO significantly outperforms DPO in aligning language models, especially when the number of preference pairs is limited."
+  },
+  {
+    "paperId": "53be03c5ba18bdd81d69d18349be20e56c3b3908",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2504-13122",
+      "ArXiv": "2504.13122",
+      "DOI": "10.48550/arXiv.2504.13122",
+      "CorpusId": 277857061
+    },
+    "title": "VistaDPO: Video Hierarchical Spatial-Temporal Direct Preference Optimization for Large Video Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.13122, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2296857672",
+        "name": "Haojian Huang"
+      },
+      {
+        "authorId": "2283487036",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "1957924118",
+        "name": "Shengqiong Wu"
+      },
+      {
+        "authorId": "2306962324",
+        "name": "Meng Luo"
+      },
+      {
+        "authorId": "2287968509",
+        "name": "Jinlan Fu"
+      },
+      {
+        "authorId": "2356797151",
+        "name": "Xinya Du"
+      },
+      {
+        "authorId": "2257264007",
+        "name": "Hanwang Zhang"
+      },
+      {
+        "authorId": "2342504726",
+        "name": "Hao Fei"
+      }
+    ],
+    "abstract": "Large Video Models (LVMs) built upon Large Language Models (LLMs) have shown promise in video understanding but often suffer from misalignment with human intuition and video hallucination issues. To address these challenges, we introduce VistaDPO, a novel framework for Video Hierarchical Spatial-Temporal Direct Preference Optimization. VistaDPO enhances text-video preference alignment across three hierarchical levels: i) Instance Level, aligning overall video content with responses; ii) Temporal Level, aligning video temporal semantics with event descriptions; and iii) Perceptive Level, aligning spatial objects with language tokens. Given the lack of datasets for fine-grained video-language preference alignment, we construct VistaDPO-7k, a dataset of 7.2K QA pairs annotated with chosen and rejected responses, along with spatial-temporal grounding information such as timestamps, keyframes, and bounding boxes. Extensive experiments on benchmarks such as Video Hallucination, Video QA, and Captioning performance tasks demonstrate that VistaDPO significantly improves the performance of existing LVMs, effectively mitigating video-language misalignment and hallucination. The code and data are available at https://github.com/HaroldChen19/VistaDPO."
+  },
+  {
+    "paperId": "8f2254fb38cfc8f79524fd1cd2609124808f2c8c",
+    "externalIds": {
+      "ArXiv": "2404.11999",
+      "DBLP": "conf/icml/ZengLMYZW24",
+      "DOI": "10.48550/arXiv.2404.11999",
+      "CorpusId": 269214026
+    },
+    "title": "Token-level Direct Preference Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.11999, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2297444639",
+        "name": "Yongcheng Zeng"
+      },
+      {
+        "authorId": "2297437972",
+        "name": "Guoqing Liu"
+      },
+      {
+        "authorId": "2275596860",
+        "name": "Weiyu Ma"
+      },
+      {
+        "authorId": "2292898878",
+        "name": "Ning Yang"
+      },
+      {
+        "authorId": "2247479851",
+        "name": "Haifeng Zhang"
+      },
+      {
+        "authorId": "2386604138",
+        "name": "Jun Wang"
+      }
+    ],
+    "abstract": "Fine-tuning pre-trained Large Language Models (LLMs) is essential to align them with human values and intentions. This process often utilizes methods like pairwise comparisons and KL divergence against a reference LLM, focusing on the evaluation of full answers generated by the models. However, the generation of these responses occurs in a token level, following a sequential, auto-regressive fashion. In this paper, we introduce Token-level Direct Preference Optimization (TDPO), a novel approach to align LLMs with human preferences by optimizing policy at the token level. Unlike previous methods, which face challenges in divergence efficiency, TDPO incorporates forward KL divergence constraints for each token, improving alignment and diversity. Utilizing the Bradley-Terry model for a token-based reward system, TDPO enhances the regulation of KL divergence, while preserving simplicity without the need for explicit reward modeling. Experimental results across various text tasks demonstrate TDPO's superior performance in balancing alignment with generation diversity. Notably, fine-tuning with TDPO strikes a better balance than DPO in the controlled sentiment generation and single-turn dialogue datasets, and significantly improves the quality of generated responses compared to both DPO and PPO-based RLHF methods. Our code is open-sourced at https://github.com/Vance0124/Token-level-Direct-Preference-Optimization."
+  },
+  {
+    "paperId": "c93d7e26ba36eef361bc1011a3a0a30c5233893c",
+    "externalIds": {
+      "DBLP": "conf/nips/ChenTZ0SZWC24",
+      "ArXiv": "2406.09215",
+      "DOI": "10.48550/arXiv.2406.09215",
+      "CorpusId": 270440827
+    },
+    "title": "On Softmax Direct Preference Optimization for Recommendation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.09215, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258784735",
+        "name": "Yuxin Chen"
+      },
+      {
+        "authorId": "2308069999",
+        "name": "Junfei Tan"
+      },
+      {
+        "authorId": "2153659066",
+        "name": "An Zhang"
+      },
+      {
+        "authorId": "2261748725",
+        "name": "Zhengyi Yang"
+      },
+      {
+        "authorId": "2258731846",
+        "name": "Leheng Sheng"
+      },
+      {
+        "authorId": "2261086256",
+        "name": "Enzhi Zhang"
+      },
+      {
+        "authorId": "2257436645",
+        "name": "Xiang Wang"
+      },
+      {
+        "authorId": "2257036129",
+        "name": "Tat-Seng Chua"
+      }
+    ],
+    "abstract": "Recommender systems aim to predict personalized rankings based on user preference data. With the rise of Language Models (LMs), LM-based recommenders have been widely explored due to their extensive world knowledge and powerful reasoning abilities. Most of the LM-based recommenders convert historical interactions into language prompts, pairing with a positive item as the target response and fine-tuning LM with a language modeling loss. However, the current objective fails to fully leverage preference data and is not optimized for personalized ranking tasks, which hinders the performance of LM-based recommenders. Inspired by the current advancement of Direct Preference Optimization (DPO) in human preference alignment and the success of softmax loss in recommendations, we propose Softmax-DPO (S-DPO) to instill ranking information into the LM to help LM-based recommenders distinguish preferred items from negatives, rather than solely focusing on positives. Specifically, we incorporate multiple negatives in user preference data and devise an alternative version of DPO loss tailored for LM-based recommenders, which is extended from the traditional full-ranking Plackett-Luce (PL) model to partial rankings and connected to softmax sampling strategies. Theoretically, we bridge S-DPO with the softmax loss over negative sampling and find that it has an inherent benefit of mining hard negatives, which assures its exceptional capabilities in recommendation tasks. Empirically, extensive experiments conducted on three real-world datasets demonstrate the superiority of S-DPO to effectively model user preference and further boost recommendation performance while providing better rewards for preferred items. Our codes are available at https://github.com/chenyuxin1999/S-DPO."
+  },
+  {
+    "paperId": "2edd56fd82749d0f0d987ee341d8caf95037b164",
+    "externalIds": {
+      "ArXiv": "2505.20065",
+      "DBLP": "journals/corr/abs-2505-20065",
+      "DOI": "10.48550/arXiv.2505.20065",
+      "CorpusId": 278911238
+    },
+    "title": "SafeDPO: A Simple Approach to Direct Preference Optimization with Enhanced Safety",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.20065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40379031",
+        "name": "Geon-hyeong Kim"
+      },
+      {
+        "authorId": "2288604723",
+        "name": "Youngsoo Jang"
+      },
+      {
+        "authorId": "2129538296",
+        "name": "Yu Jin Kim"
+      },
+      {
+        "authorId": "2272348107",
+        "name": "Byoungjip Kim"
+      },
+      {
+        "authorId": "2261393055",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "40290697",
+        "name": "Kyunghoon Bae"
+      },
+      {
+        "authorId": "2327002089",
+        "name": "Moontae Lee"
+      }
+    ],
+    "abstract": "As Large Language Models (LLMs) are increasingly deployed in real-world applications, balancing helpfulness and safety has become a central challenge. A natural approach is to incorporate safety constraints into Reinforcement Learning from Human Feedback (RLHF), where recent studies have shown promising progress. However, these methods often rely on auxiliary networks or multi-stage pipelines, thereby increasing complexity. In this work, we revisit the original safety alignment objective and show that, under mild assumptions, it admits a closed-form optimal policy. We further derive a provably equivalent and tractable objective, enabling direct optimization. Building on this insight, we propose SafeDPO, a lightweight method that preserves the optimal solution of the underlying safety-constrained objective while requiring only one additional hyperparameter and minimal modifications to existing preference-based training methods. SafeDPO eliminates the need for reward models, cost models, and online sampling, relying only on preference data and safety indicators. Despite its simplicity, SafeDPO achieves competitive safety-helpfulness trade-offs compared to existing safety alignment methods. Experiments on the PKU-SafeRLHF-30K benchmark demonstrate that SafeDPO substantially improves safety while maintaining competitive helpfulness. Ablation studies further show that the additional hyperparameter provides a flexible mechanism to enhance safety while preserving the theoretical optimum, and confirm that SafeDPO scales reliably to LLMs with up to 13B parameters. Overall, our results highlight that a simple, theory-driven objective can provide a lightweight yet effective solution for safety alignment in practice."
+  },
+  {
+    "paperId": "3c20be1b4227d1da11bcc705fd92ba76b010ecaf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-08639",
+      "ArXiv": "2407.08639",
+      "DOI": "10.48550/arXiv.2407.08639",
+      "CorpusId": 271097721
+    },
+    "title": "β-DPO: Direct Preference Optimization with Dynamic β",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.08639, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2260622979",
+        "name": "Junkang Wu"
+      },
+      {
+        "authorId": "2298950582",
+        "name": "Yuexiang Xie"
+      },
+      {
+        "authorId": "2261748725",
+        "name": "Zhengyi Yang"
+      },
+      {
+        "authorId": "1491035012",
+        "name": "Jiancan Wu"
+      },
+      {
+        "authorId": "2237951623",
+        "name": "Jinyang Gao"
+      },
+      {
+        "authorId": "2265900833",
+        "name": "Bolin Ding"
+      },
+      {
+        "authorId": "2259678005",
+        "name": "Xiang Wang"
+      },
+      {
+        "authorId": "2240825631",
+        "name": "Xiangnan He"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has emerged as a compelling approach for training Large Language Models (LLMs) to adhere to human preferences. However, the performance of DPO is sensitive to the fine-tuning of its trade-off parameter $\\beta$, as well as to the quality of the preference data. We analyze the impact of $\\beta$ and data quality on DPO, uncovering that optimal $\\beta$ values vary with the informativeness of pairwise data. Addressing the limitations of static $\\beta$ values, we introduce a novel framework that dynamically calibrates $\\beta$ at the batch level, informed by data quality considerations. Additionally, our method incorporates $\\beta$-guided data filtering to safeguard against the influence of outliers. Through empirical evaluation, we demonstrate that our dynamic $\\beta$ adjustment technique significantly improves DPO's performance across a range of models and datasets, offering a more robust and adaptable training paradigm for aligning LLMs with human feedback. The code is available at \\url{https://github.com/junkangwu/beta-DPO}."
+  },
+  {
+    "paperId": "117b52d94d38048aca36fc7432ac17742103e2e2",
+    "externalIds": {
+      "ArXiv": "2502.01930",
+      "CorpusId": 276107560
+    },
+    "title": "Robust LLM Alignment via Distributionally Robust Direct Preference Optimization",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.01930, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2181133564",
+        "name": "Zaiyan Xu"
+      },
+      {
+        "authorId": "2343749688",
+        "name": "Sushil Vemuri"
+      },
+      {
+        "authorId": "1518267866",
+        "name": "Kishan Panaganti"
+      },
+      {
+        "authorId": "1956081",
+        "name": "D. Kalathil"
+      },
+      {
+        "authorId": "2306783899",
+        "name": "Rahul Jain"
+      },
+      {
+        "authorId": "2306780380",
+        "name": "Deepak Ramachandran"
+      }
+    ],
+    "abstract": "A major challenge in aligning large language models (LLMs) with human preferences is the issue of distribution shift. LLM alignment algorithms rely on static preference datasets, assuming that they accurately represent real-world user preferences. However, user preferences vary significantly across geographical regions, demographics, linguistic patterns, and evolving cultural trends. This preference distribution shift leads to catastrophic alignment failures in many real-world applications. We address this problem using the principled framework of distributionally robust optimization, and develop two novel distributionally robust direct preference optimization (DPO) algorithms, namely, Wasserstein DPO (WDPO) and Kullback-Leibler DPO (KLDPO). We characterize the sample complexity of learning the optimal policy parameters for WDPO and KLDPO. Moreover, we propose scalable gradient descent-style learning algorithms by developing suitable approximations for the challenging minimax loss functions of WDPO and KLDPO. Our empirical experiments using benchmark data sets and LLMs demonstrate the superior performance of WDPO and KLDPO in substantially improving the alignment when there is a preference distribution shift."
+  },
+  {
+    "paperId": "efae534e2a3e4b79fe4050fa3fd40d8c7ba9745b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-08847",
+      "ArXiv": "2410.08847",
+      "DOI": "10.48550/arXiv.2410.08847",
+      "CorpusId": 273323881
+    },
+    "title": "Unintentional Unalignment: Likelihood Displacement in Direct Preference Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 60,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.08847, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1388726511",
+        "name": "Noam Razin"
+      },
+      {
+        "authorId": "49288855",
+        "name": "Sadhika Malladi"
+      },
+      {
+        "authorId": "2284985689",
+        "name": "Adithya Bhaskar"
+      },
+      {
+        "authorId": "2311498038",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "2283134097",
+        "name": "Sanjeev Arora"
+      },
+      {
+        "authorId": "2248191566",
+        "name": "Boris Hanin"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) and its variants are increasingly used for aligning language models with human preferences. Although these methods are designed to teach a model to generate preferred responses more frequently relative to dispreferred responses, prior work has observed that the likelihood of preferred responses often decreases during training. The current work sheds light on the causes and implications of this counter-intuitive phenomenon, which we term likelihood displacement. We demonstrate that likelihood displacement can be catastrophic, shifting probability mass from preferred responses to responses with an opposite meaning. As a simple example, training a model to prefer $\\texttt{No}$ over $\\texttt{Never}$ can sharply increase the probability of $\\texttt{Yes}$. Moreover, when aligning the model to refuse unsafe prompts, we show that such displacement can unintentionally lead to unalignment, by shifting probability mass from preferred refusal responses to harmful responses (e.g., reducing the refusal rate of Llama-3-8B-Instruct from 74.4% to 33.4%). We theoretically characterize that likelihood displacement is driven by preferences that induce similar embeddings, as measured by a centered hidden embedding similarity (CHES) score. Empirically, the CHES score enables identifying which training samples contribute most to likelihood displacement in a given dataset. Filtering out these samples effectively mitigated unintentional unalignment in our experiments. More broadly, our results highlight the importance of curating data with sufficiently distinct preferences, for which we believe the CHES score may prove valuable."
+  },
+  {
+    "paperId": "860c8de4fdac38695ff6860dd15312f1079c6117",
+    "externalIds": {
+      "DBLP": "conf/iclr/WangJYLC24",
+      "ArXiv": "2309.16240",
+      "DOI": "10.48550/arXiv.2309.16240",
+      "CorpusId": 263142109
+    },
+    "title": "Beyond Reverse KL: Generalizing Direct Preference Optimization with Diverse Divergence Constraints",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 168,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.16240",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.16240, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144093796",
+        "name": "Chaoqi Wang"
+      },
+      {
+        "authorId": "2249607229",
+        "name": "Yibo Jiang"
+      },
+      {
+        "authorId": "46962597",
+        "name": "Chenghao Yang"
+      },
+      {
+        "authorId": "2140162948",
+        "name": "Han Liu"
+      },
+      {
+        "authorId": "50580847",
+        "name": "Yuxin Chen"
+      }
+    ],
+    "abstract": "The increasing capabilities of large language models (LLMs) raise opportunities for artificial general intelligence but concurrently amplify safety concerns, such as potential misuse of AI systems, necessitating effective AI alignment. Reinforcement Learning from Human Feedback (RLHF) has emerged as a promising pathway towards AI alignment but brings forth challenges due to its complexity and dependence on a separate reward model. Direct Preference Optimization (DPO) has been proposed as an alternative, and it remains equivalent to RLHF under the reverse KL regularization constraint. This paper presents $f$-DPO, a generalized approach to DPO by incorporating diverse divergence constraints. We show that under certain $f$-divergences, including Jensen-Shannon divergence, forward KL divergences and $\\alpha$-divergences, the complex relationship between the reward and optimal policy can also be simplified by addressing the Karush-Kuhn-Tucker conditions. This eliminates the need for estimating the normalizing constant in the Bradley-Terry model and enables a tractable mapping between the reward function and the optimal policy. Our approach optimizes LLMs to align with human preferences in a more efficient and supervised manner under a broad set of divergence constraints. Empirically, adopting these divergences ensures a balance between alignment performance and generation diversity. Importantly, $f$-DPO outperforms PPO-based methods in divergence efficiency, and divergence constraints directly influence expected calibration error (ECE)."
+  },
+  {
+    "paperId": "68e64ff720c2a6cc2a306aacbeb6f04320ad9805",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-14516",
+      "ArXiv": "2412.14516",
+      "DOI": "10.48550/arXiv.2412.14516",
+      "CorpusId": 274860102
+    },
+    "title": "Cal-DPO: Calibrated Direct Preference Optimization for Language Model Alignment",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.14516, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2290909385",
+        "name": "Teng Xiao"
+      },
+      {
+        "authorId": "2191690098",
+        "name": "Yige Yuan"
+      },
+      {
+        "authorId": "2290912804",
+        "name": "Huaisheng Zhu"
+      },
+      {
+        "authorId": "2325912099",
+        "name": "Mingxiao Li"
+      },
+      {
+        "authorId": "2320465874",
+        "name": "V.G. Honavar"
+      }
+    ],
+    "abstract": "We study the problem of aligning large language models (LLMs) with human preference data. Contrastive preference optimization has shown promising results in aligning LLMs with available preference data by optimizing the implicit reward associated with the policy. However, the contrastive objective focuses mainly on the relative values of implicit rewards associated with two responses while ignoring their actual values, resulting in suboptimal alignment with human preferences. To address this limitation, we propose calibrated direct preference optimization (Cal-DPO), a simple yet effective algorithm. We show that substantial improvement in alignment with the given preferences can be achieved simply by calibrating the implicit reward to ensure that the learned implicit rewards are comparable in scale to the ground-truth rewards. We demonstrate the theoretical advantages of Cal-DPO over existing approaches. The results of our experiments on a variety of standard benchmarks show that Cal-DPO remarkably improves off-the-shelf methods."
+  },
+  {
+    "paperId": "73020a07af4cfc42286e299097a0e35d2fe71a6c",
+    "externalIds": {
+      "ArXiv": "2411.02712",
+      "DBLP": "journals/corr/abs-2411-02712",
+      "DOI": "10.18653/v1/2024.findings-emnlp.775",
+      "CorpusId": 273821696
+    },
+    "title": "V-DPO: Mitigating Hallucination in Large Vision Language Models via Vision-Guided Direct Preference Optimization",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 60,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2411.02712",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.02712, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325017947",
+        "name": "Yuxi Xie"
+      },
+      {
+        "authorId": "2218255462",
+        "name": "Guanzhen Li"
+      },
+      {
+        "authorId": "2325914565",
+        "name": "Xiao Xu"
+      },
+      {
+        "authorId": "2253497237",
+        "name": "Min-Yen Kan"
+      }
+    ],
+    "abstract": "Large vision-language models (LVLMs) suffer from hallucination, resulting in misalignment between the output textual response and the input visual content. Recent research indicates that the over-reliance on the Large Language Model (LLM) backbone, as one cause of the LVLM hallucination, inherently introduces bias from language priors, leading to insufficient context attention to the visual inputs. We tackle this issue of hallucination by mitigating such over-reliance through preference learning. We propose Vision-guided Direct Preference Optimization (V-DPO) to enhance visual context learning at training time. To interpret the effectiveness and generalizability of V-DPO on different types of training data, we construct a synthetic dataset containing both response- and image-contrast preference pairs, compared against existing human-annotated hallucination samples. Our approach achieves significant improvements compared with baseline methods across various hallucination benchmarks. Our analysis indicates that V-DPO excels in learning from image-contrast preference data, demonstrating its superior ability to elicit and understand nuances of visual context. Our code is publicly available at https://github.com/YuxiXie/V-DPO."
+  },
+  {
+    "paperId": "59207e9d0cd4129b6ed665205105192dd3032ff3",
+    "externalIds": {
+      "DBLP": "conf/acl/ZhouLS00O024",
+      "ArXiv": "2310.03708",
+      "DOI": "10.18653/v1/2024.findings-acl.630",
+      "CorpusId": 264175263
+    },
+    "title": "Beyond One-Preference-Fits-All Alignment: Multi-Objective Direct Preference Optimization",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 109,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.03708",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.03708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2254279326",
+        "name": "Zhanhui Zhou"
+      },
+      {
+        "authorId": "2254329836",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2254280929",
+        "name": "Jing Shao"
+      },
+      {
+        "authorId": "2268400784",
+        "name": "Xiangyu Yue"
+      },
+      {
+        "authorId": "2256435850",
+        "name": "Chao Yang"
+      },
+      {
+        "authorId": "2254269925",
+        "name": "Wanli Ouyang"
+      },
+      {
+        "authorId": "2257348324",
+        "name": "Yu Qiao"
+      }
+    ],
+    "abstract": "A single language model, even when aligned with labelers through reinforcement learning from human feedback (RLHF), may not suit all human preferences. Recent approaches therefore prefer customization, gathering multi-dimensional feedback, and creating distinct reward models for each dimension. Different language models are then optimized for various preferences using multi-objective RLHF (MORLHF) with varying reward weights. However, RL fine-tuning is unstable and resource-heavy, especially with diverse and usually conflicting objectives. In this paper, we present Multi-Objective Direct Preference Optimization (MODPO), an RL-free extension of Direct Preference Optimization (DPO) for multiple alignment objectives. Essentially, MODPO folds language modeling directly into reward modeling, training language models as implicit collective reward models that combine all objectives with specific weights. MODPO theoretically yields the same optimal solutions as MORLHF but is practically more stable and efficient. Empirical results in safety alignment and long-form question answering show that MODPO matches or outperforms existing methods, producing a Pareto front of language models catering to diverse preferences with three times less computational resources compared to MORLHF. Code is available at https://github.com/ZHZisZZ/modpo."
+  },
+  {
+    "paperId": "3198c08d67edbcb4c1f736d815fd7139ba7c3ce5",
+    "externalIds": {
+      "DBLP": "conf/icml/HuZK25",
+      "ArXiv": "2505.22002",
+      "DOI": "10.48550/arXiv.2505.22002",
+      "CorpusId": 278960198
+    },
+    "title": "D-Fusion: Direct Preference Optimization for Aligning Diffusion Models with Visually Consistent Samples",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.22002, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2350526300",
+        "name": "Zijing Hu"
+      },
+      {
+        "authorId": "1452322269",
+        "name": "Fengda Zhang"
+      },
+      {
+        "authorId": "2363876873",
+        "name": "Kun Kuang"
+      }
+    ],
+    "abstract": "The practical applications of diffusion models have been limited by the misalignment between generated images and corresponding text prompts. Recent studies have introduced direct preference optimization (DPO) to enhance the alignment of these models. However, the effectiveness of DPO is constrained by the issue of visual inconsistency, where the significant visual disparity between well-aligned and poorly-aligned images prevents diffusion models from identifying which factors contribute positively to alignment during fine-tuning. To address this issue, this paper introduces D-Fusion, a method to construct DPO-trainable visually consistent samples. On one hand, by performing mask-guided self-attention fusion, the resulting images are not only well-aligned, but also visually consistent with given poorly-aligned images. On the other hand, D-Fusion can retain the denoising trajectories of the resulting images, which are essential for DPO training. Extensive experiments demonstrate the effectiveness of D-Fusion in improving prompt-image alignment when applied to different reinforcement learning algorithms."
+  },
+  {
+    "paperId": "04fadcdf8333baa83db33dc3a6299cf60d569bd7",
+    "externalIds": {
+      "DBLP": "conf/aaai/LeeKNPK25",
+      "ArXiv": "2501.06761",
+      "DOI": "10.48550/arXiv.2501.06761",
+      "CorpusId": 275470948
+    },
+    "title": "VidChain: Chain-of-Tasks with Metric-based Direct Preference Optimization for Dense Video Captioning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.06761, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2232661859",
+        "name": "Ji Soo Lee"
+      },
+      {
+        "authorId": "2182393860",
+        "name": "Jongha Kim"
+      },
+      {
+        "authorId": "2339773222",
+        "name": "Jeehye Na"
+      },
+      {
+        "authorId": "2149155177",
+        "name": "Jinyoung Park"
+      },
+      {
+        "authorId": "2261450804",
+        "name": "Hyunwoo J. Kim"
+      }
+    ],
+    "abstract": "Despite the advancements of Video Large Language Models (VideoLLMs) in various tasks, they struggle with fine-grained temporal understanding, such as Dense Video Captioning (DVC). DVC is a complicated task of describing all events within a video while also temporally localizing them, which integrates multiple fine-grained tasks, including video segmentation, video captioning, and temporal video grounding. Previous VideoLLMs attempt to solve DVC in a single step, failing to utilize their reasoning capability. Moreover, previous training objectives for VideoLLMs do not fully reflect the evaluation metrics, therefore not providing supervision directly aligned to target tasks. To address such a problem, we propose a novel framework named VidChain comprised of Chain-of-Tasks (CoTasks) and Metric-based Direct Preference Optimization (M-DPO).\nCoTasks decompose a complex task into a sequence of sub-tasks, allowing VideoLLMs to leverage their reasoning capabilities more effectively. M-DPO aligns a VideoLLM with evaluation metrics, providing fine-grained supervision to each task that is well-aligned with metrics. Applied to two different VideoLLMs, VidChain consistently improves their fine-grained video understanding, thereby outperforming previous VideoLLMs on two different DVC benchmarks and also on the temporal video grounding task."
+  },
+  {
+    "paperId": "b54ed05a333b2dfb783ce2a3716bb01b0a87f48e",
+    "externalIds": {
+      "ArXiv": "2505.23525",
+      "DBLP": "journals/corr/abs-2505-23525",
+      "DOI": "10.48550/arXiv.2505.23525",
+      "CorpusId": 278996601
+    },
+    "title": "Hallo4: High-Fidelity Dynamic Portrait Animation via Direct Preference Optimization and Temporal Motion Modulation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.23525, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325491442",
+        "name": "Jiahao Cui"
+      },
+      {
+        "authorId": "2364543839",
+        "name": "Yan Chen"
+      },
+      {
+        "authorId": "2306097377",
+        "name": "Mingwang Xu"
+      },
+      {
+        "authorId": "2306124581",
+        "name": "Hanlin Shang"
+      },
+      {
+        "authorId": "2333403178",
+        "name": "Yuxuan Chen"
+      },
+      {
+        "authorId": "2333400898",
+        "name": "Yun Zhan"
+      },
+      {
+        "authorId": "2268646063",
+        "name": "Zilong Dong"
+      },
+      {
+        "authorId": "2267861475",
+        "name": "Yao Yao"
+      },
+      {
+        "authorId": "2306054847",
+        "name": "Jingdong Wang"
+      },
+      {
+        "authorId": "2288876720",
+        "name": "Siyu Zhu"
+      }
+    ],
+    "abstract": "Generating highly dynamic and photorealistic portrait animations driven by audio and skeletal motion remains challenging due to the need for precise lip synchronization, natural facial expressions, and high-fidelity body motion dynamics. We propose a human-preference-aligned diffusion framework that addresses these challenges through two key innovations. First, we introduce direct preference optimization tailored for human-centric animation, leveraging a curated dataset of human preferences to align generated outputs with perceptual metrics for portrait motion-video alignment and naturalness of expression. Second, the proposed temporal motion modulation resolves spatiotemporal resolution mismatches by reshaping motion conditions into dimensionally aligned latent features through temporal channel redistribution and proportional feature expansion, preserving the fidelity of high-frequency motion details in diffusion-based synthesis. The proposed mechanism is complementary to existing UNet and DiT-based portrait diffusion approaches, and experiments demonstrate obvious improvements in lip-audio synchronization, expression vividness, body motion coherence over baseline methods, alongside notable gains in human preference metrics. Our model and source code can be found at: https://github.com/fudan-generative-vision/hallo4."
+  },
+  {
+    "paperId": "7726d40d59af31de2a88d265d3eb8ee5be5f74c1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-11656",
+      "ArXiv": "2502.11656",
+      "DOI": "10.48550/arXiv.2502.11656",
+      "CorpusId": 276408351
+    },
+    "title": "Uncovering the Impact of Chain-of-Thought Reasoning for Direct Preference Optimization: Lessons from Text-to-SQL",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.11656, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303287269",
+        "name": "Hanbing Liu"
+      },
+      {
+        "authorId": "2274084217",
+        "name": "Haoyang Li"
+      },
+      {
+        "authorId": "2108046717",
+        "name": "Xiaokang Zhang"
+      },
+      {
+        "authorId": "2370201694",
+        "name": "Ruotong Chen"
+      },
+      {
+        "authorId": "2118533399",
+        "name": "Haiyong Xu"
+      },
+      {
+        "authorId": "2364208930",
+        "name": "Tian Tian"
+      },
+      {
+        "authorId": "2377498786",
+        "name": "Qi Qi"
+      },
+      {
+        "authorId": "2345829238",
+        "name": "Jing Zhang"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has proven effective in complex reasoning tasks like math word problems and code generation. However, when applied to Text-to-SQL datasets, it often fails to improve performance and can even degrade it. Our investigation reveals the root cause: unlike math and code tasks, which naturally integrate Chain-of-Thought (CoT) reasoning with DPO, Text-to-SQL datasets typically include only final answers (gold SQL queries) without detailed CoT solutions. By augmenting Text-to-SQL datasets with synthetic CoT solutions, we achieve, for the first time, consistent and significant performance improvements using DPO. Our analysis shows that CoT reasoning is crucial for unlocking DPO's potential, as it mitigates reward hacking, strengthens discriminative capabilities, and improves scalability. These findings offer valuable insights for building more robust Text-to-SQL models. To support further research, we publicly release the code and CoT-enhanced datasets."
+  },
+  {
+    "paperId": "a803d8451b2daca44ca6eec2af43cf6374f97c86",
+    "externalIds": {
+      "DBLP": "conf/sigir/Shen0W0C25",
+      "DOI": "10.1145/3726302.3729980",
+      "CorpusId": 280056459
+    },
+    "title": "Flow-guided Direct Preference Optimization for Knowledge Graph Reasoning with Trees",
+    "venue": "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3726302.3729980?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3726302.3729980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2189825927",
+        "name": "Tiesunlong Shen"
+      },
+      {
+        "authorId": "2261445911",
+        "name": "Rui Mao"
+      },
+      {
+        "authorId": "2284448119",
+        "name": "Jin Wang"
+      },
+      {
+        "authorId": "2144497782",
+        "name": "Xuejie Zhang"
+      },
+      {
+        "authorId": "2133890206",
+        "name": "Erik Cambria"
+      }
+    ],
+    "abstract": "Recent advancements in knowledge graph question answering (KGQA) have shown promise, yet existing methods often fail to align with human reasoning patterns that involve continuous reflection and refinement. This paper proposes FD-PORT (flow-guided direct preference optimization for knowledge graph reasoning with trees), a novel approach that combines Monte Carlo Tree Search (MCTS) with flow-guided direct preference optimization (FDPO) for KGQA tasks. MCTS simulates human-like reasoning by systematically exploring multiple inference paths in knowledge graphs, while FDPO transforms the search feedback into fine-grained training signals through flow balance conditions. Unlike traditional methods focusing on end-to-end training or sequence-level preferences, FD-PORT establishes flow consistency between any states along the reasoning chain, enabling robust multi-hop reasoning that adapts to local decisions and long-range dependencies. Experimental results on three benchmark datasets demonstrate that FD-PORT significantly outperforms state-of-the-art methods, achieving up to 50.6% improvements over GPT-4 on complex multi-hop reasoning tasks with a smaller open-source language model. The framework is advanced in maintaining diverse reasoning paths while ensuring answer quality, closely mirroring human problem-solving strategies."
+  },
+  {
+    "paperId": "6cdb43f5893dfa84ab54307451c107205c61c026",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-01690",
+      "ArXiv": "2502.01690",
+      "DOI": "10.48550/arXiv.2502.01690",
+      "CorpusId": 276107526
+    },
+    "title": "HuViDPO:Enhancing Video Generation through Direct Preference Optimization for Human-Centric Alignment",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.01690, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2300027322",
+        "name": "Lifan Jiang"
+      },
+      {
+        "authorId": "2317143350",
+        "name": "Boxi Wu"
+      },
+      {
+        "authorId": "2343676584",
+        "name": "Jiahui Zhang"
+      },
+      {
+        "authorId": "2344046967",
+        "name": "Xiaotong Guan"
+      },
+      {
+        "authorId": "2343888727",
+        "name": "Shuang Chen"
+      }
+    ],
+    "abstract": "With the rapid development of AIGC technology, significant progress has been made in diffusion model-based technologies for text-to-image (T2I) and text-to-video (T2V). In recent years, a few studies have introduced the strategy of Direct Preference Optimization (DPO) into T2I tasks, significantly enhancing human preferences in generated images. However, existing T2V generation methods lack a well-formed pipeline with exact loss function to guide the alignment of generated videos with human preferences using DPO strategies. Additionally, challenges such as the scarcity of paired video preference data hinder effective model training. At the same time, the lack of training datasets poses a risk of insufficient flexibility and poor video generation quality in the generated videos. Based on those problems, our work proposes three targeted solutions in sequence. 1) Our work is the first to introduce the DPO strategy into the T2V tasks. By deriving a carefully structured loss function, we utilize human feedback to align video generation with human preferences. We refer to this new method as HuViDPO. 2) Our work constructs small-scale human preference datasets for each action category and fine-tune this model, improving the aesthetic quality of the generated videos while reducing training costs. 3) We adopt a First-Frame-Conditioned strategy, leveraging the rich in formation from the first frame to guide the generation of subsequent frames, enhancing flexibility in video generation. At the same time, we employ a SparseCausal Attention mechanism to enhance the quality of the generated videos.More details and examples can be accessed on our website: https://tankowa.github.io/HuViDPO. github.io/."
+  },
+  {
+    "paperId": "fa6403312906085e2eda5bd51fcf2ddbc18445e8",
+    "externalIds": {
+      "ArXiv": "2404.09956",
+      "DBLP": "conf/mm/MajumderHGHMP24",
+      "DOI": "10.1145/3664647.3681688",
+      "CorpusId": 269149104
+    },
+    "title": "Tango 2: Aligning Diffusion-based Text-to-Audio Generations through Direct Preference Optimization",
+    "venue": "ACM Multimedia",
+    "year": 2024,
+    "citationCount": 123,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.09956",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.09956, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35122767",
+        "name": "Navonil Majumder"
+      },
+      {
+        "authorId": "2257349426",
+        "name": "Chia-Yu Hung"
+      },
+      {
+        "authorId": "32528506",
+        "name": "Deepanway Ghosal"
+      },
+      {
+        "authorId": "2306272639",
+        "name": "Wei-Ning Hsu"
+      },
+      {
+        "authorId": "2105984203",
+        "name": "Rada Mihalcea"
+      },
+      {
+        "authorId": "1746416",
+        "name": "Soujanya Poria"
+      }
+    ],
+    "abstract": "Generative multimodal content is increasingly prevalent in much of the content creation arena, as it has the potential to allow artists and media personnel to create pre-production mockups by quickly bringing their ideas to life. The generation of audio from text prompts is an important aspect of such processes in the music and film industry. Many of the recent diffusion-based text-to-audio models focus on training increasingly sophisticated diffusion models on a large set of datasets of prompt-audio pairs. These models do not explicitly focus on the presence of concepts or events and their temporal ordering in the output audio with respect to the input prompt. Our hypothesis is focusing on how these aspects of audio generation could improve audio generation performance in the presence of limited data. As such, in this work, using an existing text-to-audio model Tango, we synthetically create a preference dataset where each prompt has a winner audio output and some loser audio outputs for the diffusion model to learn from. The loser outputs, in theory, have some concepts from the prompt missing or in an incorrect order. We fine-tune the publicly available Tango text-to-audio model using diffusion-DPO (direct preference optimization) loss on our preference dataset and show that it leads to improved audio output over Tango and AudioLDM2, in terms of both automatic- and manual-evaluation metrics."
+  },
+  {
+    "paperId": "6976185bec1d85b6e72c49626266c566eb6aff6f",
+    "externalIds": {
+      "DOI": "10.1101/2024.05.20.595026",
+      "CorpusId": 269976016
+    },
+    "title": "Aligning protein generative models with experimental fitness via Direct Preference Optimization",
+    "venue": "bioRxiv",
+    "year": 2024,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "https://www.biorxiv.org/content/biorxiv/early/2024/05/21/2024.05.20.595026.full.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1101/2024.05.20.595026?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1101/2024.05.20.595026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2302738995",
+        "name": "Talal Widatalla"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "3641819",
+        "name": "Brian L. Hie"
+      }
+    ],
+    "abstract": "Generative models trained on unlabeled protein datasets have demonstrated a remarkable ability to predict some biological functions without any task-specific training data. However, this capability does not extend to all relevant functions and, in many cases, the unsupervised model still underperforms task-specific, supervised baselines. We hypothesize that this is due to a fundamental “alignment gap” in which the rules learned during unsupervised training are not guaranteed to be related to the function of interest. Here, we demonstrate how to provide protein generative models with useful task-specific information without losing the rich, general knowledge learned during pretraining. Using an optimization task called Direct Preference Optimization (DPO), we align a structure-conditioned language model to generate stable protein sequences by encouraging the model to prefer stabilizing over destabilizing variants given a protein backbone structure. Our resulting model, ProteinDPO, is the first structure-conditioned language model preference-optimized to experimental data. ProteinDPO achieves competitive stability prediction and consistently outperforms both unsupervised and finetuned versions of the model. Notably, the aligned model also performs well in domains beyond its training data to enable absolute stability prediction of large proteins and binding affinity prediction of multi-chain complexes, while also enabling single-step stabilization of diverse backbones. These results indicate that ProteinDPO has learned generalizable information from its biophysical alignment data."
+  },
+  {
+    "paperId": "f9de40080cc808b0ae87ff22ec26ee4342305912",
+    "externalIds": {
+      "DBLP": "conf/icmcs/ZhaoWODWH25",
+      "DOI": "10.1109/ICME59968.2025.11209377",
+      "CorpusId": 282612452
+    },
+    "title": "Beyond Multimodal Hallucinations: Enhancing LVLMs through Hallucination-Aware Direct Preference Optimization",
+    "venue": "IEEE International Conference on Multimedia and Expo",
+    "year": 2025,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICME59968.2025.11209377?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICME59968.2025.11209377, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2246944115",
+        "name": "Zhiyuan Zhao"
+      },
+      {
+        "authorId": "2256857728",
+        "name": "Bin Wang"
+      },
+      {
+        "authorId": "2161162356",
+        "name": "Linke Ouyang"
+      },
+      {
+        "authorId": "2118187561",
+        "name": "Xiao-wen Dong"
+      },
+      {
+        "authorId": "2267494294",
+        "name": "Jiaqi Wang"
+      },
+      {
+        "authorId": "2267889334",
+        "name": "Conghui He"
+      }
+    ],
+    "abstract": "Multimodal large language models have made significant advancements in recent years, yet they still suffer from a common issue known as the \"hallucination problem\", in which the models generate textual descriptions that inaccurately depict or entirely fabricate content from associated images. This paper introduces a novel solution, Hallucination-Aware Direct Preference Optimization (HA-DPO), which reframes the hallucination problem as a preference selection task. The model is trained to favor the non-hallucinatory response when presented with two responses of the same image. Meanwhile, this paper proposes an automated pipeline for constructing positive (non-hallucinatory) and negative (hallucinatory) sample pairs, ensuring a style-consistent dataset with varied types of hallucinations aligns with real-world model outputs. Lastly, regarding the limitations of existing benchmarks, we propose Sentence-Level Hallucination Ratio (SHR), which offers a broader and fine-grained hallucination evaluation. With extensive experiments, HA-DPO shows significant hallucination-mitigating performance on different LVLMs and metrics, proving its effectiveness and generality. Code available at https://github.com/opendatalab/HA-DPO#."
+  },
+  {
+    "paperId": "f8e568f5e55e7434b767d1d88775365b5633ef1f",
+    "externalIds": {
+      "DBLP": "journals/bdcc/KadyrbekTMV25",
+      "DOI": "10.3390/bdcc9050137",
+      "CorpusId": 278791253
+    },
+    "title": "The Development of Small-Scale Language Models for Low-Resource Languages, with a Focus on Kazakh and Direct Preference Optimization",
+    "venue": "Big Data and Cognitive Computing",
+    "year": 2025,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/bdcc9050137?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/bdcc9050137, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2028218972",
+        "name": "N. Kadyrbek"
+      },
+      {
+        "authorId": "2351990037",
+        "name": "Zhanseit Tuimebayev"
+      },
+      {
+        "authorId": "145463052",
+        "name": "Madina Mansurova"
+      },
+      {
+        "authorId": "2362742258",
+        "name": "Vítor Viegas"
+      }
+    ],
+    "abstract": "Low-resource languages remain underserved by contemporary large language models (LLMs) because they lack sizable corpora, bespoke preprocessing tools, and the computing budgets assumed by mainstream alignment pipelines. Focusing on Kazakh, we present a 1.94B parameter LLaMA-based model that demonstrates how strong, culturally aligned performance can be achieved without massive infrastructure. The contribution is threefold. (i) Data and tokenization—we compile a rigorously cleaned, mixed-domain Kazakh corpus and design a tokenizer that respects the language’s agglutinative morphology, mixed-script usage, and diacritics. (ii) Training recipe—the model is built in two stages: causal language modeling from scratch followed by instruction tuning. Alignment is further refined with Direct Preference Optimization (DPO), extended by contrastive and entropy-based regularization to stabilize training under sparse, noisy preference signals. Two complementary resources support this step: ChatTune-DPO, a crowd-sourced set of human preference pairs, and Pseudo-DPO, an automatically generated alternative that repurposes instruction data to reduce annotation cost. (iii) Evaluation and impact—qualitative and task-specific assessments show that targeted monolingual training and the proposed DPO variant markedly improve factuality, coherence, and cultural fidelity over baseline instruction-only and multilingual counterparts. The model and datasets are released under open licenses, offering a reproducible blueprint for extending state-of-the-art language modeling to other under-represented languages and domains."
+  },
+  {
+    "paperId": "c4d65d124c3ceeb7369425954516b1d7c6ffc1ab",
+    "externalIds": {
+      "ArXiv": "2506.17252",
+      "CorpusId": 280000628
+    },
+    "title": "Adaptive Batch-Wise Sample Scheduling for Direct Preference Optimization",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.17252, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2371358462",
+        "name": "Zixuan Huang"
+      },
+      {
+        "authorId": "2367522469",
+        "name": "Y. Ban"
+      },
+      {
+        "authorId": "2371034942",
+        "name": "Lean Fu"
+      },
+      {
+        "authorId": "2370955556",
+        "name": "Xiaojie Li"
+      },
+      {
+        "authorId": "2346815014",
+        "name": "Zhongxiang Dai"
+      },
+      {
+        "authorId": "2370961004",
+        "name": "Jianxin Li"
+      },
+      {
+        "authorId": "2367458813",
+        "name": "Deqing Wang"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has emerged as an effective approach for aligning large language models (LLMs) with human preferences. However, its performance is highly dependent on the quality of the underlying human preference data. To address this bottleneck, prior work has explored various data selection strategies, but these methods often overlook the impact of the evolving states of the language model during the optimization process. In this paper, we introduce a novel problem: Sample Scheduling for DPO, which aims to dynamically and adaptively schedule training samples based on the model's evolving batch-wise states throughout preference optimization. To solve this problem, we propose SamS, an efficient and effective algorithm that adaptively selects samples in each training batch based on the LLM's learning feedback to maximize the potential generalization performance. Notably, without modifying the core DPO algorithm, simply integrating SamS significantly improves performance across tasks, with minimal additional computational overhead. This work points to a promising new direction for improving LLM alignment through batch-wise sample selection, with potential generalization to RLHF and broader supervised learning paradigms."
+  },
+  {
+    "paperId": "4d4432514695e0f36720c73c23d15d8e21abe2fe",
+    "externalIds": {
+      "DBLP": "conf/naacl/KhakiLMYR24",
+      "ArXiv": "2402.10038",
+      "DOI": "10.48550/arXiv.2402.10038",
+      "CorpusId": 267682216
+    },
+    "title": "RS-DPO: A Hybrid Rejection Sampling and Direct Preference Optimization Method for Alignment of Large Language Models",
+    "venue": "NAACL-HLT",
+    "year": 2024,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.10038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238206230",
+        "name": "Saeed Khaki"
+      },
+      {
+        "authorId": "2284249190",
+        "name": "JinJin Li"
+      },
+      {
+        "authorId": "2238398936",
+        "name": "Lan Ma"
+      },
+      {
+        "authorId": "2267519122",
+        "name": "Liu Yang"
+      },
+      {
+        "authorId": "2121359655",
+        "name": "Prathap Ramachandra"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has been extensively employed to align large language models with user intent. However, proximal policy optimization (PPO) based RLHF is occasionally unstable requiring significant hyperparameter finetuning, and computationally expensive to maximize the estimated reward during alignment. Recently, direct preference optimization (DPO) is proposed to address those challenges. However, DPO relies on contrastive responses generated from human annotator and alternative LLM, instead of the policy model, limiting the effectiveness of the RLHF. In this paper, we addresses both challenges by systematically combining rejection sampling (RS) and DPO. Our proposed method, RS-DPO, initiates with the development of a supervised fine-tuned policy model (SFT). A varied set of k responses per prompt are sampled directly from the SFT model. RS-DPO identifies pairs of contrastive samples based on their reward distribution. Finally, we apply DPO with the contrastive samples to align the model to human preference. Our experiments indicate that our proposed method effectively fine-tunes LLMs with limited resource environments, leading to improved alignment with user intent. Furthermore, it outperforms existing methods, including RS, PPO, and DPO."
+  },
+  {
+    "paperId": "6f918de95b8a3619e6eb00dbc16a3da43d6fa571",
+    "externalIds": {
+      "DBLP": "conf/iclr/WuX0W0GDW025",
+      "ArXiv": "2407.07880",
+      "DOI": "10.48550/arXiv.2407.07880",
+      "CorpusId": 271088493
+    },
+    "title": "Towards Robust Alignment of Language Models: Distributionally Robustifying Direct Preference Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.07880, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2260622979",
+        "name": "Junkang Wu"
+      },
+      {
+        "authorId": "2298950582",
+        "name": "Yuexiang Xie"
+      },
+      {
+        "authorId": "2261748725",
+        "name": "Zhengyi Yang"
+      },
+      {
+        "authorId": "1491035012",
+        "name": "Jiancan Wu"
+      },
+      {
+        "authorId": "2259837759",
+        "name": "Jiawei Chen"
+      },
+      {
+        "authorId": "2237951623",
+        "name": "Jinyang Gao"
+      },
+      {
+        "authorId": "2265900833",
+        "name": "Bolin Ding"
+      },
+      {
+        "authorId": "2259678005",
+        "name": "Xiang Wang"
+      },
+      {
+        "authorId": "2240825631",
+        "name": "Xiangnan He"
+      }
+    ],
+    "abstract": "This study addresses the challenge of noise in training datasets for Direct Preference Optimization (DPO), a method for aligning Large Language Models (LLMs) with human preferences. We categorize noise into pointwise noise, which includes low-quality data points, and pairwise noise, which encompasses erroneous data pair associations that affect preference rankings. Utilizing Distributionally Robust Optimization (DRO), we enhance DPO's resilience to these types of noise. Our theoretical insights reveal that DPO inherently embeds DRO principles, conferring robustness to pointwise noise, with the regularization coefficient $\\beta$ playing a critical role in its noise resistance. Extending this framework, we introduce Distributionally Robustifying DPO (Dr. DPO), which integrates pairwise robustness by optimizing against worst-case pairwise scenarios. The novel hyperparameter $\\beta'$ in Dr. DPO allows for fine-tuned control over data pair reliability, providing a strategic balance between exploration and exploitation in noisy training environments. Empirical evaluations demonstrate that Dr. DPO substantially improves the quality of generated text and response accuracy in preference datasets, showcasing enhanced performance in both noisy and noise-free settings. The code is available at https://github.com/junkangwu/Dr_DPO."
+  },
+  {
+    "paperId": "1d71eab05a4820cb44feb5dfb221efcece07abca",
+    "externalIds": {
+      "PubMedCentral": "11970896",
+      "DOI": "10.1093/protein/gzaf003",
+      "CorpusId": 277068392,
+      "PubMed": "40098262"
+    },
+    "title": "Tuning ProteinMPNN to reduce protein visibility via MHC Class I through direct preference optimization",
+    "venue": "Protein engineering, design & selection : PEDS",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC11970896, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [],
+    "abstract": "Abstract ProteinMPNN is widely used in protein design workflows due to its ability to identify amino acid sequences that fold into specific 3D protein structures. In our work, we adjust ProteinMPNN to design proteins for a given 3D protein structure with reduced immune-visibility to cytotoxic T lymphocytes that recognize proteins via the MHC-I pathway. To achieve this, we developed a novel framework that integrates direct preference optimization (DPO)—a tuning method originally designed for large language models—with MHC-I peptide presentation predictions. This approach fosters the generation of designs with fewer MHC-I epitopes while preserving the protein’s original structure. Our results demonstrate that DPO effectively reduces MHC-I visibility without compromising the structural integrity of the proteins."
+  },
+  {
+    "paperId": "277b7cd4b88787e0b42e14d0ec497b435d219968",
+    "externalIds": {
+      "DBLP": "conf/aaai/PanSHZZ26",
+      "ArXiv": "2504.15843",
+      "DOI": "10.48550/arXiv.2504.15843",
+      "CorpusId": 277993885
+    },
+    "title": "Pre-DPO: Improving Data Utilization in Direct Preference Optimization Using a Guiding Reference Model",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.15843, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2356809987",
+        "name": "Junshu Pan"
+      },
+      {
+        "authorId": "2237809882",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "2347052668",
+        "name": "Shulin Huang"
+      },
+      {
+        "authorId": "2289467055",
+        "name": "Qiji Zhou"
+      },
+      {
+        "authorId": "2303379291",
+        "name": "Yue Zhang"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) simplifies reinforcement learning from human feedback (RLHF) for large language models (LLMs) by directly training on offline preference data to align with human preferences. During DPO training, the reference model serves as a data weight adjuster. However, the common practice of initializing the policy and reference models identically in DPO can lead to inefficient data utilization and impose a performance ceiling. Meanwhile, the absence of a reference model in Simple Preference Optimization (SimPO) reduces training robustness and requires stricter conditions to prevent catastrophic forgetting. In this work, we propose Pre-DPO, a simple yet effective DPO-based training paradigm that improves preference optimization by introducing a guiding reference model. This reference model provides foresight into the desired policy state achievable through the training preference data, serving as a guiding mechanism that adaptively assigns higher weights to samples more suitable for the model and lower weights to those less suitable. Extensive experiments on the AlpacaEval 2 and Arena-Hard v0.1 benchmarks demonstrate that Pre-DPO consistently improves the performance of both DPO and SimPO, without relying on external models or additional data."
+  },
+  {
+    "paperId": "fc27609749c599c0008a1719a2dde3ea53472386",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-07599",
+      "ArXiv": "2502.07599",
+      "DOI": "10.48550/arXiv.2502.07599",
+      "CorpusId": 276259450
+    },
+    "title": "DPO-Shift: Shifting the Distribution of Direct Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.07599, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2267503077",
+        "name": "Xiliang Yang"
+      },
+      {
+        "authorId": "2308661183",
+        "name": "Feng Jiang"
+      },
+      {
+        "authorId": "2344960057",
+        "name": "Qianen Zhang"
+      },
+      {
+        "authorId": "2344969239",
+        "name": "Lei Zhao"
+      },
+      {
+        "authorId": "2386890118",
+        "name": "Xiao Li"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) and its variants have become increasingly popular for aligning language models with human preferences. These methods aim to teach models to better distinguish between chosen (or preferred) and rejected (or dispreferred) responses. However, prior research has identified that the probability of chosen responses often decreases during training, and this phenomenon is known as likelihood displacement. To tackle this challenge, in this work we introduce DPO-Shift to controllably shift the distribution of the chosen probability. Then, we show that DPO-Shift exhibits a fundamental trade-off between improving the chosen probability and sacrificing the reward margin, as supported by both theoretical analysis and experimental validation. Furthermore, we demonstrate the superiority of DPO-Shift over DPO on downstream tasks such as MT-Bench and a designed win rate experiment. We believe this study shows that the likelihood displacement issue of DPO can be effectively mitigated with a simple, theoretically grounded solution. Our code is available at https://github.com/Meaquadddd/DPO-Shift."
+  },
+  {
+    "paperId": "e67db5ac94e4c1daeb2c134d24f3c8592ee6462d",
+    "externalIds": {
+      "ArXiv": "2406.05534",
+      "DBLP": "journals/corr/abs-2406-05534",
+      "DOI": "10.48550/arXiv.2406.05534",
+      "CorpusId": 270371127
+    },
+    "title": "Online DPO: Online Direct Preference Optimization with Fast-Slow Chasing",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 38,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.05534, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "66242399",
+        "name": "Biqing Qi"
+      },
+      {
+        "authorId": "2305735457",
+        "name": "Pengfei Li"
+      },
+      {
+        "authorId": "2305648677",
+        "name": "Fangyuan Li"
+      },
+      {
+        "authorId": "2287801881",
+        "name": "Junqi Gao"
+      },
+      {
+        "authorId": "2153281320",
+        "name": "Kaiyan Zhang"
+      },
+      {
+        "authorId": "2218723159",
+        "name": "Bowen Zhou"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) improves the alignment of large language models (LLMs) with human values by training directly on human preference datasets, eliminating the need for reward models. However, due to the presence of cross-domain human preferences, direct continual training can lead to catastrophic forgetting, limiting DPO's performance and efficiency. Inspired by intraspecific competition driving species evolution, we propose a Online Fast-Slow chasing DPO (OFS-DPO) for preference alignment, simulating competition through fast and slow chasing among models to facilitate rapid adaptation. Specifically, we first derive the regret upper bound for online learning, validating our motivation with a min-max optimization pattern. Based on this, we introduce two identical modules using Low-rank Adaptive (LoRA) with different optimization speeds to simulate intraspecific competition, and propose a new regularization term to guide their learning. To further mitigate catastrophic forgetting in cross-domain scenarios, we extend the OFS-DPO with LoRA modules combination strategy, resulting in the Cross domain Online Fast-Slow chasing DPO (COFS-DPO). This method leverages linear combinations of fast modules parameters from different task domains, fully utilizing historical information to achive continual value alignment. Experimental results show that OFS-DPO outperforms DPO in in-domain alignment, while COFS-DPO excels in cross-domain continual learning scenarios."
+  },
+  {
+    "paperId": "dccc72d4cfb2ac6147520c7901b11e5c6c2cc6f4",
+    "externalIds": {
+      "DBLP": "conf/pkdd/Hou25",
+      "ArXiv": "2504.01389",
+      "DOI": "10.48550/arXiv.2504.01389",
+      "CorpusId": 277501965
+    },
+    "title": "De Novo Molecular Design Enabled by Direct Preference Optimization and Curriculum Learning",
+    "venue": "ECML/PKDD",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.01389, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299118073",
+        "name": "Junyue Hou"
+      }
+    ],
+    "abstract": "De novo molecular design has extensive applications in drug discovery and materials science. The vast chemical space renders direct molecular searches computationally prohibitive, while traditional experimental screening is both time- and labor-intensive. Efficient molecular generation and screening methods are therefore essential for accelerating drug discovery and reducing costs. Although reinforcement learning (RL) has been applied to optimize molecular properties via reward mechanisms, its practical utility is limited by issues in training efficiency, convergence, and stability. To address these challenges, we adopt Direct Preference Optimization (DPO) from NLP, which uses molecular score-based sample pairs to maximize the likelihood difference between high- and low-quality molecules, effectively guiding the model toward better compounds. Moreover, integrating curriculum learning further boosts training efficiency and accelerates convergence. A systematic evaluation of the proposed method on the GuacaMol Benchmark yielded excellent scores. For instance, the method achieved a score of 0.883 on the Perindopril MPO task, representing a 6\\% improvement over competing models. And subsequent target protein binding experiments confirmed its practical efficacy. These results demonstrate the strong potential of DPO for molecular design tasks and highlight its effectiveness as a robust and efficient solution for data-driven drug discovery."
+  },
+  {
+    "paperId": "2dbf3173556f22ed881b652fc12867f392eef3c0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-10250",
+      "ArXiv": "2505.10250",
+      "DOI": "10.48550/arXiv.2505.10250",
+      "CorpusId": 278636087
+    },
+    "title": "ADHMR: Aligning Diffusion-based Human Mesh Recovery via Direct Preference Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.10250, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303415150",
+        "name": "Wenhao Shen"
+      },
+      {
+        "authorId": "22180965",
+        "name": "Wanqi Yin"
+      },
+      {
+        "authorId": "145418647",
+        "name": "Xiaofeng Yang"
+      },
+      {
+        "authorId": "2273542892",
+        "name": "Cheng Chen"
+      },
+      {
+        "authorId": "1388734273",
+        "name": "Chaoyue Song"
+      },
+      {
+        "authorId": "66562436",
+        "name": "Zhongang Cai"
+      },
+      {
+        "authorId": "2268359690",
+        "name": "Lei Yang"
+      },
+      {
+        "authorId": "2281126516",
+        "name": "Hao Wang"
+      },
+      {
+        "authorId": "2344205023",
+        "name": "Guosheng Lin"
+      }
+    ],
+    "abstract": "Human mesh recovery (HMR) from a single image is inherently ill-posed due to depth ambiguity and occlusions. Probabilistic methods have tried to solve this by generating numerous plausible 3D human mesh predictions, but they often exhibit misalignment with 2D image observations and weak robustness to in-the-wild images. To address these issues, we propose ADHMR, a framework that Aligns a Diffusion-based HMR model in a preference optimization manner. First, we train a human mesh prediction assessment model, HMR-Scorer, capable of evaluating predictions even for in-the-wild images without 3D annotations. We then use HMR-Scorer to create a preference dataset, where each input image has a pair of winner and loser mesh predictions. This dataset is used to finetune the base model using direct preference optimization. Moreover, HMR-Scorer also helps improve existing HMR models by data cleaning, even with fewer training samples. Extensive experiments show that ADHMR outperforms current state-of-the-art methods. Code is available at: https://github.com/shenwenhao01/ADHMR."
+  },
+  {
+    "paperId": "e43fa63d5b79b65b8dc2abb7aa5bc903471be6f7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-14340",
+      "ArXiv": "2502.14340",
+      "DOI": "10.48550/arXiv.2502.14340",
+      "CorpusId": 276482479
+    },
+    "title": "Earlier Tokens Contribute More: Learning Direct Preference Optimization From Temporal Decay Perspective",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.14340, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2346325468",
+        "name": "Ruichen Shao"
+      },
+      {
+        "authorId": "2325002673",
+        "name": "Bei Li"
+      },
+      {
+        "authorId": "2346437690",
+        "name": "Gangao Liu"
+      },
+      {
+        "authorId": "2378851355",
+        "name": "Yang Chen"
+      },
+      {
+        "authorId": "2326647420",
+        "name": "Xiang Zhou"
+      },
+      {
+        "authorId": "2324838018",
+        "name": "Jingang Wang"
+      },
+      {
+        "authorId": "2259620212",
+        "name": "Xunliang Cai"
+      },
+      {
+        "authorId": "2420142465",
+        "name": "Peng Li"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has gained attention as an efficient alternative to reinforcement learning from human feedback (RLHF) for aligning large language models (LLMs) with human preferences. Despite its advantages, DPO suffers from a length bias, generating responses longer than those from the reference model. Existing solutions like SimPO and SamPO address this issue but uniformly treat the contribution of rewards across sequences, overlooking temporal dynamics. To this end, we propose an enhanced preference optimization method that incorporates a temporal decay factor controlled by a gamma parameter. This dynamic weighting mechanism adjusts the influence of each reward based on its position in the sequence, prioritizing earlier tokens that are more critical for alignment. By adaptively focusing on more relevant feedback, our approach mitigates overfitting to less pertinent data and remains responsive to evolving human preferences. Experimental results on several benchmarks show that our approach consistently outperforms vanilla DPO by 5.9-8.8 points on AlpacaEval 2 and 3.3-9.7 points on Arena-Hard across different model architectures and sizes. Furthermore, additional experiments on mathematical and reasoning benchmarks (MMLU, GSM8K, and MATH) confirm that our method enhances performance without compromising general capabilities. Our codebase would be available at \\url{https://github.com/LotuSrc/D2PO}."
+  },
+  {
+    "paperId": "220291492a71f3a93889f2d759f33dbe1e7f7238",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-02475",
+      "ArXiv": "2403.02475",
+      "DOI": "10.48550/arXiv.2403.02475",
+      "CorpusId": 268247648
+    },
+    "title": "Enhancing LLM Safety via Constrained Direct Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.02475, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2257393033",
+        "name": "Zixuan Liu"
+      },
+      {
+        "authorId": "2290024400",
+        "name": "Xiaolin Sun"
+      },
+      {
+        "authorId": "2290027897",
+        "name": "Zizhan Zheng"
+      }
+    ],
+    "abstract": "The rapidly increasing capabilities of large language models (LLMs) raise an urgent need to align AI systems with diverse human preferences to simultaneously enhance their usefulness and safety, despite the often conflicting nature of these goals. To address this important problem, a promising approach is to enforce a safety constraint at the fine-tuning stage through a constrained Reinforcement Learning from Human Feedback (RLHF) framework. This approach, however, is computationally expensive and often unstable. In this work, we introduce Constrained DPO (C-DPO), a novel extension of the recently proposed Direct Preference Optimization (DPO) approach for fine-tuning LLMs that is both efficient and lightweight. By integrating dual gradient descent and DPO, our method identifies a nearly optimal trade-off between helpfulness and harmlessness without using reinforcement learning. Empirically, our approach provides a safety guarantee to LLMs that is missing in DPO while achieving significantly higher rewards under the same safety constraint compared to a recently proposed safe RLHF approach. Warning: This paper contains example data that may be offensive or harmful."
+  },
+  {
+    "paperId": "7be0c002db797445ba4201ef56a32b51a203924f",
+    "externalIds": {
+      "ArXiv": "2406.10957",
+      "DBLP": "conf/emnlp/Lu0AZ0YS24",
+      "ACL": "2024.emnlp-main.60",
+      "DOI": "10.48550/arXiv.2406.10957",
+      "CorpusId": 270560153
+    },
+    "title": "Eliminating Biased Length Reliance of Direct Preference Optimization via Down-Sampled KL Divergence",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.10957, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2284699608",
+        "name": "Junru Lu"
+      },
+      {
+        "authorId": "92861741",
+        "name": "Jiazheng Li"
+      },
+      {
+        "authorId": "2190499674",
+        "name": "Siyu An"
+      },
+      {
+        "authorId": "2315831986",
+        "name": "Meng Zhao"
+      },
+      {
+        "authorId": "2284803920",
+        "name": "Yulan He"
+      },
+      {
+        "authorId": "2284681216",
+        "name": "Di Yin"
+      },
+      {
+        "authorId": "2231625098",
+        "name": "Xing Sun"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has emerged as a prominent algorithm for the direct and robust alignment of Large Language Models (LLMs) with human preferences, offering a more straightforward alternative to the complex Reinforcement Learning from Human Feedback (RLHF). Despite its promising efficacy, DPO faces a notable drawback: “verbosity”, a common over-optimization phenomenon also observed in RLHF. While previous studies mainly attributed verbosity to biased labels within the data, we propose that the issue also stems from an inherent algorithmic length reliance in DPO. Specifically, we suggest that the discrepancy between sequence-level Kullback–Leibler (KL) divergences between chosen and rejected sequences, used in DPO, results in overestimated or underestimated rewards due to varying token lengths. Empirically, we utilize datasets with different label lengths to demonstrate the presence of biased rewards. We then introduce an effective downsampling approach, named SamPO, to eliminate potential length reliance. Our experimental evaluations, conducted across three LLMs of varying scales and a diverse array of conditional and open-ended benchmarks, highlight the efficacy of SamPO in mitigating verbosity, achieving improvements of 5% to 12% over DPO through debaised rewards. Our code can be accessed at: https://github.com/LuJunru/SamPO/."
+  },
+  {
+    "paperId": "4f9f4bc55a25ff6cf04f3e2f01c23ce7801184d7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-17637",
+      "ArXiv": "2410.17637",
+      "DOI": "10.48550/arXiv.2410.17637",
+      "CorpusId": 273532785
+    },
+    "title": "MIA-DPO: Multi-Image Augmented Direct Preference Optimization For Large Vision-Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 30,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.17637, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2292942831",
+        "name": "Ziyu Liu"
+      },
+      {
+        "authorId": "12862495",
+        "name": "Yuhang Zang"
+      },
+      {
+        "authorId": "2118187561",
+        "name": "Xiao-wen Dong"
+      },
+      {
+        "authorId": "2271462894",
+        "name": "Pan Zhang"
+      },
+      {
+        "authorId": "50206929",
+        "name": "Yuhang Cao"
+      },
+      {
+        "authorId": "31463937",
+        "name": "Haodong Duan"
+      },
+      {
+        "authorId": "2267889334",
+        "name": "Conghui He"
+      },
+      {
+        "authorId": "2271895082",
+        "name": "Yuanjun Xiong"
+      },
+      {
+        "authorId": "2237734015",
+        "name": "Dahua Lin"
+      },
+      {
+        "authorId": "2267494294",
+        "name": "Jiaqi Wang"
+      }
+    ],
+    "abstract": "Visual preference alignment involves training Large Vision-Language Models (LVLMs) to predict human preferences between visual inputs. This is typically achieved by using labeled datasets of chosen/rejected pairs and employing optimization algorithms like direct preference optimization (DPO). Existing visual alignment methods, primarily designed for single-image scenarios, struggle to effectively handle the complexity of multi-image tasks due to the scarcity of diverse training data and the high cost of annotating chosen/rejected pairs. We present Multi-Image Augmented Direct Preference Optimization (MIA-DPO), a visual preference alignment approach that effectively handles multi-image inputs. MIA-DPO mitigates the scarcity of diverse multi-image training data by extending single-image data with unrelated images arranged in grid collages or pic-in-pic formats, significantly reducing the costs associated with multi-image data annotations. Our observation reveals that attention values of LVLMs vary considerably across different images. We use attention values to identify and filter out rejected responses the model may have mistakenly focused on. Our attention-aware selection for constructing the chosen/rejected pairs without relying on (i) human annotation, (ii) extra data, and (iii) external models or APIs. MIA-DPO is compatible with various architectures and outperforms existing methods on five multi-image benchmarks, achieving an average performance boost of 3.0% on LLaVA-v1.5 and 4.3% on the recent InternLM-XC2.5. Moreover, MIA-DPO has a minimal effect on the model's ability to understand single images."
+  },
+  {
+    "paperId": "c6f21c64c08295e595c82602c37f0bcac96d3907",
+    "externalIds": {
+      "DBLP": "conf/acl/WangLL24",
+      "ArXiv": "2407.18248",
+      "DOI": "10.48550/arXiv.2407.18248",
+      "CorpusId": 271431928
+    },
+    "title": "Self-Training with Direct Preference Optimization Improves Chain-of-Thought Reasoning",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 38,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.18248, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2186734781",
+        "name": "Tianduo Wang"
+      },
+      {
+        "authorId": "2117947604",
+        "name": "Shichen Li"
+      },
+      {
+        "authorId": "2277742683",
+        "name": "Wei Lu"
+      }
+    ],
+    "abstract": "Effective training of language models (LMs) for mathematical reasoning tasks demands high-quality supervised fine-tuning data. Besides obtaining annotations from human experts, a common alternative is sampling from larger and more powerful LMs. However, this knowledge distillation approach can be costly and unstable, particularly when relying on closed-source, proprietary LMs like GPT-4, whose behaviors are often unpredictable. In this work, we demonstrate that the reasoning abilities of small-scale LMs can be enhanced through self-training, a process where models learn from their own outputs. We also show that the conventional self-training can be further augmented by a preference learning algorithm called Direct Preference Optimization (DPO). By integrating DPO into self-training, we leverage preference data to guide LMs towards more accurate and diverse chain-of-thought reasoning. We evaluate our method across various mathematical reasoning tasks using different base models. Our experiments show that this approach not only improves LMs' reasoning performance but also offers a more cost-effective and scalable solution compared to relying on large proprietary LMs."
+  },
+  {
+    "paperId": "0f1dc78331e78c090567e58c9aafdc0a62ff2368",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-04350",
+      "ArXiv": "2410.04350",
+      "DOI": "10.48550/arXiv.2410.04350",
+      "CorpusId": 273185779
+    },
+    "title": "TIS-DPO: Token-level Importance Sampling for Direct Preference Optimization With Estimated Weights",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.04350, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10017193",
+        "name": "Aiwei Liu"
+      },
+      {
+        "authorId": "9383929",
+        "name": "Haoping Bai"
+      },
+      {
+        "authorId": "2284822490",
+        "name": "Zhiyun Lu"
+      },
+      {
+        "authorId": "2314158106",
+        "name": "Yanchao Sun"
+      },
+      {
+        "authorId": "2284711146",
+        "name": "Xiang Kong"
+      },
+      {
+        "authorId": "2284725251",
+        "name": "S. Wang"
+      },
+      {
+        "authorId": "2091600962",
+        "name": "Jiulong Shan"
+      },
+      {
+        "authorId": "2203363212",
+        "name": "Albin Madappally Jose"
+      },
+      {
+        "authorId": "2324836199",
+        "name": "Xiaojiang Liu"
+      },
+      {
+        "authorId": "2284684419",
+        "name": "Lijie Wen"
+      },
+      {
+        "authorId": "2320302717",
+        "name": "Philip S. Yu"
+      },
+      {
+        "authorId": "2057073717",
+        "name": "Mengsi Cao"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has been widely adopted for preference alignment of Large Language Models (LLMs) due to its simplicity and effectiveness. However, DPO is derived as a bandit problem in which the whole response is treated as a single arm, ignoring the importance differences between tokens, which may affect optimization efficiency and make it difficult to achieve optimal results. In this work, we propose that the optimal data for DPO has equal expected rewards for each token in winning and losing responses, as there is no difference in token importance. However, since the optimal dataset is unavailable in practice, we propose using the original dataset for importance sampling to achieve unbiased optimization. Accordingly, we propose a token-level importance sampling DPO objective named TIS-DPO that assigns importance weights to each token based on its reward. Inspired by previous works, we estimate the token importance weights using the difference in prediction probabilities from a pair of contrastive LLMs. We explore three methods to construct these contrastive LLMs: (1) guiding the original LLM with contrastive prompts, (2) training two separate LLMs using winning and losing responses, and (3) performing forward and reverse DPO training with winning and losing responses. Experiments show that TIS-DPO significantly outperforms various baseline methods on harmlessness and helpfulness alignment and summarization tasks. We also visualize the estimated weights, demonstrating their ability to identify key token positions."
+  },
+  {
+    "paperId": "7d5de8eb09107e62508068c0a8344f3620703eb9",
+    "externalIds": {
+      "ArXiv": "2409.10157",
+      "DBLP": "conf/icassp/GaoZCZC25",
+      "DOI": "10.48550/arXiv.2409.10157",
+      "CorpusId": 272690110
+    },
+    "title": "Emo-DPO: Controllable Emotional Speech Synthesis through Direct Preference Optimization",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2024,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.10157, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2309534895",
+        "name": "Xiaoxue Gao"
+      },
+      {
+        "authorId": "2321413639",
+        "name": "Chen Zhang"
+      },
+      {
+        "authorId": "2309430062",
+        "name": "Yiming Chen"
+      },
+      {
+        "authorId": "2279969647",
+        "name": "Huayun Zhang"
+      },
+      {
+        "authorId": "2309696209",
+        "name": "Nancy F. Chen"
+      }
+    ],
+    "abstract": "Current emotional text-to-speech (TTS) models pre-dominantly conduct supervised training to learn the conversion from text and desired emotion to its emotional speech, focusing on a single emotion per text-speech pair. These models only learn the correct emotional outputs without fully comprehending other emotion characteristics, which limits their capabilities of capturing the nuances between different emotions. We propose a controllable Emo-DPO approach, which employs direct preference optimization to differentiate subtle emotional nuances between emotions through optimizing towards preferred emotions over less preferred emotional ones. Instead of relying on traditional neural architectures used in existing emotional TTS models, we propose utilizing the emotion-aware LLM-TTS neural architecture to leverage LLMs’ in-context learning and instruction-following capabilities. Comprehensive experiments confirm that our proposed method outperforms the existing baselines."
+  },
+  {
+    "paperId": "ccf91d44ddf11e495eff2029ba18cd2b1d28eef8",
+    "externalIds": {
+      "ArXiv": "2406.11817",
+      "DBLP": "journals/corr/abs-2406-11817",
+      "DOI": "10.48550/arXiv.2406.11817",
+      "CorpusId": 270560450
+    },
+    "title": "Iterative Length-Regularized Direct Preference Optimization: A Case Study on Improving 7B Language Models to GPT-4 Level",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.11817, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285060791",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2254279326",
+        "name": "Zhanhui Zhou"
+      },
+      {
+        "authorId": "2284731877",
+        "name": "Jiaheng Liu"
+      },
+      {
+        "authorId": "2284990102",
+        "name": "Xingyuan Bu"
+      },
+      {
+        "authorId": "2256435850",
+        "name": "Chao Yang"
+      },
+      {
+        "authorId": "2284252048",
+        "name": "Han-Sen Zhong"
+      },
+      {
+        "authorId": "2254269925",
+        "name": "Wanli Ouyang"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO), a standard method for aligning language models with human preferences, is traditionally applied to offline preferences. Recent studies show that DPO benefits from iterative training with online preferences labeled by a trained reward model. In this work, we identify a pitfall of vanilla iterative DPO - improved response quality can lead to increased verbosity. To address this, we introduce iterative length-regularized DPO (iLR-DPO) to penalize response length. Our empirical results show that iLR-DPO can enhance a 7B model to perform on par with GPT-4 without increasing verbosity. Specifically, our 7B model achieves a $50.5\\%$ length-controlled win rate against $\\texttt{GPT-4 Preview}$ on AlpacaEval 2.0, and excels across standard benchmarks including MT-Bench, Arena-Hard and OpenLLM Leaderboard. These results demonstrate the effectiveness of iterative DPO in aligning language models with human feedback."
+  }
+]

@@ -1,0 +1,1847 @@
+[
+  {
+    "paperId": "af9f365ed86614c800f082bd8eb14be76072ad16",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2207-12598",
+      "ArXiv": "2207.12598",
+      "DOI": "10.48550/arXiv.2207.12598",
+      "CorpusId": 249145348
+    },
+    "title": "Classifier-Free Diffusion Guidance",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 6037,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.12598",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.12598, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      }
+    ],
+    "abstract": "Classifier guidance is a recently introduced method to trade off mode coverage and sample fidelity in conditional diffusion models post training, in the same spirit as low temperature sampling or truncation in other types of generative models. Classifier guidance combines the score estimate of a diffusion model with the gradient of an image classifier and thereby requires training an image classifier separate from the diffusion model. It also raises the question of whether guidance can be performed without a classifier. We show that guidance can be indeed performed by a pure generative model without such a classifier: in what we call classifier-free guidance, we jointly train a conditional and an unconditional diffusion model, and we combine the resulting conditional and unconditional score estimates to attain a trade-off between sample quality and diversity similar to that obtained using classifier guidance."
+  },
+  {
+    "paperId": "88e8801e4daf404d3d40f1648ef29faeb8e6d58a",
+    "externalIds": {
+      "ArXiv": "2111.14818",
+      "DBLP": "conf/cvpr/AvrahamiLF22",
+      "DOI": "10.1109/CVPR52688.2022.01767",
+      "CorpusId": 244714366
+    },
+    "title": "Blended Diffusion for Text-driven Editing of Natural Images",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 1210,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2111.14818",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.14818, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107086356",
+        "name": "Omri Avrahami"
+      },
+      {
+        "authorId": "70018371",
+        "name": "D. Lischinski"
+      },
+      {
+        "authorId": "2416503",
+        "name": "Ohad Fried"
+      }
+    ],
+    "abstract": "Natural language offers a highly intuitive interface for image editing. In this paper, we introduce the first solution for performing local (region-based) edits in generic natural images, based on a natural language description along with an ROI mask. We achieve our goal by leveraging and combining a pretrained language-image model (CLIP), to steer the edit towards a user-provided text prompt, with a denoising diffusion probabilistic model (DDPM) to generate natural-looking results. To seamlessly fuse the edited region with the unchanged parts of the image, we spatially blend noised versions of the input image with the local text-guided diffusion latent at a progression of noise levels. In addition, we show that adding augmentations to the diffusion process mitigates adversarial results. We compare against several baselines and related methods, both qualitatively and quantitatively, and show that our method outperforms these solutions in terms of overall realism, ability to preserve the background and matching the text. Finally, we show several text-driven editing applications, including adding a new object to an image, removing/replacing/altering existing objects, background replacement, and image extrapolation."
+  },
+  {
+    "paperId": "414e554d281d529401c873cb9c97186365ec5dd8",
+    "externalIds": {
+      "ArXiv": "2111.14822",
+      "DBLP": "journals/corr/abs-2111-14822",
+      "DOI": "10.1109/CVPR52688.2022.01043",
+      "CorpusId": 244714856
+    },
+    "title": "Vector Quantized Diffusion Model for Text-to-Image Synthesis",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 1017,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2111.14822",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.14822, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2057716673",
+        "name": "Shuyang Gu"
+      },
+      {
+        "authorId": "47514557",
+        "name": "Dong Chen"
+      },
+      {
+        "authorId": "9324504",
+        "name": "Jianmin Bao"
+      },
+      {
+        "authorId": "1716835",
+        "name": "Fang Wen"
+      },
+      {
+        "authorId": "145803569",
+        "name": "Bo Zhang"
+      },
+      {
+        "authorId": "49025801",
+        "name": "Dongdong Chen"
+      },
+      {
+        "authorId": "145347147",
+        "name": "Lu Yuan"
+      },
+      {
+        "authorId": "2261753424",
+        "name": "B. Guo"
+      }
+    ],
+    "abstract": "We present the vector quantized diffusion (VQ-Diffusion) model for text-to-image generation. This method is based on a vector quantized variational autoencoder (VQ-VAE) whose latent space is modeled by a conditional variant of the recently developed Denoising Diffusion Probabilistic Model (DDPM). We find that this latent-space method is well-suited for text-to-image generation tasks because it not only eliminates the unidirectional bias with existing methods but also allows us to incorporate a mask-and-replace diffusion strategy to avoid the accumulation of errors, which is a serious problem with existing methods. Our experiments show that the VQ-Diffusion produces significantly better text-to-image generation results when compared with conventional autoregressive (AR) models with similar numbers of parameters. Compared with previous GAN-based text-to-image methods, our VQ-Diffusion can handle more complex scenes and improve the synthesized image quality by a large margin. Finally, we show that the image generation computation in our method can be made highly efficient by reparameterization. With traditional AR methods, the text-to-image generation time increases linearly with the output image resolution and hence is quite time consuming even for normal size images. The VQ-Diffusion allows us to achieve a better trade-off between quality and speed. Our experiments indicate that the VQ-Diffusion model with the reparameterization is fifteen times faster than traditional AR methods while achieving a better image quality. The code and models are available at https://github.com/cientgu/VQ-Diffusion."
+  },
+  {
+    "paperId": "eab22f9cbc6717eb919a7f0eb7a2a92063068ff9",
+    "externalIds": {
+      "ArXiv": "2111.13792",
+      "DBLP": "journals/corr/abs-2111-13792",
+      "DOI": "10.1109/CVPR52688.2022.01738",
+      "CorpusId": 244714549
+    },
+    "title": "Towards Language-Free Training for Text-to-Image Generation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 223,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.13792, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1652060942",
+        "name": "Yufan Zhou"
+      },
+      {
+        "authorId": "1940556",
+        "name": "Ruiyi Zhang"
+      },
+      {
+        "authorId": "1752041",
+        "name": "Changyou Chen"
+      },
+      {
+        "authorId": "2109737569",
+        "name": "Chunyuan Li"
+      },
+      {
+        "authorId": "67319819",
+        "name": "Chris Tensmeyer"
+      },
+      {
+        "authorId": "1500399016",
+        "name": "Tong Yu"
+      },
+      {
+        "authorId": "2174964",
+        "name": "Jiuxiang Gu"
+      },
+      {
+        "authorId": "2128691876",
+        "name": "Jinhui Xu"
+      },
+      {
+        "authorId": "1500530510",
+        "name": "Tong Sun"
+      }
+    ],
+    "abstract": "One of the major challenges in training text-to-image generation models is the need of a large number of highquality image-text pairs. While image samples are often easily accessible, the associated text descriptions typically require careful human captioning, which is particularly time- and cost-consuming. In this paper, we propose the first work to train text-to-image generation models without any text data. Our method leverages the well-aligned multi-modal semantic space of the powerful pre-trained CLIP model: the requirement of text-conditioning is seamlessly alleviated via generating text features from image features. Extensive experiments are conducted to illustrate the effectiveness of the proposed method. We obtain state-of-the-art results in the standard text-to-image generation tasks. Importantly, the proposed language-free model outperforms most existing models trained with full image-text pairs. Furthermore, our method can be applied in fine-tuning pretrained models, which saves both training time and cost in training text-to-image generation models. Our pre-trained model obtains competitive results in zero-shot text-to-image generation on the MS-COCO dataset, yet with around only 1% of the model size and training data size relative to the recently proposed large DALL-E model."
+  },
+  {
+    "paperId": "37c9c4e7648f639c0b36f150fc6c6c90b3682f4a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2111-05826",
+      "ArXiv": "2111.05826",
+      "DOI": "10.1145/3528233.3530757",
+      "CorpusId": 243938678
+    },
+    "title": "Palette: Image-to-Image Diffusion Models",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 2021,
+    "citationCount": 2162,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3528233.3530757",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.05826, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2139922989",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "2150198218",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2140690517",
+        "name": "Huiwen Chang"
+      },
+      {
+        "authorId": "2143770178",
+        "name": "Chris A. Lee"
+      },
+      {
+        "authorId": "2112615253",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "2117261512",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "2138892698",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "This paper develops a unified framework for image-to-image translation based on conditional diffusion models and evaluates this framework on four challenging image-to-image translation tasks, namely colorization, inpainting, uncropping, and JPEG restoration. Our simple implementation of image-to-image diffusion models outperforms strong GAN and regression baselines on all tasks, without task-specific hyper-parameter tuning, architecture customization, or any auxiliary loss or sophisticated new techniques needed. We uncover the impact of an L2 vs. L1 loss in the denoising diffusion objective on sample diversity, and demonstrate the importance of self-attention in the neural architecture through empirical studies. Importantly, we advocate a unified evaluation protocol based on ImageNet, with human evaluation and sample quality scores (FID, Inception Score, Classification Accuracy of a pre-trained ResNet-50, and Perceptual Distance against original images). We expect this standardized evaluation protocol to play a role in advancing image-to-image translation research. Finally, we show that a generalist, multi-task diffusion model performs as well or better than task-specific specialist counterparts. Check out https://diffusion-palette.github.io/ for an overview of the results and code."
+  },
+  {
+    "paperId": "e9e1be04853e73c8de76b919c78269eb5bc78668",
+    "externalIds": {
+      "ArXiv": "2107.02423",
+      "DBLP": "conf/bmvc/YeYTSJ21",
+      "DOI": "10.5244/c.35.137",
+      "CorpusId": 235742820
+    },
+    "title": "Improving Text-to-Image Synthesis Using Contrastive Learning",
+    "venue": "British Machine Vision Conference",
+    "year": 2021,
+    "citationCount": 90,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.02423, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111973001",
+        "name": "Hui Ye"
+      },
+      {
+        "authorId": "13744021",
+        "name": "Xiulong Yang"
+      },
+      {
+        "authorId": "144696183",
+        "name": "Martin Takác"
+      },
+      {
+        "authorId": "1756672",
+        "name": "Rajshekhar Sunderraman"
+      },
+      {
+        "authorId": "144576567",
+        "name": "Shihao Ji"
+      }
+    ],
+    "abstract": "The goal of text-to-image synthesis is to generate a visually realistic image that matches a given text description. In practice, the captions annotated by humans for the same image have large variance in terms of contents and the choice of words. The linguistic discrepancy between the captions of the identical image leads to the synthetic images deviating from the ground truth. To address this issue, we propose a contrastive learning approach to improve the quality and enhance the semantic consistency of synthetic images. In the pretraining stage, we utilize the contrastive learning approach to learn the consistent textual representations for the captions corresponding to the same image. Furthermore, in the following stage of GAN training, we employ the contrastive learning method to enhance the consistency between the generated images from the captions related to the same image. We evaluate our approach over two popular text-to-image synthesis models, AttnGAN and DM-GAN, on datasets CUB and COCO, respectively. Experimental results have shown that our approach can effectively improve the quality of synthetic images in terms of three metrics: IS, FID and R-precision. Especially, on the challenging COCO dataset, our approach boosts the FID signifcantly by 29.60% over AttnGAN and by 21.96% over DM-GAN."
+  },
+  {
+    "paperId": "0f183bcfe65781c06b1a48a6f56e0f3c63e8e4a4",
+    "externalIds": {
+      "DBLP": "journals/jmlr/HoSCFNS22",
+      "ArXiv": "2106.15282",
+      "CorpusId": 235619773
+    },
+    "title": "Cascaded Diffusion Models for High Fidelity Image Generation",
+    "venue": "Journal of machine learning research",
+    "year": 2021,
+    "citationCount": 1589,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.15282, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "2314850972",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      }
+    ],
+    "abstract": "We show that cascaded diffusion models are capable of generating high fidelity images on the class-conditional ImageNet generation benchmark, without any assistance from auxiliary image classifiers to boost sample quality. A cascaded diffusion model comprises a pipeline of multiple diffusion models that generate images of increasing resolution, beginning with a standard diffusion model at the lowest resolution, followed by one or more super-resolution diffusion models that successively upsample the image and add higher resolution details. We find that the sample quality of a cascading pipeline relies crucially on conditioning augmentation, our proposed method of data augmentation of the lower resolution conditioning inputs to the super-resolution models. Our experiments show that conditioning augmentation prevents compounding error during sampling in a cascaded model, helping us to train cascading pipelines achieving FID scores of 1.48 at 64x64, 3.52 at 128x128 and 4.88 at 256x256 resolutions, outperforming BigGAN-deep, and classification accuracy scores of 63.02% (top-1) and 84.06% (top-5) at 256x256, outperforming VQ-VAE-2."
+  },
+  {
+    "paperId": "64ea8f180d0682e6c18d1eb688afdb2027c02794",
+    "externalIds": {
+      "ArXiv": "2105.05233",
+      "DBLP": "journals/corr/abs-2105-05233",
+      "CorpusId": 234357997
+    },
+    "title": "Diffusion Models Beat GANs on Image Synthesis",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 11468,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.05233, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      }
+    ],
+    "abstract": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this on unconditional image synthesis by finding a better architecture through a series of ablations. For conditional image synthesis, we further improve sample quality with classifier guidance: a simple, compute-efficient method for trading off diversity for fidelity using gradients from a classifier. We achieve an FID of 2.97 on ImageNet 128$\\times$128, 4.59 on ImageNet 256$\\times$256, and 7.72 on ImageNet 512$\\times$512, and we match BigGAN-deep even with as few as 25 forward passes per sample, all while maintaining better coverage of the distribution. Finally, we find that classifier guidance combines well with upsampling diffusion models, further improving FID to 3.94 on ImageNet 256$\\times$256 and 3.85 on ImageNet 512$\\times$512. We release our code at https://github.com/openai/guided-diffusion"
+  },
+  {
+    "paperId": "bc7e6165b00f0c39d40ca2c7a4eb33fcc0e3200d",
+    "externalIds": {
+      "DBLP": "journals/pami/SahariaHCSFN23",
+      "ArXiv": "2104.07636",
+      "DOI": "10.1109/TPAMI.2022.3204461",
+      "CorpusId": 233241040,
+      "PubMed": "36094974"
+    },
+    "title": "Image Super-Resolution via Iterative Refinement",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 2416,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/34/4359286/09887996.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.07636, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51497543",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "We present SR3, an approach to image Super-Resolution via Repeated Refinement. SR3 adapts denoising diffusion probabilistic models (Ho et al. 2020), (Sohl-Dickstein et al. 2015) to image-to-image translation, and performs super-resolution through a stochastic iterative denoising process. Output images are initialized with pure Gaussian noise and iteratively refined using a U-Net architecture that is trained on denoising at various noise levels, conditioned on a low-resolution input image. SR3 exhibits strong performance on super-resolution tasks at different magnification factors, on faces and natural images. We conduct human evaluation on a standard 8× face super-resolution task on CelebA-HQ for which SR3 achieves a fool rate close to 50%, suggesting photo-realistic outputs, while GAN baselines do not exceed a fool rate of 34%. We evaluate SR3 on a 4× super-resolution task on ImageNet, where SR3 outperforms baselines in human evaluation and classification accuracy of a ResNet-50 classifier trained on high-resolution images. We further show the effectiveness of SR3 in cascaded image generation, where a generative model is chained with super-resolution models to synthesize high-resolution images with competitive FID scores on the class-conditional 256×256 ImageNet generation challenge."
+  },
+  {
+    "paperId": "aaa99de83292370a964fcaa51e6e866a96726bb2",
+    "externalIds": {
+      "ArXiv": "2103.17249",
+      "DBLP": "conf/iccv/PatashnikWSCL21",
+      "DOI": "10.1109/ICCV48922.2021.00209",
+      "CorpusId": 232428282
+    },
+    "title": "StyleCLIP: Text-Driven Manipulation of StyleGAN Imagery",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 1431,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.17249",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.17249, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2819477",
+        "name": "Or Patashnik"
+      },
+      {
+        "authorId": "34815981",
+        "name": "Zongze Wu"
+      },
+      {
+        "authorId": "2177801",
+        "name": "Eli Shechtman"
+      },
+      {
+        "authorId": "1388323541",
+        "name": "D. Cohen-Or"
+      },
+      {
+        "authorId": "70018371",
+        "name": "D. Lischinski"
+      }
+    ],
+    "abstract": "Inspired by the ability of StyleGAN to generate highly realistic images in a variety of domains, much recent work has focused on understanding how to use the latent spaces of StyleGAN to manipulate generated and real images. However, discovering semantically meaningful latent manipulations typically involves painstaking human examination of the many degrees of freedom, or an annotated collection of images for each desired manipulation. In this work, we explore leveraging the power of recently introduced Contrastive Language-Image Pre-training (CLIP) models in order to develop a text-based interface for StyleGAN image manipulation that does not require such manual effort. We first introduce an optimization scheme that utilizes a CLIP-based loss to modify an input latent vector in response to a user-provided text prompt. Next, we describe a latent mapper that infers a text-guided latent manipulation step for a given input image, allowing faster and more stable text-based manipulation. Finally, we present a method for mapping text prompts to input-agnostic directions in StyleGAN’s style space, enabling interactive text-driven image manipulation. Extensive results and comparisons demonstrate the effectiveness of our approaches."
+  },
+  {
+    "paperId": "c70e45892e40cb2b4587fd342fe735b0f16b6878",
+    "externalIds": {
+      "ArXiv": "2103.10951",
+      "DBLP": "journals/corr/abs-2103-10951",
+      "CorpusId": 232290554
+    },
+    "title": "Paint by Word",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 135,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.10951, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144159726",
+        "name": "David Bau"
+      },
+      {
+        "authorId": "50112310",
+        "name": "A. Andonian"
+      },
+      {
+        "authorId": "2056068167",
+        "name": "Audrey Cui"
+      },
+      {
+        "authorId": "2289284319",
+        "name": "Yeonhwa Park"
+      },
+      {
+        "authorId": "19203468",
+        "name": "Ali Jahanian"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "We investigate the problem of zero-shot semantic image painting. Instead of painting modifications into an image using only concrete colors or a finite set of semantic concepts, we ask how to create semantic paint based on open full-text descriptions: our goal is to be able to point to a location in a synthesized image and apply an arbitrary new concept such as\"rustic\"or\"opulent\"or\"happy dog.\"To do this, our method combines a state-of-the art generative model of realistic images with a state-of-the-art text-image semantic similarity network. We find that, to make large changes, it is important to use non-gradient methods to explore latent space, and it is important to relax the computations of the GAN to target changes to a specific region. We conduct user studies to compare our methods to several baselines."
+  },
+  {
+    "paperId": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4",
+    "externalIds": {
+      "DBLP": "conf/icml/RadfordKHRGASAM21",
+      "ArXiv": "2103.00020",
+      "CorpusId": 231591445
+    },
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 47329,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.00020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2110935237",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "40087786",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP."
+  },
+  {
+    "paperId": "2cd605106b88c85d7d8b865b1ef0f8c8293debf1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-12092",
+      "ArXiv": "2102.12092",
+      "MAG": "3170016573",
+      "CorpusId": 232035663
+    },
+    "title": "Zero-Shot Text-to-Image Generation",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 6328,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.12092, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "2068123790",
+        "name": "Mikhail Pavlov"
+      },
+      {
+        "authorId": "40087786",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "153387869",
+        "name": "Chelsea Voss"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "Text-to-image generation has traditionally focused on finding better modeling assumptions for training on a fixed dataset. These assumptions might involve complex architectures, auxiliary losses, or side information such as object part labels or segmentation masks supplied during training. We describe a simple approach for this task based on a transformer that autoregressively models the text and image tokens as a single stream of data. With sufficient data and scale, our approach is competitive with previous domain-specific models when evaluated in a zero-shot fashion."
+  },
+  {
+    "paperId": "de18baa4964804cf471d85a5a090498242d2e79f",
+    "externalIds": {
+      "ArXiv": "2102.09672",
+      "DBLP": "conf/icml/NicholD21",
+      "CorpusId": 231979499
+    },
+    "title": "Improved Denoising Diffusion Probabilistic Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 5190,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.09672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPM) are a class of generative models which have recently been shown to produce excellent samples. We show that with a few simple modifications, DDPMs can also achieve competitive log-likelihoods while maintaining high sample quality. Additionally, we find that learning variances of the reverse diffusion process allows sampling with an order of magnitude fewer forward passes with a negligible difference in sample quality, which is important for the practical deployment of these models. We additionally use precision and recall to compare how well DDPMs and GANs cover the target distribution. Finally, we show that the sample quality and likelihood of these models scale smoothly with model capacity and training compute, making them easily scalable. We release our code at https://github.com/openai/improved-diffusion"
+  },
+  {
+    "paperId": "33e8cad403a52ad10d0fe418ff980760401e869f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-01645",
+      "ArXiv": "2102.01645",
+      "DOI": "10.5220/0010503701660174",
+      "CorpusId": 231749958
+    },
+    "title": "Generating images from caption and vice versa via CLIP-Guided Generative Latent Space Search",
+    "venue": "International Conference on Image Processing and Vision Engineering",
+    "year": 2021,
+    "citationCount": 92,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.5220/0010503701660174",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.01645, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10758628",
+        "name": "F. Galatolo"
+      },
+      {
+        "authorId": "145432506",
+        "name": "M. Cimino"
+      },
+      {
+        "authorId": "1809381",
+        "name": "G. Vaglini"
+      }
+    ],
+    "abstract": "In this research work we present CLIP-GLaSS, a novel zero-shot framework to generate an image (or a caption) corresponding to a given caption (or image). CLIP-GLaSS is based on the CLIP neural network, which, given an image and a descriptive caption, provides similar embeddings. Differently, CLIP-GLaSS takes a caption (or an image) as an input, and generates the image (or the caption) whose CLIP embedding is the most similar to the input one. This optimal image (or caption) is produced via a generative network, after an exploration by a genetic algorithm. Promising results are shown, based on the experimentation of the image Generators BigGAN and StyleGAN2, and of the text Generator GPT2"
+  },
+  {
+    "paperId": "652032fbb744da4f279e8f30eef2323155878ac4",
+    "externalIds": {
+      "ArXiv": "2101.04702",
+      "DBLP": "journals/corr/abs-2101-04702",
+      "DOI": "10.1109/CVPR46437.2021.00089",
+      "CorpusId": 231592822
+    },
+    "title": "Cross-Modal Contrastive Learning for Text-to-Image Generation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 433,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2101.04702",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.04702, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119079641",
+        "name": "Han Zhang"
+      },
+      {
+        "authorId": "23978705",
+        "name": "Jing Yu Koh"
+      },
+      {
+        "authorId": "1387994164",
+        "name": "Jason Baldridge"
+      },
+      {
+        "authorId": "1697141",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "2781059",
+        "name": "Yinfei Yang"
+      }
+    ],
+    "abstract": "The output of text-to-image synthesis systems should be coherent, clear, photo-realistic scenes with high semantic fidelity to their conditioned text descriptions. Our Cross-Modal Contrastive Generative Adversarial Network (XMC-GAN) addresses this challenge by maximizing the mutual information between image and text. It does this via multiple contrastive losses which capture inter-modality and intra-modality correspondences. XMC-GAN uses an attentional self-modulation generator, which enforces strong text-image correspondence, and a contrastive discriminator, which acts as a critic as well as a feature encoder for contrastive learning. The quality of XMC-GAN’s output is a major step up from previous models, as we show on three challenging datasets. On MS-COCO, not only does XMC-GAN improve state-of-the-art FID from 24.70 to 9.33, but– more importantly–people prefer XMC-GAN by 77.3% for image quality and 74.1% for image-text alignment, compared to three other recent models. XMC-GAN also generalizes to the challenging Localized Narratives dataset (which has longer, more detailed descriptions), improving state-of-the-art FID from 48.70 to 14.12. Lastly, we train and evaluate XMC-GAN on the challenging Open Images data, establishing a strong benchmark FID score of 26.91."
+  },
+  {
+    "paperId": "633e2fbfc0b21e959a244100937c5853afca4853",
+    "externalIds": {
+      "ArXiv": "2011.13456",
+      "DBLP": "journals/corr/abs-2011-13456",
+      "MAG": "3110257065",
+      "CorpusId": 227209335
+    },
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 10125,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.13456, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2109224633",
+        "name": "Abhishek Kumar"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "16443937",
+        "name": "Ben Poole"
+      }
+    ],
+    "abstract": "Creating noise from data is easy; creating data from noise is generative modeling. We present a stochastic differential equation (SDE) that smoothly transforms a complex data distribution to a known prior distribution by slowly injecting noise, and a corresponding reverse-time SDE that transforms the prior distribution back into the data distribution by slowly removing the noise. Crucially, the reverse-time SDE depends only on the time-dependent gradient field (\\aka, score) of the perturbed data distribution. By leveraging advances in score-based generative modeling, we can accurately estimate these scores with neural networks, and use numerical SDE solvers to generate samples. We show that this framework encapsulates previous approaches in score-based generative modeling and diffusion probabilistic modeling, allowing for new sampling procedures and new modeling capabilities. In particular, we introduce a predictor-corrector framework to correct errors in the evolution of the discretized reverse-time SDE. We also derive an equivalent neural ODE that samples from the same distribution as the SDE, but additionally enables exact likelihood computation, and improved sampling efficiency. In addition, we provide a new way to solve inverse problems with score-based models, as demonstrated with experiments on class-conditional generation, image inpainting, and colorization. Combined with multiple architectural improvements, we achieve record-breaking performance for unconditional image generation on CIFAR-10 with an Inception score of 9.89 and FID of 2.20, a competitive likelihood of 2.99 bits/dim, and demonstrate high fidelity generation of 1024 x 1024 images for the first time from a score-based generative model."
+  },
+  {
+    "paperId": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+    "externalIds": {
+      "ArXiv": "2010.11929",
+      "MAG": "3119786062",
+      "DBLP": "conf/iclr/DosovitskiyB0WZ21",
+      "CorpusId": 225039882
+    },
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 61067,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "3319373",
+        "name": "Dirk Weissenborn"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "2274215058",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "46352821",
+        "name": "M. Minderer"
+      },
+      {
+        "authorId": "2280399",
+        "name": "G. Heigold"
+      },
+      {
+        "authorId": "1802148",
+        "name": "S. Gelly"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train."
+  },
+  {
+    "paperId": "014576b866078524286802b1d0e18628520aa886",
+    "externalIds": {
+      "ArXiv": "2010.02502",
+      "DBLP": "journals/corr/abs-2010-02502",
+      "MAG": "3092442149",
+      "CorpusId": 222140788
+    },
+    "title": "Denoising Diffusion Implicit Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 11592,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.02502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51453887",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "2057110631",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "2066211828",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPMs) have achieved high quality image generation without adversarial training, yet they require simulating a Markov chain for many steps to produce a sample. To accelerate sampling, we present denoising diffusion implicit models (DDIMs), a more efficient class of iterative implicit probabilistic models with the same training procedure as DDPMs. In DDPMs, the generative process is defined as the reverse of a Markovian diffusion process. We construct a class of non-Markovian diffusion processes that lead to the same training objective, but whose reverse process can be much faster to sample from. We empirically demonstrate that DDIMs can produce high quality samples $10 \\times$ to $50 \\times$ faster in terms of wall-clock time compared to DDPMs, allow us to trade off computation for sample quality, and can perform semantically meaningful image interpolation directly in the latent space."
+  },
+  {
+    "paperId": "efa82cc293ab3c700d86f987395d5c4f7479558f",
+    "externalIds": {
+      "MAG": "3048484056",
+      "DBLP": "journals/corr/abs-2008-05865",
+      "CorpusId": 221112715
+    },
+    "title": "DF-GAN: Deep Fusion Generative Adversarial Networks for Text-to-Image Synthesis",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 224,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2053640948",
+        "name": "Ming Tao"
+      },
+      {
+        "authorId": "2112388851",
+        "name": "H. Tang"
+      },
+      {
+        "authorId": "2716810",
+        "name": "Songsong Wu"
+      },
+      {
+        "authorId": "1703601",
+        "name": "N. Sebe"
+      },
+      {
+        "authorId": "100739542",
+        "name": "Fei Wu"
+      },
+      {
+        "authorId": "15132338",
+        "name": "Xiaoyuan Jing"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29679,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL"
+  },
+  {
+    "paperId": "1156e277fa7ec195b043161d3c5c97715da17658",
+    "externalIds": {
+      "DBLP": "conf/nips/0011E20",
+      "ArXiv": "2006.09011",
+      "MAG": "3035384201",
+      "CorpusId": 219708245
+    },
+    "title": "Improved Techniques for Training Score-Based Generative Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 1431,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.09011, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Score-based generative models can produce high quality image samples comparable to GANs, without requiring adversarial optimization. However, existing training procedures are limited to images of low resolution (typically below 32x32), and can be unstable under some settings. We provide a new theoretical analysis of learning and sampling from score models in high dimensional spaces, explaining existing failure modes and motivating new solutions that generalize across datasets. To enhance stability, we also propose to maintain an exponential moving average of model weights. With these improvements, we can effortlessly scale score-based generative models to images with unprecedented resolutions ranging from 64x64 to 256x256. Our score-based models can generate high-fidelity samples that rival best-in-class GANs on various image datasets, including CelebA, FFHQ, and multiple LSUN categories."
+  },
+  {
+    "paperId": "1b0207b56b1118b7e2fb277c719f9e50ef52d86e",
+    "externalIds": {
+      "MAG": "3023902827",
+      "ArXiv": "2005.04909",
+      "DBLP": "journals/corr/abs-2005-04909",
+      "CorpusId": 218581434
+    },
+    "title": "Conditional Image Generation and Manipulation for User-Specified Content",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.04909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1689466093",
+        "name": "David Stap"
+      },
+      {
+        "authorId": "1452678770",
+        "name": "Maurits J. R. Bleeker"
+      },
+      {
+        "authorId": "12068550",
+        "name": "Sarah Ibrahimi"
+      },
+      {
+        "authorId": "41096186",
+        "name": "Maartje ter Hoeve"
+      }
+    ],
+    "abstract": "In recent years, Generative Adversarial Networks (GANs) have improved steadily towards generating increasingly impressive real-world images. It is useful to steer the image generation process for purposes such as content creation. This can be done by conditioning the model on additional information. However, when conditioning on additional information, there still exists a large set of images that agree with a particular conditioning. This makes it unlikely that the generated image is exactly as envisioned by a user, which is problematic for practical content creation scenarios such as generating facial composites or stock photos. To solve this problem, we propose a single pipeline for text-to-image generation and manipulation. In the first part of our pipeline we introduce textStyleGAN, a model that is conditioned on text. In the second part of our pipeline we make use of the pre-trained weights of textStyleGAN to perform semantic facial image manipulation. The approach works by finding semantic directions in latent space. We show that this method can be used to manipulate facial images for a wide range of attributes. Finally, we introduce the CelebTD-HQ dataset, an extension to CelebA-HQ, consisting of faces and corresponding textual descriptions."
+  },
+  {
+    "paperId": "bdcb3af8b55836b1f5f1b3de9329dc8f333d848b",
+    "externalIds": {
+      "MAG": "3048372515",
+      "DBLP": "conf/mm/ZhangCHJ20",
+      "DOI": "10.1145/3394171.3414017",
+      "CorpusId": 221103647
+    },
+    "title": "Text-Guided Neural Image Inpainting",
+    "venue": "ACM Multimedia",
+    "year": 2020,
+    "citationCount": 65,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2004.03212",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3394171.3414017?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3394171.3414017, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107937930",
+        "name": "Lisai Zhang"
+      },
+      {
+        "authorId": "144159781",
+        "name": "Qingcai Chen"
+      },
+      {
+        "authorId": "33968873",
+        "name": "Baotian Hu"
+      },
+      {
+        "authorId": "92695867",
+        "name": "Shuoran Jiang"
+      }
+    ],
+    "abstract": "Image inpainting task requires filling the corrupted image with contents coherent with the context. This research field has achieved promising progress by using neural image inpainting methods. Nevertheless, there is still a critical challenge in guessing the missed content with only the context pixels. The goal of this paper is to fill the semantic information in corrupted images according to the provided descriptive text. Unique from existing text-guided image generation works, the inpainting models are required to compare the semantic content of the given text and the remaining part of the image, then find out the semantic content that should be filled for missing part. To fulfill such a task, we propose a novel inpainting model named Text-Guided Dual Attention Inpainting Network (TDANet). Firstly, a dual multimodal attention mechanism is designed to extract the explicit semantic information about the corrupted regions, which is done by comparing the descriptive text and complementary image areas through reciprocal attention. Secondly, an image-text matching loss is applied to maximize the semantic similarity of the generated image and the text. Experiments are conducted on two open datasets. Results show that the proposed TDANet model reaches new state-of-the-art on both quantitative and qualitative measures. Result analysis suggests that the generated images are consistent with the guidance text, enabling the generation of various results by providing different descriptions. Codes are available at https://github.com/idealwhite/TDANet"
+  },
+  {
+    "paperId": "14fdc18d9c164e5b0d6d946b3238c04e81921358",
+    "externalIds": {
+      "MAG": "3035574324",
+      "DBLP": "conf/cvpr/KarrasLAHLA20",
+      "ArXiv": "1912.04958",
+      "DOI": "10.1109/cvpr42600.2020.00813",
+      "CorpusId": 209202273
+    },
+    "title": "Analyzing and Improving the Image Quality of StyleGAN",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 6888,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1912.04958",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.04958, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2976930",
+        "name": "Tero Karras"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      },
+      {
+        "authorId": "1907688",
+        "name": "M. Aittala"
+      },
+      {
+        "authorId": "1454226629",
+        "name": "Janne Hellsten"
+      },
+      {
+        "authorId": "49244945",
+        "name": "J. Lehtinen"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      }
+    ],
+    "abstract": "The style-based GAN architecture (StyleGAN) yields state-of-the-art results in data-driven unconditional generative image modeling. We expose and analyze several of its characteristic artifacts, and propose changes in both model architecture and training methods to address them. In particular, we redesign the generator normalization, revisit progressive growing, and regularize the generator to encourage good conditioning in the mapping from latent codes to images. In addition to improving image quality, this path length regularizer yields the additional benefit that the generator becomes significantly easier to invert. This makes it possible to reliably attribute a generated image to a particular network. We furthermore visualize how well the generator utilizes its output resolution, and identify a capacity problem, motivating us to train larger models for additional quality improvements. Overall, our improved model redefines the state of the art in unconditional image modeling, both in terms of existing distribution quality metrics as well as perceived image quality."
+  },
+  {
+    "paperId": "965359b3008ab50dd04e171551220ec0e7f83aba",
+    "externalIds": {
+      "MAG": "2971034910",
+      "ArXiv": "1907.05600",
+      "DBLP": "conf/nips/SongE19",
+      "CorpusId": 196470871
+    },
+    "title": "Generative Modeling by Estimating Gradients of the Data Distribution",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 5322,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.05600, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "We introduce a new generative model where samples are produced via Langevin dynamics using gradients of the data distribution estimated with score matching. Because gradients can be ill-defined and hard to estimate when the data resides on low-dimensional manifolds, we perturb the data with different levels of Gaussian noise, and jointly estimate the corresponding scores, i.e., the vector fields of gradients of the perturbed data distribution for all noise levels. For sampling, we propose an annealed Langevin dynamics where we use gradients corresponding to gradually decreasing noise levels as the sampling process gets closer to the data manifold. Our framework allows flexible model architectures, requires no sampling during training or the use of adversarial methods, and provides a learning objective that can be used for principled model comparisons. Our models produce samples comparable to GANs on MNIST, CelebA and CIFAR-10 datasets, achieving a new state-of-the-art inception score of 8.87 on CIFAR-10. Additionally, we demonstrate that our models learn effective representations via image inpainting experiments."
+  },
+  {
+    "paperId": "6748d363ae384b8675ade6ba2e2de75d2d215368",
+    "externalIds": {
+      "MAG": "2989576588",
+      "DBLP": "conf/nips/SanturkarITETM19",
+      "CorpusId": 199511239
+    },
+    "title": "Image Synthesis with a Single (Robust) Classifier",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 214,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2852106",
+        "name": "Shibani Santurkar"
+      },
+      {
+        "authorId": "34562927",
+        "name": "Andrew Ilyas"
+      },
+      {
+        "authorId": "2754804",
+        "name": "Dimitris Tsipras"
+      },
+      {
+        "authorId": "39468283",
+        "name": "Logan Engstrom"
+      },
+      {
+        "authorId": "2057910582",
+        "name": "Brandon Tran"
+      },
+      {
+        "authorId": "143826246",
+        "name": "A. Ma̧dry"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "6be216d93421bf19c1659e7721241ae73d483baf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1906-00446",
+      "MAG": "2947590261",
+      "ArXiv": "1906.00446",
+      "CorpusId": 173990382
+    },
+    "title": "Generating Diverse High-Fidelity Images with VQ-VAE-2",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 2275,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.00446, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143653164",
+        "name": "Ali Razavi"
+      },
+      {
+        "authorId": "3422336",
+        "name": "Aäron van den Oord"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      }
+    ],
+    "abstract": "We explore the use of Vector Quantized Variational AutoEncoder (VQ-VAE) models for large scale image generation. To this end, we scale and enhance the autoregressive priors used in VQ-VAE to generate synthetic samples of much higher coherence and fidelity than possible before. We use simple feed-forward encoder and decoder networks, making our model an attractive candidate for applications where the encoding and/or decoding speed is critical. Additionally, VQ-VAE requires sampling an autoregressive model only in the compressed latent space, which is an order of magnitude faster than sampling in the pixel space, especially for large images. We demonstrate that a multi-scale hierarchical organization of VQ-VAE, augmented with powerful priors over the latent codes, is able to generate samples with quality that rivals that of state of the art Generative Adversarial Networks on multifaceted datasets such as ImageNet, while not suffering from GAN's known shortcomings such as mode collapse and lack of diversity."
+  },
+  {
+    "paperId": "d383dd8ced85d7898d8b1546c514a34fb626ea16",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1904-06991",
+      "MAG": "2971128425",
+      "ArXiv": "1904.06991",
+      "CorpusId": 118648975
+    },
+    "title": "Improved Precision and Recall Metric for Assessing Generative Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 1190,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.06991, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "100563136",
+        "name": "T. Kynkäänniemi"
+      },
+      {
+        "authorId": "2976930",
+        "name": "Tero Karras"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      },
+      {
+        "authorId": "49244945",
+        "name": "J. Lehtinen"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      }
+    ],
+    "abstract": "The ability to automatically estimate the quality and coverage of the samples produced by a generative model is a vital requirement for driving algorithm research. We present an evaluation metric that can separately and reliably measure both of these aspects in image generation tasks by forming explicit, non-parametric representations of the manifolds of real and generated data. We demonstrate the effectiveness of our metric in StyleGAN and BigGAN by providing several illustrative examples where existing metrics yield uninformative or contradictory results. Furthermore, we analyze multiple design variants of StyleGAN to better understand the relationships between the model architecture, training methods, and the properties of the resulting sample distribution. In the process, we identify new variants that improve the state-of-the-art. We also perform the first principled analysis of truncation methods and identify an improved method. Finally, we extend our metric to estimate the perceptual quality of individual samples, and use this to study latent space interpolations."
+  },
+  {
+    "paperId": "ab995f96722969a0dfc6dc9139eef4c9b13c0524",
+    "externalIds": {
+      "MAG": "2931831966",
+      "ArXiv": "1904.01310",
+      "DBLP": "journals/corr/abs-1904-01310",
+      "DOI": "10.1109/CVPR.2019.00595",
+      "CorpusId": 91183909
+    },
+    "title": "DM-GAN: Dynamic Memory Generative Adversarial Networks for Text-To-Image Synthesis",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 655,
+    "openAccessPdf": {
+      "url": "https://opus.lib.uts.edu.au/bitstream/10453/148141/3/DMGAN%20Dynamic%20Memory.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.01310, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145314938",
+        "name": "Minfeng Zhu"
+      },
+      {
+        "authorId": "1991108",
+        "name": "Pingbo Pan"
+      },
+      {
+        "authorId": null,
+        "name": "Wei Chen"
+      },
+      {
+        "authorId": "2143686040",
+        "name": "Yi Yang"
+      }
+    ],
+    "abstract": "In this paper, we focus on generating realistic images from text descriptions. Current methods first generate an initial image with rough shape and color, and then refine the initial image to a high-resolution one. Most existing text-to-image synthesis methods have two main problems. (1) These methods depend heavily on the quality of the initial images. If the initial image is not well initialized, the following processes can hardly refine the image to a satisfactory quality. (2) Each word contributes a different level of importance when depicting different image contents, however, unchanged text representation is used in existing image refinement processes. In this paper, we propose the Dynamic Memory Generative Adversarial Network (DM-GAN) to generate high-quality images. The proposed method introduces a dynamic memory module to refine fuzzy image contents, when the initial images are not well generated. A memory writing gate is designed to select the important text information based on the initial image content, which enables our method to accurately generate images from the text description. We also utilize a response gate to adaptively fuse the information read from the memories and the image features. We evaluate the DM-GAN model on the Caltech-UCSD Birds 200 dataset and the Microsoft Common Objects in Context dataset. Experimental results demonstrate that our DM-GAN model performs favorably against the state-of-the-art approaches."
+  },
+  {
+    "paperId": "dbdeac01daf69c3725032c42be04f42c17ea439d",
+    "externalIds": {
+      "MAG": "2945475205",
+      "DBLP": "conf/nips/ZhouGKNFB19",
+      "ArXiv": "1904.01121",
+      "CorpusId": 165163969
+    },
+    "title": "HYPE: A Benchmark for Human eYe Perceptual Evaluation of Generative Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.01121, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111056982",
+        "name": "Sharon Zhou"
+      },
+      {
+        "authorId": "39504881",
+        "name": "Mitchell L. Gordon"
+      },
+      {
+        "authorId": "145237361",
+        "name": "Ranjay Krishna"
+      },
+      {
+        "authorId": "89315058",
+        "name": "Austin Narcomey"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      },
+      {
+        "authorId": "145879842",
+        "name": "Michael S. Bernstein"
+      }
+    ],
+    "abstract": "Generative models often use human evaluations to measure the perceived quality of their outputs. Automated metrics are noisy indirect proxies, because they rely on heuristics or pretrained embeddings. However, up until now, direct human evaluation strategies have been ad-hoc, neither standardized nor validated. Our work establishes a gold standard human benchmark for generative realism. We construct Human eYe Perceptual Evaluation (HYPE) a human benchmark that is (1) grounded in psychophysics research in perception, (2) reliable across different sets of randomly sampled outputs from a model, (3) able to produce separable model performances, and (4) efficient in cost and time. We introduce two variants: one that measures visual perception under adaptive time constraints to determine the threshold at which a model's outputs appear real (e.g. 250ms), and the other a less expensive variant that measures human error rate on fake and real images sans time constraints. We test HYPE across six state-of-the-art generative adversarial networks and two sampling techniques on conditional and unconditional image generation using four datasets: CelebA, FFHQ, CIFAR-10, and ImageNet. We find that HYPE can track model improvements across training epochs, and we confirm via bootstrap sampling that HYPE rankings are consistent and replicable."
+  },
+  {
+    "paperId": "ceb2ebef0b41e31c1a21b28c2734123900c005e2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1812-04948",
+      "MAG": "2904367110",
+      "ArXiv": "1812.04948",
+      "DOI": "10.1109/CVPR.2019.00453",
+      "CorpusId": 54482423
+    },
+    "title": "A Style-Based Generator Architecture for Generative Adversarial Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 12732,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1812.04948",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.04948, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2976930",
+        "name": "Tero Karras"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      }
+    ],
+    "abstract": "We propose an alternative generator architecture for generative adversarial networks, borrowing from style transfer literature. The new architecture leads to an automatically learned, unsupervised separation of high-level attributes (e.g., pose and identity when trained on human faces) and stochastic variation in the generated images (e.g., freckles, hair), and it enables intuitive, scale-specific control of the synthesis. The new generator improves the state-of-the-art in terms of traditional distribution quality metrics, leads to demonstrably better interpolation properties, and also better disentangles the latent factors of variation. To quantify interpolation quality and disentanglement, we propose two new, automated methods that are applicable to any generator architecture. Finally, we introduce a new, highly varied and high-quality dataset of human faces."
+  },
+  {
+    "paperId": "22aab110058ebbd198edb1f1e7b4f69fb13c0613",
+    "externalIds": {
+      "ArXiv": "1809.11096",
+      "MAG": "2893749619",
+      "DBLP": "conf/iclr/BrockDS19",
+      "CorpusId": 52889459
+    },
+    "title": "Large Scale GAN Training for High Fidelity Natural Image Synthesis",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 6065,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.11096, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2065040247",
+        "name": "Andrew Brock"
+      },
+      {
+        "authorId": "7408951",
+        "name": "Jeff Donahue"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      }
+    ],
+    "abstract": "Despite recent progress in generative image modeling, successfully generating high-resolution, diverse samples from complex datasets such as ImageNet remains an elusive goal. To this end, we train Generative Adversarial Networks at the largest scale yet attempted, and study the instabilities specific to such scale. We find that applying orthogonal regularization to the generator renders it amenable to a simple \"truncation trick,\" allowing fine control over the trade-off between sample fidelity and variety by reducing the variance of the Generator's input. Our modifications lead to models which set the new state of the art in class-conditional image synthesis. When trained on ImageNet at 128x128 resolution, our models (BigGANs) achieve an Inception Score (IS) of 166.5 and Frechet Inception Distance (FID) of 7.4, improving over the previous best IS of 52.52 and FID of 18.6."
+  },
+  {
+    "paperId": "18858cc936947fc96b5c06bbe3c6c2faa5614540",
+    "externalIds": {
+      "MAG": "2788481061",
+      "DBLP": "conf/fat/BuolamwiniG18",
+      "CorpusId": 3298854
+    },
+    "title": "Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification",
+    "venue": "FAT",
+    "year": 2018,
+    "citationCount": 5193,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38222513",
+        "name": "Joy Buolamwini"
+      },
+      {
+        "authorId": "2076288",
+        "name": "Timnit Gebru"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "8b35c00edfa4edfd7a99d816e671023d2c000d55",
+    "externalIds": {
+      "MAG": "2771088323",
+      "ArXiv": "1711.10485",
+      "DBLP": "conf/cvpr/XuZHZGH018",
+      "DOI": "10.1109/CVPR.2018.00143",
+      "CorpusId": 8858625
+    },
+    "title": "AttnGAN: Fine-Grained Text to Image Generation with Attentional Generative Adversarial Networks",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 1936,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1711.10485",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.10485, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118717191",
+        "name": "Tao Xu"
+      },
+      {
+        "authorId": "9325940",
+        "name": "Pengchuan Zhang"
+      },
+      {
+        "authorId": "1788124",
+        "name": "Qiuyuan Huang"
+      },
+      {
+        "authorId": "48213346",
+        "name": "Han Zhang"
+      },
+      {
+        "authorId": "144702900",
+        "name": "Zhe Gan"
+      },
+      {
+        "authorId": "143713756",
+        "name": "Xiaolei Huang"
+      },
+      {
+        "authorId": "144137069",
+        "name": "Xiaodong He"
+      }
+    ],
+    "abstract": "In this paper, we propose an Attentional Generative Adversarial Network (AttnGAN) that allows attention-driven, multi-stage refinement for fine-grained text-to-image generation. With a novel attentional generative network, the AttnGAN can synthesize fine-grained details at different sub-regions of the image by paying attentions to the relevant words in the natural language description. In addition, a deep attentional multimodal similarity model is proposed to compute a fine-grained image-text matching loss for training the generator. The proposed AttnGAN significantly outperforms the previous state of the art, boosting the best reported inception score by 14.14% on the CUB dataset and 170.25% on the more challenging COCO dataset. A detailed analysis is also performed by visualizing the attention layers of the AttnGAN. It for the first time shows that the layered attentional GAN is able to automatically select the condition at the word level for generating different parts of the image."
+  },
+  {
+    "paperId": "f466157848d1a7772fb6d02cdac9a7a5e7ef982e",
+    "externalIds": {
+      "MAG": "2963799213",
+      "DBLP": "conf/nips/OordVK17",
+      "ArXiv": "1711.00937",
+      "CorpusId": 20282961
+    },
+    "title": "Neural Discrete Representation Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 7035,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.00937, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422336",
+        "name": "Aäron van den Oord"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      }
+    ],
+    "abstract": "Learning useful representations without supervision remains a key challenge in machine learning. In this paper, we propose a simple yet powerful generative model that learns such discrete representations. Our model, the Vector Quantised-Variational AutoEncoder (VQ-VAE), differs from VAEs in two key ways: the encoder network outputs discrete, rather than continuous, codes; and the prior is learnt rather than static. In order to learn a discrete latent representation, we incorporate ideas from vector quantisation (VQ). Using the VQ method allows the model to circumvent issues of \"posterior collapse\" -- where the latents are ignored when they are paired with a powerful autoregressive decoder -- typically observed in the VAE framework. Pairing these representations with an autoregressive prior, the model can generate high quality images, videos, and speech as well as doing high quality speaker conversion and unsupervised learning of phonemes, providing further evidence of the utility of the learnt representations."
+  },
+  {
+    "paperId": "e7fd6848cb29ca221a7e17d823e06fb566f1f135",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1710-03740",
+      "ArXiv": "1710.03740",
+      "MAG": "2963112338",
+      "CorpusId": 3297437
+    },
+    "title": "Mixed Precision Training",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 2311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.03740, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1802359",
+        "name": "P. Micikevicius"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "67038137",
+        "name": "Jonah Alben"
+      },
+      {
+        "authorId": "2040049",
+        "name": "G. Diamos"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "2082313059",
+        "name": "David García"
+      },
+      {
+        "authorId": "31963005",
+        "name": "Boris Ginsburg"
+      },
+      {
+        "authorId": "122523478",
+        "name": "Michael Houston"
+      },
+      {
+        "authorId": "2787022",
+        "name": "Oleksii Kuchaiev"
+      },
+      {
+        "authorId": "145595812",
+        "name": "Ganesh Venkatesh"
+      },
+      {
+        "authorId": "1491232360",
+        "name": "Hao Wu"
+      }
+    ],
+    "abstract": "Deep neural networks have enabled progress in a wide variety of applications. Growing the size of the neural network typically results in improved accuracy. As model sizes grow, the memory and compute requirements for training these models also increases. We introduce a technique to train deep neural networks using half precision floating point numbers. In our technique, weights, activations and gradients are stored in IEEE half-precision format. Half-precision floating numbers have limited numerical range compared to single-precision numbers. We propose two techniques to handle this loss of information. Firstly, we recommend maintaining a single-precision copy of the weights that accumulates the gradients after each optimizer step. This single-precision copy is rounded to half-precision format during training. Secondly, we propose scaling the loss appropriately to handle the loss of information with half-precision gradients. We demonstrate that this approach works for a wide variety of models including convolution neural networks, recurrent neural networks and generative adversarial networks. This technique works for large scale models with more than 100 million parameters trained on large datasets. Using this approach, we can reduce the memory consumption of deep learning models by nearly 2x. In future processors, we can also expect a significant computation speedup using half-precision hardware units."
+  },
+  {
+    "paperId": "231af7dc01a166cac3b5b01ca05778238f796e41",
+    "externalIds": {
+      "MAG": "2963981733",
+      "DBLP": "conf/nips/HeuselRUNH17",
+      "CorpusId": 326772
+    },
+    "title": "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 17779,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2445103",
+        "name": "M. Heusel"
+      },
+      {
+        "authorId": "19219270",
+        "name": "Hubert Ramsauer"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "37082831",
+        "name": "Bernhard Nessler"
+      },
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "MAG": "2963403868",
+      "ArXiv": "1706.03762",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 173880,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data."
+  },
+  {
+    "paperId": "571b0750085ae3d939525e62af510ee2cee9d5ea",
+    "externalIds": {
+      "DBLP": "conf/nips/SalimansGZCRCC16",
+      "ArXiv": "1606.03498",
+      "MAG": "2949938177",
+      "CorpusId": 1687220
+    },
+    "title": "Improved Techniques for Training GANs",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 10182,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.03498, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "153440022",
+        "name": "I. Goodfellow"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      },
+      {
+        "authorId": "34415167",
+        "name": "Vicki Cheung"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "41192764",
+        "name": "Xi Chen"
+      }
+    ],
+    "abstract": "We present a variety of new architectural features and training procedures that we apply to the generative adversarial networks (GANs) framework. We focus on two applications of GANs: semi-supervised learning, and the generation of images that humans find visually realistic. Unlike most work on generative models, our primary goal is not to train a model that assigns high likelihood to test data, nor do we require the model to be able to learn well without using any labels. Using our new techniques, we achieve state-of-the-art results in semi-supervised classification on MNIST, CIFAR-10 and SVHN. The generated images are of high quality as confirmed by a visual Turing test: our model generates MNIST samples that humans cannot distinguish from real data, and CIFAR-10 samples that yield a human error rate of 21.3%. We also present ImageNet samples with unprecedented resolution and show that our methods enable the model to learn recognizable features of ImageNet classes."
+  },
+  {
+    "paperId": "2dcef55a07f8607a819c21fe84131ea269cc2e3c",
+    "externalIds": {
+      "MAG": "2129069237",
+      "DBLP": "journals/corr/Sohl-DicksteinW15",
+      "ArXiv": "1503.03585",
+      "CorpusId": 14888175
+    },
+    "title": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 9673,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.03585, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "2144479710",
+        "name": "Eric A. Weiss"
+      },
+      {
+        "authorId": "2333223",
+        "name": "Niru Maheswaranathan"
+      },
+      {
+        "authorId": "25769960",
+        "name": "S. Ganguli"
+      }
+    ],
+    "abstract": "A central problem in machine learning involves modeling complex data-sets using highly flexible families of probability distributions in which learning, sampling, inference, and evaluation are still analytically or computationally tractable. Here, we develop an approach that simultaneously achieves both flexibility and tractability. The essential idea, inspired by non-equilibrium statistical physics, is to systematically and slowly destroy structure in a data distribution through an iterative forward diffusion process. We then learn a reverse diffusion process that restores structure in data, yielding a highly flexible and tractable generative model of the data. This approach allows us to rapidly learn, sample from, and evaluate probabilities in deep generative models with thousands of layers or time steps, as well as to compute conditional and posterior probabilities under the learned model. We additionally release an open source reference implementation of the algorithm."
+  },
+  {
+    "paperId": "780619693951d81f321c2bc97a51b2579e0f2cdd",
+    "externalIds": {
+      "MAG": "2070325316",
+      "DOI": "10.1641/0006-3568(2006)056[0446:TAC]2.0.CO;2",
+      "CorpusId": 5230274
+    },
+    "title": "Tooth and Claw",
+    "venue": "",
+    "year": 2006,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "https://academic.oup.com/bioscience/article-pdf/56/5/446/26898054/56-5-446.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1641/0006-3568(2006)056[0446:TAC]2.0.CO;2?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1641/0006-3568(2006)056[0446:TAC]2.0.CO;2, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3288769",
+        "name": "G. Ruxton"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "0af6e4b23091b863258176d5765759926a4c85de",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-01073",
+      "CorpusId": 236772794
+    },
+    "title": "SDEdit: Image Synthesis and Editing with Stochastic Differential Equations",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 341,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "83262128",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2112626470",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "3045089",
+        "name": "Jiajun Wu"
+      },
+      {
+        "authorId": "1922024303",
+        "name": "Jun-Yan Zhu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "78a168d41b0147a00347242b97522900631ddfe4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2110-02711",
+      "CorpusId": 238408078
+    },
+    "title": "DiffusionCLIP: Text-guided Image Manipulation Using Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 104,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2109334279",
+        "name": "Gwanghyun Kim"
+      },
+      {
+        "authorId": "30547794",
+        "name": "Jong-Chul Ye"
+      }
+    ],
+    "abstract": null
+  }
+]

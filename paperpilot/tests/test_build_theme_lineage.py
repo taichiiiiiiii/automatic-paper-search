@@ -303,17 +303,32 @@ def test_discover_seeds_caches_per_keyword(tmp_path: Path, monkeypatch):
 # ---- build pipeline ----
 
 
-def _stub_external_calls(monkeypatch, *, classifier=None):
+def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None):
     """Wire up keyword-expand + S2 + classify mocks for the full pipeline tests.
 
     Returns the FakeProvider so individual tests can introspect it.
+
+    Theme builds use the *lenient* classifier (build_deep_lineage.
+    _classify_cached_lenient), which calls ``provider._chat`` directly
+    rather than ``provider.classify_relation``. ``chat_text`` lets a test
+    pin the JSON the provider returns for both keyword expansion AND
+    classification calls; pass classifier=... if you need a structured
+    RelationClassification (currently unused — kept for future symmetry
+    with build_lineage tests).
     """
     rc = classifier or RelationClassification(
         relation="extends", confidence=0.9, rationale="既存手法の改善版"
     )
+    if chat_text is None:
+        # Default: respond like a real provider — JSON object with relation
+        # + rationale that the lenient classifier accepts.
+        chat_text = (
+            '{"relation": "extends", "confidence": 0.9, '
+            '"rationale": "既存手法の改善版"}'
+        )
     provider = _FakeProvider(
         classification=rc,
-        keyword_response='["mixture of experts", "moe", "sparse routing"]',
+        keyword_response=chat_text,
     )
     monkeypatch.setattr(
         build_theme_lineage,
@@ -362,7 +377,11 @@ def test_build_writes_output_under_themes_dir(tmp_path: Path, monkeypatch):
     payload = json.loads(expected.read_text())
     assert payload["meta"]["slug"] == "mixture-of-experts"
     assert payload["meta"]["theme"] == "Mixture of Experts"
-    assert provider.classify_calls, "classify_relation must be called"
+    # Lenient classifier calls _chat (not classify_relation). Both are on the
+    # provider — §11 (LLM via AbstractLLMProvider) is satisfied either way.
+    # Two _chat calls expected: one for keyword expansion, one for the
+    # parent → seed classification.
+    assert len(provider.chat_calls) >= 2, "_chat must be called for classify"
 
 
 def test_build_uses_slug_for_path_not_raw_theme(tmp_path: Path, monkeypatch):
@@ -404,14 +423,17 @@ def test_build_uses_slug_for_path_not_raw_theme(tmp_path: Path, monkeypatch):
 
 
 def test_build_drops_edges_with_unrelated_relation(tmp_path: Path, monkeypatch):
+    """Even via the lenient classifier, ``relation == "unrelated"`` must
+    suppress the edge — the viewer treats unrelated as noise and would
+    clutter the tree if shown."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
     _stub_external_calls(
         monkeypatch,
-        classifier=RelationClassification(
-            relation="unrelated", confidence=0.4, rationale="関係なし"
+        chat_text=(
+            '{"relation": "unrelated", "confidence": 0.4, "rationale": "関係なし"}'
         ),
     )
 
@@ -432,17 +454,21 @@ def test_build_drops_edges_with_unrelated_relation(tmp_path: Path, monkeypatch):
     assert payload["edges"] == []
 
 
-def test_build_drops_edges_with_empty_rationale(tmp_path: Path, monkeypatch):
+def test_build_uses_template_fallback_for_empty_rationale(
+    tmp_path: Path, monkeypatch
+):
+    """The lenient classifier (build_deep_lineage._classify_cached_lenient)
+    deliberately substitutes a templated rationale when the LLM returns a
+    non-unrelated relation with an empty rationale — better than silently
+    dropping a weak-but-real edge. Theme builds use this lenient path; the
+    edge must survive."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
-    # classify returns a relation but with whitespace-only rationale.
     _stub_external_calls(
         monkeypatch,
-        classifier=RelationClassification(
-            relation="extends", confidence=0.8, rationale="   "
-        ),
+        chat_text='{"relation": "extends", "confidence": 0.8, "rationale": ""}',
     )
 
     seed = _mk_s2_paper("seed", year=2020)
@@ -459,7 +485,14 @@ def test_build_drops_edges_with_empty_rationale(tmp_path: Path, monkeypatch):
             theme="Test", depth=1, seeds_count=1, width=4, since_year=None
         )
     payload = json.loads(out_path.read_text())
-    assert payload["edges"] == []
+    assert len(payload["edges"]) == 1
+    edge = payload["edges"][0]
+    assert edge["rel"] == "extends"
+    # Template fallback must be a non-empty Japanese sentence.
+    assert edge["rationale"], "fallback rationale must not be empty"
+    assert "論文" in edge["rationale"], (
+        f"fallback rationale should be templated Japanese: {edge['rationale']!r}"
+    )
 
 
 def test_build_emits_required_meta_fields(tmp_path: Path, monkeypatch):
@@ -565,8 +598,10 @@ def test_build_node_schema_matches_lineage_format(tmp_path: Path, monkeypatch):
 
 
 def test_build_classify_goes_through_provider(tmp_path: Path, monkeypatch):
-    """Absolute rule §11: LLM classification must use AbstractLLMProvider,
-    never urllib / requests directly."""
+    """Absolute rule §11: LLM access must go through AbstractLLMProvider,
+    never urllib / requests directly. The lenient classifier path uses
+    `provider._chat` rather than `classify_relation`, but both are
+    methods on the abstract provider so §11 is still satisfied."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
@@ -585,8 +620,10 @@ def test_build_classify_goes_through_provider(tmp_path: Path, monkeypatch):
         build_theme_lineage.build_theme_lineage(
             theme="X", depth=1, seeds_count=1, width=4, since_year=None
         )
-    # parent → seed must trigger one classify_relation call.
-    assert provider.classify_calls, "classify_relation was not called"
+    # Expect ≥2 _chat invocations: keyword expansion + parent→seed classify.
+    assert len(provider.chat_calls) >= 2, (
+        f"expected _chat to fire (got {len(provider.chat_calls)} calls)"
+    )
 
 
 def test_build_root_picks_seed_with_most_relations(tmp_path: Path, monkeypatch):

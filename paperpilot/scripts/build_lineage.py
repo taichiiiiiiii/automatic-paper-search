@@ -329,6 +329,34 @@ def extract_arxiv_id(arxiv_url: str) -> str | None:
     return m.group(1) if m else None
 
 
+def persist_classifications(
+    classifications: dict[str, dict], cache_path: Path
+) -> None:
+    """Merge any concurrent writer's entries into our snapshot, then atomically
+    overwrite the cache file.
+
+    Why: ``classifications.json`` is shared by build_lineage / build_deep_lineage
+    / build_theme_lineage (CLAUDE.md §14). The merge-then-rename pattern blocks
+    both lost-update races (concurrent writers add different keys; without merge
+    the last writer would silently drop the other's contribution) and corrupt
+    JSON observable by readers (``os.replace`` is atomic on POSIX).
+
+    Our in-memory entries take precedence on key collision — they are the
+    freshest we just computed.
+    """
+    if cache_path.exists():
+        try:
+            disk_obj = json.loads(cache_path.read_text())
+        except json.JSONDecodeError:
+            disk_obj = None
+        if isinstance(disk_obj, dict):
+            for k, v in disk_obj.items():
+                classifications.setdefault(k, v)
+    tmp = cache_path.with_suffix(cache_path.suffix + f".tmp.{os.getpid()}")
+    tmp.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
+    os.replace(tmp, cache_path)
+
+
 def _classify_cached(
     provider: AbstractLLMProvider,
     a: dict,
@@ -341,41 +369,21 @@ def _classify_cached(
 ) -> dict | None:
     """Classify via provider with persistent cache keyed by (src, dst).
 
-    The cache file (``classifications.json``) is shared between the
-    conference, deep, and theme lineage scripts (CLAUDE.md §14). To
-    avoid the lost-update race when two scripts run concurrently we:
-
-      1. Re-read the on-disk cache before each write and merge entries
-         we don't already have in our in-memory snapshot.
-      2. Write atomically via temp file + ``os.replace`` so a reader can
-         never observe a half-written JSON.
+    Strict variant: empty rationales are dropped by ``RelationClassification.
+    from_dict`` (better no edge than a silent empty tooltip). Use the lenient
+    variant in ``build_deep_lineage`` when weak edges should survive.
     """
     if cache_key in classifications:
         return classifications[cache_key]
     rc: RelationClassification | None = provider.classify_relation(a, b)
     if rc is not None:
-        # (1) Merge anything another writer added since our snapshot.
-        # Our existing keys take precedence — we keep the freshest copy
-        # we just produced; disk supplies only entries we don't have.
-        if cache_path.exists():
-            try:
-                disk_obj = json.loads(cache_path.read_text())
-            except json.JSONDecodeError:
-                disk_obj = None
-            if isinstance(disk_obj, dict):
-                for k, v in disk_obj.items():
-                    classifications.setdefault(k, v)
         entry = {
             "relation": rc.relation,
             "confidence": rc.confidence,
             "rationale": rc.rationale,
         }
         classifications[cache_key] = entry
-        # (2) Atomic write — temp filename includes the PID so concurrent
-        # processes don't fight over the same scratch file.
-        tmp = cache_path.with_suffix(cache_path.suffix + f".tmp.{os.getpid()}")
-        tmp.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
-        os.replace(tmp, cache_path)
+        persist_classifications(classifications, cache_path)
     time.sleep(rate_delay)
     return classifications.get(cache_key)
 
