@@ -1,0 +1,1949 @@
+[
+  {
+    "paperId": "d48d84f7c8b1f0e3079123f40d1f2a6409378ed0",
+    "externalIds": {
+      "ArXiv": "2502.10308",
+      "DBLP": "journals/corr/abs-2502-10308",
+      "DOI": "10.48550/arXiv.2502.10308",
+      "CorpusId": 276394829
+    },
+    "title": "LLM-Powered Preference Elicitation in Combinatorial Assignment",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.10308, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110525277",
+        "name": "Ermis Soumalias"
+      },
+      {
+        "authorId": "2263689431",
+        "name": "Yanchen Jiang"
+      },
+      {
+        "authorId": "2346808794",
+        "name": "Kehang Zhu"
+      },
+      {
+        "authorId": "2284064011",
+        "name": "Michael J. Curry"
+      },
+      {
+        "authorId": "2275353472",
+        "name": "Sven Seuken"
+      },
+      {
+        "authorId": "2264290288",
+        "name": "David C. Parkes"
+      }
+    ],
+    "abstract": "We study the potential of large language models (LLMs) as proxies for humans to simplify preference elicitation (PE) in combinatorial assignment. While traditional PE methods rely on iterative queries to capture preferences, LLMs offer a one-shot alternative with reduced human effort. We propose a framework for LLM proxies that can work in tandem with SOTA ML-powered preference elicitation schemes. Our framework handles the novel challenges introduced by LLMs, such as response variability and increased computational costs. We experimentally evaluate the efficiency of LLM proxies against human queries in the well-studied course allocation domain, and we investigate the model capabilities required for success. We find that our approach improves allocative efficiency by up to 20%, and these results are robust across different LLMs and to differences in quality and accuracy of reporting."
+  },
+  {
+    "paperId": "8d1d8d9c9bdb6a828f204685b51f10dcd9c8be5c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-14625",
+      "ArXiv": "2501.14625",
+      "DOI": "10.48550/arXiv.2501.14625",
+      "CorpusId": 275906479
+    },
+    "title": "Accelerated Preference Elicitation with LLM-Based Proxies",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.14625, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262087628",
+        "name": "David Huang"
+      },
+      {
+        "authorId": "2136365298",
+        "name": "F. J. Cossío"
+      },
+      {
+        "authorId": "2254273256",
+        "name": "Edwin Lock"
+      },
+      {
+        "authorId": "2321589781",
+        "name": "David C. Parkes"
+      }
+    ],
+    "abstract": "Bidders in combinatorial auctions face significant challenges when describing their preferences to an auctioneer. Classical work on preference elicitation focuses on query-based techniques inspired from proper learning--often via proxies that interface between bidders and an auction mechanism--to incrementally learn bidder preferences as needed to compute efficient allocations. Although such elicitation mechanisms enjoy theoretical query efficiency, the amount of communication required may still be too cognitively taxing in practice. We propose a family of efficient LLM-based proxy designs for eliciting preferences from bidders using natural language. Our proposed mechanism combines LLM pipelines and DNF-proper-learning techniques to quickly approximate preferences when communication is limited. To validate our approach, we create a testing sandbox for elicitation mechanisms that communicate in natural language. In our experiments, our most promising LLM proxy design reaches approximately efficient outcomes with five times fewer queries than classical proper learning based elicitation mechanisms."
+  },
+  {
+    "paperId": "30ef6a82ac5aa80f2eea02aebeee2b98ca8ba290",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-19332",
+      "ArXiv": "2405.19332",
+      "DOI": "10.48550/arXiv.2405.19332",
+      "CorpusId": 270095059
+    },
+    "title": "Self-Exploring Language Models: Active Preference Elicitation for Online Alignment",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2024,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.19332, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2145522248",
+        "name": "Shenao Zhang"
+      },
+      {
+        "authorId": "2287794511",
+        "name": "Donghan Yu"
+      },
+      {
+        "authorId": "2266307341",
+        "name": "Hiteshi Sharma"
+      },
+      {
+        "authorId": "2249539089",
+        "name": "Zhihan Liu"
+      },
+      {
+        "authorId": "2303854250",
+        "name": "Ziyi Yang"
+      },
+      {
+        "authorId": "2287785375",
+        "name": "Shuohang Wang"
+      },
+      {
+        "authorId": "143925074",
+        "name": "Hany Hassan"
+      },
+      {
+        "authorId": "2257245348",
+        "name": "Zhaoran Wang"
+      }
+    ],
+    "abstract": "Preference optimization, particularly through Reinforcement Learning from Human Feedback (RLHF), has achieved significant success in aligning Large Language Models (LLMs) to adhere to human intentions. Unlike offline alignment with a fixed dataset, online feedback collection from humans or AI on model generations typically leads to more capable reward models and better-aligned LLMs through an iterative process. However, achieving a globally accurate reward model requires systematic exploration to generate diverse responses that span the vast space of natural language. Random sampling from standard reward-maximizing LLMs alone is insufficient to fulfill this requirement. To address this issue, we propose a bilevel objective optimistically biased towards potentially high-reward responses to actively explore out-of-distribution regions. By solving the inner-level problem with the reparameterized reward function, the resulting algorithm, named Self-Exploring Language Models (SELM), eliminates the need for a separate RM and iteratively updates the LLM with a straightforward objective. Compared to Direct Preference Optimization (DPO), the SELM objective reduces indiscriminate favor of unseen extrapolations and enhances exploration efficiency. Our experimental results demonstrate that when fine-tuned on Zephyr-7B-SFT and Llama-3-8B-Instruct models, SELM significantly boosts the performance on instruction-following benchmarks such as MT-Bench and AlpacaEval 2.0, as well as various standard academic benchmarks in different settings. Our code and models are available at https://github.com/shenao-zhang/SELM."
+  },
+  {
+    "paperId": "5882fd8f5b22a9bc62ab2226597a4d45923c505c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-05534",
+      "ArXiv": "2403.05534",
+      "DOI": "10.48550/arXiv.2403.05534",
+      "CorpusId": 268297183
+    },
+    "title": "Bayesian Preference Elicitation with Language Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.05534, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2066900445",
+        "name": "Kunal Handa"
+      },
+      {
+        "authorId": "2260692820",
+        "name": "Yarin Gal"
+      },
+      {
+        "authorId": "2260118854",
+        "name": "Ellie Pavlick"
+      },
+      {
+        "authorId": "2259927468",
+        "name": "Noah D. Goodman"
+      },
+      {
+        "authorId": "2266839961",
+        "name": "Jacob Andreas"
+      },
+      {
+        "authorId": "88726969",
+        "name": "Alex Tamkin"
+      },
+      {
+        "authorId": "46708422",
+        "name": "Belinda Z. Li"
+      }
+    ],
+    "abstract": "Aligning AI systems to users' interests requires understanding and incorporating humans' complex values and preferences. Recently, language models (LMs) have been used to gather information about the preferences of human users. This preference data can be used to fine-tune or guide other LMs and/or AI systems. However, LMs have been shown to struggle with crucial aspects of preference learning: quantifying uncertainty, modeling human mental states, and asking informative questions. These challenges have been addressed in other areas of machine learning, such as Bayesian Optimal Experimental Design (BOED), which focus on designing informative queries within a well-defined feature space. But these methods, in turn, are difficult to scale and apply to real-world problems where simply identifying the relevant features can be difficult. We introduce OPEN (Optimal Preference Elicitation with Natural language) a framework that uses BOED to guide the choice of informative questions and an LM to extract features and translate abstract BOED queries into natural language questions. By combining the flexibility of LMs with the rigor of BOED, OPEN can optimize the informativity of queries while remaining adaptable to real-world domains. In user studies, we find that OPEN outperforms existing LM- and BOED-based methods for preference elicitation."
+  },
+  {
+    "paperId": "55b5b020d906420ff724a810f9db92a8d215ae43",
+    "externalIds": {
+      "DBLP": "conf/recsys/AustinKTS24",
+      "ArXiv": "2405.00981",
+      "DOI": "10.1145/3640457.3688142",
+      "CorpusId": 269502351
+    },
+    "title": "Bayesian Optimization with LLM-Based Acquisition Functions for Natural Language Preference Elicitation",
+    "venue": "ACM Conference on Recommender Systems",
+    "year": 2024,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3640457.3688142",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.00981, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2366425099",
+        "name": "David Austin"
+      },
+      {
+        "authorId": "2123355559",
+        "name": "A. Korikov"
+      },
+      {
+        "authorId": "1646622849",
+        "name": "A. Toroghi"
+      },
+      {
+        "authorId": "2273670268",
+        "name": "Scott Sanner"
+      }
+    ],
+    "abstract": "Designing preference elicitation (PE) methodologies that can quickly ascertain a user’s top item preferences in a cold-start setting is a key challenge for building effective and personalized conversational recommendation (ConvRec) systems. While large language models (LLMs) enable fully natural language (NL) PE dialogues, we hypothesize that monolithic LLM NL-PE approaches lack the multi-turn, decision-theoretic reasoning required to effectively balance the exploration and exploitation of user preferences towards an arbitrary item set. In contrast, traditional Bayesian optimization PE methods define theoretically optimal PE strategies, but cannot generate arbitrary NL queries or reason over content in NL item descriptions – requiring users to express preferences via ratings or comparisons of unfamiliar items. To overcome the limitations of both approaches, we formulate NL-PE in a Bayesian Optimization (BO) framework that seeks to actively elicit NL feedback to identify the best recommendation. Key challenges in generalizing BO to deal with natural language feedback include determining: (a) how to leverage LLMs to model the likelihood of NL preference feedback as a function of item utilities, and (b) how to design an acquisition function for NL BO that can elicit preferences in the infinite space of language. We demonstrate our framework in a novel NL-PE algorithm, PEBOL, which uses: 1) Natural Language Inference (NLI) between user preference utterances and NL item descriptions to maintain Bayesian preference beliefs, and 2) BO strategies such as Thompson Sampling (TS) and Upper Confidence Bound (UCB) to guide LLM query generation. We numerically evaluate our methods in controlled simulations, finding that after 10 turns of dialogue, PEBOL can achieve an MRR@10 of up to 0.27 compared to the best monolithic LLM baseline’s MRR@10 of 0.17, despite relying on earlier and smaller LLMs.1"
+  },
+  {
+    "paperId": "bd3e3e6bc4510e3be74a8f0591d407c56c40d2bc",
+    "externalIds": {
+      "ArXiv": "2404.13895",
+      "DBLP": "conf/nips/MukherjeeLKDLMK24",
+      "DOI": "10.52202/079017-2861",
+      "CorpusId": 269293989
+    },
+    "title": "Optimal Design for Human Preference Elicitation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.13895, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1930362",
+        "name": "Subhojyoti Mukherjee"
+      },
+      {
+        "authorId": "2296719415",
+        "name": "Anusha Lalitha"
+      },
+      {
+        "authorId": "1739094",
+        "name": "Kousha Kalantari"
+      },
+      {
+        "authorId": "2296705793",
+        "name": "Aniket Deshmukh"
+      },
+      {
+        "authorId": "2296745671",
+        "name": "Ge Liu"
+      },
+      {
+        "authorId": "2276335652",
+        "name": "Yifei Ma"
+      },
+      {
+        "authorId": "1681967",
+        "name": "B. Kveton"
+      }
+    ],
+    "abstract": "Learning of preference models from human feedback has been central to recent advances in artificial intelligence. Motivated by the cost of obtaining high-quality human annotations, we study efficient human preference elicitation for learning preference models. The key idea in our work is to generalize optimal designs, an approach to computing optimal information-gathering policies, to lists of items that represent potential questions with answers. The policy is a distribution over the lists and we elicit preferences from them proportionally to their probabilities. To show the generality of our ideas, we study both absolute and ranking feedback models on items in the list. We design efficient algorithms for both and analyze them. Finally, we demonstrate that our algorithms are practical by evaluating them on existing question-answering problems."
+  },
+  {
+    "paperId": "2f02bcea6e615c0157ab2225a0f99aa4a9b8acb6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2409-02760",
+      "ArXiv": "2409.02760",
+      "DOI": "10.48550/arXiv.2409.02760",
+      "CorpusId": 272397779
+    },
+    "title": "An incremental preference elicitation-based approach to learning potentially non-monotonic preferences in multi-criteria sorting",
+    "venue": "European Journal of Operational Research",
+    "year": 2024,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.02760, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2128031428",
+        "name": "Zhuolin Li"
+      },
+      {
+        "authorId": "2311823948",
+        "name": "Zhen Zhang"
+      },
+      {
+        "authorId": "2239228189",
+        "name": "Witold Pedrycz"
+      }
+    ],
+    "abstract": "This paper introduces a novel incremental preference elicitation-based approach to learning potentially non-monotonic preferences in multi-criteria sorting (MCS) problems, enabling decision makers to progressively provide assignment example preference information. Specifically, we first construct a max-margin optimization-based model to model potentially non-monotonic preferences and inconsistent assignment example preference information in each iteration of the incremental preference elicitation process. Using the optimal objective function value of the max-margin optimization-based model, we devise information amount measurement methods and question selection strategies to pinpoint the most informative alternative in each iteration within the framework of uncertainty sampling in active learning. Once the termination criterion is satisfied, the sorting result for non-reference alternatives can be determined through the use of two optimization models, i.e., the max-margin optimization-based model and the complexity controlling optimization model. Subsequently, two incremental preference elicitation-based algorithms are developed to learn potentially non-monotonic preferences, considering different termination criteria. Ultimately, we apply the proposed approach to a credit rating problem to elucidate the detailed implementation steps, and perform computational experiments on both artificial and real-world data sets to compare the proposed question selection strategies with several benchmark strategies."
+  },
+  {
+    "paperId": "a106fcbd0fbc8e3fc2496ce94d78adfccab343c8",
+    "externalIds": {
+      "DBLP": "conf/aies/KeswaniCHBS24",
+      "ArXiv": "2407.18889",
+      "DOI": "10.48550/arXiv.2407.18889",
+      "CorpusId": 271516615
+    },
+    "title": "On the Pros and Cons of Active Learning for Moral Preference Elicitation",
+    "venue": "AAAI/ACM Conference on AI, Ethics, and Society",
+    "year": 2024,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.18889, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2313480427",
+        "name": "V. Keswani"
+      },
+      {
+        "authorId": "2146849053",
+        "name": "Vincent Conitzer"
+      },
+      {
+        "authorId": "2313482176",
+        "name": "Hoda Heidari"
+      },
+      {
+        "authorId": "2591514",
+        "name": "Jana Schaich Borg"
+      },
+      {
+        "authorId": "2252592865",
+        "name": "Walter Sinnott-Armstrong"
+      }
+    ],
+    "abstract": "Computational preference elicitation methods are tools used to learn people’s preferences quantitatively in a given context. Recent works on preference elicitation advocate for active learning as an efficient method to iteratively construct queries (framed as comparisons between context-specific cases) that are likely to be most informative about an agent’s underlying preferences. In this work, we argue that the use of active learning for moral preference elicitation relies on certain assumptions about the underlying moral preferences, which can be violated in practice. Specifically, we highlight the following common assumptions (a) preferences are stable over time and not sensitive to the sequence of presented queries, (b) the appropriate hypothesis class is chosen to model moral preferences, and (c) noise in the agent’s responses is limited. While these assumptions can be appropriate for preference elicitation in certain domains, prior research on moral psychology suggests they may not be valid for moral judgments. Through a synthetic simulation of preferences that violate the above assumptions, we observe that active learning can have similar or worse performance than a basic random query selection method in certain settings. Yet, simulation results also demonstrate that active learning can still be viable if the degree of instability or noise is relatively small and when the agent’s preferences can be approximately represented with the hypothesis class used for learning. Our study highlights the nuances associated with effective moral preference elicitation in practice and advocates for the cautious use of active learning as a methodology to learn moral preferences."
+  },
+  {
+    "paperId": "d458f18ec6a763ab49bf1d3d613affa4de2e2f99",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-00554",
+      "ArXiv": "2405.00554",
+      "DOI": "10.48550/arXiv.2405.00554",
+      "CorpusId": 269484165
+    },
+    "title": "A First Look at Selection Bias in Preference Elicitation for Recommendation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.00554, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2284033734",
+        "name": "Shashank Gupta"
+      },
+      {
+        "authorId": "143624743",
+        "name": "Harrie Oosterhuis"
+      },
+      {
+        "authorId": "2265490493",
+        "name": "M. D. Rijke"
+      }
+    ],
+    "abstract": "Preference elicitation explicitly asks users what kind of recommendations they would like to receive. It is a popular technique for conversational recommender systems to deal with cold-starts. Previous work has studied selection bias in implicit feedback, e.g., clicks, and in some forms of explicit feedback, i.e., ratings on items. Despite the fact that the extreme sparsity of preference elicitation interactions make them severely more prone to selection bias than natural interactions, the effect of selection bias in preference elicitation on the resulting recommendations has not been studied yet. To address this gap, we take a first look at the effects of selection bias in preference elicitation and how they may be further investigated in the future. We find that a big hurdle is the current lack of any publicly available dataset that has preference elicitation interactions. As a solution, we propose a simulation of a topic-based preference elicitation process. The results from our simulation-based experiments indicate (i) that ignoring the effect of selection bias early in preference elicitation can lead to an exacerbation of overrepresentation in subsequent item recommendations, and (ii) that debiasing methods can alleviate this effect, which leads to significant improvements in subsequent item recommendation performance. Our aim is for the proposed simulator and initial results to provide a starting point and motivation for future research into this important but overlooked problem setting."
+  },
+  {
+    "paperId": "fc4bb54cbbbc08280a836fa9f7d2645f4b87875a",
+    "externalIds": {
+      "DBLP": "conf/aies/FefferSLH23",
+      "DOI": "10.1145/3600211.3604661",
+      "CorpusId": 261279408
+    },
+    "title": "From Preference Elicitation to Participatory ML: A Critical Survey & Guidelines for Future Research",
+    "venue": "AAAI/ACM Conference on AI, Ethics, and Society",
+    "year": 2023,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3600211.3604661",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3600211.3604661?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3600211.3604661, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2266864338",
+        "name": "Michael Feffer"
+      },
+      {
+        "authorId": "2684133",
+        "name": "M. Skirpan"
+      },
+      {
+        "authorId": "2266863961",
+        "name": "Zachary C. Lipton"
+      },
+      {
+        "authorId": "2253600",
+        "name": "Hoda Heidari"
+      }
+    ],
+    "abstract": "The AI Ethics community faces an imperative to empower stakeholders and impacted community members so that they can scrutinize and influence the design, development, and use of AI systems in high-stakes domains. While a growing chorus of recent papers has kindled interest in so-called “participatory ML” methods, precisely what form participation ought to take and how to operationalize these ambitions are seldom addressed. Our survey of the relevant literature shows that in many papers, participation is reduced to highly structured, computational mechanisms designed to elicit mathematically tractable approximations of narrowly-defined moral values. Of papers that actually engage with real people, these engagements typically consist of one-time interactions with individuals that are often unrepresentative of the relevant stakeholders. Motivated by these clear limitations, we introduce a consolidated set of axes to evaluate and improve participatory approaches. We use these axes to analyze contemporary work in this space and outline future AI research directions that could meaningfully contribute to operationalizing the ideal of participation."
+  },
+  {
+    "paperId": "bfef5cac9b128c39aa2923085a6e6839750d7592",
+    "externalIds": {
+      "ArXiv": "2311.02085",
+      "DBLP": "journals/corr/abs-2311-02085",
+      "DOI": "10.48550/arXiv.2311.02085",
+      "CorpusId": 265034238
+    },
+    "title": "Preference Elicitation with Soft Attributes in Interactive Recommendation",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.02085, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8307674",
+        "name": "Erdem Biyik"
+      },
+      {
+        "authorId": "2265323687",
+        "name": "Fan Yao"
+      },
+      {
+        "authorId": "1819830",
+        "name": "Yinlam Chow"
+      },
+      {
+        "authorId": "2265493853",
+        "name": "Alex Haig"
+      },
+      {
+        "authorId": "2257436216",
+        "name": "Chih-Wei Hsu"
+      },
+      {
+        "authorId": "1678622",
+        "name": "M. Ghavamzadeh"
+      },
+      {
+        "authorId": "2256989492",
+        "name": "Craig Boutilier"
+      }
+    ],
+    "abstract": "Preference elicitation plays a central role in interactive recommender systems. Most preference elicitation approaches use either item queries that ask users to select preferred items from a slate, or attribute queries that ask them to express their preferences for item characteristics. Unfortunately, users often wish to describe their preferences using soft attributes for which no ground-truth semantics is given. Leveraging concept activation vectors for soft attribute semantics, we develop novel preference elicitation methods that can accommodate soft attributes and bring together both item and attribute-based preference elicitation. Our techniques query users using both items and soft attributes to update the recommender system's belief about their preferences to improve recommendation quality. We demonstrate the effectiveness of our methods vis-a-vis competing approaches on both synthetic and real-world datasets."
+  },
+  {
+    "paperId": "c457e06127181f7834a86b2d566292ff4c904688",
+    "externalIds": {
+      "PubMedCentral": "10023624",
+      "DOI": "10.1007/s11166-022-09377-w",
+      "CorpusId": 226699094,
+      "PubMed": "36945231"
+    },
+    "title": "On the role of monetary incentives in risk preference elicitation experiments",
+    "venue": "Journal of Risk and Uncertainty",
+    "year": 2022,
+    "citationCount": 22,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s11166-022-09377-w.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC10023624, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [],
+    "abstract": "Incentivized experiments in which individuals receive monetary rewards according to the outcomes of their decisions are regarded as the gold standard for preference elicitation in experimental economics. These task-related real payments are considered necessary to reveal subjects’ “true preferences.” Using a systematic, large-sample approach with three subject pools of private investors, professional investors, and students, we test the effect of task-related monetary incentives on risk preferences in four standard experimental tasks. We find no significant differences in behavior between and within subjects in the incentivized and non-incentivized regimes. We discuss implications for academic research and forions in the field."
+  },
+  {
+    "paperId": "f61849f7ea82e6ef0b0d9f17791655f44d5e83da",
+    "externalIds": {
+      "DBLP": "journals/geb/FriedmanHJW22",
+      "DOI": "10.1016/j.geb.2022.02.002",
+      "CorpusId": 209414453
+    },
+    "title": "Varieties of risk preference elicitation",
+    "venue": "Games Econ. Behav.",
+    "year": 2022,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.geb.2022.02.002",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.geb.2022.02.002?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.geb.2022.02.002, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145886764",
+        "name": "D. Friedman"
+      },
+      {
+        "authorId": "2066053257",
+        "name": "Sameh Habib"
+      },
+      {
+        "authorId": "144600432",
+        "name": "D. James"
+      },
+      {
+        "authorId": "48964573",
+        "name": "Brett Williams"
+      }
+    ],
+    "abstract": "We explore risk preference elicitation via direct choice over lotteries. Our choice tasks di er incrementally, e.g., from choosing between two lotteries to selecting a portfolio from a continuous set of bundled Arrow securities, and from text to spatial presentation. Each subject completes multiple instances of ve di erent tasks, and responses for each task are summarized in parametric (CRRA) and non-parametric (normalized risk premium) measures of risk preference. Variation in task attributes explains much of the observed wide variation in elicited preferences and in correlations across task pairs."
+  },
+  {
+    "paperId": "d69590c808e837e4807c690c6ae7579932ef4e4d",
+    "externalIds": {
+      "PubMedCentral": "9270310",
+      "DOI": "10.1007/s40273-022-01149-3",
+      "CorpusId": 249068843,
+      "PubMed": "35619044"
+    },
+    "title": "Preference Elicitation Techniques Used in Valuing Children’s Health-Related Quality-of-Life: A Systematic Review",
+    "venue": "PharmacoEconomics (Auckland)",
+    "year": 2022,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s40273-022-01149-3.pdf",
+      "status": "HYBRID",
+      "license": "CCBYNC",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC9270310, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2151245685",
+        "name": "Cate Bailey"
+      },
+      {
+        "authorId": "31424959",
+        "name": "M. Howell"
+      },
+      {
+        "authorId": "33336954",
+        "name": "R. Raghunandan"
+      },
+      {
+        "authorId": "2166346242",
+        "name": "A. Salisbury"
+      },
+      {
+        "authorId": "8018141",
+        "name": "Gang Chen"
+      },
+      {
+        "authorId": "144260496",
+        "name": "J. Coast"
+      },
+      {
+        "authorId": "2086433806",
+        "name": "J. Craig"
+      },
+      {
+        "authorId": "3666794",
+        "name": "N. Devlin"
+      },
+      {
+        "authorId": "3013690",
+        "name": "Elisabeth Huynh"
+      },
+      {
+        "authorId": "143901607",
+        "name": "E. Lancsar"
+      },
+      {
+        "authorId": "7022731",
+        "name": "B. Mulhern"
+      },
+      {
+        "authorId": "50172494",
+        "name": "R. Norman"
+      },
+      {
+        "authorId": "2789341",
+        "name": "S. Petrou"
+      },
+      {
+        "authorId": "143836913",
+        "name": "J. Ratcliffe"
+      },
+      {
+        "authorId": "35182775",
+        "name": "D. Street"
+      },
+      {
+        "authorId": "2058997669",
+        "name": "K. Howard"
+      },
+      {
+        "authorId": "47244279",
+        "name": "R. Viney"
+      },
+      {
+        "authorId": "2166346207",
+        "name": "Kim Harriet Alison Germaine Cam Stacey Dalziel Hiscock Hayes Wong Donaldson Carter"
+      },
+      {
+        "authorId": "50324650",
+        "name": "K. Dalziel"
+      },
+      {
+        "authorId": "4819910",
+        "name": "H. Hiscock"
+      },
+      {
+        "authorId": "2150995581",
+        "name": "Alison Hayes"
+      },
+      {
+        "authorId": "143751625",
+        "name": "G. Wong"
+      },
+      {
+        "authorId": "121179185",
+        "name": "C. Donaldson"
+      },
+      {
+        "authorId": "143622095",
+        "name": "S. Carter"
+      }
+    ],
+    "abstract": "Valuing children’s health states for use in economic evaluations is globally relevant and is of particular relevance in jurisdictions where a cost-utility analysis is the preferred form of analysis for decision making. Despite this, the challenges with valuing child health mean that there are many remaining questions for debate about the approach to elicitation of values. The aim of this paper was to identify and describe the methods used to value children’s health states and the specific issues that arise in the use of these methods. We conducted a systematic search of electronic databases to identify studies published in English since 1990 that used preference elicitation methods to value child and adolescent (under 18 years of age) health states. Eligibility criteria comprised valuation studies concerning both child-specific patient-reported outcome measures and child health states defined in other ways, and methodological studies of valuation approaches that may or may not have yielded a value set algorithm. A total of 77 eligible studies were identified from which data on country setting, aims, condition (general population or clinically specific), sample size, age of respondents, the perspective that participants were asked to adopt, source of values (respondents who completed the preference elicitation tasks) and methods questions asked were extracted. Extracted data were classified and evaluated using narrative synthesis methods. The studies were classified into three groups: (1) studies comparing elicitation methods (n = 30); (2) studies comparing perspectives (n = 23); and (3) studies where no comparisons were presented (n = 26); selected studies could fall into more than one group. Overall, the studies varied considerably both in methods used and in reporting. The preference elicitation tasks included time trade-off, standard gamble, visual analogue scaling, rating/ranking, discrete choice experiments, best-worst scaling and willingness to pay elicited through a contingent valuation. Perspectives included adults’ considering the health states from their own perspective, adults taking the perspective of a child (own, other, hypothetical) and a child/adolescent taking their own or the perspective of another child. There was some evidence that children gave lower values for comparable health states than did adults that adopted their own perspective or adult/parents that adopted the perspective of children. Differences in reporting limited the conclusions that can be formed about which methods are most suitable for eliciting preferences for children’s health and the influence of differing perspectives and values. Difficulties encountered in drawing conclusions from the data (such as lack of consensus and poor reporting making it difficult for users to choose and interpret available values) suggest that reporting guidelines are required to improve the consistency and quality of reporting of studies that value children’s health using preference-based techniques."
+  },
+  {
+    "paperId": "2ae21771e4d66a4835e02bdca0836a4ec5d8e7d4",
+    "externalIds": {
+      "ArXiv": "2205.13743",
+      "DBLP": "journals/tmlr/ToniVTLP24",
+      "CorpusId": 258960097
+    },
+    "title": "Personalized Algorithmic Recourse with Preference Elicitation",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2022,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.13743, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1657672584",
+        "name": "G. D. Toni"
+      },
+      {
+        "authorId": "2188691",
+        "name": "P. Viappiani"
+      },
+      {
+        "authorId": "2580338",
+        "name": "Stefano Teso"
+      },
+      {
+        "authorId": "49305855",
+        "name": "B. Lepri"
+      },
+      {
+        "authorId": "1702610",
+        "name": "Andrea Passerini"
+      }
+    ],
+    "abstract": "Algorithmic Recourse (AR) is the problem of computing a sequence of actions that -- once performed by a user -- overturns an undesirable machine decision. It is paramount that the sequence of actions does not require too much effort for users to implement. Yet, most approaches to AR assume that actions cost the same for all users, and thus may recommend unfairly expensive recourse plans to certain users. Prompted by this observation, we introduce PEAR, the first human-in-the-loop approach capable of providing personalized algorithmic recourse tailored to the needs of any end-user. PEAR builds on insights from Bayesian Preference Elicitation to iteratively refine an estimate of the costs of actions by asking choice set queries to the target user. The queries themselves are computed by maximizing the Expected Utility of Selection, a principled measure of information gain accounting for uncertainty on both the cost estimate and the user's responses. PEAR integrates elicitation into a Reinforcement Learning agent coupled with Monte Carlo Tree Search to quickly identify promising recourse plans. Our empirical evaluation on real-world datasets highlights how PEAR produces high-quality personalized recourse in only a handful of iterations."
+  },
+  {
+    "paperId": "0f428367df954ae6b7719246f9055e307c09e910",
+    "externalIds": {
+      "PubMedCentral": "9826006",
+      "DOI": "10.1002/hec.4599",
+      "CorpusId": 252221910,
+      "PubMed": "36102864"
+    },
+    "title": "Two for the price of one: If moving beyond traditional single‐best discrete choice experiments, should we use best‐worst, best‐best or ranking for preference elicitation?",
+    "venue": "Health Economics",
+    "year": 2022,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "https://pure.eur.nl/files/65512600/Health_Economics_2022_Huls_Two_for_the_price_of_one_If_moving_beyond_traditional_single_best_discrete_choice.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC9826006, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1404273055",
+        "name": "S. Huls"
+      },
+      {
+        "authorId": "143901607",
+        "name": "E. Lancsar"
+      },
+      {
+        "authorId": "2218968",
+        "name": "B. Donkers"
+      },
+      {
+        "authorId": "40514666",
+        "name": "J. Ride"
+      }
+    ],
+    "abstract": "Abstract This study undertook a head‐to‐head comparison of best‐worst, best‐best and ranking discrete choice experiments (DCEs) to help decide which method to use if moving beyond traditional single‐best DCEs. Respondents were randomized to one of three preference elicitation methods. Rank‐ordered (exploded) mixed logit models and respondent‐reported data were used to compare methods and first and second choices. First choices differed from second choices and preferences differed between elicitation methods, even beyond scale and scale dynamics. First choices of best‐worst had good choice consistency, scale dynamics and statistical efficiency, but this method's second choices performed worst. Ranking performed best on respondent‐reported difficulty and preference; best‐best's second choices on statistical efficiency. All three preference elicitation methods improve efficiency of data collection relative to using first choices only. However, differences in preferences between first and second choices challenge moving beyond single‐best DCE. If nevertheless doing so, best‐best and ranking are preferred over best‐worst DCE."
+  },
+  {
+    "paperId": "4d4c5b5e9e8e99386f9c837460cfdc171cbe4b2c",
+    "externalIds": {
+      "DBLP": "journals/tors/KostricBR24",
+      "ArXiv": "2111.13463",
+      "DOI": "10.1145/3629981",
+      "CorpusId": 237495099
+    },
+    "title": "Generating Usage-related Questions for Preference Elicitation in Conversational Recommender Systems",
+    "venue": "Trans. Recomm. Syst.",
+    "year": 2021,
+    "citationCount": 34,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3629981",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.13463, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126525846",
+        "name": "Ivica Kostric"
+      },
+      {
+        "authorId": "1680484",
+        "name": "K. Balog"
+      },
+      {
+        "authorId": "1803571",
+        "name": "Filip Radlinski"
+      }
+    ],
+    "abstract": "A key distinguishing feature of conversational recommender systems over traditional recommender systems is theirability to elicit user preferences using natural language. Currently, the predominant approach to preference elicitation is to ask questions directly about items or item attributes. Users searching for recommendations may not have deep knowledge of the available options in a given domain. As such, they might not be aware of key attributes or desirable values for them. However, in many settings, talking about the planned use of items does not present any difficulties, even for those that are new to a domain. In this article, we propose a novel approach to preference elicitation by asking implicit questions based on item usage. As one of the main contributions of this work, we develop a multi-stage data annotation protocol using crowdsourcing, to create a high-quality labeled training dataset. Another main contribution is the development of four models for the question generation task: two template-based baseline models and two neural text-to-text models. The template-based models use heuristically extracted common patterns found in the training data, while the neural models use the training data to learn to generate questions automatically. Using common metrics from machine translation for automatic evaluation, we show that our approaches are effective in generating elicitation questions, even with limited training data. We further employ human evaluation for comparing the generated questions using both pointwise and pairwise evaluation designs. We find that the human evaluation results are consistent with the automatic ones, allowing us to draw conclusions about the quality of the generated questions with certainty. Finally, we provide a detailed analysis of cases where the models show their limitations."
+  },
+  {
+    "paperId": "ce5c07b020bd8b89b91dcb77d87bae9f4741b167",
+    "externalIds": {
+      "DBLP": "conf/wsdm/ParaparR21",
+      "DOI": "10.1145/3437963.3441786",
+      "CorpusId": 232126409
+    },
+    "title": "Diverse User Preference Elicitation with Multi-Armed Bandits",
+    "venue": "Web Search and Data Mining",
+    "year": 2021,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3437963.3441786",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3437963.3441786?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3437963.3441786, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1898621",
+        "name": "Javier Parapar"
+      },
+      {
+        "authorId": "1803571",
+        "name": "Filip Radlinski"
+      }
+    ],
+    "abstract": "Personalized recommender systems rely on knowledge of user preferences to produce recommendations. While those preferences are often obtained from past user interactions with the recommendation catalog, in some situations such observations are insufficient or unavailable. The most widely studied case is with new users, although other similar situations arise where explicit preference elicitation is valuable. At the same time, a seemingly disparate challenge is that there is a well-known popularity bias in many algorithmic approaches to recommender systems. The most common way of addressing this challenge is diversification, which tends to be applied to the output of a recommender algorithm, prior to items being presented to users. We tie these two problems together, showing a tight relationship. Our results show that popularity bias in preference elicitation contributes to popularity bias in recommendation. In particular, most elicitation methods directly optimize only for the relevance of recommendations that would result from collected preferences. This focus on recommendation accuracy biases the preferences collected. We demonstrate how diversification can instead be applied directly at elicitation time. Our model diversifies the preferences elicited using Multi-Armed Bandits, a classical exploration-exploitation framework from reinforcement learning. This leads to a broader understanding of users' preferences, and improved diversity and serendipity of recommendations, without necessitating post-hoc debiasing corrections."
+  },
+  {
+    "paperId": "b685bcfb9ff2be8fc3937a85bc84ee7958ebf621",
+    "externalIds": {
+      "PubMedCentral": "7947050",
+      "DOI": "10.1186/s41687-021-00302-4",
+      "CorpusId": 232164426,
+      "PubMed": "33689059"
+    },
+    "title": "Discrete choice experiments or best-worst scaling? A qualitative study to determine the suitability of preference elicitation tasks in research with children and young people",
+    "venue": "Journal of Patient-Reported Outcomes",
+    "year": 2021,
+    "citationCount": 22,
+    "openAccessPdf": {
+      "url": "https://jpro.springeropen.com/counter/pdf/10.1186/s41687-021-00302-4",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC7947050, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143694640",
+        "name": "H. Rogers"
+      },
+      {
+        "authorId": "2395875483",
+        "name": "Z. Marshman"
+      },
+      {
+        "authorId": "5691308",
+        "name": "H. Rodd"
+      },
+      {
+        "authorId": "3211710",
+        "name": "D. Rowen"
+      }
+    ],
+    "abstract": "Background Ordinal tasks are increasingly used to explore preferences for health states. This study aimed to determine the suitability of two ordinal preference elicitation tasks (discrete choice experiments (DCE) and best-worst scaling (BWS)) for use with children and young people to generate health state utility values. The study explored children’s understanding, the relationship between their age and level of understanding, and how many tasks they felt they could complete. Methods Children aged 11–16 years were recruited from a secondary school in South Yorkshire, UK. Participants were asked to ‘think aloud’ as they completed a computer-based survey that contained both DCE and BWS tasks relating to dental caries (tooth decay) health states. Health states involved descriptions of the impact of tooth decay on children’s daily lives. One-to-one semi-structured interviews were then held with participants, with use of a topic guide. Qualitative data were transcribed verbatim and analysed thematically. Results A total of 33 children (12 male, 21 female) participated, comprising 5–6 children from each school year group. Children expressed a preference for BWS and demonstrated a better understanding of these tasks than DCE. There was no clear relationship between children’s level of understanding and age. Children felt they could manage between 8 and 10 BWS tasks comfortably. Conclusion This study suggests that BWS tasks are the most appropriate type of preference elicitation task to value health states for children and young people aged 11–16 years to complete."
+  },
+  {
+    "paperId": "e1f340401abff7fc8d709d525e23a4eae583836a",
+    "externalIds": {
+      "MAG": "2913582123",
+      "DOI": "10.1561/0800000036",
+      "CorpusId": 127643630
+    },
+    "title": "Foundations of Stated Preference Elicitation: Consumer Behavior and Choice-based Conjoint Analysis",
+    "venue": "Foundations and Trends® in Econometrics",
+    "year": 2019,
+    "citationCount": 197,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1561/0800000036",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1561/0800000036?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1561/0800000036, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1398034669",
+        "name": "M. Ben-Akiva"
+      },
+      {
+        "authorId": "31445029",
+        "name": "D. McFadden"
+      },
+      {
+        "authorId": "79856880",
+        "name": "K. Train"
+      }
+    ],
+    "abstract": "Stated preference elicitation methods collect data on consumers by \"just asking\" about tastes, perceptions, valuations, attitudes, motivations, life satisfactions, and/or intended choices. Choice-Based Conjoint (CBC) analysis asks subjects to make choices from hypothetical menus in experiments that are designed to mimic market experiences. Stated preference methods are controversial in economics, particularly for valuation of non-market goods, but CBC analysis is accepted and used widely in marketing and policy analysis. The promise of stated preference experiments is that they can provide deeper and broader data on the structure of consumer preferences than is obtainable from revealed market observations, with experimental control of the choice environment that circumvents the feedback found in real market equilibria. The risk is that they give pictures of consumers that do not predict real market behavior. It is important for both economists and non-economists to learn about the performance of stated preference elicitations and the conditions under which they can contribute to understanding consumer behavior and forecasting market demand. This monograph re-examines the discrete choice methods and stated preference elicitation procedures that are commonly used in CBC, and provides a guide to techniques for CBC data collection, model specification, estimation, and policy analysis. The aim is to clarify the domain of applicability and delineate the circumstances under which stated preference elicitations can provide reliable information on preferences."
+  },
+  {
+    "paperId": "a84e11eb380118356e0d151f0ffd1262b8d3ec29",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-01483",
+      "ArXiv": "2602.01483",
+      "DOI": "10.48550/arXiv.2602.01483",
+      "CorpusId": 285270132
+    },
+    "title": "Causal Preference Elicitation",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.01483, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2302803908",
+        "name": "Edwin V. Bonilla"
+      },
+      {
+        "authorId": "2282545026",
+        "name": "He Zhao"
+      },
+      {
+        "authorId": "2375746784",
+        "name": "Daniel M. Steinberg"
+      }
+    ],
+    "abstract": "We propose causal preference elicitation, a Bayesian framework for expert-in-the-loop causal discovery that actively queries local edge relations to concentrate a posterior over directed acyclic graphs (DAGs). From any black-box observational posterior, we model noisy expert judgments with a three-way likelihood over edge existence and direction. Posterior inference uses a flexible particle approximation, and queries are selected by an efficient expected information gain criterion on the expert's categorical response. Experiments on synthetic graphs, protein signaling data, and a human gene perturbation benchmark show faster posterior concentration and improved recovery of directed effects under tight query budgets."
+  },
+  {
+    "paperId": "f4a906c11b6ddabb052dbbec582e66cba3eb7eb8",
+    "externalIds": {
+      "DBLP": "conf/www/ZhaoYXL22",
+      "DOI": "10.1145/3485447.3512152",
+      "CorpusId": 248367492
+    },
+    "title": "Knowledge-aware Conversational Preference Elicitation with Bandit Feedback",
+    "venue": "The Web Conference",
+    "year": 2022,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3485447.3512152?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3485447.3512152, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2145204134",
+        "name": "Canzhe Zhao"
+      },
+      {
+        "authorId": "1500399016",
+        "name": "Tong Yu"
+      },
+      {
+        "authorId": "2114115577",
+        "name": "Zhihui Xie"
+      },
+      {
+        "authorId": "1491648207",
+        "name": "Shuai Li"
+      }
+    ],
+    "abstract": "Conversational recommender systems (CRSs) have been proposed recently to mitigate the cold-start problem suffered by the traditional recommender systems. By introducing conversational key-terms, existing conversational recommenders can effectively reduce the need for extensive exploration and elicit the user preferences faster and more accurately. However, existing conversational recommenders leveraging key-terms heavily rely on the availability and quality of the key-terms, and their performances might degrade significantly when the key-terms are incomplete or not well labeled, which usually happens when there are new items being consistently incorporated into the systems and involving lots of human efforts to acquire well-labeled key-terms is costly. Besides, existing CRS methods leverage the feedback to different conversational key-terms separately, without considering the underlying relations between the key-terms. In this case, the learning of the conversational recommenders is sample inefficient, especially when there is a large number of candidate conversational key-terms. In this paper, we propose a knowledge-aware conversational preference elicitation framework and a bandit-based algorithm GraphConUCB. To achieve efficient preference elicitation given items with incompletely labeled key-terms, our algorithm leverage the underlying relations between the key-terms, guided by the knowledge graph. Being knowledge-aware, our algorithm propagates the user preferences via a pseudo graph feedback module, which also accelerates the exploration in the large action space of key-terms and improves the conversational sample efficiency. To select the most informative conversational key-terms in the graphs to conduct conversations, we further devise a graph-based optimal design module which leverages the graph structure. We provide the theoretical analysis of the regret upper bound for GraphConUCB. With extensive experiments, we show that our algorithm can effectively handle the items with incompletely labeled key-terms, and improves over the state-of-the-art baselines significantly."
+  },
+  {
+    "paperId": "a330053177e7bcf0fafc6cf8266f4d150cdf3af0",
+    "externalIds": {
+      "MAG": "2972156721",
+      "DBLP": "conf/sigdial/RadlinskiBBK19",
+      "ACL": "W19-5941",
+      "DOI": "10.18653/v1/W19-5941",
+      "CorpusId": 203045663
+    },
+    "title": "Coached Conversational Preference Elicitation: A Case Study in Understanding Movie Preferences",
+    "venue": "SIGDIAL Conferences",
+    "year": 2019,
+    "citationCount": 118,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/W19-5941.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/W19-5941, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1803571",
+        "name": "Filip Radlinski"
+      },
+      {
+        "authorId": "1680484",
+        "name": "K. Balog"
+      },
+      {
+        "authorId": "36126076",
+        "name": "B. Byrne"
+      },
+      {
+        "authorId": "88774779",
+        "name": "K. Krishnamoorthi"
+      }
+    ],
+    "abstract": "Conversational recommendation has recently attracted significant attention. As systems must understand users’ preferences, training them has called for conversational corpora, typically derived from task-oriented conversations. We observe that such corpora often do not reflect how people naturally describe preferences. We present a new approach to obtaining user preferences in dialogue: Coached Conversational Preference Elicitation. It allows collection of natural yet structured conversational preferences. Studying the dialogues in one domain, we present a brief quantitative analysis of how people describe movie preferences at scale. Demonstrating the methodology, we release the CCPE-M dataset to the community with over 500 movie preference dialogues expressing over 10,000 preferences."
+  },
+  {
+    "paperId": "068cd1ad759ceb9dc41b32ca275ce8957bc8a1d8",
+    "externalIds": {
+      "PubMedCentral": "8131174",
+      "DOI": "10.1007/s40271-021-00521-3",
+      "CorpusId": 234774054,
+      "PubMed": "34008165"
+    },
+    "title": "Assessing Patient Preferences in Rare Diseases: Direct Preference Elicitation in the Rare Chronic Kidney Disease, Immunoglobulin A Nephropathy",
+    "venue": "Patient",
+    "year": 2021,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s40271-021-00521-3.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC8131174, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40245216",
+        "name": "K. Marsh"
+      },
+      {
+        "authorId": "3197590",
+        "name": "Kerrie-Anne Ho"
+      },
+      {
+        "authorId": "153072260",
+        "name": "R. Lo"
+      },
+      {
+        "authorId": "6109926",
+        "name": "N. Zaour"
+      },
+      {
+        "authorId": "14968582",
+        "name": "A. George"
+      },
+      {
+        "authorId": "144753606",
+        "name": "N. Cook"
+      }
+    ],
+    "abstract": "Patient preference information is increasingly being used to inform decision making; however, further work is required to support the collection of preference information in rare diseases. This study illustrates the use of direct preference elicitation methods to collect preference data from small samples in the context of early decision making to inform the development of a product for the treatment of immunoglobulin A nephropathy. An interview-based swing weighting approach was used to elicit preferences from 40 patients in the US and China. Attributes were identified through a background review, expert engagement and patient focus groups. Participants completed a series of tasks that involved ranking, rating and scoring improvements in the attributes to obtain attribute swing weights and partial value functions. The preference results were then incorporated into a benefit-risk assessment simulation tool. Participants placed the greatest value on avoiding end-stage renal/kidney disease. Similar weight was given to short-term quality-of-life improvements and avoiding infections. Treatment burden (number of vaccinations) received the least weight. Heterogeneity in preferences was also observed. Consistency tests did not identify statistically significant variation in preferences, and qualitative data suggested that the elicitation exercise was sensitive to participants’ interpretation of attributes and that participants were able to express their preferences. Direct preference elicitation methods can be used to collect preference data from small samples. Further work should continue to test the validity of the estimate generated by such methods."
+  },
+  {
+    "paperId": "eebff1134ee1d1b1ca8824a9f11db1fc0880a17c",
+    "externalIds": {
+      "DBLP": "conf/um/YangSWZ21",
+      "DOI": "10.1145/3450613.3456814",
+      "CorpusId": 235495017
+    },
+    "title": "Bayesian Preference Elicitation with Keyphrase-Item Coembeddings for Interactive Recommendation",
+    "venue": "User Modeling, Adaptation, and Personalization",
+    "year": 2021,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3450613.3456814?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3450613.3456814, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2128179695",
+        "name": "Hojin Yang"
+      },
+      {
+        "authorId": "1732536",
+        "name": "S. Sanner"
+      },
+      {
+        "authorId": "2748992",
+        "name": "Ga Wu"
+      },
+      {
+        "authorId": "1455858501",
+        "name": "J. Zhou"
+      }
+    ],
+    "abstract": "Interactive (a.k.a. conversational) recommendation systems provide the potential capability to personalize interactions with increasingly prevalent dialog-based AI assistants. In the conversational recommendation setting, a user often has long-term preferences inferred from previous interactions along with ephemeral session-based preferences that need to be efficiently elicited through minimal interaction. Historically, Bayesian preference elicitation methods have proved effective for (i) leveraging prior information to incrementally estimate uncertainty in user preferences as new information is observed, and for (ii) supporting active elicitation of preference feedback to quickly zero in on the best recommendations in a session. Previous work typically focused on eliciting preferences in the space of items or a small set of attributes; in the dialog-based setting, however, we are faced with the task of eliciting preferences in the space of natural language while using this feedback to determine a user’s preferences in item space. To address this task in the era of modern, latent embedding-based recommender systems, we propose a method for coembedding user-item preferences with keyphrase descriptions (i.e., not explicitly known attributes, but rather subjective judgments mined from user reviews or tags) along with a closed-form Bayesian methodology for incrementally estimating uncertainty in user preferences based on elicited keyphrase feedback. We then combine this framework with well-known preference elicitation techniques that can leverage Bayesian posteriors such as Upper Confidence Bounds, Thompson Sampling, and a variety of other methods. Our empirical evaluation on real-world datasets shows that the proposed query selection strategies effectively update user beliefs, leading to high-quality recommendations with a minimal number of keyphrase queries."
+  },
+  {
+    "paperId": "980d94e2dcca1f01a8e680c5e981223eb698fe04",
+    "externalIds": {
+      "MAG": "2971940262",
+      "DBLP": "journals/eor/LahtinenHJ20",
+      "DOI": "10.1016/j.ejor.2019.09.004",
+      "CorpusId": 203026791
+    },
+    "title": "On preference elicitation processes which mitigate the accumulation of biases in multi-criteria decision analysis",
+    "venue": "European Journal of Operational Research",
+    "year": 2020,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "https://research.aalto.fi/files/40660499/SCI_LahtinenHamalainenJenytin_On_Preference_Elicitation_2019.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.ejor.2019.09.004?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.ejor.2019.09.004, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2733098",
+        "name": "Tuomas J. Lahtinen"
+      },
+      {
+        "authorId": "1764839",
+        "name": "R. Hämäläinen"
+      },
+      {
+        "authorId": "123937803",
+        "name": "Cosmo Jenytin"
+      }
+    ],
+    "abstract": "Abstract In the practice of multi-criteria decision analysis, biased responses to the preference elicitation questions may impact the outcome of the process. In particular, there is a risk that the effects of biases accumulate in favor of a single alternative or a subset of alternatives. In this paper, we develop new bias mitigation techniques for multi-criteria decision analysis, which are based on the idea that the effects of biases can cancel out each other in the preference elicitation process. The benefits of the techniques include that the decision maker does not need to try to change her behavior to avoid biases, and there are no numerical adjustments of her judgements. The new techniques that we propose are: (1). Introducing a virtual reference alternative in the decision problem. (2). Introducing an auxiliary measuring stick attribute. (3). Rotating the reference point. (4). Restarting the decision process at an intermediate step with a reduced set of alternatives. We simulate computationally how these techniques help mitigate biases in the Even Swaps process when the decision maker exhibits the loss aversion bias, the measuring stick bias, and makes random response errors. The techniques can also be applied in weight elicitation using the SWING and trade-off methods to reduce the aforementioned biases."
+  },
+  {
+    "paperId": "d01aac0a53043644def78dbe203975be538b4055",
+    "externalIds": {
+      "ArXiv": "2003.01899",
+      "CorpusId": 244102026
+    },
+    "title": "Robust Active Preference Elicitation",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.01899, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1716369",
+        "name": "Phebe Vayanos"
+      },
+      {
+        "authorId": "8767587",
+        "name": "Yin-Fang Ye"
+      },
+      {
+        "authorId": "9561277",
+        "name": "Duncan C. McElfresh"
+      },
+      {
+        "authorId": "1718974",
+        "name": "John P. Dickerson"
+      },
+      {
+        "authorId": "144221391",
+        "name": "E. Rice"
+      }
+    ],
+    "abstract": "We study the problem of strategically eliciting the preferences of a decision-maker through a moderate number of pairwise comparison queries with the goal of making them a high quality recommendation for a specific decision-making problem. We are particularly motivated by applications in high stakes domains, such as when choosing a policy for allocating scarce resources to satisfy basic human needs (e.g., kidneys for transplantation or housing for those experiencing homelessness) where a consequential recommendation needs to be made from the (partially) elicited preferences. We model uncertainty in the preferences as being set based and investigate two settings: a) an offline elicitation setting, where all queries are made at once, and b) an online elicitation setting, where queries are selected sequentially over time in an adaptive fashion. We propose robust optimization formulations of these problems which integrate the preference elicitation and recommendation phases with aim to either maximize worst-case utility or minimize worst-case regret, and study their complexity. For the offline case, where active preference elicitation takes the form of a two and half stage robust optimization problem with decision-dependent information discovery, we provide an equivalent reformulation in the form of a mixed-binary linear program which we solve via column-andconstraint generation. For the online setting, where active preference learning takes the form of a multistage robust optimization problem with decision-dependent information discovery, we propose a conservative solution approach. Numerical studies on synthetic data demonstrate that our methods outperform state-ofthe art approaches from the literature in terms of worst-case rank, regret, and utility. We showcase how our methodology can be used to assist a homeless services agency in choosing a policy for allocating scarce housing resources of different types to people experiencing homelessness. We use historical data to generate candidate counterfactual housing allocation policies that differ in their fairness, efficiency, and interpretability characteristics and elicit the agency’s values over these attributes."
+  },
+  {
+    "paperId": "91dc640b6c22bb717404550d418d6d0fda41d417",
+    "externalIds": {
+      "MAG": "3158306034",
+      "DOI": "10.3982/TE4208",
+      "CorpusId": 203586021
+    },
+    "title": "Constrained preference elicitation",
+    "venue": "",
+    "year": 2021,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.3982/te4208",
+      "status": "GOLD",
+      "license": "CCBYNC",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3982/TE4208?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3982/TE4208, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545357",
+        "name": "Yaron Azrieli"
+      },
+      {
+        "authorId": "1701204",
+        "name": "Christopher P. Chambers"
+      },
+      {
+        "authorId": "23265189",
+        "name": "P. Healy"
+      }
+    ],
+    "abstract": "A planner wants to elicit information about an agent’s preference relation, but not the entire ordering. Specifically, preferences are grouped into “types,” and the planner only wants to elicit the agent’s type. We first assume beliefs about randomization are subjective, and show that a space of types is elicitable if and only if each type is defined by what the agent would choose from some list of menus. If beliefs are objective then additional type spaces can be elicited, though a convexity condition must be satisfied. These results remain unchanged when we consider a setting with multiple agents."
+  },
+  {
+    "paperId": "aff5cf067cf5382e3241b59225b9b48017c5b595",
+    "externalIds": {
+      "ArXiv": "2007.06718",
+      "DBLP": "journals/corr/abs-2007-06718",
+      "MAG": "3042582152",
+      "CorpusId": 220514467
+    },
+    "title": "What If I Don't Like Any Of The Choices? The Limits of Preference Elicitation for Participatory Algorithm Design",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.06718, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2072942445",
+        "name": "Samantha Robertson"
+      },
+      {
+        "authorId": "34827715",
+        "name": "N. Salehi"
+      }
+    ],
+    "abstract": "Emerging methods for participatory algorithm design have proposed collecting and aggregating individual stakeholder preferences to create algorithmic systems that account for those stakeholders' values. Using algorithmic student assignment as a case study, we argue that optimizing for individual preference satisfaction in the distribution of limited resources may actually inhibit progress towards social and distributive justice. Individual preferences can be a useful signal but should be expanded to support more expressive and inclusive forms of democratic participation."
+  },
+  {
+    "paperId": "27e251082f351aa0bfda879f62d381e0f5fb248c",
+    "externalIds": {
+      "DBLP": "conf/wsdm/Priyogi19",
+      "MAG": "2914800632",
+      "DOI": "10.1145/3289600.3291604",
+      "CorpusId": 59528378
+    },
+    "title": "Preference Elicitation Strategy for Conversational Recommender System",
+    "venue": "Web Search and Data Mining",
+    "year": 2019,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3289600.3291604?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3289600.3291604, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2436418",
+        "name": "B. Priyogi"
+      }
+    ],
+    "abstract": "Traditionally, recommenders have been based on a single-shot model based on past user actions. Conversational recommenders allow incremental elicitation of user preference by performing user-system dialogue. For example, the systems can ask about user preference toward a feature associated with the items. In such systems, it is important to design an efficient conversation, which minimizes the number of question asked while maximizing the preference information obtained. Therefore, this research is intended to explore possible ways to design a conversational recommender with an efficient preference elicitation. Specifically, it focuses on the order of questions. Also, an idea proposed to suggest answers for each question asked, which can assist users in giving their feedback."
+  },
+  {
+    "paperId": "187e64daef6355503ffb45661b47aced451a799b",
+    "externalIds": {
+      "CorpusId": 234491445
+    },
+    "title": "Constrained preference elicitation",
+    "venue": "",
+    "year": 2021,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://econtheory.org/ojs/index.php/te/article/viewFile/20210507/30638/875, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2076037912",
+        "name": "Áron"
+      },
+      {
+        "authorId": "2092018113",
+        "name": "zrieli"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "6d5d9223b4a3a3106e4eb0e5781ae7047cb3e684",
+    "externalIds": {
+      "DBLP": "journals/mansci/BenadeNPS21",
+      "MAG": "3089003244",
+      "DOI": "10.1287/MNSC.2020.3666",
+      "CorpusId": 10710371
+    },
+    "title": "Preference Elicitation For Participatory Budgeting",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2017,
+    "citationCount": 159,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1287/MNSC.2020.3666?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1287/MNSC.2020.3666, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4696380",
+        "name": "Gerdus Benade"
+      },
+      {
+        "authorId": "40147298",
+        "name": "Swaprava Nath"
+      },
+      {
+        "authorId": "1689184",
+        "name": "Ariel D. Procaccia"
+      },
+      {
+        "authorId": "39195827",
+        "name": "Nisarg Shah"
+      }
+    ],
+    "abstract": "Participatory budgeting enables the allocation of public funds by collecting and aggregating individual preferences. It has already had a sizable real-world impact, but making the most of this new paradigm requires rethinking some of the basics of computational social choice, including the very way in which individuals express their preferences. We attempt to maximize social welfare by using observed votes as proxies for voters’ unknown underlying utilities, and analytically compare four preference elicitation methods: knapsack votes, rankings by value or value for money, and threshold approval votes. We find that threshold approval voting is qualitatively superior, and also performs well in experiments using data from real participatory budgeting elections. This paper was accepted by Yan Chen, decision analysis."
+  },
+  {
+    "paperId": "a5d12842ecb800a429d6d2a03fc1ac0a3cf15481",
+    "externalIds": {
+      "DOI": "10.2139/ssrn.3685794",
+      "CorpusId": 243550999
+    },
+    "title": "On the (Ir)Relevance of Monetary Incentives in Risk Preference Elicitation Experiments",
+    "venue": "Social Science Research Network",
+    "year": 2020,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "http://publikationen.ub.uni-frankfurt.de/files/55246/SSRN-id3678753.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.2139/ssrn.3685794?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2139/ssrn.3685794, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46964019",
+        "name": "A. Hackethal"
+      },
+      {
+        "authorId": "2541399",
+        "name": "Michael Kirchler"
+      },
+      {
+        "authorId": "118923227",
+        "name": "Christine Laudenbach"
+      },
+      {
+        "authorId": "4336366",
+        "name": "Michael Razen"
+      },
+      {
+        "authorId": "1739142426",
+        "name": "Annika Weber"
+      }
+    ],
+    "abstract": "Incentivized experiments in which individuals receive monetary rewards according to the outcomes of their decisions are regarded as the gold standard for preference elicitation in experimental economics. These task-related real payments are considered necessary to reveal subjects’ “true preferences”. Using a systematic, large-sample approach with three subject pools of private investors, professional investors, and students, we test the e ↵ ect of task-related monetary incentives on risk preferences elicited in four standard experimental tasks. We ﬁnd no systematic di ↵ erences in behavior between subjects in the incentivized and non-incentivized regimes. We discuss implications for academic research and for applications in the ﬁeld."
+  },
+  {
+    "paperId": "b2642c25f7ca7c7201e414a65164fd3ac2ba7e58",
+    "externalIds": {
+      "DBLP": "journals/ai/LuB20",
+      "MAG": "2987977793",
+      "DOI": "10.1016/j.artint.2019.103203",
+      "CorpusId": 209902354
+    },
+    "title": "Preference elicitation and robust winner determination for single- and multi-winner social choice",
+    "venue": "Artificial Intelligence",
+    "year": 2020,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.artint.2019.103203",
+      "status": "BRONZE",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.artint.2019.103203?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.artint.2019.103203, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2409297",
+        "name": "Tyler Lu"
+      },
+      {
+        "authorId": "145646162",
+        "name": "Craig Boutilier"
+      }
+    ],
+    "abstract": "Abstract The use of voting schemes based on rankings of alternatives to solve social choice problems can often impose significant burden on voters, both in terms of communication and cognitive requirements. In this paper, we develop techniques for preference elicitation in voting settings (i.e., vote elicitation) that can alleviate this burden by minimizing the amount of preference information needed to find (approximately or exactly) optimal outcomes. We first describe robust optimization techniques for determining winning alternatives given partial preference information (i.e., partial rankings) using the notion of minimax regret. We show that the corresponding computational problem is tractable for some important voting rules, and intractable for others. We then use the solution to the minimax-regret optimization as the basis for vote elicitation schemes that determine appropriate preference queries for voters to quickly reduce potential regret. We apply these techniques to multi-winner social choice problems as well, in which a slate of alternatives must be selected, developing both exact and greedy robust optimization procedures. Empirical results on several data sets validate the effectiveness of our techniques."
+  },
+  {
+    "paperId": "f809f9561e613c22f60b4fae56aaf8fa882868b0",
+    "externalIds": {
+      "MAG": "2959758102",
+      "DOI": "10.1007/s11518-019-5420-1",
+      "CorpusId": 199125221
+    },
+    "title": "Strategic Analysis of a Regulatory Conflict Using Dempster-Shafer Theory and AHP for Preference Elicitation",
+    "venue": "Journal of Systems Science and Systems Engineering",
+    "year": 2019,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11518-019-5420-1?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11518-019-5420-1, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2244578804",
+        "name": "Maisa M. Silva"
+      },
+      {
+        "authorId": "1688759",
+        "name": "K. Hipel"
+      },
+      {
+        "authorId": "144874901",
+        "name": "D. Kilgour"
+      },
+      {
+        "authorId": "2274984101",
+        "name": "A. P. C. S. Costa"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "a32c7989a5cd1e84e12164b359df5dfa78b2e6d8",
+    "externalIds": {
+      "MAG": "2917842524",
+      "DOI": "10.1016/J.JBANKFIN.2019.02.014",
+      "CorpusId": 85538039
+    },
+    "title": "Individual pension risk preference elicitation and collective asset allocation with heterogeneity",
+    "venue": "Journal of Banking & Finance",
+    "year": 2019,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.jbankfin.2019.02.014",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/J.JBANKFIN.2019.02.014?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/J.JBANKFIN.2019.02.014, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152864111",
+        "name": "G. Alserda"
+      },
+      {
+        "authorId": "1725644",
+        "name": "B. Dellaert"
+      },
+      {
+        "authorId": "104068207",
+        "name": "L. Swinkels"
+      },
+      {
+        "authorId": "1698022094",
+        "name": "Fieke S.G. van der Lecq"
+      }
+    ],
+    "abstract": "Collectively organized pension plans must increasingly demonstrate that the risk preferences of their members are adequately reflected in the plans’ asset allocations. However, whether funds should elicit individual members’ risk preferences to achieve this goal, or whether they can rely on other indicators, such as socio-demographics, remains unclear. To address this question, we apply a tailored augmented lottery choice method to elicit individual pension income risk preferences from 7894 members from five different pension plans. The results show that member risk preferences are strongly heterogeneous and can only partially be predicted from individual and plan characteristics. Differences in risk preference imply different optimal asset allocations. We find large welfare losses for heterogeneous members in pension plans with their current asset allocation because these allocations are safer than implied by members’ preferences. We provide a framework for pension plans to gauge the need to elicit risk preferences among their members."
+  },
+  {
+    "paperId": "d5ab9d4998ae86d49a9de373f69fc03e9c72c3df",
+    "externalIds": {
+      "MAG": "2956112762",
+      "DBLP": "conf/um/Torkamaan019",
+      "DOI": "10.1145/3320435.3324990",
+      "CorpusId": 182951939
+    },
+    "title": "Rating-based Preference Elicitation for Recommendation of Stress Intervention",
+    "venue": "User Modeling, Adaptation, and Personalization",
+    "year": 2019,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3320435.3324990?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3320435.3324990, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "19244431",
+        "name": "H. Torkamaan"
+      },
+      {
+        "authorId": "145758499",
+        "name": "J. Ziegler"
+      }
+    ],
+    "abstract": "In recent years, recommender systems have emerged as a key component for personalization in health applications. Central in the development of recommender systems is rating-based preference elicitation, based both on single-criterion and multi-criteria rating. Though its use has already been studied in various domains of recommender systems, far too little attention has been paid to preference elicitation in health recommender systems~(HRS). The purpose of this paper is to develop a better understanding of this preference elicitation by studying the criteria that users consider when they rate a health promotion recommendation from HRS, and accordingly, to offer a design solution as a functional feedback model for mobile health applications. This paper investigates the user-perceived importance of various criteria, as well as latent factors for eliciting user feedback on the recommendations. It also reports the relationship of explanation and trust to the overall rating. By aggregating a list of all possible criteria, we further discover that not all criteria are equally important to users, and that the effectiveness of a recommendation plays a dominant role."
+  },
+  {
+    "paperId": "17d6b999cf70d8c6c99a205c60bc02c3907871ce",
+    "externalIds": {
+      "DBLP": "journals/4or/OlteanuBMORZ22",
+      "MAG": "2889607699",
+      "DOI": "10.1007/s10288-020-00468-5",
+      "CorpusId": 57086824
+    },
+    "title": "Preference elicitation for a ranking method based on multiple reference profiles",
+    "venue": "4OR",
+    "year": 2019,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "https://hal.archives-ouvertes.fr/hal-01862334v2/file/Preference_Elicitation_for_a_Ranking_Method_________based_on_Multiple_Reference_Profiles.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10288-020-00468-5?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10288-020-00468-5, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "52375749",
+        "name": "Alexandru Olteanu"
+      },
+      {
+        "authorId": "22669348",
+        "name": "Khaled Belahcène"
+      },
+      {
+        "authorId": "1688088",
+        "name": "V. Mousseau"
+      },
+      {
+        "authorId": "3025072",
+        "name": "Wassila Ouerdane"
+      },
+      {
+        "authorId": "40462763",
+        "name": "A. Rolland"
+      },
+      {
+        "authorId": "2115842568",
+        "name": "Jun Zheng"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "8d13e9a86ba0974a70c5283365554db11bb46a04",
+    "externalIds": {
+      "MAG": "2999981043",
+      "DOI": "10.1016/j.ifacol.2019.12.656",
+      "CorpusId": 213626862
+    },
+    "title": "Preference Elicitation within Framework of Fully Probabilistic Design of Decision Strategies",
+    "venue": "IFAC-PapersOnLine",
+    "year": 2019,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.ifacol.2019.12.656",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.ifacol.2019.12.656?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.ifacol.2019.12.656, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1762026",
+        "name": "M. Kárný"
+      },
+      {
+        "authorId": "145768994",
+        "name": "Tatiana V. Guy"
+      }
+    ],
+    "abstract": "Abstract The paper proposes the preference-elicitation support within the framework of fully probabilistic design (FPD) of decision strategies. Agent employing FPD uses probability densities to model the closed-loop behaviour, i.e. a collection of all observed, opted and considered random variables. Opted actions are generated by a randomised strategy. The optimal decision strategy minimises Kullback-Leibler divergence of the closed-loop model to its ideal counterpart describing the agent’s preferences. Thus, selecting the ideal closed-loop model comprises preference elicitation. The paper provides a general choice of the best ideal closed-loop model reflecting agent’s preferences. The foreseen application potential of such a preference elicitation is high as FPD is a non-trivial dense extension of Bayesian decision making that dominates prescriptive decision theories. The general solution is illustrated on the regulation task with a linear Gaussian model describing the agent’s environment."
+  },
+  {
+    "paperId": "c63afcf8b9fc708100c2143e41abc2b363d43e11",
+    "externalIds": {
+      "MAG": "2962903234",
+      "DBLP": "conf/atal/ZintgrafRLJN18",
+      "ArXiv": "1802.07606",
+      "DOI": "10.65109/chrg6153",
+      "CorpusId": 3404226
+    },
+    "title": "Ordered Preference Elicitation Strategies for Supporting Multi-Objective Decision Making",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2018,
+    "citationCount": 53,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.07606, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3378188",
+        "name": "Luisa M. Zintgraf"
+      },
+      {
+        "authorId": "1917202",
+        "name": "D. Roijers"
+      },
+      {
+        "authorId": "35817159",
+        "name": "Sjoerd Linders"
+      },
+      {
+        "authorId": "1689001",
+        "name": "C. Jonker"
+      },
+      {
+        "authorId": "144336828",
+        "name": "A. Nowé"
+      }
+    ],
+    "abstract": "In multi-objective decision planning and learning, much attention is paid to producing optimal solution sets that contain an optimal policy for every possible user preference profile. We argue that the step that follows, i.e, determining which policy to execute by maximising the user's intrinsic utility function over this (possibly infinite) set, is under-studied. This paper aims to fill this gap. We build on previous work on Gaussian processes and pairwise comparisons for preference modelling, extend it to the multi-objective decision support scenario, and propose new ordered preference elicitation strategies based on ranking and clustering. Our main contribution is an in-depth evaluation of these strategies using computer and human-based experiments. We show that our proposed elicitation strategies outperform the currently used pairwise methods, and found that users prefer ranking most. Our experiments further show that utilising monotonicity information in GPs by using a linear prior mean at the start and virtual comparisons to the nadir and ideal points, increases performance. We demonstrate our decision support framework in a real-world study on traffic regulation, conducted with the city of Amsterdam."
+  },
+  {
+    "paperId": "0583085fa59a5f079622f954d46bdb06cc943827",
+    "externalIds": {
+      "ArXiv": "1911.09153",
+      "DBLP": "conf/aaai/VendrovLHB20",
+      "MAG": "2991567373",
+      "DOI": "10.1609/AAAI.V34I06.6592",
+      "CorpusId": 208202350
+    },
+    "title": "Gradient-based Optimization for Bayesian Preference Elicitation",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2019,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/6592/6448",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.09153, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2210865",
+        "name": "Ivan Vendrov"
+      },
+      {
+        "authorId": "2409297",
+        "name": "Tyler Lu"
+      },
+      {
+        "authorId": "2111526781",
+        "name": "Qingqing Huang"
+      },
+      {
+        "authorId": "145646162",
+        "name": "Craig Boutilier"
+      }
+    ],
+    "abstract": "Effective techniques for eliciting user preferences have taken on added importance as recommender systems (RSs) become increasingly interactive and conversational. A common and conceptually appealing Bayesian criterion for selecting queries is expected value of information (EVOI). Unfortunately, it is computationally prohibitive to construct queries with maximum EVOI in RSs with large item spaces. We tackle this issue by introducing a continuous formulation of EVOI as a differentiable network that can be optimized using gradient methods available in modern machine learning computational frameworks (e.g., TensorFlow, PyTorch). We exploit this to develop a novel Monte Carlo method for EVOI optimization, which is much more scalable for large item spaces than methods requiring explicit enumeration of items. While we emphasize the use of this approach for pairwise (or k-wise) comparisons of items, we also demonstrate how our method can be adapted to queries involving subsets of item attributes or “partial items,” which are often more cognitively manageable for users. Experiments show that our gradient-based EVOI technique achieves state-of-the-art performance across several domains while scaling to large item spaces."
+  },
+  {
+    "paperId": "2c27a5821ba6d1cc56d82a1491a8500db2ce161a",
+    "externalIds": {
+      "MAG": "2593787504",
+      "DBLP": "journals/giq/Afful-DadzieA17",
+      "DOI": "10.1016/j.giq.2017.02.005",
+      "CorpusId": 32081383
+    },
+    "title": "Open Government Data in Africa: A preference elicitation analysis of media practitioners",
+    "venue": "Government Information Quarterly",
+    "year": 2017,
+    "citationCount": 46,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.giq.2017.02.005?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.giq.2017.02.005, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1398789324",
+        "name": "Eric Afful-Dadzie"
+      },
+      {
+        "authorId": "1398789321",
+        "name": "Anthony Afful-Dadzie"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "640b3ae149194ea148f6dd8e7c6d6949bf5f72cb",
+    "externalIds": {
+      "MAG": "2981729031",
+      "PubMedCentral": "6862116",
+      "DOI": "10.3390/ijerph16214088",
+      "CorpusId": 204909028,
+      "PubMed": "31652907"
+    },
+    "title": "A Novel Preference Elicitation Technique Based on a Graph Model and Its Application to a Brownfield Redevelopment Conflict in China",
+    "venue": "International Journal of Environmental Research and Public Health",
+    "year": 2019,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/1660-4601/16/21/4088/pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC6862116, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "104407396",
+        "name": "Shinan Zhao"
+      },
+      {
+        "authorId": "46485188",
+        "name": "Haiyan Xu"
+      }
+    ],
+    "abstract": "Disputes are very common and pervasive in brownfield redevelopment projects, in which multiple stakeholders or decision-makers (DMs) strategically interact with each other with a conflict of interest. The preference information of DMs involved plays a vital role in identifying possible outcomes or resolutions for resolving a tough brownfield conflict. In this research, a novel preference ranking technique is purposefully proposed within the graph model for conflict resolution (GMCR) paradigm to effectively and accurately garner DMs’ actual preferences, in which states are ranked according to their similarities and closeness to the most and least preferred states instead of subjective option statements or weights in traditional preference ranking methods. Finally, a real-world brownfield conflict which occurred in China is utilized to show how the proposed preference ranking method can be applied for conveniently obtaining the true preference information of DMs and strategically determining the equilibria of a given dispute. The case study indicates that the novel preference elicitation approach is more objective and reasonable than the traditional option prioritization method. Moreover, there exists an equilibrium which can provide strategic advice and meaningful insights for addressing the brownfield conflict."
+  },
+  {
+    "paperId": "775513066557e20dc3117fbaaea17891e88d6795",
+    "externalIds": {
+      "MAG": "2893518396",
+      "DBLP": "conf/recsys/SepliarskaiaKRR18",
+      "DOI": "10.1145/3240323.3240352",
+      "CorpusId": 51990475
+    },
+    "title": "Preference elicitation as an optimization problem",
+    "venue": "ACM Conference on Recommender Systems",
+    "year": 2018,
+    "citationCount": 53,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3240323.3240352",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3240323.3240352?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3240323.3240352, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10175775",
+        "name": "A. Sepliarskaia"
+      },
+      {
+        "authorId": "1755651",
+        "name": "Julia Kiseleva"
+      },
+      {
+        "authorId": "1803571",
+        "name": "Filip Radlinski"
+      },
+      {
+        "authorId": "1696030",
+        "name": "M. de Rijke"
+      }
+    ],
+    "abstract": "The new user coldstart problem arises when a recommender system does not yet have any information about a user. A common solution to it is to generate a profile by asking the user to rate a number of items. Which items are selected determines the quality of the recommendations made, and thus has been studied extensively. We propose a new elicitation method to generate a static preference questionnaire (SPQ) that poses relative preference questions to the user. Using a latent factor model, we show that SPQ improves personalized recommendations by choosing a minimal and diverse set of questions. We are the first to rigorously prove which optimization task should be solved to select each question in static questionnaires. Our theoretical results are confirmed by extensive experimentation. We test the performance of SPQ on two real-world datasets, under two experimental conditions: simulated, when users behave according to a latent factor model (LFM), and real, in which only real user judgments are revealed as the system asks questions. We show that SPQ reduces the necessary length of a questionnaire by up to a factor of three compared to state-of-the-art preference elicitation methods. Moreover, solving the right optimization task, SPQ also performs better than baselines with dynamically generated questions."
+  },
+  {
+    "paperId": "7d68befb1de02456eeb76a943f7ce574a2dcd26f",
+    "externalIds": {
+      "DBLP": "journals/firai/DragoneTP18",
+      "MAG": "2782973629",
+      "DOI": "10.3389/frobt.2017.00071",
+      "CorpusId": 3655388
+    },
+    "title": "Constructive Preference Elicitation",
+    "venue": "Frontiers in Robotics and AI",
+    "year": 2018,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "https://www.frontiersin.org/articles/10.3389/frobt.2017.00071/pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3389/frobt.2017.00071?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3389/frobt.2017.00071, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2282695",
+        "name": "Paolo Dragone"
+      },
+      {
+        "authorId": "2580338",
+        "name": "Stefano Teso"
+      },
+      {
+        "authorId": "1702610",
+        "name": "Andrea Passerini"
+      }
+    ],
+    "abstract": "When faced with large or complex decision problems, human decision makers (DM) can make costly mistakes, due to inherent limitations of their memory, attention and knowledge. Preference elicitation tools assist the decision maker in overcoming these limitations. They do so by interactively learning the DM's preferences through appropriately chosen queries and suggesting high-quality outcomes based on the preference estimates. Most state-of-the-art techniques, however, fail in \\textit{constructive} settings, where the goal is to synthesize a custom or entirely novel configuration rather than choosing the best option among a given set of candidates. Many wide-spread problems are constructive in nature: customizing composite goods such as cars and computers, bundling products, recommending touristic travel plans, designing apartments, buildings or urban layouts, etc. In these settings, the full set of outcomes is humongous and can not be explicitly enumerated, and the solution must be synthesized via constrained optimization. In this paper we describe recent approaches especially designed for constructive problems, outlining the underlying ideas and their differences as well as their limitations. In presenting them we especially focus on novel issues that the constructive setting brings forth, such as how to deal with sparsity of the DM's preferences, how to properly frame the interaction, and how to achieve efficient synthesis of custom instances."
+  },
+  {
+    "paperId": "d4b33b33f00d837dc1ee2776601b4eea4705b70e",
+    "externalIds": {
+      "MAG": "2898515674",
+      "DOI": "10.1007/s11269-018-2123-1",
+      "CorpusId": 158161162
+    },
+    "title": "Multi Criteria Decision Making in Selecting Stormwater Management Green Infrastructure for Industrial Areas Part 1: Stakeholder Preference Elicitation",
+    "venue": "Water resources management",
+    "year": 2018,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11269-018-2123-1?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11269-018-2123-1, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "89191421",
+        "name": "V. Jayasooriya"
+      },
+      {
+        "authorId": "89191421",
+        "name": "V. Jayasooriya"
+      },
+      {
+        "authorId": "97955669",
+        "name": "A. Ng"
+      },
+      {
+        "authorId": "47349220",
+        "name": "S. Muthukumaran"
+      },
+      {
+        "authorId": "143664941",
+        "name": "B. Perera"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "28f238807d63812ee3b96a5b7ecff3509310afec",
+    "externalIds": {
+      "MAG": "3187289456",
+      "DOI": "10.1111/poms.13551",
+      "CorpusId": 238794192
+    },
+    "title": "Elicitation of Preference among Multiple Criteria in Food Distribution by Food Banks",
+    "venue": "Production and operations management",
+    "year": 2021,
+    "citationCount": 51,
+    "openAccessPdf": {
+      "url": "https://rss.onlinelibrary.wiley.com/doi/am-pdf/10.1111/poms.13551",
+      "status": "BRONZE",
+      "license": "publisher-specific, author manuscript",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1111/poms.13551?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1111/poms.13551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2132651771",
+        "name": "Tanzid Hasnain"
+      },
+      {
+        "authorId": "2047916352",
+        "name": "Irem Sengul Orgut"
+      },
+      {
+        "authorId": "40433668",
+        "name": "Julie S. Ivy"
+      }
+    ],
+    "abstract": "The United Nations Sustainable Development Goals provide a road map for countries to achieve peace and prosperity. In this study, we address two of these sustainable development goals: achieving food security and reducing inequalities. Food banks are nonprofit organizations that collect and distribute food donations to food‐insecure populations in their service regions. Food banks consider three criteria while distributing the donated food: equity, effectiveness, and efficiency. The equity criterion aims to distribute food in proportion to the food‐insecure households in a food bank's service area. The effectiveness criterion aims to minimize undistributed food, whereas the efficiency criterion minimizes the total cost of transportation. Models that assume predetermined weights on these criteria may produce inaccurate results as the preference of food banks over these criteria may vary over time, and as a function of supply and demand. In collaboration with our food bank partner in North Carolina, we develop a single‐period, weighted multi‐criteria optimization model that provides the decision‐maker the flexibility to capture their preferences over the three criteria of equity, effectiveness, and efficiency, and explore the resulting trade‐offs. We then introduce a novel algorithm that elicits the inherent preference of a food bank by analyzing its actions within a single‐period. The algorithm does not require direct interaction with the decision‐maker. The non‐interactive nature of this algorithm is especially significant for humanitarian organizations such as food banks which lack the resources to interact with modelers on a regular basis. We perform extensive numerical experiments to validate the efficiency of our algorithm. We illustrate results using historical data from our food bank partner and discuss managerial insights. We explore the implications of different decision‐maker preferences for the criteria on distribution policies."
+  },
+  {
+    "paperId": "5edaab1fa078a5c468e3fb26d267ca49be32e70e",
+    "externalIds": {
+      "MAG": "2802771679",
+      "DBLP": "conf/uai/ZhaoLWKMSX18",
+      "ArXiv": "1805.05287",
+      "CorpusId": 21695149
+    },
+    "title": "A Cost-Effective Framework for Preference Elicitation and Aggregation",
+    "venue": "Conference on Uncertainty in Artificial Intelligence",
+    "year": 2018,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.05287, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2495710",
+        "name": "Zhibing Zhao"
+      },
+      {
+        "authorId": null,
+        "name": "Haoming Li"
+      },
+      {
+        "authorId": "2110265612",
+        "name": "Junming Wang"
+      },
+      {
+        "authorId": "1721327",
+        "name": "J. Kephart"
+      },
+      {
+        "authorId": "143999398",
+        "name": "Nicholas Mattei"
+      },
+      {
+        "authorId": "145984784",
+        "name": "Hui Su"
+      },
+      {
+        "authorId": "35276487",
+        "name": "Lirong Xia"
+      }
+    ],
+    "abstract": "We propose a cost-effective framework for preference elicitation and aggregation under the Plackett-Luce model with features. Given a budget, our framework iteratively computes the most cost-effective elicitation questions in order to help the agents make a better group decision. \nWe illustrate the viability of the framework with experiments on Amazon Mechanical Turk, which we use to estimate the cost of answering different types of elicitation questions. We compare the prediction accuracy of our framework when adopting various information criteria that evaluate the expected information gain from a question. Our experiments show carefully designed information criteria are much more efficient, i.e., they arrive at the correct answer using fewer queries, than randomly asking questions given the budget constraint."
+  },
+  {
+    "paperId": "1dbd1c738616241b865a52dc3d0d4c3a924496d2",
+    "externalIds": {
+      "MAG": "2807909161",
+      "DBLP": "conf/atal/LeTT0S18",
+      "DOI": "10.65109/grhf6422",
+      "CorpusId": 22889797
+    },
+    "title": "Preference Elicitation with Interdependency and User Bother Cost",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2018,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.65109/grhf6422?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.65109/grhf6422, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39321396",
+        "name": "Tiep Le"
+      },
+      {
+        "authorId": "3382615",
+        "name": "Atena M. Tabakhi"
+      },
+      {
+        "authorId": "1389575160",
+        "name": "Long Tran-Thanh"
+      },
+      {
+        "authorId": "1805457",
+        "name": "W. Yeoh"
+      },
+      {
+        "authorId": "1776076",
+        "name": "Tran Cao Son"
+      }
+    ],
+    "abstract": "Agent-based scheduling systems, such as automated systems that schedule meetings for users and systems that schedule smart devices in smart homes, require the elicitation of user preferences in oder to operate in a manner that is consistent with user expectations. Unfortunately, interactions between such systems and users can be limited as human users prefer to not be overly bothered by such systems. As such, a key challenge is for the system to efficiently elicit key preferences without bothering the users too much. To tackle this problem, we propose a cost model that captures the cognitive or bother cost associated with asking a question. We incorporate this model into our iPLEASE system, an interactive preference elicitation approach. iPLEASE represents a user's preferences as a matrix, called preference matrix, and uses heuristics to select, from a given set of questions, an efficient sequence of questions to ask the user such that the total bother cost incurred to the user does not exceed a given bother cost budget. The user's response to those questions will partially populate the preference matrix. It then performs an exact matrix completion via convex optimization to approximate the remaining preferences that are not directly elicited. We empirically apply iPLEASE on randomly-generated problems as well as on a real-world dataset for the smart device scheduling problem to demonstrate that our approach outperforms other non-trivial benchmarks in eliciting user preferences."
+  },
+  {
+    "paperId": "96234ea841d6f77d606ca7d993cecb1254be4895",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1805-06632",
+      "ArXiv": "1805.06632",
+      "MAG": "2804777327",
+      "CorpusId": 29154222
+    },
+    "title": "Preference Elicitation and Robust Optimization with Multi-Attribute Quasi-Concave Choice Functions",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.06632, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35539969",
+        "name": "W. Haskell"
+      },
+      {
+        "authorId": "144024285",
+        "name": "Wenjie Huang"
+      },
+      {
+        "authorId": "3251694",
+        "name": "Huifu Xu"
+      }
+    ],
+    "abstract": "Decision maker's preferences are often captured by some choice functions which are used to rank prospects. In this paper, we consider ambiguity in choice functions over a multi-attribute prospect space. Our main result is a robust preference model where the optimal decision is based on the worst-case choice function from an ambiguity set constructed through preference elicitation with pairwise comparisons of prospects. Differing from existing works in the area, our focus is on quasi-concave choice functions rather than concave functions and this enables us to cover a wide range of utility/risk preference problems including multi-attribute expected utility and $S$-shaped aspirational risk preferences. The robust choice function is increasing and quasi-concave but not necessarily translation invariant, a key property of monetary risk measures. We propose two approaches based respectively on the support functions and level functions of quasi-concave functions to develop tractable formulations of the maximin preference robust optimization model. The former gives rise to a mixed integer linear programming problem whereas the latter is equivalent to solving a sequence of convex risk minimization problems. To assess the effectiveness of the proposed robust preference optimization model and numerical schemes, we apply them to a security budget allocation problem and report some preliminary results from experiments."
+  }
+]

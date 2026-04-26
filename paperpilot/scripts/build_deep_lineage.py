@@ -43,6 +43,7 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     build_provider,
     fetch_paper_by_arxiv,
     fetch_related,
+    persist_classifications,
     select_top,
     to_node,
 )
@@ -116,7 +117,9 @@ def _classify_cached_lenient(
 
     entry = {"relation": rel, "confidence": conf, "rationale": rationale}
     classifications[cache_key] = entry
-    cache_path.write_text(json.dumps(classifications, ensure_ascii=False, indent=2))
+    # Use the same race-safe persist helper that build_lineage uses; without
+    # it, parallel deep + theme runs can lose each other's contributions.
+    persist_classifications(classifications, cache_path)
     return entry
 
 
