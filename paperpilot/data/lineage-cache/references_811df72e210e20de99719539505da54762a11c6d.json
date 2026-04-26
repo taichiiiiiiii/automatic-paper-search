@@ -1,0 +1,1671 @@
+[
+  {
+    "paperId": "4debb99c0c63bfaa97dd433bc2828e4dac81c48b",
+    "externalIds": {
+      "MAG": "2963923407",
+      "DBLP": "journals/corr/abs-1802-09477",
+      "ArXiv": "1802.09477",
+      "CorpusId": 3544558
+    },
+    "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+    "venue": "International Conference on Machine Learning",
+    "year": 2018,
+    "citationCount": 6692,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.09477, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "14637819",
+        "name": "Scott Fujimoto"
+      },
+      {
+        "authorId": "47662867",
+        "name": "H. V. Hoof"
+      },
+      {
+        "authorId": "2462512",
+        "name": "D. Meger"
+      }
+    ],
+    "abstract": "In value-based reinforcement learning methods such as deep Q-learning, function approximation errors are known to lead to overestimated value estimates and suboptimal policies. We show that this problem persists in an actor-critic setting and propose novel mechanisms to minimize its effects on both the actor and the critic. Our algorithm builds on Double Q-learning, by taking the minimum value between a pair of critics to limit overestimation. We draw the connection between target networks and overestimation bias, and suggest delaying policy updates to reduce per-update error and further improve performance. We evaluate our method on the suite of OpenAI gym tasks, outperforming the state of the art in every environment tested."
+  },
+  {
+    "paperId": "33690ff21ef1efb576410e656f2e60c89d0307d6",
+    "externalIds": {
+      "MAG": "2754517384",
+      "DBLP": "conf/aaai/0002IBPPM18",
+      "ArXiv": "1709.06560",
+      "DOI": "10.1609/aaai.v32i1.11694",
+      "CorpusId": 4674781
+    },
+    "title": "Deep Reinforcement Learning that Matters",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2017,
+    "citationCount": 2273,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/11694/11553",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1709.06560, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40068904",
+        "name": "Peter Henderson"
+      },
+      {
+        "authorId": "18014232",
+        "name": "Riashat Islam"
+      },
+      {
+        "authorId": "143902541",
+        "name": "Philip Bachman"
+      },
+      {
+        "authorId": "145134886",
+        "name": "Joelle Pineau"
+      },
+      {
+        "authorId": "144368601",
+        "name": "Doina Precup"
+      },
+      {
+        "authorId": "2462512",
+        "name": "D. Meger"
+      }
+    ],
+    "abstract": "\n \n In recent years, significant progress has been made in solving challenging problems across various domains using deep reinforcement learning (RL). Reproducing existing work and accurately judging the improvements offered by novel methods is vital to sustaining this progress. Unfortunately, reproducing results for state-of-the-art deep RL methods is seldom straightforward. In particular, non-determinism in standard benchmark environments, combined with variance intrinsic to the methods, can make reported results tough to interpret. Without significance metrics and tighter standardization of experimental reporting, it is difficult to determine whether improvements over the prior state-of-the-art are meaningful. In this paper, we investigate challenges posed by reproducibility, proper experimental techniques, and reporting procedures. We illustrate the variability in reported metrics and results when comparing against common baselines and suggest guidelines to make future results in deep RL more reproducible. We aim to spur discussion about how to ensure continued progress in the field by minimizing wasted effort stemming from results that are non-reproducible and easily misinterpreted.\n \n"
+  },
+  {
+    "paperId": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+    "externalIds": {
+      "MAG": "2736601468",
+      "DBLP": "journals/corr/SchulmanWDRK17",
+      "ArXiv": "1707.06347",
+      "CorpusId": 28695052
+    },
+    "title": "Proximal Policy Optimization Algorithms",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 26816,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.06347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "143909660",
+        "name": "Filip Wolski"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2067138712",
+        "name": "Oleg Klimov"
+      }
+    ],
+    "abstract": "We propose a new family of policy gradient methods for reinforcement learning, which alternate between sampling data through interaction with the environment, and optimizing a \"surrogate\" objective function using stochastic gradient ascent. Whereas standard policy gradient methods perform one gradient update per data sample, we propose a novel objective function that enables multiple epochs of minibatch updates. The new methods, which we call proximal policy optimization (PPO), have some of the benefits of trust region policy optimization (TRPO), but they are much simpler to implement, more general, and have better sample complexity (empirically). Our experiments test PPO on a collection of benchmark tasks, including simulated robotic locomotion and Atari game playing, and we show that PPO outperforms other online policy gradient methods, and overall strikes a favorable balance between sample complexity, simplicity, and wall-time."
+  },
+  {
+    "paperId": "bc8eb0c66f8977d3b23dedb247607a8af2360859",
+    "externalIds": {
+      "MAG": "2963849886",
+      "DBLP": "journals/corr/NachumNXS17aa",
+      "ArXiv": "1707.01891",
+      "CorpusId": 3303573
+    },
+    "title": "Trust-PCL: An Off-Policy Trust Region Method for Continuous Control",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 115,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.01891, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7624658",
+        "name": "Ofir Nachum"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "36303818",
+        "name": "Kelvin Xu"
+      },
+      {
+        "authorId": "1714772",
+        "name": "Dale Schuurmans"
+      }
+    ],
+    "abstract": "Trust region methods, such as TRPO, are often used to stabilize policy optimization algorithms in reinforcement learning (RL). While current trust region strategies are effective for continuous control, they typically require a prohibitively large amount of on-policy interaction with the environment. To address this problem, we propose an off-policy trust region method, Trust-PCL. The algorithm is the result of observing that the optimal policy and state values of a maximum reward objective with a relative-entropy regularizer satisfy a set of multi-step pathwise consistencies along any path. Thus, Trust-PCL is able to maintain optimization stability while exploiting off-policy data to improve sample efficiency. When evaluated on a number of continuous control tasks, Trust-PCL improves the solution quality and sample efficiency of TRPO."
+  },
+  {
+    "paperId": "d0352057e2b99f65f8b5244a0b912026c86d7b21",
+    "externalIds": {
+      "ArXiv": "1704.06440",
+      "DBLP": "journals/corr/SchulmanAC17",
+      "MAG": "2609650878",
+      "CorpusId": 17234172
+    },
+    "title": "Equivalence Between Policy Gradients and Soft Q-Learning",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 401,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.06440, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "41192764",
+        "name": "Xi Chen"
+      }
+    ],
+    "abstract": "Two of the leading approaches for model-free reinforcement learning are policy gradient methods and $Q$-learning methods. $Q$-learning methods can be effective and sample-efficient when they work, however, it is not well-understood why they work, since empirically, the $Q$-values they estimate are very inaccurate. A partial explanation may be that $Q$-learning methods are secretly implementing policy gradient updates: we show that there is a precise equivalence between $Q$-learning and policy gradient methods in the setting of entropy-regularized reinforcement learning, that \"soft\" (entropy-regularized) $Q$-learning is exactly equivalent to a policy gradient method. We also point out a connection between $Q$-learning methods and natural policy gradient methods. Experimentally, we explore the entropy-regularized versions of $Q$-learning and policy gradients, and we find them to perform as well as (or slightly better than) the standard variants on the Atari benchmark. We also show that the equivalence holds in practical settings by constructing a $Q$-learning method that closely matches the learning dynamics of A3C without using a target network or $\\epsilon$-greedy exploration schedule."
+  },
+  {
+    "paperId": "ee1ac4a86cafa34e4905327f3436fea2d5994fc8",
+    "externalIds": {
+      "DBLP": "conf/iclr/GruslysDAPBM18",
+      "MAG": "2949980113",
+      "CorpusId": 67203472
+    },
+    "title": "The Reactor: A fast and sample-efficient Actor-Critic agent for Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 102,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2203658",
+        "name": "A. Gruslys"
+      },
+      {
+        "authorId": "2605877",
+        "name": "Will Dabney"
+      },
+      {
+        "authorId": "37666967",
+        "name": "M. G. Azar"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      },
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "1708654",
+        "name": "R. Munos"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "052282998bc24db695891f755a00e3cebd3fd796",
+    "externalIds": {
+      "MAG": "2612610049",
+      "ArXiv": "1704.04651",
+      "DBLP": "journals/corr/GruslysABM17",
+      "CorpusId": 174832
+    },
+    "title": "The Reactor: A Sample-Efficient Actor-Critic Architecture",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.04651, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2203658",
+        "name": "A. Gruslys"
+      },
+      {
+        "authorId": "37666967",
+        "name": "M. G. Azar"
+      },
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "1708654",
+        "name": "R. Munos"
+      }
+    ],
+    "abstract": "In this work we present a new reinforcement learning agent, called Reactor (for Retrace-actor), based on an off-policy multi-step return actor-critic architecture. The agent uses a deep recurrent neural network for function approximation. The network outputs a target policy {\\pi} (the actor), an action-value Q-function (the critic) evaluating the current policy {\\pi}, and an estimated behavioral policy {\\hat \\mu} which we use for off-policy correction. The agent maintains a memory buffer filled with past experiences. The critic is trained by the multi-step off-policy Retrace algorithm and the actor is trained by a novel {\\beta}-leave-one-out policy gradient estimate (which uses both the off-policy corrected return and the estimated Q-function). The Reactor is sample-efficient thanks to the use of memory replay, and numerical efficient since it uses multi-step returns. Also both acting and learning can be parallelized. We evaluated our algorithm on 57 Atari 2600 games and demonstrate that it achieves state-of-the-art performance."
+  },
+  {
+    "paperId": "017b07fe36e8d43965b2125f6170a97c9d747fca",
+    "externalIds": {
+      "DBLP": "journals/corr/PopovHLHBVLTER17",
+      "MAG": "2610395436",
+      "ArXiv": "1704.03073",
+      "CorpusId": 13268930
+    },
+    "title": "Data-efficient Deep Reinforcement Learning for Dexterous Manipulation",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 278,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.03073, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2099317828",
+        "name": "I. Popov"
+      },
+      {
+        "authorId": "2801204",
+        "name": "N. Heess"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "49512734",
+        "name": "Roland Hafner"
+      },
+      {
+        "authorId": "1403998955",
+        "name": "Gabriel Barth-Maron"
+      },
+      {
+        "authorId": "7515048",
+        "name": "Matej Vecerík"
+      },
+      {
+        "authorId": "2066153554",
+        "name": "Thomas Lampe"
+      },
+      {
+        "authorId": "2109481",
+        "name": "Yuval Tassa"
+      },
+      {
+        "authorId": "1968210",
+        "name": "Tom Erez"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      }
+    ],
+    "abstract": "Deep learning and reinforcement learning methods have recently been used to solve a variety of problems in continuous control domains. An obvious application of these techniques is dexterous manipulation tasks in robotics which are difficult to solve using traditional control theory or hand-engineered approaches. One example of such a task is to grasp an object and precisely stack it on another. Solving this difficult and practically relevant problem in the real world is an important long-term goal for the field of robotics. Here we take a step towards this goal by examining the problem in simulation and providing models and techniques aimed at solving it. We introduce two extensions to the Deep Deterministic Policy Gradient algorithm (DDPG), a model-free Q-learning based method, which make it significantly more data-efficient and scalable. Our results show that by making extensive use of off-policy data and replay, it is possible to find control policies that robustly grasp objects and stack them. Further, our results hint that it may soon be feasible to train successful stacking policies by collecting interactions on real robots."
+  },
+  {
+    "paperId": "96a067e188f1c89db9faea1fea2314a15ae51bbc",
+    "externalIds": {
+      "DBLP": "journals/corr/NachumNXS17",
+      "MAG": "2951507724",
+      "ArXiv": "1702.08892",
+      "CorpusId": 3615386
+    },
+    "title": "Bridging the Gap Between Value and Policy Based Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 531,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.08892, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7624658",
+        "name": "Ofir Nachum"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "36303818",
+        "name": "Kelvin Xu"
+      },
+      {
+        "authorId": "1714772",
+        "name": "Dale Schuurmans"
+      }
+    ],
+    "abstract": "We establish a new connection between value and policy based reinforcement learning (RL) based on a relationship between softmax temporal value consistency and policy optimality under entropy regularization. Specifically, we show that softmax consistent action values correspond to optimal entropy regularized policy probabilities along any action sequence, regardless of provenance. From this observation, we develop a new RL algorithm, Path Consistency Learning (PCL), that minimizes a notion of soft consistency error along multi-step action sequences extracted from both on- and off-policy traces. We examine the behavior of PCL in different scenarios and show that PCL can be interpreted as generalizing both actor-critic and Q-learning algorithms. We subsequently deepen the relationship by showing how a single model can be used to represent both a policy and the corresponding softmax state values, eliminating the need for a separate critic. The experimental evaluation demonstrates that PCL significantly outperforms strong actor-critic and Q-learning baselines across several benchmarks."
+  },
+  {
+    "paperId": "9172cd6c253edf7c3a1568e03577db20648ad0c4",
+    "externalIds": {
+      "MAG": "2594103415",
+      "ArXiv": "1702.08165",
+      "DBLP": "conf/icml/HaarnojaTAL17",
+      "CorpusId": 11227891
+    },
+    "title": "Reinforcement Learning with Deep Energy-Based Policies",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 1560,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.08165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2587648",
+        "name": "Tuomas Haarnoja"
+      },
+      {
+        "authorId": "4990833",
+        "name": "Haoran Tang"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "We propose a method for learning expressive energy-based policies for continuous states and actions, which has been feasible only in tabular domains before. We apply our method to learning maximum entropy policies, resulting into a new algorithm, called soft Q-learning, that expresses the optimal policy via a Boltzmann distribution. We use the recently proposed amortized Stein variational gradient descent to learn a stochastic sampling network that approximates samples from this distribution. The benefits of the proposed algorithm include improved exploration and compositionality that allows transferring skills between tasks, which we confirm in simulated experiments with swimming and walking robots. We also draw a connection to actor-critic methods, which can be viewed performing approximate inference on the corresponding energy-based model."
+  },
+  {
+    "paperId": "524513b6f4ddca331c33bcc70a9f677fa240cfa3",
+    "externalIds": {
+      "DBLP": "journals/corr/GuLGTL16",
+      "MAG": "2950492145",
+      "ArXiv": "1611.02247",
+      "DOI": "10.17863/CAM.21294",
+      "CorpusId": 14048239
+    },
+    "title": "Q-Prop: Sample-Efficient Policy Gradient with An Off-Policy Critic",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 361,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.02247, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2046135",
+        "name": "S. Gu"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "1744700",
+        "name": "Zoubin Ghahramani"
+      },
+      {
+        "authorId": "145369890",
+        "name": "Richard E. Turner"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "© ICLR 2019 - Conference Track Proceedings. All rights reserved. Model-free deep reinforcement learning (RL) methods have been successful in a wide variety of simulated domains. However, a major obstacle facing deep RL in the real world is their high sample complexity. Batch policy gradient methods offer stable learning, but at the cost of high variance, which often requires large batches. TD-style methods, such as off-policy actor-critic and Q-learning, are more sample-efficient but biased, and often require costly hyperparameter sweeps to stabilize. In this work, we aim to develop methods that combine the stability of policy gradients with the efficiency of off-policy RL. We present Q-Prop, a policy gradient method that uses a Taylor expansion of the off-policy critic as a control variate. Q-Prop is both sample efficient and stable, and effectively combines the benefits of on-policy and off-policy methods. We analyze the connection between Q-Prop and existing model-free algorithms, and use control variate theory to derive two variants of Q-Prop with conservative and aggressive adaptation. We show that conservative Q-Prop provides substantial gains in sample efficiency over trust region policy optimization (TRPO) with generalized advantage estimation (GAE), and improves stability over deep deterministic policy gradient (DDPG), the state-of-the-art on-policy and off-policy methods, on OpenAI Gym's MuJoCo continuous control environments."
+  },
+  {
+    "paperId": "c40dd8f235aabe6efbb93c59c0536adf491f9ead",
+    "externalIds": {
+      "DBLP": "conf/iclr/ODonoghueMKM17",
+      "ArXiv": "1611.01626",
+      "MAG": "2963170229",
+      "CorpusId": 18785947
+    },
+    "title": "PGQ: Combining policy gradient and Q-learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 145,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.01626, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1389654226",
+        "name": "Brendan O'Donoghue"
+      },
+      {
+        "authorId": "1708654",
+        "name": "R. Munos"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      }
+    ],
+    "abstract": "Policy gradient is an efficient technique for improving a policy in a reinforcement learning setting. However, vanilla online variants are on-policy only and not able to take advantage of off-policy data. In this paper we describe a new technique that combines policy gradient with off-policy Q-learning, drawing experience from a replay buffer. This is motivated by making a connection between the fixed points of the regularized policy gradient algorithm and the Q-values. This connection allows us to estimate the Q-values from the action preferences of the policy, to which we apply Q-learning updates. We refer to the new technique as 'PGQL', for policy gradient and Q-learning. We also establish an equivalency between action-value fitting techniques and actor-critic algorithms, showing that regularized policy gradient techniques can be interpreted as advantage function learning algorithms. We conclude with some numerical examples that demonstrate improved data efficiency and stability of PGQL. In particular, we tested PGQL on the full suite of Atari games and achieved performance exceeding that of both asynchronous advantage actor-critic (A3C) and Q-learning."
+  },
+  {
+    "paperId": "e37b999f0c96d7136db07b0185b837d5decd599a",
+    "externalIds": {
+      "DBLP": "journals/corr/GuHLL16",
+      "MAG": "2953326790",
+      "ArXiv": "1610.00633",
+      "DOI": "10.1109/ICRA.2017.7989385",
+      "CorpusId": 18389147
+    },
+    "title": "Deep reinforcement learning for robotic manipulation with asynchronous off-policy updates",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2016,
+    "citationCount": 1581,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1610.00633",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.00633, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2046135",
+        "name": "S. Gu"
+      },
+      {
+        "authorId": "29891985",
+        "name": "E. Holly"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Reinforcement learning holds the promise of enabling autonomous robots to learn large repertoires of behavioral skills with minimal human intervention. However, robotic applications of reinforcement learning often compromise the autonomy of the learning process in favor of achieving training times that are practical for real physical systems. This typically involves introducing hand-engineered policy representations and human-supplied demonstrations. Deep reinforcement learning alleviates this limitation by training general-purpose neural network policies, but applications of direct deep reinforcement learning algorithms have so far been restricted to simulated settings and relatively simple tasks, due to their apparent high sample complexity. In this paper, we demonstrate that a recent deep reinforcement learning algorithm based on off-policy training of deep Q-functions can scale to complex 3D manipulation tasks and can learn deep neural network policies efficiently enough to train on real physical robots. We demonstrate that the training times can be further reduced by parallelizing the algorithm across multiple robots which pool their policy updates asynchronously. Our experimental evaluation shows that our method can learn a variety of 3D manipulation skills in simulation and a complex door opening skill on real robots without any prior demonstrations or manually designed representations."
+  },
+  {
+    "paperId": "2b10281297ee001a9f3f4ea1aa9bea6b638c27df",
+    "externalIds": {
+      "ArXiv": "1606.01540",
+      "DBLP": "journals/corr/BrockmanCPSSTZ16",
+      "CorpusId": 16099293
+    },
+    "title": "OpenAI Gym",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 5508,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.01540, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2065151121",
+        "name": "Greg Brockman"
+      },
+      {
+        "authorId": "34415167",
+        "name": "Vicki Cheung"
+      },
+      {
+        "authorId": "152877508",
+        "name": "Ludwig Pettersson"
+      },
+      {
+        "authorId": "2113526509",
+        "name": "Jonas Schneider"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2109541439",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      }
+    ],
+    "abstract": "OpenAI Gym is a toolkit for reinforcement learning research. It includes a growing collection of benchmark problems that expose a common interface, and a website where people can share their results and compare the performance of algorithms. This whitepaper discusses the components of OpenAI Gym and the design decisions that went into the software."
+  },
+  {
+    "paperId": "1464776f20e2bccb6182f183b5ff2e15b0ae5e56",
+    "externalIds": {
+      "DBLP": "journals/corr/DuanCHSA16",
+      "MAG": "2342662072",
+      "ArXiv": "1604.06778",
+      "CorpusId": 12296499
+    },
+    "title": "Benchmarking Deep Reinforcement Learning for Continuous Control",
+    "venue": "International Conference on Machine Learning",
+    "year": 2016,
+    "citationCount": 1805,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1604.06778, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144581158",
+        "name": "Yan Duan"
+      },
+      {
+        "authorId": "41192764",
+        "name": "Xi Chen"
+      },
+      {
+        "authorId": "3127100",
+        "name": "Rein Houthooft"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "Recently, researchers have made significant progress combining the advances in deep learning for learning feature representations with reinforcement learning. Some notable examples include training agents to play Atari games based on raw pixel data and to acquire advanced manipulation skills using raw sensory inputs. However, it has been difficult to quantify progress in the domain of continuous control due to the lack of a commonly adopted benchmark. In this work, we present a benchmark suite of continuous control tasks, including classic tasks like cart-pole swing-up, tasks with very high state and action dimensionality such as 3D humanoid locomotion, tasks with partial observations, and tasks with hierarchical structure. We report novel findings based on the systematic evaluation of a range of implemented reinforcement learning algorithms. Both the benchmark and reference implementations are released at this https URL in order to facilitate experimental reproducibility and to encourage adoption by other researchers."
+  },
+  {
+    "paperId": "69e76e16740ed69f4dc55361a3d319ac2f1293dd",
+    "externalIds": {
+      "MAG": "2964043796",
+      "DBLP": "journals/corr/MnihBMGLHSK16",
+      "ArXiv": "1602.01783",
+      "CorpusId": 6875312
+    },
+    "title": "Asynchronous Methods for Deep Reinforcement Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2016,
+    "citationCount": 9891,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.01783, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "36045539",
+        "name": "Adrià Puigdomènech Badia"
+      },
+      {
+        "authorId": "153583218",
+        "name": "Mehdi Mirza"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "3367786",
+        "name": "Tim Harley"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      }
+    ],
+    "abstract": "We propose a conceptually simple and lightweight framework for deep reinforcement learning that uses asynchronous gradient descent for optimization of deep neural network controllers. We present asynchronous variants of four standard reinforcement learning algorithms and show that parallel actor-learners have a stabilizing effect on training allowing all four methods to successfully train neural network controllers. The best performing method, an asynchronous variant of actor-critic, surpasses the current state-of-the-art on the Atari domain while training for half the time on a single multi-core CPU instead of a GPU. Furthermore, we show that asynchronous actor-critic succeeds on a wide variety of continuous motor control problems as well as on a new task of navigating random 3D mazes using a visual input."
+  },
+  {
+    "paperId": "846aedd869a00c09b40f1f1f35673cb22bc87490",
+    "externalIds": {
+      "DBLP": "journals/nature/SilverHMGSDSAPL16",
+      "MAG": "2257979135",
+      "DOI": "10.1038/nature16961",
+      "CorpusId": 515925,
+      "PubMed": "26819042"
+    },
+    "title": "Mastering the game of Go with deep neural networks and tree search",
+    "venue": "Nature",
+    "year": 2016,
+    "citationCount": 18694,
+    "openAccessPdf": {
+      "url": "https://www.nature.com/articles/nature16961.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/nature16961?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/nature16961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1885349",
+        "name": "Aja Huang"
+      },
+      {
+        "authorId": "2772217",
+        "name": "Chris J. Maddison"
+      },
+      {
+        "authorId": "35099444",
+        "name": "A. Guez"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      },
+      {
+        "authorId": "47568983",
+        "name": "George van den Driessche"
+      },
+      {
+        "authorId": "4337102",
+        "name": "Julian Schrittwieser"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "2749418",
+        "name": "Vedavyas Panneershelvam"
+      },
+      {
+        "authorId": "1975889",
+        "name": "Marc Lanctot"
+      },
+      {
+        "authorId": "48373216",
+        "name": "S. Dieleman"
+      },
+      {
+        "authorId": "2401609",
+        "name": "Dominik Grewe"
+      },
+      {
+        "authorId": "4111313",
+        "name": "John Nham"
+      },
+      {
+        "authorId": "2583391",
+        "name": "Nal Kalchbrenner"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "40662181",
+        "name": "Madeleine Leach"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "1686971",
+        "name": "T. Graepel"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "4a026fd65af4ba3575e64174de56fee093fa3330",
+    "externalIds": {
+      "DBLP": "conf/uai/FoxPT16",
+      "ArXiv": "1512.08562",
+      "MAG": "2963267001",
+      "CorpusId": 2374643
+    },
+    "title": "Taming the Noise in Reinforcement Learning via Soft Updates",
+    "venue": "Conference on Uncertainty in Artificial Intelligence",
+    "year": 2015,
+    "citationCount": 368,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.08562, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145609073",
+        "name": "Roy Fox"
+      },
+      {
+        "authorId": "3314041",
+        "name": "Ari Pakman"
+      },
+      {
+        "authorId": "1777660",
+        "name": "Naftali Tishby"
+      }
+    ],
+    "abstract": "Model-free reinforcement learning algorithms, such as Q-learning, perform poorly in the early stages of learning in noisy environments, because much effort is spent unlearning biased estimates of the state-action value function. The bias results from selecting, among several noisy estimates, the apparent optimum, which may actually be suboptimal. We propose G-learning, a new off-policy learning algorithm that regularizes the value estimates by penalizing deterministic policies in the beginning of the learning process. We show that this method reduces the bias of the value-function estimation, leading to faster convergence to the optimal value and the optimal policy. Moreover, G-learning enables the natural incorporation of prior domain knowledge, when available. The stochastic nature of G-learning also makes it avoid some exploration costs, a property usually attributed only to on-policy algorithms. We illustrate these ideas in several examples, where G-learning results in significant improvements of the convergence rate and the cost of the learning process."
+  },
+  {
+    "paperId": "6640f4e4beae786f301928d82a9f8eb037aa6935",
+    "externalIds": {
+      "DBLP": "conf/nips/HeessWSLET15",
+      "MAG": "1906772730",
+      "ArXiv": "1510.09142",
+      "CorpusId": 53604
+    },
+    "title": "Learning Continuous Control Policies by Stochastic Value Gradients",
+    "venue": "Neural Information Processing Systems",
+    "year": 2015,
+    "citationCount": 593,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1510.09142, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2801204",
+        "name": "N. Heess"
+      },
+      {
+        "authorId": "89504302",
+        "name": "Greg Wayne"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "1968210",
+        "name": "Tom Erez"
+      },
+      {
+        "authorId": "2109481",
+        "name": "Yuval Tassa"
+      }
+    ],
+    "abstract": "We present a unified framework for learning continuous control policies using backpropagation. It supports stochastic control by treating stochasticity in the Bellman equation as a deterministic function of exogenous noise. The product is a spectrum of general policy gradient algorithms that range from model-free methods with value functions to model-based methods without value functions. We use learned models but only require observations from the environment in- stead of observations from model-predicted trajectories, minimizing the impact of compounded model errors. We apply these algorithms first to a toy stochastic control problem and then to several physics-based control problems in simulation. One of these variants, SVG(1), shows the effectiveness of learning models, value functions, and policies simultaneously in continuous domains."
+  },
+  {
+    "paperId": "024006d4c2a89f7acacc6e4438d156525b60a98f",
+    "externalIds": {
+      "MAG": "2173248099",
+      "DBLP": "journals/corr/LillicrapHPHETS15",
+      "ArXiv": "1509.02971",
+      "CorpusId": 16326763
+    },
+    "title": "Continuous control with deep reinforcement learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 15241,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1509.02971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "2323922",
+        "name": "Jonathan J. Hunt"
+      },
+      {
+        "authorId": "1863250",
+        "name": "A. Pritzel"
+      },
+      {
+        "authorId": "2801204",
+        "name": "N. Heess"
+      },
+      {
+        "authorId": "1968210",
+        "name": "Tom Erez"
+      },
+      {
+        "authorId": "2109481",
+        "name": "Yuval Tassa"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      }
+    ],
+    "abstract": "We adapt the ideas underlying the success of Deep Q-Learning to the continuous action domain. We present an actor-critic, model-free algorithm based on the deterministic policy gradient that can operate over continuous action spaces. Using the same learning algorithm, network architecture and hyper-parameters, our algorithm robustly solves more than 20 simulated physics tasks, including classic problems such as cartpole swing-up, dexterous manipulation, legged locomotion and car driving. Our algorithm is able to find policies whose performance is competitive with those found by a planning algorithm with full access to the dynamics of the domain and its derivatives. We further demonstrate that for many of the tasks the algorithm can learn policies end-to-end: directly from raw pixel inputs."
+  },
+  {
+    "paperId": "b6b8a1b80891c96c28cc6340267b58186157e536",
+    "externalIds": {
+      "MAG": "2952125531",
+      "DBLP": "journals/jmlr/LevineFDA16",
+      "ArXiv": "1504.00702",
+      "DOI": "10.5555/2946645.2946684",
+      "CorpusId": 7242892
+    },
+    "title": "End-to-End Training of Deep Visuomotor Policies",
+    "venue": "Journal of machine learning research",
+    "year": 2015,
+    "citationCount": 3750,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1504.00702, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "Policy search methods can allow robots to learn control policies for a wide range of tasks, but practical applications of policy search often require hand-engineered components for perception, state estimation, and low-level control. In this paper, we aim to answer the following question: does training the perception and control systems jointly end-to-end provide better performance than training each component separately? To this end, we develop a method that can be used to learn policies that map raw image observations directly to torques at the robot's motors. The policies are represented by deep convolutional neural networks (CNNs) with 92,000 parameters, and are trained using a partially observed guided policy search method, which transforms policy search into supervised learning, with supervision provided by a simple trajectory-centric reinforcement learning method. We evaluate our method on a range of real-world manipulation tasks that require close coordination between vision and control, such as screwing a cap onto a bottle, and present simulated comparisons to a range of prior policy search methods."
+  },
+  {
+    "paperId": "340f48901f72278f6bf78a04ee5b01df208cc508",
+    "externalIds": {
+      "MAG": "2145339207",
+      "DBLP": "journals/nature/MnihKSRVBGRFOPB15",
+      "DOI": "10.1038/nature14236",
+      "CorpusId": 205242740,
+      "PubMed": "25719670"
+    },
+    "title": "Human-level control through deep reinforcement learning",
+    "venue": "Nature",
+    "year": 2015,
+    "citationCount": 31279,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/nature14236?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/nature14236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "2228824",
+        "name": "Andrei A. Rusu"
+      },
+      {
+        "authorId": "144056327",
+        "name": "J. Veness"
+      },
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      },
+      {
+        "authorId": "145600108",
+        "name": "A. Fidjeland"
+      },
+      {
+        "authorId": "2273072",
+        "name": "Georg Ostrovski"
+      },
+      {
+        "authorId": "48348688",
+        "name": "Stig Petersen"
+      },
+      {
+        "authorId": "50388928",
+        "name": "Charlie Beattie"
+      },
+      {
+        "authorId": "49813280",
+        "name": "Amir Sadik"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "143776287",
+        "name": "Helen King"
+      },
+      {
+        "authorId": "2106164",
+        "name": "D. Kumaran"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "449532187c94af3dd3aa55e16d2c50f7854d2199",
+    "externalIds": {
+      "MAG": "1771410628",
+      "ArXiv": "1502.05477",
+      "DBLP": "conf/icml/SchulmanLAJM15",
+      "CorpusId": 16046818
+    },
+    "title": "Trust Region Policy Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 7827,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.05477, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "29912342",
+        "name": "Philipp Moritz"
+      }
+    ],
+    "abstract": "In this article, we describe a method for optimizing control policies, with guaranteed monotonic improvement. By making several approximations to the theoretically-justified scheme, we develop a practical algorithm, called Trust Region Policy Optimization (TRPO). This algorithm is effective for optimizing large nonlinear policies such as neural networks. Our experiments demonstrate its robust performance on a wide variety of tasks: learning simulated robotic swimming, hopping, and walking gaits; and playing Atari games using images of the screen as input. Despite its approximations that deviate from the theory, TRPO tends to give monotonic improvement, with little tuning of hyperparameters."
+  },
+  {
+    "paperId": "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "externalIds": {
+      "MAG": "2964121744",
+      "DBLP": "journals/corr/KingmaB14",
+      "ArXiv": "1412.6980",
+      "CorpusId": 6628106
+    },
+    "title": "Adam: A Method for Stochastic Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 165251,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm."
+  },
+  {
+    "paperId": "3df673220e67cc55d40fbe495c9fba999d820613",
+    "externalIds": {
+      "MAG": "2153874061",
+      "DBLP": "conf/icml/Thomas14",
+      "CorpusId": 254721
+    },
+    "title": "Bias in Natural Actor-Critic Algorithms",
+    "venue": "International Conference on Machine Learning",
+    "year": 2014,
+    "citationCount": 123,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "143640165",
+        "name": "P. Thomas"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "687d0e59d5c35f022ce4638b3e3a6142068efc94",
+    "externalIds": {
+      "MAG": "2643747386",
+      "DBLP": "conf/icml/SilverLHDWR14",
+      "CorpusId": 13928442
+    },
+    "title": "Deterministic Policy Gradient Algorithms",
+    "venue": "International Conference on Machine Learning",
+    "year": 2014,
+    "citationCount": 4446,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "3276293",
+        "name": "Guy Lever"
+      },
+      {
+        "authorId": "2801204",
+        "name": "N. Heess"
+      },
+      {
+        "authorId": "1804488",
+        "name": "T. Degris"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "2319a491378867c7049b3da055c5df60e1671158",
+    "externalIds": {
+      "DBLP": "journals/corr/MnihKSGAWR13",
+      "MAG": "1757796397",
+      "ArXiv": "1312.5602",
+      "CorpusId": 15238391
+    },
+    "title": "Playing Atari with Deep Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2013,
+    "citationCount": 13583,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1312.5602, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      }
+    ],
+    "abstract": "We present the first deep learning model to successfully learn control policies directly from high-dimensional sensory input using reinforcement learning. The model is a convolutional neural network, trained with a variant of Q-learning, whose input is raw pixels and whose output is a value function estimating future rewards. We apply our method to seven Atari 2600 games from the Arcade Learning Environment, with no adjustment of the architecture or learning algorithm. We find that it outperforms all previous approaches on six of the games and surpasses a human expert on three of them."
+  },
+  {
+    "paperId": "244539f454800697ed663326b7cfba337ca0c2ec",
+    "externalIds": {
+      "DBLP": "conf/icml/LevineK13",
+      "MAG": "2104733512",
+      "CorpusId": 13971447
+    },
+    "title": "Guided Policy Search",
+    "venue": "International Conference on Machine Learning",
+    "year": 2013,
+    "citationCount": 882,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "145231047",
+        "name": "V. Koltun"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c0d047a50dbcd984c2624c32369dd54e3e98ec2c",
+    "externalIds": {
+      "DBLP": "conf/ijcai/RawlikTV13a",
+      "MAG": "2534779738",
+      "DOI": "10.15607/RSS.2012.VIII.045",
+      "CorpusId": 2168740
+    },
+    "title": "On Stochastic Optimal Control and Reinforcement Learning by Approximate Inference (Extended Abstract)",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2012,
+    "citationCount": 181,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.15607/rss.2012.viii.045",
+      "status": "BRONZE",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.15607/RSS.2012.VIII.045?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.15607/RSS.2012.VIII.045, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2236434",
+        "name": "K. Rawlik"
+      },
+      {
+        "authorId": "2312920557",
+        "name": "Marc Toussaint"
+      },
+      {
+        "authorId": "144575699",
+        "name": "S. Vijayakumar"
+      }
+    ],
+    "abstract": "We present a reformulation of the stochastic optimal control problem in terms of KL divergence minimisation, not only providing a unifying perspective of previous approaches in this area, but also demonstrating that the formalism leads to novel practical approaches to the control problem. Specifically, a natural relaxation of the dual formulation gives rise to exact iter- ative solutions to the finite and infinite horizon stochastic optimal control problem, while direct application of Bayesian inference methods yields instances of risk sensitive control. We furthermore study corresponding formulations in the reinforcement learning setting and present model free algorithms for problems with both discrete and continuous state and action spaces. Evaluation of the proposed methods on the standard Gridworld and Cart-Pole benchmarks verifies the theoretical insights and shows that the proposed methods improve upon current approaches."
+  },
+  {
+    "paperId": "644a079073969a92674f69483c4a85679d066545",
+    "externalIds": {
+      "MAG": "2115211925",
+      "DBLP": "conf/nips/Hasselt10",
+      "CorpusId": 5155799
+    },
+    "title": "Double Q-learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2010,
+    "citationCount": 1771,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "7634925",
+        "name": "H. V. Hasselt"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "e1262319851d78ffa40c89d98d8afba10d0aec2d",
+    "externalIds": {
+      "MAG": "2134042548",
+      "DBLP": "conf/nips/MaeiSBPSS09",
+      "CorpusId": 3232170
+    },
+    "title": "Convergent Temporal-Difference Learning with Arbitrary Smooth Function Approximation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2009,
+    "citationCount": 307,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1797222",
+        "name": "H. Maei"
+      },
+      {
+        "authorId": "40868287",
+        "name": "Csaba Szepesvari"
+      },
+      {
+        "authorId": "143683893",
+        "name": "S. Bhatnagar"
+      },
+      {
+        "authorId": "144368601",
+        "name": "Doina Precup"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1699645",
+        "name": "R. Sutton"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "7a7a23f2c39f9b1526bc8853c6c71a5b7f89e68c",
+    "externalIds": {
+      "MAG": "2107464055",
+      "DBLP": "conf/icml/Toussaint09",
+      "DOI": "10.1145/1553374.1553508",
+      "CorpusId": 838406
+    },
+    "title": "Robot trajectory optimization using approximate inference",
+    "venue": "International Conference on Machine Learning",
+    "year": 2009,
+    "citationCount": 453,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1553374.1553508?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1553374.1553508, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144918851",
+        "name": "Marc Toussaint"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "1df88f9f0e599b79b1fef6d1bc8dd46271844a0a",
+    "externalIds": {
+      "DBLP": "conf/cdc/Todorov08",
+      "MAG": "2155772159",
+      "DOI": "10.1109/CDC.2008.4739438",
+      "CorpusId": 11319606
+    },
+    "title": "General duality between optimal control and estimation",
+    "venue": "IEEE Conference on Decision and Control",
+    "year": 2008,
+    "citationCount": 347,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CDC.2008.4739438?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CDC.2008.4739438, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144832491",
+        "name": "E. Todorov"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c8221c054459e37edbf313668523d667fe5c1536",
+    "externalIds": {
+      "DBLP": "conf/aaai/ZiebartMBD08",
+      "MAG": "2098774185",
+      "CorpusId": 336219
+    },
+    "title": "Maximum Entropy Inverse Reinforcement Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2008,
+    "citationCount": 3357,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1753269",
+        "name": "Brian D. Ziebart"
+      },
+      {
+        "authorId": "34961461",
+        "name": "Andrew L. Maas"
+      },
+      {
+        "authorId": "1756566",
+        "name": "J. Bagnell"
+      },
+      {
+        "authorId": "144021446",
+        "name": "A. Dey"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "ffced5b53ad956474a12d73b5cbfd38355dfb70a",
+    "externalIds": {
+      "MAG": "2125612430",
+      "DBLP": "journals/nn/PetersS08",
+      "DOI": "10.1016/j.neunet.2008.02.003",
+      "CorpusId": 15454626,
+      "PubMed": "18482830"
+    },
+    "title": "Reinforcement learning of motor skills with policy gradients",
+    "venue": "Neural Networks",
+    "year": 2008,
+    "citationCount": 1016,
+    "openAccessPdf": {
+      "url": "http://www-clmc.usc.edu/publications/P/peters-NN2008.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.neunet.2008.02.003?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.neunet.2008.02.003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145197867",
+        "name": "Jan Peters"
+      },
+      {
+        "authorId": "1745219",
+        "name": "S. Schaal"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "99a0ddad2da8540ba3974cdac47c17b2e8cb19f3",
+    "externalIds": {
+      "DBLP": "conf/aaai/JohnsMW07",
+      "MAG": "1567962063",
+      "CorpusId": 76563
+    },
+    "title": "Compact Spectral Bases for Value Function Approximation Using Kronecker Factorization",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2007,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "33674253",
+        "name": "Jeffrey Johns"
+      },
+      {
+        "authorId": "1850503",
+        "name": "S. Mahadevan"
+      },
+      {
+        "authorId": "2146408409",
+        "name": "Chang Wang"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "8a7acaf6469c06ae5876d92f013184db5897bb13",
+    "externalIds": {
+      "MAG": "1583833196",
+      "DBLP": "journals/tsmc/BartoSA83",
+      "DOI": "10.1109/TSMC.1983.6313077",
+      "CorpusId": 1522994
+    },
+    "title": "Neuronlike adaptive elements that can solve difficult learning control problems",
+    "venue": "IEEE Transactions on Systems, Man and Cybernetics",
+    "year": 1983,
+    "citationCount": 3691,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TSMC.1983.6313077?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TSMC.1983.6313077, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1730590",
+        "name": "A. Barto"
+      },
+      {
+        "authorId": "1699645",
+        "name": "R. Sutton"
+      },
+      {
+        "authorId": "144826602",
+        "name": "C. Anderson"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d2a3c57defe48b0c310c561f97c8bd2b81672f14",
+    "externalIds": {
+      "MAG": "2017957151",
+      "DOI": "10.1103/PHYSREV.36.823",
+      "CorpusId": 121805391
+    },
+    "title": "On the Theory of the Brownian Motion",
+    "venue": "",
+    "year": 1930,
+    "citationCount": 2342,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1103/PHYSREV.36.823?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1103/PHYSREV.36.823, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50538596",
+        "name": "G. Uhlenbeck"
+      },
+      {
+        "authorId": "48051407",
+        "name": "L. Ornstein"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "2a65434d43ffa6554eaf14b728780919ad4f33eb",
+    "externalIds": {
+      "MAG": "64088143",
+      "DBLP": "phd/us/Ziebart18",
+      "DOI": "10.1184/R1/6720692.V1",
+      "CorpusId": 11919065
+    },
+    "title": "Modeling Purposeful Adaptive Behavior with the Principle of Maximum Causal Entropy",
+    "venue": "",
+    "year": 2010,
+    "citationCount": 747,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1184/R1/6720692.V1?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1184/R1/6720692.V1, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1753269",
+        "name": "Brian D. Ziebart"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "4c915c1eecb217c123a36dc6d3ce52d12c742614",
+    "externalIds": {
+      "DOI": "10.1023/A:1022672621406",
+      "CorpusId": 2332513
+    },
+    "title": "Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning",
+    "venue": "Machine-mediated learning",
+    "year": 2004,
+    "citationCount": 10054,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1023/A:1022672621406.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1023/A:1022672621406?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1023/A:1022672621406, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116648700",
+        "name": "Ronald J. Williams"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "97efafdb4a3942ab3efba53ded7413199f79c054",
+    "externalIds": {
+      "MAG": "2121863487",
+      "DBLP": "journals/tnn/SuttonB98",
+      "DOI": "10.1109/TNN.1998.712192",
+      "CorpusId": 60035920
+    },
+    "title": "Reinforcement Learning: An Introduction",
+    "venue": "IEEE Trans. Neural Networks",
+    "year": 1998,
+    "citationCount": 42384,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TNN.1998.712192?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TNN.1998.712192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238176724",
+        "name": "R. S. Sutton"
+      },
+      {
+        "authorId": "1730590",
+        "name": "A. Barto"
+      }
+    ],
+    "abstract": null
+  }
+]

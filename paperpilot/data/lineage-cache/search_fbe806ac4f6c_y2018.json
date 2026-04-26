@@ -1,0 +1,2308 @@
+[
+  {
+    "paperId": "5bbb6f9a8204eb13070b6f033e61c84ef8ee68dd",
+    "externalIds": {
+      "MAG": "2626804490",
+      "DBLP": "journals/corr/abs-1706-03741",
+      "ArXiv": "1706.03741",
+      "CorpusId": 4787508
+    },
+    "title": "Deep Reinforcement Learning from Human Preferences",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 5000,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03741, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "26890260",
+        "name": "Miljan Martic"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "2330246606",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "For sophisticated reinforcement learning (RL) systems to interact usefully with real-world environments, we need to communicate complex goals to these systems. In this work, we explore goals defined in terms of (non-expert) human preferences between pairs of trajectory segments. We show that this approach can effectively solve complex RL tasks without access to the reward function, including Atari games and simulated robot locomotion, while providing feedback on less than one percent of our agent's interactions with the environment. This reduces the cost of human oversight far enough that it can be practically applied to state-of-the-art RL systems. To demonstrate the flexibility of our approach, we show that we can successfully train complex novel behaviors with about an hour of human time. These behaviors and environments are considerably more complex than any that have been previously learned from human feedback."
+  },
+  {
+    "paperId": "f3460dc3ae5cfd41099d576a3bb77411e1fc2e3f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-12036",
+      "ArXiv": "2310.12036",
+      "DOI": "10.48550/arXiv.2310.12036",
+      "CorpusId": 264288854
+    },
+    "title": "A General Theoretical Paradigm to Understand Learning from Human Preferences",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2023,
+    "citationCount": 935,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.12036, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "37666967",
+        "name": "M. G. Azar"
+      },
+      {
+        "authorId": "144845456",
+        "name": "Mark Rowland"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      },
+      {
+        "authorId": "2260679471",
+        "name": "D. Guo"
+      },
+      {
+        "authorId": "2439765",
+        "name": "Daniele Calandriello"
+      },
+      {
+        "authorId": "1806291",
+        "name": "Michal Valko"
+      },
+      {
+        "authorId": "2237802765",
+        "name": "Rémi Munos"
+      }
+    ],
+    "abstract": "The prevalent deployment of learning from human preferences through reinforcement learning (RLHF) relies on two important approximations: the first assumes that pairwise preferences can be substituted with pointwise rewards. The second assumes that a reward model trained on these pointwise rewards can generalize from collected data to out-of-distribution data sampled by the policy. Recently, Direct Preference Optimisation (DPO) has been proposed as an approach that bypasses the second approximation and learn directly a policy from collected data without the reward modelling stage. However, this method still heavily relies on the first approximation. In this paper we try to gain a deeper theoretical understanding of these practical algorithms. In particular we derive a new general objective called $\\Psi$PO for learning from human preferences that is expressed in terms of pairwise preferences and therefore bypasses both approximations. This new general objective allows us to perform an in-depth analysis of the behavior of RLHF and DPO (as special cases of $\\Psi$PO) and to identify their potential pitfalls. We then consider another special case for $\\Psi$PO by setting $\\Psi$ simply to Identity, for which we can derive an efficient optimisation procedure, prove performance guarantees and demonstrate its empirical superiority to DPO on some illustrative examples."
+  },
+  {
+    "paperId": "3e6cde685fdf321d7edf9319f7b07c01ff79c11a",
+    "externalIds": {
+      "MAG": "2889659926",
+      "DBLP": "journals/corr/abs-1811-06521",
+      "ArXiv": "1811.06521",
+      "CorpusId": 53424488
+    },
+    "title": "Reward learning from human preferences and demonstrations in Atari",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 467,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.06521, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6675568",
+        "name": "Borja Ibarz"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "3408089",
+        "name": "Tobias Pohlen"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "2330246606",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "To solve complex real-world problems with reinforcement learning, we cannot rely on manually specified reward functions. Instead, we can have humans communicate an objective to the agent directly. In this work, we combine two approaches to learning from human feedback: expert demonstrations and trajectory preferences. We train a deep neural network to model the reward function and use its predicted reward to train an DQN-based deep reinforcement learning agent on 9 Atari games. Our approach beats the imitation learning baseline in 7 games and achieves strictly superhuman performance on 2 games without using game rewards. Additionally, we investigate the goodness of fit of the reward model, present some reward hacking problems, and study the effects of noise in the human labels."
+  },
+  {
+    "paperId": "9ba81cd8bb6d695bddfb68140e9c3c425f2f1939",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-01857",
+      "ArXiv": "2403.01857",
+      "DOI": "10.48550/arXiv.2403.01857",
+      "CorpusId": 268247520
+    },
+    "title": "Reward Model Learning vs. Direct Policy Optimization: A Comparative Analysis of Learning from Human Preferences",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 21,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.01857, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283843937",
+        "name": "Andi Nika"
+      },
+      {
+        "authorId": "2970095",
+        "name": "Debmalya Mandal"
+      },
+      {
+        "authorId": "2197201",
+        "name": "Parameswaran Kamalaruban"
+      },
+      {
+        "authorId": "2215269869",
+        "name": "Georgios Tzannetos"
+      },
+      {
+        "authorId": "2283843934",
+        "name": "Goran Radanovi'c"
+      },
+      {
+        "authorId": "1703727",
+        "name": "A. Singla"
+      }
+    ],
+    "abstract": "In this paper, we take a step towards a deeper understanding of learning from human preferences by systematically comparing the paradigm of reinforcement learning from human feedback (RLHF) with the recently proposed paradigm of direct preference optimization (DPO). We focus our attention on the class of loglinear policy parametrization and linear reward functions. In order to compare the two paradigms, we first derive minimax statistical bounds on the suboptimality gap induced by both RLHF and DPO, assuming access to an oracle that exactly solves the optimization problems. We provide a detailed discussion on the relative comparison between the two paradigms, simultaneously taking into account the sample size, policy and reward class dimensions, and the regularization temperature. Moreover, we extend our analysis to the approximate optimization setting and derive exponentially decaying convergence rates for both RLHF and DPO. Next, we analyze the setting where the ground-truth reward is not realizable and find that, while RLHF incurs a constant additional error, DPO retains its asymptotically decaying gap by just tuning the temperature accordingly. Finally, we extend our comparison to the Markov decision process setting, where we generalize our results with exact optimization. To the best of our knowledge, we are the first to provide such a comparative analysis for RLHF and DPO."
+  },
+  {
+    "paperId": "86e426b97069e4e8ded04dce0633a59286139a57",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-10228",
+      "ArXiv": "2503.10228",
+      "DOI": "10.48550/arXiv.2503.10228",
+      "CorpusId": 276961322
+    },
+    "title": "Policy Teaching via Data Poisoning in Learning from Human Preferences",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.10228, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283843937",
+        "name": "Andi Nika"
+      },
+      {
+        "authorId": "2210093903",
+        "name": "Jonathan Nöther"
+      },
+      {
+        "authorId": "2970095",
+        "name": "Debmalya Mandal"
+      },
+      {
+        "authorId": "2197201",
+        "name": "Parameswaran Kamalaruban"
+      },
+      {
+        "authorId": "1703727",
+        "name": "A. Singla"
+      },
+      {
+        "authorId": "2667883",
+        "name": "Goran Radanovic"
+      }
+    ],
+    "abstract": "We study data poisoning attacks in learning from human preferences. More specifically, we consider the problem of teaching/enforcing a target policy $\\pi^\\dagger$ by synthesizing preference data. We seek to understand the susceptibility of different preference-based learning paradigms to poisoned preference data by analyzing the number of samples required by the attacker to enforce $\\pi^\\dagger$. We first propose a general data poisoning formulation in learning from human preferences and then study it for two popular paradigms, namely: (a) reinforcement learning from human feedback (RLHF) that operates by learning a reward model using preferences; (b) direct preference optimization (DPO) that directly optimizes policy using preferences. We conduct a theoretical analysis of the effectiveness of data poisoning in a setting where the attacker is allowed to augment a pre-existing dataset and also study its special case where the attacker can synthesize the entire preference dataset from scratch. As our main results, we provide lower/upper bounds on the number of samples required to enforce $\\pi^\\dagger$. Finally, we discuss the implications of our results in terms of the susceptibility of these learning paradigms under such data poisoning attacks."
+  },
+  {
+    "paperId": "90e28a202605b4e8a10f0e0806ccec2eb852786e",
+    "externalIds": {
+      "DOI": "10.1016/j.oceaneng.2024.120036",
+      "CorpusId": 274747142
+    },
+    "title": "Deep reinforcement learning from human preferences for ROV path tracking",
+    "venue": "Ocean Engineering",
+    "year": 2025,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.oceaneng.2024.120036?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.oceaneng.2024.120036, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2335243242",
+        "name": "Shilong Niu"
+      },
+      {
+        "authorId": "2321947382",
+        "name": "Xingwei Pan"
+      },
+      {
+        "authorId": "2335523269",
+        "name": "Jun Wang"
+      },
+      {
+        "authorId": "2271680780",
+        "name": "Guangliang Li"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d38717a79a55cad8ed20d96ffe71136d0bbea9af",
+    "externalIds": {
+      "DBLP": "conf/iclr/VermaM24",
+      "ArXiv": "2404.08828",
+      "DOI": "10.48550/arXiv.2404.08828",
+      "CorpusId": 269148555
+    },
+    "title": "Hindsight PRIORs for Reward Learning from Human Preferences",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.08828, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2379657992",
+        "name": "Mudit Verma"
+      },
+      {
+        "authorId": "2262216465",
+        "name": "Katherine Metcalf"
+      }
+    ],
+    "abstract": "Preference based Reinforcement Learning (PbRL) removes the need to hand specify a reward function by learning a reward from preference feedback over policy behaviors. Current approaches to PbRL do not address the credit assignment problem inherent in determining which parts of a behavior most contributed to a preference, which result in data intensive approaches and subpar reward functions. We address such limitations by introducing a credit assignment strategy (Hindsight PRIOR) that uses a world model to approximate state importance within a trajectory and then guides rewards to be proportional to state importance through an auxiliary predicted return redistribution objective. Incorporating state importance into reward learning improves the speed of policy learning, overall policy performance, and reward recovery on both locomotion and manipulation tasks. For example, Hindsight PRIOR recovers on average significantly (p<0.05) more reward on MetaWorld (20%) and DMC (15%). The performance gains and our ablations demonstrate the benefits even a simple credit assignment strategy can have on reward learning and that state importance in forward dynamics prediction is a strong proxy for a state's contribution to a preference decision. Code repository can be found at https://github.com/apple/ml-rlhf-hindsight-prior."
+  },
+  {
+    "paperId": "7b6dd8542906a8014ba4924efdc7213d5e0a0711",
+    "externalIds": {
+      "DBLP": "conf/atal/KazantzidisNDF22",
+      "DOI": "10.5555/3535850.3536066",
+      "CorpusId": 248700222
+    },
+    "title": "How to Train Your Agent: Active Learning from Human Preferences and Justifications in Safety-critical Environments",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2022,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5555/3535850.3536066?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5555/3535850.3536066, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2164906783",
+        "name": "Ilias Kazantzidis"
+      },
+      {
+        "authorId": "39505328",
+        "name": "T. Norman"
+      },
+      {
+        "authorId": "1390662136",
+        "name": "Yali Du"
+      },
+      {
+        "authorId": "2164905902",
+        "name": "Christopher T. Freeman"
+      }
+    ],
+    "abstract": "Training reinforcement learning agents in real-world environments is costly, particularly for safety-critical applications. Human input can enable an agent to learn a good policy while avoiding unsafe actions, but at the cost of bothering the human with repeated queries. We present a model for safe learning in safety-critical environments from human input that minimises bother cost. Our model, JPAL-HA, proposes an efficient mechanism to harness human preferences and justifications to significantly improve safety during the learning process without increasing the number of interactions with a user. We show this with both simulation and human experiments."
+  },
+  {
+    "paperId": "d8912da8653567483242235aa9a6850951ff1d1b",
+    "externalIds": {
+      "ArXiv": "2307.12975",
+      "DBLP": "journals/corr/abs-2307-12975",
+      "DOI": "10.48550/arXiv.2307.12975",
+      "CorpusId": 260357869
+    },
+    "title": "Provable Benefits of Policy Learning from Human Preferences in Contextual Bandit Problems",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.12975",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.12975, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2152001525",
+        "name": "Xiang Ji"
+      },
+      {
+        "authorId": "3249827",
+        "name": "Huazheng Wang"
+      },
+      {
+        "authorId": "2108809403",
+        "name": "Minshuo Chen"
+      },
+      {
+        "authorId": "2118668129",
+        "name": "Tuo Zhao"
+      },
+      {
+        "authorId": "2258997595",
+        "name": "Mengdi Wang"
+      }
+    ],
+    "abstract": "For a real-world decision-making problem, the reward function often needs to be engineered or learned. A popular approach is to utilize human feedback to learn a reward function for training. The most straightforward way to do so is to ask humans to provide ratings for state-action pairs on an absolute scale and take these ratings as reward samples directly. Another popular way is to ask humans to rank a small set of state-action pairs by preference and learn a reward function from these preference data. Recently, preference-based methods have demonstrated substantial success in empirical applications such as InstructGPT. In this work, we develop a theoretical comparison between these human feedback approaches in offline contextual bandits and show how human bias and uncertainty in feedback modelings can affect the theoretical guarantees of these approaches. Through this, our results seek to provide a theoretical explanation for the empirical successes of preference-based methods from a modeling perspective."
+  },
+  {
+    "paperId": "8e2daf1f06d2d75bff9519c86382bf50fff6ae0f",
+    "externalIds": {
+      "ArXiv": "2210.15906",
+      "DBLP": "conf/iclr/GuanVK23",
+      "DOI": "10.48550/arXiv.2210.15906",
+      "CorpusId": 253224276
+    },
+    "title": "Relative Behavioral Attributes: Filling the Gap between Symbolic Goal Specification and Reward Learning from Human Preferences",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.15906",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.15906, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144190085",
+        "name": "L. Guan"
+      },
+      {
+        "authorId": "144982263",
+        "name": "Karthik Valmeekam"
+      },
+      {
+        "authorId": "2047340230",
+        "name": "Subbarao Kambhampati"
+      }
+    ],
+    "abstract": "Generating complex behaviors that satisfy the preferences of non-expert users is a crucial requirement for AI agents. Interactive reward learning from trajectory comparisons (a.k.a. RLHF) is one way to allow non-expert users to convey complex objectives by expressing preferences over short clips of agent behaviors. Even though this parametric method can encode complex tacit knowledge present in the underlying tasks, it implicitly assumes that the human is unable to provide richer feedback than binary preference labels, leading to intolerably high feedback complexity and poor user experience. While providing a detailed symbolic closed-form specification of the objectives might be tempting, it is not always feasible even for an expert user. However, in most cases, humans are aware of how the agent should change its behavior along meaningful axes to fulfill their underlying purpose, even if they are not able to fully specify task objectives symbolically. Using this as motivation, we introduce the notion of Relative Behavioral Attributes, which allows the users to tweak the agent behavior through symbolic concepts (e.g., increasing the softness or speed of agents' movement). We propose two practical methods that can learn to model any kind of behavioral attributes from ordered behavior clips. We demonstrate the effectiveness of our methods on four tasks with nine different behavioral attributes, showing that once the attributes are learned, end users can produce desirable agent behaviors relatively effortlessly, by providing feedback just around ten times. This is over an order of magnitude less than that required by the popular learning-from-human-preferences baselines. The supplementary video and source code are available at: https://guansuns.github.io/pages/rba."
+  },
+  {
+    "paperId": "f5a7b66d05322acae07a3b8196c64f877dec38b6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-08734",
+      "ArXiv": "2302.08734",
+      "DOI": "10.48550/arXiv.2302.08734",
+      "CorpusId": 257019873
+    },
+    "title": "A State Augmentation based approach to Reinforcement Learning from Human Preferences",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.08734",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.08734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151500192",
+        "name": "Mudit Verma"
+      },
+      {
+        "authorId": "2047340230",
+        "name": "Subbarao Kambhampati"
+      }
+    ],
+    "abstract": "Reinforcement Learning has suffered from poor reward specification, and issues for reward hacking even in simple enough domains. Preference Based Reinforcement Learning attempts to solve the issue by utilizing binary feedbacks on queried trajectory pairs by a human in the loop indicating their preferences about the agent's behavior to learn a reward model. In this work, we present a state augmentation technique that allows the agent's reward model to be robust and follow an invariance consistency that significantly improved performance, i.e. the reward recovery and subsequent return computed using the learned policy over our baseline PEBBLE. We validate our method on three domains, Mountain Car, a locomotion task of Quadruped-Walk, and a robotic manipulation task of Sweep-Into, and find that using the proposed augmentation the agent not only benefits in the overall performance but does so, quite early in the agent's training phase."
+  },
+  {
+    "paperId": "144caddc0d09fa4d2a83056f61c2de4389132732",
+    "externalIds": {
+      "ArXiv": "2210.09151",
+      "DBLP": "journals/corr/abs-2210-09151",
+      "DOI": "10.48550/arXiv.2210.09151",
+      "CorpusId": 252918703
+    },
+    "title": "Symbol Guided Hindsight Priors for Reward Learning from Human Preferences",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.09151",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.09151, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151500192",
+        "name": "Mudit Verma"
+      },
+      {
+        "authorId": "2240302",
+        "name": "Katherine Metcalf"
+      }
+    ],
+    "abstract": "Specifying rewards for reinforcement learned (RL) agents is challenging. Preference-based RL (PbRL) mitigates these challenges by inferring a reward from feedback over sets of trajectories. However, the effectiveness of PbRL is limited by the amount of feedback needed to reliably recover the structure of the target reward. We present the PRIor Over Rewards (PRIOR) framework, which incorporates priors about the structure of the reward function and the preference feedback into the reward learning process. Imposing these priors as soft constraints on the reward learning objective reduces the amount of feedback required by half and improves overall reward recovery. Additionally, we demonstrate that using an abstract state space for the computation of the priors further improves the reward learning and the agent's performance."
+  },
+  {
+    "paperId": "2fb30f1bdc9466fa424776bb07b85293d3f5d3ab",
+    "externalIds": {
+      "DOI": "10.5220/0014408700004052",
+      "CorpusId": 286468481
+    },
+    "title": "Safe Reward Learning from Human Preferences and Justifications",
+    "venue": "Proceedings of the 18th International Conference on Agents and Artificial Intelligence",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5220/0014408700004052?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5220/0014408700004052, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2164906783",
+        "name": "Ilias Kazantzidis"
+      },
+      {
+        "authorId": "2323997707",
+        "name": "Timothy J. Norman"
+      },
+      {
+        "authorId": "2285231723",
+        "name": "Yali Du"
+      },
+      {
+        "authorId": "2164905902",
+        "name": "Christopher T. Freeman"
+      }
+    ],
+    "abstract": "."
+  },
+  {
+    "paperId": "c2ec144b633e2dcbf889da95c711b483803e8350",
+    "externalIds": {
+      "MAG": "3203056473",
+      "DBLP": "journals/apin/BougieI22",
+      "DOI": "10.1007/s10489-021-02726-3",
+      "CorpusId": 244264453
+    },
+    "title": "Hierarchical learning from human preferences and curiosity",
+    "venue": "Applied intelligence (Boston)",
+    "year": 2021,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s10489-021-02726-3.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10489-021-02726-3?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10489-021-02726-3, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32823060",
+        "name": "Nicolas Bougie"
+      },
+      {
+        "authorId": "143758327",
+        "name": "R. Ichise"
+      }
+    ],
+    "abstract": "Recent success in scaling deep reinforcement algorithms (DRL) to complex problems has been driven by well-designed extrinsic rewards, which limits their applicability to many real-world tasks where rewards are naturally extremely sparse. One solution to this problem is to introduce human guidance to drive the agent’s learning. Although low-level demonstrations is a promising approach, it was shown that such guidance may be difficult for experts to demonstrate since some tasks require a large amount of high-quality demonstrations. In this work, we explore human guidance in the form of high-level preferences between sub-goals, leading to drastic reductions in both human effort and cost of exploration. We design a novel hierarchical reinforcement learning method that introduces non-expert human preferences at the high-level, and curiosity to drastically speed up the convergence of subpolicies to reach any sub-goals. We further propose a strategy based on curiosity to automatically discover sub-goals. We evaluate the proposed method on 2D navigation tasks, robotic control tasks, and image-based video games (Atari 2600), which have high-dimensional observations, sparse rewards, and complex state dynamics. The experimental results show that the proposed method can learn significantly faster than traditional hierarchical RL methods and drastically reduces the amount of human effort required over standard imitation learning approaches."
+  },
+  {
+    "paperId": "ed83227d6922bfecc0dd0bd15b09cf2dc818018d",
+    "externalIds": {
+      "DBLP": "conf/icra/PinslerAO0N18",
+      "MAG": "2801182767",
+      "DOI": "10.1109/ICRA.2018.8460907",
+      "CorpusId": 4660010
+    },
+    "title": "Sample and Feedback Efficient Hierarchical Reinforcement Learning from Human Preferences",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2018,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICRA.2018.8460907?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICRA.2018.8460907, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51312865",
+        "name": "Robert Pinsler"
+      },
+      {
+        "authorId": "1688702",
+        "name": "R. Akrour"
+      },
+      {
+        "authorId": "40229316",
+        "name": "Takayuki Osa"
+      },
+      {
+        "authorId": "145197867",
+        "name": "Jan Peters"
+      },
+      {
+        "authorId": "26599977",
+        "name": "G. Neumann"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "0a543cc850645c09eecc1dff4cc77e1ffbba0abb",
+    "externalIds": {
+      "DBLP": "journals/thri/BiyikAS24",
+      "ArXiv": "2402.15757",
+      "DOI": "10.1145/3649885",
+      "CorpusId": 267938610
+    },
+    "title": "Batch Active Learning of Reward Functions from Human Preferences",
+    "venue": "ACM Trans. Hum. Robot Interact.",
+    "year": 2024,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3649885",
+      "status": "HYBRID",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.15757, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8307674",
+        "name": "Erdem Biyik"
+      },
+      {
+        "authorId": "3162610",
+        "name": "Nima Anari"
+      },
+      {
+        "authorId": "1779671",
+        "name": "Dorsa Sadigh"
+      }
+    ],
+    "abstract": "Data generation and labeling are often expensive in robot learning. Preference-based learning is a concept that enables reliable labeling by querying users with preference questions. Active querying methods are commonly employed in preference-based learning to generate more informative data at the expense of parallelization and computation time. In this article, we develop a set of novel algorithms, batch active preference-based learning methods, that enable efficient learning of reward functions using as few data samples as possible while still having short query generation times and also retaining parallelizability. We introduce a method based on determinantal point processes for active batch generation and several heuristic-based alternatives. Finally, we present our experimental results for a variety of robotics tasks in simulation. Our results suggest that our batch active learning algorithm requires only a few queries that are computed in a short amount of time. We showcase one of our algorithms in a study to learn human users’ preferences."
+  },
+  {
+    "paperId": "535708777863633f7cc7fd6f4a716b1483c7100f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2301-11774",
+      "ArXiv": "2301.11774",
+      "DOI": "10.48550/arXiv.2301.11774",
+      "CorpusId": 256358616
+    },
+    "title": "Reinforcement Learning from Diverse Human Preferences",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2023,
+    "citationCount": 34,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.11774",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.11774, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052308113",
+        "name": "Wanqi Xue"
+      },
+      {
+        "authorId": "143706345",
+        "name": "Bo An"
+      },
+      {
+        "authorId": "2186749683",
+        "name": "Shuicheng Yan"
+      },
+      {
+        "authorId": "2351434",
+        "name": "Zhongwen Xu"
+      }
+    ],
+    "abstract": "The complexity of designing reward functions has been a major obstacle to the wide application of deep reinforcement learning (RL) techniques. Describing an agent's desired behaviors and properties can be difficult, even for experts. A new paradigm called reinforcement learning from human preferences (or preference-based RL) has emerged as a promising solution, in which reward functions are learned from human preference labels among behavior trajectories. However, existing methods for preference-based RL are limited by the need for accurate oracle preference labels. This paper addresses this limitation by developing a method for learning from diverse human preferences. The key idea is to stabilize reward learning through regularization and correction in a latent space. To ensure temporal consistency, a strong constraint is imposed on the reward model that forces its latent space to be close to a non-parameterized distribution. Additionally, a confidence-based reward model ensembling method is designed to generate more stable and reliable predictions. The proposed method is tested on a variety of tasks in DMcontrol and Meta-world and has shown consistent and significant improvements over existing preference-based RL algorithms when learning from diverse feedback, paving the way for real-world applications of RL methods."
+  },
+  {
+    "paperId": "12cf8be0865649b5e878051182b69f51e67fb8d4",
+    "externalIds": {
+      "ArXiv": "2311.14115",
+      "DBLP": "journals/tmlr/Dumoulin0CLD24",
+      "DOI": "10.48550/arXiv.2311.14115",
+      "CorpusId": 265445749
+    },
+    "title": "A density estimation perspective on learning from pairwise human preferences",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.14115, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3074927",
+        "name": "Vincent Dumoulin"
+      },
+      {
+        "authorId": "2344151338",
+        "name": "Daniel D. Johnson"
+      },
+      {
+        "authorId": "2268317844",
+        "name": "Pablo Samuel Castro"
+      },
+      {
+        "authorId": "2268317474",
+        "name": "H. Larochelle"
+      },
+      {
+        "authorId": "2268319505",
+        "name": "Yann Dauphin"
+      }
+    ],
+    "abstract": "Learning from human feedback (LHF) -- and in particular learning from pairwise preferences -- has recently become a crucial ingredient in training large language models (LLMs), and has been the subject of much research. Most recent works frame it as a reinforcement learning problem, where a reward function is learned from pairwise preference data and the LLM is treated as a policy which is adapted to maximize the rewards, often under additional regularization constraints. We propose an alternative interpretation which centers on the generative process for pairwise preferences and treats LHF as a density estimation problem. We provide theoretical and empirical results showing that for a family of generative processes defined via preference behavior distribution equations, training a reward function on pairwise preferences effectively models an annotator's implicit preference distribution. Finally, we discuss and present findings on\"annotator misspecification\"-- failure cases where wrong modeling assumptions are made about annotator behavior, resulting in poorly-adapted models -- suggesting that approaches that learn from pairwise human preferences could have trouble learning from a population of annotators with diverse viewpoints."
+  },
+  {
+    "paperId": "325fd1d65411e31cca343c6f5620e23d01f72fc4",
+    "externalIds": {
+      "DBLP": "phd/us/Raman15",
+      "MAG": "2522922140",
+      "CorpusId": 63310828
+    },
+    "title": "Machine Learning from Human Preferences and Choices",
+    "venue": "",
+    "year": 2015,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://ecommons.cornell.edu/bitstream/handle/1813/40961/kr339.pdf?isAllowed=y&sequence=1, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112005368",
+        "name": "Karthik Raman"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "1b2355c3c674b26a977768a91a164384ad51bbb1",
+    "externalIds": {
+      "ArXiv": "2304.05977",
+      "DBLP": "journals/corr/abs-2304-05977",
+      "DOI": "10.48550/arXiv.2304.05977",
+      "CorpusId": 258079316
+    },
+    "title": "ImageReward: Learning and Evaluating Human Preferences for Text-to-Image Generation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 919,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.05977",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.05977, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2214082934",
+        "name": "Jiazheng Xu"
+      },
+      {
+        "authorId": "2111312892",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2118477855",
+        "name": "Yuchen Wu"
+      },
+      {
+        "authorId": "2214060402",
+        "name": "Yuxuan Tong"
+      },
+      {
+        "authorId": "2214217084",
+        "name": "Qinkai Li"
+      },
+      {
+        "authorId": "2055623340",
+        "name": "Ming Ding"
+      },
+      {
+        "authorId": "2148911956",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "2047998",
+        "name": "Yuxiao Dong"
+      }
+    ],
+    "abstract": "We present a comprehensive solution to learn and improve text-to-image models from human preference feedback. To begin with, we build ImageReward -- the first general-purpose text-to-image human preference reward model -- to effectively encode human preferences. Its training is based on our systematic annotation pipeline including rating and ranking, which collects 137k expert comparisons to date. In human evaluation, ImageReward outperforms existing scoring models and metrics, making it a promising automatic metric for evaluating text-to-image synthesis. On top of it, we propose Reward Feedback Learning (ReFL), a direct tuning algorithm to optimize diffusion models against a scorer. Both automatic and human evaluation support ReFL's advantages over compared methods. All code and datasets are provided at \\url{https://github.com/THUDM/ImageReward}."
+  },
+  {
+    "paperId": "7a15950dc71079285a4eaf195de5aadd87c41b40",
+    "externalIds": {
+      "MAG": "2973379954",
+      "DBLP": "journals/corr/abs-1909-08593",
+      "ArXiv": "1909.08593",
+      "CorpusId": 202660943
+    },
+    "title": "Fine-Tuning Language Models from Human Preferences",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 2421,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.08593, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "1387983862",
+        "name": "Nisan Stiennon"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "145370786",
+        "name": "Paul Christiano"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      }
+    ],
+    "abstract": "Reward learning enables the application of reinforcement learning (RL) to tasks where reward is defined by human judgment, building a model of reward by asking humans questions. Most work on reward learning has used simulated environments, but complex information about values is often expressed in natural language, and we believe reward learning for language is a key to making RL practical and safe for real-world tasks. In this paper, we build on advances in generative pretraining of language models to apply reward learning to four natural language tasks: continuing text with positive sentiment or physically descriptive language, and summarization tasks on the TL;DR and CNN/Daily Mail datasets. For stylistic continuation we achieve good results with only 5,000 comparisons evaluated by humans. For summarization, models trained with 60,000 comparisons copy whole sentences from the input but skip irrelevant preamble; this leads to reasonable ROUGE scores and very good performance according to our human labelers, but may be exploiting the fact that labelers rely on simple heuristics."
+  },
+  {
+    "paperId": "0f7308fbcae43d22813f70c334c2425df0b1cce1",
+    "externalIds": {
+      "ArXiv": "2310.12773",
+      "DBLP": "conf/iclr/DaiPSJXL0024",
+      "DOI": "10.48550/arXiv.2310.12773",
+      "CorpusId": 264306078
+    },
+    "title": "Safe RLHF: Safe Reinforcement Learning from Human Feedback",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 645,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.12773, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2260610683",
+        "name": "Josef Dai"
+      },
+      {
+        "authorId": "2190800297",
+        "name": "Xuehai Pan"
+      },
+      {
+        "authorId": "2217316509",
+        "name": "Ruiyang Sun"
+      },
+      {
+        "authorId": "2154630502",
+        "name": "Jiaming Ji"
+      },
+      {
+        "authorId": "2408452956",
+        "name": "Xinbo Xu"
+      },
+      {
+        "authorId": "2210950163",
+        "name": "Mickel Liu"
+      },
+      {
+        "authorId": "2260594639",
+        "name": "Yizhou Wang"
+      },
+      {
+        "authorId": "2260432856",
+        "name": "Yaodong Yang"
+      }
+    ],
+    "abstract": "With the development of large language models (LLMs), striking a balance between the performance and safety of AI systems has never been more critical. However, the inherent tension between the objectives of helpfulness and harmlessness presents a significant challenge during LLM training. To address this issue, we propose Safe Reinforcement Learning from Human Feedback (Safe RLHF), a novel algorithm for human value alignment. Safe RLHF explicitly decouples human preferences regarding helpfulness and harmlessness, effectively avoiding the crowdworkers' confusion about the tension and allowing us to train separate reward and cost models. We formalize the safety concern of LLMs as an optimization task of maximizing the reward function while satisfying specified cost constraints. Leveraging the Lagrangian method to solve this constrained problem, Safe RLHF dynamically adjusts the balance between the two objectives during fine-tuning. Through a three-round fine-tuning using Safe RLHF, we demonstrate a superior ability to mitigate harmful responses while enhancing model performance compared to existing value-aligned algorithms. Experimentally, we fine-tuned the Alpaca-7B using Safe RLHF and aligned it with collected human preferences, significantly improving its helpfulness and harmlessness according to human evaluations."
+  },
+  {
+    "paperId": "25709a50df5eb8e40dce7ffe6ecd3bfa79969c7a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-22230",
+      "ArXiv": "2503.22230",
+      "DOI": "10.48550/arXiv.2503.22230",
+      "CorpusId": 277435161
+    },
+    "title": "Exploring Data Scaling Trends and Effects in Reinforcement Learning from Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.22230, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2352907560",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "2325890791",
+        "name": "Guanlin Liu"
+      },
+      {
+        "authorId": "2325934561",
+        "name": "Zheng Wu"
+      },
+      {
+        "authorId": "2348498604",
+        "name": "Ruofei Zhu"
+      },
+      {
+        "authorId": "2352922069",
+        "name": "Qingping Yang"
+      },
+      {
+        "authorId": "2352794280",
+        "name": "Chao Xin"
+      },
+      {
+        "authorId": "2348516170",
+        "name": "Yu Yue"
+      },
+      {
+        "authorId": "2348965646",
+        "name": "Lin Yan"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) is crucial for aligning large language models with human preferences. While recent research has focused on algorithmic improvements, the importance of prompt-data construction has been overlooked. This paper addresses this gap by exploring data-driven bottlenecks in RLHF performance scaling, particularly reward hacking and decreasing response diversity. We introduce a hybrid reward system combining reasoning task verifiers (RTV) and a generative reward model (GenRM) to mitigate reward hacking. We also propose a novel prompt-selection method, Pre-PPO, to maintain response diversity and enhance learning effectiveness. Additionally, we find that prioritizing mathematical and coding tasks early in RLHF training significantly improves performance. Experiments across two model sizes validate our methods' effectiveness and scalability. Results show that RTV is most resistant to reward hacking, followed by GenRM with ground truth, and then GenRM with SFT Best-of-N responses. Our strategies enable rapid capture of subtle task-specific distinctions, leading to substantial improvements in overall RLHF performance. This work highlights the importance of careful data construction and provides practical methods to overcome performance barriers in RLHF."
+  },
+  {
+    "paperId": "c6d6b18f01139b14c9da215eeb025da83988a47c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-10434",
+      "DOI": "10.48550/arXiv.2503.10434",
+      "CorpusId": 282065836
+    },
+    "title": "Finetuning Generative Trajectory Model with Reinforcement Learning from Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2503.10434?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2503.10434, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2264011071",
+        "name": "Derun Li"
+      },
+      {
+        "authorId": "2350313779",
+        "name": "Jianwei Ren"
+      },
+      {
+        "authorId": "2350137599",
+        "name": "Yue Wang"
+      },
+      {
+        "authorId": "2327512292",
+        "name": "Xin Wen"
+      },
+      {
+        "authorId": "2349807077",
+        "name": "Pengxiang Li"
+      },
+      {
+        "authorId": "2327294747",
+        "name": "Leimeng Xu"
+      },
+      {
+        "authorId": "2277448471",
+        "name": "Kun Zhan"
+      },
+      {
+        "authorId": "2351189632",
+        "name": "Zhongpu Xia"
+      },
+      {
+        "authorId": "2353954278",
+        "name": "Peng Jia"
+      },
+      {
+        "authorId": "2277446558",
+        "name": "Xianpeng Lang"
+      },
+      {
+        "authorId": "2386569038",
+        "name": "Ningyi Xu"
+      },
+      {
+        "authorId": "2379727376",
+        "name": "Hang Zhao"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "53d5d595b263f54c9a5c4d51e298413c450abb79",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-11463",
+      "ArXiv": "2501.11463",
+      "DOI": "10.48550/arXiv.2501.11463",
+      "CorpusId": 275758441
+    },
+    "title": "Curiosity-Driven Reinforcement Learning from Human Feedback",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.11463, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324148435",
+        "name": "Haoran Sun"
+      },
+      {
+        "authorId": "1395701436",
+        "name": "Yekun Chai"
+      },
+      {
+        "authorId": "104463827",
+        "name": "Shuohuan Wang"
+      },
+      {
+        "authorId": "2296100360",
+        "name": "Yu Sun"
+      },
+      {
+        "authorId": "2190177674",
+        "name": "Hua Wu"
+      },
+      {
+        "authorId": "2238917361",
+        "name": "Haifeng Wang"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has proven effective in aligning large language models (LLMs) with human preferences, but often at the cost of reduced output diversity. This trade-off between diversity and alignment quality remains a significant challenge. Drawing inspiration from curiosity-driven exploration in reinforcement learning, we introduce curiosity-driven RLHF (CD-RLHF), a framework that incorporates intrinsic rewards for novel states, alongside traditional sparse extrinsic rewards, to optimize both output diversity and alignment quality. We demonstrate the effectiveness of CD-RLHF through extensive experiments on a range of tasks, including text summarization and instruction following. Our approach achieves significant gains in diversity on multiple diversity-oriented metrics while maintaining alignment with human preferences comparable to standard RLHF. We make our code publicly available at https://github.com/ernie-research/CD-RLHF."
+  },
+  {
+    "paperId": "5b58cfebd95ba503cdf26a8021f4e7ca0893351d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-08942",
+      "ArXiv": "2503.08942",
+      "DOI": "10.48550/arXiv.2503.08942",
+      "CorpusId": 276938150
+    },
+    "title": "Extragradient Preference Optimization (EGPO): Beyond Last-Iterate Convergence for Nash Learning from Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.08942, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2080124819",
+        "name": "Runlong Zhou"
+      },
+      {
+        "authorId": "2257263796",
+        "name": "Maryam Fazel"
+      },
+      {
+        "authorId": "2262481392",
+        "name": "Simon S. Du"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has become essential for improving language model capabilities, but traditional approaches rely on the assumption that human preferences follow a transitive Bradley-Terry model. This assumption fails to capture the non-transitive nature of populational human preferences. Nash learning from human feedback (NLHF), targeting non-transitive preferences, is a problem of computing the Nash equilibrium (NE) of the two-player constant-sum game defined by the human preference. We introduce Extragradient preference optimization (EGPO), a novel algorithm for NLHF achieving last-iterate linear convergence to the NE of KL-regularized games and polynomial convergence to the NE of original games, while being robust to noise. Unlike previous approaches that rely on nested optimization, we derive an equivalent implementation using gradients of an online variant of the identity preference optimization (IPO) loss, enabling more faithful implementation for neural networks. Our empirical evaluations demonstrate EGPO's superior performance over baseline methods when training for the same number of epochs, as measured by pairwise win-rates using the ground truth preference. These results validate both the theoretical strengths and practical advantages of EGPO for language model alignment with non-transitive human preferences."
+  },
+  {
+    "paperId": "66c16a4eb1457f447a44fb1ea1968f8841ad5a2d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2504-03784",
+      "ArXiv": "2504.03784",
+      "DOI": "10.48550/arXiv.2504.03784",
+      "CorpusId": 277621930
+    },
+    "title": "Robust Reinforcement Learning from Human Feedback for Large Language Models Fine-Tuning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.03784, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2354165813",
+        "name": "Kai Ye"
+      },
+      {
+        "authorId": "2354224430",
+        "name": "Hongyi Zhou"
+      },
+      {
+        "authorId": "2354195275",
+        "name": "Jin Zhu"
+      },
+      {
+        "authorId": "2354179582",
+        "name": "Francesco Quinzan"
+      },
+      {
+        "authorId": "2325201916",
+        "name": "Chengchun Shi"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has emerged as a key technique for aligning the output of large language models (LLMs) with human preferences. To learn the reward function, most existing RLHF algorithms use the Bradley-Terry model, which relies on assumptions about human preferences that may not reflect the complexity and variability of real-world judgments. In this paper, we propose a robust algorithm to enhance the performance of existing approaches under such reward model misspecifications. Theoretically, our algorithm reduces the variance of reward and policy estimators, leading to improved regret bounds. Empirical evaluations on LLM benchmark datasets demonstrate that the proposed algorithm consistently outperforms existing methods, with 77-81% of responses being favored over baselines on the Anthropic Helpful and Harmless dataset. The code is available at https://github.com/VRPO/VRPO."
+  },
+  {
+    "paperId": "600ff4c4ae9fc506c86673c5ecce4fa90803e987",
+    "externalIds": {
+      "DBLP": "conf/icml/0001PMMFLBHCRP24",
+      "ArXiv": "2309.00267",
+      "CorpusId": 261493811
+    },
+    "title": "RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 585,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.00267, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2132475367",
+        "name": "Harrison Lee"
+      },
+      {
+        "authorId": "2067196169",
+        "name": "Samrat Phatale"
+      },
+      {
+        "authorId": "2265752172",
+        "name": "Hassan Mansoor"
+      },
+      {
+        "authorId": "2237424129",
+        "name": "Kellie Lu"
+      },
+      {
+        "authorId": "2237423540",
+        "name": "Thomas Mesnard"
+      },
+      {
+        "authorId": "2275183062",
+        "name": "Colton Bishop"
+      },
+      {
+        "authorId": "2237423389",
+        "name": "Victor Carbune"
+      },
+      {
+        "authorId": "2188497",
+        "name": "Abhinav Rastogi"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has proven effective in aligning large language models (LLMs) with human preferences, but gathering high-quality preference labels is expensive. RL from AI Feedback (RLAIF), introduced in Bai et al., offers a promising alternative that trains the reward model (RM) on preferences generated by an off-the-shelf LLM. Across the tasks of summarization, helpful dialogue generation, and harmless dialogue generation, we show that RLAIF achieves comparable performance to RLHF. Furthermore, we take a step towards\"self-improvement\"by demonstrating that RLAIF can outperform a supervised fine-tuned baseline even when the AI labeler is the same size as the policy, or even the exact same checkpoint as the initial policy. Finally, we introduce direct-RLAIF (d-RLAIF) - a technique that circumvents RM training by obtaining rewards directly from an off-the-shelf LLM during RL, which achieves superior performance to canonical RLAIF. Our results suggest that RLAIF can achieve performance on-par with using human feedback, offering a potential solution to the scalability limitations of RLHF."
+  },
+  {
+    "paperId": "e7b5d0269bdd37d01cea2bddb4d2ec9cf1539a40",
+    "externalIds": {
+      "DBLP": "conf/nips/PoddarWIGJ24",
+      "ArXiv": "2408.10075",
+      "DOI": "10.48550/arXiv.2408.10075",
+      "CorpusId": 271904022
+    },
+    "title": "Personalizing Reinforcement Learning from Human Feedback with Variational Preference Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 125,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.10075, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1886278778",
+        "name": "S. Poddar"
+      },
+      {
+        "authorId": "2316451824",
+        "name": "Yanming Wan"
+      },
+      {
+        "authorId": "2056776606",
+        "name": "Hamish Ivison"
+      },
+      {
+        "authorId": "2316429763",
+        "name": "Abhishek Gupta"
+      },
+      {
+        "authorId": "3106683",
+        "name": "Natasha Jaques"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) is a powerful paradigm for aligning foundation models to human values and preferences. However, current RLHF techniques cannot account for the naturally occurring differences in individual human preferences across a diverse population. When these differences arise, traditional RLHF frameworks simply average over them, leading to inaccurate rewards and poor performance for individual subgroups. To address the need for pluralistic alignment, we develop a class of multimodal RLHF methods. Our proposed techniques are based on a latent variable formulation - inferring a novel user-specific latent and learning reward models and policies conditioned on this latent without additional user-specific data. While conceptually simple, we show that in practice, this reward modeling requires careful algorithmic considerations around model architecture and reward scaling. To empirically validate our proposed technique, we first show that it can provide a way to combat underspecification in simulated control problems, inferring and optimizing user-specific reward functions. Next, we conduct experiments on pluralistic language datasets representing diverse user preferences and demonstrate improved reward function accuracy. We additionally show the benefits of this probabilistic framework in terms of measuring uncertainty, and actively learning user preferences. This work enables learning from diverse populations of users with divergent preferences, an important challenge that naturally occurs in problems from robot learning to foundation model alignment."
+  },
+  {
+    "paperId": "324786abbbc22ca1fba487709536ee682fe0af60",
+    "externalIds": {
+      "DBLP": "conf/icml/SwamyDK0A24",
+      "ArXiv": "2401.04056",
+      "DOI": "10.48550/arXiv.2401.04056",
+      "CorpusId": 266844002
+    },
+    "title": "A Minimaximalist Approach to Reinforcement Learning from Human Feedback",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 145,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04056, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2073365488",
+        "name": "Gokul Swamy"
+      },
+      {
+        "authorId": "2278427676",
+        "name": "Christoph Dann"
+      },
+      {
+        "authorId": "2258957246",
+        "name": "Rahul Kidambi"
+      },
+      {
+        "authorId": "2238047775",
+        "name": "Zhiwei Steven Wu"
+      },
+      {
+        "authorId": "2278431910",
+        "name": "Alekh Agarwal"
+      }
+    ],
+    "abstract": "We present Self-Play Preference Optimization (SPO), an algorithm for reinforcement learning from human feedback. Our approach is minimalist in that it does not require training a reward model nor unstable adversarial training and is therefore rather simple to implement. Our approach is maximalist in that it provably handles non-Markovian, intransitive, and stochastic preferences while being robust to the compounding errors that plague offline approaches to sequential prediction. To achieve the preceding qualities, we build upon the concept of a Minimax Winner (MW), a notion of preference aggregation from the social choice theory literature that frames learning from preferences as a zero-sum game between two policies. By leveraging the symmetry of this game, we prove that rather than using the traditional technique of dueling two policies to compute the MW, we can simply have a single agent play against itself while maintaining strong convergence guarantees. Practically, this corresponds to sampling multiple trajectories from a policy, asking a preference or teacher model to compare them, and then using the proportion of wins as the reward for a particular trajectory. We demonstrate that on a suite of continuous control tasks, we are able to learn significantly more efficiently than reward-model based approaches while maintaining robustness to the intransitive and stochastic preferences that frequently occur in practice when aggregating human judgments."
+  },
+  {
+    "paperId": "8a8dc735939f75d0329926fe3de817203a47cb2f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-08555",
+      "ArXiv": "2404.08555",
+      "DOI": "10.1145/3743127",
+      "CorpusId": 269137670
+    },
+    "title": "RLHF Deciphered: A Critical Analysis of Reinforcement Learning from Human Feedback for LLMs",
+    "venue": "ACM Computing Surveys",
+    "year": 2024,
+    "citationCount": 129,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.08555, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275344575",
+        "name": "Shreyas Chaudhari"
+      },
+      {
+        "authorId": "2114841965",
+        "name": "Pranjal Aggarwal"
+      },
+      {
+        "authorId": "46258988",
+        "name": "Vishvak Murahari"
+      },
+      {
+        "authorId": "2590556",
+        "name": "Tanmay Rajpurohit"
+      },
+      {
+        "authorId": "51043791",
+        "name": "A. Kalyan"
+      },
+      {
+        "authorId": "2135381714",
+        "name": "Karthik Narasimhan"
+      },
+      {
+        "authorId": "33341943",
+        "name": "A. Deshpande"
+      },
+      {
+        "authorId": "2296662415",
+        "name": "Bruno Castro da Silva"
+      }
+    ],
+    "abstract": "A significant challenge in training large language models (LLMs) as effective assistants is aligning them with human preferences. Reinforcement learning from human feedback (RLHF) has emerged as a promising solution. However, our understanding of RLHF is often limited to initial design choices. This article analyzes RLHF through reinforcement learning principles, focusing on the reward model. It examines modeling choices and function approximation caveats, highlighting assumptions about reward expressivity and revealing limitations like incorrect generalization, model misspecification, and sparse feedback. A categorical review of current literature provides insights for researchers to understand the challenges of RLHF and build upon existing methods."
+  },
+  {
+    "paperId": "03f0d177fe3d201e8739716963592865ad2d9527",
+    "externalIds": {
+      "ArXiv": "2503.10434",
+      "CorpusId": 276961126
+    },
+    "title": "Learning Personalized Driving Styles via Reinforcement Learning from Human Feedback",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.10434, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2264011071",
+        "name": "Derun Li"
+      },
+      {
+        "authorId": "2305685401",
+        "name": "Changye Li"
+      },
+      {
+        "authorId": "2350137599",
+        "name": "Yue Wang"
+      },
+      {
+        "authorId": "2350313779",
+        "name": "Jianwei Ren"
+      },
+      {
+        "authorId": "2327512292",
+        "name": "Xin Wen"
+      },
+      {
+        "authorId": "2349807077",
+        "name": "Pengxiang Li"
+      },
+      {
+        "authorId": "2327294747",
+        "name": "Leimeng Xu"
+      },
+      {
+        "authorId": "2277448471",
+        "name": "Kun Zhan"
+      },
+      {
+        "authorId": "2277497559",
+        "name": "Peng Jia"
+      },
+      {
+        "authorId": "2277446558",
+        "name": "Xianpeng Lang"
+      },
+      {
+        "authorId": "50694475",
+        "name": "Ningyi Xu"
+      },
+      {
+        "authorId": "2284724822",
+        "name": "Hang Zhao"
+      }
+    ],
+    "abstract": "Generating human-like and adaptive trajectories is essential for autonomous driving in dynamic environments. While generative models have shown promise in synthesizing feasible trajectories, they often fail to capture the nuanced variability of personalized driving styles due to dataset biases and distributional shifts. To address this, we introduce TrajHF, a human feedback-driven finetuning framework for generative trajectory models, designed to align motion planning with diverse driving styles. TrajHF incorporates multi-conditional denoiser and reinforcement learning with human feedback to refine multi-modal trajectory generation beyond conventional imitation learning. This enables better alignment with human driving preferences while maintaining safety and feasibility constraints. TrajHF achieves performance comparable to the state-of-the-art on NavSim benchmark. TrajHF sets a new paradigm for personalized and adaptable trajectory generation in autonomous driving."
+  },
+  {
+    "paperId": "f6ceaa899b85a978020f534c587adabaf9a694d1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-04370",
+      "ArXiv": "2502.04370",
+      "DOI": "10.48550/arXiv.2502.04370",
+      "CorpusId": 276236069
+    },
+    "title": "DreamDPO: Aligning Text-to-3D Generation with Human Preferences via Direct Preference Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.04370, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2271381551",
+        "name": "Zhen Zhou"
+      },
+      {
+        "authorId": "2337234877",
+        "name": "Xiaobo Xia"
+      },
+      {
+        "authorId": "2283456376",
+        "name": "Fan Ma"
+      },
+      {
+        "authorId": "2332780684",
+        "name": "Hehe Fan"
+      },
+      {
+        "authorId": "2283816709",
+        "name": "Yi Yang"
+      },
+      {
+        "authorId": "2336954823",
+        "name": "Tat-Seng Chua"
+      }
+    ],
+    "abstract": "Text-to-3D generation automates 3D content creation from textual descriptions, which offers transformative potential across various fields. However, existing methods often struggle to align generated content with human preferences, limiting their applicability and flexibility. To address these limitations, in this paper, we propose DreamDPO, an optimization-based framework that integrates human preferences into the 3D generation process, through direct preference optimization. Practically, DreamDPO first constructs pairwise examples, then compare their alignment with human preferences using reward or large multimodal models, and lastly optimizes the 3D representation with a preference-driven loss function. By leveraging pairwise comparison to reflect preferences, DreamDPO reduces reliance on precise pointwise quality evaluations while enabling fine-grained controllability through preference-guided optimization. Experiments demonstrate that DreamDPO achieves competitive results, and provides higher-quality and more controllable 3D content compared to existing methods. The code and models will be open-sourced."
+  },
+  {
+    "paperId": "38c8111873cb40d28c8bbc8aa6836a172234b5fa",
+    "externalIds": {
+      "ArXiv": "2312.00886",
+      "DBLP": "journals/corr/abs-2312-00886",
+      "DOI": "10.48550/arXiv.2312.00886",
+      "CorpusId": 265609682
+    },
+    "title": "Nash Learning from Human Feedback",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.00886, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2237802765",
+        "name": "Rémi Munos"
+      },
+      {
+        "authorId": "1806291",
+        "name": "Michal Valko"
+      },
+      {
+        "authorId": "2439765",
+        "name": "Daniele Calandriello"
+      },
+      {
+        "authorId": "37666967",
+        "name": "M. G. Azar"
+      },
+      {
+        "authorId": "144845456",
+        "name": "Mark Rowland"
+      },
+      {
+        "authorId": "3407143",
+        "name": "Z. Guo"
+      },
+      {
+        "authorId": "2269752766",
+        "name": "Yunhao Tang"
+      },
+      {
+        "authorId": "2253609155",
+        "name": "Matthieu Geist"
+      },
+      {
+        "authorId": "2237423540",
+        "name": "Thomas Mesnard"
+      },
+      {
+        "authorId": "82899350",
+        "name": "Andrea Michi"
+      },
+      {
+        "authorId": "2269473701",
+        "name": "M. Selvi"
+      },
+      {
+        "authorId": "35022714",
+        "name": "Sertan Girgin"
+      },
+      {
+        "authorId": "1470531643",
+        "name": "Nikola Momchev"
+      },
+      {
+        "authorId": "1936951",
+        "name": "Olivier Bachem"
+      },
+      {
+        "authorId": "3187297",
+        "name": "D. Mankowitz"
+      },
+      {
+        "authorId": "2249762747",
+        "name": "D. Precup"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has emerged as the main paradigm for aligning large language models (LLMs) with human preferences. Typically, RLHF involves the initial step of learning a reward model from human feedback, often expressed as preferences between pairs of text generations produced by a pre-trained LLM. Subsequently, the LLM's policy is fine-tuned by optimizing it to maximize the reward model through a reinforcement learning algorithm. However, an inherent limitation of current reward models is their inability to fully represent the richness of human preferences and their dependency on the sampling distribution. In this study, we introduce an alternative pipeline for the fine-tuning of LLMs using pairwise human feedback. Our approach entails the initial learning of a preference model, which is conditioned on two inputs given a prompt, followed by the pursuit of a policy that consistently generates responses preferred over those generated by any competing policy, thus defining the Nash equilibrium of this preference model. We term this approach Nash learning from human feedback (NLHF). In the context of a tabular policy representation, we present a novel algorithmic solution, Nash-MD, founded on the principles of mirror descent. This algorithm produces a sequence of policies, with the last iteration converging to the regularized Nash equilibrium. Additionally, we explore parametric representations of policies and introduce gradient descent algorithms for deep-learning architectures. To demonstrate the effectiveness of our approach, we present experimental results involving the fine-tuning of a LLM for a text summarization task. We believe NLHF offers a compelling avenue for preference learning and policy optimization with the potential of advancing the field of aligning LLMs with human preferences."
+  },
+  {
+    "paperId": "e1e027639b54616217bde738033470dbf7d73d64",
+    "externalIds": {
+      "ArXiv": "2403.07708",
+      "DBLP": "journals/corr/abs-2403-07708",
+      "DOI": "10.48550/arXiv.2403.07708",
+      "CorpusId": 268364043
+    },
+    "title": "Improving Reinforcement Learning from Human Feedback Using Contrastive Rewards",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.07708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2248291262",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "2279784287",
+        "name": "Xiaoying Zhang"
+      },
+      {
+        "authorId": "2257134957",
+        "name": "Yuanshun Yao"
+      },
+      {
+        "authorId": "2290918961",
+        "name": "Rui Zheng"
+      },
+      {
+        "authorId": "2249533404",
+        "name": "Hongyi Guo"
+      },
+      {
+        "authorId": "2247390779",
+        "name": "Yang Liu"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) is the mainstream paradigm used to align large language models (LLMs) with human preferences. Yet existing RLHF heavily relies on accurate and informative reward models, which are vulnerable and sensitive to noise from various sources, e.g. human labeling errors, making the pipeline fragile. In this work, we improve the effectiveness of the reward model by introducing a penalty term on the reward, named as \\textit{contrastive rewards}. %Contrastive rewards Our approach involves two steps: (1) an offline sampling step to obtain responses to prompts that serve as baseline calculation and (2) a contrastive reward calculated using the baseline responses and used in the Proximal Policy Optimization (PPO) step. We show that contrastive rewards enable the LLM to penalize reward uncertainty, improve robustness, encourage improvement over baselines, calibrate according to task difficulty, and reduce variance in PPO. We show empirically contrastive rewards can improve RLHF substantially, evaluated by both GPTs and humans, and our method consistently outperforms strong baselines."
+  },
+  {
+    "paperId": "053b1d7b97eb2c91fc3921d589c160b0923c70b1",
+    "externalIds": {
+      "MAG": "3082115681",
+      "DBLP": "journals/corr/abs-2009-01325",
+      "ArXiv": "2009.01325",
+      "CorpusId": 221665105
+    },
+    "title": "Learning to summarize from human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 3038,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.01325, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1387983862",
+        "name": "Nisan Stiennon"
+      },
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      },
+      {
+        "authorId": "153387869",
+        "name": "Chelsea Voss"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "145370786",
+        "name": "Paul Christiano"
+      }
+    ],
+    "abstract": "As language models become more powerful, training and evaluation are increasingly bottlenecked by the data and metrics used for a particular task. For example, summarization models are often trained to predict human reference summaries and evaluated using ROUGE, but both of these metrics are rough proxies for what we really care about---summary quality. In this work, we show that it is possible to significantly improve summary quality by training a model to optimize for human preferences. We collect a large, high-quality dataset of human comparisons between summaries, train a model to predict the human-preferred summary, and use that model as a reward function to fine-tune a summarization policy using reinforcement learning. We apply our method to a version of the TL;DR dataset of Reddit posts and find that our models significantly outperform both human reference summaries and much larger models fine-tuned with supervised learning alone. Our models also transfer to CNN/DM news articles, producing summaries nearly as good as the human reference without any news-specific fine-tuning. We conduct extensive analyses to understand our human feedback dataset and fine-tuned models We establish that our reward model generalizes to new datasets, and that optimizing our reward model results in better summaries than optimizing ROUGE according to humans. We hope the evidence from our paper motivates machine learning researchers to pay closer attention to how their training loss affects the model behavior they actually want."
+  },
+  {
+    "paperId": "386cebdba39d2d5f2862a9ab43a8d807f3863dae",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-13639",
+      "ArXiv": "2310.13639",
+      "DOI": "10.48550/arXiv.2310.13639",
+      "CorpusId": 264405839
+    },
+    "title": "Contrastive Preference Learning: Learning from Human Feedback without RL",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 78,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.13639, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2122700519",
+        "name": "Joey Hejna"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "51521430",
+        "name": "Harshit S. Sikchi"
+      },
+      {
+        "authorId": "2257346440",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "2791038",
+        "name": "S. Niekum"
+      },
+      {
+        "authorId": "144288136",
+        "name": "W. B. Knox"
+      },
+      {
+        "authorId": "1779671",
+        "name": "Dorsa Sadigh"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) has emerged as a popular paradigm for aligning models with human intent. Typically RLHF algorithms operate in two phases: first, use human preferences to learn a reward function and second, align the model by optimizing the learned reward via reinforcement learning (RL). This paradigm assumes that human preferences are distributed according to reward, but recent work suggests that they instead follow the regret under the user's optimal policy. Thus, learning a reward function from feedback is not only based on a flawed assumption of human preference, but also leads to unwieldy optimization challenges that stem from policy gradients or bootstrapping in the RL phase. Because of these optimization challenges, contemporary RLHF methods restrict themselves to contextual bandit settings (e.g., as in large language models) or limit observation dimensionality (e.g., state-based robotics). We overcome these limitations by introducing a new family of algorithms for optimizing behavior from human feedback using the regret-based model of human preferences. Using the principle of maximum entropy, we derive Contrastive Preference Learning (CPL), an algorithm for learning optimal policies from preferences without learning reward functions, circumventing the need for RL. CPL is fully off-policy, uses only a simple contrastive objective, and can be applied to arbitrary MDPs. This enables CPL to elegantly scale to high-dimensional and sequential RLHF problems while being simpler than prior methods."
+  },
+  {
+    "paperId": "9eb681288c9c4e0c0d0cde45c5980b0594c7fdd6",
+    "externalIds": {
+      "DBLP": "conf/nips/Gong0ZLH00LW24",
+      "ArXiv": "2411.00823",
+      "DOI": "10.48550/arXiv.2411.00823",
+      "CorpusId": 273811945
+    },
+    "title": "Mobility-LLM: Learning Visiting Intentions and Travel Preferences from Human Mobility Data with Large Language Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 34,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.00823, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2222371153",
+        "name": "Letian Gong"
+      },
+      {
+        "authorId": "2149202986",
+        "name": "Yan Lin"
+      },
+      {
+        "authorId": "2337097272",
+        "name": "Xinyue Zhang"
+      },
+      {
+        "authorId": "2141537750",
+        "name": "Yiwen Lu"
+      },
+      {
+        "authorId": "2330149194",
+        "name": "Xu Han"
+      },
+      {
+        "authorId": "2311716113",
+        "name": "Yicheng Liu"
+      },
+      {
+        "authorId": "1910814",
+        "name": "S. Guo"
+      },
+      {
+        "authorId": "2237808031",
+        "name": "Youfang Lin"
+      },
+      {
+        "authorId": "39699556",
+        "name": "Huaiyu Wan"
+      }
+    ],
+    "abstract": "Location-based services (LBS) have accumulated extensive human mobility data on diverse behaviors through check-in sequences. These sequences offer valuable insights into users' intentions and preferences. Yet, existing models analyzing check-in sequences fail to consider the semantics contained in these sequences, which closely reflect human visiting intentions and travel preferences, leading to an incomplete comprehension. Drawing inspiration from the exceptional semantic understanding and contextual information processing capabilities of large language models (LLMs) across various domains, we present Mobility-LLM, a novel framework that leverages LLMs to analyze check-in sequences for multiple tasks. Since LLMs cannot directly interpret check-ins, we reprogram these sequences to help LLMs comprehensively understand the semantics of human visiting intentions and travel preferences. Specifically, we introduce a visiting intention memory network (VIMN) to capture the visiting intentions at each record, along with a shared pool of human travel preference prompts (HTPP) to guide the LLM in understanding users' travel preferences. These components enhance the model's ability to extract and leverage semantic information from human mobility data effectively. Extensive experiments on four benchmark datasets and three downstream tasks demonstrate that our approach significantly outperforms existing models, underscoring the effectiveness of Mobility-LLM in advancing our understanding of human mobility data within LBS contexts."
+  },
+  {
+    "paperId": "51cd34563172a288d610b589d95b4e8e602a5b5f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-10990",
+      "ArXiv": "2503.10990",
+      "DOI": "10.48550/arXiv.2503.10990",
+      "CorpusId": 277043183
+    },
+    "title": "Statistical Impossibility and Possibility of Aligning LLMs with Human Preferences: From Condorcet Paradox to Nash Equilibrium",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.10990, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2352291645",
+        "name": "Kaizhao Liu"
+      },
+      {
+        "authorId": "2055685346",
+        "name": "Qi Long"
+      },
+      {
+        "authorId": "2350522675",
+        "name": "Zhekun Shi"
+      },
+      {
+        "authorId": "2288099064",
+        "name": "Weijie J. Su"
+      },
+      {
+        "authorId": "2327839292",
+        "name": "Jiancong Xiao"
+      }
+    ],
+    "abstract": "Aligning large language models (LLMs) with diverse human preferences is critical for ensuring fairness and informed outcomes when deploying these models for decision-making. In this paper, we seek to uncover fundamental statistical limits concerning aligning LLMs with human preferences, with a focus on the probabilistic representation of human preferences and the preservation of diverse preferences in aligned LLMs. We first show that human preferences can be represented by a reward model if and only if the preference among LLM-generated responses is free of any Condorcet cycle. Moreover, we prove that Condorcet cycles exist with probability converging to one exponentially fast under a probabilistic preference model, thereby demonstrating the impossibility of fully aligning human preferences using reward-based approaches such as reinforcement learning from human feedback. Next, we explore the conditions under which LLMs would employ mixed strategies -- meaning they do not collapse to a single response -- when aligned in the limit using a non-reward-based approach, such as Nash learning from human feedback (NLHF). We identify a necessary and sufficient condition for mixed strategies: the absence of a response that is preferred over all others by a majority. As a blessing, we prove that this condition holds with high probability under the probabilistic preference model, thereby highlighting the statistical possibility of preserving minority preferences without explicit regularization in aligning LLMs. Finally, we leverage insights from our statistical results to design a novel, computationally efficient algorithm for finding Nash equilibria in aligning LLMs with NLHF. Our experiments show that Llama-3.2-1B, aligned with our algorithm, achieves a win rate of 60.55\\% against the base model."
+  },
+  {
+    "paperId": "cb587eaea753ee38013afb7e5b6bc8fba1248d04",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2309-00267",
+      "DOI": "10.48550/arXiv.2309.00267",
+      "CorpusId": 285581982
+    },
+    "title": "RLAIF: Scaling Reinforcement Learning from Human Feedback with AI Feedback",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 311,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.00267",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2309.00267?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2309.00267, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2132475367",
+        "name": "Harrison Lee"
+      },
+      {
+        "authorId": "2067196169",
+        "name": "Samrat Phatale"
+      },
+      {
+        "authorId": "2265752172",
+        "name": "Hassan Mansoor"
+      },
+      {
+        "authorId": "2237424129",
+        "name": "Kellie Lu"
+      },
+      {
+        "authorId": "2237423540",
+        "name": "Thomas Mesnard"
+      },
+      {
+        "authorId": "2275183062",
+        "name": "Colton Bishop"
+      },
+      {
+        "authorId": "2237423389",
+        "name": "Victor Carbune"
+      },
+      {
+        "authorId": "2188497",
+        "name": "Abhinav Rastogi"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "4a081d1e1ea87ffcbf64cfe1c8a4a1da24c2c1b8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-02504",
+      "ArXiv": "2410.02504",
+      "DOI": "10.48550/arXiv.2410.02504",
+      "CorpusId": 273098777
+    },
+    "title": "Dual Active Learning for Reinforcement Learning from Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.02504, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324067259",
+        "name": "Pangpang Liu"
+      },
+      {
+        "authorId": "2325201916",
+        "name": "Chengchun Shi"
+      },
+      {
+        "authorId": "2292206872",
+        "name": "Will Wei Sun"
+      }
+    ],
+    "abstract": "Aligning large language models (LLMs) with human preferences is critical to recent advances in generative artificial intelligence. Reinforcement learning from human feedback (RLHF) is widely applied to achieve this objective. A key step in RLHF is to learn the reward function from human feedback. However, human feedback is costly and time-consuming, making it essential to collect high-quality conversation data for human teachers to label. Additionally, different human teachers have different levels of expertise. It is thus critical to query the most appropriate teacher for their opinions. In this paper, we use offline reinforcement learning (RL) to formulate the alignment problem. Motivated by the idea of $D$-optimal design, we first propose a dual active reward learning algorithm for the simultaneous selection of conversations and teachers. Next, we apply pessimistic RL to solve the alignment problem, based on the learned reward estimator. Theoretically, we show that the reward estimator obtained through our proposed adaptive selection strategy achieves minimal generalized variance asymptotically, and prove that the sub-optimality of our pessimistic policy scales as $O(1/\\sqrt{T})$ with a given sample budget $T$. Through simulations and experiments on LLMs, we demonstrate the effectiveness of our algorithm and its superiority over state-of-the-arts."
+  },
+  {
+    "paperId": "b8e1569d7c78c9666933c011135b8b8b5003a244",
+    "externalIds": {
+      "ArXiv": "2408.04447",
+      "DBLP": "journals/corr/abs-2408-04447",
+      "DOI": "10.48550/arXiv.2408.04447",
+      "CorpusId": 271768813
+    },
+    "title": "Reinforcement Learning from Human Feedback for Lane Changing of Autonomous Vehicles in Mixed Traffic",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.04447, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238125935",
+        "name": "Yuting Wang"
+      },
+      {
+        "authorId": "2261259258",
+        "name": "Lu Liu"
+      },
+      {
+        "authorId": "2265927745",
+        "name": "Maonan Wang"
+      },
+      {
+        "authorId": "2261087749",
+        "name": "Xi Xiong"
+      }
+    ],
+    "abstract": "The burgeoning field of autonomous driving necessitates the seamless integration of autonomous vehicles (AVs) with human-driven vehicles, calling for more predictable AV behavior and enhanced interaction with human drivers. Human-like driving, particularly during lane-changing maneuvers on highways, is a critical area of research due to its significant impact on safety and traffic flow. Traditional rule-based decision-making approaches often fail to encapsulate the nuanced boundaries of human behavior in diverse driving scenarios, while crafting reward functions for learning-based methods introduces its own set of complexities. This study investigates the application of Reinforcement Learning from Human Feedback (RLHF) to emulate human-like lane-changing decisions in AVs. An initial RL policy is pre-trained to ensure safe lane changes. Subsequently, this policy is employed to gather data, which is then annotated by humans to train a reward model that discerns lane changes aligning with human preferences. This human-informed reward model supersedes the original, guiding the refinement of the policy to reflect human-like preferences. The effectiveness of RLHF in producing human-like lane changes is demonstrated through the development and evaluation of conservative and aggressive lane-changing models within obstacle-rich environments and mixed autonomy traffic scenarios. The experimental outcomes underscore the potential of RLHF to diversify lane-changing behaviors in AVs, suggesting its viability for enhancing the integration of AVs into the fabric of human-driven traffic."
+  },
+  {
+    "paperId": "85c961d5b3fea95b48f94c0461782e887a8b3b0f",
+    "externalIds": {
+      "DBLP": "conf/iclr/Zhang025",
+      "ArXiv": "2409.17401",
+      "DOI": "10.48550/arXiv.2409.17401",
+      "CorpusId": 272910996
+    },
+    "title": "Zeroth-Order Policy Gradient for Reinforcement Learning from Human Feedback without Reward Inference",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.17401, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2237583393",
+        "name": "Qining Zhang"
+      },
+      {
+        "authorId": "2237427333",
+        "name": "Lei Ying"
+      }
+    ],
+    "abstract": "Reward inference (learning a reward model from human preferences) is a critical intermediate step in the Reinforcement Learning from Human Feedback (RLHF) pipeline for fine-tuning Large Language Models (LLMs). In practice, RLHF faces fundamental challenges such as distribution shift, reward model overfitting, and problem misspecification. An alternative approach is direct policy optimization without reward inference, such as Direct Preference Optimization (DPO), which provides a much simpler pipeline and has shown empirical success in LLM applications. However, DPO utilizes the closed-form expression between the optimal policy and the reward function, which is only suitable under the bandit setting or deterministic MDPs. This paper develops two RLHF algorithms without reward inference for general RL problems beyond bandits and deterministic MDPs, and general preference models beyond the Bradley-Terry model. The key idea is to estimate the local value function difference from human preferences and then approximate the policy gradient with a zeroth-order gradient approximator. For both algorithms, we establish polynomial convergence rates in terms of the number of policy gradient iterations, the number of trajectory samples, and human preference queries per iteration. Numerical experiments in stochastic environments validate the performance of our proposed algorithms, outperforming popular RLHF baselines such as DPO and PPO. Our paper shows there exist provably efficient methods to solve general RLHF problems without reward inference."
+  },
+  {
+    "paperId": "dd7a74a09fc29cadcd47fafc4f7812bb8d2d7208",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-07629",
+      "ArXiv": "2310.07629",
+      "DOI": "10.48550/arXiv.2310.07629",
+      "CorpusId": 263834741
+    },
+    "title": "The Past, Present and Better Future of Feedback Learning in Large Language Models for Subjective Human Preferences and Values",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 70,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.07629",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.07629, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "90729626",
+        "name": "Hannah Rose Kirk"
+      },
+      {
+        "authorId": "2242554313",
+        "name": "Andrew M. Bean"
+      },
+      {
+        "authorId": "2737827",
+        "name": "Bertie Vidgen"
+      },
+      {
+        "authorId": "2043232919",
+        "name": "Paul Röttger"
+      },
+      {
+        "authorId": "1741886127",
+        "name": "Scott A. Hale"
+      }
+    ],
+    "abstract": "Human feedback is increasingly used to steer the behaviours of Large Language Models (LLMs). However, it is unclear how to collect and incorporate feedback in a way that is efficient, effective and unbiased, especially for highly subjective human preferences and values. In this paper, we survey existing approaches for learning from human feedback, drawing on 95 papers primarily from the ACL and arXiv repositories.First, we summarise the past, pre-LLM trends for integrating human feedback into language models. Second, we give an overview of present techniques and practices, as well as the motivations for using feedback; conceptual frameworks for defining values and preferences; and how feedback is collected and from whom. Finally, we encourage a better future of feedback learning in LLMs by raising five unresolved conceptual and practical challenges."
+  },
+  {
+    "paperId": "0d49552b54a1c2e064047d332018a898fcf6d9cb",
+    "externalIds": {
+      "ArXiv": "2410.02743",
+      "DBLP": "conf/iclr/ChaiSFWS025",
+      "DOI": "10.48550/arXiv.2410.02743",
+      "CorpusId": 273098444
+    },
+    "title": "MA-RLHF: Reinforcement Learning from Human Feedback with Macro Actions",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.02743, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1395701436",
+        "name": "Yekun Chai"
+      },
+      {
+        "authorId": "2324148435",
+        "name": "Haoran Sun"
+      },
+      {
+        "authorId": "2249914364",
+        "name": "Huang Fang"
+      },
+      {
+        "authorId": "104463827",
+        "name": "Shuohuan Wang"
+      },
+      {
+        "authorId": "2296100360",
+        "name": "Yu Sun"
+      },
+      {
+        "authorId": "2190177674",
+        "name": "Hua Wu"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has demonstrated effectiveness in aligning large language models (LLMs) with human preferences. However, token-level RLHF suffers from the credit assignment problem over long sequences, where delayed rewards make it challenging for the model to discern which actions contributed to preferred outcomes. This hinders learning efficiency and slows convergence.In this paper, we propose MA-RLHF, a simple yet effective RLHF framework that incorporates macro actions -- sequences of tokens or higher-level language constructs -- into the learning process. By operating at higher level of abstraction, our approach reduces the temporal distance between actions and rewards, facilitating faster and more accurate credit assignment. This results in more stable policy gradient estimates and enhances learning efficiency within each episode, all without increasing computational complexity during training or inference. We validate our approach through extensive experiments across various model sizes and tasks, including text summarization, dialogue generation, question answering, and program synthesis. Our method achieves substantial performance improvements over standard RLHF, with performance gains of up to 30% in text summarization and code generation, 18% in dialogue, and 8% in question answering tasks. Notably, our approach reaches parity with vanilla RLHF 1.7 ~ 2 times faster in terms of training time and continues to outperform it with further training. We make our code and data publicly available at https://github.com/ernie-research/MA-RLHF."
+  },
+  {
+    "paperId": "ef9e1e3650c8d6f57ba25f417a32d57123d69dcf",
+    "externalIds": {
+      "DBLP": "conf/aistats/LiJCW24",
+      "CorpusId": 269648595
+    },
+    "title": "Policy Evaluation for Reinforcement Learning from Human Feedback: A Sample Complexity Analysis",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2024,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://proceedings.mlr.press/v238/li24l/li24l.pdf, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258812689",
+        "name": "Zihao Li"
+      },
+      {
+        "authorId": "2152001525",
+        "name": "Xiang Ji"
+      },
+      {
+        "authorId": "2258803874",
+        "name": "Minshuo Chen"
+      },
+      {
+        "authorId": "2258997595",
+        "name": "Mengdi Wang"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "a0748478cd2752b733b4183dbd0dcd1031c38b6e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-10704",
+      "DOI": "10.48550/arXiv.2403.10704",
+      "CorpusId": 268513245
+    },
+    "title": "PERL: Parameter Efficient Reinforcement Learning from Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2403.10704?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2403.10704, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39041127",
+        "name": "Hakim Sidahmed"
+      },
+      {
+        "authorId": "2067196169",
+        "name": "Samrat Phatale"
+      },
+      {
+        "authorId": "2292030132",
+        "name": "Alex Hutcheson"
+      },
+      {
+        "authorId": "2292086395",
+        "name": "Zhuonan Lin"
+      },
+      {
+        "authorId": "2279039039",
+        "name": "Zhan Chen"
+      },
+      {
+        "authorId": "2292085445",
+        "name": "Zac Yu"
+      },
+      {
+        "authorId": "2292090451",
+        "name": "Jarvis Jin"
+      },
+      {
+        "authorId": "2292029791",
+        "name": "Roman Komarytsia"
+      },
+      {
+        "authorId": "2292033382",
+        "name": "Christiane Ahlheim"
+      },
+      {
+        "authorId": "2292086819",
+        "name": "Yonghao Zhu"
+      },
+      {
+        "authorId": "2057003286",
+        "name": "Simral Chaudhary"
+      },
+      {
+        "authorId": "2292209427",
+        "name": "Bowen Li"
+      },
+      {
+        "authorId": "1486248633",
+        "name": "Saravanan Ganesh"
+      },
+      {
+        "authorId": "2292032171",
+        "name": "Bill Byrne"
+      },
+      {
+        "authorId": "2282530111",
+        "name": "Jessica Hoffmann"
+      },
+      {
+        "authorId": "2265752172",
+        "name": "Hassan Mansoor"
+      },
+      {
+        "authorId": "2268846280",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "2188497",
+        "name": "Abhinav Rastogi"
+      },
+      {
+        "authorId": "2282533189",
+        "name": "Lucas Dixon"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "90ec1b95ab1579673f0a4b81dc5a76dfc955b2a5",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HwangWPLKE24",
+      "ArXiv": "2312.09337",
+      "DOI": "10.1109/CVPR52733.2024.01535",
+      "CorpusId": 266335341
+    },
+    "title": "Promptable Behaviors: Personalizing Multi-Objective Rewards from Human Preferences",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2312.09337",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.09337, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2274930285",
+        "name": "Minyoung Hwang"
+      },
+      {
+        "authorId": "20745881",
+        "name": "Luca Weihs"
+      },
+      {
+        "authorId": "2274973548",
+        "name": "Chanwoo Park"
+      },
+      {
+        "authorId": "2275055477",
+        "name": "Kimin Lee"
+      },
+      {
+        "authorId": "2684226",
+        "name": "Aniruddha Kembhavi"
+      },
+      {
+        "authorId": "2883417",
+        "name": "Kiana Ehsani"
+      }
+    ],
+    "abstract": "Customizing robotic behaviors to be aligned with di-verse human preferences is an underexplored challenge in the field of embodied AI. In this paper, we present Prompt-able Behaviors, a novel framework that facilitates efficient personalization of robotic agents to diverse human prefer-ences in complex environments. We use multi-objective re-inforcement learning to train a single policy adaptable to a broad spectrum of preferences. We introduce three distinct methods to infer human preferences by leveraging different types of interactions: (1) human demonstrations, (2) prefer-ence feedback on trajectory comparisons, and (3) language instructions. We evaluate the proposed method in person-alized object-goal navigation and flee navigation tasks in ProcTHOR [18] and RoboTHOR [17], demonstrating the ability to prompt agent behaviors to satisfy human prefer-ences in various scenarios. Project page: https://promptable-behaviors.github.io"
+  },
+  {
+    "paperId": "a84d6b82947f27bc6bf7f42d69f48b40adcfb6c3",
+    "externalIds": {
+      "ArXiv": "2310.11971",
+      "DBLP": "journals/corr/abs-2310-11971",
+      "DOI": "10.48550/arXiv.2310.11971",
+      "CorpusId": 264289051
+    },
+    "title": "Improving Generalization of Alignment with Human Preferences through Group Invariant Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.11971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2058585152",
+        "name": "Rui Zheng"
+      },
+      {
+        "authorId": "2248291262",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "152738167",
+        "name": "Yuan Hua"
+      },
+      {
+        "authorId": "2259943139",
+        "name": "Wenbin Lai"
+      },
+      {
+        "authorId": "2042683163",
+        "name": "Shihan Dou"
+      },
+      {
+        "authorId": "2212175381",
+        "name": "Yuhao Zhou"
+      },
+      {
+        "authorId": "2190751523",
+        "name": "Zhiheng Xi"
+      },
+      {
+        "authorId": "2118451107",
+        "name": "Xiao Wang"
+      },
+      {
+        "authorId": "2260451921",
+        "name": "Haoran Huang"
+      },
+      {
+        "authorId": "2067331064",
+        "name": "Tao Gui"
+      },
+      {
+        "authorId": "2257376355",
+        "name": "Qi Zhang"
+      },
+      {
+        "authorId": "2257129989",
+        "name": "Xuanjing Huang"
+      }
+    ],
+    "abstract": "The success of AI assistants based on language models (LLMs) hinges crucially on Reinforcement Learning from Human Feedback (RLHF), which enables the generation of responses more aligned with human preferences. As universal AI assistants, there's a growing expectation for them to perform consistently across various domains. However, previous work shows that Reinforcement Learning (RL) often exploits shortcuts to attain high rewards and overlooks challenging samples. This focus on quick reward gains undermines both the stability in training and the model's ability to generalize to new, unseen data. In this work, we propose a novel approach that can learn a consistent policy via RL across various data groups or domains. Given the challenges associated with acquiring group annotations, our method automatically classifies data into different groups, deliberately maximizing performance variance. Then, we optimize the policy to perform well on challenging groups. Lastly, leveraging the established groups, our approach adaptively adjusts the exploration space, allocating more learning capacity to more challenging data and preventing the model from over-optimizing on simpler data. Experimental results indicate that our approach significantly enhances training stability and model generalization."
+  },
+  {
+    "paperId": "d3c3213cdc21facafca8cac3fa7397ea066fc4ef",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-14769",
+      "ArXiv": "2405.14769",
+      "DOI": "10.48550/arXiv.2405.14769",
+      "CorpusId": 269983679
+    },
+    "title": "Pragmatic Feature Preferences: Learning Reward-Relevant Preferences from Human Input",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.14769, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2302796315",
+        "name": "Andi Peng"
+      },
+      {
+        "authorId": "2136535650",
+        "name": "Yuying Sun"
+      },
+      {
+        "authorId": "2302797356",
+        "name": "Tianmin Shu"
+      },
+      {
+        "authorId": "2365040655",
+        "name": "David Abel"
+      }
+    ],
+    "abstract": "Humans use social context to specify preferences over behaviors, i.e. their reward functions. Yet, algorithms for inferring reward models from preference data do not take this social learning view into account. Inspired by pragmatic human communication, we study how to extract fine-grained data regarding why an example is preferred that is useful for learning more accurate reward models. We propose to enrich binary preference queries to ask both (1) which features of a given example are preferable in addition to (2) comparisons between examples themselves. We derive an approach for learning from these feature-level preferences, both for cases where users specify which features are reward-relevant, and when users do not. We evaluate our approach on linear bandit settings in both vision- and language-based domains. Results support the efficiency of our approach in quickly converging to accurate rewards with fewer comparisons vs. example-only labels. Finally, we validate the real-world applicability with a behavioral experiment on a mushroom foraging task. Our findings suggest that incorporating pragmatic feature preferences is a promising approach for more efficient user-aligned reward learning."
+  }
+]

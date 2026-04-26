@@ -42,13 +42,19 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from paperpilot.scripts._common import theme_slug  # noqa: E402
+from paperpilot.scripts.build_deep_lineage import _classify_cached_lenient  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
-    _classify_cached,
     build_provider,
     fetch_related,
     to_node,
 )
+
+# Theme trees are like deep trees: BFS over weakly-related references where
+# Groq frequently returns a non-unrelated relation with an empty rationale.
+# Strict mode would drop ~all edges (observed during initial bulk gen). Use
+# the lenient variant (template fallback rationale) to keep weak edges visible.
+_classify_cached = _classify_cached_lenient
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.keyword_expand import expand_keywords  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402

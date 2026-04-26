@@ -1,0 +1,3243 @@
+[
+  {
+    "paperId": "832fff14d2ed50eb7969c4c4b976c35776548f56",
+    "externalIds": {
+      "ArXiv": "2002.08909",
+      "MAG": "3034671305",
+      "DBLP": "conf/icml/GuuLTPC20",
+      "CorpusId": 211204736
+    },
+    "title": "REALM: Retrieval-Augmented Language Model Pre-Training",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2907,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.08909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "9941702",
+        "name": "Zora Tung"
+      },
+      {
+        "authorId": "2616463",
+        "name": "Panupong Pasupat"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      }
+    ],
+    "abstract": "Language model pre-training has been shown to capture a surprising amount of world knowledge, crucial for NLP tasks such as question answering. However, this knowledge is stored implicitly in the parameters of a neural network, requiring ever-larger networks to cover more facts. \nTo capture knowledge in a more modular and interpretable way, we augment language model pre-training with a latent knowledge retriever, which allows the model to retrieve and attend over documents from a large corpus such as Wikipedia, used during pre-training, fine-tuning and inference. For the first time, we show how to pre-train such a knowledge retriever in an unsupervised manner, using masked language modeling as the learning signal and backpropagating through a retrieval step that considers millions of documents. \nWe demonstrate the effectiveness of Retrieval-Augmented Language Model pre-training (REALM) by fine-tuning on the challenging task of Open-domain Question Answering (Open-QA). We compare against state-of-the-art models for both explicit and implicit knowledge storage on three popular Open-QA benchmarks, and find that we outperform all previous methods by a significant margin (4-16% absolute accuracy), while also providing qualitative benefits such as interpretability and modularity."
+  },
+  {
+    "paperId": "678cfca72b7de72b005f71207bc8a522ea9ac62c",
+    "externalIds": {
+      "ACL": "2023.matching-1.7",
+      "ArXiv": "2306.04136",
+      "DOI": "10.18653/v1/2023.matching-1.7",
+      "CorpusId": 260063238
+    },
+    "title": "Knowledge-Augmented Language Model Prompting for Zero-Shot Knowledge Graph Question Answering",
+    "venue": "MATCHING",
+    "year": 2023,
+    "citationCount": 186,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.matching-1.7.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.04136, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "90765684",
+        "name": "Jinheon Baek"
+      },
+      {
+        "authorId": "8129718",
+        "name": "Alham Fikri Aji"
+      },
+      {
+        "authorId": "1741702",
+        "name": "Amir Saffari"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) are capable of performing zero-shot closed-book question answering tasks, based on their internal knowledge stored in parameters during pre-training. However, such internalized knowledge might be insufficient and incorrect, which could lead LLMs to generate factually wrong answers. Furthermore, fine-tuning LLMs to update their knowledge is expensive. To this end, we propose to augment the knowledge directly in the input of LLMs. Specifically, we first retrieve the relevant facts to the input question from the knowledge graph based on semantic similarities between the question and its associated facts. After that, we prepend the retrieved facts to the input question in the form of the prompt, which is then forwarded to LLMs to generate the answer. Our framework, Knowledge-Augmented language model PromptING (KAPING), requires no model training, thus completely zero-shot. We validate the performance of our KAPING framework on the knowledge graph question answering task, that aims to answer the user’s question based on facts over a knowledge graph, on which ours outperforms relevant zero-shot baselines by up to 48% in average, across multiple LLMs of various sizes."
+  },
+  {
+    "paperId": "4aae0d84fdc1d069d9cf549ca2a6672554d04f4c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-04136",
+      "ACL": "2023.nlrse-1.7",
+      "DOI": "10.18653/v1/2023.nlrse-1.7",
+      "CorpusId": 259095910
+    },
+    "title": "Knowledge-Augmented Language Model Prompting for Zero-Shot Knowledge Graph Question Answering",
+    "venue": "NLRSE",
+    "year": 2023,
+    "citationCount": 168,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.nlrse-1.7.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/2023.nlrse-1.7, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "90765684",
+        "name": "Jinheon Baek"
+      },
+      {
+        "authorId": "8129718",
+        "name": "Alham Fikri Aji"
+      },
+      {
+        "authorId": "1741702",
+        "name": "Amir Saffari"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) are capable of performing zero-shot closed-book question answering tasks, based on their internal knowledge stored in parameters during pre-training. However, such internalized knowledge might be insufficient and incorrect, which could lead LLMs to generate factually wrong answers. Furthermore, fine-tuning LLMs to update their knowledge is expensive. To this end, we propose to augment the knowledge directly in the input of LLMs. Specifically, we first retrieve the relevant facts to the input question from the knowledge graph based on semantic similarities between the question and its associated facts. After that, we prepend the retrieved facts to the input question in the form of the prompt, which is then forwarded to LLMs to generate the answer. Our framework, Knowledge-Augmented language model PromptING (KAPING), requires no model training, thus completely zero-shot. We validate the performance of our KAPING framework on the knowledge graph question answering task, that aims to answer the user’s question based on facts over a knowledge graph, on which ours outperforms relevant zero-shot baselines by up to 48% in average, across multiple LLMs of various sizes."
+  },
+  {
+    "paperId": "d8cbe0bfcc9c2eb1714c0e5be18a6ecaf50ea7a5",
+    "externalIds": {
+      "DBLP": "conf/aaai/XiaZSCH25",
+      "ArXiv": "2407.19813",
+      "DOI": "10.48550/arXiv.2407.19813",
+      "CorpusId": 271534087
+    },
+    "title": "Improving Retrieval Augmented Language Model with Self-Reasoning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.19813, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111275391",
+        "name": "Yuan Xia"
+      },
+      {
+        "authorId": "2314078488",
+        "name": "Jingbo Zhou"
+      },
+      {
+        "authorId": "18083770",
+        "name": "Zhenhui Shi"
+      },
+      {
+        "authorId": "2153418695",
+        "name": "Jun Chen"
+      },
+      {
+        "authorId": "30898812",
+        "name": "Hai-ting Huang"
+      }
+    ],
+    "abstract": "The Retrieval-Augmented Language Model (RALM) has demonstrated remarkable performance on knowledge-intensive tasks by integrating external knowledge during inference, which mitigates the factual hallucinations inherited in large language models (LLMs). Despite these advancements, challenges persist in the implementation of RALMs, particularly in terms of reliability and traceability. Specifically, the irrelevant document retrieval may result in unhelpful responses or even deteriorate the performance of LLMs, while the lack of appropriate citations in outputs complicates efforts to verify the trustworthiness of the models. To this end, we propose a novel self-reasoning framework aimed at improving the reliability and traceability of RALMs, whose core idea is to leverage reasoning trajectories generated by the LLM itself. The framework involves constructing self-reasoning trajectories through three processes: a relevance-aware process, an evidence-aware selective process, and a trajectory analysis process. We evaluated our framework across four public datasets (two short-form QA datasets, one long-form QA dataset, and one fact verification dataset) to demonstrate its superiority. Our method can outperform existing state-of-the-art models and achieve performance comparable with GPT-4, using only 2,000 training samples."
+  },
+  {
+    "paperId": "a8b66565cdb2b8c90556bb98a7fc58ac679c2cec",
+    "externalIds": {
+      "ArXiv": "2401.14021",
+      "DBLP": "journals/corr/abs-2401-14021",
+      "DOI": "10.48550/arXiv.2401.14021",
+      "CorpusId": 267212215
+    },
+    "title": "Accelerating Retrieval-Augmented Language Model Serving with Speculation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.14021, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2185953295",
+        "name": "Zhihao Zhang"
+      },
+      {
+        "authorId": "2343867057",
+        "name": "Alan Zhu"
+      },
+      {
+        "authorId": "2231664587",
+        "name": "Lijie Yang"
+      },
+      {
+        "authorId": "2281208130",
+        "name": "Yihua Xu"
+      },
+      {
+        "authorId": "2281325214",
+        "name": "Lanting Li"
+      },
+      {
+        "authorId": "2623548",
+        "name": "P. Phothilimthana"
+      },
+      {
+        "authorId": "2271058444",
+        "name": "Zhihao Jia"
+      }
+    ],
+    "abstract": "Retrieval-augmented language models (RaLM) have demonstrated the potential to solve knowledge-intensive natural language processing (NLP) tasks by combining a non-parametric knowledge base with a parametric language model. Instead of fine-tuning a fully parametric model, RaLM excels at its low-cost adaptation to the latest data and better source attribution mechanisms. Among various RaLM approaches, iterative RaLM delivers a better generation quality due to a more frequent interaction between the retriever and the language model. Despite the benefits, iterative RaLM usually encounters high overheads due to the frequent retrieval step. To this end, we propose RaLMSpec, a speculation-inspired framework that provides generic speed-up over iterative RaLM while preserving the same model outputs through speculative retrieval and batched verification. By further incorporating prefetching, optimal speculation stride scheduler, and asynchronous verification, RaLMSpec can automatically exploit the acceleration potential to the fullest. For naive iterative RaLM serving, extensive evaluations over three language models on four downstream QA datasets demonstrate that RaLMSpec can achieve a speed-up ratio of 1.75-2.39x, 1.04-1.39x, and 1.31-1.77x when the retriever is an exact dense retriever, approximate dense retriever, and sparse retriever respectively compared with the baseline. For KNN-LM serving, RaLMSpec can achieve a speed-up ratio up to 7.59x and 2.45x when the retriever is an exact dense retriever and approximate dense retriever, respectively, compared with the baseline."
+  },
+  {
+    "paperId": "f2f9c02a7eb484dd7b7ac46892856e3f278eed77",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2309-16058",
+      "ArXiv": "2309.16058",
+      "ACL": "2024.emnlp-industry.98",
+      "DOI": "10.18653/v1/2024.emnlp-industry.98",
+      "CorpusId": 263137930
+    },
+    "title": "AnyMAL: An Efficient and Scalable Any-Modality Augmented Language Model",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.16058, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256132624",
+        "name": "Seungwhan Moon"
+      },
+      {
+        "authorId": "2111680936",
+        "name": "Andrea Madotto"
+      },
+      {
+        "authorId": "2146396528",
+        "name": "Zhaojiang Lin"
+      },
+      {
+        "authorId": "2276070428",
+        "name": "Tushar Nagarajan"
+      },
+      {
+        "authorId": "121758626",
+        "name": "Matt Smith"
+      },
+      {
+        "authorId": "2249741629",
+        "name": "Shashank Jain"
+      },
+      {
+        "authorId": "2064364274",
+        "name": "Chun-Fu Yeh"
+      },
+      {
+        "authorId": "2248184913",
+        "name": "Prakash Murugesan"
+      },
+      {
+        "authorId": "80566039",
+        "name": "P. Heidari"
+      },
+      {
+        "authorId": "2247965931",
+        "name": "Yue Liu"
+      },
+      {
+        "authorId": "27693639",
+        "name": "Kavya Srinet"
+      },
+      {
+        "authorId": "3057557",
+        "name": "Babak Damavandi"
+      },
+      {
+        "authorId": "2247977368",
+        "name": "Anuj Kumar"
+      }
+    ],
+    "abstract": "We present Any-Modality Augmented Language Model (AnyMAL), a unified model that reasons over diverse input modality signals (i.e. text, image, video, audio, IMU motion sensor), and generates textual responses. AnyMAL inherits the powerful text-based reasoning abilities of the state-of-the-art LLMs including Llama-3 (70B), and converts modality-specific signals to the joint textual space through a pre-trained aligner module.In this paper, we provide details on the optimizations implemented to efficiently scale the training pipeline, and present a comprehensive recipe for model and training configurations. We conduct comprehensive empirical analysis comprising both human and automatic evaluations, and demonstrate state-of-the-art performance on various multimodal tasks compared to industry-leading models – albeit with a relatively small number of trainable parameters."
+  },
+  {
+    "paperId": "1533c2cbfa402f7f6caf0d126be7864795afbe9d",
+    "externalIds": {
+      "DBLP": "conf/icassp/ChenHAHPLGBG24",
+      "ArXiv": "2310.09424",
+      "DOI": "10.1109/ICASSP48485.2024.10447553",
+      "CorpusId": 264146423
+    },
+    "title": "SALM: Speech-Augmented Language Model with in-Context Learning for Speech Recognition and Translation",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2023,
+    "citationCount": 99,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.09424",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.09424, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258939548",
+        "name": "Zhehuai Chen"
+      },
+      {
+        "authorId": "2258757455",
+        "name": "He Huang"
+      },
+      {
+        "authorId": "2239557157",
+        "name": "A. Andrusenko"
+      },
+      {
+        "authorId": "29891116",
+        "name": "Oleksii Hrinchuk"
+      },
+      {
+        "authorId": "2121516",
+        "name": "Krishna C. Puvvada"
+      },
+      {
+        "authorId": "2258750728",
+        "name": "Jason Li"
+      },
+      {
+        "authorId": "2258794138",
+        "name": "Subhankar Ghosh"
+      },
+      {
+        "authorId": "2494510",
+        "name": "Jagadeesh Balam"
+      },
+      {
+        "authorId": "2241631811",
+        "name": "Boris Ginsburg"
+      }
+    ],
+    "abstract": "We present a novel Speech Augmented Language Model (SALM) with multitask and in-context learning capabilities. SALM comprises a frozen text LLM, a audio encoder, a modality adapter module, and LoRA layers to accommodate speech input and associated task instructions. The unified SALM not only achieves performance on par with task-specific Conformer baselines for Automatic Speech Recognition (ASR) and Speech Translation (AST), but also exhibits zero-shot in-context learning capabilities, demonstrated through keyword-boosting task for ASR and AST. Moreover, speech supervised in-context training is proposed to bridge the gap between LLM training and downstream speech tasks, which further boosts the in-context learning ability of speech-to-text models. Proposed model is open-sourced via NeMo toolkit 1."
+  },
+  {
+    "paperId": "1b7492a4b813052146300fa8c03325c4ad7a0a25",
+    "externalIds": {
+      "ArXiv": "2404.19543",
+      "DBLP": "journals/corr/abs-2404-19543",
+      "DOI": "10.48550/arXiv.2404.19543",
+      "CorpusId": 269457256
+    },
+    "title": "RAG and RAU: A Survey on Retrieval-Augmented Language Model in Natural Language Processing",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 39,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.19543, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299263700",
+        "name": "Yucheng Hu"
+      },
+      {
+        "authorId": "2220675861",
+        "name": "Yuxing Lu"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) have catalyzed significant advancements in Natural Language Processing (NLP), yet they encounter challenges such as hallucination and the need for domain-specific knowledge. To mitigate these, recent methodologies have integrated information retrieved from external resources with LLMs, substantially enhancing their performance across NLP tasks. This survey paper addresses the absence of a comprehensive overview on Retrieval-Augmented Language Models (RALMs), both Retrieval-Augmented Generation (RAG) and Retrieval-Augmented Understanding (RAU), providing an in-depth examination of their paradigm, evolution, taxonomy, and applications. The paper discusses the essential components of RALMs, including Retrievers, Language Models, and Augmentations, and how their interactions lead to diverse model structures and applications. RALMs demonstrate utility in a spectrum of tasks, from translation and dialogue systems to knowledge-intensive applications. The survey includes several evaluation methods of RALMs, emphasizing the importance of robustness, accuracy, and relevance in their assessment. It also acknowledges the limitations of RALMs, particularly in retrieval quality and computational efficiency, offering directions for future research. In conclusion, this survey aims to offer a structured insight into RALMs, their potential, and the avenues for their future development in NLP. The paper is supplemented with a Github Repository containing the surveyed works and resources for further study: https://github.com/2471023025/RALM_Survey."
+  },
+  {
+    "paperId": "8a4fda653f2e58471f21c79ae980ab0e3135f39e",
+    "externalIds": {
+      "ArXiv": "2410.10450",
+      "DBLP": "conf/iclr/WangIMH25",
+      "DOI": "10.48550/arXiv.2410.10450",
+      "CorpusId": 273345408
+    },
+    "title": "KBLaM: Knowledge Base augmented Language Model",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.10450, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2356797829",
+        "name": "Xi Wang"
+      },
+      {
+        "authorId": "2274334782",
+        "name": "Liana Mikaelyan"
+      },
+      {
+        "authorId": "2127175780",
+        "name": "Taketomo Isazawa"
+      },
+      {
+        "authorId": "2266803418",
+        "name": "James Hensman"
+      }
+    ],
+    "abstract": "In this paper, we propose Knowledge Base augmented Language Model (KBLaM), a new method for augmenting Large Language Models (LLMs) with external knowledge. KBLaM works with a knowledge base (KB) constructed from a corpus of documents, transforming each piece of knowledge in the KB into continuous key-value vector pairs via pre-trained sentence encoders with linear adapters and integrating them into pre-trained LLMs via a specialized rectangular attention mechanism. Unlike Retrieval-Augmented Generation, KBLaM eliminates external retrieval modules, and unlike in-context learning, its computational overhead scales linearly with KB size rather than quadratically. Our approach enables integrating a large KB of more than 10K triples into an 8B pre-trained LLM of only 8K context window on one single A100 80GB GPU and allows for dynamic updates without model fine-tuning or retraining. Experiments demonstrate KBLaM's effectiveness in various tasks, including question-answering and open-ended reasoning, while providing interpretable insights into its use of the augmented knowledge. Code and datasets are available at https://github.com/microsoft/KBLaM/"
+  },
+  {
+    "paperId": "a1d2a932f638ac3ccd39a83d08dcfe6c229dad95",
+    "externalIds": {
+      "DBLP": "journals/tois/LiWLYWYFGY25",
+      "ArXiv": "2410.16229",
+      "DOI": "10.1145/3695868",
+      "CorpusId": 273507657
+    },
+    "title": "Building a Coding Assistant via the Retrieval-Augmented Language Model",
+    "venue": "ACM Trans. Inf. Syst.",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.16229, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261354998",
+        "name": "Xinze Li"
+      },
+      {
+        "authorId": "2267230996",
+        "name": "Hanbin Wang"
+      },
+      {
+        "authorId": "2323176343",
+        "name": "Zhenghao Liu"
+      },
+      {
+        "authorId": "2314785970",
+        "name": "Shi Yu"
+      },
+      {
+        "authorId": "2267033597",
+        "name": "Shuo Wang"
+      },
+      {
+        "authorId": "2277242040",
+        "name": "Yukun Yan"
+      },
+      {
+        "authorId": "2339701510",
+        "name": "Yukai Fu"
+      },
+      {
+        "authorId": "2261295920",
+        "name": "Yu Gu"
+      },
+      {
+        "authorId": "2204644192",
+        "name": "Ge Yu"
+      }
+    ],
+    "abstract": "Pretrained language models have shown strong effectiveness in code-related tasks, such as code retrieval, code generation, code summarization, and code completion tasks. In this article, we propose COde assistaNt viA retrieval-augmeNted language model (CONAN), which aims to build a code assistant by mimicking the knowledge-seeking behaviors of humans during coding. Specifically, it consists of a code structure-aware retriever (CONAN-R) and a dual-view code representation-based retrieval-augmented generation model (CONAN-G). CONAN-R pretrains CodeT5 using Code-Documentation Alignment and Masked Entity Prediction tasks to make language models code structure-aware and learn effective representations for code snippets and documentation. Then CONAN-G designs a dual-view code representation mechanism for implementing a retrieval-augmented code generation model. CONAN-G regards the code documentation descriptions as prompts, which help language models better understand the code semantics. Our experiments show that CONAN achieves convincing performance on different code generation tasks and significantly outperforms previous retrieval augmented code generation models. Our further analyses show that CONAN learns tailored representations for both code snippets and documentation by aligning code-documentation data pairs and capturing structural semantics by masking and predicting entities in the code data. Additionally, the retrieved code snippets and documentation provide necessary information from both program language and natural language to assist the code generation process. CONAN can also be used as an assistant for Large Language Models (LLMs), providing LLMs with external knowledge in shorter code document lengths to improve their effectiveness on various code tasks. It shows the ability of CONAN to extract necessary information and help filter out the noise from retrieved code documents."
+  },
+  {
+    "paperId": "40e82fde3d05b4f1564b5310ba42c6e6ba5a846f",
+    "externalIds": {
+      "DOI": "10.1109/ACSAT68407.2025.11406960",
+      "CorpusId": 286134425
+    },
+    "title": "Lightweight Retrieval-augmented language model",
+    "venue": "International Conference on Advanced Computer Science Applications and Technologies",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ACSAT68407.2025.11406960?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ACSAT68407.2025.11406960, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326553201",
+        "name": "Yiping Li"
+      },
+      {
+        "authorId": "2109955387",
+        "name": "Dexin Zhang"
+      },
+      {
+        "authorId": "47724869",
+        "name": "Yizhun Peng"
+      },
+      {
+        "authorId": "2300033068",
+        "name": "Hui Zhang"
+      },
+      {
+        "authorId": "2316466218",
+        "name": "Jing Liu"
+      }
+    ],
+    "abstract": "As industrial intelligence continues to advance, complex industrial environments demand systems equipped with sufficient domain expertise and rapid response mechanisms. Small language models (SLMs), with their compact architecture and efficient inference speed, serve as an ideal foundation for industrial intelligence. However, constrained by limited knowledge base, these models are prone to factual errors (i.e., hallucinations) in critical scenarios, severely limiting their reliability in industrial applications. To address these challenges, this paper proposes a lightweight solution based on retrieval-augmented technology for chemical safety scenarios. By introducing a retriever, small models can access external expert knowledge bases to answer questions. We constructed an intelligent system with only 0.3B parameters, significantly enhancing the model's understanding of chemical safety knowledge and decision-making capabilities while consuming minimal resources. Experiments demonstrate the system's outstanding performance in safety question-answering and selection tasks, along with robust cross-task adaptability with few samples. This research provides an effective technical pathway for building low-cost, highly reliable intelligent systems in industrial settings, advancing the practical application of intelligent automation technologies in vertical domains."
+  },
+  {
+    "paperId": "945ac0cf278414d2f033e88ab82825e182f95e3b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2311-12289",
+      "ArXiv": "2311.12289",
+      "DOI": "10.48550/arXiv.2311.12289",
+      "CorpusId": 265308533
+    },
+    "title": "ATLANTIC: Structure-Aware Retrieval-Augmented Language Model for Interdisciplinary Science",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.12289, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258957941",
+        "name": "Sai Munikoti"
+      },
+      {
+        "authorId": "145536102",
+        "name": "Anurag Acharya"
+      },
+      {
+        "authorId": "2054838317",
+        "name": "S. Wagle"
+      },
+      {
+        "authorId": "24029613",
+        "name": "Sameera Horawalavithana"
+      }
+    ],
+    "abstract": "Large language models record impressive performance on many natural language processing tasks. However, their knowledge capacity is limited to the pretraining corpus. Retrieval augmentation offers an effective solution by retrieving context from external knowledge sources to complement the language model. However, existing retrieval augmentation techniques ignore the structural relationships between these documents. Furthermore, retrieval models are not explored much in scientific tasks, especially in regard to the faithfulness of retrieved documents. In this paper, we propose a novel structure-aware retrieval augmented language model that accommodates document structure during retrieval augmentation. We create a heterogeneous document graph capturing multiple types of relationships (e.g., citation, co-authorship, etc.) that connect documents from more than 15 scientific disciplines (e.g., Physics, Medicine, Chemistry, etc.). We train a graph neural network on the curated document graph to act as a structural encoder for the corresponding passages retrieved during the model pretraining. Particularly, along with text embeddings of the retrieved passages, we obtain structural embeddings of the documents (passages) and fuse them together before feeding them to the language model. We evaluate our model extensively on various scientific benchmarks that include science question-answering and scientific document classification tasks. Experimental results demonstrate that structure-aware retrieval improves retrieving more coherent, faithful and contextually relevant passages, while showing a comparable performance in the overall accuracy."
+  },
+  {
+    "paperId": "6ae63be462816bdd0da32894985d16f1e8cbdd5c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2204-10555",
+      "ArXiv": "2204.10555",
+      "ACL": "2022.naacl-main.379",
+      "DOI": "10.48550/arXiv.2204.10555",
+      "CorpusId": 248366611
+    },
+    "title": "KALA: Knowledge-Augmented Language Model Adaptation",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.10555",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.10555, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "120434407",
+        "name": "Minki Kang"
+      },
+      {
+        "authorId": "90765684",
+        "name": "Jinheon Baek"
+      },
+      {
+        "authorId": "35788904",
+        "name": "Sung Ju Hwang"
+      }
+    ],
+    "abstract": "Pre-trained language models (PLMs) have achieved remarkable success on various natural language understanding tasks. Simple fine-tuning of PLMs, on the other hand, might be suboptimal for domain-specific tasks because they cannot possibly cover knowledge from all domains. While adaptive pre-training of PLMs can help them obtain domain-specific knowledge, it requires a large training cost. Moreover, adaptive pre-training can harm the PLM’s performance on the downstream task by causing catastrophic forgetting of its general knowledge. To overcome such limitations of adaptive pre-training for PLM adaption, we propose a novel domain adaption framework for PLMs coined as Knowledge-Augmented Language model Adaptation (KALA), which modulates the intermediate hidden representations of PLMs with domain knowledge, consisting of entities and their relational facts. We validate the performance of our KALA on question answering and named entity recognition tasks on multiple datasets across various domains. The results show that, despite being computationally efficient, our KALA largely outperforms adaptive pre-training."
+  },
+  {
+    "paperId": "ab1bcc67482fa970fd0c9fd2ce33e5b8ff1d8cdd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-00211",
+      "ArXiv": "2401.00211",
+      "DOI": "10.1007/s13042-024-02190-8",
+      "CorpusId": 266693228
+    },
+    "title": "Open-ti: open traffic intelligence with augmented language model",
+    "venue": "International Journal of Machine Learning and Cybernetics",
+    "year": 2023,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.00211, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1387492282",
+        "name": "Longchao Da"
+      },
+      {
+        "authorId": "2277246356",
+        "name": "Kuan-Ru Liou"
+      },
+      {
+        "authorId": "2278853459",
+        "name": "Tiejin Chen"
+      },
+      {
+        "authorId": "2277565032",
+        "name": "Xuesong Zhou"
+      },
+      {
+        "authorId": "2277571026",
+        "name": "Xiangyong Luo"
+      },
+      {
+        "authorId": "2277415274",
+        "name": "Yezhou Yang"
+      },
+      {
+        "authorId": "2277576540",
+        "name": "Hua Wei"
+      }
+    ],
+    "abstract": "Transportation has greatly benefited the cities’ development in the modern civilization process. Intelligent transportation, leveraging advanced computer algorithms, could further increase people’s daily commuting efficiency. However, intelligent transportation, as a cross-discipline, often requires practitioners to comprehend complicated algorithms and obscure neural networks, bringing a challenge for the advanced techniques to be trusted and deployed in practical industries. Recognizing the expressiveness of the pre-trained large language models, especially the potential of being augmented with abilities to understand and execute intricate commands, we introduce Open-TI. Serving as a bridge to mitigate the industry-academic gap, Open-TI is an innovative model targeting the goal of Turing Indistinguishable Traffic Intelligence, it is augmented with the capability to harness external traffic analysis packages based on existing conversations. Marking its distinction, Open-TI is the first method capable of conducting exhaustive traffic analysis from scratch—spanning from map data acquisition to the eventual execution in complex simulations. Besides, Open-TI is able to conduct task-specific embodiment like training and adapting the traffic signal control policies (TSC), explore demand optimizations, etc. Furthermore, we explored the viability of LLMs directly serving as control agents, by understanding the expected intentions from Open-TI, we designed an agent-to-agent communication mode to support Open-TI conveying messages to ChatZero (control agent), and then the control agent would choose from the action space to proceed the execution. We eventually provide the formal implementation structure, and the open-ended design invites further community-driven enhancements. A demo video is provided at: https://youtu.be/pZ4-5PXz9Xs."
+  },
+  {
+    "paperId": "476de9654c840a080276c4b8b5dadfdbe25c663f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2309-12626",
+      "ArXiv": "2309.12626",
+      "DOI": "10.48550/arXiv.2309.12626",
+      "CorpusId": 262217163
+    },
+    "title": "Construction contract risk identification based on knowledge-augmented language model",
+    "venue": "Computers in industry (Print)",
+    "year": 2023,
+    "citationCount": 53,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.12626",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.12626, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2243404018",
+        "name": "Saika Wong"
+      },
+      {
+        "authorId": "2228068133",
+        "name": "Chunmo Zheng"
+      },
+      {
+        "authorId": "2243496449",
+        "name": "Xing Su"
+      },
+      {
+        "authorId": "2243415288",
+        "name": "Yinqiu Tang"
+      }
+    ],
+    "abstract": "Contract review is an essential step in construction projects to prevent potential losses. However, the current methods for reviewing construction contracts lack effectiveness and reliability, leading to time-consuming and error-prone processes. While large language models (LLMs) have shown promise in revolutionizing natural language processing (NLP) tasks, they struggle with domain-specific knowledge and addressing specialized issues. This paper presents a novel approach that leverages LLMs with construction contract knowledge to emulate the process of contract review by human experts. Our tuning-free approach incorporates construction contract domain knowledge to enhance language models for identifying construction contract risks. The use of a natural language when building the domain knowledge base facilitates practical implementation. We evaluated our method on real construction contracts and achieved solid performance. Additionally, we investigated how large language models employ logical thinking during the task and provide insights and recommendations for future research."
+  },
+  {
+    "paperId": "a33c02803eed966eb135bc5179c42dd752d29c2b",
+    "externalIds": {
+      "ArXiv": "2305.17116",
+      "DBLP": "journals/corr/abs-2305-17116",
+      "PubMedCentral": "11338460",
+      "DOI": "10.1371/journal.pdig.0000568",
+      "CorpusId": 258947604,
+      "PubMed": "39167594"
+    },
+    "title": "Improving accuracy of GPT-3/4 results on biomedical data using a retrieval-augmented language model",
+    "venue": "PLOS Digital Health",
+    "year": 2023,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1371/journal.pdig.0000568",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.17116, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144506027",
+        "name": "D. Soong"
+      },
+      {
+        "authorId": "8797188",
+        "name": "S. Sridhar"
+      },
+      {
+        "authorId": "2170635354",
+        "name": "Han Si"
+      },
+      {
+        "authorId": "108082794",
+        "name": "J. Wagner"
+      },
+      {
+        "authorId": "2378277170",
+        "name": "Ana Caroline Costa Sá"
+      },
+      {
+        "authorId": "46756088",
+        "name": "Christina Y. Yu"
+      },
+      {
+        "authorId": "2407846",
+        "name": "Kubra Karagoz"
+      },
+      {
+        "authorId": "5182735",
+        "name": "Meijian Guan"
+      },
+      {
+        "authorId": "2085075720",
+        "name": "Hisham K Hamadeh"
+      },
+      {
+        "authorId": "2139794738",
+        "name": "Brandon W. Higgs"
+      }
+    ],
+    "abstract": "Large language models (LLMs) have made a significant impact on the fields of general artificial intelligence. General purpose LLMs exhibit strong logic and reasoning skills and general world knowledge but can sometimes generate misleading results when prompted on specific subject areas. LLMs trained with domain-specific knowledge can reduce the generation of misleading information (i.e. hallucinations) and enhance the precision of LLMs in specialized contexts. Training new LLMs on specific corpora however can be resource intensive. Here we explored the use of a retrieval-augmented generation (RAG) model which we tested on literature specific to a biomedical research area. OpenAI’s GPT-3.5, GPT-4, Microsoft’s Prometheus, and a custom RAG model were used to answer 19 questions pertaining to diffuse large B-cell lymphoma (DLBCL) disease biology and treatment. Eight independent reviewers assessed LLM responses based on accuracy, relevance, and readability, rating responses on a 3-point scale for each category. These scores were then used to compare LLM performance. The performance of the LLMs varied across scoring categories. On accuracy and relevance, the RAG model outperformed other models with higher scores on average and the most top scores across questions. GPT-4 was more comparable to the RAG model on relevance versus accuracy. By the same measures, GPT-4 and GPT-3.5 had the highest scores for readability of answers when compared to the other LLMs. GPT-4 and 3.5 also had more answers with hallucinations than the other LLMs, due to non-existent references and inaccurate responses to clinical questions. Our findings suggest that an oncology research-focused RAG model may outperform general-purpose LLMs in accuracy and relevance when answering subject-related questions. This framework can be tailored to Q&A in other subject areas. Further research will help understand the impact of LLM architectures, RAG methodologies, and prompting techniques in answering questions across different subject areas."
+  },
+  {
+    "paperId": "cf851103cdb37162a46ff2b03d77ca68e5dfa33e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-19821",
+      "ArXiv": "2305.19821",
+      "DOI": "10.48550/arXiv.2305.19821",
+      "CorpusId": 258987414
+    },
+    "title": "LMCap: Few-shot Multilingual Image Captioning by Retrieval Augmented Language Model Prompting",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.19821",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.19821, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1390025466",
+        "name": "R. Ramos"
+      },
+      {
+        "authorId": "144694868",
+        "name": "Bruno Martins"
+      },
+      {
+        "authorId": "50369944",
+        "name": "Desmond Elliott"
+      }
+    ],
+    "abstract": "Multilingual image captioning has recently been tackled by training with large-scale machine translated data, which is an expensive, noisy, and time-consuming process. Without requiring any multilingual caption data, we propose LMCap, an image-blind few-shot multilingual captioning model that works by prompting a language model with retrieved captions. Specifically, instead of following the standard encoder-decoder paradigm, given an image, LMCap first retrieves the captions of similar images using a multilingual CLIP encoder. These captions are then combined into a prompt for an XGLM decoder, in order to generate captions in the desired language. In other words, the generation model does not directly process the image, instead processing retrieved captions. Experiments on the XM3600 dataset of geographically diverse images show that our model is competitive with fully-supervised multilingual captioning models, without requiring any supervised training on any captioning data."
+  },
+  {
+    "paperId": "8236c7cb26222b98af6dbcb15f9166f957b6ea67",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-12836",
+      "ArXiv": "2310.12836",
+      "DOI": "10.48550/arXiv.2310.12836",
+      "CorpusId": 264306280
+    },
+    "title": "Knowledge-Augmented Language Model Verification",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.12836, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "90765684",
+        "name": "Jinheon Baek"
+      },
+      {
+        "authorId": "8599185",
+        "name": "Soyeong Jeong"
+      },
+      {
+        "authorId": "120434407",
+        "name": "Minki Kang"
+      },
+      {
+        "authorId": "2109285560",
+        "name": "Jong C. Park"
+      },
+      {
+        "authorId": "2260611009",
+        "name": "Sung Ju Hwang"
+      }
+    ],
+    "abstract": "Recent Language Models (LMs) have shown impressive capabilities in generating texts with the knowledge internalized in parameters. Yet, LMs often generate the factually incorrect responses to the given queries, since their knowledge may be inaccurate, incomplete, and outdated. To address this problem, previous works propose to augment LMs with the knowledge retrieved from an external knowledge source. However, such approaches often show suboptimal text generation performance due to two reasons: 1) the model may fail to retrieve the knowledge relevant to the given query, or 2) the model may not faithfully reflect the retrieved knowledge in the generated text. To overcome these, we propose to verify the output and the knowledge of the knowledge-augmented LMs with a separate verifier, which is a small LM that is trained to detect those two types of errors through instruction-finetuning. Then, when the verifier recognizes an error, we can rectify it by either retrieving new knowledge or generating new text. Further, we use an ensemble of the outputs from different instructions with a single verifier to enhance the reliability of the verification processes. We validate the effectiveness of the proposed verification steps on multiple question answering benchmarks, whose results show that the proposed verifier effectively identifies retrieval and generation errors, allowing LMs to provide more factually correct outputs. Our code is available at https://github.com/JinheonBaek/KALMV."
+  },
+  {
+    "paperId": "e4758d05c3d4231dd30c656330e156ccc9dbb07b",
+    "externalIds": {
+      "DBLP": "conf/emnlp/BehnamGhaderMR23",
+      "ArXiv": "2212.09146",
+      "DOI": "10.48550/arXiv.2212.09146",
+      "CorpusId": 254854344
+    },
+    "title": "Can Retriever-Augmented Language Models Reason? The Blame Game Between the Retriever and the Language Model",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2022,
+    "citationCount": 47,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2212.09146",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.09146, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2101317786",
+        "name": "Parishad BehnamGhader"
+      },
+      {
+        "authorId": "2294574515",
+        "name": "Santiago Miret"
+      },
+      {
+        "authorId": "145732771",
+        "name": "Siva Reddy"
+      }
+    ],
+    "abstract": "Augmenting pretrained language models with retrievers to select the supporting documents has shown promise in effectively solving common NLP problems, including language modeling and question answering, in an interpretable way. In this paper, we first study the strengths and weaknesses of different retriever-augmented language models (REALM, $k$NN-LM, FiD coupled with DPR, and ATLAS and Flan-T5 coupled with Contriever) in reasoning over the retrieved statements in different tasks. We show how the retrieve-then-read models' limitations in reasoning are rooted both in the retriever module as well as the language model. Our experimental results demonstrate that the similarity metric used by the retrievers is generally insufficient for reasoning tasks. Additionally, we show that the language models in retriever-augmented models do not take the complicated relations between the statements into account, which leads to poor reasoning performance even when using the larger models. Moreover, we analyze the reasoning performance of large language models using multihop retrieval but we only observe minor improvements. Overall, this shows great room for further research in this area."
+  },
+  {
+    "paperId": "d443234c0a835422ef5f675e7571a3509c117e43",
+    "externalIds": {
+      "DBLP": "conf/emnlp/VoigtCMRZL23",
+      "DOI": "10.18653/v1/2023.emnlp-demo.5",
+      "CorpusId": 265824821
+    },
+    "title": "VIST5: An Adaptive, Retrieval-Augmented Language Model for Visualization-oriented Dialog",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.emnlp-demo.5.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.18653/v1/2023.emnlp-demo.5?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.18653/v1/2023.emnlp-demo.5, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40405684",
+        "name": "Henrik Voigt"
+      },
+      {
+        "authorId": "116377499",
+        "name": "N. Carvalhais"
+      },
+      {
+        "authorId": "2649961",
+        "name": "M. Meuschke"
+      },
+      {
+        "authorId": "2530948",
+        "name": "M. Reichstein"
+      },
+      {
+        "authorId": "2271320735",
+        "name": "Sina Zarrieß"
+      },
+      {
+        "authorId": "1798143",
+        "name": "K. Lawonn"
+      }
+    ],
+    "abstract": "The advent of large language models has brought about new ways of interacting with data intuitively via natural language. In recent years, a variety of visualization systems have explored the use of natural language to create and modify visualizations through visualization-oriented dialog. However, the majority of these systems rely on tailored dialog agents to analyze domain-specific data and operate domain-specific visualization tools and libraries. This is a major challenge when trying to transfer functionalities between dialog interfaces of different visualization applications. To address this issue, we propose VIST5, a visualization-oriented dialog system that focuses on easy adaptability to an application domain as well as easy transferability of language-controllable visualization library functions be-tween applications. Its architecture is based on a retrieval-augmented T5 language model that leverages few-shot learning capabilities to enable a rapid adaptation of the system."
+  },
+  {
+    "paperId": "880f418fef7a768a9a24f872eab3b1ce5de83e53",
+    "externalIds": {
+      "MAG": "2953045411",
+      "DBLP": "journals/corr/abs-1904-04458",
+      "ACL": "N19-1117",
+      "ArXiv": "1904.04458",
+      "DOI": "10.18653/v1/N19-1117",
+      "CorpusId": 104292554
+    },
+    "title": "Knowledge-Augmented Language Model and Its Application to Unsupervised Named-Entity Recognition",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 40,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.04458",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.04458, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49285560",
+        "name": "Angli Liu"
+      },
+      {
+        "authorId": "3048577",
+        "name": "Jingfei Du"
+      },
+      {
+        "authorId": "1759422",
+        "name": "Veselin Stoyanov"
+      }
+    ],
+    "abstract": "Traditional language models are unable to efficiently model entity names observed in text. All but the most popular named entities appear infrequently in text providing insufficient context. Recent efforts have recognized that context can be generalized between entity names that share the same type (e.g., person or location) and have equipped language models with an access to external knowledge base (KB). Our Knowledge-Augmented Language Model (KALM) continues this line of work by augmenting a traditional model with a KB. Unlike previous methods, however, we train with an end-to-end predictive objective optimizing the perplexity of text. We do not require any additional information such as named entity tags. In addition to improving language modeling performance, KALM learns to recognize named entities in an entirely unsupervised way by using entity type information latent in the model. On a Named Entity Recognition (NER) task, KALM achieves performance comparable with state-of-the-art supervised models. Our work demonstrates that named entities (and possibly other types of world knowledge) can be modeled successfully using predictive learning and training on large corpora of text without any additional information."
+  },
+  {
+    "paperId": "83939671534dc3d374c9bc4e3e03b5ec2c7ba301",
+    "externalIds": {
+      "DBLP": "journals/jamia/LiuMW25",
+      "PubMedCentral": "12005634",
+      "DOI": "10.1093/jamia/ocaf008",
+      "CorpusId": 275541863,
+      "PubMed": "39812777"
+    },
+    "title": "Improving large language model applications in biomedicine with retrieval-augmented generation: a systematic review, meta-analysis, and clinical development guidelines",
+    "venue": "J. Am. Medical Informatics Assoc.",
+    "year": 2025,
+    "citationCount": 109,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1093/jamia/ocaf008",
+      "status": "HYBRID",
+      "license": "CCBYNC",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC12005634, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2284995577",
+        "name": "Siru Liu"
+      },
+      {
+        "authorId": "2290265261",
+        "name": "Allison B. McCoy"
+      },
+      {
+        "authorId": "2290260931",
+        "name": "Adam Wright"
+      }
+    ],
+    "abstract": "Abstract Objective The objectives of this study are to synthesize findings from recent research of retrieval-augmented generation (RAG) and large language models (LLMs) in biomedicine and provide clinical development guidelines to improve effectiveness. Materials and Methods We conducted a systematic literature review and a meta-analysis. The report was created in adherence to the Preferred Reporting Items for Systematic Reviews and Meta-Analyses 2020 analysis. Searches were performed in 3 databases (PubMed, Embase, PsycINFO) using terms related to “retrieval augmented generation” and “large language model,” for articles published in 2023 and 2024. We selected studies that compared baseline LLM performance with RAG performance. We developed a random-effect meta-analysis model, using odds ratio as the effect size. Results Among 335 studies, 20 were included in this literature review. The pooled effect size was 1.35, with a 95% confidence interval of 1.19-1.53, indicating a statistically significant effect (P = .001). We reported clinical tasks, baseline LLMs, retrieval sources and strategies, as well as evaluation methods. Discussion Building on our literature review, we developed Guidelines for Unified Implementation and Development of Enhanced LLM Applications with RAG in Clinical Settings to inform clinical applications using RAG. Conclusion Overall, RAG implementation showed a 1.35 odds ratio increase in performance compared to baseline LLMs. Future research should focus on (1) system-level enhancement: the combination of RAG and agent, (2) knowledge-level enhancement: deep integration of knowledge into LLM, and (3) integration-level enhancement: integrating RAG systems within electronic health records."
+  },
+  {
+    "paperId": "454274b92a27bc5d97c1e80accc78095ae991cf0",
+    "externalIds": {
+      "ArXiv": "2501.06327",
+      "DOI": "10.1063/5.0257555",
+      "CorpusId": 275470865
+    },
+    "title": "OpenFOAMGPT: A retrieval-augmented large language model (LLM) agent for OpenFOAM-based computational fluid dynamics",
+    "venue": "The Physics of Fluids",
+    "year": 2025,
+    "citationCount": 46,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.06327, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268402142",
+        "name": "Sandeep Pandey"
+      },
+      {
+        "authorId": "2340657869",
+        "name": "Ran Xu"
+      },
+      {
+        "authorId": "2024968433",
+        "name": "Wenkang Wang"
+      },
+      {
+        "authorId": "2268394371",
+        "name": "Xu Chu"
+      }
+    ],
+    "abstract": "This work presents a large language model (LLM)-based agent OpenFOAMGPT tailored for OpenFOAM-centric computational fluid dynamics (CFD) simulations, leveraging two foundation models from OpenAI: the GPT-4o (GPT means Generative Pre-trained Transformer) and a chain-of-thought–enabled o1 preview model. Both agents demonstrate success across multiple tasks. While the price of token with o1 model is six times as that of GPT-4o, it consistently exhibits superior performance in handling complex tasks, from zero-shot/few-shot case setup to boundary condition modifications, zero-shot turbulence model adjustments, and zero-shot code translation. Through an iterative correction loop, the agent efficiently addressed single-phase and multiphase flow, heat transfer, Reynolds-averaged Navier–Stokes modeling, large eddy simulation, and other engineering scenarios, often converging in a limited number of iterations at low token costs. To embed domain-specific knowledge, we employed a retrieval-augmented generation pipeline, demonstrating how preexisting simulation setups can further specialize the agent for subdomains such as energy and aerospace. Despite the great performance of the agent, human oversight remains crucial for ensuring accuracy and adapting to shifting contexts. Fluctuations in model performance over time suggest the need for monitoring in mission-critical applications. Although our demonstrations focus on OpenFOAM, the adaptable nature of this framework opens the door to developing LLM-driven agents into a wide range of solvers and codes. By streamlining CFD simulations, this approach has the potential to accelerate both fundamental research and industrial engineering advancements."
+  },
+  {
+    "paperId": "ab90bbf4de9411383e0c05b7e1066d928d65078c",
+    "externalIds": {
+      "DBLP": "conf/www/LiZLCRKL25",
+      "ArXiv": "2502.12586",
+      "DOI": "10.1145/3696410.3714727",
+      "CorpusId": 276421643
+    },
+    "title": "G-Refer: Graph Retrieval-Augmented Large Language Model for Explainable Recommendation",
+    "venue": "The Web Conference",
+    "year": 2025,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.12586, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2267495002",
+        "name": "Yuhan Li"
+      },
+      {
+        "authorId": "2293442048",
+        "name": "Xinni Zhang"
+      },
+      {
+        "authorId": "2346640540",
+        "name": "Linhao Luo"
+      },
+      {
+        "authorId": "2303979712",
+        "name": "Heng Chang"
+      },
+      {
+        "authorId": "2345994084",
+        "name": "Yuxiang Ren"
+      },
+      {
+        "authorId": "2052565939",
+        "name": "Irwin King"
+      },
+      {
+        "authorId": "2273828439",
+        "name": "Jia Li"
+      }
+    ],
+    "abstract": "Explainable recommendation has demonstrated significant advantages in informing users about the logic behind recommendations, thereby increasing system transparency, effectiveness, and trustworthiness. To provide personalized and interpretable explanations, existing works often combine the generation capabilities of large language models (LLMs) with collaborative filtering (CF) information. CF information extracted from the user-item interaction graph captures the user behaviors and preferences, which is crucial for providing informative explanations. However, due to the complexity of graph structure, effectively extracting the CF information from graphs still remains a challenge. Moreover, existing methods often struggle with the integration of extracted CF information with LLMs due to its implicit representation and the modality gap between graph structures and natural language explanations. To address these challenges, we propose G-Refer, a framework using Graph Retrieval-augmented large language models (LLMs) for explainable recommendation. Specifically, we first employ a hybrid graph retrieval mechanism to retrieve explicit CF signals from both structural and semantic perspectives. The retrieved CF information is explicitly formulated as human-understandable text by the proposed graph translation and accounts for the explanations generated by LLMs. To bridge the modality gap, we introduce knowledge pruning and retrieval-augmented fine-tuning to enhance the ability of LLMs to process and utilize the retrieved CF information to generate explanations. Extensive experiments show that G-Refer achieves superior performance compared with existing methods in both explainability and stability. Codes and data are available at https://github.com/Yuhan1i/G-Refer."
+  },
+  {
+    "paperId": "64fed9e0be009f064b72cdcb7d1fadeb28bea3b0",
+    "externalIds": {
+      "ArXiv": "2408.04187",
+      "DBLP": "journals/corr/abs-2408-04187",
+      "DOI": "10.48550/arXiv.2408.04187",
+      "CorpusId": 271768853
+    },
+    "title": "Medical Graph RAG: Towards Safe Medical Large Language Model via Graph Retrieval-Augmented Generation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 146,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.04187, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2290900099",
+        "name": "Junde Wu"
+      },
+      {
+        "authorId": "2275784890",
+        "name": "Jiayuan Zhu"
+      },
+      {
+        "authorId": "2316017828",
+        "name": "Yunli Qi"
+      }
+    ],
+    "abstract": "We introduce a novel graph-based Retrieval-Augmented Generation (RAG) framework specifically designed for the medical domain, called \\textbf{MedGraphRAG}, aimed at enhancing Large Language Model (LLM) capabilities for generating evidence-based medical responses, thereby improving safety and reliability when handling private medical data. Graph-based RAG (GraphRAG) leverages LLMs to organize RAG data into graphs, showing strong potential for gaining holistic insights from long-form documents. However, its standard implementation is overly complex for general use and lacks the ability to generate evidence-based responses, limiting its effectiveness in the medical field. To extend the capabilities of GraphRAG to the medical domain, we propose unique Triple Graph Construction and U-Retrieval techniques over it. In our graph construction, we create a triple-linked structure that connects user documents to credible medical sources and controlled vocabularies. In the retrieval process, we propose U-Retrieval which combines Top-down Precise Retrieval with Bottom-up Response Refinement to balance global context awareness with precise indexing. These effort enable both source information retrieval and comprehensive response generation. Our approach is validated on 9 medical Q\\&A benchmarks, 2 health fact-checking benchmarks, and one collected dataset testing long-form generation. The results show that MedGraphRAG consistently outperforms state-of-the-art models across all benchmarks, while also ensuring that responses include credible source documentation and definitions. Our code is released at: https://github.com/MedicineToken/Medical-Graph-RAG."
+  },
+  {
+    "paperId": "971f1c0dcdfabe31c88b9dc1428967286f17586a",
+    "externalIds": {
+      "DBLP": "conf/sp/WangYL24",
+      "DOI": "10.1109/SP54263.2024.00211",
+      "CorpusId": 272432502
+    },
+    "title": "LLMIF: Augmented Large Language Model for Fuzzing IoT Devices",
+    "venue": "IEEE Symposium on Security and Privacy",
+    "year": 2024,
+    "citationCount": 61,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/SP54263.2024.00211?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/SP54263.2024.00211, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2319940488",
+        "name": "Jincheng Wang"
+      },
+      {
+        "authorId": "33253422",
+        "name": "Le Yu"
+      },
+      {
+        "authorId": "2241568077",
+        "name": "Xiapu Luo"
+      }
+    ],
+    "abstract": "Despite the efficacy of fuzzing in verifying the implementation correctness of network protocols, existing IoT protocol fuzzing approaches grapple with several limitations, including obfuscated message formats, unresolved message dependencies, and a lack of evaluations on the testing cases. These limitations significantly curtail the capabilities of IoT fuzzers in vulnerability identification. In this work, we show that the protocol specification contains fruitful descriptions of protocol messages, which can be used to overcome the above limitations and guide IoT protocol fuzzing. To automate the specification analysis, we augment the large language model with the specification contents, and drive it to perform two tasks (i.e., protocol information extraction, and device response reasoning). We further design and implement a fuzzing algorithm, LLMIF, which incorporates the LLM into IoT fuzzing. Finally, we select Zigbee as the target protocol and initiate comprehensive evaluations. The evaluation result shows that LLMIF successfully addressed the above limitations. Compared with the existing Zigbee fuzzers, it increases the protocol message coverage and code coverage by 55.2% and 53.9%, respectively. Besides the enhanced coverage, LLMIF unearthed 11 vulnerabilities on real-world Zigbee devices, which include eight previously unknown vulnerabilities. Seven of them are not covered by the existing Zigbee fuzzers."
+  },
+  {
+    "paperId": "2c4bf56c5b1a1f06ee3ca21ce964ba2c8c66cb2c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-17231",
+      "ArXiv": "2402.17231",
+      "ACL": "2024.naacl-long.54",
+      "DOI": "10.48550/arXiv.2402.17231",
+      "CorpusId": 268032238
+    },
+    "title": "MATHSENSEI: A Tool-Augmented Large Language Model for Mathematical Reasoning",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 40,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.17231, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2287759902",
+        "name": "Debrup Das"
+      },
+      {
+        "authorId": "19373324",
+        "name": "Debopriyo Banerjee"
+      },
+      {
+        "authorId": "2279830689",
+        "name": "Somak Aditya"
+      },
+      {
+        "authorId": "2287833353",
+        "name": "Ashish Kulkarni"
+      }
+    ],
+    "abstract": "Tool-augmented Large Language Models (TALMs) are known to enhance the skillset of large language models (LLMs), thereby, leading to their improved reasoning abilities across many tasks. While, TALMs have been successfully employed in different question-answering benchmarks, their efficacy on complex mathematical reasoning benchmarks, and the potential complementary benefits offered by tools for knowledge retrieval and mathematical equation solving are open research questions. In this work, we present MathSensei, a tool-augmented large language model for mathematical reasoning. We study the complementary benefits of the tools - knowledge retriever (Bing Web Search), program generator + executor (Python), and symbolic equation solver (Wolfram-Alpha API) through evaluations on mathematical reasoning datasets. We perform exhaustive ablations on MATH, a popular dataset for evaluating mathematical reasoning on diverse mathematical disciplines. We also conduct experiments involving well-known tool planners to study the impact of tool sequencing on the model performance. MathSensei achieves 13.5% better accuracy over gpt-3.5-turbo with Chain-of-Thought on the MATH dataset. We further observe that TALMs are not as effective for simpler math word problems (in GSM-8K), and the benefit increases as the complexity and required knowledge increases (progressively over AQuA, MMLU-Math, and higher level complex questions in MATH). The code and data are available at https://github.com/Debrup-61/MathSensei."
+  },
+  {
+    "paperId": "7f254928af6718c80224199e9cd915e7372ac54d",
+    "externalIds": {
+      "ArXiv": "2402.10828",
+      "DBLP": "conf/rss/YuanSOZ0KG24",
+      "DOI": "10.48550/arXiv.2402.10828",
+      "CorpusId": 267740546
+    },
+    "title": "RAG-Driver: Generalisable Driving Explanations with Retrieval-Augmented In-Context Learning in Multi-Modal Large Language Model",
+    "venue": "Robotics: Science and Systems",
+    "year": 2024,
+    "citationCount": 97,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.10828, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258942418",
+        "name": "Jianhao Yuan"
+      },
+      {
+        "authorId": "2284759777",
+        "name": "Shuyang Sun"
+      },
+      {
+        "authorId": "51880324",
+        "name": "Daniel Omeiza"
+      },
+      {
+        "authorId": "2284660362",
+        "name": "Bo Zhao"
+      },
+      {
+        "authorId": "2135739162",
+        "name": "Paul Newman"
+      },
+      {
+        "authorId": "2253650662",
+        "name": "Lars Kunze"
+      },
+      {
+        "authorId": "2346231",
+        "name": "Matthew Gadd"
+      }
+    ],
+    "abstract": "We need to trust robots that use often opaque AI methods. They need to explain themselves to us, and we need to trust their explanation. In this regard, explainability plays a critical role in trustworthy autonomous decision-making to foster transparency and acceptance among end users, especially in complex autonomous driving. Recent advancements in Multi-Modal Large Language models (MLLMs) have shown promising potential in enhancing the explainability as a driving agent by producing control predictions along with natural language explanations. However, severe data scarcity due to expensive annotation costs and significant domain gaps between different datasets makes the development of a robust and generalisable system an extremely challenging task. Moreover, the prohibitively expensive training requirements of MLLM and the unsolved problem of catastrophic forgetting further limit their generalisability post-deployment. To address these challenges, we present RAG-Driver, a novel retrieval-augmented multi-modal large language model that leverages in-context learning for high-performance, explainable, and generalisable autonomous driving. By grounding in retrieved expert demonstration, we empirically validate that RAG-Driver achieves state-of-the-art performance in producing driving action explanations, justifications, and control signal prediction. More importantly, it exhibits exceptional zero-shot generalisation capabilities to unseen environments without further training endeavours."
+  },
+  {
+    "paperId": "8d0df3168870fd17b36ecd5575e406feb5a5a1b5",
+    "externalIds": {
+      "DBLP": "conf/acl/WangTOXS24",
+      "ArXiv": "2405.16420",
+      "DOI": "10.48550/arXiv.2405.16420",
+      "CorpusId": 270062508
+    },
+    "title": "M-RAG: Reinforcing Large Language Model Performance through Retrieval-Augmented Generation with Multiple Partitions",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.16420, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303565983",
+        "name": "Zheng Wang"
+      },
+      {
+        "authorId": "2274319013",
+        "name": "Shu Xian Teo"
+      },
+      {
+        "authorId": "2303398119",
+        "name": "Jieer Ouyang"
+      },
+      {
+        "authorId": "2355462590",
+        "name": "Yongjun Xu"
+      },
+      {
+        "authorId": "2261895678",
+        "name": "Wei Shi"
+      }
+    ],
+    "abstract": "Retrieval-Augmented Generation (RAG) enhances Large Language Models (LLMs) by retrieving relevant memories from an external database. However, existing RAG methods typically organize all memories in a whole database, potentially limiting focus on crucial memories and introducing noise. In this paper, we introduce a multiple partition paradigm for RAG (called M-RAG), where each database partition serves as a basic unit for RAG execution. Based on this paradigm, we propose a novel framework that leverages LLMs with Multi-Agent Reinforcement Learning to optimize different language generation tasks explicitly. Through comprehensive experiments conducted on seven datasets, spanning three language generation tasks and involving three distinct language model architectures, we confirm that M-RAG consistently outperforms various baseline methods, achieving improvements of 11%, 8%, and 12% for text summarization, machine translation, and dialogue generation, respectively."
+  },
+  {
+    "paperId": "916be31cbf847faa65cad0549e153f0c25b9f424",
+    "externalIds": {
+      "ArXiv": "2208.03299",
+      "DBLP": "journals/jmlr/IzacardLLHPSDJRG23",
+      "CorpusId": 251371732
+    },
+    "title": "Few-shot Learning with Retrieval Augmented Language Models",
+    "venue": "Journal of machine learning research",
+    "year": 2022,
+    "citationCount": 1176,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2208.03299, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "3376175",
+        "name": "M. Lomeli"
+      },
+      {
+        "authorId": "26360550",
+        "name": "Lucas Hosseini"
+      },
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "32246932",
+        "name": "Timo Schick"
+      },
+      {
+        "authorId": "2129456957",
+        "name": "Jane A. Yu"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      }
+    ],
+    "abstract": "Large language models have shown impressive few-shot results on a wide range of tasks. However, when knowledge is key for such results, as is the case for tasks such as question answering and fact checking, massive parameter counts to store knowledge seem to be needed. Retrieval augmented models are known to excel at knowledge intensive tasks without the need for as many parameters, but it is unclear whether they work in few-shot settings. In this work we present Atlas, a carefully designed and pre-trained retrieval augmented language model able to learn knowledge intensive tasks with very few training examples. We perform evaluations on a wide range of tasks, including MMLU, KILT and NaturalQuestions, and study the impact of the content of the document index, showing that it can easily be updated. Notably, Atlas reaches over 42% accuracy on Natural Questions using only 64 examples, outperforming a 540B parameters model by 3% despite having 50x fewer parameters."
+  },
+  {
+    "paperId": "b7a9754bbe631eb5431533a7ab8c7408cafa2e0a",
+    "externalIds": {
+      "ArXiv": "2405.00465",
+      "DBLP": "journals/jbi/LiKXZ25",
+      "DOI": "10.48550/arXiv.2405.00465",
+      "CorpusId": 269484440,
+      "PubMed": "39814274"
+    },
+    "title": "BiomedRAG: A Retrieval Augmented Large Language Model for Biomedicine",
+    "venue": "Journal of Biomedical Informatics",
+    "year": 2024,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.00465, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262448361",
+        "name": "Mingchen Li"
+      },
+      {
+        "authorId": "3358452",
+        "name": "H. Kilicoglu"
+      },
+      {
+        "authorId": "2124947799",
+        "name": "Hualei Xu"
+      },
+      {
+        "authorId": "2262893164",
+        "name": "Rui Zhang"
+      }
+    ],
+    "abstract": "Retrieval-augmented generation (RAG) involves a solution by retrieving knowledge from an established database to enhance the performance of large language models (LLM). , these models retrieve information at the sentence or paragraph level, potentially introducing noise and affecting the generation quality. To address these issues, we propose a novel BiomedRAG framework that directly feeds automatically retrieved chunk-based documents into the LLM. Our evaluation of BiomedRAG across four biomedical natural language processing tasks using eight datasets demonstrates that our proposed framework not only improves the performance by 9.95% on average, but also achieves state-of-the-art results, surpassing various baselines by 4.97%. BiomedRAG paves the way for more accurate and adaptable LLM applications in the biomedical domain."
+  },
+  {
+    "paperId": "a681b1085c088c51347cdb9358dd344081d29c99",
+    "externalIds": {
+      "ArXiv": "2407.10805",
+      "DBLP": "conf/iclr/MaXJLQYMG25",
+      "CorpusId": 273185432
+    },
+    "title": "Think-on-Graph 2.0: Deep and Faithful Large Language Model Reasoning with Knowledge-guided Retrieval Augmented Generation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 68,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.10805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2311556497",
+        "name": "Shengjie Ma"
+      },
+      {
+        "authorId": "2250617116",
+        "name": "Chengjin Xu"
+      },
+      {
+        "authorId": "144267788",
+        "name": "Xuhui Jiang"
+      },
+      {
+        "authorId": "2307043422",
+        "name": "Muzhi Li"
+      },
+      {
+        "authorId": "2311383154",
+        "name": "Huaren Qu"
+      },
+      {
+        "authorId": "2307038391",
+        "name": "Cehao Yang"
+      },
+      {
+        "authorId": "2289744328",
+        "name": "Jiaxin Mao"
+      },
+      {
+        "authorId": "2284217200",
+        "name": "Jian Guo"
+      }
+    ],
+    "abstract": "Retrieval-augmented generation (RAG) has improved large language models (LLMs) by using knowledge retrieval to overcome knowledge deficiencies. However, current RAG methods often fall short of ensuring the depth and completeness of retrieved information, which is necessary for complex reasoning tasks. In this work, we introduce Think-on-Graph 2.0 (ToG-2), a hybrid RAG framework that iteratively retrieves information from both unstructured and structured knowledge sources in a tight-coupling manner. Specifically, ToG-2 leverages knowledge graphs (KGs) to link documents via entities, facilitating deep and knowledge-guided context retrieval. Simultaneously, it utilizes documents as entity contexts to achieve precise and efficient graph retrieval. ToG-2 alternates between graph retrieval and context retrieval to search for in-depth clues relevant to the question, enabling LLMs to generate answers. We conduct a series of well-designed experiments to highlight the following advantages of ToG-2: 1) ToG-2 tightly couples the processes of context retrieval and graph retrieval, deepening context retrieval via the KG while enabling reliable graph retrieval based on contexts; 2) it achieves deep and faithful reasoning in LLMs through an iterative knowledge retrieval process of collaboration between contexts and the KG; and 3) ToG-2 is training-free and plug-and-play compatible with various LLMs. Extensive experiments demonstrate that ToG-2 achieves overall state-of-the-art (SOTA) performance on 6 out of 7 knowledge-intensive datasets with GPT-3.5, and can elevate the performance of smaller models (e.g., LLAMA-2-13B) to the level of GPT-3.5's direct reasoning. The source code is available on https://github.com/IDEA-FinAI/ToG-2."
+  },
+  {
+    "paperId": "465471bb5bf1a945549d6291c2d23367966b4957",
+    "externalIds": {
+      "ArXiv": "2302.00083",
+      "DBLP": "journals/corr/abs-2302-00083",
+      "DOI": "10.1162/tacl_a_00605",
+      "CorpusId": 256459451
+    },
+    "title": "In-Context Retrieval-Augmented Language Models",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 961,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00605/2178834/tacl_a_00605.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.00083, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "73775461",
+        "name": "Ori Ram"
+      },
+      {
+        "authorId": "152754428",
+        "name": "Yoav Levine"
+      },
+      {
+        "authorId": "1491822146",
+        "name": "Itay Dalmedigos"
+      },
+      {
+        "authorId": "51918041",
+        "name": "Dor Muhlgay"
+      },
+      {
+        "authorId": "3140335",
+        "name": "A. Shashua"
+      },
+      {
+        "authorId": "2066411743",
+        "name": "Kevin Leyton-Brown"
+      },
+      {
+        "authorId": "1701353",
+        "name": "Y. Shoham"
+      }
+    ],
+    "abstract": "Abstract Retrieval-Augmented Language Modeling (RALM) methods, which condition a language model (LM) on relevant documents from a grounding corpus during generation, were shown to significantly improve language modeling performance. In addition, they can mitigate the problem of factually inaccurate text generation and provide natural source attribution mechanism. Existing RALM approaches focus on modifying the LM architecture in order to facilitate the incorporation of external information, significantly complicating deployment. This paper considers a simple alternative, which we dub In-Context RALM: leaving the LM architecture unchanged and prepending grounding documents to the input, without any further training of the LM. We show that In-Context RALM that builds on off-the-shelf general purpose retrievers provides surprisingly large LM gains across model sizes and diverse corpora. We also demonstrate that the document retrieval and ranking mechanism can be specialized to the RALM setting to further boost performance. We conclude that In-Context RALM has considerable potential to increase the prevalence of LM grounding, particularly in settings where a pretrained LM must be used without modification or even via API access.1"
+  },
+  {
+    "paperId": "65f1eb1b651590563aebcccadf5678d26f371ddd",
+    "externalIds": {
+      "PubMedCentral": "11655968",
+      "DBLP": "journals/npjdm/SiangOZCS24",
+      "DOI": "10.1038/s41746-024-01391-3",
+      "CorpusId": 274856083,
+      "PubMed": "39695316"
+    },
+    "title": "SurgeryLLM: a retrieval-augmented generation large language model framework for surgical decision support and workflow enhancement",
+    "venue": "npj Digital Medicine",
+    "year": 2024,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1038/s41746-024-01391-3",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC11655968, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2877146",
+        "name": "Ong Chin Siang"
+      },
+      {
+        "authorId": "2336057291",
+        "name": "N. T. Obey"
+      },
+      {
+        "authorId": "2328790677",
+        "name": "Yanan Zheng"
+      },
+      {
+        "authorId": "2266838179",
+        "name": "Arman Cohan"
+      },
+      {
+        "authorId": "2276596507",
+        "name": "Eric B. Schneider"
+      }
+    ],
+    "abstract": "SurgeryLLM, a large language model framework using Retrieval Augmented Generation demonstrably incorporated domain-specific knowledge from current evidence-based surgical guidelines when presented with patient-specific data. The successful incorporation of guideline-based information represents a substantial step toward enabling greater surgeon efficiency, improving patient safety, and optimizing surgical outcomes."
+  },
+  {
+    "paperId": "1bca0871e893568c5fd346c14c17691f71a8f65a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-06639",
+      "ArXiv": "2405.06639",
+      "DOI": "10.48550/arXiv.2405.06639",
+      "CorpusId": 269741048
+    },
+    "title": "Value Augmented Sampling for Language Model Alignment and Personalization",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.06639, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2301077050",
+        "name": "Seungwook Han"
+      },
+      {
+        "authorId": "2164041844",
+        "name": "Idan Shenfeld"
+      },
+      {
+        "authorId": "2243025154",
+        "name": "Akash Srivastava"
+      },
+      {
+        "authorId": "2301224064",
+        "name": "Yoon Kim"
+      },
+      {
+        "authorId": "2257003971",
+        "name": "Pulkit Agrawal"
+      }
+    ],
+    "abstract": "Aligning Large Language Models (LLMs) to cater to different human preferences, learning new skills, and unlearning harmful behavior is an important problem. Search-based methods, such as Best-of-N or Monte-Carlo Tree Search, are performant, but impractical for LLM adaptation due to their high inference cost. On the other hand, using Reinforcement Learning (RL) for adaptation is computationally efficient, but performs worse due to the optimization challenges in co-training the value function and the policy. We present a new framework for reward optimization, Value Augmented Sampling (VAS), that can maximize different reward functions using data sampled from only the initial, frozen LLM. VAS solves for the optimal reward-maximizing policy without co-training the policy and the value function, making the optimization stable, outperforming established baselines, such as PPO and DPO, on standard benchmarks, and achieving comparable results to Best-of-128 with lower inference cost. Unlike existing RL methods that require changing the weights of the LLM, VAS does not require access to the weights of the pre-trained LLM. Thus, it can even adapt LLMs (e.g., ChatGPT), which are available only as APIs. In addition, our algorithm unlocks the new capability of composing several rewards and controlling the extent of each one during deployment time, paving the road ahead for the future of aligned, personalized LLMs."
+  },
+  {
+    "paperId": "47dbce63f439fff0d9b12dc09ae938c2ad3e96b2",
+    "externalIds": {
+      "DBLP": "conf/chi/RajashekarSPCYG24",
+      "DOI": "10.1145/3613904.3642024",
+      "CorpusId": 269745028
+    },
+    "title": "Human-Algorithmic Interaction Using a Large Language Model-Augmented Artificial Intelligence Clinical Decision Support System",
+    "venue": "International Conference on Human Factors in Computing Systems",
+    "year": 2024,
+    "citationCount": 69,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3613904.3642024",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3613904.3642024?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3613904.3642024, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47957950",
+        "name": "Niroop Rajashekar"
+      },
+      {
+        "authorId": "2276493052",
+        "name": "Yeo Eun Shin"
+      },
+      {
+        "authorId": "2275054952",
+        "name": "Yuan Pu"
+      },
+      {
+        "authorId": "2275578644",
+        "name": "Sunny Chung"
+      },
+      {
+        "authorId": "2260731556",
+        "name": "Kisung You"
+      },
+      {
+        "authorId": "2299973744",
+        "name": "Mauro Giuffrè"
+      },
+      {
+        "authorId": "2275820661",
+        "name": "Colleen E. Chan"
+      },
+      {
+        "authorId": "2275055125",
+        "name": "Theo Saarinen"
+      },
+      {
+        "authorId": "2170905056",
+        "name": "Allen Hsiao"
+      },
+      {
+        "authorId": "2275054630",
+        "name": "Jasjeet Sekhon"
+      },
+      {
+        "authorId": "2275343187",
+        "name": "Ambrose H Wong"
+      },
+      {
+        "authorId": "2299998905",
+        "name": "Leigh V Evans"
+      },
+      {
+        "authorId": "2256875887",
+        "name": "René F. Kizilcec"
+      },
+      {
+        "authorId": "2275054643",
+        "name": "Loren Laine"
+      },
+      {
+        "authorId": "48454256",
+        "name": "Terika Mccall"
+      },
+      {
+        "authorId": "16014130",
+        "name": "Dennis L. Shung"
+      }
+    ],
+    "abstract": "Integration of artificial intelligence (AI) into clinical decision support systems (CDSS) poses a socio-technological challenge that is impacted by usability, trust, and human-computer interaction (HCI). AI-CDSS interventions have shown limited benefit in clinical outcomes, which may be due to insufficient understanding of how health-care providers interact with AI systems. Large language models (LLMs) have the potential to enhance AI-CDSS, but haven’t been studied in either simulated or real-world clinical scenarios. We present findings from a randomized controlled trial deploying AI-CDSS for the management of upper gastrointestinal bleeding (UGIB) with and without an LLM interface within realistic clinical simulations for physician and medical student participants. We find evidence that LLM augmentation improves ease-of-use, that LLM-generated responses with citations improve trust, and HCI varies based on clinical expertise. Qualitative themes from interviews suggest the perception of LLM-augmented AI-CDSS as a team-member used to confirm initial clinical intuitions and help evaluate borderline decisions."
+  },
+  {
+    "paperId": "8c44c3fa1d3cbc9cbde4cb028f598f1999d539d7",
+    "externalIds": {
+      "PubMedCentral": "11027160",
+      "DOI": "10.1021/acsengineeringau.3c00058",
+      "CorpusId": 267155089,
+      "PubMed": "38646516"
+    },
+    "title": "Generative Retrieval-Augmented Ontologic Graph and Multiagent Strategies for Interpretive Large Language Model-Based Materials Design",
+    "venue": "ACS Engineering Au",
+    "year": 2024,
+    "citationCount": 62,
+    "openAccessPdf": {
+      "url": "https://pubs.acs.org/doi/pdf/10.1021/acsengineeringau.3c00058",
+      "status": "GOLD",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC11027160, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2252265640",
+        "name": "Markus J. Buehler"
+      }
+    ],
+    "abstract": "Transformer neural networks show promising capabilities, in particular for uses in materials analysis, design, and manufacturing, including their capacity to work effectively with human language, symbols, code, and numerical data. Here, we explore the use of large language models (LLMs) as a tool that can support engineering analysis of materials, applied to retrieving key information about subject areas, developing research hypotheses, discovery of mechanistic relationships across disparate areas of knowledge, and writing and executing simulation codes for active knowledge generation based on physical ground truths. Moreover, when used as sets of AI agents with specific features, capabilities, and instructions, LLMs can provide powerful problem-solution strategies for applications in analysis and design problems. Our experiments focus on using a fine-tuned model, MechGPT, developed based on training data in the mechanics of materials domain. We first affirm how fine-tuning endows LLMs with a reasonable understanding of subject area knowledge. However, when queried outside the context of learned matter, LLMs can have difficulty recalling correct information and may hallucinate. We show how this can be addressed using retrieval-augmented Ontological Knowledge Graph strategies. The graph-based strategy helps us not only to discern how the model understands what concepts are important but also how they are related, which significantly improves generative performance and also naturally allows for injection of new and augmented data sources into generative AI algorithms. We find that the additional feature of relatedness provides advantages over regular retrieval augmentation approaches and not only improves LLM performance but also provides mechanistic insights for exploration of a material design process. Illustrated for a use case of relating distinct areas of knowledge, here, music and proteins, such strategies can also provide an interpretable graph structure with rich information at the node, edge, and subgraph level that provides specific insights into mechanisms and relationships. We discuss other approaches to improve generative qualities, including nonlinear sampling strategies and agent-based modeling that offer enhancements over single-shot generations, whereby LLMs are used to both generate content and assess content against an objective target. Examples provided include complex question answering, code generation, and execution in the context of automated force-field development from actively learned density functional theory (DFT) modeling and data analysis."
+  },
+  {
+    "paperId": "3ddcd4d50468c9ede8887b8bf27898247128b3f9",
+    "externalIds": {
+      "DBLP": "conf/acl/LiZS24",
+      "ArXiv": "2401.04514",
+      "DOI": "10.48550/arXiv.2401.04514",
+      "CorpusId": 266899699
+    },
+    "title": "Rewriting the Code: A Simple Method for Large Language Model Augmented Code Search",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04514, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2188740060",
+        "name": "Haochen Li"
+      },
+      {
+        "authorId": "2257593840",
+        "name": "Xin Zhou"
+      },
+      {
+        "authorId": "2261928516",
+        "name": "Zhiqi Shen"
+      }
+    ],
+    "abstract": "In code search, the Generation-Augmented Retrieval (GAR) framework, which generates exemplar code snippets to augment queries, has emerged as a promising strategy to address the principal challenge of modality misalignment between code snippets and natural language queries, particularly with the demonstrated code generation capabilities of Large Language Models (LLMs). Nevertheless, our preliminary investigations indicate that the improvements conferred by such an LLM-augmented framework are somewhat constrained. This limitation could potentially be ascribed to the fact that the generated codes, albeit functionally accurate, frequently display a pronounced stylistic deviation from the ground truth code in the codebase. In this paper, we extend the foundational GAR framework and propose a simple yet effective method that additionally Rewrites the Code (ReCo) within the codebase for style normalization. Experimental results demonstrate that ReCo significantly boosts retrieval accuracy across sparse (up to 35.7%), zero-shot dense (up to 27.6%), and fine-tuned dense (up to 23.6%) retrieval settings in diverse search scenarios. To further elucidate the advantages of ReCo and stimulate research in code style normalization, we introduce Code Style Similarity, the first metric tailored to quantify stylistic similarities in code. Notably, our empirical findings reveal the inadequacy of existing metrics in capturing stylistic nuances. The source code and data are available at \\url{https://github.com/Alex-HaochenLi/ReCo}."
+  },
+  {
+    "paperId": "daed41785efecb393898af61b27934ffa5421230",
+    "externalIds": {
+      "DBLP": "conf/icml/AbhyankarHSZ024",
+      "ArXiv": "2402.01869",
+      "CorpusId": 267412875
+    },
+    "title": "InferCept: Efficient Intercept Support for Augmented Large Language Model Inference",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.01869, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2217683047",
+        "name": "Reyna Abhyankar"
+      },
+      {
+        "authorId": "2253828077",
+        "name": "Zijian He"
+      },
+      {
+        "authorId": "2248827841",
+        "name": "Vikranth Srivatsa"
+      },
+      {
+        "authorId": "2281494006",
+        "name": "Hao Zhang"
+      },
+      {
+        "authorId": "2244769765",
+        "name": "Yiying Zhang"
+      }
+    ],
+    "abstract": "Large language models are increasingly integrated with external environments, tools, and agents like ChatGPT plugins to extend their capability beyond language-centric tasks. However, today's LLM inference systems are designed for standalone LLMs. They treat each external interaction as the end of LLM generation and form a new request when the interaction finishes, causing unnecessary recomputation of already computed contexts, which accounts for 37-40% of total model forwarding time. This paper presents InferCept, the first LLM inference framework targeting augmented LLMs and supporting the efficient interception of LLM generation. InferCept minimizes the GPU resource waste caused by LLM interceptions and dedicates saved memory for serving more requests. InferCept improves the overall serving throughput by 1.6x-2x and completes 2x more requests per second compared to the state-of-the-art LLM inference systems."
+  },
+  {
+    "paperId": "c20188e14c7534a0240dd3d9dc453bc35012ffe2",
+    "externalIds": {
+      "PubMedCentral": "11258636",
+      "DOI": "10.1001/jamaophthalmol.2024.2513",
+      "CorpusId": 271268934,
+      "PubMed": "39023885"
+    },
+    "title": "Development and Evaluation of a Retrieval-Augmented Large Language Model Framework for Ophthalmology",
+    "venue": "JAMA ophthalmology",
+    "year": 2024,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11258636",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC11258636, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2311836730",
+        "name": "Ming-Jie Luo"
+      },
+      {
+        "authorId": "2260325063",
+        "name": "Jianyu Pang"
+      },
+      {
+        "authorId": "87991343",
+        "name": "Shaowei Bi"
+      },
+      {
+        "authorId": "2223977639",
+        "name": "Yunxi Lai"
+      },
+      {
+        "authorId": "2311918523",
+        "name": "Jiaman Zhao"
+      },
+      {
+        "authorId": "2311860023",
+        "name": "Yuanrui Shang"
+      },
+      {
+        "authorId": "2117686463",
+        "name": "Tingxin Cui"
+      },
+      {
+        "authorId": "2381790429",
+        "name": "Yahan Yang"
+      },
+      {
+        "authorId": "2108740051",
+        "name": "Zhenzhe Lin"
+      },
+      {
+        "authorId": "152665046",
+        "name": "Lanqin Zhao"
+      },
+      {
+        "authorId": "47149536",
+        "name": "Xiaohang Wu"
+      },
+      {
+        "authorId": "4369893",
+        "name": "Duoru Lin"
+      },
+      {
+        "authorId": "48884605",
+        "name": "Jingjing Chen"
+      },
+      {
+        "authorId": "2270944772",
+        "name": "Haotian Lin"
+      }
+    ],
+    "abstract": "This quality improvement study discusses the challenges of knowledge inaccuracies and data privacy issues when using large language models in ophthalmology and how to overcome them."
+  },
+  {
+    "paperId": "8bbfa19b5ef55c22b773cee948a664f0b514e0a0",
+    "externalIds": {
+      "PubMedCentral": "12048518",
+      "DBLP": "journals/npjdm/ZhangXJCFLRXLWP25",
+      "DOI": "10.1038/s41746-025-01651-w",
+      "CorpusId": 278284698,
+      "PubMed": "40316710"
+    },
+    "title": "Leveraging long context in retrieval augmented language models for medical question answering",
+    "venue": "npj Digital Medicine",
+    "year": 2025,
+    "citationCount": 51,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1038/s41746-025-01651-w",
+      "status": "GOLD",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC12048518, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2267386372",
+        "name": "Gongbo Zhang"
+      },
+      {
+        "authorId": "2332725291",
+        "name": "Zihan Xu"
+      },
+      {
+        "authorId": "2267486801",
+        "name": "Qiao Jin"
+      },
+      {
+        "authorId": "2269138293",
+        "name": "Fangyi Chen"
+      },
+      {
+        "authorId": "2112787433",
+        "name": "Yilu Fang"
+      },
+      {
+        "authorId": "2336778709",
+        "name": "Yi Liu"
+      },
+      {
+        "authorId": "2349595538",
+        "name": "Justin F. Rousseau"
+      },
+      {
+        "authorId": "2279762930",
+        "name": "Ziyang Xu"
+      },
+      {
+        "authorId": "2237807642",
+        "name": "Zhiyong Lu"
+      },
+      {
+        "authorId": "2267339908",
+        "name": "Chunhua Weng"
+      },
+      {
+        "authorId": "2344896741",
+        "name": "Yifan Peng"
+      }
+    ],
+    "abstract": "While holding great promise for improving and facilitating healthcare through applications of medical literature summarization, large language models (LLMs) struggle to produce up-to-date responses on evolving topics due to outdated knowledge or hallucination. Retrieval-augmented generation (RAG) is a pivotal innovation that improves the accuracy and relevance of LLM responses by integrating LLMs with a search engine and external sources of knowledge. However, the quality of RAG responses can be largely impacted by the rank and density of key information in the retrieval results, such as the “lost-in-the-middle” problem. In this work, we aim to improve the robustness and reliability of the RAG workflow in the medical domain. Specifically, we propose a map-reduce strategy, BriefContext, to combat the “lost-in-the-middle” issue without modifying the model weights. We demonstrated the advantage of the workflow with various LLM backbones and on multiple QA datasets. This method promises to improve the safety and reliability of LLMs deployed in healthcare domains by reducing the risk of misinformation, ensuring critical clinical content is retained in generated responses, and enabling more trustworthy use of LLMs in critical tasks such as medical question answering, clinical decision support, and patient-facing applications."
+  },
+  {
+    "paperId": "83edcfbb206ddad38a971d605da09390604248ea",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2303-17564",
+      "ArXiv": "2303.17564",
+      "CorpusId": 257833842
+    },
+    "title": "BloombergGPT: A Large Language Model for Finance",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 1274,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.17564, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50425845",
+        "name": "Shijie Wu"
+      },
+      {
+        "authorId": "2329943",
+        "name": "Ozan Irsoy"
+      },
+      {
+        "authorId": "2144851146",
+        "name": "Steven Lu"
+      },
+      {
+        "authorId": "2213265733",
+        "name": "Vadim Dabravolski"
+      },
+      {
+        "authorId": "1782853",
+        "name": "Mark Dredze"
+      },
+      {
+        "authorId": "3159346",
+        "name": "Sebastian Gehrmann"
+      },
+      {
+        "authorId": "2071549",
+        "name": "P. Kambadur"
+      },
+      {
+        "authorId": "2064188376",
+        "name": "David Stuart Rosenberg"
+      },
+      {
+        "authorId": "2065970358",
+        "name": "Gideon Mann"
+      }
+    ],
+    "abstract": "The use of NLP in the realm of financial technology is broad and complex, with applications ranging from sentiment analysis and named entity recognition to question answering. Large Language Models (LLMs) have been shown to be effective on a variety of tasks; however, no LLM specialized for the financial domain has been reported in literature. In this work, we present BloombergGPT, a 50 billion parameter language model that is trained on a wide range of financial data. We construct a 363 billion token dataset based on Bloomberg's extensive data sources, perhaps the largest domain-specific dataset yet, augmented with 345 billion tokens from general purpose datasets. We validate BloombergGPT on standard LLM benchmarks, open financial benchmarks, and a suite of internal benchmarks that most accurately reflect our intended usage. Our mixed dataset training leads to a model that outperforms existing models on financial tasks by significant margins without sacrificing performance on general LLM benchmarks. Additionally, we explain our modeling choices, training process, and evaluation methodology. We release Training Chronicles (Appendix C) detailing our experience in training BloombergGPT."
+  },
+  {
+    "paperId": "f1f07a37d4cd44daab987ff19c0bcd185910f50c",
+    "externalIds": {
+      "ArXiv": "2504.00698",
+      "CorpusId": 277467379
+    },
+    "title": "Command A: An Enterprise-Ready Large Language Model",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 52,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.00698, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2353071938",
+        "name": "Team Cohere"
+      },
+      {
+        "authorId": "2308469151",
+        "name": "Aakanksha"
+      },
+      {
+        "authorId": "2304550771",
+        "name": "Arash Ahmadian"
+      },
+      {
+        "authorId": "2327630874",
+        "name": "Marwan Ahmed"
+      },
+      {
+        "authorId": "2353067948",
+        "name": "Jay Alammar"
+      },
+      {
+        "authorId": "2007022511",
+        "name": "Yazeed Alnumay"
+      },
+      {
+        "authorId": "1620824465",
+        "name": "Sophia Althammer"
+      },
+      {
+        "authorId": "7572177",
+        "name": "Arkady Arkhangorodsky"
+      },
+      {
+        "authorId": "2283848534",
+        "name": "Viraat Aryabumi"
+      },
+      {
+        "authorId": "2310609708",
+        "name": "Dennis Aumiller"
+      },
+      {
+        "authorId": "2353068552",
+        "name": "Raphael Avalos"
+      },
+      {
+        "authorId": "2353068851",
+        "name": "Zahara Aviv"
+      },
+      {
+        "authorId": "2333933898",
+        "name": "Sammie Bae"
+      },
+      {
+        "authorId": "2353068134",
+        "name": "S. Baji"
+      },
+      {
+        "authorId": "2350868336",
+        "name": "Alexandre Barbet"
+      },
+      {
+        "authorId": "2248198014",
+        "name": "Max Bartolo"
+      },
+      {
+        "authorId": "1423718676",
+        "name": "Björn Bebensee"
+      },
+      {
+        "authorId": "2000801252",
+        "name": "Neeral Beladia"
+      },
+      {
+        "authorId": "2353071917",
+        "name": "Walter Beller-Morales"
+      },
+      {
+        "authorId": "2309172370",
+        "name": "Alexandre B'erard"
+      },
+      {
+        "authorId": "3364593",
+        "name": "Andrew G. Berneshawi"
+      },
+      {
+        "authorId": "2350869421",
+        "name": "Anna Bialas"
+      },
+      {
+        "authorId": "2283848746",
+        "name": "Phil Blunsom"
+      },
+      {
+        "authorId": "2353068548",
+        "name": "Matt Bobkin"
+      },
+      {
+        "authorId": "70275484",
+        "name": "A. Bongale"
+      },
+      {
+        "authorId": "2353063745",
+        "name": "Sam Braun"
+      },
+      {
+        "authorId": "2069952435",
+        "name": "M. Brunet"
+      },
+      {
+        "authorId": "2220548276",
+        "name": "Samuel Cahyawijaya"
+      },
+      {
+        "authorId": "2303257254",
+        "name": "David Cairuz"
+      },
+      {
+        "authorId": "2304322749",
+        "name": "Jon Ander Campos"
+      },
+      {
+        "authorId": "2228020016",
+        "name": "C. Cao"
+      },
+      {
+        "authorId": "2353070727",
+        "name": "Kris Cao"
+      },
+      {
+        "authorId": "2190282134",
+        "name": "Roman Castagn'e"
+      },
+      {
+        "authorId": "2183411057",
+        "name": "Julián Cendrero"
+      },
+      {
+        "authorId": "2433315",
+        "name": "Leila Chan Currie"
+      },
+      {
+        "authorId": "2232505",
+        "name": "Yash Chandak"
+      },
+      {
+        "authorId": "2299190462",
+        "name": "D. Chang"
+      },
+      {
+        "authorId": "2353069587",
+        "name": "Giannis Chatziveroglou"
+      },
+      {
+        "authorId": "2309480891",
+        "name": "Hongyu Chen"
+      },
+      {
+        "authorId": "2391490501",
+        "name": "Cl Cheng"
+      },
+      {
+        "authorId": "2284703052",
+        "name": "Alexis Chevalier"
+      },
+      {
+        "authorId": "2266751199",
+        "name": "Justin T. Chiu"
+      },
+      {
+        "authorId": "2052164965",
+        "name": "Eugene Cho"
+      },
+      {
+        "authorId": "2113600192",
+        "name": "Eugene Choi"
+      },
+      {
+        "authorId": "2299379130",
+        "name": "E. Choi"
+      },
+      {
+        "authorId": "2333905843",
+        "name": "Tim Chung"
+      },
+      {
+        "authorId": "3149518",
+        "name": "Volkan Cirik"
+      },
+      {
+        "authorId": "2316144852",
+        "name": "Ana Cismaru"
+      },
+      {
+        "authorId": "2304953166",
+        "name": "Pierre Clavier"
+      },
+      {
+        "authorId": "2362501052",
+        "name": "Henry Conklin"
+      },
+      {
+        "authorId": "2333890692",
+        "name": "Lucas Crawhall-Stein"
+      },
+      {
+        "authorId": "2353069671",
+        "name": "Devon Crouse"
+      },
+      {
+        "authorId": "1412323609",
+        "name": "Andres Felipe Cruz Salinas"
+      },
+      {
+        "authorId": "2353068241",
+        "name": "Ben Cyrus"
+      },
+      {
+        "authorId": "1432838153",
+        "name": "Daniel D'souza"
+      },
+      {
+        "authorId": "2201332269",
+        "name": "Hugo Dalla-torre"
+      },
+      {
+        "authorId": "2303257581",
+        "name": "John Dang"
+      },
+      {
+        "authorId": "2350868582",
+        "name": "William Darling"
+      },
+      {
+        "authorId": "2293110172",
+        "name": "Omar Darwiche Domingues"
+      },
+      {
+        "authorId": "2304323459",
+        "name": "Saurabh Dash"
+      },
+      {
+        "authorId": "79715239",
+        "name": "A. Debugne"
+      },
+      {
+        "authorId": "2309005484",
+        "name": "Th'eo Dehaze"
+      },
+      {
+        "authorId": "2350871398",
+        "name": "Shaan Desai"
+      },
+      {
+        "authorId": "2120120",
+        "name": "Joan Devassy"
+      },
+      {
+        "authorId": "2307329816",
+        "name": "Rishit Dholakia"
+      },
+      {
+        "authorId": "2350868750",
+        "name": "Kyle Duffy"
+      },
+      {
+        "authorId": "2280146983",
+        "name": "Ali Edalati"
+      },
+      {
+        "authorId": "2353068034",
+        "name": "Ace Eldeib"
+      },
+      {
+        "authorId": "2269499772",
+        "name": "A. Elkady"
+      },
+      {
+        "authorId": "11128420",
+        "name": "S. Elsharkawy"
+      },
+      {
+        "authorId": "2283767018",
+        "name": "Irem Ergun"
+      },
+      {
+        "authorId": "2445273",
+        "name": "B. Ermiş"
+      },
+      {
+        "authorId": "2818759",
+        "name": "Marzieh Fadaee"
+      },
+      {
+        "authorId": "2008730765",
+        "name": "Boyu Fan"
+      },
+      {
+        "authorId": "2353068238",
+        "name": "Lucas Fayoux"
+      },
+      {
+        "authorId": "2303464545",
+        "name": "Yannis Flet-Berliac"
+      },
+      {
+        "authorId": "2303257441",
+        "name": "Nick Frosst"
+      },
+      {
+        "authorId": "2310607471",
+        "name": "Matthias Gall'e"
+      },
+      {
+        "authorId": "2247475926",
+        "name": "Wojciech Galuba"
+      },
+      {
+        "authorId": "39957046",
+        "name": "Utsav Garg"
+      },
+      {
+        "authorId": "2304953164",
+        "name": "Matthieu Geist"
+      },
+      {
+        "authorId": "37666967",
+        "name": "M. G. Azar"
+      },
+      {
+        "authorId": "1405375772",
+        "name": "Seraphina Goldfarb-Tarrant"
+      },
+      {
+        "authorId": "2188058199",
+        "name": "Tomas Goldsack"
+      },
+      {
+        "authorId": "2334132612",
+        "name": "Aidan Gomez"
+      },
+      {
+        "authorId": "2129497418",
+        "name": "Victor Machado Gonzaga"
+      },
+      {
+        "authorId": "2380939798",
+        "name": "Nithya Govindarajan"
+      },
+      {
+        "authorId": "2333890457",
+        "name": "Manoj Govindassamy"
+      },
+      {
+        "authorId": "2007774239",
+        "name": "Nathan Grinsztajn"
+      },
+      {
+        "authorId": "2153302934",
+        "name": "Nikolas Gritsch"
+      },
+      {
+        "authorId": "2353072485",
+        "name": "Patrick Gu"
+      },
+      {
+        "authorId": "2353121276",
+        "name": "Shangmin Guo"
+      },
+      {
+        "authorId": "2186875597",
+        "name": "Kilian Haefeli"
+      },
+      {
+        "authorId": "2328225281",
+        "name": "R. Hajjar"
+      },
+      {
+        "authorId": "1985884",
+        "name": "T. Hawes"
+      },
+      {
+        "authorId": "2310796811",
+        "name": "Jingyi He"
+      },
+      {
+        "authorId": "1689405303",
+        "name": "Sebastian Hofstatter"
+      },
+      {
+        "authorId": "2334011205",
+        "name": "Sungjin Hong"
+      },
+      {
+        "authorId": "2257040307",
+        "name": "Sara Hooker"
+      },
+      {
+        "authorId": "73767990",
+        "name": "Tom Hosking"
+      },
+      {
+        "authorId": "2350865161",
+        "name": "Stephanie Howe"
+      },
+      {
+        "authorId": "2202701858",
+        "name": "Eric Hu"
+      },
+      {
+        "authorId": "2353873635",
+        "name": "Renjie Huang"
+      },
+      {
+        "authorId": "2262171027",
+        "name": "Hemant Jain"
+      },
+      {
+        "authorId": "2113687602",
+        "name": "Ritika Jain"
+      },
+      {
+        "authorId": "2429322",
+        "name": "N. Jakobi"
+      },
+      {
+        "authorId": "103583092",
+        "name": "M. Jenkins"
+      },
+      {
+        "authorId": "2323091809",
+        "name": "J. Jordan"
+      },
+      {
+        "authorId": "2329809641",
+        "name": "Dhruti Joshi"
+      },
+      {
+        "authorId": "2265929182",
+        "name": "Jason J. Jung"
+      },
+      {
+        "authorId": "1388721949",
+        "name": "Trushant Kalyanpur"
+      },
+      {
+        "authorId": "1419486332",
+        "name": "S. Kamalakara"
+      },
+      {
+        "authorId": "2353068337",
+        "name": "Julia Kedrzycki"
+      },
+      {
+        "authorId": "3865563",
+        "name": "Gokce Keskin"
+      },
+      {
+        "authorId": "2261364299",
+        "name": "Edward Kim"
+      },
+      {
+        "authorId": "2265618046",
+        "name": "Joonghoon Kim"
+      },
+      {
+        "authorId": "2309005865",
+        "name": "Wei-Yin Ko"
+      },
+      {
+        "authorId": "2331623247",
+        "name": "Tom Kocmi"
+      },
+      {
+        "authorId": "2353069002",
+        "name": "M. Kozakov"
+      },
+      {
+        "authorId": "2238207485",
+        "name": "Wojciech Kry'sci'nski"
+      },
+      {
+        "authorId": "2319764306",
+        "name": "A. Jain"
+      },
+      {
+        "authorId": "1419929288",
+        "name": "Komal K. Teru"
+      },
+      {
+        "authorId": "2300370901",
+        "name": "Sander Land"
+      },
+      {
+        "authorId": "2353072139",
+        "name": "Michael Lasby"
+      },
+      {
+        "authorId": "2350871410",
+        "name": "Olivia Lasche"
+      },
+      {
+        "authorId": "2350989790",
+        "name": "Justin Lee"
+      },
+      {
+        "authorId": "2257043196",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "2287821949",
+        "name": "Jeffrey Li"
+      },
+      {
+        "authorId": "2124950910",
+        "name": "Jonathan Li"
+      },
+      {
+        "authorId": "2303832658",
+        "name": "Hangyu Lin"
+      },
+      {
+        "authorId": "153563548",
+        "name": "Acyr F. Locatelli"
+      },
+      {
+        "authorId": "1395629350",
+        "name": "K. Luong"
+      },
+      {
+        "authorId": "2311423763",
+        "name": "Raymond Ma"
+      },
+      {
+        "authorId": "2287030808",
+        "name": "Lukas Mach"
+      },
+      {
+        "authorId": "2283816089",
+        "name": "Marina Machado"
+      },
+      {
+        "authorId": "2353069000",
+        "name": "Joanne Magbitang"
+      },
+      {
+        "authorId": "2360328344",
+        "name": "B. Lopez"
+      },
+      {
+        "authorId": "2290914971",
+        "name": "A. Mann"
+      },
+      {
+        "authorId": "1396188646",
+        "name": "Kelly Marchisio"
+      },
+      {
+        "authorId": "2240523142",
+        "name": "O. Markham"
+      },
+      {
+        "authorId": "2310610702",
+        "name": "Alexandre Matton"
+      },
+      {
+        "authorId": "2237140251",
+        "name": "A. McKinney"
+      },
+      {
+        "authorId": "118372229",
+        "name": "Dominic McLoughlin"
+      },
+      {
+        "authorId": "9951016",
+        "name": "Jozef Mokry"
+      },
+      {
+        "authorId": "1833773702",
+        "name": "Adrien Morisot"
+      },
+      {
+        "authorId": "2353068974",
+        "name": "Autumn Moulder"
+      },
+      {
+        "authorId": "2353069083",
+        "name": "Harry Moynehan"
+      },
+      {
+        "authorId": "2331416367",
+        "name": "Maximilian Mozes"
+      },
+      {
+        "authorId": "1572347545",
+        "name": "Vivek Muppalla"
+      },
+      {
+        "authorId": "2353069164",
+        "name": "Lidiya Murakhovska"
+      },
+      {
+        "authorId": "2373028925",
+        "name": "H. Nagarajan"
+      },
+      {
+        "authorId": "2306281145",
+        "name": "Alekhya Nandula"
+      },
+      {
+        "authorId": "2353071950",
+        "name": "Hisham Nasir"
+      },
+      {
+        "authorId": "2353074653",
+        "name": "Shauna Nehra"
+      },
+      {
+        "authorId": "2353068204",
+        "name": "Josh Netto-Rosen"
+      },
+      {
+        "authorId": "2353068313",
+        "name": "Daniel Ohashi"
+      },
+      {
+        "authorId": "2353068968",
+        "name": "James Owers-Bardsley"
+      },
+      {
+        "authorId": "2353068201",
+        "name": "Jason Ozuzu"
+      },
+      {
+        "authorId": "2377035603",
+        "name": "D. Padilla"
+      },
+      {
+        "authorId": "2256144789",
+        "name": "G. Park"
+      },
+      {
+        "authorId": "2353071792",
+        "name": "Sam Passaglia"
+      },
+      {
+        "authorId": "2353068008",
+        "name": "Jeremy Pekmez"
+      },
+      {
+        "authorId": "2353074407",
+        "name": "Laura Penstone"
+      },
+      {
+        "authorId": "120174856",
+        "name": "Aleksandra Piktus"
+      },
+      {
+        "authorId": "122288438",
+        "name": "C. Ploeg"
+      },
+      {
+        "authorId": "2282542314",
+        "name": "Andrew Poulton"
+      },
+      {
+        "authorId": "2356580605",
+        "name": "Youran Qi"
+      },
+      {
+        "authorId": "5002178",
+        "name": "Shubha Raghvendra"
+      },
+      {
+        "authorId": null,
+        "name": "Miguel Ramos"
+      },
+      {
+        "authorId": "1420122675",
+        "name": "Ekagra Ranjan"
+      },
+      {
+        "authorId": "16326904",
+        "name": "Pierre H. Richemond"
+      },
+      {
+        "authorId": "2353068692",
+        "name": "C'ecile Robert-Michon"
+      },
+      {
+        "authorId": "2166043087",
+        "name": "Aur'elien Rodriguez"
+      },
+      {
+        "authorId": "2333966995",
+        "name": "Sudip Roy"
+      },
+      {
+        "authorId": "2065612731",
+        "name": "L. Ruis"
+      },
+      {
+        "authorId": "144389472",
+        "name": "L. Rust"
+      },
+      {
+        "authorId": "122237141",
+        "name": "A. Sachan"
+      },
+      {
+        "authorId": "2333906838",
+        "name": "Alejandro R. Salamanca"
+      },
+      {
+        "authorId": "2139514542",
+        "name": "K. Saravanakumar"
+      },
+      {
+        "authorId": "2353069099",
+        "name": "Isha Satyakam"
+      },
+      {
+        "authorId": "47540766",
+        "name": "Alice Schoenauer Sebag"
+      },
+      {
+        "authorId": "2324582919",
+        "name": "Priyanka Sen"
+      },
+      {
+        "authorId": "2353072137",
+        "name": "Sholeh Sepehri"
+      },
+      {
+        "authorId": "2272030611",
+        "name": "P. Seshadri"
+      },
+      {
+        "authorId": "2286779796",
+        "name": "Yelong Shen"
+      },
+      {
+        "authorId": "20662387",
+        "name": "Tom Sherborne"
+      },
+      {
+        "authorId": "2261093523",
+        "name": "S. Shi"
+      },
+      {
+        "authorId": "1413776878",
+        "name": "S. Shivaprasad"
+      },
+      {
+        "authorId": "2353069638",
+        "name": "Vladyslav Shmyhlo"
+      },
+      {
+        "authorId": "2350868087",
+        "name": "Anirudh Shrinivason"
+      },
+      {
+        "authorId": "2085919143",
+        "name": "Inna Shteinbuk"
+      },
+      {
+        "authorId": "2333890694",
+        "name": "Amir Shukayev"
+      },
+      {
+        "authorId": "2053148533",
+        "name": "Mathieu Simard"
+      },
+      {
+        "authorId": "145801858",
+        "name": "E. Snyder"
+      },
+      {
+        "authorId": "2295667288",
+        "name": "Ava Spataru"
+      },
+      {
+        "authorId": "2353072282",
+        "name": "Victoria Spooner"
+      },
+      {
+        "authorId": "2353072250",
+        "name": "Trisha Starostina"
+      },
+      {
+        "authorId": "2292199158",
+        "name": "Florian Strub"
+      },
+      {
+        "authorId": "2316521043",
+        "name": "Yixuan Su"
+      },
+      {
+        "authorId": "2353204568",
+        "name": "Jimin Sun"
+      },
+      {
+        "authorId": "2303258186",
+        "name": "Dwarak Talupuru"
+      },
+      {
+        "authorId": "2401143",
+        "name": "Eugene Tarassov"
+      },
+      {
+        "authorId": "2310607479",
+        "name": "Elena Tommasone"
+      },
+      {
+        "authorId": "2350871145",
+        "name": "Jennifer Tracey"
+      },
+      {
+        "authorId": "2353069139",
+        "name": "Billy Trend"
+      },
+      {
+        "authorId": "143947252",
+        "name": "E. Tumer"
+      },
+      {
+        "authorId": "82290814",
+        "name": "A. Ustun"
+      },
+      {
+        "authorId": "8795464",
+        "name": "Bharat Venkitesh"
+      },
+      {
+        "authorId": "35720014",
+        "name": "David Venuto"
+      },
+      {
+        "authorId": "2324587084",
+        "name": "Pat Verga"
+      },
+      {
+        "authorId": "2310609552",
+        "name": "Maxime Voisin"
+      },
+      {
+        "authorId": "2353206385",
+        "name": "Alex Wang"
+      },
+      {
+        "authorId": "2353080739",
+        "name": "Donglu Wang"
+      },
+      {
+        "authorId": "2311456726",
+        "name": "Shijian Wang"
+      },
+      {
+        "authorId": "115255587",
+        "name": "E. Wen"
+      },
+      {
+        "authorId": "2298900577",
+        "name": "Naomi White"
+      },
+      {
+        "authorId": "2353068675",
+        "name": "J. Willman"
+      },
+      {
+        "authorId": "40909629",
+        "name": "M. Winkels"
+      },
+      {
+        "authorId": "2056987736",
+        "name": "C. Xia"
+      },
+      {
+        "authorId": "89206330",
+        "name": "J. Xie"
+      },
+      {
+        "authorId": "2299391303",
+        "name": "Minjie Xu"
+      },
+      {
+        "authorId": "2299163003",
+        "name": "Bowen Yang"
+      },
+      {
+        "authorId": "2353068663",
+        "name": "Tan Yi-Chern"
+      },
+      {
+        "authorId": "2316486966",
+        "name": "Ivan Zhang"
+      },
+      {
+        "authorId": "2349654629",
+        "name": "Zhenyu Zhao"
+      },
+      {
+        "authorId": "2258798869",
+        "name": "Zhou Zhao"
+      }
+    ],
+    "abstract": "In this report we describe the development of Command A, a powerful large language model purpose-built to excel at real-world enterprise use cases. Command A is an agent-optimised and multilingual-capable model, with support for 23 languages of global business, and a novel hybrid architecture balancing efficiency with top of the range performance. It offers best-in-class Retrieval Augmented Generation (RAG) capabilities with grounding and tool use to automate sophisticated business processes. These abilities are achieved through a decentralised training approach, including self-refinement algorithms and model merging techniques. We also include results for Command R7B which shares capability and architectural similarities to Command A. Weights for both models have been released for research purposes. This technical report details our original training pipeline and presents an extensive evaluation of our models across a suite of enterprise-relevant tasks and public benchmarks, demonstrating excellent performance and efficiency."
+  },
+  {
+    "paperId": "fbc8899c9295b9ef7c62a7751a08908a5f881523",
+    "externalIds": {
+      "PubMedCentral": "12064692",
+      "DBLP": "journals/npjdm/GaberSABBGFA25",
+      "DOI": "10.1038/s41746-025-01684-1",
+      "CorpusId": 272927800,
+      "PubMed": "40346344"
+    },
+    "title": "Evaluating large language model workflows in clinical decision support for triage and referral and diagnosis",
+    "venue": "npj Digital Medicine",
+    "year": 2025,
+    "citationCount": 84,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC12064692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2359975093",
+        "name": "Farieda Gaber"
+      },
+      {
+        "authorId": "2322016056",
+        "name": "Maqsood Shaik"
+      },
+      {
+        "authorId": "2359976579",
+        "name": "Fabio Allega"
+      },
+      {
+        "authorId": "2359976240",
+        "name": "Agnes Julia Bilecz"
+      },
+      {
+        "authorId": "2165405218",
+        "name": "Felix Busch"
+      },
+      {
+        "authorId": "2359975085",
+        "name": "Kelsey Goon"
+      },
+      {
+        "authorId": "48716027",
+        "name": "V. Franke"
+      },
+      {
+        "authorId": "2315259609",
+        "name": "A. Akalin"
+      }
+    ],
+    "abstract": "Accurate medical decision-making is critical for both patients and clinicians. Patients often struggle to interpret their symptoms, determine their severity, and select the right specialist. Simultaneously, clinicians face challenges in integrating complex patient data to make timely, accurate diagnoses. Recent advances in large language models (LLMs) offer the potential to bridge this gap by supporting decision-making for both patients and healthcare providers. In this study, we benchmark multiple LLM versions and an LLM-based workflow incorporating retrieval-augmented generation (RAG) on a curated dataset of 2000 medical cases derived from the Medical Information Mart for Intensive Care database. Our findings show that these LLMs are capable of providing personalized insights into likely diagnoses, suggesting appropriate specialists, and assessing urgent care needs. These models may also support clinicians in refining diagnoses and decision-making, offering a promising approach to improving patient outcomes and streamlining healthcare delivery."
+  },
+  {
+    "paperId": "717d4cc5188e06791ef2043045e6e570ae764091",
+    "externalIds": {
+      "DBLP": "conf/emnlp/YangPLKNHFYLLS023",
+      "ArXiv": "2302.04858",
+      "DOI": "10.48550/arXiv.2302.04858",
+      "CorpusId": 256697441
+    },
+    "title": "Re-ViLM: Retrieval-Augmented Visual Language Model for Zero and Few-Shot Image Captioning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.04858",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.04858, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2168550",
+        "name": "Zhuolin Yang"
+      },
+      {
+        "authorId": "2056440915",
+        "name": "Wei Ping"
+      },
+      {
+        "authorId": "2117941142",
+        "name": "Zihan Liu"
+      },
+      {
+        "authorId": "3111334",
+        "name": "V. Korthikanti"
+      },
+      {
+        "authorId": "2066304514",
+        "name": "Weili Nie"
+      },
+      {
+        "authorId": "38485317",
+        "name": "De-An Huang"
+      },
+      {
+        "authorId": "3275727",
+        "name": "Linxi (Jim) Fan"
+      },
+      {
+        "authorId": "1751019",
+        "name": "Zhiding Yu"
+      },
+      {
+        "authorId": "8539304",
+        "name": "Shiyi Lan"
+      },
+      {
+        "authorId": "71788673",
+        "name": "Bo Li"
+      },
+      {
+        "authorId": "2135695038",
+        "name": "Mingyan Liu"
+      },
+      {
+        "authorId": "2117748",
+        "name": "Yuke Zhu"
+      },
+      {
+        "authorId": "1911755",
+        "name": "M. Shoeybi"
+      },
+      {
+        "authorId": "2301680",
+        "name": "Bryan Catanzaro"
+      },
+      {
+        "authorId": "2723309",
+        "name": "Chaowei Xiao"
+      },
+      {
+        "authorId": "47627049",
+        "name": "Anima Anandkumar"
+      }
+    ],
+    "abstract": "Augmenting pretrained language models (LMs) with a vision encoder (e.g., Flamingo) has obtained the state-of-the-art results in image-to-text generation. However, these models store all the knowledge within their parameters, thus often requiring enormous model parameters to model the abundant visual concepts and very rich textual descriptions. Additionally, they are inefficient in incorporating new data, requiring a computational-expensive fine-tuning process. In this work, we introduce a Retrieval-augmented Visual Language Model, Re-ViLM, built upon the Flamingo, that supports retrieving the relevant knowledge from the external database for zero and in-context few-shot image-to-text generations. By storing certain knowledge explicitly in the external database, our approach reduces the number of model parameters and can easily accommodate new data during evaluation by simply updating the database. We also construct an interleaved image and text data that facilitates in-context few-shot learning capabilities. We demonstrate that Re-ViLM significantly boosts performance for image-to-text generation tasks, especially for zero-shot and few-shot generation in out-of-domain settings with 4 times less parameters compared with baseline methods."
+  },
+  {
+    "paperId": "3a56bc074b8f3f985599627404b70e16fc5bce1b",
+    "externalIds": {
+      "DBLP": "conf/icml/0002LZCHSL0XI24",
+      "ArXiv": "2312.04474",
+      "DOI": "10.48550/arXiv.2312.04474",
+      "CorpusId": 266051661
+    },
+    "title": "Chain of Code: Reasoning with a Language Model-Augmented Code Emulator",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 154,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.04474, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2128669132",
+        "name": "Chengshu Li"
+      },
+      {
+        "authorId": "2271707306",
+        "name": "Jacky Liang"
+      },
+      {
+        "authorId": "2267246149",
+        "name": "Andy Zeng"
+      },
+      {
+        "authorId": "2356578173",
+        "name": "Xinyun Chen"
+      },
+      {
+        "authorId": "1944801",
+        "name": "Karol Hausman"
+      },
+      {
+        "authorId": "1779671",
+        "name": "Dorsa Sadigh"
+      },
+      {
+        "authorId": "2257062067",
+        "name": "Sergey Levine"
+      },
+      {
+        "authorId": "2271994139",
+        "name": "Fei-Fei Li"
+      },
+      {
+        "authorId": "2267320085",
+        "name": "Fei Xia"
+      },
+      {
+        "authorId": "2704814",
+        "name": "Brian Ichter"
+      }
+    ],
+    "abstract": "Code provides a general syntactic structure to build complex programs and perform precise computations when paired with a code interpreter - we hypothesize that language models (LMs) can leverage code-writing to improve Chain of Thought reasoning not only for logic and arithmetic tasks, but also for semantic ones (and in particular, those that are a mix of both). For example, consider prompting an LM to write code that counts the number of times it detects sarcasm in an essay: the LM may struggle to write an implementation for\"detect_sarcasm(string)\"that can be executed by the interpreter (handling the edge cases would be insurmountable). However, LMs may still produce a valid solution if they not only write code, but also selectively\"emulate\"the interpreter by generating the expected output of\"detect_sarcasm(string)\". In this work, we propose Chain of Code (CoC), a simple yet surprisingly effective extension that improves LM code-driven reasoning. The key idea is to encourage LMs to format semantic sub-tasks in a program as flexible pseudocode that the interpreter can explicitly catch undefined behaviors and hand off to simulate with an LM (as an\"LMulator\"). Experiments demonstrate that Chain of Code outperforms Chain of Thought and other baselines across a variety of benchmarks; on BIG-Bench Hard, Chain of Code achieves 84%, a gain of 12% over Chain of Thought. In a nutshell, CoC broadens the scope of reasoning questions that LMs can answer by\"thinking in code\"."
+  },
+  {
+    "paperId": "d1f925c65d56ff4de5d317a54d47d6df34b17d4e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/JiangXDCYYYZHZ24",
+      "ArXiv": "2312.06968",
+      "DOI": "10.1109/CVPR52733.2024.02553",
+      "CorpusId": 266174200
+    },
+    "title": "Hallucination Augmented Contrastive Learning for Multimodal Large Language Model",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 144,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2312.06968",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.06968, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1657285750",
+        "name": "Chaoya Jiang"
+      },
+      {
+        "authorId": "153194420",
+        "name": "Haiyang Xu"
+      },
+      {
+        "authorId": "2273660604",
+        "name": "Mengfan Dong"
+      },
+      {
+        "authorId": "2339987041",
+        "name": "Jiaxin Chen"
+      },
+      {
+        "authorId": "145235149",
+        "name": "Wei Ye"
+      },
+      {
+        "authorId": "2114009661",
+        "name": "Mingshi Yan"
+      },
+      {
+        "authorId": "2199011713",
+        "name": "Qinghao Ye"
+      },
+      {
+        "authorId": "2116921824",
+        "name": "Ji Zhang"
+      },
+      {
+        "authorId": "2262080010",
+        "name": "Fei Huang"
+      },
+      {
+        "authorId": "1705434",
+        "name": "Shikun Zhang"
+      }
+    ],
+    "abstract": "Multi-modal large language models (MLLMs) have been shown to efficiently integrate natural language with visual information to handle multi-modal tasks. However, MLLMs still face a fundamental limitation of hallucinations, where they tend to generate erroneous or fabricated information. In this paper, we address hallucinations in MLLMs from a novel perspective of representation learning. We first analyzed the representation distribution of textual and visual tokens in MLLM, revealing two important findings: 1) there is a significant gap between textual and visual representations, indicating unsatisfactory cross-modal representation alignment; 2) representations of texts that contain and do not contain hallucinations are entangled, making it challenging to distinguish them. These two observations inspire us with a simple yet effective method to mitigate hallucinations. Specifically, we introduce contrastive learning into MLLMs and use text with hallucination as hard negative examples, naturally bringing representations of non-hallucinative text and visual samples closer while pushing way representations of non-hallucinating and hallucinative text. We evaluate our method quantitatively and qualitatively, showing its effectiveness in reducing hallucination occurrences and improving performance across multiple benchmarks. On the MMhal-Bench benchmark, our method obtains a 34.66% /29.5% improvement over the baseline MiniGPT-4/LLaVA. Our code is available on https://github.com/X-PLUG/mPLUG-HalOwl/tree/main/hacl."
+  },
+  {
+    "paperId": "5b3c1a291cc717fa80218ead429e7507e967ec01",
+    "externalIds": {
+      "PubMedCentral": "10659484",
+      "DOI": "10.1101/2023.11.10.23298364",
+      "CorpusId": 265104711,
+      "PubMed": "37986764"
+    },
+    "title": "Development of a Liver Disease-Specific Large Language Model Chat Interface using Retrieval Augmented Generation",
+    "venue": "medRxiv",
+    "year": 2023,
+    "citationCount": 76,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10659484",
+      "status": "GREEN",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC10659484, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47744700",
+        "name": "J. Ge"
+      },
+      {
+        "authorId": "2268795342",
+        "name": "Steve Sun"
+      },
+      {
+        "authorId": "2268730255",
+        "name": "Joseph Owens"
+      },
+      {
+        "authorId": "2268735598",
+        "name": "Victor Galvez"
+      },
+      {
+        "authorId": "2278684814",
+        "name": "Oksana Gologorskaya"
+      },
+      {
+        "authorId": "2238926348",
+        "name": "Jennifer C. Lai"
+      },
+      {
+        "authorId": "2215787921",
+        "name": "Mark J. Pletcher"
+      },
+      {
+        "authorId": "2268733993",
+        "name": "Ki Lai"
+      }
+    ],
+    "abstract": "Background: Large language models (LLMs) have significant capabilities in clinical information processing tasks. Commercially available LLMs, however, are not optimized for clinical uses and are prone to generating incorrect or hallucinatory information. Retrieval-augmented generation (RAG) is an enterprise architecture that allows embedding of customized data into LLMs. This approach \"specializes\" the LLMs and is thought to reduce hallucinations. Methods: We developed \"LiVersa,\" a liver disease-specific LLM, by using our institution's protected health information (PHI)-complaint text embedding and LLM platform, \"Versa.\" We conducted RAG on 30 publicly available American Association for the Study of Liver Diseases (AASLD) guidelines and guidance documents to be incorporated into LiVersa. We evaluated LiVersa's performance by comparing its responses versus those of trainees from a previously published knowledge assessment study regarding hepatitis B (HBV) treatment and hepatocellular carcinoma (HCC) surveillance. Results: LiVersa answered all 10 questions correctly when forced to provide a \"yes\" or \"no\" answer. Full detailed responses with justifications and rationales, however, were not completely correct for three of the questions. Discussions: In this study, we demonstrated the ability to build disease-specific and PHI-compliant LLMs using RAG. While our LLM, LiVersa, demonstrated more specificity in answering questions related to clinical hepatology - there were some knowledge deficiencies due to limitations set by the number and types of documents used for RAG. The LiVersa prototype, however, is a proof of concept for utilizing RAG to customize LLMs for clinical uses and a potential strategy to realize personalized medicine in the future."
+  },
+  {
+    "paperId": "3d297441afbc2124bc805f2a9a4d3db3e21ae217",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-16146",
+      "ArXiv": "2310.16146",
+      "DOI": "10.48550/arXiv.2310.16146",
+      "CorpusId": 264487188,
+      "PubMed": "38160266"
+    },
+    "title": "Clinfo.ai: An Open-Source Retrieval-Augmented Large Language Model System for Answering Medical Questions using Scientific Literature",
+    "venue": "Pacific Symposium on Biocomputing. Pacific Symposium on Biocomputing",
+    "year": 2023,
+    "citationCount": 67,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.16146, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052999011",
+        "name": "A. Lozano"
+      },
+      {
+        "authorId": "2261671769",
+        "name": "Scott L. Fleming"
+      },
+      {
+        "authorId": "2234347139",
+        "name": "Chia-Chun Chiang"
+      },
+      {
+        "authorId": "2262093570",
+        "name": "Nigam H. Shah"
+      }
+    ],
+    "abstract": "The quickly-expanding nature of published medical literature makes it challenging for clinicians and researchers to keep up with and summarize recent, relevant findings in a timely manner. While several closed-source summarization tools based on large language models (LLMs) now exist, rigorous and systematic evaluations of their outputs are lacking. Furthermore, there is a paucity of high-quality datasets and appropriate benchmark tasks with which to evaluate these tools. We address these issues with four contributions: we release Clinfo.ai, an open-source WebApp that answers clinical questions based on dynamically retrieved scientific literature; we specify an information retrieval and abstractive summarization task to evaluate the performance of such retrieval-augmented LLM systems; we release a dataset of 200 questions and corresponding answers derived from published systematic reviews, which we name PubMed Retrieval and Synthesis (PubMedRS-200); and report benchmark results for Clinfo.ai and other publicly available OpenQA systems on PubMedRS-200."
+  },
+  {
+    "paperId": "cc78babfacce48e715dac56886d7dd9746cfcab0",
+    "externalIds": {
+      "ArXiv": "2306.05212",
+      "DBLP": "journals/corr/abs-2306-05212",
+      "DOI": "10.48550/arXiv.2306.05212",
+      "CorpusId": 259108339
+    },
+    "title": "RETA-LLM: A Retrieval-Augmented Large Language Model Toolkit",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 60,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.05212",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.05212, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1830383266",
+        "name": "Jiongnan Liu"
+      },
+      {
+        "authorId": "4376097",
+        "name": "Jiajie Jin"
+      },
+      {
+        "authorId": "2243360876",
+        "name": "Zihan Wang"
+      },
+      {
+        "authorId": "2219726925",
+        "name": "Jiehan Cheng"
+      },
+      {
+        "authorId": "1897235",
+        "name": "Zhicheng Dou"
+      },
+      {
+        "authorId": "153693432",
+        "name": "Ji-rong Wen"
+      }
+    ],
+    "abstract": "Although Large Language Models (LLMs) have demonstrated extraordinary capabilities in many domains, they still have a tendency to hallucinate and generate fictitious responses to user requests. This problem can be alleviated by augmenting LLMs with information retrieval (IR) systems (also known as retrieval-augmented LLMs). Applying this strategy, LLMs can generate more factual texts in response to user input according to the relevant content retrieved by IR systems from external corpora as references. In addition, by incorporating external knowledge, retrieval-augmented LLMs can answer in-domain questions that cannot be answered by solely relying on the world knowledge stored in parameters. To support research in this area and facilitate the development of retrieval-augmented LLM systems, we develop RETA-LLM, a {RET}reival-{A}ugmented LLM toolkit. In RETA-LLM, we create a complete pipeline to help researchers and users build their customized in-domain LLM-based systems. Compared with previous retrieval-augmented LLM systems, RETA-LLM provides more plug-and-play modules to support better interaction between IR systems and LLMs, including {request rewriting, document retrieval, passage extraction, answer generation, and fact checking} modules. Our toolkit is publicly available at https://github.com/RUC-GSAI/YuLan-IR/tree/main/RETA-LLM."
+  }
+]

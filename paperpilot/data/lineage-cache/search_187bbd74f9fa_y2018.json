@@ -1,0 +1,1903 @@
+[
+  {
+    "paperId": "4367911d9d28d83fafbcf6c908698dd981ddbe9e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-15363",
+      "ArXiv": "2305.15363",
+      "DOI": "10.48550/arXiv.2305.15363",
+      "CorpusId": 258865730
+    },
+    "title": "Inverse Preference Learning: Preference-based RL without a Reward Function",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 77,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.15363",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.15363, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2122700519",
+        "name": "Joey Hejna"
+      },
+      {
+        "authorId": "1779671",
+        "name": "Dorsa Sadigh"
+      }
+    ],
+    "abstract": "Reward functions are difficult to design and often hard to align with human intent. Preference-based Reinforcement Learning (RL) algorithms address these problems by learning reward functions from human feedback. However, the majority of preference-based RL methods na\\\"ively combine supervised reward models with off-the-shelf RL algorithms. Contemporary approaches have sought to improve performance and query complexity by using larger and more complex reward architectures such as transformers. Instead of using highly complex architectures, we develop a new and parameter-efficient algorithm, Inverse Preference Learning (IPL), specifically designed for learning from offline preference data. Our key insight is that for a fixed policy, the $Q$-function encodes all information about the reward function, effectively making them interchangeable. Using this insight, we completely eliminate the need for a learned reward function. Our resulting algorithm is simpler and more parameter-efficient. Across a suite of continuous control and robotics benchmarks, IPL attains competitive performance compared to more complex approaches that leverage transformer-based and non-Markovian reward functions while having fewer algorithmic hyperparameters and learned network parameters. Our code is publicly released."
+  },
+  {
+    "paperId": "15378f453102f627467d7b7603d270438dea1237",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-06861",
+      "ArXiv": "2502.06861",
+      "DOI": "10.48550/arXiv.2502.06861",
+      "CorpusId": 276259120
+    },
+    "title": "Design Considerations in Offline Preference-based RL",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.06861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2278431910",
+        "name": "Alekh Agarwal"
+      },
+      {
+        "authorId": "2278427676",
+        "name": "Christoph Dann"
+      },
+      {
+        "authorId": "35991776",
+        "name": "T. Marinov"
+      }
+    ],
+    "abstract": "Offline algorithms for Reinforcement Learning from Human Preferences (RLHF), which use only a fixed dataset of sampled responses given an input, and preference feedback among these responses, have gained increasing prominence in the literature on aligning language models. In this paper, we study how the different design choices made in methods such as DPO, IPO, SLiC and many variants influence the quality of the learned policy, from a theoretical perspective. Our treatment yields insights into the choices of loss function, the policy which is used to normalize log-likelihoods, and also the role of the data sampling policy. Notably, our results do not rely on the standard reparameterization-style arguments used to motivate some of the algorithms in this family, which allows us to give a unified treatment to a broad class of methods. We also conduct a small empirical study to verify some of the theoretical findings on a standard summarization benchmark."
+  },
+  {
+    "paperId": "d383d344818ee1d6ad58f7a1928cbc0b5f40a3a3",
+    "externalIds": {
+      "DBLP": "journals/access/KarlausS25",
+      "DOI": "10.1109/ACCESS.2025.3588936",
+      "CorpusId": 280169553
+    },
+    "title": "TEMPO: Timestep Explanations for Modeling Preferences in Online Preference-Based RL",
+    "venue": "IEEE Access",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ACCESS.2025.3588936?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ACCESS.2025.3588936, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2372787408",
+        "name": "Jakob Karlaus"
+      },
+      {
+        "authorId": "2243275773",
+        "name": "Friedhelm Schwenker"
+      }
+    ],
+    "abstract": "Human-in-the-loop reinforcement learning enables non-expert users to train agents through interactive feedback. While preference-based methods (PbRL) have gained popularity by allowing humans to express preferences between trajectory pairs, they are limited by their narrow feedback interface - humans can only indicate which trajectory they prefer but not why. This work introduces a more expressive preference-based learning framework that allows humans to provide step-level explanations alongside their preferences, indicating which specific timesteps influenced their decisions. Our key technical innovation is a training approach that incorporates these explanations using a novel loss function combining reward learning, saliency-based explanations, and structural regularization. We evaluate our method across multiple continuous control environments using both synthetic oracles and human trainers. Results show that our approach accelerates learning compared to standard preference-based methods while maintaining robustness across different types of human feedback patterns. The improved learning speed and more natural interaction suggest that this is a promising direction for making human-in-the-loop RL more practical."
+  },
+  {
+    "paperId": "551a5e52bc72df8251a2f66fc9652faabfcacdb7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2504-10002",
+      "ArXiv": "2504.10002",
+      "DOI": "10.1109/ICRA55743.2025.11127633",
+      "CorpusId": 277781608
+    },
+    "title": "Flora: Sample-Efficient Preference-Based Rl Via Low-Rank Style Adaptation of Reward Functions",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.10002, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2082009633",
+        "name": "Daniel Marta"
+      },
+      {
+        "authorId": "2140634515",
+        "name": "Simon Holk"
+      },
+      {
+        "authorId": "2266591266",
+        "name": "Miguel Vasco"
+      },
+      {
+        "authorId": "2259925080",
+        "name": "Jens Lundell"
+      },
+      {
+        "authorId": "20962076",
+        "name": "Timon Homberger"
+      },
+      {
+        "authorId": "2163583306",
+        "name": "F. Busch"
+      },
+      {
+        "authorId": "2321548979",
+        "name": "Olov Andersson"
+      },
+      {
+        "authorId": "2153721470",
+        "name": "Danica Kragic"
+      },
+      {
+        "authorId": "2266510646",
+        "name": "Iolanda Leite"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (PbRL) is a suitable approach for style adaptation of pre-trained robotic behavior: adapting the robot's policy to follow human user preferences while still being able to perform the original task. However, collecting preferences for the adaptation process in robotics is often challenging and time-consuming. In this work we explore the adaptation of pre-trained robots in the low-preference-data regime. We show that, in this regime, recent adaptation approaches suffer from catastrophic reward forgetting (CRF), where the updated reward model overfits to the new preferences, leading the agent to become unable to perform the original task. To mitigate CRF, we propose to enhance the original reward model with a small number of parameters (low-rank matrices) responsible for modeling the preference adaptation. Our evaluation shows that our method can efficiently and effectively adjust robotic behavior to human preferences across simulation benchmark tasks and multiple real-world robotic tasks. We provide videos of our results and source code at https://sites.google.com/view/preflora/."
+  },
+  {
+    "paperId": "5008574062623b3269ba9e39d37e319770101d6e",
+    "externalIds": {
+      "DBLP": "conf/icra/MartaHPL24",
+      "DOI": "10.1109/ICRA57147.2024.10610534",
+      "CorpusId": 271798786
+    },
+    "title": "SEQUEL: Semi-Supervised Preference-based RL with Query Synthesis via Latent Interpolation",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2024,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICRA57147.2024.10610534?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICRA57147.2024.10610534, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2082009633",
+        "name": "Daniel Marta"
+      },
+      {
+        "authorId": "2140634515",
+        "name": "Simon Holk"
+      },
+      {
+        "authorId": "5142479",
+        "name": "Christian Pek"
+      },
+      {
+        "authorId": "2266510646",
+        "name": "Iolanda Leite"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (RL) poses as a recent research direction in robot learning, by allowing humans to teach robots through preferences on pairs of desired behaviours. Nonetheless, to obtain realistic robot policies, an arbitrarily large number of queries is required to be answered by humans. In this work, we approach the sample-efficiency challenge by presenting a technique which synthesizes queries, in a semi-supervised learning perspective. To achieve this, we leverage latent variational autoencoder (VAE) representations of trajectory segments (sequences of state-action pairs). Our approach manages to produce queries which are closely aligned with those labeled by humans, while avoiding excessive uncertainty according to the human preference predictions as determined by reward estimations. Additionally, by introducing variation without deviating from the original human’s intents, more robust reward function representations are achieved. We compare our approach to recent state-of-the-art preference-based RL semi-supervised learning techniques. Our experimental findings reveal that we can enhance the generalization of the estimated reward function without requiring additional human intervention. Lastly, to confirm the practical applicability of our approach, we conduct experiments involving actual human users in a simulated social navigation setting. Videos of the experiments can be found at https://sites.google.com/view/rl-sequel"
+  },
+  {
+    "paperId": "a00003c2363fa138e31e6357cc72435dbdf36649",
+    "externalIds": {
+      "ArXiv": "2603.28053",
+      "CorpusId": 286974740
+    },
+    "title": "Reducing Oracle Feedback with Vision-Language Embeddings for Preference-Based RL",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.28053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324576657",
+        "name": "Udita Ghosh"
+      },
+      {
+        "authorId": "30164077",
+        "name": "Dripta S. Raychaudhuri"
+      },
+      {
+        "authorId": "2277407567",
+        "name": "Jiachen Li"
+      },
+      {
+        "authorId": "2309244861",
+        "name": "Konstantinos Karydis"
+      },
+      {
+        "authorId": "2262047475",
+        "name": "Amit K. Roy-Chowdhury"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning can learn effective reward functions from comparisons, but its scalability is constrained by the high cost of oracle feedback. Lightweight vision-language embedding (VLE) models provide a cheaper alternative, but their noisy outputs limit their effectiveness as standalone reward generators. To address this challenge, we propose ROVED, a hybrid framework that combines VLE-based supervision with targeted oracle feedback. Our method uses the VLE to generate segment-level preferences and defers to an oracle only for samples with high uncertainty, identified through a filtering mechanism. In addition, we introduce a parameter-efficient fine-tuning method that adapts the VLE with the obtained oracle feedback in order to improve the model over time in a synergistic fashion. This ensures the retention of the scalability of embeddings and the accuracy of oracles, while avoiding their inefficiencies. Across multiple robotic manipulation tasks, ROVED matches or surpasses prior preference-based methods while reducing oracle queries by up to 80%. Remarkably, the adapted VLE generalizes across tasks, yielding cumulative annotation savings of up to 90%, highlighting the practicality of combining scalable embeddings with precise oracle supervision for preference-based RL."
+  },
+  {
+    "paperId": "7d17adc73fca6a22f51be7957c64c6aa3f906f80",
+    "externalIds": {
+      "DOI": "10.5220/0014221600004052",
+      "CorpusId": 286481096
+    },
+    "title": "Sparse Rewards as Preferences: Investigating Reward Shaping with Preference-Based RL Methods in Sparse Reward Domains",
+    "venue": "Proceedings of the 18th International Conference on Agents and Artificial Intelligence",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5220/0014221600004052?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5220/0014221600004052, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2423348927",
+        "name": "Veerendrababu Vakkapatla"
+      },
+      {
+        "authorId": "2423348974",
+        "name": "Shariq Faraz"
+      },
+      {
+        "authorId": "2266794108",
+        "name": "Virendra Singh"
+      }
+    ],
+    "abstract": ": Reinforcement learning (RL) agents struggle with sparse rewards. While reward shaping offers guidance, traditional preference-based RL (PbRL) learns rewards from human input when explicit reward functions are absent. In this work, we adapt PbRL for sparse-reward tasks by automatically generating preferences from the existing sparse reward signal, removing the need for human intervention. We evaluate recent PbRL methods on continuous control tasks (OpenAI Gym MuJoCo), focusing on how their distinct exploration or reward inference strategies contribute to agent learning under this self-supervised framework. Our findings reveal that these specific characteristics significantly enhance the dense reward functions inferred from self-supervised preferences. This leads to more sample-efficient policies that outperform those trained on original sparse rewards, highlighting the potential of leveraging specific PbRL features to automate reward design in sparse-reward problems."
+  },
+  {
+    "paperId": "0623b0ecd46bdb36f658dd36bd82789076e8881d",
+    "externalIds": {
+      "DOI": "10.1214/24-aos2483",
+      "CorpusId": 276359464
+    },
+    "title": "Unified algorithms for RL with Decision-Estimation Coefficients: PAC, reward-free, preference-based learning and beyond",
+    "venue": "Annals of Statistics",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1214/24-aos2483?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1214/24-aos2483, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299191224",
+        "name": "Fan Chen"
+      },
+      {
+        "authorId": "2257346113",
+        "name": "Song Mei"
+      },
+      {
+        "authorId": "2257420186",
+        "name": "Yu Bai"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "f2f9cc38d5a1a4fdef996ea03fdb71e01f65d574",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-14554",
+      "ArXiv": "2310.14554",
+      "DOI": "10.48550/arXiv.2310.14554",
+      "CorpusId": 264426005
+    },
+    "title": "Making RL with Preference-based Feedback Efficient via Randomization",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.14554, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111880189",
+        "name": "Runzhe Wu"
+      },
+      {
+        "authorId": "2261362271",
+        "name": "Wen Sun"
+      }
+    ],
+    "abstract": "Reinforcement Learning algorithms that learn from human feedback (RLHF) need to be efficient in terms of statistical complexity, computational complexity, and query complexity. In this work, we consider the RLHF setting where the feedback is given in the format of preferences over pairs of trajectories. In the linear MDP model, using randomization in algorithm design, we present an algorithm that is sample efficient (i.e., has near-optimal worst-case regret bounds) and has polynomial running time (i.e., computational complexity is polynomial with respect to relevant parameters). Our algorithm further minimizes the query complexity through a novel randomized active learning procedure. In particular, our algorithm demonstrates a near-optimal tradeoff between the regret bound and the query complexity. To extend the results to more general nonlinear function approximation, we design a model-based randomized algorithm inspired by the idea of Thompson sampling. Our algorithm minimizes Bayesian regret bound and query complexity, again achieving a near-optimal tradeoff between these two quantities. Computation-wise, similar to the prior Thompson sampling algorithms under the regular RL setting, the main computation primitives of our algorithm are Bayesian supervised learning oracles which have been heavily investigated on the empirical side when applying Thompson sampling algorithms to RL benchmark problems."
+  },
+  {
+    "paperId": "3b12af85bad53c443fcdd96b17c237ecdba0faa8",
+    "externalIds": {
+      "DBLP": "conf/iclr/Wu024",
+      "CorpusId": 271745588
+    },
+    "title": "Making RL with Preference-based Feedback Efficient via Randomization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://openreview.net/forum?id=Pe2lo3QOvo, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111880189",
+        "name": "Runzhe Wu"
+      },
+      {
+        "authorId": "2261362271",
+        "name": "Wen Sun"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "ae843221017d8b8941d4ea11a883c52240f8ce07",
+    "externalIds": {
+      "DBLP": "journals/ral/WangZYOM25",
+      "DOI": "10.1109/LRA.2025.3528663",
+      "CorpusId": 271097378
+    },
+    "title": "PrefCLM: Enhancing Preference-Based Reinforcement Learning With Crowdsourced Large Language Models",
+    "venue": "IEEE Robotics and Automation Letters",
+    "year": 2025,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/LRA.2025.3528663?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/LRA.2025.3528663, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1390826784",
+        "name": "Ruiqi Wang"
+      },
+      {
+        "authorId": "2210831517",
+        "name": "Dezhong Zhao"
+      },
+      {
+        "authorId": "2310865137",
+        "name": "Ziqin Yuan"
+      },
+      {
+        "authorId": "2310697149",
+        "name": "Ike Obi"
+      },
+      {
+        "authorId": "2247857569",
+        "name": "Byung-Cheol Min"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (PbRL) is emerging as a promising approach to teaching robots through human comparative feedback without complex reward engineering. However, the substantial volume of human feedback required hinders broader applications. In this work, we introduce PrefCLM, a novel framework that utilizes crowdsourced large language models (LLMs) as synthetic teachers in PbRL. We utilize Dempster-Shafer Theory to fuse individual preference beliefs from multiple LLM agents at the score level, efficiently leveraging their diversity and collective intelligence. We also introduce a human-in-the-loop pipeline, enabling iterative and collective refinements that adapt to the nuanced and individualized preferences inherent to human-robot interaction (HRI) scenarios. Experimental results across various general RL tasks show that PrefCLM achieves competitive performance compared to expert-engineered scripted teachers and excels in facilitating more natural and efficient behaviors. A real-world user study (N = 10) further demonstrates its capability to tailor robot behaviors to individual user preferences, enhancing user satisfaction in HRI scenarios."
+  },
+  {
+    "paperId": "6d82ca5b7742ca1a1b97f812b06f281c99ddf678",
+    "externalIds": {
+      "ArXiv": "2509.26605",
+      "DBLP": "journals/corr/abs-2509-26605",
+      "DOI": "10.48550/arXiv.2509.26605",
+      "CorpusId": 281681790
+    },
+    "title": "Fine-tuning Behavioral Cloning Policies with Preference-Based Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.26605, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2307074846",
+        "name": "Mael Macuglia"
+      },
+      {
+        "authorId": "2327338967",
+        "name": "Paul Friedrich"
+      },
+      {
+        "authorId": "144763838",
+        "name": "G. Ramponi"
+      }
+    ],
+    "abstract": "Deploying reinforcement learning (RL) in robotics, industry, and health care is blocked by two obstacles: the difficulty of specifying accurate rewards and the risk of unsafe, data-hungry exploration. We address this by proposing a two-stage framework that first learns a safe initial policy from a reward-free dataset of expert demonstrations, then fine-tunes it online using preference-based human feedback. We provide the first principled analysis of this offline-to-online approach and introduce BRIDGE, a unified algorithm that integrates both signals via an uncertainty-weighted objective. We derive regret bounds that shrink with the number of offline demonstrations, explicitly connecting the quantity of offline data to online sample efficiency. We validate BRIDGE in discrete and continuous control MuJoCo environments, showing it achieves lower regret than both standalone behavioral cloning and online preference-based RL. Our work establishes a theoretical foundation for designing more sample-efficient interactive agents."
+  },
+  {
+    "paperId": "6623a117f1b1b5c11ebc06d7be93c6368eae7417",
+    "externalIds": {
+      "DBLP": "journals/tii/DangXLS25",
+      "DOI": "10.1109/TII.2024.3507203",
+      "CorpusId": 274733824
+    },
+    "title": "A Preference-Based Online Reinforcement Learning With Embedded Communication Failure Solutions in Smart Grid",
+    "venue": "IEEE Transactions on Industrial Informatics",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TII.2024.3507203?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TII.2024.3507203, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2292765372",
+        "name": "Yibing Dang"
+      },
+      {
+        "authorId": "2293011828",
+        "name": "Jiangjiao Xu"
+      },
+      {
+        "authorId": "2281693268",
+        "name": "Dongdong Li"
+      },
+      {
+        "authorId": "2271340777",
+        "name": "Hongjian Sun"
+      }
+    ],
+    "abstract": "Microgrids, marked by substantial renewable energy integration, have garnered significant attention. Traditional optimization methods face challenges in handling the unpredictability of renewable energy, market prices, and loads. Reinforcement learning (RL) offers a solution by learning from historical data. However, Offline-RL models often encounter adaptability challenges in new environments, while traditional Online-RL faces stability issues in certain scenarios. To address these concerns, this article proposes a preference-based deep deterministic policy gradient (PDDPG) algorithm. It guides the online learning process using expert experience based on expert rules and offline-RL to enhance the model's performance. Moreover, unlike studies that assume perfect communication and ignore random communication failures, the proposed real-time microgrid energy management system tackles communication challenges by incorporating a communication detection and data supplement system (CDDSS), especially during extreme weather conditions. The results indicate that the incorporation of CDDSS, as opposed to zero value supplementation, previous moment data, and conventional predictive models, results in a remarkable reduction of microgrid losses by 88.3%, 80.5%, and 53.4%, respectively."
+  },
+  {
+    "paperId": "68181e5ab79f06da339f7765d1a596638b297c9b",
+    "externalIds": {
+      "ArXiv": "2209.11745",
+      "CorpusId": 269448595
+    },
+    "title": "Unified Algorithms for RL with Decision-Estimation Coefficients: PAC, Reward-Free, Preference-Based Learning, and Beyond",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.11745, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299191224",
+        "name": "Fan Chen"
+      },
+      {
+        "authorId": "2257346113",
+        "name": "Song Mei"
+      },
+      {
+        "authorId": "2257420186",
+        "name": "Yu Bai"
+      }
+    ],
+    "abstract": "Modern Reinforcement Learning (RL) is more than just learning the optimal policy; Alternative learning goals such as exploring the environment, estimating the underlying model, and learning from preference feedback are all of practical importance. While provably sample-efficient algorithms for each specific goal have been proposed, these algorithms often depend strongly on the particular learning goal and thus admit different structures correspondingly. It is an urging open question whether these learning goals can rather be tackled by a single unified algorithm. We make progress on this question by developing a unified algorithm framework for a large class of learning goals, building on the Decision-Estimation Coefficient (DEC) framework. Our framework handles many learning goals such as no-regret RL, PAC RL, reward-free learning, model estimation, and preference-based learning, all by simply instantiating the same generic complexity measure called\"Generalized DEC\", and a corresponding generic algorithm. The generalized DEC also yields a sample complexity lower bound for each specific learning goal. As applications, we propose\"decouplable representation\"as a natural sufficient condition for bounding generalized DECs, and use it to obtain many new sample-efficient results (and recover existing results) for a wide range of learning goals and problem classes as direct corollaries. Finally, as a connection, we re-analyze two existing optimistic model-based algorithms based on Posterior Sampling and Maximum Likelihood Estimation, showing that they enjoy sample complexity bounds under similar structural conditions as the DEC."
+  },
+  {
+    "paperId": "d3c2121cb18b13b051a314686c1bcbedf888c7f2",
+    "externalIds": {
+      "ArXiv": "2410.12375",
+      "DBLP": "journals/corr/abs-2410-12375",
+      "DOI": "10.1038/s44387-025-00003-z",
+      "CorpusId": 273374930
+    },
+    "title": "PRefLexOR: preference-based recursive language modeling for exploratory optimization of reasoning and agentic thinking",
+    "venue": "npj Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1038/s44387-025-00003-z",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.12375, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2274373577",
+        "name": "Markus J. Buehler"
+      }
+    ],
+    "abstract": "We introduce PRefLexOR (Preference-based Recursive Language Modeling for Exploratory Optimization of Reasoning), a framework that integrates preference optimization with reinforcement learning (RL) concepts for self-improving scientific reasoning. PRefLexOR employs a recursive approach, refining intermediate steps before producing final outputs in training and inference. It optimizes log odds between preferred and non-preferred responses using an in-situ dataset generation algorithm. A dynamic knowledge graph contextualizes reasoning with retrieval-augmented data. Preference optimization enhances performance via rejection sampling, masking reasoning steps to focus on discovery. Recursive optimization, guided by feedback loops, refines reasoning. This process mirrors biological adaptation, enabling real-time learning. We find that even small models (3B parameters) self-teach deeper reasoning, solving open-domain problems effectively. Our method integrates into existing LLMs and demonstrates success in biological materials science, leveraging multi-agent self-improvement for enhanced reasoning depth and cross-domain adaptability, offering flexibility and integration into larger agentic systems."
+  },
+  {
+    "paperId": "a9d825e3009f777cb07a72d07f954bb358be8f8d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2506-12529",
+      "ArXiv": "2506.12529",
+      "DOI": "10.48550/arXiv.2506.12529",
+      "CorpusId": 279403152
+    },
+    "title": "Similarity as Reward Alignment: Robust and Versatile Preference-based Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.12529, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2396423862",
+        "name": "S. Rajaram"
+      },
+      {
+        "authorId": "2363499732",
+        "name": "R. J. Cotton"
+      },
+      {
+        "authorId": "2268495239",
+        "name": "Fabian H. Sinz"
+      }
+    ],
+    "abstract": "Preference-based Reinforcement Learning (PbRL) entails a variety of approaches for aligning models with human intent to alleviate the burden of reward engineering. However, most previous PbRL work has not investigated the robustness to labeler errors, inevitable with labelers who are non-experts or operate under time constraints. Additionally, PbRL algorithms often target very specific settings (e.g. pairwise ranked preferences or purely offline learning). We introduce Similarity as Reward Alignment (SARA), a simple contrastive framework that is both resilient to noisy labels and adaptable to diverse feedback formats and training paradigms. SARA learns a latent representation of preferred samples and computes rewards as similarities to the learned latent. We demonstrate strong performance compared to baselines on continuous control offline RL benchmarks. We further demonstrate SARA's versatility in applications such as trajectory filtering for downstream tasks, cross-task preference transfer, and reward shaping in online learning."
+  },
+  {
+    "paperId": "ded8126a497348a80aadcd76ea66c550c457c38f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-06357",
+      "ArXiv": "2505.06357",
+      "DOI": "10.1109/MRA.2026.3650847",
+      "CorpusId": 278502439
+    },
+    "title": "DAPPER: Discriminability-Aware Policy-to-Policy Preference-Based Reinforcement Learning for Query-Efficient Robot Skill Acquisition",
+    "venue": "IEEE robotics & automation magazine",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.06357, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "80320916",
+        "name": "Y. Kadokawa"
+      },
+      {
+        "authorId": "2249531943",
+        "name": "Jonas Frey"
+      },
+      {
+        "authorId": "1825794582",
+        "name": "Takahiro Miki"
+      },
+      {
+        "authorId": "3248224",
+        "name": "Takamitsu Matsubara"
+      },
+      {
+        "authorId": "2246875679",
+        "name": "Marco Hutter"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (PBRL) enables policy learning through simple queries comparing trajectories from a single policy. While human responses to these queries make it possible to learn policies aligned with human preferences, PBRL suffers from low query efficiency, as policy bias limits trajectory diversity and reduces the number of discriminable queries available for learning preferences. This article identifies preference discriminability, which quantifies how easily a human can judge which trajectory is closer to their ideal behavior, as a key metric for improving query efficiency. To address this, we move beyond comparisons within a single policy and instead generate queries by comparing trajectories from multiple policies, as training them from scratch promotes diversity without policy bias. We propose discriminability-aware policy-to-policy preference-based efficient RL (DAPPER), which integrates preference discriminability with trajectory diversification achieved by multiple policies. DAPPER trains new policies from scratch after each reward update and employs a discriminator that learns to estimate preference discriminability, enabling the prioritized sampling of more discriminable queries. During training, it jointly maximizes the preference reward and preference discriminability score, encouraging the discovery of highly rewarding and easily distinguishable policies. Experiments in simulated and real-world legged robot environments demonstrate that DAPPER outperforms previous methods in query efficiency, particularly under challenging preference discriminability conditions."
+  },
+  {
+    "paperId": "78ed3c59818bf5d44cd6f75e23c811cd2f5d2cc0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-01616",
+      "ArXiv": "2502.01616",
+      "DOI": "10.48550/arXiv.2502.01616",
+      "CorpusId": 276107940
+    },
+    "title": "Preference VLM: Leveraging VLMs for Scalable Preference-Based Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.01616, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324576657",
+        "name": "Udita Ghosh"
+      },
+      {
+        "authorId": "30164077",
+        "name": "Dripta S. Raychaudhuri"
+      },
+      {
+        "authorId": "2324686339",
+        "name": "Jiachen Li"
+      },
+      {
+        "authorId": "2309244861",
+        "name": "Konstantinos Karydis"
+      },
+      {
+        "authorId": "2262047475",
+        "name": "Amit K. Roy-Chowdhury"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (RL) offers a promising approach for aligning policies with human intent but is often constrained by the high cost of human feedback. In this work, we introduce PrefVLM, a framework that integrates Vision-Language Models (VLMs) with selective human feedback to significantly reduce annotation requirements while maintaining performance. Our method leverages VLMs to generate initial preference labels, which are then filtered to identify uncertain cases for targeted human annotation. Additionally, we adapt VLMs using a self-supervised inverse dynamics loss to improve alignment with evolving policies. Experiments on Meta-World manipulation tasks demonstrate that PrefVLM achieves comparable or superior success rates to state-of-the-art methods while using up to 2 x fewer human annotations. Furthermore, we show that adapted VLMs enable efficient knowledge transfer across tasks, further minimizing feedback needs. Our results highlight the potential of combining VLMs with selective human supervision to make preference-based RL more scalable and practical."
+  },
+  {
+    "paperId": "8ac27e630cdafadfb57a91b7d461f870f5e70621",
+    "externalIds": {
+      "ArXiv": "2510.25801",
+      "DBLP": "journals/corr/abs-2510-25801",
+      "DOI": "10.48550/arXiv.2510.25801",
+      "CorpusId": 285241176
+    },
+    "title": "Metis-SPECS: Decoupling Multimodal Learning via Self-distilled Preference-based Cold Start",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.25801, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2408375489",
+        "name": "Kun Chen"
+      },
+      {
+        "authorId": "2367196849",
+        "name": "Peng Shi"
+      },
+      {
+        "authorId": "2354610320",
+        "name": "Haibo Qiu"
+      },
+      {
+        "authorId": "2358994948",
+        "name": "Zhixiong Zeng"
+      },
+      {
+        "authorId": "2353312145",
+        "name": "Siqi Yang"
+      },
+      {
+        "authorId": "2345575725",
+        "name": "Wenji Mao"
+      },
+      {
+        "authorId": "2383247134",
+        "name": "Lin Ma"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) with verifiable rewards has recently catalyzed a wave of\"MLLM-r1\"approaches that bring RL to vision language models. Most representative paradigms begin with a cold start, typically employing supervised fine-tuning (SFT), to initialize the policy before RL. However, SFT-based cold start adopts the reasoning paradigm intertwined with task solution and output format, which may induce instruction-style overfitting, weakens out-of-distribution generalization, and ultimately affects downstream RL. We revisit the cold start along two views, its training method and data construction, and introduce the Generalization Factor (GF) coefficient to quantify the generalization capability under different methods. Our empirical study finds that preference-based training methods (e.g. DPO) generalizes better than SFT-based methods in cold start. Motivated by this, we propose SPECS-a Self-distilled, Preference-based Cold Start framework that decouples multimodal learning: (1) generates introspective preference data pairs via self-distillation, avoiding reliance on larger teachers or manual annotation; (2) performs preference-based training to learn, focusing on shallow, transferable surface-form criteria (format, structure, style) rather than memorizing content; and (3) hands off to RL with verifiable rewards for deep reasoning results. Experimental results across multiple multimodal benchmarks show that our decoupling learning framework yields consistent performance gains over strong baselines, improving MEGA-Bench by 4.1% and MathVista by 12.2%. Additional experiments indicate that SPECS contributes to reducing in-distribution\"stuckness,\"improving exploration, stabilizing training, and raising the performance ceiling. Project Page: https://kwen-chen.github.io/SPECS-VL/"
+  },
+  {
+    "paperId": "d95664ecae2b9083cf211ab827a3dc28b8187018",
+    "externalIds": {
+      "ArXiv": "2405.14244",
+      "CorpusId": 269983254
+    },
+    "title": "Tell me why: Training preferences-based RL with human preferences and step-level explanations",
+    "venue": "",
+    "year": 2024,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.14244, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2122580935",
+        "name": "J. Karalus"
+      }
+    ],
+    "abstract": "Human-in-the-loop reinforcement learning allows the training of agents through various interfaces, even for non-expert humans. Recently, preference-based methods (PbRL), where the human has to give his preference over two trajectories, increased in popularity since they allow training in domains where more direct feedback is hard to formulate. However, the current PBRL methods have limitations and do not provide humans with an expressive interface for giving feedback. With this work, we propose a new preference-based learning method that provides humans with a more expressive interface to provide their preference over trajectories and a factual explanation (or annotation of why they have this preference). These explanations allow the human to explain what parts of the trajectory are most relevant for the preference. We allow the expression of the explanations over individual trajectory steps. We evaluate our method in various simulations using a simulated human oracle (with realistic restrictions), and our results show that our extended feedback can improve the speed of learning."
+  },
+  {
+    "paperId": "0ff47176152995ae5cc48f073dcafaa44ee07b4b",
+    "externalIds": {
+      "DBLP": "conf/ifaamas/KouL0QC0CL25",
+      "DOI": "10.5555/3709347.3743639",
+      "CorpusId": 280336969
+    },
+    "title": "Offline Multi-Agent Preference-based Reinforcement Learning with Agent-aware Direct Preference Optimization",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5555/3709347.3743639?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5555/3709347.3743639, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2292319237",
+        "name": "Qian Kou"
+      },
+      {
+        "authorId": "2292426765",
+        "name": "Mingyang Li"
+      },
+      {
+        "authorId": "2226668201",
+        "name": "Zeyang Liu"
+      },
+      {
+        "authorId": "2292326961",
+        "name": "Long Qian"
+      },
+      {
+        "authorId": "2288053307",
+        "name": "Zhuoran Chen"
+      },
+      {
+        "authorId": "143692584",
+        "name": "Lipeng Wan"
+      },
+      {
+        "authorId": "2328795443",
+        "name": "Xingyug Chen"
+      },
+      {
+        "authorId": "2287922954",
+        "name": "Xuguang Lan"
+      }
+    ],
+    "abstract": "Multi-agent Preference-Based Reinforcement Learning (MAPbRL) is promising in offline policy learning by leveraging human preferences to replace complex manual reward designing. Current MAPbRL methods use complicated structures to realize better reward modeling with off-the-shelf MARL algorithms and obtain the joint policy based on it. However, it faces a severe preference-behavior mismatch problem stemming from the instability of RL training and global-local preference inconsistency datasets in offline MARL, resulting in potential suboptimal policy convergence. To address this problem, we propose Agent-aware Multi-Agent Direct Preference Optimization (AMADPO) by utilizing a multi-agent preference predictor to guide agent-aware direct optimization from imbalanced preference labels, which can learn coordination policy from both positive and negative segments. Experimental results in SMAC environment show substantial improvements in global-local preference inconsistency datasets, demonstrating the effectiveness of AMADPO in solving the preference-behavior mismatch problem."
+  },
+  {
+    "paperId": "e89e800002c45aa7f1d96913eb5036936f79d154",
+    "externalIds": {
+      "ArXiv": "2503.01143",
+      "CorpusId": 276742386
+    },
+    "title": "Diffusion Classifier-Driven Reward for Offline Preference-based Reinforcement Learning",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.01143, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2273534662",
+        "name": "Teng Pang"
+      },
+      {
+        "authorId": "2274276448",
+        "name": "Bingzheng Wang"
+      },
+      {
+        "authorId": "2273817761",
+        "name": "Guoqiang Wu"
+      },
+      {
+        "authorId": "2273624640",
+        "name": "Yilong Yin"
+      }
+    ],
+    "abstract": "Offline preference-based reinforcement learning (PbRL) mitigates the need for reward definition, aligning with human preferences via preference-driven reward feedback without interacting with the environment. However, trajectory-wise preference labels are difficult to meet the precise learning of step-wise reward, thereby affecting the performance of downstream algorithms. To alleviate the insufficient step-wise reward caused by trajectory-wise preferences, we propose a novel preference-based reward acquisition method: Diffusion Preference-based Reward (DPR). DPR directly treats step-wise preference-based reward acquisition as a binary classification and utilizes the robustness of diffusion classifiers to infer step-wise rewards discriminatively. In addition, to further utilize trajectory-wise preference information, we propose Conditional Diffusion Preference-based Reward (C-DPR), which conditions on trajectory-wise preference labels to enhance reward inference. We apply the above methods to existing offline RL algorithms, and a series of experimental results demonstrate that the diffusion classifier-driven reward outperforms the previous reward acquisition method with the Bradley-Terry model."
+  },
+  {
+    "paperId": "8525434adbf25984e55c78063c71bcb958d364e4",
+    "externalIds": {
+      "ArXiv": "2408.04190",
+      "DBLP": "conf/icml/ChoiJAM24",
+      "DOI": "10.48550/arXiv.2408.04190",
+      "CorpusId": 271768740
+    },
+    "title": "Listwise Reward Estimation for Offline Preference-based Reinforcement Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.04190, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2295954954",
+        "name": "Heewoong Choi"
+      },
+      {
+        "authorId": "47165273",
+        "name": "Sangwon Jung"
+      },
+      {
+        "authorId": "2112569591",
+        "name": "Hongjoon Ahn"
+      },
+      {
+        "authorId": "2315133096",
+        "name": "Taesup Moon"
+      }
+    ],
+    "abstract": "In Reinforcement Learning (RL), designing precise reward functions remains to be a challenge, particularly when aligning with human intent. Preference-based RL (PbRL) was introduced to address this problem by learning reward models from human feedback. However, existing PbRL methods have limitations as they often overlook the second-order preference that indicates the relative strength of preference. In this paper, we propose Listwise Reward Estimation (LiRE), a novel approach for offline PbRL that leverages second-order preference information by constructing a Ranked List of Trajectories (RLT), which can be efficiently built by using the same ternary feedback type as traditional methods. To validate the effectiveness of LiRE, we propose a new offline PbRL dataset that objectively reflects the effect of the estimated rewards. Our extensive experiments on the dataset demonstrate the superiority of LiRE, i.e., outperforming state-of-the-art baselines even with modest feedback budgets and enjoying robustness with respect to the number of feedbacks and feedback noise. Our code is available at https://github.com/chwoong/LiRE"
+  },
+  {
+    "paperId": "2b6f6977daf8525a101905d2b6d2a6d0aa59529b",
+    "externalIds": {
+      "DBLP": "conf/aaai/ZhuQZ024",
+      "DOI": "10.1609/aaai.v38i15.29666",
+      "CorpusId": 268701799
+    },
+    "title": "Decoding Global Preferences: Temporal and Cooperative Dependency Modeling in Multi-Agent Preference-Based Reinforcement Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/29666/31137",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1609/aaai.v38i15.29666?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1609/aaai.v38i15.29666, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2154454976",
+        "name": "Tianchen Zhu"
+      },
+      {
+        "authorId": "2293419120",
+        "name": "Yue Qiu"
+      },
+      {
+        "authorId": "2395143",
+        "name": "Haoyi Zhou"
+      },
+      {
+        "authorId": "2280099035",
+        "name": "Jianxin Li"
+      }
+    ],
+    "abstract": "Designing accurate reward functions for reinforcement learning (RL) has long been challenging. Preference-based RL (PbRL) offers a promising approach by using human preferences\nto train agents, eliminating the need for manual reward design. While successful in single-agent tasks, extending PbRL to complex multi-agent scenarios is nontrivial. Existing PbRL methods lack the capacity to comprehensively capture both temporal and cooperative aspects, leading to inadequate reward functions. This work introduces an advanced multi-agent preference learning framework that effectively addresses these limitations. Based on a cascading Transformer architecture, our approach captures both temporal and cooperative dependencies, alleviating issues related to reward uniformity and intricate interactions among agents. Experimental results demonstrate substantial performance improvements in multi-agent cooperative tasks, and the reconstructed reward function closely resembles expert-defined reward functions. The source code is available at https://github.com/catezi/MAPT."
+  },
+  {
+    "paperId": "4989bead096e388cc79dccb6f0ee73f0ebdfd504",
+    "externalIds": {
+      "ArXiv": "2401.10941",
+      "DBLP": "journals/corr/abs-2401-10941",
+      "DOI": "10.48550/arXiv.2401.10941",
+      "CorpusId": 267069108
+    },
+    "title": "Crowd-PrefRL: Preference-Based Reward Learning from Crowds",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.10941, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2280148445",
+        "name": "David Chhan"
+      },
+      {
+        "authorId": "151479011",
+        "name": "Ellen R. Novoseller"
+      },
+      {
+        "authorId": "2194602",
+        "name": "Vernon J. Lawhern"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (RL) provides a framework to train AI agents using human feedback through preferences over pairs of behaviors, enabling agents to learn desired behaviors when it is difficult to specify a numerical reward function. While this paradigm leverages human feedback, it typically treats the feedback as given by a single human user. However, different users may desire multiple AI behaviors and modes of interaction. Meanwhile, incorporating preference feedback from crowds (i.e. ensembles of users) in a robust manner remains a challenge, and the problem of training RL agents using feedback from multiple human users remains understudied. In this work, we introduce a conceptual framework, Crowd-PrefRL, that integrates preference-based RL approaches with techniques from unsupervised crowdsourcing to enable training of autonomous system behaviors from crowdsourced feedback. We show preliminary results suggesting that Crowd-PrefRL can learn reward functions and agent policies from preference feedback provided by crowds of unknown expertise and reliability. We also show that in most cases, agents trained with Crowd-PrefRL outperform agents trained with majority-vote preferences or preferences from any individual user, especially when the spread of user error rates among the crowd is large. Results further suggest that our method can identify the presence of minority viewpoints within the crowd in an unsupervised manner."
+  },
+  {
+    "paperId": "58a5a16fbad1eb32490f71c8b0b256c5c7c29860",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-16878",
+      "ArXiv": "2412.16878",
+      "DOI": "10.48550/arXiv.2412.16878",
+      "CorpusId": 274982683
+    },
+    "title": "Online Preference-based Reinforcement Learning with Self-augmented Feedback from Large Language Model",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2024,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.16878, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334864217",
+        "name": "Songjun Tu"
+      },
+      {
+        "authorId": "2221283670",
+        "name": "Jingbo Sun"
+      },
+      {
+        "authorId": "3342918",
+        "name": "Qichao Zhang"
+      },
+      {
+        "authorId": "2336877315",
+        "name": "Xiangyuan Lan"
+      },
+      {
+        "authorId": "2259831523",
+        "name": "Dongbin Zhao"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (PbRL) provides a powerful paradigm to avoid meticulous reward engineering by learning rewards based on human preferences. However, real-time human feedback is hard to obtain in online tasks. Most work suppose there is a ''scripted teacher'' that utilizes privileged predefined reward to provide preference feedback. In this paper, we propose a RL Self-augmented Large Language Model Feedback (RL-SaLLM-F) technique that does not rely on privileged information for online PbRL. RL-SaLLM-F leverages the reflective and discriminative capabilities of LLM to generate self-augmented trajectories and provide preference labels for reward learning. First, we identify a failure issue in LLM-based preference discrimination, specifically ''query ambiguity'', in online PbRL. Then LLM is employed to provide preference labels and generate self-augmented imagined trajectories that better achieve the task goal, thereby enhancing the quality and efficiency of feedback. Additionally, a double-check mechanism is introduced to mitigate randomness in the preference labels, improving the reliability of LLM feedback. The experiment across multiple tasks in the MetaWorld benchmark demonstrates the specific contributions of each proposed module in RL-SaLLM-F, and shows that self-augmented LLM feedback can effectively replace the impractical ''scripted teacher'' feedback. In summary, RL-SaLLM-F introduces a new direction of feedback acquisition in online PbRL that does not rely on any online privileged information, offering an efficient and lightweight solution with LLM-driven feedback."
+  },
+  {
+    "paperId": "1ed2e682e787f992fddcb8be3ad8ea75b7435f94",
+    "externalIds": {
+      "ArXiv": "2412.21001",
+      "DBLP": "journals/corr/abs-2412-21001",
+      "DOI": "10.48550/arXiv.2412.21001",
+      "CorpusId": 275133293
+    },
+    "title": "LEASE: Offline Preference-based Reinforcement Learning with High Sample Efficiency",
+    "venue": "IEEE Transactions on Systems, Man, and Cybernetics: Systems",
+    "year": 2024,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.21001, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2241377930",
+        "name": "Xiao-Yin Liu"
+      },
+      {
+        "authorId": "2272344064",
+        "name": "Guo-Tao Li"
+      },
+      {
+        "authorId": "2280898932",
+        "name": "Xiao-Hu Zhou"
+      },
+      {
+        "authorId": "2241350912",
+        "name": "Zeng-Guang Hou"
+      }
+    ],
+    "abstract": "Offline preference-based reinforcement learning (PbRL) provides an effective way to overcome the challenges of designing reward and the high costs of online interaction. However, since labeling preference needs real-time human feedback, acquiring sufficient preference labels is challenging. To solve this, this paper proposes a offLine prEference-bAsed RL with high Sample Efficiency (LEASE) algorithm, where a learned transition model is leveraged to generate unlabeled preference data. Considering the pretrained reward model may generate incorrect labels for unlabeled data, we design an uncertainty-aware mechanism to ensure the performance of reward model, where only high confidence and low variance data are selected. Moreover, we provide the generalization bound of reward model to analyze the factors influencing reward accuracy, and demonstrate that the policy learned by LEASE has theoretical improvement guarantee. The developed theory is based on state-action pair, which can be easily combined with other offline algorithms. The experimental results show that LEASE can achieve comparable performance to baseline under fewer preference data without online interaction."
+  },
+  {
+    "paperId": "3a62a5a05e33dae685c1b674b9a1fb9cd8722df6",
+    "externalIds": {
+      "DBLP": "conf/aaai/TuSZZLCZ25",
+      "ArXiv": "2412.09104",
+      "DOI": "10.48550/arXiv.2412.09104",
+      "CorpusId": 274656063
+    },
+    "title": "In-Dataset Trajectory Return Regularization for Offline Preference-based Reinforcement Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.09104, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334864217",
+        "name": "Songjun Tu"
+      },
+      {
+        "authorId": "2221283670",
+        "name": "Jingbo Sun"
+      },
+      {
+        "authorId": "3342918",
+        "name": "Qichao Zhang"
+      },
+      {
+        "authorId": "2296661042",
+        "name": "Yaocheng Zhang"
+      },
+      {
+        "authorId": "2382740497",
+        "name": "Jia Liu"
+      },
+      {
+        "authorId": "2335085988",
+        "name": "Ke Chen"
+      },
+      {
+        "authorId": "2259831523",
+        "name": "Dongbin Zhao"
+      }
+    ],
+    "abstract": "Offline preference-based reinforcement learning (PbRL) typically operates in two phases: first, use human preferences to learn a reward model and annotate rewards for a reward-free offline dataset; second, learn a policy by optimizing the learned reward via offline RL. However, accurately modeling step-wise rewards from trajectory-level preference feedback presents inherent challenges. The reward bias introduced, particularly the overestimation of predicted rewards, leads to optimistic trajectory stitching, which undermines the pessimism mechanism critical to the offline RL phase. To address this challenge, we propose In-Dataset Trajectory Return Regularization (DTR) for offline PbRL, which leverages conditional sequence modeling to mitigate the risk of learning inaccurate trajectory stitching under reward bias. Specifically, DTR employs Decision Transformer and TD-Learning to strike a balance between maintaining fidelity to the behavior policy with high in-dataset trajectory returns and selecting optimal actions based on high reward labels. Additionally, we introduce an ensemble normalization technique that effectively integrates multiple reward models, balancing the trade-off between reward differentiation and accuracy. Empirical evaluations on various benchmarks demonstrate the superiority of DTR over other state-of-the-art baselines."
+  },
+  {
+    "paperId": "d1b4c920035c7e413aac3fd07b8d374b24b8f79f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-04451",
+      "ArXiv": "2407.04451",
+      "DOI": "10.48550/arXiv.2407.04451",
+      "CorpusId": 271039696
+    },
+    "title": "Hindsight Preference Learning for Offline Preference-based Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.04451, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2309789157",
+        "name": "Chen-Xiao Gao"
+      },
+      {
+        "authorId": "2390899326",
+        "name": "Shengjun Fang"
+      },
+      {
+        "authorId": "2308074447",
+        "name": "Chenjun Xiao"
+      },
+      {
+        "authorId": "2257181815",
+        "name": "Yang Yu"
+      },
+      {
+        "authorId": "2293554557",
+        "name": "Zongzhang Zhang"
+      }
+    ],
+    "abstract": "Offline preference-based reinforcement learning (RL), which focuses on optimizing policies using human preferences between pairs of trajectory segments selected from an offline dataset, has emerged as a practical avenue for RL applications. Existing works rely on extracting step-wise reward signals from trajectory-wise preference annotations, assuming that preferences correlate with the cumulative Markovian rewards. However, such methods fail to capture the holistic perspective of data annotation: Humans often assess the desirability of a sequence of actions by considering the overall outcome rather than the immediate rewards. To address this challenge, we propose to model human preferences using rewards conditioned on future outcomes of the trajectory segments, i.e. the hindsight information. For downstream RL optimization, the reward of each step is calculated by marginalizing over possible future outcomes, the distribution of which is approximated by a variational auto-encoder trained using the offline dataset. Our proposed method, Hindsight Preference Learning (HPL), can facilitate credit assignment by taking full advantage of vast trajectory data available in massive unlabeled datasets. Comprehensive empirical studies demonstrate the benefits of HPL in delivering robust and advantageous rewards across various domains. Our code is publicly released at https://github.com/typoverflow/WiseRL."
+  },
+  {
+    "paperId": "d6105f404d89b7d6267cf46b3a54efab9d0c7962",
+    "externalIds": {
+      "DOI": "10.1109/CCSSTA62096.2024.10691827",
+      "CorpusId": 273034948
+    },
+    "title": "Curriculum-Guided Preference-based Reinforcement Learning: An Exploratory Approach",
+    "venue": "2024 IEEE 25th China Conference on System Simulation Technology and its Application (CCSSTA)",
+    "year": 2024,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CCSSTA62096.2024.10691827?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CCSSTA62096.2024.10691827, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2323795460",
+        "name": "Zihao Wang"
+      },
+      {
+        "authorId": "2117042660",
+        "name": "Yuanyang Zhu"
+      },
+      {
+        "authorId": "2323852518",
+        "name": "Jingwen Wei"
+      },
+      {
+        "authorId": "2315249076",
+        "name": "Chunlin Chen"
+      }
+    ],
+    "abstract": "Conveying complex objectives to reinforcement learning (RL) agents can often be difficult, involving meticulous design of reward functions that are sufficiently informative yet easy enough to provide. Human-in-the-loop RL methods allow practitioners to instead interactively teach agents through tailored feedback; however, such approaches have been challenging to scale since human feedback is very expensive. In this work, we propose a preference-based reinforcement learning method based on the idea of curriculum learning to improve the utilization of human preference feedback, namely Curriculum Guided Preference-based Reinforcement (CG-PbRL). CG-PbRL designs a difficulty metric to assess the difficulty of preference feedback queries, and learns the preference set based on the difficulty of preference queries through updating the training set, thereby training the reward estimation model from easy to difficult. Experimental results show that CG-PbRL can effectively improve the performance of preference-based reinforcement learning methods on a range of tasks."
+  },
+  {
+    "paperId": "4f0bfeadd39e64456d15d400fda8ecc2197c3265",
+    "externalIds": {
+      "DBLP": "conf/nips/AnLZKKS23",
+      "ArXiv": "2301.12842",
+      "DOI": "10.52202/075280-3078",
+      "CorpusId": 256389836
+    },
+    "title": "Direct Preference-based Policy Optimization without Reward Modeling",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.12842, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "119792143",
+        "name": "Gaon An"
+      },
+      {
+        "authorId": "2159200677",
+        "name": "Junhyeok Lee"
+      },
+      {
+        "authorId": "49996817",
+        "name": "Xingdong Zuo"
+      },
+      {
+        "authorId": "2067034633",
+        "name": "Norio Kosaka"
+      },
+      {
+        "authorId": "2109351321",
+        "name": "KyungHyun Kim"
+      },
+      {
+        "authorId": "2133680",
+        "name": "Hyun Oh Song"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (PbRL) is an approach that enables RL agents to learn from preference, which is particularly useful when formulating a reward function is challenging. Existing PbRL methods generally involve a two-step procedure: they first learn a reward model based on given preference data and then employ off-the-shelf reinforcement learning algorithms using the learned reward model. However, obtaining an accurate reward model solely from preference information, especially when the preference is from human teachers, can be difficult. Instead, we propose a PbRL algorithm that directly learns from preference without requiring any reward modeling. To achieve this, we adopt a contrastive learning framework to design a novel policy scoring metric that assigns a high score to policies that align with the given preferences. We apply our algorithm to offline RL tasks with actual human preference labels and show that our algorithm outperforms or is on par with the existing PbRL methods. Notably, on high-dimensional control tasks, our algorithm surpasses offline RL methods that learn with ground-truth reward information. Finally, we show that our algorithm can be successfully applied to fine-tune large language models."
+  },
+  {
+    "paperId": "f2a2401a35b6b892d43642b31700e83e88b2ebb8",
+    "externalIds": {
+      "CorpusId": 247613305
+    },
+    "title": "SURF: Semi-supervised Reward Learning with Data Augmentation for Feedback-efficient Preference-based Reinforcement Learning",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 115,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2109073979",
+        "name": "Jongjin Park"
+      },
+      {
+        "authorId": "2067714176",
+        "name": "Younggyo Seo"
+      },
+      {
+        "authorId": "143720148",
+        "name": "Jinwoo Shin"
+      },
+      {
+        "authorId": "2118338545",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "68c7652c408937ed155bb4289decf7d416b381bc",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2301-04741",
+      "ArXiv": "2301.04741",
+      "DOI": "10.1109/ICRA48891.2023.10161081",
+      "CorpusId": 255749266
+    },
+    "title": "Efficient Preference-Based Reinforcement Learning Using Learned Dynamics Models",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2023,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.04741",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.04741, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153629699",
+        "name": "Yi Liu"
+      },
+      {
+        "authorId": "40348019",
+        "name": "G. Datta"
+      },
+      {
+        "authorId": "151479011",
+        "name": "Ellen R. Novoseller"
+      },
+      {
+        "authorId": "2115445928",
+        "name": "Daniel S. Brown"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (PbRL) can enable robots to learn to perform tasks based on an individual's preferences without requiring a hand-crafted re-ward function. However, existing approaches either assume access to a high-fidelity simulator or analytic model or take a model-free approach that requires extensive, possibly unsafe online environment interactions. In this paper, we study the benefits and challenges of using a learned dynamics model when performing PbRL. In particular, we provide evidence that a learned dynamics model offers the following benefits when performing PbRL: (1) preference elicitation and policy optimization require significantly fewer environment interactions than model-free PbRL, (2) diverse preference queries can be synthesized safely and efficiently as a byproduct of standard model-based RL, and (3) reward pre-training based on suboptimal demonstrations can be performed without any environmental interaction. Our paper provides empirical ev-idence that learned dynamics models enable robots to learn customized policies based on user preferences in ways that are safer and more sample efficient than prior preference learning approaches. Supplementary materials and code are available at https://sites.google.com/berkeley.edu/mop-rl."
+  },
+  {
+    "paperId": "88ae720354fa4883be13e25e1cf92dcd4fed5f5d",
+    "externalIds": {
+      "ArXiv": "2301.01392",
+      "DBLP": "journals/tmlr/ShinDB23",
+      "DOI": "10.48550/arXiv.2301.01392",
+      "CorpusId": 255416247
+    },
+    "title": "Benchmarks and Algorithms for Offline Preference-Based Reward Learning",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 71,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.01392",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.01392, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119996488",
+        "name": "D. Shin"
+      },
+      {
+        "authorId": "2745001",
+        "name": "A. Dragan"
+      },
+      {
+        "authorId": "2115445928",
+        "name": "Daniel S. Brown"
+      }
+    ],
+    "abstract": "Learning a reward function from human preferences is challenging as it typically requires having a high-fidelity simulator or using expensive and potentially unsafe actual physical rollouts in the environment. However, in many tasks the agent might have access to offline data from related tasks in the same target environment. While offline data is increasingly being used to aid policy optimization via offline RL, our observation is that it can be a surprisingly rich source of information for preference learning as well. We propose an approach that uses an offline dataset to craft preference queries via pool-based active learning, learns a distribution over reward functions, and optimizes a corresponding policy via offline RL. Crucially, our proposed approach does not require actual physical rollouts or an accurate simulator for either the reward learning or policy optimization steps. To test our approach, we first evaluate existing offline RL benchmarks for their suitability for offline reward learning. Surprisingly, for many offline RL domains, we find that simply using a trivial reward function results good policy performance, making these domains ill-suited for evaluating learned rewards. To address this, we identify a subset of existing offline RL benchmarks that are well suited for offline reward learning and also propose new offline apprenticeship learning benchmarks which allow for more open-ended behaviors. When evaluated on this curated set of domains, our empirical results suggest that combining offline RL with learned human preferences can enable an agent to learn to perform novel tasks that were not explicitly shown in the offline data."
+  },
+  {
+    "paperId": "287ff9a6899f8ff0690de3c6a7ce8d6da3efbb61",
+    "externalIds": {
+      "DBLP": "conf/iros/MartaHPTL23",
+      "DOI": "10.1109/IROS55552.2023.10341795",
+      "CorpusId": 266196294
+    },
+    "title": "VARIQuery: VAE Segment-Based Active Learning for Query Selection in Preference-Based Reinforcement Learning",
+    "venue": "IEEE/RJS International Conference on Intelligent RObots and Systems",
+    "year": 2023,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "https://kth.diva-portal.org/smash/get/diva2:1787953/FULLTEXT01",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/IROS55552.2023.10341795?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/IROS55552.2023.10341795, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2082009633",
+        "name": "Daniel Marta"
+      },
+      {
+        "authorId": "2140634515",
+        "name": "Simon Holk"
+      },
+      {
+        "authorId": "5142479",
+        "name": "Christian Pek"
+      },
+      {
+        "authorId": "2248829932",
+        "name": "Jana Tumova"
+      },
+      {
+        "authorId": "2266510646",
+        "name": "Iolanda Leite"
+      }
+    ],
+    "abstract": "Human-in-the-loop reinforcement learning (RL) methods actively integrate human knowledge to create reward functions for various robotic tasks. Learning from preferences shows promise as alleviates the requirement of demonstrations by querying humans on state-action sequences. However, the limited granularity of sequence-based approaches complicates temporal credit assignment. The amount of human querying is contingent on query quality, as redundant queries result in excessive human involvement. This paper addresses the often-overlooked aspect of query selection, which is closely related to active learning (AL). We propose a novel query selection approach that leverages variational autoencoder (VAE) representations of state sequences. In this manner, we formulate queries that are diverse in nature while simultaneously taking into account reward model estimations. We compare our approach to the current state-of-the-art query selection methods in preference-based RL, and find ours to be either on-par or more sample efficient through extensive benchmarking on simulated environments relevant to robotics. Lastly, we conduct an online study to verify the effectiveness of our query selection approach with real human feedback and examine several metrics related to human effort."
+  },
+  {
+    "paperId": "acd0afc43871b626c5f2ec48a0c4e1453b94b670",
+    "externalIds": {
+      "ArXiv": "2305.18505",
+      "DBLP": "conf/iclr/ZhanU0L24",
+      "CorpusId": 258967589
+    },
+    "title": "Provable Reward-Agnostic Preference-Based Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18505, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1858443952",
+        "name": "Wenhao Zhan"
+      },
+      {
+        "authorId": "51228100",
+        "name": "Masatoshi Uehara"
+      },
+      {
+        "authorId": "144426657",
+        "name": "Wen Sun"
+      },
+      {
+        "authorId": "2108327687",
+        "name": "Jason D. Lee"
+      }
+    ],
+    "abstract": "Preference-based Reinforcement Learning (PbRL) is a paradigm in which an RL agent learns to optimize a task using pair-wise preference-based feedback over trajectories, rather than explicit reward signals. While PbRL has demonstrated practical success in fine-tuning language models, existing theoretical work focuses on regret minimization and fails to capture most of the practical frameworks. In this study, we fill in such a gap between theoretical PbRL and practical algorithms by proposing a theoretical reward-agnostic PbRL framework where exploratory trajectories that enable accurate learning of hidden reward functions are acquired before collecting any human feedback. Theoretical analysis demonstrates that our algorithm requires less human feedback for learning the optimal policy under preference-based models with linear parameterization and unknown transitions, compared to the existing theoretical literature. Specifically, our framework can incorporate linear and low-rank MDPs with efficient sample complexity. Additionally, we investigate reward-agnostic RL with action-based comparison feedback and introduce an efficient querying algorithm tailored to this scenario."
+  },
+  {
+    "paperId": "b7f74db45b05e79489541ad80c2332969a7d2e6f",
+    "externalIds": {
+      "DBLP": "conf/iclr/HuLZJZ24",
+      "ArXiv": "2305.17400",
+      "DOI": "10.48550/arXiv.2305.17400",
+      "CorpusId": 258960580
+    },
+    "title": "Query-Policy Misalignment in Preference-Based Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.17400",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.17400, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2324682070",
+        "name": "Xiao Hu"
+      },
+      {
+        "authorId": "2136086524",
+        "name": "Jianxiong Li"
+      },
+      {
+        "authorId": "3415564",
+        "name": "Xianyuan Zhan"
+      },
+      {
+        "authorId": "46355830",
+        "name": "Qing-Shan Jia"
+      },
+      {
+        "authorId": "2108200924",
+        "name": "Ya-Qin Zhang"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (PbRL) provides a natural way to align RL agents' behavior with human desired outcomes, but is often restrained by costly human feedback. To improve feedback efficiency, most existing PbRL methods focus on selecting queries to maximally improve the overall quality of the reward model, but counter-intuitively, we find that this may not necessarily lead to improved performance. To unravel this mystery, we identify a long-neglected issue in the query selection schemes of existing PbRL studies: Query-Policy Misalignment. We show that the seemingly informative queries selected to improve the overall quality of reward model actually may not align with RL agents' interests, thus offering little help on policy learning and eventually resulting in poor feedback efficiency. We show that this issue can be effectively addressed via near on-policy query and a specially designed hybrid experience replay, which together enforce the bidirectional query-policy alignment. Simple yet elegant, our method can be easily incorporated into existing approaches by changing only a few lines of code. We showcase in comprehensive experiments that our method achieves substantial gains in both human feedback and RL sample efficiency, demonstrating the importance of addressing query-policy misalignment in PbRL tasks."
+  },
+  {
+    "paperId": "51965de80f86432d42749427db1e5bb0fa1e204c",
+    "externalIds": {
+      "ArXiv": "2111.03026",
+      "DBLP": "conf/nips/LeeSDA21",
+      "CorpusId": 237250049
+    },
+    "title": "B-Pref: Benchmarking Preference-Based Reinforcement Learning",
+    "venue": "NeurIPS Datasets and Benchmarks",
+    "year": 2021,
+    "citationCount": 134,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.03026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      },
+      {
+        "authorId": "152447364",
+        "name": "Laura M. Smith"
+      },
+      {
+        "authorId": "2745001",
+        "name": "A. Dragan"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) requires access to a reward function that incentivizes the right behavior, but these are notoriously hard to specify for complex tasks. Preference-based RL provides an alternative: learning policies using a teacher's preferences without pre-defined rewards, thus overcoming concerns associated with reward engineering. However, it is difficult to quantify the progress in preference-based RL due to the lack of a commonly adopted benchmark. In this paper, we introduce B-Pref: a benchmark specially designed for preference-based RL. A key challenge with such a benchmark is providing the ability to evaluate candidate algorithms quickly, which makes relying on real human input for evaluation prohibitive. At the same time, simulating human input as giving perfect preferences for the ground truth reward function is unrealistic. B-Pref alleviates this by simulating teachers with a wide array of irrationalities, and proposes metrics not solely for performance but also for robustness to these potential irrationalities. We showcase the utility of B-Pref by using it to analyze algorithmic design choices, such as selecting informative queries, for state-of-the-art preference-based RL algorithms. We hope that B-Pref can serve as a common starting point to study preference-based RL more systematically. Source code is available at https://github.com/rll-research/B-Pref."
+  },
+  {
+    "paperId": "b1362b8a11b1984378b91162195e10e369f6b012",
+    "externalIds": {
+      "ArXiv": "2205.11140",
+      "DBLP": "journals/corr/abs-2205-11140",
+      "DOI": "10.48550/arXiv.2205.11140",
+      "CorpusId": 248987080
+    },
+    "title": "Human-in-the-loop: Provably Efficient Preference-based Reinforcement Learning with General Function Approximation",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 89,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.11140",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.11140, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Xiaoyu Chen"
+      },
+      {
+        "authorId": "2064919742",
+        "name": "Han Zhong"
+      },
+      {
+        "authorId": "150358650",
+        "name": "Zhuoran Yang"
+      },
+      {
+        "authorId": "50218397",
+        "name": "Zhaoran Wang"
+      },
+      {
+        "authorId": "39060743",
+        "name": "Liwei Wang"
+      }
+    ],
+    "abstract": "We study human-in-the-loop reinforcement learning (RL) with trajectory preferences, where instead of receiving a numeric reward at each step, the agent only receives preferences over trajectory pairs from a human overseer. The goal of the agent is to learn the optimal policy which is most preferred by the human overseer. Despite the empirical successes, the theoretical understanding of preference-based RL (PbRL) is only limited to the tabular case. In this paper, we propose the first optimistic model-based algorithm for PbRL with general function approximation, which estimates the model using value-targeted regression and calculates the exploratory policies by solving an optimistic planning problem. Our algorithm achieves the regret of $\\tilde{O} (\\operatorname{poly}(d H) \\sqrt{K} )$, where $d$ is the complexity measure of the transition and preference model depending on the Eluder dimension and log-covering numbers, $H$ is the planning horizon, $K$ is the number of episodes, and $\\tilde O(\\cdot)$ omits logarithmic terms. Our lower bound indicates that our algorithm is near-optimal when specialized to the linear setting. Furthermore, we extend the PbRL problem by formulating a novel problem called RL with $n$-wise comparisons, and provide the first sample-efficient algorithm for this new setting. To the best of our knowledge, this is the first theoretical result for PbRL with (general) function approximation."
+  },
+  {
+    "paperId": "cc9f2fd320a279741403c4bfbeb91179803c428c",
+    "externalIds": {
+      "CorpusId": 249062649
+    },
+    "title": "PREFERENCE-BASED REINFORCEMENT LEARNING",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3233963",
+        "name": "Xinran Liang"
+      },
+      {
+        "authorId": "2400465993",
+        "name": "K. Shu"
+      },
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c6478decdfff11ccbd085967c2f83aea11927a46",
+    "externalIds": {
+      "ArXiv": "2303.00957",
+      "DBLP": "conf/iclr/KimPSLAL23",
+      "DOI": "10.48550/arXiv.2303.00957",
+      "CorpusId": 257279836
+    },
+    "title": "Preference Transformer: Modeling Human Preferences using Transformers for RL",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 100,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.00957",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.00957, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110230345",
+        "name": "Changyeon Kim"
+      },
+      {
+        "authorId": "2109073979",
+        "name": "Jongjin Park"
+      },
+      {
+        "authorId": "143720148",
+        "name": "Jinwoo Shin"
+      },
+      {
+        "authorId": "2118338545",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (RL) provides a framework to train agents using human preferences between two behaviors. However, preference-based RL has been challenging to scale since it requires a large amount of human feedback to learn a reward function aligned with human intent. In this paper, we present Preference Transformer, a neural architecture that models human preferences using transformers. Unlike prior approaches assuming human judgment is based on the Markovian rewards which contribute to the decision equally, we introduce a new preference model based on the weighted sum of non-Markovian rewards. We then design the proposed preference model using a transformer architecture that stacks causal and bidirectional self-attention layers. We demonstrate that Preference Transformer can solve a variety of control tasks using real human preferences, while prior approaches fail to work. We also show that Preference Transformer can induce a well-specified reward and attend to critical events in the trajectory by automatically capturing the temporal dependencies in human decision-making. Code is available on the project website: https://sites.google.com/view/preference-transformer."
+  },
+  {
+    "paperId": "908cbb5bda77eb2b4231154a0699565cf4ef5cbc",
+    "externalIds": {
+      "DOI": "10.1017/s0263574726103300",
+      "CorpusId": 287006308
+    },
+    "title": "Integrating task objectives for improved performance of preference-based reinforcement learning in different tasks",
+    "venue": "Robotica (Cambridge. Print)",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1017/s0263574726103300?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1017/s0263574726103300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2427094846",
+        "name": "Jiabin Hu"
+      },
+      {
+        "authorId": "2133273745",
+        "name": "Peng Zhai"
+      },
+      {
+        "authorId": "2216966319",
+        "name": "Xiaoyi Wei"
+      },
+      {
+        "authorId": "2427059427",
+        "name": "Cunwang Liu"
+      },
+      {
+        "authorId": "2108067618",
+        "name": "Lihua Zhang"
+      }
+    ],
+    "abstract": "\n Preference-based reinforcement learning (PbRL) significantly simplifies the design of reward functions in reinforcement learning (RL) tasks. However, because of the tasks’ complexity, intransitive preferences, and sensitivity to preference errors, PbRL requires substantial feedback to achieve the desired performance. This extensive reliance on expert input notably increases the burden on participants. We have developed a novel framework: Self-teacher-learning preference-based reinforcement learning (STL-PbRL). In the teacher-led (TL) module, agents learn more reliable reward prediction models (RM) through TL PbRL. In the self-learning (SL) module, agents utilizing the preference comparison approach for trajectory segments integrate sparse but critical, easily designed task-oriented information into the feedback process. The STL-PbRL framework incorporates the SL module to refine the RM initially generated by the TL module. We have demonstrated that this integration significantly enhances RM by enabling RM to converge toward an optimal reward model that effectively supports achieving a training policy that meets task objectives. This streamlined and efficient STL-PbRL framework enables a more accurate and efficient training process. Our experimental results confirm that the SL module seamlessly integrates with existing PbRL algorithms, significantly reducing the need for feedback and alleviating the impact of errors in preference indications. This efficiency and effectiveness highlight that STL-PbRL innovates, simplifies, and enhances the RL training process across various applications."
+  },
+  {
+    "paperId": "444a1ac2b2b05fa8c1c8ad08fc6afb9fa1e56bf6",
+    "externalIds": {
+      "ArXiv": "2603.23565",
+      "CorpusId": 286776215
+    },
+    "title": "Safe Reinforcement Learning with Preference-based Constraint Inference",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.23565, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2373704696",
+        "name": "Chenglin Li"
+      },
+      {
+        "authorId": "2305613256",
+        "name": "Guangchun Ruan"
+      },
+      {
+        "authorId": "2305614047",
+        "name": "Hua Geng"
+      }
+    ],
+    "abstract": "Safe reinforcement learning (RL) is a standard paradigm for safety-critical decision making. However, real-world safety constraints can be complex, subjective, and even hard to explicitly specify. Existing works on constraint inference rely on restrictive assumptions or extensive expert demonstrations, which is not realistic in many real-world applications. How to cheaply and reliably learn these constraints is the major challenge we focus on in this study. While inferring constraints from human preferences offers a data-efficient alternative, we identify the popular Bradley-Terry (BT) models fail to capture the asymmetric, heavy-tailed nature of safety costs, resulting in risk underestimation. It is still rare in the literature to understand the impacts of BT models on the downstream policy learning. To address the above knowledge gaps, we propose a novel approach namely Preference-based Constrained Reinforcement Learning (PbCRL). We introduce a novel dead zone mechanism into preference modeling and theoretically prove that it encourages heavy-tailed cost distributions, thereby achieving better constraint alignment. Additionally, we incorporate a Signal-to-Noise Ratio (SNR) loss to encourage exploration by cost variances, which is found to benefit policy learning. Further, two-stage training strategy are deployed to lower online labeling burdens while adaptively enhancing constraint satisfaction. Empirical results demonstrate that PbCRL achieves superior alignment with true safety requirements and outperforms the state-of-the-art baselines in terms of safety and reward. Our work explores a promising and effective way for constraint inference in Safe RL, which has great potential in a range of safety-critical applications."
+  },
+  {
+    "paperId": "386cebdba39d2d5f2862a9ab43a8d807f3863dae",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-13639",
+      "ArXiv": "2310.13639",
+      "DOI": "10.48550/arXiv.2310.13639",
+      "CorpusId": 264405839
+    },
+    "title": "Contrastive Preference Learning: Learning from Human Feedback without RL",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 78,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.13639, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2122700519",
+        "name": "Joey Hejna"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "51521430",
+        "name": "Harshit S. Sikchi"
+      },
+      {
+        "authorId": "2257346440",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "2791038",
+        "name": "S. Niekum"
+      },
+      {
+        "authorId": "144288136",
+        "name": "W. B. Knox"
+      },
+      {
+        "authorId": "1779671",
+        "name": "Dorsa Sadigh"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) has emerged as a popular paradigm for aligning models with human intent. Typically RLHF algorithms operate in two phases: first, use human preferences to learn a reward function and second, align the model by optimizing the learned reward via reinforcement learning (RL). This paradigm assumes that human preferences are distributed according to reward, but recent work suggests that they instead follow the regret under the user's optimal policy. Thus, learning a reward function from feedback is not only based on a flawed assumption of human preference, but also leads to unwieldy optimization challenges that stem from policy gradients or bootstrapping in the RL phase. Because of these optimization challenges, contemporary RLHF methods restrict themselves to contextual bandit settings (e.g., as in large language models) or limit observation dimensionality (e.g., state-based robotics). We overcome these limitations by introducing a new family of algorithms for optimizing behavior from human feedback using the regret-based model of human preferences. Using the principle of maximum entropy, we derive Contrastive Preference Learning (CPL), an algorithm for learning optimal policies from preferences without learning reward functions, circumventing the need for RL. CPL is fully off-policy, uses only a simple contrastive objective, and can be applied to arbitrary MDPs. This enables CPL to elegantly scale to high-dimensional and sequential RLHF problems while being simpler than prior methods."
+  },
+  {
+    "paperId": "b0726dd009bae5f602a4e71ac5f9e8f53b6e385c",
+    "externalIds": {
+      "DBLP": "conf/smc/AbdelkareemSK22",
+      "ArXiv": "2408.11943",
+      "DOI": "10.1109/SMC53654.2022.9945333",
+      "CorpusId": 253630610
+    },
+    "title": "Advances in Preference-based Reinforcement Learning: A Review",
+    "venue": "IEEE International Conference on Systems, Man and Cybernetics",
+    "year": 2022,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.11943, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2191239866",
+        "name": "Youssef Abdelkareem"
+      },
+      {
+        "authorId": "38510157",
+        "name": "Shady Shehata"
+      },
+      {
+        "authorId": "1696863",
+        "name": "F. Karray"
+      }
+    ],
+    "abstract": "Reinforcement Learning (RL) algorithms suffer from the dependency on accurately engineered reward functions to properly guide the learning agents to do the required tasks. Preference-based reinforcement learning (PbRL) addresses that by utilizing human preferences as feedback from the experts instead of numeric rewards. Due to its promising advantage over traditional RL, PbRL has gained more focus in recent years with many significant advances. In this survey, we present a unified PbRL framework to include the newly emerging approaches that improve the scalability and efficiency of PbRL. In addition, we give a detailed overview of the theoretical guarantees and benchmarking work done in the field, while presenting its recent applications in complex real-world tasks. Lastly, we go over the limitations of the current approaches and the proposed future research directions."
+  },
+  {
+    "paperId": "5c926e61729fb37fd4f635bd42760aa20faf07ec",
+    "externalIds": {
+      "DBLP": "conf/iros/LiuC22",
+      "DOI": "10.1109/IROS47612.2022.9981076",
+      "CorpusId": 255170255
+    },
+    "title": "Task Decoupling in Preference-based Reinforcement Learning for Personalized Human-Robot Interaction",
+    "venue": "IEEE/RJS International Conference on Intelligent RObots and Systems",
+    "year": 2022,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/IROS47612.2022.9981076?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/IROS47612.2022.9981076, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112239535",
+        "name": "Mingjiang Liu"
+      },
+      {
+        "authorId": "2128701550",
+        "name": "Chunlin Chen"
+      }
+    ],
+    "abstract": "Intelligent robots designed to interact with hu-mans in the real world need to adapt to the preferences of different individuals. Preference-based reinforcement learning (RL) has shown great potential for teaching robots to learn personalized behaviors from interacting with humans with-out a meticulous, hand-crafted reward function, replaced by learning reward based on a human's preferences between two robot trajectories. However, poor feedback efficiency and poor exploration in the state and reward spaces make current preference-based RL algorithms perform poorly in complex interactive tasks. To improve the performance of preference-based RL, we incorporate prior knowledge of the task into preference-based RL. Specifically, we decouple the task from preference in human-robot interaction. We utilize a sketchy task reward derived from task priori to instruct robots to conduct more effective task exploration. Then a learned reward from preference-based RL is used to optimize the robot's policy to align with human preferences. In addition, these two parts are combined organically via reward shaping. The experimental results show that our method is a practical and effective solution for personalized human-robot interaction. Code is available at https://github.com/Wenminggong/PbRL_for_PHRI."
+  },
+  {
+    "paperId": "0fd6c747b48526ba4abc05b4ae9260f93718ce8f",
+    "externalIds": {
+      "DBLP": "conf/nips/RenLL0M22",
+      "ArXiv": "2211.10861",
+      "DOI": "10.48550/arXiv.2211.10861",
+      "CorpusId": 253734302
+    },
+    "title": "Efficient Meta Reinforcement Learning for Preference-based Fast Adaptation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2211.10861",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.10861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "67255636",
+        "name": "Zhizhou Ren"
+      },
+      {
+        "authorId": "70097297",
+        "name": "Anji Liu"
+      },
+      {
+        "authorId": "2397352",
+        "name": "Yitao Liang"
+      },
+      {
+        "authorId": "143718676",
+        "name": "Jian Peng"
+      },
+      {
+        "authorId": "5214991",
+        "name": "Jianzhu Ma"
+      }
+    ],
+    "abstract": "Learning new task-specific skills from a few trials is a fundamental challenge for artificial intelligence. Meta reinforcement learning (meta-RL) tackles this problem by learning transferable policies that support few-shot adaptation to unseen tasks. Despite recent advances in meta-RL, most existing methods require the access to the environmental reward function of new tasks to infer the task objective, which is not realistic in many practical applications. To bridge this gap, we study the problem of few-shot adaptation in the context of human-in-the-loop reinforcement learning. We develop a meta-RL algorithm that enables fast policy adaptation with preference-based feedback. The agent can adapt to new tasks by querying human's preference between behavior trajectories instead of using per-step numeric rewards. By extending techniques from information theory, our approach can design query sequences to maximize the information gain from human interactions while tolerating the inherent error of non-expert human oracle. In experiments, we extensively evaluate our method, Adaptation with Noisy OracLE (ANOLE), on a variety of meta-RL benchmark tasks and demonstrate substantial improvement over baseline algorithms in terms of both feedback efficiency and error tolerance."
+  },
+  {
+    "paperId": "05a2c3bdd1eeaeef226f56be4545bfadc9eb68f5",
+    "externalIds": {
+      "ArXiv": "2211.06527",
+      "DBLP": "journals/corr/abs-2211-06527",
+      "DOI": "10.48550/arXiv.2211.06527",
+      "CorpusId": 253510714
+    },
+    "title": "Rewards Encoding Environment Dynamics Improves Preference-based Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2211.06527",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.06527, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2240302",
+        "name": "Katherine Metcalf"
+      },
+      {
+        "authorId": "35530735",
+        "name": "Miguel Sarabia"
+      },
+      {
+        "authorId": "2785748",
+        "name": "B. Theobald"
+      }
+    ],
+    "abstract": "Preference-based reinforcement learning (RL) algorithms help avoid the pitfalls of hand-crafted reward functions by distilling them from human preference feedback, but they remain impractical due to the burdensome number of labels required from the human, even for relatively simple tasks. In this work, we demonstrate that encoding environment dynamics in the reward function (REED) dramatically reduces the number of preference labels required in state-of-the-art preference-based RL frameworks. We hypothesize that REED-based methods better partition the state-action space and facilitate generalization to state-action pairs not included in the preference dataset. REED iterates between encoding environment dynamics in a state-action representation via a self-supervised temporal consistency task, and bootstrapping the preference-based reward function from the state-action representation. Whereas prior approaches train only on the preference-labelled trajectory pairs, REED exposes the state-action representation to all transitions experienced during policy training. We explore the benefits of REED within the PrefPPO [1] and PEBBLE [2] preference learning frameworks and demonstrate improvements across experimental conditions to both the speed of policy learning and the final policy performance. For example, on quadruped-walk and walker-walk with 50 preference labels, REED-based reward functions recover 83% and 66% of ground truth reward policy performance and without REED only 38\\% and 21\\% are recovered. For some domains, REED-based reward functions result in policies that outperform policies trained on the ground truth reward."
+  },
+  {
+    "paperId": "6e86872620166491d75eec2c2306495b764ddc5a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2112-11230",
+      "ArXiv": "2112.11230",
+      "DOI": "10.5555/3535850.3535865",
+      "CorpusId": 245353680
+    },
+    "title": "Interpretable Preference-based Reinforcement Learning with Tree-Structured Reward Functions",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2021,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.11230, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151751382",
+        "name": "Tom Bewley"
+      },
+      {
+        "authorId": "1863173",
+        "name": "F. Lécué"
+      }
+    ],
+    "abstract": "The potential of reinforcement learning (RL) to deliver aligned and performant agents is partially bottlenecked by the reward engineering problem. One alternative to heuristic trial-and-error is preference-based RL (PbRL), where a reward function is inferred from sparse human feedback. However, prior PbRL methods lack interpretability of the learned reward structure, which hampers the ability to assess robustness and alignment. We propose an online, active preference learning algorithm that constructs reward functions with the intrinsically interpretable, compositional structure of a tree. Using both synthetic and human-provided feedback, we demonstrate sample-efficient learning of tree-structured reward functions in several environments, then harness the enhanced interpretability to explore and debug for alignment."
+  },
+  {
+    "paperId": "b65118061650446bdd79087def417e6a4de7ecdf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-02779",
+      "DOI": "10.48550/arXiv.2212.02779",
+      "CorpusId": 254275154
+    },
+    "title": "PrefRec: Preference-based Recommender Systems for Reinforcing Long-term User Engagement",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2212.02779",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2212.02779?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2212.02779, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052308113",
+        "name": "Wanqi Xue"
+      },
+      {
+        "authorId": "144994208",
+        "name": "Qingpeng Cai"
+      },
+      {
+        "authorId": "2093481204",
+        "name": "Zhenghai Xue"
+      },
+      {
+        "authorId": "1992684938",
+        "name": "Shuo Sun"
+      },
+      {
+        "authorId": "2244772979",
+        "name": "Shuchang Liu"
+      },
+      {
+        "authorId": "2153430224",
+        "name": "Dong Zheng"
+      },
+      {
+        "authorId": "2061280682",
+        "name": "Peng Jiang"
+      },
+      {
+        "authorId": "143706345",
+        "name": "Bo An"
+      }
+    ],
+    "abstract": null
+  }
+]
