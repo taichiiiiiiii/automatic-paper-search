@@ -267,6 +267,13 @@ def build_theme_lineage(
                 continue
             if pid not in nodes:
                 nodes[pid] = to_node(parent)
+            # Issue #50: skip the LLM call for parents S2 has flagged as
+            # *not* influential to the citing paper — those are typically
+            # background-section name-drops and would map to `unrelated`
+            # anyway. Bool() check keeps `None` (older cache without the
+            # field) on the classify path so existing themes don't regress.
+            if parent.get("_is_influential") is False:
+                continue
             classify_attempted += 1
             cls = _classify_cached(
                 provider,
@@ -315,6 +322,15 @@ def build_theme_lineage(
             "high LLM failure rate (%.1f%%) — likely Groq RPM/daily quota; "
             "consider re-running after quota resets",
             fail_rate * 100,
+        )
+    # All parents skipped by the isInfluential filter (#50) — produces a
+    # node-only graph that looks healthy but is structurally empty.
+    # Surface this distinct from the LLM-quota path so the operator can
+    # widen the seed pool / loosen the filter rather than wait for quota.
+    if classify_attempted == 0 and len(nodes) > len(seed_ids):
+        logger.warning(
+            "no classify calls attempted — every parent was filtered out "
+            "(non-influential per S2). Theme may be too narrow."
         )
     if not cleaned_edges:
         logger.warning(
