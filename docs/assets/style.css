@@ -1382,6 +1382,23 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
               border-color 0.15s ease;
 }
 
+/* #68: trending badge — small 📈 inline next to the venue. Pulses
+   gently to draw the eye on a busy graph. */
+.node-card--theme .node-card__trending {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.78rem;
+  background: oklch(94% 0.06 30 / 0.95);
+  border-radius: 999px;
+  padding: 0 0.4rem;
+  vertical-align: middle;
+  animation: card-trending-pulse 2.4s ease-in-out infinite;
+}
+@keyframes card-trending-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(58% 0.18 30 / 0.30); }
+  50%      { box-shadow: 0 0 0 4px oklch(58% 0.18 30 / 0.05); }
+}
+
 /* #63: TLDR — 2-line clamp under the title. Keeps the card height
    bounded while giving readers a fast sniff-test of the abstract. */
 .node-card--theme .node-card__tldr {
