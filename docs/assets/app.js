@@ -94,7 +94,7 @@ function renderRelationsSection(paper) {
   const groupHtml = orderedKeys.map((k) => {
     const { meta, items } = groups.get(k);
     const itemsHtml = items.map((e) => {
-      const venue = `${e.other.venue || ""} ${e.other.year || ""}`.trim();
+      const venue = PP.formatVenue(e.other.venue, e.other.year);
       const why = e.rationale ? `<span class="rel-rationale">→ ${escapeHtml(e.rationale)}</span>` : "";
       return `<li class="rel-item">
         <span class="rel-item__title">${escapeHtml(e.other.title)}</span>

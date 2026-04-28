@@ -213,7 +213,7 @@ function bindSearch() {
       results.innerHTML = `<div class="lineage-search__empty">一致なし</div>`;
     } else {
       results.innerHTML = matches.map((n) => {
-        const sub = `${n.venue || ""} ${n.year || ""}`.trim();
+        const sub = PP.formatVenue(n.venue, n.year);
         return `<button class="lineage-search__item" data-id="${escapeHtml(n.id)}" type="button">
           <span class="lineage-search__title">${escapeHtml(n.title)}</span>
           <span class="lineage-search__sub">${escapeHtml(sub)}</span>
@@ -469,7 +469,7 @@ function drawSvg(positioned, edges) {
     card.addEventListener("click", () => focusPaper(p.id));
 
     const tier = p.venue_tier === "A+" ? "aplus" : p.venue_tier === "A" ? "a" : "preprint";
-    const venue = `${p.venue || ""} ${p.year || ""}`.trim();
+    const venue = PP.formatVenue(p.venue, p.year);
     const authors = (p.authors || []).slice(0, 3).join(", ")
       + ((p.authors || []).length > 3 ? ` +${p.authors.length - 3}` : "");
     const cits = typeof p.citation_count === "number" && p.citation_count > 0
