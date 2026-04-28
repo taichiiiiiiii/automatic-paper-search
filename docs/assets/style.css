@@ -1340,8 +1340,14 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 /* Theme nodes: slightly more compact than deep cards (no TLDR) so the
    chronological grid stays scannable across many year rows. */
 .node-card--theme {
-  min-height: 116px;
+  /* Match theme.js NODE_H 168 minus the foreignObject ↔ card 4px gutter
+     (2px each side). 152px keeps the venue badge + 4-line title +
+     authors + meta visible without spilling out of the SVG fobj. */
+  width: 100%;
+  min-height: 152px;
   padding: 0.6rem 0.75rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .node-card--theme .node-card__title {
@@ -1350,9 +1356,11 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-weight: 600;
   color: var(--color-ink);
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .node-card--theme .node-card__authors {
@@ -1363,6 +1371,7 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .node-card--theme .node-card__meta {

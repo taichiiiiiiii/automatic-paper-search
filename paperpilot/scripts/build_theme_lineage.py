@@ -64,6 +64,11 @@ _S2_SEARCH_LIMIT = 50
 _THEME_MAX_LEN = 500
 _KEYWORD_EXPANSIONS = 8
 
+# Cross-node lookup (#54) only checks for in-graph hits, so 100 refs is
+# more than enough to surface any cohort-internal citation. fetch_related
+# already caps at 100 (S2's per-page max).
+_CROSS_NODE_LIMIT = 100
+
 
 # Issue #53: heuristic templates that mirror build_deep_lineage's lenient
 # fallback rationales. derive_relation() picks one based on S2's intent
@@ -86,6 +91,64 @@ _DEFAULT_DERIVED = (
     "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
 )
 _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
+
+
+def _add_cross_node_edges(
+    nodes: dict[str, dict], edges: list[dict]
+) -> int:
+    """Find citation links between nodes already in the graph.
+
+    Issue #54: BFS only emits (parent → seed) edges, but the collected
+    node set frequently contains intra-cohort citations — e.g. one 2024
+    paper citing another 2024 paper that's also a seed, or two parents
+    where one cites the other. Those edges should be visible in the
+    chronological tree.
+
+    For each node in the graph, fetch its references (from the on-disk
+    cache; a network call is made only if the cache is missing) and add
+    an edge whenever the cited paper is also in our node set.
+    derive_relation() supplies the relation type so this stays LLM-free.
+
+    Returns the number of edges added.
+    """
+    existing = {(e["src"], e["dst"]) for e in edges}
+    node_ids = set(nodes.keys())
+    added = 0
+    # Snapshot the keys — we never mutate `nodes`, but iterating over a
+    # set we read from is fine; the explicit list makes intent clearer.
+    for citing_id in list(node_ids):
+        try:
+            refs = fetch_related(citing_id, "references", _CROSS_NODE_LIMIT)
+        except Exception as exc:  # pragma: no cover - S2 fail-safe
+            logger.warning("cross-node: fetch_related failed for %s: %s", citing_id, exc)
+            continue
+        for ref in refs:
+            ref_id = ref.get("paperId")
+            if ref_id not in node_ids:
+                continue
+            if ref_id == citing_id:
+                # S2 occasionally lists a paper among its own references
+                # (data anomaly); a self-loop in the chronological tree
+                # would render as a degenerate edge.
+                continue
+            # Edge convention is parent → child. References = ancestors;
+            # cited paper is the parent, citing paper is the child.
+            edge_key = (ref_id, citing_id)
+            if edge_key in existing:
+                continue
+            cls = derive_relation(ref)
+            if cls is None:
+                continue
+            edges.append({
+                "src": ref_id,
+                "dst": citing_id,
+                "rel": cls["relation"],
+                "conf": cls["confidence"],
+                "rationale": cls["rationale"],
+            })
+            existing.add(edge_key)
+            added += 1
+    return added
 
 
 def derive_relation(parent: dict) -> dict | None:
@@ -349,6 +412,22 @@ def build_theme_lineage(
             if pid not in visited:
                 visited.add(pid)
                 frontier.append((parent, current_depth + 1))
+
+    # Issue #54: cross-node edges. The BFS only adds (parent → seed) edges,
+    # so two seeds that cite each other, or a parent that cites another
+    # parent in the same graph, never produce a visible relation. Scan the
+    # full collected node set against each node's references and add any
+    # in-graph citation links we find. This is purely a cache + Python
+    # operation — no LLM, no extra S2 round-trips for already-fetched
+    # references. Parent nodes whose references weren't fetched during BFS
+    # (depth=1 doesn't expand grandparents) are looked up here too so we
+    # discover lateral relationships across the whole graph.
+    cross_added = _add_cross_node_edges(nodes, edges)
+    if cross_added:
+        logger.info(
+            "cross-node pass added %d edges (in-graph citations not seen by BFS)",
+            cross_added,
+        )
 
     # Stage 4: drop edges with empty rationale (matches build_lineage policy).
     cleaned_edges = [e for e in edges if (e.get("rationale") or "").strip()]
