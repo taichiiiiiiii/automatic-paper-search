@@ -459,9 +459,16 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
       ? `<span class="node-card__cit">📖 ${p.citation_count.toLocaleString()}</span>` : "";
     const stars = formatStars(p.github_stars);
     const starsHtml = stars ? `<span class="node-card__stars">⭐${stars}</span>` : "";
-    // Build a Semantic Scholar URL from the paperId — clicking the card
-    // opens the canonical paper page so readers can dive in.
-    const s2Url = `https://www.semanticscholar.org/paper/${encodeURIComponent(p.id)}`;
+    // Build a paper URL — prefer arXiv (immediate PDF), then DOI (publisher
+    // page), and fall back to Semantic Scholar's detail page when neither
+    // is on the node. arXiv ids may include a version suffix like
+    // "1610.04256v2" — strip nothing; arxiv.org accepts both forms.
+    let paperUrl = `https://www.semanticscholar.org/paper/${encodeURIComponent(p.id)}`;
+    if (p.arxiv_id && /^[\w./-]+$/.test(p.arxiv_id)) {
+      paperUrl = `https://arxiv.org/abs/${encodeURIComponent(p.arxiv_id)}`;
+    } else if (p.doi && /^[\w./-]+$/.test(p.doi)) {
+      paperUrl = `https://doi.org/${encodeURIComponent(p.doi)}`;
+    }
     card.innerHTML = `
       <div class="node-card__venue">
         <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
@@ -475,12 +482,16 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
     // by toggling .is-faded on every edge that doesn't touch this id.
     card.addEventListener("mouseenter", () => highlightNode(p.id));
     card.addEventListener("mouseleave", () => clearHighlight());
-    // Click: open the S2 paper page in a new tab (rel=noopener for safety).
+    // Click: open the paper page in a new tab. arxiv > doi > S2 fallback
+    // gives readers the most direct route to the actual paper.
     card.addEventListener("click", () => {
-      window.open(s2Url, "_blank", "noopener,noreferrer");
+      window.open(paperUrl, "_blank", "noopener,noreferrer");
     });
     card.style.cursor = "pointer";
-    card.title = "クリックで Semantic Scholar に開く";
+    const tooltipBase = p.arxiv_id ? "arXiv"
+                      : p.doi ? "DOI"
+                      : "Semantic Scholar";
+    card.title = `クリックで ${tooltipBase} に開く`;
 
     fo.appendChild(card);
     ng.appendChild(fo);

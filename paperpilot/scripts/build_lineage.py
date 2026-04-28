@@ -348,6 +348,12 @@ def to_node(
         else (paper.get("citationCount") or 0)
     )
     github_stars = catalog_stars if catalog_stars is not None else 0
+    # Pull arxiv / DOI out of S2's externalIds dict so the viewer can
+    # link the card to the canonical paper page (#59). Either may be
+    # absent; the viewer falls back to S2's paper detail page.
+    external = paper.get("externalIds") or {}
+    arxiv_id = external.get("ArXiv") or external.get("arxiv")
+    doi = external.get("DOI") or external.get("doi")
     return {
         "id": paper["paperId"],
         "title": paper["title"],
@@ -359,6 +365,8 @@ def to_node(
         "citation_count": citation_count,
         "github_stars": github_stars,
         "tldr": tldr,
+        **({"arxiv_id": arxiv_id} if arxiv_id else {}),
+        **({"doi": doi} if doi else {}),
         **({"is_focus": True} if focus else {}),
         **({"is_trending": True} if trending else {}),
     }
