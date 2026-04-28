@@ -1368,6 +1368,51 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   opacity: 0.28;
 }
 
+/* #61: search-driven filter — non-matching cards drop to a low opacity
+   while keeping the chronological grid intact. Slightly stronger fade
+   than the hover-dim state so a search box "hit" reads clearly. */
+.node-card--filtered {
+  opacity: 0.18;
+  pointer-events: none;
+}
+.edge--filtered {
+  opacity: 0.08 !important;
+}
+
+/* #61: search input styled to match the existing toolbar pill aesthetic. */
+.theme-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.theme-search:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px oklch(58% 0.18 30 / 0.18);
+}
+.theme-search__icon {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+.theme-search__input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--color-ink);
+  width: 18rem;
+  max-width: 40vw;
+}
+.theme-search__input::placeholder {
+  color: var(--color-ink-muted);
+  opacity: 0.7;
+}
+
 .node-card--theme .node-card__title {
   font-size: 0.9rem;
   line-height: 1.3;
