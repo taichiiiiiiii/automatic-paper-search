@@ -47,6 +47,23 @@
         autocomplete="off"
       />
     </label>
+    <div class="year-range" id="year-range" aria-label="Year range filter">
+      <span class="year-range__icon" aria-hidden="true">📅</span>
+      <span class="year-range__min" id="year-range-min-label">—</span>
+      <input
+        id="year-range-min"
+        class="year-range__slider"
+        type="range"
+        aria-label="Minimum year"
+      />
+      <input
+        id="year-range-max"
+        class="year-range__slider"
+        type="range"
+        aria-label="Maximum year"
+      />
+      <span class="year-range__max" id="year-range-max-label">—</span>
+    </div>
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
   </div>
 
@@ -74,7 +91,7 @@
     <span>Y 軸: 年（rank-based 等間隔） · X 軸: 引用数 · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=4" defer></script>
-  <script src="../assets/theme.js?v=4" defer></script>
+  <script src="../assets/utils.js?v=5" defer></script>
+  <script src="../assets/theme.js?v=5" defer></script>
 </body>
 </html>
