@@ -1,0 +1,3091 @@
+[
+  {
+    "paperId": "e7e87f88c84c5af5d3102ab8c94ec833ba4c7976",
+    "externalIds": {
+      "DBLP": "journals/pami/TangSLXHZDT26",
+      "DOI": "10.1109/TPAMI.2025.3612480",
+      "CorpusId": 281494854,
+      "PubMed": "40982522"
+    },
+    "title": "Zero-Shot Sparse Mixture of Low-Rank Experts Construction From Pre-Trained Foundation Models",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPAMI.2025.3612480?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPAMI.2025.3612480, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2178366354",
+        "name": "A. Tang"
+      },
+      {
+        "authorId": "2248152216",
+        "name": "Li Shen"
+      },
+      {
+        "authorId": "2279402395",
+        "name": "Yong Luo"
+      },
+      {
+        "authorId": "2316480034",
+        "name": "Shuai Xie"
+      },
+      {
+        "authorId": "2247556302",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2282189838",
+        "name": "Lefei Zhang"
+      },
+      {
+        "authorId": "2212029373",
+        "name": "Bo Du"
+      },
+      {
+        "authorId": "2255502438",
+        "name": "D. Tao"
+      }
+    ],
+    "abstract": "Deep model training on extensive datasets is increasingly cost-prohibitive, prompting adoption of deep model fusion to leverage knowledge from pre-existing models. From weight averaging to more sophisticated methods, fusion effectively improves model performance and accelerates new model development. However, parameter interference between models and the lack of interpretability remain challenges. Existing methods address interference by evaluating parameters attributes, such as magnitude or sign, or by pruning. We begin by examining the fine-tuning of linear layers through the lens of subspace analysis and define parameter interference as an optimization problem. Subsequently, we introduce an innovative approach called zero-shot Sparse MIxture of Low-rank Experts (SMILE) construction, which upscales source models into an MoE model without extra data or training. Our approach relies on the observation that fine-tuning mostly keeps the important parts from the pre-training, but it uses less significant or unused areas to adapt to new tasks. Additionally, the issue of parameter interference, which is intrinsically challenging in the original parameter space, can be managed by expanding the dimensions. We conduct extensive experiments across both image classification and text generation tasks, using full fine-tuning and LoRA fine-tuning, and we apply our method to LLMs, highlighting the adaptability and scalability of SMILE. For full fine-tuned models, about 50% additional parameters can achieve around 98% -99% of the performance of eight individual fine-tuned ViT models, while for LoRA fine-tuned Flan-T5 models, maintaining 99% performance with only 2% extra parameters. Code is available at https://github.com/tanganke/fusion_bench.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9107b0b84a39670dfa33fb170417d6a5ae5ab526",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2506-14038",
+      "ArXiv": "2506.14038",
+      "DOI": "10.48550/arXiv.2506.14038",
+      "CorpusId": 279410452
+    },
+    "title": "Load Balancing Mixture of Experts with Similarity Preserving Routers",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.14038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2328412793",
+        "name": "Nabil Omi"
+      },
+      {
+        "authorId": "2328413621",
+        "name": "Siddhartha Sen"
+      },
+      {
+        "authorId": "2403192995",
+        "name": "Ali Farhadi"
+      }
+    ],
+    "abstract": "Sparse Mixture of Experts (MoE) models offer a scalable and efficient architecture for training large neural networks by activating only a subset of parameters (\"experts\") for each input. A learned router computes a distribution over these experts, and assigns input tokens to a small subset. However, without auxiliary balancing mechanisms, routers often converge to using only a few experts, severely limiting model capacity and degrading performance. Most current load balancing mechanisms encourage a distribution over experts that resembles a roughly uniform distribution of experts per token. During training, this can result in inconsistent routing behavior, resulting in the model spending its capacity to learn redundant knowledge. We address this by introducing a novel load balancing loss that preserves token-wise relational structure, encouraging consistent expert choices for similar inputs during training. Our experimental results show that applying our loss to the router results in 36% faster convergence and lower redundancy compared to a popular load balancing loss.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "5f4c297b970daee39529de01852cadd67f49900d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-02005",
+      "ArXiv": "2505.02005",
+      "DOI": "10.1109/TPAMI.2025.3603305",
+      "CorpusId": 278327869,
+      "PubMed": "40864585"
+    },
+    "title": "Learning Heterogeneous Mixture of Scene Experts for Large-Scale Neural Radiance Fields",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.02005, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2345817085",
+        "name": "Zhenxing Mi"
+      },
+      {
+        "authorId": "2359149990",
+        "name": "Ping Yin"
+      },
+      {
+        "authorId": "2359218159",
+        "name": "Xue Xiao"
+      },
+      {
+        "authorId": "2331572737",
+        "name": "Dan Xu"
+      }
+    ],
+    "abstract": "Recent Neural Radiance Field (NeRF) methods on large-scale scenes have demonstrated promising results and underlined the importance of scene decomposition for scalable NeRFs. Although these methods achieved reasonable scalability, there are several critical problems remaining unexplored in the existing large-scale NeRF modeling methods, i.e., learnable decomposition, modeling scene heterogeneity, and modeling efficiency. In this paper, we introduce Switch-NeRF++, a Heterogeneous Mixture of Hash Experts (HMoHE) network that addresses these challenges within a unified framework. Our framework is a highly scalable NeRF that learns heterogeneous decomposition and heterogeneous Neural Radiance Fields efficiently for large-scale scenes in an end-to-end manner. In our framework, a gating network learns to decompose scenes into partitions and allocates 3D points to specialized NeRF experts. This gating network is co-optimized with the experts by our proposed Sparsely Gated Mixture of Experts (MoE) NeRF framework. Our network architecture incorporates a hash-based gating network and distinct heterogeneous hash experts. The hash-based gating efficiently learns the decomposition of the large-scale scene. The distinct heterogeneous hash experts consist of hash grids of different resolution ranges. This enables effective learning of the heterogeneous representation of different decomposed scene parts within large-scale complex scenes. These design choices make our framework an end-to-end and highly scalable NeRF solution for real-world large-scale scene modeling to achieve both quality and efficiency. We evaluate our accuracy and scalability on existing large-scale NeRF datasets. Additionally, we also introduce a new dataset with very large-scale scenes (<inline-formula><tex-math notation=\"LaTeX\">$ {>} 6.5\\,\\text{km}^{2}$</tex-math><alternatives><mml:math><mml:mrow><mml:mo>></mml:mo><mml:mn>6</mml:mn><mml:mo>.</mml:mo><mml:mn>5</mml:mn><mml:mspace width=\"0.166667em\"/><mml:msup><mml:mtext>km</mml:mtext><mml:mn>2</mml:mn></mml:msup></mml:mrow></mml:math><inline-graphic xlink:href=\"xu-ieq1-3603305.gif\"/></alternatives></inline-formula>) from UrbanBIS. Extensive experiments demonstrate that our approach can be easily scaled to various large-scale scenes and achieve state-of-the-art scene rendering accuracy. Furthermore, our method exhibits significant efficiency gains, with an 8x acceleration in training and a 16x acceleration in rendering compared to the best-performing competitor Switch-NeRF.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "358d04e468df0107dab4f01cfc4b960d78260cdd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-00997",
+      "ArXiv": "2502.00997",
+      "DOI": "10.48550/arXiv.2502.00997",
+      "CorpusId": 276095183
+    },
+    "title": "MergeME: Model Merging Techniques for Homogeneous and Heterogeneous MoEs",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.00997, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2266789873",
+        "name": "Yuhang Zhou"
+      },
+      {
+        "authorId": "8458211",
+        "name": "Giannis Karamanolakis"
+      },
+      {
+        "authorId": "2302332301",
+        "name": "Victor Soto"
+      },
+      {
+        "authorId": "1681193",
+        "name": "Anna Rumshisky"
+      },
+      {
+        "authorId": "2302332615",
+        "name": "Mayank Kulkarni"
+      },
+      {
+        "authorId": "2257407889",
+        "name": "Furong Huang"
+      },
+      {
+        "authorId": "2218202090",
+        "name": "Wei Ai"
+      },
+      {
+        "authorId": "2302633316",
+        "name": "Jianhua Lu"
+      }
+    ],
+    "abstract": "The recent success of specialized Large Language Models (LLMs) in domains such as mathematical reasoning and coding has led to growing interest in methods for merging these expert LLMs into a unified Mixture-of-Experts (MoE) model, with the goal of enhancing performance in each domain while retaining effectiveness on general tasks. However, the effective merging of expert models remains an open challenge, especially for models with highly divergent weight parameters or different architectures. State-of-the-art MoE merging methods only work with homogeneous model architectures and rely on simple unweighted averaging to merge expert layers, which does not address parameter interference and requires extensive fine-tuning of the merged MoE to restore performance. To address these limitations, this paper introduces new MoE merging techniques, including strategies to mitigate parameter interference, routing heuristics to reduce the need for MoE fine-tuning, and a novel method for merging experts with different architectures. Extensive experiments across multiple domains demonstrate the effectiveness of our proposed methods, reducing fine-tuning costs, improving performance over state-of-the-art methods, and expanding the applicability of MoE merging.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4dc5dc0f1f49fafc83c4774284efb243f482bcfc",
+    "externalIds": {
+      "ArXiv": "2412.14711",
+      "DBLP": "conf/iclr/WangZC25",
+      "DOI": "10.48550/arXiv.2412.14711",
+      "CorpusId": 274859355
+    },
+    "title": "ReMoE: Fully Differentiable Mixture-of-Experts with ReLU Routing",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.14711, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2287803073",
+        "name": "Ziteng Wang"
+      },
+      {
+        "authorId": "2276707",
+        "name": "Jianfei Chen"
+      },
+      {
+        "authorId": "2287800407",
+        "name": "Jun Zhu"
+      }
+    ],
+    "abstract": "Sparsely activated Mixture-of-Experts (MoE) models are widely adopted to scale up model capacity without increasing the computation budget. However, vanilla TopK routers are trained in a discontinuous, non-differentiable way, limiting their performance and scalability. To address this issue, we propose ReMoE, a fully differentiable MoE architecture that offers a simple yet effective drop-in replacement for the conventional TopK+Softmax routing, utilizing ReLU as the router instead. We further propose methods to regulate the router's sparsity while balancing the load among experts. ReMoE's continuous nature enables efficient dynamic allocation of computation across tokens and layers, while also exhibiting domain specialization. Our experiments demonstrate that ReMoE consistently outperforms vanilla TopK-routed MoE across various model sizes, expert counts, and levels of granularity. Furthermore, ReMoE exhibits superior scalability with respect to the number of experts, surpassing traditional MoE architectures. The implementation based on Megatron-LM is available at https://github.com/thu-ml/ReMoE.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "32b8ec099d9d4e42a7912930243dc80a8e717a89",
+    "externalIds": {
+      "DBLP": "conf/iclr/0001Z0Y25",
+      "ArXiv": "2410.07348",
+      "DOI": "10.48550/arXiv.2410.07348",
+      "CorpusId": 273233844
+    },
+    "title": "MoE++: Accelerating Mixture-of-Experts Methods with Zero-Computation Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.07348, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2185571736",
+        "name": "Peng Jin"
+      },
+      {
+        "authorId": "2326254303",
+        "name": "Bo Zhu"
+      },
+      {
+        "authorId": "2326448562",
+        "name": "Li Yuan"
+      },
+      {
+        "authorId": "2277903531",
+        "name": "Shuicheng Yan"
+      }
+    ],
+    "abstract": "In this work, we aim to simultaneously enhance the effectiveness and efficiency of Mixture-of-Experts (MoE) methods. To achieve this, we propose MoE++, a general and heterogeneous MoE framework that integrates both Feed-Forward Network~(FFN) and zero-computation experts. Specifically, we introduce three types of zero-computation experts: the zero expert, copy expert, and constant expert, which correspond to discard, skip, and replace operations, respectively. This design offers three key advantages: (i) Low Computing Overhead: Unlike the uniform mixing mechanism for all tokens within vanilla MoE, MoE++ allows each token to engage with a dynamic number of FFNs, be adjusted by constant vectors, or even skip the MoE layer entirely. (ii) High Performance: By enabling simple tokens to utilize fewer FFN experts, MoE++ allows more experts to focus on challenging tokens, thereby unlocking greater performance potential than vanilla MoE. (iii) Deployment Friendly: Given that zero-computation experts have negligible parameters, we can deploy all zero-computation experts on each GPU, eliminating the significant communication overhead and expert load imbalance associated with FFN experts distributed across different GPUs. Moreover, we leverage gating residuals, enabling each token to consider the pathway taken in the previous layer when selecting the appropriate experts. Extensive experimental results demonstrate that MoE++ achieves better performance while delivering 1.1-2.1x expert forward throughput compared to a vanilla MoE model of the same size, which lays a solid foundation for developing advanced and efficient MoE-related models.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "3bbf2639a894892f3e71ffabdd00910fd78ff0c8",
+    "externalIds": {
+      "DBLP": "journals/ijcv/ZhangCZLT25",
+      "DOI": "10.1007/s11263-024-02199-0",
+      "CorpusId": 272208475
+    },
+    "title": "Learning General and Specific Embedding with Transformer for Few-Shot Object Detection",
+    "venue": "International Journal of Computer Vision",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1007/s11263-024-02199-0",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11263-024-02199-0?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11263-024-02199-0, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2274677268",
+        "name": "Xu Zhang"
+      },
+      {
+        "authorId": "2308623165",
+        "name": "Zhe Chen"
+      },
+      {
+        "authorId": "2310273794",
+        "name": "Jing Zhang"
+      },
+      {
+        "authorId": "121698214",
+        "name": "Tongliang Liu"
+      },
+      {
+        "authorId": "2280877281",
+        "name": "Dacheng Tao"
+      }
+    ],
+    "abstract": "Few-shot object detection (FSOD) studies how to detect novel objects with few annotated examples effectively. Recently, it has been demonstrated that decent feature embeddings, including the general feature embeddings that are more invariant to visual changes and the specific feature embeddings that are more discriminative for different object classes, are both important for FSOD. However, current methods lack appropriate mechanisms to sensibly cooperate both types of feature embeddings based on their importance to detecting objects of novel classes, which may result in sub-optimal performance. In this paper, to achieve more effective FSOD, we attempt to explicitly encode both general and specific feature embeddings using learnable tensors and apply a Transformer to help better incorporate them in FSOD according to their relations to the input object features. We thus propose a Transformer-based general and specific embedding learning (T-GSEL) method for FSOD. In T-GSEL, learnable tensors are employed in a three-stage pipeline, encoding feature embeddings in general level, intermediate level, and specific level, respectively. In each stage, we apply a Transformer to first model the relations of the corresponding embedding to input object features and then apply the estimated relations to refine the input features. Meanwhile, we further introduce cross-stage connections between embeddings of different stages to make them complement and cooperate with each other, delivering general, intermediate, and specific feature embeddings stage by stage and utilizing them together for feature refinement in FSOD. In practice, a T-GSEL module is easy to inject. Extensive empirical results further show that our proposed T-GSEL method achieves compelling FSOD performance on both PASCAL VOC and MS COCO datasets compared with other state-of-the-art approaches.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b5ccbfa9380682f1078a185630cfd4dd1a593167",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-10083",
+      "ArXiv": "2407.10083",
+      "DOI": "10.48550/arXiv.2407.10083",
+      "CorpusId": 271213036
+    },
+    "title": "Plain-Det: A Plain Multi-Dataset Object Detector",
+    "venue": "European Conference on Computer Vision",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.10083, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113917364",
+        "name": "Cheng Shi"
+      },
+      {
+        "authorId": "2311419127",
+        "name": "Yuchen Zhu"
+      },
+      {
+        "authorId": "2297336257",
+        "name": "Sibei Yang"
+      }
+    ],
+    "abstract": "Recent advancements in large-scale foundational models have sparked widespread interest in training highly proficient large vision models. A common consensus revolves around the necessity of aggregating extensive, high-quality annotated data. However, given the inherent challenges in annotating dense tasks in computer vision, such as object detection and segmentation, a practical strategy is to combine and leverage all available data for training purposes. In this work, we propose Plain-Det, which offers flexibility to accommodate new datasets, robustness in performance across diverse datasets, training efficiency, and compatibility with various detection architectures. We utilize Def-DETR, with the assistance of Plain-Det, to achieve a mAP of 51.9 on COCO, matching the current state-of-the-art detectors. We conduct extensive experiments on 13 downstream datasets and Plain-Det demonstrates strong generalization capability. Code is release at https://github.com/ChengShiest/Plain-Det",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "3c69fc97d2b02e681fd5fda034b1eda9ea24b818",
+    "externalIds": {
+      "DBLP": "journals/pami/PanPBZ24",
+      "DOI": "10.1109/TPAMI.2024.3421300",
+      "CorpusId": 270876190,
+      "PubMed": "38949947"
+    },
+    "title": "Large-Scale Object Detection in the Wild With Imbalanced Data Distribution, and Multi-Labels",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2024,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPAMI.2024.3421300?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPAMI.2024.3421300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2084643635",
+        "name": "C. Pan"
+      },
+      {
+        "authorId": "34735086",
+        "name": "Junran Peng"
+      },
+      {
+        "authorId": "3466376",
+        "name": "Xingyuan Bu"
+      },
+      {
+        "authorId": "2238078029",
+        "name": "Zhaoxiang Zhang"
+      }
+    ],
+    "abstract": "Training with more data has always been the most stable and effective way of improving performance in the deep learning era. The Open Images dataset, the largest object detection dataset, presents significant opportunities and challenges for general and sophisticated scenarios. However, its semi-automatic collection and labeling process, designed to manage the huge data scale, leads to label-related problems, including explicit or implicit multiple labels per object and highly imbalanced label distribution. In this work, we quantitatively analyze the major problems in large-scale object detection and provide a detailed yet comprehensive demonstration of our solutions. First, we design a concurrent softmax to handle the multi-label problems in object detection and propose a soft-balance sampling method with a hybrid training scheduler to address the label imbalance. This approach yields a notable improvement of 3.34 points, achieving the best single-model performance with a mAP of 60.90% on the public object detection test set of Open Images. Then, we introduce a well-designed ensemble mechanism that substantially enhances the performance of the single model, achieving an overall mAP of 67.17%, which is 4.29 points higher than the best result from the Open Images public test 2018.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "57ed7527c45f6b685eeefc65abe083dd350cd579",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-11273",
+      "ArXiv": "2405.11273",
+      "DOI": "10.1109/TPAMI.2025.3532688",
+      "CorpusId": 269921303,
+      "PubMed": "40031848"
+    },
+    "title": "Uni-MoE: Scaling Unified Multimodal LLMs With Mixture of Experts",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2024,
+    "citationCount": 127,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2405.11273",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.11273, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118046679",
+        "name": "Yunxin Li"
+      },
+      {
+        "authorId": "2302405323",
+        "name": "Shenyuan Jiang"
+      },
+      {
+        "authorId": "33968873",
+        "name": "Baotian Hu"
+      },
+      {
+        "authorId": "2300330615",
+        "name": "Longyue Wang"
+      },
+      {
+        "authorId": "2266437328",
+        "name": "Wanqi Zhong"
+      },
+      {
+        "authorId": "2287969058",
+        "name": "Wenhan Luo"
+      },
+      {
+        "authorId": "2152343740",
+        "name": "Lin Ma"
+      },
+      {
+        "authorId": "2284915404",
+        "name": "Min Zhang"
+      }
+    ],
+    "abstract": "Recent advancements in Multimodal Large Language Models (MLLMs) underscore the significance of scalable models and data to boost performance, yet this often incurs substantial computational costs. Although the Mixture of Experts (MoE) architecture has been employed to scale large language or visual-language models efficiently, these efforts typically involve fewer experts and limited modalities. To address this, our work presents the pioneering attempt to develop a unified MLLM with the MoE architecture, named Uni-MoE that can handle a wide array of modalities. Specifically, it features modality-specific encoders with connectors for a unified multimodal representation. We also implement a sparse MoE architecture within the LLMs to enable efficient training and inference through modality-level data parallelism and expert-level model parallelism. To enhance the multi-expert collaboration and generalization, we present a progressive training strategy: 1) Cross-modality alignment using various connectors with different cross-modality data, 2) Training modality-specific experts with cross-modality instruction data to activate experts’ preferences, and 3) Tuning the whole Uni-MoE framework utilizing Low-Rank Adaptation (LoRA) on mixed multimodal instruction data. We evaluate the instruction-tuned Uni-MoE on a comprehensive set of multimodal datasets. The extensive experimental results demonstrate Uni-MoE's principal advantage of significantly reducing performance bias in handling mixed multimodal datasets, alongside improved multi-expert collaboration and generalization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5370fed735af6aabb0360513793875e512ad4a7b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-07652",
+      "ArXiv": "2403.07652",
+      "DOI": "10.48550/arXiv.2403.07652",
+      "CorpusId": 268363693
+    },
+    "title": "Harder Tasks Need More Experts: Dynamic Routing in MoE Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 75,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.07652, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2007771781",
+        "name": "Quzhe Huang"
+      },
+      {
+        "authorId": "1961228",
+        "name": "Zhenwei An"
+      },
+      {
+        "authorId": "2290907777",
+        "name": "Zhuang Nan"
+      },
+      {
+        "authorId": "2053641126",
+        "name": "Mingxu Tao"
+      },
+      {
+        "authorId": "2111574159",
+        "name": "Chen Zhang"
+      },
+      {
+        "authorId": "2239056878",
+        "name": "Yang Jin"
+      },
+      {
+        "authorId": "2266735757",
+        "name": "Kun Xu"
+      },
+      {
+        "authorId": "2266419021",
+        "name": "Liwei Chen"
+      },
+      {
+        "authorId": "2290972467",
+        "name": "Songfang Huang"
+      },
+      {
+        "authorId": "2115387922",
+        "name": "Yansong Feng"
+      }
+    ],
+    "abstract": "In this paper, we introduce a novel dynamic expert selection framework for Mixture of Experts (MoE) models, aiming to enhance computational efficiency and model performance by adjusting the number of activated experts based on input difficulty. Unlike traditional MoE approaches that rely on fixed Top-K routing, which activates a predetermined number of experts regardless of the input's complexity, our method dynamically selects experts based on the confidence level in expert selection for each input. This allows for a more efficient utilization of computational resources, activating more experts for complex tasks requiring advanced reasoning and fewer for simpler tasks. Through extensive evaluations, our dynamic routing method demonstrates substantial improvements over conventional Top-2 routing across various benchmarks, achieving an average improvement of 0.7% with less than 90% activated parameters. Further analysis shows our model dispatches more experts to tasks requiring complex reasoning skills, like BBH, confirming its ability to dynamically allocate computational resources in alignment with the input's complexity. Our findings also highlight a variation in the number of experts needed across different layers of the transformer model, offering insights into the potential for designing heterogeneous MoE frameworks. The code and models are available at https://github.com/ZhenweiAn/Dynamic_MoE.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5021b25c452ab52178c5a8aaa77fdbc3efdc167d",
+    "externalIds": {
+      "ArXiv": "2402.12550",
+      "DBLP": "conf/nips/0001G0TPNDP24",
+      "DOI": "10.48550/arXiv.2402.12550",
+      "CorpusId": 267760359
+    },
+    "title": "Multilinear Mixture of Experts: Scalable Expert Specialization through Factorization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 22,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.12550, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2059960629",
+        "name": "James Oldfield"
+      },
+      {
+        "authorId": "34291068",
+        "name": "Markos Georgopoulos"
+      },
+      {
+        "authorId": "2140285545",
+        "name": "Grigorios G. Chrysos"
+      },
+      {
+        "authorId": "1694090",
+        "name": "Christos Tzelepis"
+      },
+      {
+        "authorId": "1780393",
+        "name": "Yannis Panagakis"
+      },
+      {
+        "authorId": "1752913",
+        "name": "M. Nicolaou"
+      },
+      {
+        "authorId": "2355240887",
+        "name": "Jiankang Deng"
+      },
+      {
+        "authorId": "2261492976",
+        "name": "Ioannis Patras"
+      }
+    ],
+    "abstract": "The Mixture of Experts (MoE) paradigm provides a powerful way to decompose dense layers into smaller, modular computations often more amenable to human interpretation, debugging, and editability. However, a major challenge lies in the computational cost of scaling the number of experts high enough to achieve fine-grained specialization. In this paper, we propose the Multilinear Mixture of Experts ($\\mu$MoE) layer to address this, focusing on vision models. $\\mu$MoE layers enable scalable expert specialization by performing an implicit computation on prohibitively large weight tensors entirely in factorized form. Consequently, $\\mu$MoEs (1) avoid the restrictively high inference-time costs of dense MoEs, yet (2) do not inherit the training issues of the popular sparse MoEs' discrete (non-differentiable) expert routing. We present both qualitative and quantitative evidence that scaling $\\mu$MoE layers when fine-tuning foundation models for vision tasks leads to more specialized experts at the class-level, further enabling manual bias correction in CelebA attribute classification. Finally, we show qualitative results demonstrating the expert specialism achieved when pre-training large GPT2 and MLP-Mixer models with parameter-matched $\\mu$MoE blocks at every layer, maintaining comparable accuracy. Our code is available at: https://github.com/james-oldfield/muMoE.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "9548bacc4c7714151b674748dc86e2cc185a4955",
+    "externalIds": {
+      "DBLP": "conf/icml/LudziejewskiKAP24",
+      "ArXiv": "2402.07871",
+      "DOI": "10.48550/arXiv.2402.07871",
+      "CorpusId": 267626982
+    },
+    "title": "Scaling Laws for Fine-Grained Mixture of Experts",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 144,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.07871, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261391307",
+        "name": "Jakub Krajewski"
+      },
+      {
+        "authorId": "2261391884",
+        "name": "Jan Ludziejewski"
+      },
+      {
+        "authorId": "2287756379",
+        "name": "Kamil Adamczewski"
+      },
+      {
+        "authorId": "2261392151",
+        "name": "Maciej Pi'oro"
+      },
+      {
+        "authorId": "2261391303",
+        "name": "Michal Krutul"
+      },
+      {
+        "authorId": "2184103686",
+        "name": "Szymon Antoniak"
+      },
+      {
+        "authorId": "2278427988",
+        "name": "Kamil Ciebiera"
+      },
+      {
+        "authorId": "2278427725",
+        "name": "Krystian Kr'ol"
+      },
+      {
+        "authorId": "2261392065",
+        "name": "Tomasz Odrzyg'o'zd'z"
+      },
+      {
+        "authorId": "2268495134",
+        "name": "Piotr Sankowski"
+      },
+      {
+        "authorId": "2261392232",
+        "name": "Marek Cygan"
+      },
+      {
+        "authorId": "25898662",
+        "name": "Sebastian Jaszczur"
+      }
+    ],
+    "abstract": "Mixture of Experts (MoE) models have emerged as a primary solution for reducing the computational cost of Large Language Models. In this work, we analyze their scaling properties, incorporating an expanded range of variables. Specifically, we introduce a new hyperparameter, granularity, whose adjustment enables precise control over the size of the experts. Building on this, we establish scaling laws for fine-grained MoE, taking into account the number of training tokens, model size, and granularity. Leveraging these laws, we derive the optimal training configuration for a given computational budget. Our findings not only show that MoE models consistently outperform dense Transformers but also highlight that the efficiency gap between dense and MoE models widens as we scale up the model size and training budget. Furthermore, we demonstrate that the common practice of setting the size of experts in MoE to mirror the feed-forward layer is not optimal at almost any computational budget.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d855e8ddce01b1f60a49992c1bf8ce4da67025fc",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-05526",
+      "ArXiv": "2402.05526",
+      "DOI": "10.48550/arXiv.2402.05526",
+      "CorpusId": 267547433
+    },
+    "title": "Buffer Overflow in Mixture of Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.05526, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283307020",
+        "name": "Jamie Hayes"
+      },
+      {
+        "authorId": "47473421",
+        "name": "Ilia Shumailov"
+      },
+      {
+        "authorId": "2283305710",
+        "name": "Itay Yona"
+      }
+    ],
+    "abstract": "Mixture of Experts (MoE) has become a key ingredient for scaling large foundation models while keeping inference costs steady. We show that expert routing strategies that have cross-batch dependencies are vulnerable to attacks. Malicious queries can be sent to a model and can affect a model's output on other benign queries if they are grouped in the same batch. We demonstrate this via a proof-of-concept attack in a toy experimental setting.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "16d6e1ed1cf72212f6154644f3aa59d18bc95fda",
+    "externalIds": {
+      "ArXiv": "2401.06066",
+      "DBLP": "conf/acl/DaiDZXGCLZYWXLH24",
+      "DOI": "10.48550/arXiv.2401.06066",
+      "CorpusId": 266933338
+    },
+    "title": "DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 791,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.06066, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "2278221484",
+        "name": "C. Deng"
+      },
+      {
+        "authorId": "2278389597",
+        "name": "Chenggang Zhao"
+      },
+      {
+        "authorId": "2274917091",
+        "name": "R. Xu"
+      },
+      {
+        "authorId": "2278395340",
+        "name": "Huazuo Gao"
+      },
+      {
+        "authorId": "2274200088",
+        "name": "Deli Chen"
+      },
+      {
+        "authorId": "2278337977",
+        "name": "Jiashi Li"
+      },
+      {
+        "authorId": "2279051415",
+        "name": "Wangding Zeng"
+      },
+      {
+        "authorId": "2279159169",
+        "name": "Xingkai Yu"
+      },
+      {
+        "authorId": "49176273",
+        "name": "Yu Wu"
+      },
+      {
+        "authorId": "2279107352",
+        "name": "Zhenda Xie"
+      },
+      {
+        "authorId": "2278599324",
+        "name": "Y. K. Li"
+      },
+      {
+        "authorId": "2278251752",
+        "name": "Panpan Huang"
+      },
+      {
+        "authorId": "2278218736",
+        "name": "Fuli Luo"
+      },
+      {
+        "authorId": "2278217940",
+        "name": "C. Ruan"
+      },
+      {
+        "authorId": "3335836",
+        "name": "Zhifang Sui"
+      },
+      {
+        "authorId": "2278618633",
+        "name": "W. Liang"
+      }
+    ],
+    "abstract": "In the era of large language models, Mixture-of-Experts (MoE) is a promising architecture for managing computational costs when scaling up model parameters. However, conventional MoE architectures like GShard, which activate the top-$K$ out of $N$ experts, face challenges in ensuring expert specialization, i.e. each expert acquires non-overlapping and focused knowledge. In response, we propose the DeepSeekMoE architecture towards ultimate expert specialization. It involves two principal strategies: (1) finely segmenting the experts into $mN$ ones and activating $mK$ from them, allowing for a more flexible combination of activated experts; (2) isolating $K_s$ experts as shared ones, aiming at capturing common knowledge and mitigating redundancy in routed experts. Starting from a modest scale with 2B parameters, we demonstrate that DeepSeekMoE 2B achieves comparable performance with GShard 2.9B, which has 1.5 times the expert parameters and computation. In addition, DeepSeekMoE 2B nearly approaches the performance of its dense counterpart with the same number of total parameters, which set the upper bound of MoE models. Subsequently, we scale up DeepSeekMoE to 16B parameters and show that it achieves comparable performance with LLaMA2 7B, with only about 40% of computations. Further, our preliminary efforts to scale up DeepSeekMoE to 145B parameters consistently validate its substantial advantages over the GShard architecture, and show its performance comparable with DeepSeek 67B, using only 28.5% (maybe even 18.2%) of computations.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "411114f989a3d1083d90afd265103132fee94ebe",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-04088",
+      "ArXiv": "2401.04088",
+      "DOI": "10.48550/arXiv.2401.04088",
+      "CorpusId": 266844877
+    },
+    "title": "Mixtral of Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1797,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04088, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2278435713",
+        "name": "Albert Q. Jiang"
+      },
+      {
+        "authorId": "2256994781",
+        "name": "Alexandre Sablayrolles"
+      },
+      {
+        "authorId": "2278435471",
+        "name": "Antoine Roux"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "2278434888",
+        "name": "Blanche Savary"
+      },
+      {
+        "authorId": "2256994975",
+        "name": "Chris Bamford"
+      },
+      {
+        "authorId": "2328602",
+        "name": "Devendra Singh Chaplot"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "2168785331",
+        "name": "Emma Bou Hanna"
+      },
+      {
+        "authorId": "2256995640",
+        "name": "Florian Bressand"
+      },
+      {
+        "authorId": "2256993163",
+        "name": "Gianna Lengyel"
+      },
+      {
+        "authorId": "2278434464",
+        "name": "Guillaume Bour"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      },
+      {
+        "authorId": "2256995632",
+        "name": "Lélio Renard Lavaud"
+      },
+      {
+        "authorId": "2113836860",
+        "name": "Lucile Saulnier"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "2256994779",
+        "name": "Pierre Stock"
+      },
+      {
+        "authorId": "2278428931",
+        "name": "Sandeep Subramanian"
+      },
+      {
+        "authorId": "2303863687",
+        "name": "Sophia Yang"
+      },
+      {
+        "authorId": "2184103686",
+        "name": "Szymon Antoniak"
+      },
+      {
+        "authorId": "1379806208",
+        "name": "Teven Le Scao"
+      },
+      {
+        "authorId": "81588783",
+        "name": "Théophile Gervet"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "2278590503",
+        "name": "Thomas Wang"
+      },
+      {
+        "authorId": "47733973",
+        "name": "Timothée Lacroix"
+      },
+      {
+        "authorId": "2256992826",
+        "name": "William El Sayed"
+      }
+    ],
+    "abstract": "We introduce Mixtral 8x7B, a Sparse Mixture of Experts (SMoE) language model. Mixtral has the same architecture as Mistral 7B, with the difference that each layer is composed of 8 feedforward blocks (i.e. experts). For every token, at each layer, a router network selects two experts to process the current state and combine their outputs. Even though each token only sees two experts, the selected experts can be different at each timestep. As a result, each token has access to 47B parameters, but only uses 13B active parameters during inference. Mixtral was trained with a context size of 32k tokens and it outperforms or matches Llama 2 70B and GPT-3.5 across all evaluated benchmarks. In particular, Mixtral vastly outperforms Llama 2 70B on mathematics, code generation, and multilingual benchmarks. We also provide a model fine-tuned to follow instructions, Mixtral 8x7B - Instruct, that surpasses GPT-3.5 Turbo, Claude-2.1, Gemini Pro, and Llama 2 70B - chat model on human benchmarks. Both the base and instruct models are released under the Apache 2.0 license.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "98f41341c87448f32065eff170222274b3e5a906",
+    "externalIds": {
+      "ArXiv": "2401.03540",
+      "DBLP": "journals/corr/abs-2401-03540",
+      "DOI": "10.48550/arXiv.2401.03540",
+      "CorpusId": 266844321
+    },
+    "title": "SeTformer is What You Need for Vision and Language",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.03540, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3129798",
+        "name": "Pourya Shamsolmoali"
+      },
+      {
+        "authorId": "2345767",
+        "name": "Masoumeh Zareapoor"
+      },
+      {
+        "authorId": "2276480093",
+        "name": "Eric Granger"
+      },
+      {
+        "authorId": "2239099080",
+        "name": "Michael Felsberg"
+      }
+    ],
+    "abstract": "The dot product self-attention (DPSA) is a fundamental component of transformers. However, scaling them to long sequences, like documents or high-resolution images, becomes prohibitively expensive due to the quadratic time and memory complexities arising from the softmax operation. Kernel methods are employed to simplify computations by approximating softmax but often lead to performance drops compared to softmax attention. We propose SeTformer, a novel transformer where DPSA is purely replaced by Self-optimal Transport (SeT) for achieving better performance and computational efficiency. SeT is based on two essential softmax properties: maintaining a non-negative attention matrix and using a nonlinear reweighting mechanism to emphasize important tokens in input sequences. By introducing a kernel cost function for optimal transport, SeTformer effectively satisfies these properties. In particular, with small and base-sized models, SeTformer achieves impressive top-1 accuracies of 84.7% and 86.2% on ImageNet-1K. In object detection, SeTformer-base outperforms the FocalNet counterpart by +2.2 mAP, using 38% fewer parameters and 29% fewer FLOPs. In semantic segmentation, our base-size model surpasses NAT by +3.5 mIoU with 33% fewer parameters. SeTformer also achieves state-of-the-art results in language modeling on the GLUE benchmark. These findings highlight SeTformer applicability for vision and language tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3c1f0e22b84ee41f4bd936c4c9a571c75b3ff66c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2312-09077",
+      "ArXiv": "2312.09077",
+      "DOI": "10.48550/arXiv.2312.09077",
+      "CorpusId": 266210367
+    },
+    "title": "Entropy Regularization and Faster Decremental Matching in General Graphs",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.09077, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2274190614",
+        "name": "Jiale Chen"
+      },
+      {
+        "authorId": "2274105519",
+        "name": "Aaron Sidford"
+      },
+      {
+        "authorId": "2274110104",
+        "name": "Ta-Wei Tu"
+      }
+    ],
+    "abstract": "We provide an algorithm that maintains, against an adaptive adversary, a $(1-\\varepsilon)$-approximate maximum matching in $n$-node $m$-edge general (not necessarily bipartite) undirected graph undergoing edge deletions with high probability with (amortized) $O(\\mathrm{poly}(\\varepsilon^{-1}, \\log n))$ time per update. We also obtain the same update time for maintaining a fractional approximate weighted matching (and hence an approximation to the value of the maximum weight matching) and an integral approximate weighted matching in dense graphs. Our unweighted result improves upon the prior state-of-the-art which includes a $\\mathrm{poly}(\\log{n}) \\cdot 2^{O(1/\\varepsilon^2)}$ update time [Assadi-Bernstein-Dudeja 2022] and an $O(\\sqrt{m} \\varepsilon^{-2})$ update time [Gupta-Peng 2013], and our weighted result improves upon the $O(\\sqrt{m}\\varepsilon^{-O(1/\\varepsilon)}\\log{n})$ update time due to [Gupta-Peng 2013]. To obtain our results, we generalize a recent optimization approach to dynamic algorithms from [Jambulapati-Jin-Sidford-Tian 2022]. We show that repeatedly solving entropy-regularized optimization problems yields a lazy updating scheme for fractional decremental problems with a near-optimal number of updates. To apply this framework we develop optimization methods compatible with it and new dynamic rounding algorithms for the matching polytope.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9fb75a6b88122147e21a2d08ae5c04fe9556dd96",
+    "externalIds": {
+      "DBLP": "conf/nips/JainBKV23",
+      "ArXiv": "2311.04894",
+      "DOI": "10.48550/arXiv.2311.04894",
+      "CorpusId": 265050925
+    },
+    "title": "DAMEX: Dataset-aware Mixture-of-Experts for visual understanding of mixture-of-datasets",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 39,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.04894, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2066308637",
+        "name": "Yash Jain"
+      },
+      {
+        "authorId": "145560551",
+        "name": "Harkirat Singh Behl"
+      },
+      {
+        "authorId": "145276578",
+        "name": "Z. Kira"
+      },
+      {
+        "authorId": "143729959",
+        "name": "Vibhav Vineet"
+      }
+    ],
+    "abstract": "Construction of a universal detector poses a crucial question: How can we most effectively train a model on a large mixture of datasets? The answer lies in learning dataset-specific features and ensembling their knowledge but do all this in a single model. Previous methods achieve this by having separate detection heads on a common backbone but that results in a significant increase in parameters. In this work, we present Mixture-of-Experts as a solution, highlighting that MoEs are much more than a scalability tool. We propose Dataset-Aware Mixture-of-Experts, DAMEX where we train the experts to become an `expert' of a dataset by learning to route each dataset tokens to its mapped expert. Experiments on Universal Object-Detection Benchmark show that we outperform the existing state-of-the-art by average +10.2 AP score and improve over our non-MoE baseline by average +2.0 AP score. We also observe consistent gains while mixing datasets with (1) limited availability, (2) disparate domains and (3) divergent label sets. Further, we qualitatively show that DAMEX is robust against expert representation collapse.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "68134d575dfef21b067c910e5fb5152dddfa81d0",
+    "externalIds": {
+      "ArXiv": "2309.14976",
+      "DBLP": "journals/corr/abs-2309-14976",
+      "DOI": "10.48550/arXiv.2309.14976",
+      "CorpusId": 262825516
+    },
+    "title": "MoCaE: Mixture of Calibrated Experts Significantly Improves Object Detection",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.14976",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.14976, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9392506",
+        "name": "Kemal Oksuz"
+      },
+      {
+        "authorId": "2191683599",
+        "name": "S. Kuzucu"
+      },
+      {
+        "authorId": "2246804465",
+        "name": "Tom Joy"
+      },
+      {
+        "authorId": "144679302",
+        "name": "P. Dokania"
+      }
+    ],
+    "abstract": "Combining the strengths of many existing predictors to obtain a Mixture of Experts which is superior to its individual components is an effective way to improve the performance without having to develop new architectures or train a model from scratch. However, surprisingly, we find that na\\\"ively combining expert object detectors in a similar way to Deep Ensembles, can often lead to degraded performance. We identify that the primary cause of this issue is that the predictions of the experts do not match their performance, a term referred to as miscalibration. Consequently, the most confident detector dominates the final predictions, preventing the mixture from leveraging all the predictions from the experts appropriately. To address this, when constructing the Mixture of Experts, we propose to combine their predictions in a manner which reflects the individual performance of the experts; an objective we achieve by first calibrating the predictions before filtering and refining them. We term this approach the Mixture of Calibrated Experts and demonstrate its effectiveness through extensive experiments on 5 different detection tasks using a variety of detectors, showing that it: (i) improves object detectors on COCO and instance segmentation methods on LVIS by up to $\\sim 2.5$ AP; (ii) reaches state-of-the-art on COCO test-dev with $65.1$ AP and on DOTA with $82.62$ $\\mathrm{AP_{50}}$; (iii) outperforms single models consistently on recent detection tasks such as Open Vocabulary Object Detection.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2edccb8fa562ed52cd49ea6fc67ed32db6218247",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2308-00951",
+      "ArXiv": "2308.00951",
+      "DOI": "10.48550/arXiv.2308.00951",
+      "CorpusId": 260378993
+    },
+    "title": "From Sparse to Soft Mixtures of Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.00951",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.00951, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1794202",
+        "name": "J. Puigcerver"
+      },
+      {
+        "authorId": "145814174",
+        "name": "C. Riquelme"
+      },
+      {
+        "authorId": "40608942",
+        "name": "Basil Mustafa"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "Sparse mixture of expert architectures (MoEs) scale model capacity without significant increases in training or inference costs. Despite their success, MoEs suffer from a number of issues: training instability, token dropping, inability to scale the number of experts, or ineffective finetuning. In this work, we propose Soft MoE, a fully-differentiable sparse Transformer that addresses these challenges, while maintaining the benefits of MoEs. Soft MoE performs an implicit soft assignment by passing different weighted combinations of all input tokens to each expert. As in other MoEs, experts in Soft MoE only process a subset of the (combined) tokens, enabling larger model capacity (and performance) at lower inference cost. In the context of visual recognition, Soft MoE greatly outperforms dense Transformers (ViTs) and popular MoEs (Tokens Choice and Experts Choice). Furthermore, Soft MoE scales well: Soft MoE Huge/14 with 128 experts in 16 MoE layers has over 40x more parameters than ViT Huge/14, with only 2% increased inference time, and substantially better quality.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c3e5a20b844c042d2174263d2fd5b30d8cc8f0b0",
+    "externalIds": {
+      "DBLP": "conf/eccv/LiuZRLZYJLYSZZ24",
+      "ArXiv": "2303.05499",
+      "DOI": "10.48550/arXiv.2303.05499",
+      "CorpusId": 257427307
+    },
+    "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+    "venue": "European Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 3944,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.05499",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.05499, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8602739",
+        "name": "Shilong Liu"
+      },
+      {
+        "authorId": "2075413603",
+        "name": "Zhaoyang Zeng"
+      },
+      {
+        "authorId": "2143150727",
+        "name": "Tianhe Ren"
+      },
+      {
+        "authorId": "2152978390",
+        "name": "Feng Li"
+      },
+      {
+        "authorId": "2315254849",
+        "name": "Hao Zhang"
+      },
+      {
+        "authorId": "2146105297",
+        "name": "Jie Yang"
+      },
+      {
+        "authorId": "2109738542",
+        "name": "Chun-yue Li"
+      },
+      {
+        "authorId": "120157163",
+        "name": "Jianwei Yang"
+      },
+      {
+        "authorId": "2093561216",
+        "name": "Hang Su"
+      },
+      {
+        "authorId": "89006344",
+        "name": "Jun-Juan Zhu"
+      },
+      {
+        "authorId": "2152832911",
+        "name": "Lei Zhang"
+      }
+    ],
+    "abstract": "In this paper, we present an open-set object detector, called Grounding DINO, by marrying Transformer-based detector DINO with grounded pre-training, which can detect arbitrary objects with human inputs such as category names or referring expressions. The key solution of open-set object detection is introducing language to a closed-set detector for open-set concept generalization. To effectively fuse language and vision modalities, we conceptually divide a closed-set detector into three phases and propose a tight fusion solution, which includes a feature enhancer, a language-guided query selection, and a cross-modality decoder for cross-modality fusion. While previous works mainly evaluate open-set object detection on novel categories, we propose to also perform evaluations on referring expression comprehension for objects specified with attributes. Grounding DINO performs remarkably well on all three settings, including benchmarks on COCO, LVIS, ODinW, and RefCOCO/+/g. Grounding DINO achieves a $52.5$ AP on the COCO detection zero-shot transfer benchmark, i.e., without any training data from COCO. It sets a new record on the ODinW zero-shot benchmark with a mean $26.1$ AP. Code will be available at \\url{https://github.com/IDEA-Research/GroundingDINO}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a27d5e6140269f292da02c3e88b4235c83f49e9e",
+    "externalIds": {
+      "DBLP": "conf/iclr/LiuPB23",
+      "ArXiv": "2209.15466",
+      "DOI": "10.48550/arXiv.2209.15466",
+      "CorpusId": 252668582
+    },
+    "title": "Sparsity-Constrained Optimal Transport",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.15466",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.15466, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "121698110",
+        "name": "Tianlin Liu"
+      },
+      {
+        "authorId": "1794202",
+        "name": "J. Puigcerver"
+      },
+      {
+        "authorId": "27257992",
+        "name": "Mathieu Blondel"
+      }
+    ],
+    "abstract": "Regularized optimal transport (OT) is now increasingly used as a loss or as a matching layer in neural networks. Entropy-regularized OT can be computed using the Sinkhorn algorithm but it leads to fully-dense transportation plans, meaning that all sources are (fractionally) matched with all targets. To address this issue, several works have investigated quadratic regularization instead. This regularization preserves sparsity and leads to unconstrained and smooth (semi) dual objectives, that can be solved with off-the-shelf gradient methods. Unfortunately, quadratic regularization does not give direct control over the cardinality (number of nonzeros) of the transportation plan. We propose in this paper a new approach for OT with explicit cardinality constraints on the transportation plan. Our work is motivated by an application to sparse mixture of experts, where OT can be used to match input tokens such as image patches with expert models such as neural networks. Cardinality constraints ensure that at most $k$ tokens are matched with an expert, which is crucial for computational performance reasons. Despite the nonconvexity of cardinality constraints, we show that the corresponding (semi) dual problems are tractable and can be solved with first-order gradient methods. Our method can be thought as a middle ground between unregularized OT (recovered in the limit case $k=1$) and quadratically-regularized OT (recovered when $k$ is large enough). The smoothness of the objectives increases as $k$ increases, giving rise to a trade-off between convergence speed and sparsity of the optimal plan.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c1bfc8676225d9d19caddfa1bd2299b4469b78e4",
+    "externalIds": {
+      "DBLP": "conf/pppj/MosanerLKSM22",
+      "DOI": "10.1145/3546918.3546921",
+      "CorpusId": 254097035
+    },
+    "title": "Machine-Learning-Based Self-Optimizing Compiler Heuristics✱",
+    "venue": "MPLR",
+    "year": 2022,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3546918.3546921",
+      "status": "HYBRID",
+      "license": "CCBYSA",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3546918.3546921?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3546918.3546921, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1387984125",
+        "name": "R. Mosaner"
+      },
+      {
+        "authorId": "3355543",
+        "name": "David Leopoldseder"
+      },
+      {
+        "authorId": "2173873566",
+        "name": "Wolfgang Kisling"
+      },
+      {
+        "authorId": "2173873573",
+        "name": "Lukas Stadler"
+      },
+      {
+        "authorId": "1738841",
+        "name": "H. Mössenböck"
+      }
+    ],
+    "abstract": "Compiler optimizations are often based on hand-crafted heuristics to guide the optimization process. These heuristics are designed to benefit the average program and are otherwise static or only customized by profiling information. We propose machine-learning-based self-optimizing compiler heuristics, a novel approach for fitting optimization decisions in a dynamic compiler to specific environments. This is done by updating a machine learning model with extracted performance data at run time. Related work—which primarily targets static compilers—has already shown that machine learning can outperform hand-crafted heuristics. Our approach is specifically designed for dynamic compilation and uses concepts such as deoptimization for transparently switching between generating data and performing machine learning decisions in single program runs. We implemented our approach in the GraalVM, a high-performance production VM for dynamic compilation. When evaluating our approach by replacing loop peeling heuristics with learned models we encountered speedups larger than 30% for several benchmarks and only few slowdowns of up to 7%.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8e14d955eedd7e22e5df297a8f9bd4b3c2fe5b5d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2207-07519",
+      "ArXiv": "2207.07519",
+      "DOI": "10.48550/arXiv.2207.07519",
+      "CorpusId": 250607763
+    },
+    "title": "Dynamic Algorithms for Packing-Covering LPs via Multiplicative Weight Updates",
+    "venue": "ACM-SIAM Symposium on Discrete Algorithms",
+    "year": 2022,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.07519",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.07519, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3074832",
+        "name": "Sayan Bhattacharya"
+      },
+      {
+        "authorId": "49419684",
+        "name": "P. Kiss"
+      },
+      {
+        "authorId": "2993556",
+        "name": "Thatchaphol Saranurak"
+      }
+    ],
+    "abstract": "In the dynamic linear program (LP) problem, we are given an LP undergoing updates and we need to maintain an approximately optimal solution. Recently, significant attention (e.g., [Gupta et al. STOC'17; Arar et al. ICALP'18, Wajc STOC'20]) has been devoted to the study of special cases of dynamic packing and covering LPs, such as the dynamic fractional matching and set cover problems. But until now, there is no non-trivial dynamic algorithm for general packing and covering LPs. In this paper, we settle the complexity of dynamic packing and covering LPs, up to a polylogarithmic factor in update time. More precisely, in the partially dynamic setting (where updates can either only relax or only restrict the feasible region), we give near-optimal deterministic $\\epsilon$-approximation algorithms with polylogarithmic amortized update time. Then, we show that both partially dynamic updates and amortized update time are necessary; without any of these conditions, the trivial algorithm that recomputes the solution from scratch after every update is essentially the best possible, assuming SETH. To obtain our results, we initiate a systematic study of the multiplicative weights update (MWU) method in the dynamic setting. As by-products of our techniques, we also obtain the first online $(1+\\epsilon)$-competitive algorithms for both covering and packing LPs with polylogarithmic recourse, and the first streaming algorithms for covering and packing LPs with linear space and polylogarithmic passes.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "9c08d8fca57bac1998b79235f773cde27319a209",
+    "externalIds": {
+      "DBLP": "conf/iclr/LiSYWRCZ023",
+      "ArXiv": "2206.04046",
+      "CorpusId": 252668882
+    },
+    "title": "Sparse Mixture-of-Experts are Domain Generalizable Learners",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 107,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.04046, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2165243810",
+        "name": "Bo Li"
+      },
+      {
+        "authorId": "2115383310",
+        "name": "Yifei Shen"
+      },
+      {
+        "authorId": "2295601",
+        "name": "Jingkang Yang"
+      },
+      {
+        "authorId": "2115738764",
+        "name": "Yezhen Wang"
+      },
+      {
+        "authorId": "1820909323",
+        "name": "Jiawei Ren"
+      },
+      {
+        "authorId": "2396595703",
+        "name": "Tong Che"
+      },
+      {
+        "authorId": "2155660340",
+        "name": "Jun Zhang"
+      },
+      {
+        "authorId": "2145254462",
+        "name": "Ziwei Liu"
+      }
+    ],
+    "abstract": "Human visual perception can easily generalize to out-of-distributed visual data, which is far beyond the capability of modern machine learning models. Domain generalization (DG) aims to close this gap, with existing DG methods mainly focusing on the loss function design. In this paper, we propose to explore an orthogonal direction, i.e., the design of the backbone architecture. It is motivated by an empirical finding that transformer-based models trained with empirical risk minimization (ERM) outperform CNN-based models employing state-of-the-art (SOTA) DG algorithms on multiple DG datasets. We develop a formal framework to characterize a network's robustness to distribution shifts by studying its architecture's alignment with the correlations in the dataset. This analysis guides us to propose a novel DG model built upon vision transformers, namely Generalizable Mixture-of-Experts (GMoE). Extensive experiments on DomainBed demonstrate that GMoE trained with ERM outperforms SOTA DG baselines by a large margin. Moreover, GMoE is complementary to existing DG methods and its performance is substantially improved when trained with DG algorithms.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "6c25712136f17a9f3c7a861552445bb8633c477b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2206-03484",
+      "ArXiv": "2206.03484",
+      "DOI": "10.1109/CVPR52729.2023.01097",
+      "CorpusId": 249431964
+    },
+    "title": "Detection Hub: Unifying Object Detection Datasets via Query Adaptation on Language Embedding",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 31,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2206.03484",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.03484, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "11600940",
+        "name": "Lingchen Meng"
+      },
+      {
+        "authorId": "3386593",
+        "name": "Xiyang Dai"
+      },
+      {
+        "authorId": "2109306087",
+        "name": "Yinpeng Chen"
+      },
+      {
+        "authorId": "9325940",
+        "name": "Pengchuan Zhang"
+      },
+      {
+        "authorId": "49025801",
+        "name": "Dongdong Chen"
+      },
+      {
+        "authorId": "2152968847",
+        "name": "Mengchen Liu"
+      },
+      {
+        "authorId": "2124948371",
+        "name": "Jianfeng Wang"
+      },
+      {
+        "authorId": "3099139",
+        "name": "Zuxuan Wu"
+      },
+      {
+        "authorId": "2150687325",
+        "name": "Lu Yuan"
+      },
+      {
+        "authorId": "1717861",
+        "name": "Yu-Gang Jiang"
+      }
+    ],
+    "abstract": "Combining multiple datasets enables performance boost on many computer vision tasks. But similar trend has not been witnessed in object detection when combining multiple datasets due to two inconsistencies among detection datasets: taxonomy difference and domain gap. In this paper, we address these challenges by a new design (named Detection Hub) that is dataset-aware and category-aligned. It not only mitigates the dataset inconsistency but also provides coherent guidance for the detector to learn across multiple datasets. In particular, the dataset-aware design is achieved by learning a dataset embedding that is used to adapt object queries as well as convolutional kernels in detection heads. The categories across datasets are semantically aligned into a unified space by replacing one-hot category representations with word embedding and leveraging the semantic coherence of language embedding. Detection Hub fulfills the benefits of large data on object detection. Experiments demonstrate that joint training on multiple datasets achieves significant performance gains over training on each dataset alone. Detection Hub further achieves SoTA performance on UODB benchmark with wide variety of datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f4b5278a8a5af443706756a948e363e2989ae6d9",
+    "externalIds": {
+      "DBLP": "conf/icara/BianMLH24",
+      "ArXiv": "2205.07716",
+      "DOI": "10.1109/ICARA60736.2024.10552980",
+      "CorpusId": 248810783
+    },
+    "title": "Generalizing to New Tasks via One-Shot Compositional Subgoals",
+    "venue": "International Conference on Automation, Robotics and Applications",
+    "year": 2022,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.07716, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2106708970",
+        "name": "Xihan Bian"
+      },
+      {
+        "authorId": "46800296",
+        "name": "Oscar Alejandro Mendez Maldonado"
+      },
+      {
+        "authorId": "2417546",
+        "name": "Simon Hadfield"
+      }
+    ],
+    "abstract": "Generalizing to new tasks with little supervision is a challenge in machine learning and a requirement for future “General AI” agents. Reinforcement and imitation learning is used to adapt to new tasks, but this is difficult for complex tasks that require long-term planning. However, this can be challenging for complex tasks often requiring many timesteps or large numbers of subtasks. This leads to long episodes with long-horizon tasks which are difficult to learn. In this work, we attempt to address these issues by training an Imitation Learning agent using in-episode “near future” subgoals. These sub goals are re-calculated at each step using compositional arithmetic in a learned latent representation space. In addition to improving learning efficiency for standard long-term tasks, this approach also makes it possible to perform one-shot generalization to previously unseen tasks, given only a single reference trajectory for the task in a different environment. Our experiments show that the proposed approach consistently outperforms the previous state-of-the-art compositional Imitation Learning approach by 30%. While capable of learning from long episodes where the SOTA fails.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c855c86f605195cac4a3c4fad1a3d1f08930fa4c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2204-12721",
+      "ArXiv": "2204.12721",
+      "DOI": "10.48550/arXiv.2204.12721",
+      "CorpusId": 248405973
+    },
+    "title": "Regularized Box-Simplex Games and Dynamic Decremental Bipartite Matching",
+    "venue": "International Colloquium on Automata, Languages and Programming",
+    "year": 2022,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2204.12721",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.12721, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "27667836",
+        "name": "Arun Jambulapati"
+      },
+      {
+        "authorId": "2110894927",
+        "name": "Yujia Jin"
+      },
+      {
+        "authorId": "2139680917",
+        "name": "Aaron Sidford"
+      },
+      {
+        "authorId": "46343365",
+        "name": "Kevin Tian"
+      }
+    ],
+    "abstract": "Box-simplex games are a family of bilinear minimax objectives which encapsulate graph-structured problems such as maximum flow [41], optimal transport [29], and bipartite matching [5]. We develop efficient near-linear time, high-accuracy solvers for regularized variants of these games. Beyond the immediate applications of such solvers for computing Sinkhorn distances, a prominent tool in machine learning, we show that these solvers can be used to obtain improved running times for maintaining a (fractional) ϵ -approximate maximum matching in a dynamic decremental bipartite graph against an adaptive adversary. We give a generic framework which reduces this dynamic matching problem to solving regularized graph-structured optimization problems to high accuracy. Through our reduction framework, our regularized box-simplex game solver implies a new algorithm for dynamic decremental bipartite matching in total time e O ( m · ϵ − 3 ), from an initial graph with m edges and n nodes. We further show how to use recent advances in flow optimization [11] to improve our runtime to m 1+ o (1) · ϵ − 2 , thereby demonstrating the versatility of our reduction-based approach. These results improve upon the previous best runtime of e O ( m · ϵ − 4 ) [6] and illustrate the utility of using regularized optimization problem solvers for designing dynamic algorithms.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c26bb68806a992bf4fc85b5639e1657a445c4781",
+    "externalIds": {
+      "DBLP": "conf/nips/Chi0HDMPSBSMHW22",
+      "ArXiv": "2204.09179",
+      "DOI": "10.48550/arXiv.2204.09179",
+      "CorpusId": 248266346
+    },
+    "title": "On the Representation Collapse of Sparse Mixture of Experts",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 171,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.09179",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.09179, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46221722",
+        "name": "Zewen Chi"
+      },
+      {
+        "authorId": "145307652",
+        "name": "Li Dong"
+      },
+      {
+        "authorId": "3110003",
+        "name": "Shaohan Huang"
+      },
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "2118866998",
+        "name": "Shuming Ma"
+      },
+      {
+        "authorId": "27419446",
+        "name": "Barun Patra"
+      },
+      {
+        "authorId": "14839052",
+        "name": "Saksham Singhal"
+      },
+      {
+        "authorId": "34765717",
+        "name": "Payal Bajaj"
+      },
+      {
+        "authorId": "50706785",
+        "name": "Xia Song"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      }
+    ],
+    "abstract": "Sparse mixture of experts provides larger model capacity while requiring a constant computational overhead. It employs the routing mechanism to distribute input tokens to the best-matched experts according to their hidden representations. However, learning such a routing mechanism encourages token clustering around expert centroids, implying a trend toward representation collapse. In this work, we propose to estimate the routing scores between tokens and experts on a low-dimensional hypersphere. We conduct extensive experiments on cross-lingual language model pre-training and fine-tuning on downstream tasks. Experimental results across seven multilingual benchmarks show that our method achieves consistent gains. We also present a comprehensive analysis on the representation and routing behaviors of our models. Our method alleviates the representation collapse issue and achieves more consistent routing than the baseline mixture-of-experts methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9dc481ec44178e797466bbad968071917842156b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-03605",
+      "ArXiv": "2203.03605",
+      "DOI": "10.48550/arXiv.2203.03605",
+      "CorpusId": 247292561
+    },
+    "title": "DINO: DETR with Improved DeNoising Anchor Boxes for End-to-End Object Detection",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 2567,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.03605",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.03605, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2315254849",
+        "name": "Hao Zhang"
+      },
+      {
+        "authorId": "2146312758",
+        "name": "Feng Li"
+      },
+      {
+        "authorId": "8602739",
+        "name": "Shilong Liu"
+      },
+      {
+        "authorId": "2152834943",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2093561216",
+        "name": "Hang Su"
+      },
+      {
+        "authorId": "89006344",
+        "name": "Jun-Juan Zhu"
+      },
+      {
+        "authorId": "1726587",
+        "name": "L. Ni"
+      },
+      {
+        "authorId": "93596028",
+        "name": "H. Shum"
+      }
+    ],
+    "abstract": "We present DINO (\\textbf{D}ETR with \\textbf{I}mproved de\\textbf{N}oising anch\\textbf{O}r boxes), a state-of-the-art end-to-end object detector. % in this paper. DINO improves over previous DETR-like models in performance and efficiency by using a contrastive way for denoising training, a mixed query selection method for anchor initialization, and a look forward twice scheme for box prediction. DINO achieves $49.4$AP in $12$ epochs and $51.3$AP in $24$ epochs on COCO with a ResNet-50 backbone and multi-scale features, yielding a significant improvement of $\\textbf{+6.0}$\\textbf{AP} and $\\textbf{+2.7}$\\textbf{AP}, respectively, compared to DN-DETR, the previous best DETR-like model. DINO scales well in both model size and data size. Without bells and whistles, after pre-training on the Objects365 dataset with a SwinL backbone, DINO obtains the best results on both COCO \\texttt{val2017} ($\\textbf{63.2}$\\textbf{AP}) and \\texttt{test-dev} (\\textbf{$\\textbf{63.3}$AP}). Compared to other models on the leaderboard, DINO significantly reduces its model size and pre-training data size while achieving better results. Our code will be available at \\url{https://github.com/IDEACVR/DINO}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bbc57e1b3cf90e09b64377f13de455793bc81ad5",
+    "externalIds": {
+      "DBLP": "conf/nips/ZhouLLDHZDCLL22",
+      "ArXiv": "2202.09368",
+      "DOI": "10.52202/068431-0515",
+      "CorpusId": 247011948
+    },
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 696,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.09368, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1929135",
+        "name": "Yan-Quan Zhou"
+      },
+      {
+        "authorId": "2055852528",
+        "name": "Tao Lei"
+      },
+      {
+        "authorId": "46935491",
+        "name": "Han-Chu Liu"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2406193831",
+        "name": "Vincent Zhao"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2111317372",
+        "name": "Zhifeng Chen"
+      },
+      {
+        "authorId": "1397917613",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2926266",
+        "name": "J. Laudon"
+      }
+    ],
+    "abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choice method. Instead of letting tokens select the top-k experts, we have experts selecting the top-k tokens. As a result, each token can be routed to a variable number of experts and each expert can have a fixed bucket size. We systematically study pre-training speedups using the same computational resources of the Switch Transformer top-1 and GShard top-2 gating of prior work and find that our method improves training convergence time by more than 2x. For the same computational cost, our method demonstrates higher performance in fine-tuning 11 selected tasks in the GLUE and SuperGLUE benchmarks. For a smaller activation cost, our method outperforms the T5 dense model in 7 out of the 11 tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c2536182c010c41941e8a031071a1880c34cec60",
+    "externalIds": {
+      "ArXiv": "2202.01169",
+      "DBLP": "journals/corr/abs-2202-01169",
+      "CorpusId": 246473179
+    },
+    "title": "Unified Scaling Laws for Routed Language Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 264,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.01169, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31993415",
+        "name": "Aidan Clark"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "40895205",
+        "name": "Aurelia Guy"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "35550664",
+        "name": "Michela Paganini"
+      },
+      {
+        "authorId": "46616544",
+        "name": "Jordan Hoffmann"
+      },
+      {
+        "authorId": "2143374656",
+        "name": "Bogdan Damoc"
+      },
+      {
+        "authorId": "3135881",
+        "name": "Blake A. Hechtman"
+      },
+      {
+        "authorId": "2072572294",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "148016269",
+        "name": "Sebastian Borgeaud"
+      },
+      {
+        "authorId": "47568983",
+        "name": "George van den Driessche"
+      },
+      {
+        "authorId": "2143538252",
+        "name": "Eliza Rutherford"
+      },
+      {
+        "authorId": "4629007",
+        "name": "T. Hennigan"
+      },
+      {
+        "authorId": "2124469920",
+        "name": "Matthew G. Johnson"
+      },
+      {
+        "authorId": "2143434227",
+        "name": "Katie Millican"
+      },
+      {
+        "authorId": "51042571",
+        "name": "Albin Cassirer"
+      },
+      {
+        "authorId": "2115601070",
+        "name": "Chris Jones"
+      },
+      {
+        "authorId": "118801223",
+        "name": "Elena Buchatskaya"
+      },
+      {
+        "authorId": "2508525",
+        "name": "D. Budden"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      },
+      {
+        "authorId": "2217144",
+        "name": "Simon Osindero"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "34269227",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      }
+    ],
+    "abstract": "The performance of a language model has been shown to be effectively modeled as a power-law in its parameter count. Here we study the scaling behaviors of Routing Networks: architectures that conditionally use only a subset of their parameters while processing an input. For these models, parameter count and computational requirement form two independent axes along which an increase leads to better performance. In this work we derive and justify scaling laws defined on these two variables which generalize those known for standard language models and describe the performance of a wide range of routing architectures trained via three different techniques. Afterwards we provide two applications of these laws: first deriving an Effective Parameter Count along which all models scale at the same rate, and then using the scaling coefficients to give a quantitative comparison of the three routing techniques considered. Our analysis derives from an extensive evaluation of Routing Networks across five orders of magnitude of size, including models with hundreds of experts and hundreds of billions of parameters.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c3d086d0f50ff9efa28d56616ed127547d836e55",
+    "externalIds": {
+      "ArXiv": "2201.08377",
+      "DBLP": "conf/cvpr/GirdharSRMJM22",
+      "DOI": "10.1109/CVPR52688.2022.01563",
+      "CorpusId": 246063865
+    },
+    "title": "Omnivore: A Single Model for Many Visual Modalities",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 304,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2201.08377",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.08377, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3102850",
+        "name": "Rohit Girdhar"
+      },
+      {
+        "authorId": "152964870",
+        "name": "Mannat Singh"
+      },
+      {
+        "authorId": "2444781",
+        "name": "Nikhil Ravi"
+      },
+      {
+        "authorId": "1803520",
+        "name": "L. Maaten"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "1806773",
+        "name": "Ishan Misra"
+      }
+    ],
+    "abstract": "Prior work has studied different visual modalities in isolation and developed separate architectures for recognition of images, videos, and 3D data. Instead, in this paper, we propose a single model which excels at classifying images, videos, and single-view 3D data using exactly the same model parameters. Our ‘OMNIVORE’ model leverages the flexibility of transformer-based architectures and is trained jointly on classification tasks from different modalities. Omnivoreis simple to train, uses off-the-shelf standard datasets, and performs at-par or better than modality-specific models of the same size. A single Omnivoremodel obtains 86.0% on ImageNet, 84.1% on Kinetics, and 67.1% on SUN RGB-D. After finetuning, our models outperform prior work on a variety of vision tasks and generalize across modalities. OMNIVORE's shared visual representation naturally enables cross-modal recognition without access to correspondences between modalities. We hope our results motivate researchers to model visual modalities together.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "80d0116d77beeded0c23cf48946d9d10d4faee14",
+    "externalIds": {
+      "ArXiv": "2112.06905",
+      "DBLP": "journals/corr/abs-2112-06905",
+      "CorpusId": 245124124
+    },
+    "title": "GLaM: Efficient Scaling of Language Models with Mixture-of-Experts",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 1160,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.06905, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2058177533",
+        "name": "Simon Tong"
+      },
+      {
+        "authorId": "150077954",
+        "name": "Dmitry Lepikhin"
+      },
+      {
+        "authorId": "2145139570",
+        "name": "Yuanzhong Xu"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "40625240",
+        "name": "Adams Wei Yu"
+      },
+      {
+        "authorId": "2345617",
+        "name": "Orhan Firat"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "2096916416",
+        "name": "L. Fedus"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "1389392654",
+        "name": "Zongwei Zhou"
+      },
+      {
+        "authorId": null,
+        "name": "Tao Wang"
+      },
+      {
+        "authorId": "2153608756",
+        "name": "Yu Emma Wang"
+      },
+      {
+        "authorId": "20825661",
+        "name": "Kellie Webster"
+      },
+      {
+        "authorId": "97905921",
+        "name": "Marie Pellat"
+      },
+      {
+        "authorId": "2148473059",
+        "name": "Kevin Robinson"
+      },
+      {
+        "authorId": "1398655031",
+        "name": "K. Meier-Hellstern"
+      },
+      {
+        "authorId": "2145151992",
+        "name": "Toju Duke"
+      },
+      {
+        "authorId": "2065639113",
+        "name": "Lucas Dixon"
+      },
+      {
+        "authorId": "1556095165",
+        "name": "Kun Zhang"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "48607963",
+        "name": "Yonghui Wu"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      },
+      {
+        "authorId": "2052275005",
+        "name": "Claire Cui"
+      }
+    ],
+    "abstract": "Scaling language models with more data, compute and parameters has driven significant progress in natural language processing. For example, thanks to scaling, GPT-3 was able to achieve strong results on in-context learning tasks. However, training these large dense models requires significant amounts of computing resources. In this paper, we propose and develop a family of language models named GLaM (Generalist Language Model), which uses a sparsely activated mixture-of-experts architecture to scale the model capacity while also incurring substantially less training cost compared to dense variants. The largest GLaM has 1.2 trillion parameters, which is approximately 7x larger than GPT-3. It consumes only 1/3 of the energy used to train GPT-3 and requires half of the computation flops for inference, while still achieving better overall zero-shot and one-shot performance across 29 NLP tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8690d62d4bbbd0b1ed5e1f25320d10853bfbeb01",
+    "externalIds": {
+      "ArXiv": "2106.05974",
+      "DBLP": "conf/nips/RiquelmePMNJPKH21",
+      "CorpusId": 235417196
+    },
+    "title": "Scaling Vision with Sparse Mixture of Experts",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 983,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.05974, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145814174",
+        "name": "C. Riquelme"
+      },
+      {
+        "authorId": "1794202",
+        "name": "J. Puigcerver"
+      },
+      {
+        "authorId": "40608942",
+        "name": "Basil Mustafa"
+      },
+      {
+        "authorId": "2060377146",
+        "name": "Maxim Neumann"
+      },
+      {
+        "authorId": "2068720",
+        "name": "Rodolphe Jenatton"
+      },
+      {
+        "authorId": "1809220",
+        "name": "André Susano Pinto"
+      },
+      {
+        "authorId": "51027911",
+        "name": "Daniel Keysers"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer Vision, however, almost all performant networks are\"dense\", that is, every input is processed by every parameter. We present a Vision MoE (V-MoE), a sparse version of the Vision Transformer, that is scalable and competitive with the largest dense networks. When applied to image recognition, V-MoE matches the performance of state-of-the-art networks, while requiring as little as half of the compute at inference time. Further, we propose an extension to the routing algorithm that can prioritize subsets of each input across the entire batch, leading to adaptive per-image compute. This allows V-MoE to trade-off performance and compute smoothly at test-time. Finally, we demonstrate the potential of V-MoE to scale vision models, and train a 15B parameter model that attains 90.35% on ImageNet.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "b15ea460c77a4ee8aa159a30ab0331deedfcf392",
+    "externalIds": {
+      "DBLP": "conf/icml/LewisBDGZ21",
+      "ArXiv": "2103.16716",
+      "CorpusId": 232428341
+    },
+    "title": "BASE Layers: Simplifying Training of Large, Sparse Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 379,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.16716, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "2116473",
+        "name": "Shruti Bhosale"
+      },
+      {
+        "authorId": "3239480",
+        "name": "Tim Dettmers"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We introduce a new balanced assignment of experts (BASE) layer for large language models that greatly simplifies existing high capacity sparse layers. Sparse layers can dramatically improve the efficiency of training and inference by routing each token to specialized expert modules that contain only a small fraction of the model parameters. However, it can be difficult to learn balanced routing functions that make full use of the available experts; existing approaches typically use routing heuristics or auxiliary expert-balancing loss functions. In contrast, we formulate token-to-expert allocation as a linear assignment problem, allowing an optimal assignment in which each expert receives an equal number of tokens. This optimal assignment scheme improves efficiency by guaranteeing balanced compute loads, and also simplifies training by not requiring any new hyperparameters or auxiliary losses. Code is publicly released at https://github.com/pytorch/fairseq/",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1200ce0e0f604f742db6d7fb05c97a8efbc8a8d4",
+    "externalIds": {
+      "ArXiv": "2102.13086",
+      "DBLP": "conf/cvpr/ZhouKK22",
+      "DOI": "10.1109/CVPR52688.2022.00742",
+      "CorpusId": 232045899
+    },
+    "title": "Simple Multi-dataset Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 154,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2102.13086",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.13086, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1390555183",
+        "name": "Xingyi Zhou"
+      },
+      {
+        "authorId": "145231047",
+        "name": "V. Koltun"
+      },
+      {
+        "authorId": "2562966",
+        "name": "Philipp Krähenbühl"
+      }
+    ],
+    "abstract": "How do we build a general and broad object detection system? We use all labels of all concepts ever annotated. These labels span diverse datasets with potentially inconsistent taxonomies. In this paper, we present a simple method for training a unified detector on multiple large-scale datasets. We use dataset-specific training protocols and losses, but share a common detection architecture with dataset-specific outputs. We show how to automatically integrate these dataset-specific outputs into a common semantic taxonomy. In contrast to prior work, our approach does not require manual taxonomy reconciliation. Experiments show our learned taxonomy outperforms a expert-designed taxonomy in all datasets. Our multi-dataset detector performs as well as dataset-specific models on each training domain, and can generalize to new unseen dataset without fine-tuning on them. Code is available at https://github.com/xingyizhou/UniDet.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "26c4a3f8852ad90415e366d7cb4bc86f1bdc75ad",
+    "externalIds": {
+      "DBLP": "journals/pami/KapidisPV23",
+      "MAG": "3129222583",
+      "DOI": "10.1109/TPAMI.2021.3061479",
+      "CorpusId": 232039185,
+      "PubMed": "33621171"
+    },
+    "title": "Multi-Dataset, Multitask Learning of Egocentric Vision Tasks",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/34/4359286/09361177.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPAMI.2021.3061479?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPAMI.2021.3061479, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51463388",
+        "name": "G. Kapidis"
+      },
+      {
+        "authorId": "1754666",
+        "name": "R. Poppe"
+      },
+      {
+        "authorId": "1739867",
+        "name": "R. Veltkamp"
+      }
+    ],
+    "abstract": "For egocentric vision tasks such as action recognition, there is a relative scarcity of labeled data. This increases the risk of overfitting during training. In this paper, we address this issue by introducing a multitask learning scheme that employs related tasks as well as related datasets in the training process. Related tasks are indicative of the performed action, such as the presence of objects and the position of the hands. By including related tasks as additional outputs to be optimized, action recognition performance typically increases because the network focuses on relevant aspects in the video. Still, the training data is limited to a single dataset because the set of action labels usually differs across datasets. To mitigate this issue, we extend the multitask paradigm to include datasets with different label sets. During training, we effectively mix batches with samples from multiple datasets. Our experiments on egocentric action recognition in the EPIC-Kitchens, EGTEA Gaze+, ADL and Charades-EGO datasets demonstrate the improvements of our approach over single-dataset baselines. On EGTEA we surpass the current state-of-the-art by 2.47 percent. We further illustrate the cross-dataset task correlations that emerge automatically with our novel training scheme.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fdacf2a732f55befdc410ea927091cad3b791f13",
+    "externalIds": {
+      "DBLP": "journals/jmlr/FedusZS22",
+      "ArXiv": "2101.03961",
+      "CorpusId": 231573431
+    },
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "venue": "Journal of machine learning research",
+    "year": 2021,
+    "citationCount": 3707,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.03961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communication and computational costs. Our proposed training techniques help wrangle the instabilities and we show large sparse models may be trained, for the first time, with lower precision (bfloat16) formats. We design models based off T5-Base and T5-Large to obtain up to 7x increases in pre-training speed with the same computational resources. These improvements extend into multilingual settings where we measure gains over the mT5-Base version across all 101 languages. Finally, we advance the current scale of language models by pre-training up to trillion parameter models on the\"Colossal Clean Crawled Corpus\"and achieve a 4x speedup over the T5-XXL model.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "705209d1703a736d5ece5725c1c6d57ae925c680",
+    "externalIds": {
+      "DBLP": "conf/focs/BernsteinGS20",
+      "ArXiv": "2009.02584",
+      "MAG": "3083570594",
+      "DOI": "10.1109/FOCS46700.2020.00108",
+      "CorpusId": 221516444
+    },
+    "title": "Deterministic Decremental Reachability, SCC, and Shortest Paths via Directed Expanders and Congestion Balancing",
+    "venue": "IEEE Annual Symposium on Foundations of Computer Science",
+    "year": 2020,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2009.02584",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.02584, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2061134218",
+        "name": "A. Bernstein"
+      },
+      {
+        "authorId": "1491009274",
+        "name": "Maximilian Probst Gutenberg"
+      },
+      {
+        "authorId": "2993556",
+        "name": "Thatchaphol Saranurak"
+      }
+    ],
+    "abstract": "Let $G=(V, E, w)$ be a weighted, directed graph subject to a sequence of adversarial edge deletions. In the decremental single-source reachability problem (SSR), we are given a fixed source $s$ and the goal is to maintain a data structure that can answer path-queries $s\\rightarrowtail v$ for any $v\\in V$. In the more general single-source shortest paths (SSSP) problem the goal is to return an approximate shortest path to $v$, and in the SCC problem the goal is to maintain strongly connected components of $G$ and to answer path queries within each component. All of these problems have been very actively studied over the past two decades, but all the fast algorithms are randomized and, more significantly, they can only answer path queries if they assume a weaker model: they assume an oblivious adversary which is not adaptive and must fix the update sequence in advance. This assumption significantly limits the use of these data structures, most notably preventing them from being used as subroutines in static algorithms. All the above problems are notoriously difficult in the adaptive setting. In fact, the state-of-the-art is still the Even and Shiloach tree, which dates back all the way to 1981 [1] and achieves total update time $O(mn)$. We present the first algorithms to break through this barrier. •deterministic decremental SSR/SSC with total update time $mn^{2/3+o(1)}$ •deterministic decremental SSSP with total update time $n^{2+2/3+o(1)}$ To achieve these results, we develop two general techniques for working with dynamic graphs. The first generalizes expander-based tools to dynamic directed graphs. While these tools have already proven very successful in undirected graphs, the underlying expander decomposition they rely on does not exist in directed graphs. We thus need to develop an efficient framework for using expanders in directed graphs, as well as overcome several technical challenges in processing directed expanders. We establish several powerful primitives that we hope will pave the way for other expander-based algorithms in directed graphs. The second technique, which we call congestion balancing, provides a new method for maintaining flow under adversarial deletions. The results above use this technique to maintain an embedding of an expander. The technique is quite general, and to highlight its power, we use it to achieve the following additional result: •The first near-optimal algorithm for decremental bipartite matching",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b405f4213700a32f9773a6f397fa80b3c8621457",
+    "externalIds": {
+      "DBLP": "journals/pami/AkrourTP22",
+      "ArXiv": "2006.05911",
+      "DOI": "10.1109/TPAMI.2021.3103132",
+      "CorpusId": 219558472,
+      "PubMed": "34375280"
+    },
+    "title": "Continuous Action Reinforcement Learning From a Mixture of Interpretable Experts",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2020,
+    "citationCount": 31,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2006.05911",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.05911, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1688702",
+        "name": "R. Akrour"
+      },
+      {
+        "authorId": "35387097",
+        "name": "Davide Tateo"
+      },
+      {
+        "authorId": "144719340",
+        "name": "J. Peters"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) has demonstrated its ability to solve high dimensional tasks by leveraging non-linear function approximators. However, these successes are mostly achieved by ’black-box’ policies in simulated domains. When deploying RL to the real world, several concerns regarding the use of a ’black-box’ policy might be raised. In order to make the learned policies more transparent, we propose in this paper a policy iteration scheme that retains a complex function approximator for its internal value predictions but constrains the policy to have a concise, hierarchical, and human-readable structure, based on a mixture of interpretable experts. Each expert selects a primitive action according to a distance to a prototypical state. A key design decision to keep such experts interpretable is to select the prototypical states from trajectory data. The main technical contribution of the paper is to address the challenges introduced by this non-differentiable prototypical state selection procedure. Experimentally, we show that our proposed algorithm can learn compelling policies on continuous action deep RL benchmarks, matching the performance of neural network based policies, but returning policies that are more amenable to human inspection than neural network or linear-in-feature policies.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c5ff974a69fd0c760b4855b819e61e89f31cfffe",
+    "externalIds": {
+      "MAG": "2983943451",
+      "DBLP": "conf/iccv/0005LZPYZLS19",
+      "DOI": "10.1109/ICCV.2019.00852",
+      "CorpusId": 207967883
+    },
+    "title": "Objects365: A Large-Scale, High-Quality Dataset for Object Detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 1011,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2019.00852?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2019.00852, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143993776",
+        "name": "Shuai Shao"
+      },
+      {
+        "authorId": "6000385",
+        "name": "Zeming Li"
+      },
+      {
+        "authorId": "123437116",
+        "name": "Tianyuan Zhang"
+      },
+      {
+        "authorId": "2113567716",
+        "name": "Chao Peng"
+      },
+      {
+        "authorId": "2116565951",
+        "name": "Gang Yu"
+      },
+      {
+        "authorId": "50875121",
+        "name": "Xiangyu Zhang"
+      },
+      {
+        "authorId": "2152913006",
+        "name": "Jing Li"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "In this paper, we introduce a new large-scale object detection dataset, Objects365, which has 365 object categories over 600K training images. More than 10 million, high-quality bounding boxes are manually labeled through a three-step, carefully designed annotation pipeline. It is the largest object detection dataset (with full annotation) so far and establishes a more challenging benchmark for the community. Objects365 can serve as a better feature learning dataset for localization-sensitive tasks like object detection and semantic segmentation. The Objects365 pre-trained models significantly outperform ImageNet pre-trained models with 5.6 points gain (42 vs 36.4) based on the standard setting of 90K iterations on COCO benchmark. Even compared with much long training time like 540K iterations, our Objects365 pretrained model with 90K iterations still have 2.7 points gain (42 vs 39.3). Meanwhile, the finetuning time can be greatly reduced (up to 10 times) when reaching the same accuracy. Better generalization ability of Object365 has also been verified on CityPersons, VOC segmentation, and ADE tasks. The dataset as well as the pretrained-models have been released at www.objects365.org.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d0f30b0638a7badb1aad695fc180a663fad74f71",
+    "externalIds": {
+      "MAG": "2967452169",
+      "DBLP": "conf/iccv/YangWC19",
+      "ArXiv": "1908.05217",
+      "DOI": "10.1109/ICCV.2019.00990",
+      "CorpusId": 199577754
+    },
+    "title": "Detecting 11K Classes: Large Scale Object Detection Without Fine-Grained Bounding Boxes",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 30,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1908.05217",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.05217, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115537318",
+        "name": "Hao Yang"
+      },
+      {
+        "authorId": "2886966",
+        "name": "Hao-Yu Wu"
+      },
+      {
+        "authorId": "2149051088",
+        "name": "Hao Chen"
+      }
+    ],
+    "abstract": "Recent advances in deep learning greatly boost the performance of object detection. State-of-the-art methods such as Faster-RCNN, FPN and R-FCN have achieved high accuracy in challenging benchmark datasets. However, these methods require fully annotated object bounding boxes for training, which are incredibly hard to scale up due to the high annotation cost. Weakly-supervised methods, on the other hand, only require image-level labels for training, but the performance is far below their fully-supervised counterparts. In this paper, we propose a semi-supervised large scale fine-grained detection method, which only needs bounding box annotations of a smaller number of coarse-grained classes and image-level labels of large scale fine-grained classes, and can detect all classes at nearly fully-supervised accuracy. We achieve this by utilizing the correlations between coarse-grained and fine-grained classes with shared backbone, soft-attention based proposal re-ranking, and a dual-level memory module. Experiment results show that our methods can achieve close accuracy on object detection to state-of-the-art fully-supervised methods on two large scale datasets, ImageNet and OpenImages, with only a small fraction of fully annotated classes.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f902a64f7d08aaa6bfca7463e8729952ddc6134e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/GuptaDG19",
+      "MAG": "2965565989",
+      "ArXiv": "1908.03195",
+      "DOI": "10.1109/CVPR.2019.00550",
+      "CorpusId": 195441339
+    },
+    "title": "LVIS: A Dataset for Large Vocabulary Instance Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 1713,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1908.03195",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.03195, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2337947187",
+        "name": "Agrim Gupta"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "Progress on object detection is enabled by datasets that focus the research community’s attention on open challenges. This process led us from simple images to complex scenes and from bounding boxes to segmentation masks. In this work, we introduce LVIS (pronounced ‘el-vis’): a new dataset for Large Vocabulary Instance Segmentation. We plan to collect 2.2 million high-quality instance segmentation masks for over 1000 entry-level object categories in 164k images. Due to the Zipfian distribution of categories in natural images, LVIS naturally has a long tail of categories with few training samples. Given that state-of-the-art deep learning methods for object detection perform poorly in the low-sample regime, we believe that our dataset poses an important and exciting new scientific challenge. LVIS is available at http://www.lvisdataset.org.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2749519e0612c5ccc1f9375439d258a2f782c2aa",
+    "externalIds": {
+      "MAG": "2953204929",
+      "DBLP": "journals/corr/abs-1904-04402",
+      "ArXiv": "1904.04402",
+      "DOI": "10.1109/CVPR.2019.00746",
+      "CorpusId": 104292107
+    },
+    "title": "Towards Universal Object Detection by Domain Attention",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 216,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.04402",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.04402, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108076606",
+        "name": "Xudong Wang"
+      },
+      {
+        "authorId": "1773408",
+        "name": "Zhaowei Cai"
+      },
+      {
+        "authorId": "2036170",
+        "name": "Dashan Gao"
+      },
+      {
+        "authorId": "1699559",
+        "name": "N. Vasconcelos"
+      }
+    ],
+    "abstract": "Despite increasing efforts on universal representations for visual recognition, few have addressed object detection. In this paper, we develop an effective and efficient universal object detection system that is capable of working on various image domains, from human faces and traffic signs to medical CT images. Unlike multi-domain models, this universal model does not require prior knowledge of the domain of interest. This is achieved by the introduction of a new family of adaptation layers, based on the principles of squeeze and excitation, and a new domain-attention mechanism. In the proposed universal detector, all parameters and computations are shared across domains, and a single network processes all domains all the time. Experiments, on a newly established universal object detection benchmark of 11 diverse datasets, show that the proposed detector outperforms a bank of individual detectors, a multi-domain detector, and a baseline universal detector, with a 1.3x parameter increase over a single-domain baseline detector. The code and benchmark are available at http://www.svcl.ucsd.edu/projects/universal-detection/.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "1c0150d2eb50ce33ad1e6e0e7c1bff0503e5bdc7",
+    "externalIds": {
+      "DBLP": "conf/cvpr/InoueFYA18",
+      "MAG": "2795124604",
+      "ArXiv": "1803.11365",
+      "DOI": "10.1109/CVPR.2018.00525",
+      "CorpusId": 4486024
+    },
+    "title": "Cross-Domain Weakly-Supervised Object Detection Through Progressive Domain Adaptation",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 619,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1803.11365",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.11365, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47036547",
+        "name": "Naoto Inoue"
+      },
+      {
+        "authorId": "25371473",
+        "name": "Ryosuke Furuta"
+      },
+      {
+        "authorId": "145572097",
+        "name": "T. Yamasaki"
+      },
+      {
+        "authorId": "1712839",
+        "name": "K. Aizawa"
+      }
+    ],
+    "abstract": "Can we detect common objects in a variety of image domains without instance-level annotations? In this paper, we present a framework for a novel task, cross-domain weakly supervised object detection, which addresses this question. For this paper, we have access to images with instance-level annotations in a source domain (e.g., natural image) and images with image-level annotations in a target domain (e.g., watercolor). In addition, the classes to be detected in the target domain are all or a subset of those in the source domain. Starting from a fully supervised object detector, which is pre-trained on the source domain, we propose a two-step progressive domain adaptation technique by fine-tuning the detector on two types of artificially and automatically generated samples. We test our methods on our newly collected datasets1 containing three image domains, and achieve an improvement of approximately 5 to 20 percentage points in terms of mean average precision (mAP) compared to the best-performing baselines.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4081de7e0f94e7e0d7b645c298d7768698d05774",
+    "externalIds": {
+      "ArXiv": "1803.10082",
+      "MAG": "2795026356",
+      "DBLP": "conf/cvpr/RebuffiBV18",
+      "DOI": "10.1109/CVPR.2018.00847",
+      "CorpusId": 215822736
+    },
+    "title": "Efficient Parametrization of Multi-domain Deep Neural Networks",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 385,
+    "openAccessPdf": {
+      "url": "https://www.pure.ed.ac.uk/ws/files/57981621/Rebuffi18.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.10082, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8478422",
+        "name": "Sylvestre-Alvise Rebuffi"
+      },
+      {
+        "authorId": "2518212",
+        "name": "Hakan Bilen"
+      },
+      {
+        "authorId": "1687524",
+        "name": "A. Vedaldi"
+      }
+    ],
+    "abstract": "A practical limitation of deep neural networks is their high degree of specialization to a single task and visual domain. Recently, inspired by the successes of transfer learning, several authors have proposed to learn instead universal feature extractors that, used as the first stage of any deep network, work well for several tasks and domains simultaneously. Nevertheless, such universal features are still somewhat inferior to specialized networks. To overcome this limitation, in this paper we propose to consider instead universal parametric families of neural networks, which still contain specialized problem-specific models, but differing only by a small number of parameters. We study different designs for such parametrizations, including series and parallel residual adapters, joint adapter compression, and parameter allocations, and empirically identify the ones that yield the highest compression. We show that, in order to maximize performance, it is necessary to adapt both shallow and deep layers of a deep network, but the required changes are very small. We also show that these universal parametrization are very effective for transfer learning, where they outperform traditional fine-tuning techniques.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c562e95b7906066be4210d00c4f6187475e6e13a",
+    "externalIds": {
+      "MAG": "2775397671",
+      "DBLP": "journals/corr/abs-1711-10535",
+      "ArXiv": "1711.10535",
+      "DOI": "10.1109/CVPR.2018.00965",
+      "CorpusId": 3365647
+    },
+    "title": "Deep Lesion Graphs in the Wild: Relationship Learning and Organization of Significant Radiology Image Findings in a Diverse Large-Scale Lesion Database",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 169,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1711.10535",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.10535, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145829312",
+        "name": "Ke Yan"
+      },
+      {
+        "authorId": "2026596",
+        "name": "Xiaosong Wang"
+      },
+      {
+        "authorId": "50706692",
+        "name": "Le Lu"
+      },
+      {
+        "authorId": "47059386",
+        "name": "Ling Zhang"
+      },
+      {
+        "authorId": "2964822",
+        "name": "Adam P. Harrison"
+      },
+      {
+        "authorId": "3774191",
+        "name": "M. Bagheri"
+      },
+      {
+        "authorId": "2388128104",
+        "name": "R. Summers"
+      }
+    ],
+    "abstract": "Radiologists in their daily work routinely find and annotate significant abnormalities on a large number of radiology images. Such abnormalities, or lesions, have collected over years and stored in hospitals' picture archiving and communication systems. However, they are basically unsorted and lack semantic annotations like type and location. In this paper, we aim to organize and explore them by learning a deep feature representation for each lesion. A large-scale and comprehensive dataset, DeepLesion, is introduced for this task. DeepLesion contains bounding boxes and size measurements of over 32K lesions. To model their similarity relationship, we leverage multiple supervision information including types, self-supervised location coordinates, and sizes. They require little manual annotation effort but describe useful attributes of the lesions. Then, a triplet network is utilized to learn lesion embeddings with a sequential sampling strategy to depict their hierarchical similarity structure. Experiments show promising qualitative and quantitative results on lesion retrieval, clustering, and classification. The learned embeddings can be further employed to build a lesion graph for various clinically useful applications. An algorithm for intra-patient lesion matching is proposed and validated with experiments.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8ecf9e6428edd33986e8c6a143870e57142fd5a1",
+    "externalIds": {
+      "MAG": "2769221444",
+      "DBLP": "journals/corr/abs-1711-10398",
+      "ArXiv": "1711.10398",
+      "DOI": "10.1109/CVPR.2018.00418",
+      "CorpusId": 32378562
+    },
+    "title": "DOTA: A Large-Scale Dataset for Object Detection in Aerial Images",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 2799,
+    "openAccessPdf": {
+      "url": "https://elib.dlr.de/123453/1/CVPR2018_DOTA.pdf",
+      "status": "GREEN",
+      "license": "mit",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.10398, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39943835",
+        "name": "Gui-Song Xia"
+      },
+      {
+        "authorId": "145905113",
+        "name": "X. Bai"
+      },
+      {
+        "authorId": "2023933935",
+        "name": "Jian Ding"
+      },
+      {
+        "authorId": "145773449",
+        "name": "Zhen Zhu"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "33642939",
+        "name": "Jiebo Luo"
+      },
+      {
+        "authorId": "1777167",
+        "name": "M. Datcu"
+      },
+      {
+        "authorId": "8111020",
+        "name": "M. Pelillo"
+      },
+      {
+        "authorId": "9802604",
+        "name": "Liangpei Zhang"
+      }
+    ],
+    "abstract": "Object detection is an important and challenging problem in computer vision. Although the past decade has witnessed major advances in object detection in natural scenes, such successes have been slow to aerial imagery, not only because of the huge variation in the scale, orientation and shape of the object instances on the earth's surface, but also due to the scarcity of well-annotated datasets of objects in aerial scenes. To advance object detection research in Earth Vision, also known as Earth Observation and Remote Sensing, we introduce a large-scale Dataset for Object deTection in Aerial images (DOTA). To this end, we collect 2806 aerial images from different sensors and platforms. Each image is of the size about 4000 Ã— 4000 pixels and contains objects exhibiting a wide variety of scales, orientations, and shapes. These DOTA images are then annotated by experts in aerial image interpretation using 15 common object categories. The fully annotated DOTA images contains 188, 282 instances, each of which is labeled by an arbitrary (8 d.o.f.) quadrilateral. To build a baseline for object detection in Earth Vision, we evaluate state-of-the-art object detection algorithms on DOTA. Experiments demonstrate that DOTA well represents real Earth Vision applications and are quite challenging.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0e5988dbdc5d48e3dd8c3e7c1b486ba353e9accb",
+    "externalIds": {
+      "MAG": "2927492090",
+      "ArXiv": "1703.00900",
+      "DBLP": "journals/dc/Fischer20",
+      "DOI": "10.1007/s00446-018-0344-4",
+      "CorpusId": 20951773
+    },
+    "title": "Improved deterministic distributed matching via rounding",
+    "venue": "Distributed computing",
+    "year": 2017,
+    "citationCount": 72,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.00900, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35266350",
+        "name": "Manuela Fischer"
+      }
+    ],
+    "abstract": "We present improved deterministic distributed algorithms for a number of well-studied matching problems, which are simpler, faster, more accurate, and/or more general than their known counterparts. The common denominator of these results is a deterministic distributed rounding method for certain linear programs, which is the first such rounding method, to our knowledge. A sampling of our end results is as follows: An Olog2Δ·logn\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^2 \\Delta \\cdot \\log n\\right) \\mathclose {}$$\\end{document}-round deterministic distributed algorithm for computing a maximal matching, in n-node graphs with maximum degree Δ\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$\\Delta $$\\end{document}. This is the first improvement in about 20 years over the celebrated O(log4n)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O(\\log ^4 n)$$\\end{document}-round algorithm of Hańćkowiak, Karoński, and Panconesi [SODA’98, PODC’99]. A deterministic distributed algorithm for computing a (2+ε)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$(2+\\varepsilon )$$\\end{document}-approximation of maximum matching in Olog2Δ·log1ε+log∗n\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^2 \\Delta \\cdot \\log \\frac{1}{\\varepsilon } + \\log ^ * n\\right) \\mathclose {}$$\\end{document} rounds. This is exponentially faster than the classic O(Δ+log∗n)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O(\\Delta +\\log ^* n)$$\\end{document}-round 2-approximation of Panconesi and Rizzi [DIST’01]. With some modifications, the algorithm can also find an almost maximal matching which leaves only an ε\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$\\varepsilon $$\\end{document}-fraction of the edges on unmatched nodes. An Olog2Δ·log1ε·log1+εW+log∗n\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^2 \\Delta \\cdot \\log \\frac{1}{\\varepsilon } \\cdot \\log _{1+\\varepsilon } W + \\log ^ * n\\right) \\mathclose {}$$\\end{document}-round deterministic distributed algorithm for computing a (2+ε)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$(2+\\varepsilon )$$\\end{document}-approximation of a maximum weighted matching, and also for the more general problem of maximum weighted b-matching. Here, W denotes the maximum normalized weight. These improve over the Olog4n·log1+εW\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^4 n \\cdot \\log _{1+\\varepsilon } W\\right) \\mathclose {}$$\\end{document}-round (6+ε)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$(6+\\varepsilon )$$\\end{document}-approximation algorithm of Panconesi and Sozio [DIST’10]. An Olog2Δ·logn\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^2 \\Delta \\cdot \\log n\\right) \\mathclose {}$$\\end{document}-round deterministic distributed algorithm for computing a maximal matching, in n-node graphs with maximum degree Δ\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$\\Delta $$\\end{document}. This is the first improvement in about 20 years over the celebrated O(log4n)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O(\\log ^4 n)$$\\end{document}-round algorithm of Hańćkowiak, Karoński, and Panconesi [SODA’98, PODC’99]. A deterministic distributed algorithm for computing a (2+ε)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$(2+\\varepsilon )$$\\end{document}-approximation of maximum matching in Olog2Δ·log1ε+log∗n\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^2 \\Delta \\cdot \\log \\frac{1}{\\varepsilon } + \\log ^ * n\\right) \\mathclose {}$$\\end{document} rounds. This is exponentially faster than the classic O(Δ+log∗n)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O(\\Delta +\\log ^* n)$$\\end{document}-round 2-approximation of Panconesi and Rizzi [DIST’01]. With some modifications, the algorithm can also find an almost maximal matching which leaves only an ε\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$\\varepsilon $$\\end{document}-fraction of the edges on unmatched nodes. An Olog2Δ·log1ε·log1+εW+log∗n\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^2 \\Delta \\cdot \\log \\frac{1}{\\varepsilon } \\cdot \\log _{1+\\varepsilon } W + \\log ^ * n\\right) \\mathclose {}$$\\end{document}-round deterministic distributed algorithm for computing a (2+ε)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$(2+\\varepsilon )$$\\end{document}-approximation of a maximum weighted matching, and also for the more general problem of maximum weighted b-matching. Here, W denotes the maximum normalized weight. These improve over the Olog4n·log1+εW\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$O\\mathopen {}\\left( \\log ^4 n \\cdot \\log _{1+\\varepsilon } W\\right) \\mathclose {}$$\\end{document}-round (6+ε)\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$(6+\\varepsilon )$$\\end{document}-approximation algorithm of Panconesi and Sozio [DIST’10].",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+    "externalIds": {
+      "DBLP": "journals/corr/ShazeerMMDLHD17",
+      "MAG": "2952339051",
+      "ArXiv": "1701.06538",
+      "CorpusId": 12462234
+    },
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 4382,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.06538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "1861312",
+        "name": "Azalia Mirhoseini"
+      },
+      {
+        "authorId": "2275364713",
+        "name": "Krzysztof Maziarz"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational efficiency on modern GPU clusters. We introduce a Sparsely-Gated Mixture-of-Experts layer (MoE), consisting of up to thousands of feed-forward sub-networks. A trainable gating network determines a sparse combination of these experts to use for each example. We apply the MoE to the tasks of language modeling and machine translation, where model capacity is critical for absorbing the vast quantities of knowledge available in the training corpora. We present model architectures in which a MoE with up to 137 billion parameters is applied convolutionally between stacked LSTM layers. On large language modeling and machine translation benchmarks, these models achieve significantly better results than state-of-the-art at lower computational cost.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "24bdbbfa99c2d951e7d684100cd5b2f70a7a8b56",
+    "externalIds": {
+      "MAG": "2758083860",
+      "DBLP": "journals/jmlr/RoyP17",
+      "ArXiv": "1610.09269",
+      "CorpusId": 146697
+    },
+    "title": "Hierarchical Clustering via Spreading Metrics",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 78,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.09269, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39788470",
+        "name": "Aurko Roy"
+      },
+      {
+        "authorId": "145729210",
+        "name": "S. Pokutta"
+      }
+    ],
+    "abstract": "We study the cost function for hierarchical clusterings introduced by [Dasgupta, 2015] where hierarchies are treated as first-class objects rather than deriving their cost from projections into flat clusters. It was also shown in [Dasgupta, 2015] that a top-down algorithm returns a hierarchical clustering of cost at most \\(O\\left(\\alpha_n \\log n\\right)\\) times the cost of the optimal hierarchical clustering, where \\(\\alpha_n\\) is the approximation ratio of the Sparsest Cut subroutine used. Thus using the best known approximation algorithm for Sparsest Cut due to Arora-Rao-Vazirani, the top down algorithm returns a hierarchical clustering of cost at most \\(O\\left(\\log^{3/2} n\\right)\\) times the cost of the optimal solution. We improve this by giving an \\(O(\\log{n})\\)-approximation algorithm for this problem. Our main technical ingredients are a combinatorial characterization of ultrametrics induced by this cost function, deriving an Integer Linear Programming (ILP) formulation for this family of ultrametrics, and showing how to iteratively round an LP relaxation of this formulation by using the idea of \\emph{sphere growing} which has been extensively used in the context of graph partitioning. We also prove that our algorithm returns an \\(O(\\log{n})\\)-approximate hierarchical clustering for a generalization of this cost function also studied in [Dasgupta, 2015]. Experiments show that the hierarchies found by using the ILP formulation as well as our rounding algorithm often have better projections into flat clusters than the standard linkage based algorithms. We conclude with an inapproximability result for this problem, namely that no polynomial sized LP or SDP can be used to obtain a constant factor approximation for this problem.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "52d7eb0fbc3522434c13cc247549f74bb9609c5d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/YangLLT16",
+      "ArXiv": "1511.06523",
+      "MAG": "2176613063",
+      "DOI": "10.1109/CVPR.2016.596",
+      "CorpusId": 12090268
+    },
+    "title": "WIDER FACE: A Face Detection Benchmark",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 1764,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1511.06523",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.06523, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "92887925",
+        "name": "Shuo Yang"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      },
+      {
+        "authorId": "1717179",
+        "name": "Chen Change Loy"
+      },
+      {
+        "authorId": "50295995",
+        "name": "Xiaoou Tang"
+      }
+    ],
+    "abstract": "Face detection is one of the most studied topics in the computer vision community. Much of the progresses have been made by the availability of face detection benchmark datasets. We show that there is a gap between current face detection performance and the real world requirements. To facilitate future face detection research, we introduce the WIDER FACE dataset1, which is 10 times larger than existing datasets. The dataset contains rich annotations, including occlusions, poses, event categories, and face bounding boxes. Faces in the proposed dataset are extremely challenging due to large variations in scale, pose and occlusion, as shown in Fig. 1. Furthermore, we show that WIDER FACE dataset is an effective training source for face detection. We benchmark several representative detection systems, providing an overview of state-of-the-art performance and propose a solution to deal with large scale variation. Finally, we discuss common failure cases that worth to be further investigated.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "eb8fc65cd7cb1002a59100956476e45f20076706",
+    "externalIds": {
+      "DBLP": "conf/focs/LeeS14",
+      "MAG": "2084990336",
+      "DOI": "10.1109/FOCS.2014.52",
+      "CorpusId": 206656410
+    },
+    "title": "Path Finding Methods for Linear Programming: Solving Linear Programs in Õ(vrank) Iterations and Faster Algorithms for Maximum Flow",
+    "venue": "IEEE Annual Symposium on Foundations of Computer Science",
+    "year": 2014,
+    "citationCount": 345,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/FOCS.2014.52?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/FOCS.2014.52, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109308930",
+        "name": "Y. Lee"
+      },
+      {
+        "authorId": "2357926",
+        "name": "Aaron Sidford"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "616b246e332573af1f4859aa91440280774c183a",
+    "externalIds": {
+      "DBLP": "journals/ijcv/EveringhamEGWWZ15",
+      "MAG": "2037227137",
+      "DOI": "10.1007/s11263-014-0733-5",
+      "CorpusId": 207252270
+    },
+    "title": "The Pascal Visual Object Classes Challenge: A Retrospective",
+    "venue": "International Journal of Computer Vision",
+    "year": 2014,
+    "citationCount": 6614,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11263-014-0733-5?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11263-014-0733-5, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3056091",
+        "name": "M. Everingham"
+      },
+      {
+        "authorId": "143648071",
+        "name": "S. Eslami"
+      },
+      {
+        "authorId": "1681236",
+        "name": "L. Gool"
+      },
+      {
+        "authorId": "145715698",
+        "name": "Christopher K. I. Williams"
+      },
+      {
+        "authorId": "33652486",
+        "name": "J. Winn"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "71b7178df5d2b112d07e45038cb5637208659ff7",
+    "externalIds": {
+      "ArXiv": "1405.0312",
+      "DBLP": "conf/eccv/LinMBHPRDZ14",
+      "MAG": "2952122856",
+      "DOI": "10.1007/978-3-319-10602-1_48",
+      "CorpusId": 14113767
+    },
+    "title": "Microsoft COCO: Common Objects in Context",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 52014,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2F978-3-319-10602-1_48.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1405.0312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "48966748",
+        "name": "James Hays"
+      },
+      {
+        "authorId": "1690922",
+        "name": "P. Perona"
+      },
+      {
+        "authorId": "1770537",
+        "name": "Deva Ramanan"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "1699161",
+        "name": "C. L. Zitnick"
+      }
+    ],
+    "abstract": "We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c8b5f38617a202816486acd2a1e79556ff7f1f70",
+    "externalIds": {
+      "DBLP": "journals/tits/MogelmoseTM12",
+      "MAG": "2126628495",
+      "DOI": "10.1109/TITS.2012.2209421",
+      "CorpusId": 206739910
+    },
+    "title": "Vision-Based Traffic Sign Detection and Analysis for Intelligent Driver Assistance Systems: Perspectives and Survey",
+    "venue": "IEEE transactions on intelligent transportation systems (Print)",
+    "year": 2012,
+    "citationCount": 707,
+    "openAccessPdf": {
+      "url": "https://vbn.aau.dk/files/72574480/survey.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TITS.2012.2209421?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TITS.2012.2209421, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9491160",
+        "name": "Andreas Møgelmose"
+      },
+      {
+        "authorId": "1713989",
+        "name": "M. Trivedi"
+      },
+      {
+        "authorId": "1700569",
+        "name": "T. Moeslund"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "de5b0fd02ea4f4d67fe3ae0d74603b9822df4e42",
+    "externalIds": {
+      "DBLP": "conf/cvpr/GeigerLU12",
+      "MAG": "2150066425",
+      "DOI": "10.1109/CVPR.2012.6248074",
+      "CorpusId": 6724907
+    },
+    "title": "Are we ready for autonomous driving? The KITTI vision benchmark suite",
+    "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2012,
+    "citationCount": 14919,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2012.6248074?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2012.6248074, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47237027",
+        "name": "Andreas Geiger"
+      },
+      {
+        "authorId": "37108776",
+        "name": "Philip Lenz"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ab25e57c716c34c02fe8f78738ffbd44fe7732fa",
+    "externalIds": {
+      "DBLP": "conf/soda/ArthurV07",
+      "MAG": "2073459066",
+      "CorpusId": 1782131
+    },
+    "title": "k-means++: the advantages of careful seeding",
+    "venue": "ACM-SIAM Symposium on Discrete Algorithms",
+    "year": 2007,
+    "citationCount": 10247,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "150072513",
+        "name": "David Arthur"
+      },
+      {
+        "authorId": "1749789",
+        "name": "Sergei Vassilvitskii"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9d2f2b45d89f840f2076f70eac46d46121b9267c",
+    "externalIds": {
+      "MAG": "2014369282",
+      "DBLP": "journals/mp/ShmoysT93",
+      "DOI": "10.1007/BF01585178",
+      "CorpusId": 9027754
+    },
+    "title": "An approximation algorithm for the generalized assignment problem",
+    "venue": "Mathematical programming",
+    "year": 1993,
+    "citationCount": 763,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/BF01585178?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/BF01585178, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1747127",
+        "name": "D. Shmoys"
+      },
+      {
+        "authorId": "1746222",
+        "name": "É. Tardos"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9b4a1455230c2c9719156a50e93b734a79969018",
+    "externalIds": {
+      "DBLP": "journals/tmm/LuHZLL24",
+      "DOI": "10.1109/TMM.2024.3358062",
+      "CorpusId": 267246209
+    },
+    "title": "Multi-Source and Multi-Target Domain Adaptation Based on Dynamic Generator with Attention",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2024,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMM.2024.3358062?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMM.2024.3358062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277140311",
+        "name": "Yuwu Lu"
+      },
+      {
+        "authorId": "2281624122",
+        "name": "Haoyu Huang"
+      },
+      {
+        "authorId": "2281200241",
+        "name": "Biqing Zeng"
+      },
+      {
+        "authorId": "2189977211",
+        "name": "Zhihui Lai"
+      },
+      {
+        "authorId": "2182222454",
+        "name": "Xuelong Li"
+      }
+    ],
+    "abstract": "As a branch of domain adaptation (DA), multi-source DA (MSDA) is a challenging issue that aims to transfer knowledge from multiple well-labeled source domains to a target domain for target tasks. However, most existing related works focus on single-target domain adaptation, and multiple target domain adaptation is not accounted for. We believe that multiple target domains provide valuable knowledge. Meanwhile, in multi-source and multi-target adaptation scenarios, feature generators with static parameters have difficulty generating deep features of each individual domain. In this article, we propose a Dynamic Generator With Attention (DGWA) method for multi-source and multi-target domain adaptation to adapt domain-agnostic deep features in multi source and multi target domain scenarios. The feature generator with dynamic parameters can dynamically change its parameters with data input from different domains, which greatly improves the generalization of the feature pools. An attention mechanism is used in our DGWA to learn more transferable information from different domains. To demonstrate the performance of DGWA, we conduct extensive experiments on several popular domain adaptation datasets, including the digits, Office+Caltech10, Office-Home, and ImageCLEF-DA datasets. The experimental results demonstrate that our method performs better than state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "42d24c91b728fc4777a0d4fcb72045fdb8a604ba",
+    "externalIds": {
+      "DBLP": "phd/us/Ali20",
+      "CorpusId": 249551552
+    },
+    "title": "Machine Learning in Compiler Optimization",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 140,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1411406011",
+        "name": "Ameer Haj-Ali"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

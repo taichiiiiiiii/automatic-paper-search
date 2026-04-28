@@ -1,0 +1,1844 @@
+[
+  {
+    "paperId": "476ceccc25e02a3bf8aa7e00cda48fc833b0ca58",
+    "externalIds": {
+      "DBLP": "conf/iclr/YoonYHY25",
+      "ArXiv": "2507.04976",
+      "DOI": "10.48550/arXiv.2507.04976",
+      "CorpusId": 278499022
+    },
+    "title": "Can Video LLMs Refuse to Answer? Alignment for Answerability in Video Large Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.04976, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2187930164",
+        "name": "Eunseop Yoon"
+      },
+      {
+        "authorId": "2187923088",
+        "name": "Hee Suk Yoon"
+      },
+      {
+        "authorId": "1399115926",
+        "name": "M. Hasegawa-Johnson"
+      },
+      {
+        "authorId": "2273677525",
+        "name": "C. Yoo"
+      }
+    ],
+    "abstract": "In the broader context of deep learning, Multimodal Large Language Models have achieved significant breakthroughs by leveraging powerful Large Language Models as a backbone to align different modalities into the language space. A prime exemplification is the development of Video Large Language Models (Video-LLMs). While numerous advancements have been proposed to enhance the video understanding capabilities of these models, they are predominantly trained on questions generated directly from video content. However, in real-world scenarios, users often pose questions that extend beyond the informational scope of the video, highlighting the need for Video-LLMs to assess the relevance of the question. We demonstrate that even the best-performing Video-LLMs fail to reject unfit questions-not necessarily due to a lack of video understanding, but because they have not been trained to identify and refuse such questions. To address this limitation, we propose alignment for answerability, a framework that equips Video-LLMs with the ability to evaluate the relevance of a question based on the input video and appropriately decline to answer when the question exceeds the scope of the video, as well as an evaluation framework with a comprehensive set of metrics designed to measure model behavior before and after alignment. Furthermore, we present a pipeline for creating a dataset specifically tailored for alignment for answerability, leveraging existing video-description paired datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6edfc4c682ce7c99e53de6ee238e2a4523500c1c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-02685",
+      "ArXiv": "2412.02685",
+      "DOI": "10.48550/arXiv.2412.02685",
+      "CorpusId": 274446300
+    },
+    "title": "T-REG: Preference Optimization with Token-Level Reward Regularization",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.02685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325092526",
+        "name": "Wenxuan Zhou"
+      },
+      {
+        "authorId": "2324804589",
+        "name": "Shujian Zhang"
+      },
+      {
+        "authorId": "2309262010",
+        "name": "Lingxiao Zhao"
+      },
+      {
+        "authorId": "2333426172",
+        "name": "Tao Meng"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has been crucial in aligning large language models (LLMs) with human values. Traditionally, RLHF involves generating responses to a query and using a reward model to assign a reward to the entire response. However, this approach faces challenges due to its reliance on a single, sparse reward, which makes it challenging for the model to identify which parts of the sequence contribute most significantly to the final reward. Recent methods have attempted to address this limitation by introducing token-level rewards. However, these methods often rely on either a trained credit assignment model or AI annotators, raising concerns about the quality and reliability of the rewards. In this paper, we propose token-level reward regularization (T-REG), a novel approach that leverages both sequence-level and token-level rewards for preference optimization. Harnessing the self-refinement capabilities of LLMs, our method uses contrastive prompting to enable LLMs to self-generate token-level rewards. These self-generated rewards then act as reward regularization, guiding the model to more effectively distribute sequence-level rewards across tokens. This facilitates better token-level credit assignment and enhances alignment performance. Experiments on the instruction following benchmarks, including Alpaca Eval 2 and Arena-Hard, show that our method consistently outperforms baseline methods by up to 3.8% and 4.4%, respectively. We will release the code and models at https://github.com/wzhouad/T-REG.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f6b56a6754bc52fcc4ad46b74a01386fc2224d8a",
+    "externalIds": {
+      "ArXiv": "2410.24037",
+      "DBLP": "journals/corr/abs-2410-24037",
+      "DOI": "10.48550/arXiv.2410.24037",
+      "CorpusId": 273707026
+    },
+    "title": "TPC: Test-time Procrustes Calibration for Diffusion-based Human Image Animation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.24037, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110793204",
+        "name": "Sunjae Yoon"
+      },
+      {
+        "authorId": "2256986050",
+        "name": "Gwanhyeong Koo"
+      },
+      {
+        "authorId": "2328427961",
+        "name": "Younghwan Lee"
+      },
+      {
+        "authorId": "2328220830",
+        "name": "C. D. Yoo"
+      }
+    ],
+    "abstract": "Human image animation aims to generate a human motion video from the inputs of a reference human image and a target motion video. Current diffusion-based image animation systems exhibit high precision in transferring human identity into targeted motion, yet they still exhibit irregular quality in their outputs. Their optimal precision is achieved only when the physical compositions (i.e., scale and rotation) of the human shapes in the reference image and target pose frame are aligned. In the absence of such alignment, there is a noticeable decline in fidelity and consistency. Especially, in real-world environments, this compositional misalignment commonly occurs, posing significant challenges to the practical usage of current systems. To this end, we propose Test-time Procrustes Calibration (TPC), which enhances the robustness of diffusion-based image animation systems by maintaining optimal performance even when faced with compositional misalignment, effectively addressing real-world scenarios. The TPC provides a calibrated reference image for the diffusion model, enhancing its capability to understand the correspondence between human shapes in the reference and target images. Our method is simple and can be applied to any diffusion-based image animation system in a model-agnostic manner, improving the effectiveness at test time without additional training.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5104bc5c9e3f4a733b4e8155cb4a59a1a7a4e20b",
+    "externalIds": {
+      "ArXiv": "2408.13518",
+      "DBLP": "journals/corr/abs-2408-13518",
+      "DOI": "10.48550/arXiv.2408.13518",
+      "CorpusId": 271956928
+    },
+    "title": "Selective Preference Optimization via Token-Level Reward Function Estimation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.13518, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2003396186",
+        "name": "Kailai Yang"
+      },
+      {
+        "authorId": "2263516877",
+        "name": "Zhiwei Liu"
+      },
+      {
+        "authorId": "2249763955",
+        "name": "Qianqian Xie"
+      },
+      {
+        "authorId": "2555230",
+        "name": "Jimin Huang"
+      },
+      {
+        "authorId": "19262845",
+        "name": "Erxue Min"
+      },
+      {
+        "authorId": "2240623492",
+        "name": "Sophia Ananiadou"
+      }
+    ],
+    "abstract": "Recent advancements in large language model alignment leverage token-level supervisions to perform fine-grained preference optimization. However, existing token-level alignment methods either optimize on all available tokens, which can be noisy and inefficient, or perform selective training with complex and expensive key token selection strategies. In this work, we propose Selective Preference Optimization (SePO), a novel selective alignment strategy that centers on efficient key token selection. SePO proposes the first token selection method based on Direct Preference Optimization (DPO), which trains an oracle model to estimate a token-level reward function on the target data. This method applies to any existing alignment datasets with response-level annotations and enables cost-efficient token selection with small-scale oracle models and training data. The estimated reward function is then utilized to score all tokens within the target dataset, where only the key tokens are selected to supervise the target policy model with a reference model-free contrastive objective function. Extensive experiments on three public evaluation benchmarks show that SePO significantly outperforms competitive baseline methods by only optimizing 30% key tokens on the target dataset. SePO applications on weak-to-strong generalization show that weak oracle models effectively supervise strong policy models with up to 16.8x more parameters. SePO also effectively selects key tokens from out-of-distribution data to enhance strong policy models and alleviate the over-optimization problem.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "83d3def71bcca1d2a6d765a74caf10c8452084ff",
+    "externalIds": {
+      "PubMedCentral": "11556436",
+      "DOI": "10.1162/nol_a_00155",
+      "CorpusId": 271674983,
+      "PubMed": "39534445"
+    },
+    "title": "Lexical Surprisal Shapes the Time Course of Syntactic Structure Building",
+    "venue": "Neurobiology of Language",
+    "year": 2024,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11556436",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC11556436, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2239087073",
+        "name": "S. Slaats"
+      },
+      {
+        "authorId": "2258596694",
+        "name": "Antje S Meyer"
+      },
+      {
+        "authorId": "2251684022",
+        "name": "Andrea E. Martin"
+      }
+    ],
+    "abstract": "Abstract When we understand language, we recognize words and combine them into sentences. In this article, we explore the hypothesis that listeners use probabilistic information about words to build syntactic structure. Recent work has shown that lexical probability and syntactic structure both modulate the delta-band (<4 Hz) neural signal. Here, we investigated whether the neural encoding of syntactic structure changes as a function of the distributional properties of a word. To this end, we analyzed MEG data of 24 native speakers of Dutch who listened to three fairytales with a total duration of 49 min. Using temporal response functions and a cumulative model-comparison approach, we evaluated the contributions of syntactic and distributional features to the variance in the delta-band neural signal. This revealed that lexical surprisal values (a distributional feature), as well as bottom-up node counts (a syntactic feature) positively contributed to the model of the delta-band neural signal. Subsequently, we compared responses to the syntactic feature between words with high- and low-surprisal values. This revealed a delay in the response to the syntactic feature as a consequence of the surprisal value of the word: high-surprisal values were associated with a delayed response to the syntactic feature by 150–190 ms. The delay was not affected by word duration, and did not have a lexical origin. These findings suggest that the brain uses probabilistic information to infer syntactic structure, and highlight an importance for the role of time in this process.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e57583e5c4e9bd472f1e229a7a5017216e296f9b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-16574",
+      "ArXiv": "2407.16574",
+      "DOI": "10.48550/arXiv.2407.16574",
+      "CorpusId": 271334724
+    },
+    "title": "TLCR: Token-Level Continuous Reward for Fine-grained Reinforcement Learning from Human Feedback",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 36,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.16574, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2187930164",
+        "name": "Eunseop Yoon"
+      },
+      {
+        "authorId": "2187923088",
+        "name": "Hee Suk Yoon"
+      },
+      {
+        "authorId": "2216434524",
+        "name": "Soohwan Eom"
+      },
+      {
+        "authorId": "2146513388",
+        "name": "Gunsoo Han"
+      },
+      {
+        "authorId": "1491244118",
+        "name": "D. W. Nam"
+      },
+      {
+        "authorId": "5014906",
+        "name": "DaeJin Jo"
+      },
+      {
+        "authorId": "2266750059",
+        "name": "Kyoung-Woon On"
+      },
+      {
+        "authorId": "1399115926",
+        "name": "M. Hasegawa-Johnson"
+      },
+      {
+        "authorId": "2257091924",
+        "name": "Sungwoong Kim"
+      },
+      {
+        "authorId": "2273677525",
+        "name": "C. Yoo"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) leverages human preference data to train language models to align more closely with human essence. These human preference data, however, are labeled at the sequence level, creating a mismatch between sequence-level preference labels and tokens, which are autoregressively generated from the language model. Although several recent approaches have tried to provide token-level (i.e., dense) rewards for each individual token, these typically rely on predefined discrete reward values (e.g., positive: +1, negative: -1, neutral: 0), failing to account for varying degrees of preference inherent to each token. To address this limitation, we introduce TLCR (Token-Level Continuous Reward) for RLHF, which incorporates a discriminator trained to distinguish positive and negative tokens, and the confidence of the discriminator is used to assign continuous rewards to each token considering the context. Extensive experiments show that our proposed TLCR leads to consistent performance improvements over previous sequence-level or token-level discrete rewards on open-ended generation benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "501f8a0200a12a6f3906c1e4f3f40715e0e7d23a",
+    "externalIds": {
+      "ArXiv": "2406.18629",
+      "DBLP": "journals/corr/abs-2406-18629",
+      "DOI": "10.48550/arXiv.2406.18629",
+      "CorpusId": 270764693
+    },
+    "title": "Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 248,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.18629, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2237802684",
+        "name": "Xin Lai"
+      },
+      {
+        "authorId": "148438070",
+        "name": "Zhuotao Tian"
+      },
+      {
+        "authorId": "2109297557",
+        "name": "Yukang Chen"
+      },
+      {
+        "authorId": "2276746547",
+        "name": "Senqiao Yang"
+      },
+      {
+        "authorId": "2364360585",
+        "name": "Xi Peng"
+      },
+      {
+        "authorId": "2291196160",
+        "name": "Jiaya Jia"
+      }
+    ],
+    "abstract": "Mathematical reasoning presents a significant challenge for Large Language Models (LLMs) due to the extensive and precise chain of reasoning required for accuracy. Ensuring the correctness of each reasoning step is critical. To address this, we aim to enhance the robustness and factuality of LLMs by learning from human feedback. However, Direct Preference Optimization (DPO) has shown limited benefits for long-chain mathematical reasoning, as models employing DPO struggle to identify detailed errors in incorrect answers. This limitation stems from a lack of fine-grained process supervision. We propose a simple, effective, and data-efficient method called Step-DPO, which treats individual reasoning steps as units for preference optimization rather than evaluating answers holistically. Additionally, we have developed a data construction pipeline for Step-DPO, enabling the creation of a high-quality dataset containing 10K step-wise preference pairs. We also observe that in DPO, self-generated data is more effective than data generated by humans or GPT-4, due to the latter's out-of-distribution nature. Our findings demonstrate that as few as 10K preference data pairs and fewer than 500 Step-DPO training steps can yield a nearly 3% gain in accuracy on MATH for models with over 70B parameters. Notably, Step-DPO, when applied to Qwen2-72B-Instruct, achieves scores of 70.8% and 94.0% on the test sets of MATH and GSM8K, respectively, surpassing a series of closed-source models, including GPT-4-1106, Claude-3-Opus, and Gemini-1.5-Pro. Our code, data, and models are available at https://github.com/dvlab-research/Step-DPO.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "830c277b2992f59ec2f21982e245bd1e17dd85ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2406-10858",
+      "ArXiv": "2406.10858",
+      "DOI": "10.48550/arXiv.2406.10858",
+      "CorpusId": 270559546
+    },
+    "title": "Step-level Value Preference Optimization for Mathematical Reasoning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 72,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.10858, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2300110478",
+        "name": "Guoxin Chen"
+      },
+      {
+        "authorId": "2211476336",
+        "name": "Minpeng Liao"
+      },
+      {
+        "authorId": "2279871391",
+        "name": "Chengxi Li"
+      },
+      {
+        "authorId": "2297775845",
+        "name": "Kai Fan"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) using an implicit reward model has proven to be an effective alternative to reinforcement learning from human feedback (RLHF) for fine-tuning preference aligned large language models (LLMs). However, the overall preference annotations of responses do not fully capture the fine-grained quality of model outputs in complex multi-step reasoning tasks, such as mathematical reasoning. To address this limitation, we introduce a novel algorithm called Step-level Value Preference Optimization (SVPO). Our approach employs Monte Carlo Tree Search (MCTS) to automatically annotate step-level preferences for multi-step reasoning. Furthermore, from the perspective of learning-to-rank, we train an explicit value model to replicate the behavior of the implicit reward model, complementing standard preference optimization. This value model enables the LLM to generate higher reward responses with minimal cost during inference. Experimental results demonstrate that our method achieves state-of-the-art performance on both in-domain and out-of-domain mathematical reasoning benchmarks. Our code is available at \\url{https://github.com/MARIO-Math-Reasoning/Super_MARIO}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0c43750030198dbe7fe164e1ce743ec64427bca1",
+    "externalIds": {
+      "DBLP": "conf/nips/RafailovCPSHKFN24",
+      "ArXiv": "2406.02900",
+      "DOI": "10.48550/arXiv.2406.02900",
+      "CorpusId": 270257855
+    },
+    "title": "Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 118,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.02900, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2301519261",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "2304745643",
+        "name": "Yaswanth Chittepu"
+      },
+      {
+        "authorId": "2293725656",
+        "name": "Ryan Park"
+      },
+      {
+        "authorId": "51521430",
+        "name": "Harshit S. Sikchi"
+      },
+      {
+        "authorId": "2122700519",
+        "name": "Joey Hejna"
+      },
+      {
+        "authorId": "2304745596",
+        "name": "Bradley Knox"
+      },
+      {
+        "authorId": "2284774407",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "2791038",
+        "name": "S. Niekum"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) has been crucial to the recent success of Large Language Models (LLMs), however, it is often a complex and brittle process. In the classical RLHF framework, a reward model is first trained to represent human preferences, which is in turn used by an online reinforcement learning (RL) algorithm to optimize the LLM. A prominent issue with such methods is reward over-optimization or reward hacking, where performance as measured by the learned proxy reward model increases, but true quality plateaus or even deteriorates. Direct Alignment Algorithms (DDAs) like Direct Preference Optimization have emerged as alternatives to the classical RLHF pipeline by circumventing the reward modeling phase. However, although DAAs do not use a separate proxy reward model, they still commonly deteriorate from over-optimization. While the so-called reward hacking phenomenon is not well-defined for DAAs, we still uncover similar trends: at higher KL budgets, DAA algorithms exhibit similar degradation patterns to their classic RLHF counterparts. In particular, we find that DAA methods deteriorate not only across a wide range of KL budgets but also often before even a single epoch of the dataset is completed. Through extensive empirical experimentation, this work formulates and formalizes the reward over-optimization or hacking problem for DAAs and explores its consequences across objectives, training regimes, and model scales.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9ffad46dcde21e7ae76f650420ab11202dc32200",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-16436",
+      "ArXiv": "2405.16436",
+      "DOI": "10.48550/arXiv.2405.16436",
+      "CorpusId": 270062569
+    },
+    "title": "Provably Mitigating Overoptimization in RLHF: Your SFT Loss is Implicitly an Adversarial Regularizer",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 97,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.16436, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2249539089",
+        "name": "Zhihan Liu"
+      },
+      {
+        "authorId": "2166932409",
+        "name": "Miao Lu"
+      },
+      {
+        "authorId": "2145522248",
+        "name": "Shenao Zhang"
+      },
+      {
+        "authorId": "2156641199",
+        "name": "Boyi Liu"
+      },
+      {
+        "authorId": "2249533404",
+        "name": "Hongyi Guo"
+      },
+      {
+        "authorId": "2257087612",
+        "name": "Yingxiang Yang"
+      },
+      {
+        "authorId": "2257245848",
+        "name": "Jose H. Blanchet"
+      },
+      {
+        "authorId": "2257245348",
+        "name": "Zhaoran Wang"
+      }
+    ],
+    "abstract": "Aligning generative models with human preference via RLHF typically suffers from overoptimization, where an imperfectly learned reward model can misguide the generative model to output undesired responses. We investigate this problem in a principled manner by identifying the source of the misalignment as a form of distributional shift and uncertainty in learning human preferences. To mitigate overoptimization, we first propose a theoretical algorithm that chooses the best policy for an adversarially chosen reward model; one that simultaneously minimizes the maximum likelihood estimation of the loss and a reward penalty term. Here, the reward penalty term is introduced to prevent the policy from choosing actions with spurious high proxy rewards, resulting in provable sample efficiency of the algorithm under a partial coverage style condition. Moving from theory to practice, the proposed algorithm further enjoys an equivalent but surprisingly easy-to-implement reformulation. Using the equivalence between reward models and the corresponding optimal policy, the algorithm features a simple objective that combines: (i) a preference optimization loss that directly aligns the policy with human preference, and (ii) a supervised learning loss that explicitly imitates the policy with a (suitable) baseline distribution. In the context of aligning large language models (LLM), this objective fuses the direct preference optimization (DPO) loss with the supervised fine-tuning (SFT) loss to help mitigate the overoptimization towards undesired responses, for which we name the algorithm Regularized Preference Optimization (RPO). Experiments of aligning LLMs demonstrate the improved performance of RPO compared with DPO baselines. Our work sheds light on the interplay between preference optimization and SFT in tuning LLMs with both theoretical guarantees and empirical evidence.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c3f1fae241a3c2449e675ab750873d800f95513c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-14734",
+      "ArXiv": "2405.14734",
+      "DOI": "10.48550/arXiv.2405.14734",
+      "CorpusId": 269983560
+    },
+    "title": "SimPO: Simple Preference Optimization with a Reference-Free Reward",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 925,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.14734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145391513",
+        "name": "Yu Meng"
+      },
+      {
+        "authorId": "67284811",
+        "name": "Mengzhou Xia"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) is a widely used offline preference optimization algorithm that reparameterizes reward functions in reinforcement learning from human feedback (RLHF) to enhance simplicity and training stability. In this work, we propose SimPO, a simpler yet more effective approach. The effectiveness of SimPO is attributed to a key design: using the average log probability of a sequence as the implicit reward. This reward formulation better aligns with model generation and eliminates the need for a reference model, making it more compute and memory efficient. Additionally, we introduce a target reward margin to the Bradley-Terry objective to encourage a larger margin between the winning and losing responses, further improving the algorithm's performance. We compare SimPO to DPO and its latest variants across various state-of-the-art training setups, including both base and instruction-tuned models such as Mistral, Llama 3, and Gemma 2. We evaluate on extensive chat-based evaluation benchmarks, including AlpacaEval 2, MT-Bench, and Arena-Hard. Our results demonstrate that SimPO consistently and significantly outperforms existing approaches without substantially increasing response length. Specifically, SimPO outperforms DPO by up to 6.4 points on AlpacaEval 2 and by up to 7.5 points on Arena-Hard. Our top-performing model, built on Gemma-2-9B-it, achieves a 72.4% length-controlled win rate on AlpacaEval 2, a 59.1% win rate on Arena-Hard, and ranks 1st on Chatbot Arena among<10B models with real user votes.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "8f2254fb38cfc8f79524fd1cd2609124808f2c8c",
+    "externalIds": {
+      "ArXiv": "2404.11999",
+      "DBLP": "conf/icml/ZengLMYZW24",
+      "DOI": "10.48550/arXiv.2404.11999",
+      "CorpusId": 269214026
+    },
+    "title": "Token-level Direct Preference Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.11999, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2297444639",
+        "name": "Yongcheng Zeng"
+      },
+      {
+        "authorId": "2297437972",
+        "name": "Guoqing Liu"
+      },
+      {
+        "authorId": "2275596860",
+        "name": "Weiyu Ma"
+      },
+      {
+        "authorId": "2292898878",
+        "name": "Ning Yang"
+      },
+      {
+        "authorId": "2247479851",
+        "name": "Haifeng Zhang"
+      },
+      {
+        "authorId": "2386604138",
+        "name": "Jun Wang"
+      }
+    ],
+    "abstract": "Fine-tuning pre-trained Large Language Models (LLMs) is essential to align them with human values and intentions. This process often utilizes methods like pairwise comparisons and KL divergence against a reference LLM, focusing on the evaluation of full answers generated by the models. However, the generation of these responses occurs in a token level, following a sequential, auto-regressive fashion. In this paper, we introduce Token-level Direct Preference Optimization (TDPO), a novel approach to align LLMs with human preferences by optimizing policy at the token level. Unlike previous methods, which face challenges in divergence efficiency, TDPO incorporates forward KL divergence constraints for each token, improving alignment and diversity. Utilizing the Bradley-Terry model for a token-based reward system, TDPO enhances the regulation of KL divergence, while preserving simplicity without the need for explicit reward modeling. Experimental results across various text tasks demonstrate TDPO's superior performance in balancing alignment with generation diversity. Notably, fine-tuning with TDPO strikes a better balance than DPO in the controlled sentiment generation and single-turn dialogue datasets, and significantly improves the quality of generated responses compared to both DPO and PPO-based RLHF methods. Our code is open-sourced at https://github.com/Vance0124/Token-level-Direct-Preference-Optimization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "eb375712bd37250c350ecd3f559e1879e87eb3e5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-04475",
+      "ArXiv": "2404.04475",
+      "DOI": "10.48550/arXiv.2404.04475",
+      "CorpusId": 269004605
+    },
+    "title": "Length-Controlled AlpacaEval: A Simple Way to Debias Automatic Evaluators",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 734,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.04475, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2257007362",
+        "name": "Yann Dubois"
+      },
+      {
+        "authorId": "2295663980",
+        "name": "Bal'azs Galambosi"
+      },
+      {
+        "authorId": "2256995425",
+        "name": "Percy Liang"
+      },
+      {
+        "authorId": "2253575091",
+        "name": "Tatsunori Hashimoto"
+      }
+    ],
+    "abstract": "LLM-based auto-annotators have become a key component of the LLM development process due to their cost-effectiveness and scalability compared to human-based evaluation. However, these auto-annotators can introduce biases that are hard to remove. Even simple, known confounders such as preference for longer outputs remain in existing automated evaluation metrics. We propose a simple regression analysis approach for controlling biases in auto-evaluations. As a real case study, we focus on reducing the length bias of AlpacaEval, a fast and affordable benchmark for instruction-tuned LLMs that uses LLMs to estimate response quality. Despite being highly correlated with human preferences, AlpacaEval is known to favor models that generate longer outputs. We introduce a length-controlled AlpacaEval that aims to answer the counterfactual question:\"What would the preference be if the model's and baseline's output had the same length?\"To achieve this, we first fit a generalized linear model to predict the biased auto-annotator's preferences based on the mediators we want to control for (length difference) and other relevant features. We then obtain length-controlled preferences by predicting preferences while conditioning the GLM with a zero difference in lengths. Length-controlling not only improves the robustness of the metric to manipulations in model verbosity, but we also find that it increases the Spearman correlation with LMSYS Chatbot Arena from 0.94 to 0.98.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bfc223b002401f42b44bca725da6ed6d1b953cff",
+    "externalIds": {
+      "DBLP": "conf/acl/ParkREF24",
+      "ArXiv": "2403.19159",
+      "DOI": "10.48550/arXiv.2403.19159",
+      "CorpusId": 268733207
+    },
+    "title": "Disentangling Length from Quality in Direct Preference Optimization",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 197,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.19159, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293725656",
+        "name": "Ryan Park"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "2282987268",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2284774407",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) has been a crucial component in the recent success of Large Language Models. However, RLHF is know to exploit biases in human preferences, such as verbosity. A well-formatted and eloquent answer is often more highly rated by users, even when it is less helpful and objective. A number of approaches have been developed to control those biases in the classical RLHF literature, but the problem remains relatively under-explored for Direct Alignment Algorithms such as Direct Preference Optimization (DPO). Unlike classical RLHF, DPO does not train a separate reward model or use reinforcement learning directly, so previous approaches developed to control verbosity cannot be directly applied to this setting. Our work makes several contributions. For the first time, we study the length problem in the DPO setting, showing significant exploitation in DPO and linking it to out-of-distribution bootstrapping. We then develop a principled but simple regularization strategy that prevents length exploitation, while still maintaining improvements in model quality. We demonstrate these effects across datasets on summarization and dialogue, where we achieve up to 20\\% improvement in win rates when controlling for length, despite the GPT4 judge's well-known verbosity bias.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "8d4b9420bf3c8d81d2edbc5c8c4425e30033685f",
+    "externalIds": {
+      "DBLP": "conf/iclr/YoonYTHLY24",
+      "ArXiv": "2403.14119",
+      "DOI": "10.48550/arXiv.2403.14119",
+      "CorpusId": 268554144
+    },
+    "title": "C-TPT: Calibrated Test-Time Prompt Tuning for Vision-Language Models via Text Feature Dispersion",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 82,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.14119, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2187923088",
+        "name": "Hee Suk Yoon"
+      },
+      {
+        "authorId": "2187930164",
+        "name": "Eunseop Yoon"
+      },
+      {
+        "authorId": "2191520768",
+        "name": "Joshua Tian Jin Tee"
+      },
+      {
+        "authorId": "1399115926",
+        "name": "M. Hasegawa-Johnson"
+      },
+      {
+        "authorId": "2391724655",
+        "name": "Yingzhen Li"
+      },
+      {
+        "authorId": "2273677525",
+        "name": "C. Yoo"
+      }
+    ],
+    "abstract": "In deep learning, test-time adaptation has gained attention as a method for model fine-tuning without the need for labeled data. A prime exemplification is the recently proposed test-time prompt tuning for large-scale vision-language models such as CLIP. Unfortunately, these prompts have been mainly developed to improve accuracy, overlooking the importance of calibration, which is a crucial aspect for quantifying prediction uncertainty. However, traditional calibration methods rely on substantial amounts of labeled data, making them impractical for test-time scenarios. To this end, this paper explores calibration during test-time prompt tuning by leveraging the inherent properties of CLIP. Through a series of observations, we find that the prompt choice significantly affects the calibration in CLIP, where the prompts leading to higher text feature dispersion result in better-calibrated predictions. Introducing the Average Text Feature Dispersion (ATFD), we establish its relationship with calibration error and present a novel method, Calibrated Test-time Prompt Tuning (C-TPT), for optimizing prompts during test-time with enhanced calibration. Through extensive experiments on different CLIP architectures and datasets, we show that C-TPT can effectively improve the calibration of test-time prompt tuning without needing labeled data. The code is publicly accessible at https://github.com/hee-suk-yoon/C-TPT.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c0d8e5ee66c279299012cc3b8d0519011b3f4998",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-01306",
+      "ArXiv": "2402.01306",
+      "CorpusId": 267406810
+    },
+    "title": "KTO: Model Alignment as Prospect Theoretic Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 954,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.01306, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10324691",
+        "name": "Kawin Ethayarajh"
+      },
+      {
+        "authorId": "2282503091",
+        "name": "Winnie Xu"
+      },
+      {
+        "authorId": "2037383772",
+        "name": "Niklas Muennighoff"
+      },
+      {
+        "authorId": "1746807",
+        "name": "Dan Jurafsky"
+      },
+      {
+        "authorId": "2111313627",
+        "name": "Douwe Kiela"
+      }
+    ],
+    "abstract": "Kahneman&Tversky's $\\textit{prospect theory}$ tells us that humans perceive random variables in a biased but well-defined manner (1992); for example, humans are famously loss-averse. We show that objectives for aligning LLMs with human feedback implicitly incorporate many of these biases -- the success of these objectives (e.g., DPO) over cross-entropy minimization can partly be ascribed to them belonging to a family of loss functions that we call $\\textit{human-aware losses}$ (HALOs). However, the utility functions these methods attribute to humans still differ from those in the prospect theory literature. Using a Kahneman-Tversky model of human utility, we propose a HALO that directly maximizes the utility of generations instead of maximizing the log-likelihood of preferences, as current methods do. We call this approach KTO, and it matches or exceeds the performance of preference-based methods at scales from 1B to 30B, despite only learning from a binary signal of whether an output is desirable. More broadly, our work suggests that there is no one HALO that is universally superior; the best loss depends on the inductive biases most appropriate for a given setting, an oft-overlooked consideration.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "ebd1c04c61f73f46def3305ca11d038c46665b65",
+    "externalIds": {
+      "DBLP": "conf/icml/XuSCTSDM024",
+      "ArXiv": "2401.08417",
+      "DOI": "10.48550/arXiv.2401.08417",
+      "CorpusId": 267028540
+    },
+    "title": "Contrastive Preference Optimization: Pushing the Boundaries of LLM Performance in Machine Translation",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 441,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.08417, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108835452",
+        "name": "Haoran Xu"
+      },
+      {
+        "authorId": "2243335598",
+        "name": "Amr Sharaf"
+      },
+      {
+        "authorId": "104375103",
+        "name": "Yunmo Chen"
+      },
+      {
+        "authorId": "28000727",
+        "name": "Weiting Tan"
+      },
+      {
+        "authorId": "2121272448",
+        "name": "Lingfeng Shen"
+      },
+      {
+        "authorId": "7536576",
+        "name": "Benjamin Van Durme"
+      },
+      {
+        "authorId": "2253405580",
+        "name": "Kenton Murray"
+      },
+      {
+        "authorId": "2152658577",
+        "name": "Young Jin Kim"
+      }
+    ],
+    "abstract": "Moderate-sized large language models (LLMs) -- those with 7B or 13B parameters -- exhibit promising machine translation (MT) performance. However, even the top-performing 13B LLM-based translation models, like ALMA, does not match the performance of state-of-the-art conventional encoder-decoder translation models or larger-scale LLMs such as GPT-4. In this study, we bridge this performance gap. We first assess the shortcomings of supervised fine-tuning for LLMs in the MT task, emphasizing the quality issues present in the reference data, despite being human-generated. Then, in contrast to SFT which mimics reference translations, we introduce Contrastive Preference Optimization (CPO), a novel approach that trains models to avoid generating adequate but not perfect translations. Applying CPO to ALMA models with only 22K parallel sentences and 12M parameters yields significant improvements. The resulting model, called ALMA-R, can match or exceed the performance of the WMT competition winners and GPT-4 on WMT'21, WMT'22 and WMT'23 test datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e51f20efb872d0ba99a8b501259948bbb2f6963f",
+    "externalIds": {
+      "DBLP": "conf/iclr/GuoZT0W24",
+      "ArXiv": "2311.04072",
+      "DOI": "10.48550/arXiv.2311.04072",
+      "CorpusId": 265043685
+    },
+    "title": "Beyond Imitation: Leveraging Fine-grained Quality Signals for Alignment",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.04072, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47447649",
+        "name": "Geyang Guo"
+      },
+      {
+        "authorId": "2220825120",
+        "name": "Ran Zhao"
+      },
+      {
+        "authorId": "1997234792",
+        "name": "Tianyi Tang"
+      },
+      {
+        "authorId": "2257376413",
+        "name": "Wayne Xin Zhao"
+      },
+      {
+        "authorId": "153693432",
+        "name": "Ji-rong Wen"
+      }
+    ],
+    "abstract": "Alignment with human preference is a desired property of large language models (LLMs). Currently, the main alignment approach is based on reinforcement learning from human feedback (RLHF). Despite the effectiveness of RLHF, it is intricate to implement and train, thus recent studies explore how to develop alternative alignment approaches based on supervised fine-tuning (SFT). A major limitation of SFT is that it essentially does imitation learning, which cannot fully understand what are the expected behaviors. To address this issue, we propose an improved alignment approach named FIGA. Different from prior methods, we incorporate fine-grained (i.e., token or phrase level) quality signals that are derived by contrasting good and bad responses. Our approach has made two major contributions. Firstly, we curate a refined alignment dataset that pairs initial responses and the corresponding revised ones. Secondly, we devise a new loss function can leverage fine-grained quality signals to instruct the learning of LLMs for alignment. Extensive experiments have demonstrated the effectiveness of our approaches by comparing a number of competitive baselines.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f3460dc3ae5cfd41099d576a3bb77411e1fc2e3f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-12036",
+      "ArXiv": "2310.12036",
+      "DOI": "10.48550/arXiv.2310.12036",
+      "CorpusId": 264288854
+    },
+    "title": "A General Theoretical Paradigm to Understand Learning from Human Preferences",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2023,
+    "citationCount": 936,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.12036, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "37666967",
+        "name": "M. G. Azar"
+      },
+      {
+        "authorId": "144845456",
+        "name": "Mark Rowland"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      },
+      {
+        "authorId": "2260679471",
+        "name": "D. Guo"
+      },
+      {
+        "authorId": "2439765",
+        "name": "Daniele Calandriello"
+      },
+      {
+        "authorId": "1806291",
+        "name": "Michal Valko"
+      },
+      {
+        "authorId": "2237802765",
+        "name": "Rémi Munos"
+      }
+    ],
+    "abstract": "The prevalent deployment of learning from human preferences through reinforcement learning (RLHF) relies on two important approximations: the first assumes that pairwise preferences can be substituted with pointwise rewards. The second assumes that a reward model trained on these pointwise rewards can generalize from collected data to out-of-distribution data sampled by the policy. Recently, Direct Preference Optimisation (DPO) has been proposed as an approach that bypasses the second approximation and learn directly a policy from collected data without the reward modelling stage. However, this method still heavily relies on the first approximation. In this paper we try to gain a deeper theoretical understanding of these practical algorithms. In particular we derive a new general objective called $\\Psi$PO for learning from human preferences that is expressed in terms of pairwise preferences and therefore bypasses both approximations. This new general objective allows us to perform an in-depth analysis of the behavior of RLHF and DPO (as special cases of $\\Psi$PO) and to identify their potential pitfalls. We then consider another special case for $\\Psi$PO by setting $\\Psi$ simply to Identity, for which we can derive an efficient optimisation procedure, prove performance guarantees and demonstrate its empirical superiority to DPO on some illustrative examples.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "db633c6b1c286c0386f0078d8a2e6224e03a6227",
+    "externalIds": {
+      "ArXiv": "2310.06825",
+      "DBLP": "journals/corr/abs-2310-06825",
+      "DOI": "10.48550/arXiv.2310.06825",
+      "CorpusId": 263830494
+    },
+    "title": "Mistral 7B",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 3354,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.06825",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.06825, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2063969818",
+        "name": "Albert Qiaochu Jiang"
+      },
+      {
+        "authorId": "2256994781",
+        "name": "Alexandre Sablayrolles"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "2256994975",
+        "name": "Chris Bamford"
+      },
+      {
+        "authorId": "2328602",
+        "name": "Devendra Singh Chaplot"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "2256995640",
+        "name": "Florian Bressand"
+      },
+      {
+        "authorId": "2256993163",
+        "name": "Gianna Lengyel"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      },
+      {
+        "authorId": "2113836860",
+        "name": "Lucile Saulnier"
+      },
+      {
+        "authorId": "2256995632",
+        "name": "Lélio Renard Lavaud"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "2256994779",
+        "name": "Pierre Stock"
+      },
+      {
+        "authorId": "1379806208",
+        "name": "Teven Le Scao"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "2135734748",
+        "name": "Thomas Wang"
+      },
+      {
+        "authorId": "47733973",
+        "name": "Timothée Lacroix"
+      },
+      {
+        "authorId": "2256992826",
+        "name": "William El Sayed"
+      }
+    ],
+    "abstract": "We introduce Mistral 7B v0.1, a 7-billion-parameter language model engineered for superior performance and efficiency. Mistral 7B outperforms Llama 2 13B across all evaluated benchmarks, and Llama 1 34B in reasoning, mathematics, and code generation. Our model leverages grouped-query attention (GQA) for faster inference, coupled with sliding window attention (SWA) to effectively handle sequences of arbitrary length with a reduced inference cost. We also provide a model fine-tuned to follow instructions, Mistral 7B -- Instruct, that surpasses the Llama 2 13B -- Chat model both on human and automated benchmarks. Our models are released under the Apache 2.0 license.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0d1c76d45afa012ded7ab741194baf142117c495",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18290",
+      "ArXiv": "2305.18290",
+      "DOI": "10.52202/075280-2338",
+      "CorpusId": 258959321
+    },
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "50465276",
+        "name": "Archit Sharma"
+      },
+      {
+        "authorId": "49688913",
+        "name": "E. Mitchell"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a122863d239643453195424c04067e89406246e1",
+    "externalIds": {
+      "DBLP": "conf/emnlp/DingCXQHL0Z23",
+      "ArXiv": "2305.14233",
+      "DOI": "10.48550/arXiv.2305.14233",
+      "CorpusId": 258840897
+    },
+    "title": "Enhancing Chat Language Models by Scaling High-quality Instructional Conversations",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 843,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.14233",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.14233, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46649145",
+        "name": "Ning Ding"
+      },
+      {
+        "authorId": "2135835258",
+        "name": "Yulin Chen"
+      },
+      {
+        "authorId": "2052218689",
+        "name": "Bokai Xu"
+      },
+      {
+        "authorId": "50625437",
+        "name": "Yujia Qin"
+      },
+      {
+        "authorId": "2115548452",
+        "name": "Zhi Zheng"
+      },
+      {
+        "authorId": "1576223501",
+        "name": "Shengding Hu"
+      },
+      {
+        "authorId": "2141313179",
+        "name": "Zhiyuan Liu"
+      },
+      {
+        "authorId": "1753344",
+        "name": "Maosong Sun"
+      },
+      {
+        "authorId": "2218723159",
+        "name": "Bowen Zhou"
+      }
+    ],
+    "abstract": "Fine-tuning on instruction data has been widely validated as an effective practice for implementing chat language models like ChatGPT. Scaling the diversity and quality of such data, although straightforward, stands a great chance of leading to improved performance. This paper aims to improve the upper bound of open-source models further. We first provide a systematically designed, diverse, informative, large-scale dataset of instructional conversations, UltraChat, which does not involve human queries. Our objective is to capture the breadth of interactions that a human might have with an AI assistant and employs a comprehensive framework to generate multi-turn conversation iteratively. UltraChat contains 1.5 million high-quality multi-turn dialogues and covers a wide range of topics and instructions. Our statistical analysis of UltraChat reveals its superiority in various key metrics, including scale, average length, diversity, coherence, etc., solidifying its position as a leading open-source dataset. Building upon UltraChat, we fine-tune a LLaMA model to create a powerful conversational model, UltraLLaMA. Our evaluations indicate that UltraLLaMA consistently outperforms other open-source models, including Vicuna, the previously recognized state-of-the-art open-source model. The dataset and the model will be publicly released\\footnote{\\url{https://github.com/thunlp/UltraChat}}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "58af2d4fcca54c14334d1efd975554b4eb78cd4d",
+    "externalIds": {
+      "ArXiv": "2305.10425",
+      "DBLP": "journals/corr/abs-2305-10425",
+      "DOI": "10.48550/arXiv.2305.10425",
+      "CorpusId": 258741082
+    },
+    "title": "SLiC-HF: Sequence Likelihood Calibration with Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 393,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.10425",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.10425, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143397386",
+        "name": "Yao Zhao"
+      },
+      {
+        "authorId": "51468278",
+        "name": "Rishabh Joshi"
+      },
+      {
+        "authorId": "2115346248",
+        "name": "Tianqi Liu"
+      },
+      {
+        "authorId": "2140488873",
+        "name": "Misha Khalman"
+      },
+      {
+        "authorId": "144413479",
+        "name": "Mohammad Saleh"
+      },
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      }
+    ],
+    "abstract": "Learning from human feedback has been shown to be effective at aligning language models with human preferences. Past work has often relied on Reinforcement Learning from Human Feedback (RLHF), which optimizes the language model using reward scores assigned from a reward model trained on human preference data. In this work we show how the recently introduced Sequence Likelihood Calibration (SLiC), can also be used to effectively learn from human preferences (SLiC-HF). Furthermore, we demonstrate this can be done with human feedback data collected for a different model, similar to off-policy, offline RL data. Automatic and human evaluation experiments on the TL;DR summarization task show that SLiC-HF significantly improves supervised fine-tuning baselines. Furthermore, SLiC-HF presents a competitive alternative to the PPO RLHF implementation used in past work while being much simpler to implement, easier to tune and more computationally efficient in practice.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "748698bd4387afd08594e0dc8150c2afa210d9ae",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-05302",
+      "ArXiv": "2304.05302",
+      "DOI": "10.48550/arXiv.2304.05302",
+      "CorpusId": 258059818
+    },
+    "title": "RRHF: Rank Responses to Align Language Models with Human Feedback without tears",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 511,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.05302",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.05302, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112340945",
+        "name": "Zheng Yuan"
+      },
+      {
+        "authorId": "2114128654",
+        "name": "Hongyi Yuan"
+      },
+      {
+        "authorId": "2111727840",
+        "name": "Chuanqi Tan"
+      },
+      {
+        "authorId": "2203795932",
+        "name": "Wei Wang"
+      },
+      {
+        "authorId": "2410938",
+        "name": "Songfang Huang"
+      },
+      {
+        "authorId": "51012694",
+        "name": "Feiran Huang"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) facilitates the alignment of large language models with human preferences, significantly enhancing the quality of interactions between humans and models. InstructGPT implements RLHF through several stages, including Supervised Fine-Tuning (SFT), reward model training, and Proximal Policy Optimization (PPO). However, PPO is sensitive to hyperparameters and requires multiple models in its standard implementation, making it hard to train and scale up to larger parameter counts. In contrast, we propose a novel learning paradigm called RRHF, which scores sampled responses from different sources via a logarithm of conditional probabilities and learns to align these probabilities with human preferences through ranking loss. RRHF can leverage sampled responses from various sources including the model responses from itself, other large language model responses, and human expert responses to learn to rank them. RRHF only needs 1 to 2 models during tuning and can efficiently align language models with human preferences robustly without complex hyperparameter tuning. Additionally, RRHF can be considered an extension of SFT and reward model training while being simpler than PPO in terms of coding, model counts, and hyperparameters. We evaluate RRHF on the Helpful and Harmless dataset, demonstrating comparable alignment performance with PPO by reward model score and human labeling. Extensive experiments show that the performance of RRHF is highly related to sampling quality which suggests RRHF is a best-of-n learner. Codes available at https://github.com/GanjinZero/RRHF.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2386670cbe053ec29f116ee23c79c8ac38c39a30",
+    "externalIds": {
+      "DBLP": "conf/iclr/YoonTYYKLY23",
+      "ArXiv": "2303.02472",
+      "DOI": "10.48550/arXiv.2303.02472",
+      "CorpusId": 257365327
+    },
+    "title": "ESD: Expected Squared Difference as a Tuning-Free Trainable Calibration Measure",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.02472",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.02472, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2187923088",
+        "name": "Hee Suk Yoon"
+      },
+      {
+        "authorId": "2191520768",
+        "name": "Joshua Tian Jin Tee"
+      },
+      {
+        "authorId": "2187930164",
+        "name": "Eunseop Yoon"
+      },
+      {
+        "authorId": "2110793204",
+        "name": "Sunjae Yoon"
+      },
+      {
+        "authorId": "152139097",
+        "name": "G. Kim"
+      },
+      {
+        "authorId": "2672661",
+        "name": "Yingzhen Li"
+      },
+      {
+        "authorId": "2064471084",
+        "name": "Changdong Yoo"
+      }
+    ],
+    "abstract": "Studies have shown that modern neural networks tend to be poorly calibrated due to over-confident predictions. Traditionally, post-processing methods have been used to calibrate the model after training. In recent years, various trainable calibration measures have been proposed to incorporate them directly into the training process. However, these methods all incorporate internal hyperparameters, and the performance of these calibration objectives relies on tuning these hyperparameters, incurring more computational costs as the size of neural networks and datasets become larger. As such, we present Expected Squared Difference (ESD), a tuning-free (i.e., hyperparameter-free) trainable calibration objective loss, where we view the calibration error from the perspective of the squared difference between the two expectations. With extensive experiments on several architectures (CNNs, Transformers) and datasets, we demonstrate that (1) incorporating ESD into the training improves model calibration in various batch size settings without the need for internal hyperparameter tuning, (2) ESD yields the best-calibrated results compared with previous approaches, and (3) ESD drastically improves the computational costs required for calibration during training due to the absence of internal hyperparameter. The code is publicly accessible at https://github.com/hee-suk-yoon/ESD.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c6784d18a77176f58b75e639d0b99d797a0b4f84",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-05765",
+      "ACL": "2022.emnlp-main.280",
+      "ArXiv": "2212.05765",
+      "DOI": "10.18653/v1/2022.emnlp-main.280",
+      "CorpusId": 254563972
+    },
+    "title": "Information-Theoretic Text Hallucination Reduction for Video-grounded Dialogue",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2022,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.emnlp-main.280.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.05765, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110793204",
+        "name": "Sunjae Yoon"
+      },
+      {
+        "authorId": "2187930164",
+        "name": "Eunseop Yoon"
+      },
+      {
+        "authorId": "2187923088",
+        "name": "Hee Suk Yoon"
+      },
+      {
+        "authorId": "118691408",
+        "name": "Junyeong Kim"
+      },
+      {
+        "authorId": "2064471084",
+        "name": "Changdong Yoo"
+      }
+    ],
+    "abstract": "Video-grounded Dialogue (VGD) aims to decode an answer sentence to a question regarding a given video and dialogue context. Despite the recent success of multi-modal reasoning to generate answer sentences, existing dialogue systems still suffer from a text hallucination problem, which denotes indiscriminate text-copying from input texts without an understanding of the question. This is due to learning spurious correlations from the fact that answer sentences in the dataset usually include the words of input texts, thus the VGD system excessively relies on copying words from input texts by hoping those words to overlap with ground-truth texts. Hence, we design Text Hallucination Mitigating (THAM) framework, which incorporates Text Hallucination Regularization (THR) loss derived from the proposed information-theoretic text hallucination measurement approach. Applying THAM with current dialogue systems validates the effectiveness on VGD benchmarks (i.e., AVSD@DSTC7 and AVSD@DSTC8) and shows enhanced interpretability.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fb3dc5e20e0a71134ca916f0d6d8d41f01225b4b",
+    "externalIds": {
+      "DBLP": "conf/icml/GaoSH23",
+      "ArXiv": "2210.10760",
+      "CorpusId": 252992904
+    },
+    "title": "Scaling Laws for Reward Model Overoptimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 945,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.10760, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2027599537",
+        "name": "Leo Gao"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      }
+    ],
+    "abstract": "In reinforcement learning from human feedback, it is common to optimize against a reward model trained to predict human preferences. Because the reward model is an imperfect proxy, optimizing its value too much can hinder ground truth performance, in accordance with Goodhart's law. This effect has been frequently observed, but not carefully measured due to the expense of collecting human preference data. In this work, we use a synthetic setup in which a fixed\"gold-standard\"reward model plays the role of humans, providing labels used to train a proxy reward model. We study how the gold reward model score changes as we optimize against the proxy reward model using either reinforcement learning or best-of-$n$ sampling. We find that this relationship follows a different functional form depending on the method of optimization, and that in both cases its coefficients scale smoothly with the number of reward model parameters. We also study the effect on this relationship of the size of the reward model dataset, the number of reward model and policy parameters, and the coefficient of the KL penalty added to the reward in the reinforcement learning setup. We explore the implications of these empirical results for theoretical considerations in AI alignment.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+    "externalIds": {
+      "ArXiv": "2203.02155",
+      "DBLP": "journals/corr/abs-2203-02155",
+      "DOI": "10.52202/068431-2011",
+      "CorpusId": 246426909
+    },
+    "title": "Training language models to follow instructions with human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20076,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "2061137049",
+        "name": "Diogo Almeida"
+      },
+      {
+        "authorId": "2064084601",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": null,
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2151735262",
+        "name": "Fraser Kelton"
+      },
+      {
+        "authorId": "2142365973",
+        "name": "Luke E. Miller"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      }
+    ],
+    "abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6add8d6f1ba7e78924dad8ba61df9808ed4d9ca6",
+    "externalIds": {
+      "DBLP": "conf/acl-cmcl/MerkxF21",
+      "ACL": "2021.cmcl-1.2",
+      "ArXiv": "2005.09471",
+      "DOI": "10.18653/v1/2021.cmcl-1.2",
+      "CorpusId": 233738843
+    },
+    "title": "Human Sentence Processing: Recurrence or Attention?",
+    "venue": "Workshop on Cognitive Modeling and Computational Linguistics",
+    "year": 2020,
+    "citationCount": 104,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.cmcl-1.2.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.09471, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35833790",
+        "name": "Danny Merkx"
+      },
+      {
+        "authorId": "144655341",
+        "name": "S. Frank"
+      }
+    ],
+    "abstract": "Recurrent neural networks (RNNs) have long been an architecture of interest for computational models of human sentence processing. The recently introduced Transformer architecture outperforms RNNs on many natural language processing tasks but little is known about its ability to model human language processing. We compare Transformer- and RNN-based language models’ ability to account for measures of human reading effort. Our analysis shows Transformers to outperform RNNs in explaining self-paced reading times and neural activity during reading English sentences, challenging the widely held idea that human sentence processing involves recurrent and immediate processing and provides evidence for cue-based retrieval.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "01356797005cc02c414e358dcc2b417b9b81cceb",
+    "externalIds": {
+      "MAG": "3146613606",
+      "ArXiv": "1903.10464",
+      "DBLP": "journals/corr/abs-1903-10464",
+      "DOI": "10.1016/J.ARTINT.2021.103502",
+      "CorpusId": 85497080
+    },
+    "title": "Explaining individual predictions when features are dependent: More accurate approximations to Shapley values",
+    "venue": "Artificial Intelligence",
+    "year": 2019,
+    "citationCount": 882,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.artint.2021.103502",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1903.10464, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38418382",
+        "name": "K. Aas"
+      },
+      {
+        "authorId": "51313788",
+        "name": "Martin Jullum"
+      },
+      {
+        "authorId": "88727456",
+        "name": "Anders Løland"
+      }
+    ],
+    "abstract": "Explaining complex or seemingly simple machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations. Of existing work on interpreting complex models, Shapley values is the only method with a solid theoretical foundation. Kernel SHAP is a computationally efficient approximation to Shapley values in higher dimensions. Like most other existing methods, this approach assumes independent features, which may give very wrong explanations. This is the case even if a simple linear model is used for predictions. We extend the Kernel SHAP method to handle dependent features. We provide several examples of linear and non-linear models with linear and non-linear feature dependence, where our method gives more accurate approximations to the true Shapley values. We also propose a method for aggregating individual Shapley values, such that the prediction can be explained by groups of dependent variables.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d07284a6811f1b2745d91bdb06b040b57f226882",
+    "externalIds": {
+      "MAG": "2950541952",
+      "DBLP": "conf/iclr/LoshchilovH19",
+      "CorpusId": 53592270
+    },
+    "title": "Decoupled Weight Decay Regularization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 33053,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5bbb6f9a8204eb13070b6f033e61c84ef8ee68dd",
+    "externalIds": {
+      "MAG": "2626804490",
+      "DBLP": "journals/corr/abs-1706-03741",
+      "ArXiv": "1706.03741",
+      "CorpusId": 4787508
+    },
+    "title": "Deep Reinforcement Learning from Human Preferences",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 5010,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03741, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "26890260",
+        "name": "Miljan Martic"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "2330246606",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "For sophisticated reinforcement learning (RL) systems to interact usefully with real-world environments, we need to communicate complex goals to these systems. In this work, we explore goals defined in terms of (non-expert) human preferences between pairs of trajectory segments. We show that this approach can effectively solve complex RL tasks without access to the reward function, including Atari games and simulated robot locomotion, while providing feedback on less than one percent of our agent's interactions with the environment. This reduces the cost of human oversight far enough that it can be practically applied to state-of-the-art RL systems. To demonstrate the flexibility of our approach, we show that we can successfully train complex novel behaviors with about an hour of human time. These behaviors and environments are considerably more complex than any that have been previously learned from human feedback.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "442e10a3c6640ded9408622005e3c2a8906ce4c2",
+    "externalIds": {
+      "MAG": "2618851150",
+      "DBLP": "journals/corr/LundbergL17",
+      "ArXiv": "1705.07874",
+      "CorpusId": 21889700
+    },
+    "title": "A Unified Approach to Interpreting Model Predictions",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 33318,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.07874, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "23451726",
+        "name": "Scott M. Lundberg"
+      },
+      {
+        "authorId": "2180463",
+        "name": "Su-In Lee"
+      }
+    ],
+    "abstract": "Understanding why a model makes a certain prediction can be as crucial as the prediction's accuracy in many applications. However, the highest accuracy for large modern datasets is often achieved by complex models that even experts struggle to interpret, such as ensemble or deep learning models, creating a tension between accuracy and interpretability. In response, various methods have recently been proposed to help users interpret the predictions of complex models, but it is often unclear how these methods are related and when one method is preferable over another. To address this problem, we present a unified framework for interpreting predictions, SHAP (SHapley Additive exPlanations). SHAP assigns each feature an importance value for a particular prediction. Its novel components include: (1) the identification of a new class of additive feature importance measures, and (2) theoretical results showing there is a unique solution in this class with a set of desirable properties. The new class unifies six existing methods, notable because several recent methods in the class lack the proposed desirable properties. Based on insights from this unification, we present new methods that show improved computational performance and/or better consistency with human intuition than previous approaches.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d5077354f5eca6694b4ea4ebe9dc26d19c6e83ab",
+    "externalIds": {
+      "ArXiv": "1610.02080",
+      "DBLP": "journals/juq/OwenP17",
+      "MAG": "2530685584",
+      "DOI": "10.1137/16M1097717",
+      "CorpusId": 30418078
+    },
+    "title": "On Shapley Value for Measuring Importance of Dependent Inputs",
+    "venue": "SIAM/ASA J. Uncertain. Quantification",
+    "year": 2016,
+    "citationCount": 176,
+    "openAccessPdf": {
+      "url": "https://hal.archives-ouvertes.fr/hal-01379188/file/shapleydependentR1bettergaus.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.02080, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144244963",
+        "name": "A. Owen"
+      },
+      {
+        "authorId": "24978807",
+        "name": "C. Prieur"
+      }
+    ],
+    "abstract": "This paper makes the case for using Shapley value to quantify the importance of random input variables to a function. Alternatives based on the ANOVA decomposition can run into conceptual and computational problems when the input variables are dependent. Our main goal here is to show that Shapley value removes the conceptual problems. We do this with some simple examples where Shapley value leads to intuitively reasonable nearly closed form values.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "89774f17d4ae199ea6950b747bf21e390a6e023a",
+    "externalIds": {
+      "MAG": "2108010971",
+      "DOI": "10.1016/j.cognition.2013.02.013",
+      "CorpusId": 23284719,
+      "PubMed": "23747651"
+    },
+    "title": "The effect of word predictability on reading time is logarithmic.",
+    "venue": "Cognition",
+    "year": 2013,
+    "citationCount": 718,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.cognition.2013.02.013",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.cognition.2013.02.013?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.cognition.2013.02.013, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50463401",
+        "name": "Nathaniel J. Smith"
+      },
+      {
+        "authorId": "143643017",
+        "name": "R. Levy"
+      }
+    ],
+    "abstract": "It is well known that real-time human language processing is highly incremental and context-driven, and that the strength of a comprehender's expectation for each word encountered is a key determinant of the difficulty of integrating that word into the preceding context. In reading, this differential difficulty is largely manifested in the amount of time taken to read each word. While numerous studies over the past thirty years have shown expectation-based effects on reading times driven by lexical, syntactic, semantic, pragmatic, and other information sources, there has been little progress in establishing the quantitative relationship between expectation (or prediction) and reading times. Here, by combining a state-of-the-art computational language model, two large behavioral data-sets, and non-parametric statistical techniques, we establish for the first time the quantitative form of this relationship, finding that it is logarithmic over six orders of magnitude in estimated predictability. This result is problematic for a number of established models of eye movement control in reading, but lends partial support to an optimal perceptual discrimination account of word recognition. We also present a novel model in which language processing is highly incremental well below the level of the individual word, and show that it predicts both the shape and time-course of this effect. At a more general level, this result provides challenges for both anticipatory processing and semantic integration accounts of lexical predictability effects. And finally, this result provides evidence that comprehenders are highly sensitive to relative differences in predictability - even for differences between highly unpredictable words - and thus helps bring theoretical unity to our understanding of the role of prediction at multiple levels of linguistic structure in real-time language comprehension.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bec3b18d0b74b7154882505545265b471bd7e68f",
+    "externalIds": {
+      "MAG": "2157365695",
+      "DBLP": "conf/nips/LevyJ06",
+      "DOI": "10.7551/mitpress/7503.003.0111",
+      "CorpusId": 5357066
+    },
+    "title": "Speakers optimize information density through syntactic reduction",
+    "venue": "Neural Information Processing Systems",
+    "year": 2006,
+    "citationCount": 509,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.7551/mitpress/7503.003.0111?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.7551/mitpress/7503.003.0111, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143643017",
+        "name": "R. Levy"
+      },
+      {
+        "authorId": "143985134",
+        "name": "T. Jaeger"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a959ae0f08228d5d04eb46d5dc1ec3f4c9ee91d7",
+    "externalIds": {
+      "ACL": "N01-1021",
+      "MAG": "2054125330",
+      "DBLP": "conf/naacl/Hale01",
+      "DOI": "10.3115/1073336.1073357",
+      "CorpusId": 5490143
+    },
+    "title": "A Probabilistic Earley Parser as a Psycholinguistic Model",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2001,
+    "citationCount": 1399,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.3115/1073336.1073357",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/N01-1021, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145562084",
+        "name": "John Hale"
+      }
+    ],
+    "abstract": "In human sentence processing, cognitive load can be defined many ways. This report considers a definition of cognitive load in terms of the total probability of structural options that have been disconfirmed at some point in a sentence: the surprisal of word wi given its prefix wo...i-1 on a phrase-structural language model. These loads can be efficiently calculated using a probabilistic Earley parser (Stolcke, 1995) which is interpreted as generating predictions about reading time on a word-by-word basis. Under grammatical assumptions supported by corpus-frequency data, the operation of Stolcke's probabilistic Earley parser correctly predicts processing phenomena associated with garden path structural ambiguity and with the subject/object relative asymmetry.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "19088a582f2eb657ac1803f1ea1b79058d5c3dc7",
+    "externalIds": {
+      "MAG": "1562353621",
+      "DOI": "10.1017/CBO9780511528446.003",
+      "CorpusId": 153629957
+    },
+    "title": "A Value for n-person Games",
+    "venue": "",
+    "year": 1988,
+    "citationCount": 9828,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1017/CBO9780511528446.003?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1017/CBO9780511528446.003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8755730",
+        "name": "L. Shapley"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7d47ee5f84103529f84297c98c21dadb4742e3ff",
+    "externalIds": {
+      "MAG": "2013784666",
+      "DOI": "10.1093/BIOMET/39.3-4.324",
+      "CorpusId": 121987403
+    },
+    "title": "RANK ANALYSIS OF INCOMPLETE BLOCK DESIGNS THE METHOD OF PAIRED COMPARISONS",
+    "venue": "",
+    "year": 1952,
+    "citationCount": 4104,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1093/BIOMET/39.3-4.324?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1093/BIOMET/39.3-4.324, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "69566971",
+        "name": "R. Bradley"
+      },
+      {
+        "authorId": "49491973",
+        "name": "M. E. Terry"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "80757652e1f968bdbcc2d5e14a37a7962c3d91bb",
+    "externalIds": {
+      "DBLP": "conf/nips/LinGGLSX0Y0DC24",
+      "DOI": "10.52202/079017-0914",
+      "CorpusId": 276184891
+    },
+    "title": "Not All Tokens Are What You Need for Pretraining",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 69,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.52202/079017-0914?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.52202/079017-0914, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31113759",
+        "name": "Zheng-Wen Lin"
+      },
+      {
+        "authorId": "1797090",
+        "name": "Zhibin Gou"
+      },
+      {
+        "authorId": "2254121650",
+        "name": "Yeyun Gong"
+      },
+      {
+        "authorId": "2273828580",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2237948786",
+        "name": "Yelong Shen"
+      },
+      {
+        "authorId": "2266367743",
+        "name": "Ruochen Xu"
+      },
+      {
+        "authorId": "2269773814",
+        "name": "Chen Lin"
+      },
+      {
+        "authorId": "2284727148",
+        "name": "Yujiu Yang"
+      },
+      {
+        "authorId": "2143968416",
+        "name": "Jian Jiao"
+      },
+      {
+        "authorId": "2269471632",
+        "name": "Nan Duan"
+      },
+      {
+        "authorId": "2249538838",
+        "name": "Weizhu Chen"
+      }
+    ],
+    "abstract": "Previous language model pre-training methods have uniformly applied a next-token prediction loss to all training tokens. Challenging this norm, we posit that “Not all tokens in a corpus are equally important for language model training” . Our initial analysis examines token-level training dynamics of language model, revealing distinct loss patterns for different tokens. Leveraging these insights, we introduce a new language model called R HO -1. Unlike traditional LMs that learn to predict every next token in a corpus, R HO -1 employs Selective Language Modeling (SLM), which selectively trains on useful tokens that aligned with the desired distribution. This approach involves scoring tokens using a reference model, and then training the language model with a focused loss on tokens with higher scores. When continual pretraining on 15B OpenWebMath corpus, R HO -1 yields an absolute improvement in few-shot accuracy of up to 30% in 9 math tasks. After fine-tuning, R HO -1-1B and 7B achieved state-of-the-art results of 40.6% and 51.8% on MATH dataset, respectively — matching DeepSeekMath with only 3% of the pretraining tokens. Furthermore, when continual pretraining on 80B general tokens, R HO -1 achieves 6.8% average enhancement across 15 diverse tasks, increasing both data efficiency and performance of the language model pre-training.",
+    "_is_influential": false,
+    "_intents": []
+  }
+]

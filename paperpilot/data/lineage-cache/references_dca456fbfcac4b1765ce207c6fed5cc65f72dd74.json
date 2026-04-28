@@ -1,0 +1,4541 @@
+[
+  {
+    "paperId": "243dce356173444cbdd6d3fbebb05f04429edbe6",
+    "externalIds": {
+      "ArXiv": "2505.19601",
+      "DBLP": "journals/corr/abs-2505-19601",
+      "DOI": "10.48550/arXiv.2505.19601",
+      "CorpusId": 278904633
+    },
+    "title": "Preference Optimization by Estimating the Ratio of the Data Distribution",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.19601, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119255215",
+        "name": "Yeongmin Kim"
+      },
+      {
+        "authorId": "2164036377",
+        "name": "Heesun Bae"
+      },
+      {
+        "authorId": "1999215536",
+        "name": "Byeonghu Na"
+      },
+      {
+        "authorId": "2288547472",
+        "name": "Il-chul Moon"
+      }
+    ],
+    "abstract": "Direct preference optimization (DPO) is widely used as a simple and stable method for aligning large language models (LLMs) with human preferences. This paper investigates a generalized DPO loss that enables a policy model to match the target policy from a likelihood ratio estimation perspective. The ratio of the target policy provides a unique identification of the policy distribution without relying on reward models or partition functions. This allows the generalized loss to retain both simplicity and theoretical guarantees, which prior work such as $f$-PO fails to achieve simultaneously. We propose Bregman preference optimization (BPO), a generalized framework for ratio matching that provides a family of objective functions achieving target policy optimality. BPO subsumes DPO as a special case and offers tractable forms for all instances, allowing implementation with a few lines of code. We further develop scaled Basu's power divergence (SBA), a gradient scaling method that can be used for BPO instances. The BPO framework complements other DPO variants and is applicable to target policies defined by these variants. In experiments, unlike other probabilistic loss extensions such as $f$-DPO or $f$-PO, which exhibit a trade-off between generation fidelity and diversity, instances of BPO improve both win rate and entropy compared with DPO. When applied to Llama-3-8B-Instruct, BPO achieves state-of-the-art performance among Llama-3-8B backbones, with a 55.9\\% length-controlled win rate on AlpacaEval2. Project page: https://github.com/aailab-kaist/BPO.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1bd6aeceb885fdce3593621d039e7ea27f12ab19",
+    "externalIds": {
+      "DBLP": "conf/aistats/HanJSEX25",
+      "ArXiv": "2410.21662",
+      "DOI": "10.48550/arXiv.2410.21662",
+      "CorpusId": 273662526
+    },
+    "title": "f-PO: Generalizing Preference Optimization with f-divergence Minimization",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2024,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.21662, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2320845290",
+        "name": "Jiaqi Han"
+      },
+      {
+        "authorId": "2328340713",
+        "name": "Mingjian Jiang"
+      },
+      {
+        "authorId": "1610782647",
+        "name": "Yuxuan Song"
+      },
+      {
+        "authorId": "2251205420",
+        "name": "J. Leskovec"
+      },
+      {
+        "authorId": "2302797121",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2257420991",
+        "name": "Minkai Xu"
+      }
+    ],
+    "abstract": "Preference optimization has made significant progress recently, with numerous methods developed to align language models with human preferences. This paper introduces $f$-divergence Preference Optimization ($f$-PO), a novel framework that generalizes and extends existing approaches. $f$-PO minimizes $f$-divergences between the optimized policy and the optimal policy, encompassing a broad family of alignment methods using various divergences. Our approach unifies previous algorithms like DPO and EXO, while offering new variants through different choices of $f$-divergences. We provide theoretical analysis of $f$-PO's properties and conduct extensive experiments on state-of-the-art language models using benchmark datasets. Results demonstrate $f$-PO's effectiveness across various tasks, achieving superior performance compared to existing methods on popular benchmarks such as AlpacaEval 2, Arena-Hard, MT-Bench, and Open LLM Leaderboard v2. Additionally, we present ablation studies exploring the impact of different $f$-divergences, offering insights into the trade-offs between regularization and performance in offline preference optimization. Our work contributes both practical algorithms and theoretical understanding to the field of language model alignment. Code is available at https://github.com/MinkaiXu/fPO.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0d49552b54a1c2e064047d332018a898fcf6d9cb",
+    "externalIds": {
+      "ArXiv": "2410.02743",
+      "DBLP": "conf/iclr/ChaiSFWS025",
+      "DOI": "10.48550/arXiv.2410.02743",
+      "CorpusId": 273098444
+    },
+    "title": "MA-RLHF: Reinforcement Learning from Human Feedback with Macro Actions",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.02743, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1395701436",
+        "name": "Yekun Chai"
+      },
+      {
+        "authorId": "2324148435",
+        "name": "Haoran Sun"
+      },
+      {
+        "authorId": "2249914364",
+        "name": "Huang Fang"
+      },
+      {
+        "authorId": "104463827",
+        "name": "Shuohuan Wang"
+      },
+      {
+        "authorId": "2296100360",
+        "name": "Yu Sun"
+      },
+      {
+        "authorId": "2190177674",
+        "name": "Hua Wu"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has demonstrated effectiveness in aligning large language models (LLMs) with human preferences. However, token-level RLHF suffers from the credit assignment problem over long sequences, where delayed rewards make it challenging for the model to discern which actions contributed to preferred outcomes. This hinders learning efficiency and slows convergence.In this paper, we propose MA-RLHF, a simple yet effective RLHF framework that incorporates macro actions -- sequences of tokens or higher-level language constructs -- into the learning process. By operating at higher level of abstraction, our approach reduces the temporal distance between actions and rewards, facilitating faster and more accurate credit assignment. This results in more stable policy gradient estimates and enhances learning efficiency within each episode, all without increasing computational complexity during training or inference. We validate our approach through extensive experiments across various model sizes and tasks, including text summarization, dialogue generation, question answering, and program synthesis. Our method achieves substantial performance improvements over standard RLHF, with performance gains of up to 30% in text summarization and code generation, 18% in dialogue, and 8% in question answering tasks. Notably, our approach reaches parity with vanilla RLHF 1.7 ~ 2 times faster in terms of training time and continues to outperform it with further training. We make our code and data publicly available at https://github.com/ernie-research/MA-RLHF.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "11dd2fc88747d20629f5aafab72ba649d93e969c",
+    "externalIds": {
+      "ArXiv": "2409.12186",
+      "DBLP": "journals/corr/abs-2409-12186",
+      "CorpusId": 272707390
+    },
+    "title": "Qwen2.5-Coder Technical Report",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1129,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.12186, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2321578848",
+        "name": "Binyuan Hui"
+      },
+      {
+        "authorId": "2319616826",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "2248072386",
+        "name": "Zeyu Cui"
+      },
+      {
+        "authorId": "2135964855",
+        "name": "Jiaxi Yang"
+      },
+      {
+        "authorId": "2248487202",
+        "name": "Dayiheng Liu"
+      },
+      {
+        "authorId": "2321577284",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2311842337",
+        "name": "Tianyu Liu"
+      },
+      {
+        "authorId": "2321653170",
+        "name": "Jiajun Zhang"
+      },
+      {
+        "authorId": "2249451832",
+        "name": "Bowen Yu"
+      },
+      {
+        "authorId": "2247877609",
+        "name": "K. Dang"
+      },
+      {
+        "authorId": "2311633047",
+        "name": "An Yang"
+      },
+      {
+        "authorId": "47447639",
+        "name": "Rui Men"
+      },
+      {
+        "authorId": "152159016",
+        "name": "Fei Huang"
+      },
+      {
+        "authorId": "2325151882",
+        "name": "Shanghaoran Quan"
+      },
+      {
+        "authorId": "2274095735",
+        "name": "Xingzhang Ren"
+      },
+      {
+        "authorId": "2312110505",
+        "name": "Xuancheng Ren"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "2312866505",
+        "name": "Junyang Lin"
+      }
+    ],
+    "abstract": "In this report, we introduce the Qwen2.5-Coder series, a significant upgrade from its predecessor, CodeQwen1.5. This series includes six models: Qwen2.5-Coder-(0.5B/1.5B/3B/7B/14B/32B). As a code-specific model, Qwen2.5-Coder is built upon the Qwen2.5 architecture and continues pretrained on a vast corpus of over 5.5 trillion tokens. Through meticulous data cleaning, scalable synthetic data generation, and balanced data mixing, Qwen2.5-Coder demonstrates impressive code generation capabilities while retaining general and math skills. These models have been evaluated on a wide range of code-related tasks, achieving state-of-the-art (SOTA) performance across more than 10 benchmarks, including code generation, completion, reasoning, and repair, consistently outperforming larger models of the same model size. We believe that the release of the Qwen2.5-Coder series will advance research in code intelligence and, with its permissive licensing, support wider adoption by developers in real-world applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "daa5eaa9a7e3f02aa27e3e3f1ddfcd1af3a1315e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-13399",
+      "ArXiv": "2407.13399",
+      "DOI": "10.48550/arXiv.2407.13399",
+      "CorpusId": 271270840
+    },
+    "title": "Correcting the Mythos of KL-Regularization: Direct Alignment without Overoptimization via Chi-Squared Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 58,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.13399, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2312002293",
+        "name": "Audrey Huang"
+      },
+      {
+        "authorId": "1858443952",
+        "name": "Wenhao Zhan"
+      },
+      {
+        "authorId": "51437774",
+        "name": "Tengyang Xie"
+      },
+      {
+        "authorId": "2257354792",
+        "name": "Jason D. Lee"
+      },
+      {
+        "authorId": "2257373093",
+        "name": "Wen Sun"
+      },
+      {
+        "authorId": "2268062211",
+        "name": "Akshay Krishnamurthy"
+      },
+      {
+        "authorId": "2279828764",
+        "name": "Dylan J. Foster"
+      }
+    ],
+    "abstract": "Language model alignment methods such as reinforcement learning from human feedback (RLHF) have led to impressive advances in language model capabilities, but are limited by a widely observed phenomenon known as overoptimization, where the quality of the language model degrades over the course of the alignment process. As the model optimizes performance with respect to an offline reward model, it overfits to inaccuracies and drifts away from preferred responses covered by the data. To discourage such distribution shift, KL-regularization is widely employed in existing offline alignment methods, but overoptimization continues to harm performance. Lending theoretical insight into the source of these empirical observations, we first show that the KL-regularization is too weak to prevent overfitting, then raise the following question: is it possible to design an efficient algorithm that is provably robust to overoptimization? We address this question with a new algorithm for offline alignment, $\\chi^2$-Preference Optimization ($\\chi$PO). $\\chi$PO is a one-line change to Direct Preference Optimization (DPO; Rafailov et al., 2023), which only involves modifying the logarithmic link function in the DPO objective. Despite this minimal change, $\\chi$PO implicitly implements the principle of pessimism in the face of uncertainty via regularization with the $\\chi^2$-divergence -- which quantifies uncertainty more effectively than KL-regularization -- and provably alleviates overoptimization, achieving sample-complexity guarantees based on single-policy concentrability -- the gold standard in offline reinforcement learning. $\\chi$PO's simplicity and strong guarantees make it the first practical and general-purpose offline alignment algorithm that is provably robust to overoptimization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dd3268b6fb685b7e31ca576f2a629467da90d662",
+    "externalIds": {
+      "ArXiv": "2406.11409",
+      "DBLP": "journals/corr/abs-2406-11409",
+      "DOI": "10.48550/arXiv.2406.11409",
+      "CorpusId": 270560319
+    },
+    "title": "CodeGemma: Open Code Models Based on Gemma",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 228,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.11409, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2307560293",
+        "name": "CodeGemma Team Heri Zhao"
+      },
+      {
+        "authorId": "2134586809",
+        "name": "Jeffrey Hui"
+      },
+      {
+        "authorId": "113828976",
+        "name": "Joshua Howland"
+      },
+      {
+        "authorId": "2307557596",
+        "name": "Nam Nguyen"
+      },
+      {
+        "authorId": "2307456167",
+        "name": "Siqi Zuo"
+      },
+      {
+        "authorId": "2284600524",
+        "name": "A. Hu"
+      },
+      {
+        "authorId": "1415982317",
+        "name": "Christopher A. Choquette-Choo"
+      },
+      {
+        "authorId": "2372265830",
+        "name": "Jingyue Shen"
+      },
+      {
+        "authorId": "2307455862",
+        "name": "Joe Kelley"
+      },
+      {
+        "authorId": "2307455424",
+        "name": "Kshi-tij Bansal"
+      },
+      {
+        "authorId": "2289035179",
+        "name": "Luke Vilnis"
+      },
+      {
+        "authorId": "2275185968",
+        "name": "Mateo Wirth"
+      },
+      {
+        "authorId": "2275185732",
+        "name": "Paul Michel"
+      },
+      {
+        "authorId": "2070068655",
+        "name": "Peter Choy"
+      },
+      {
+        "authorId": "2336086099",
+        "name": "Pratik Joshi"
+      },
+      {
+        "authorId": "2290629265",
+        "name": "Ravin Kumar"
+      },
+      {
+        "authorId": "2307454889",
+        "name": "S. Hashmi"
+      },
+      {
+        "authorId": "2275163561",
+        "name": "Shubham Agrawal"
+      },
+      {
+        "authorId": "2275190668",
+        "name": "Zhitao Gong"
+      },
+      {
+        "authorId": "2091787857",
+        "name": "J. Fine"
+      },
+      {
+        "authorId": "1986491804",
+        "name": "Tris Warkentin"
+      },
+      {
+        "authorId": "2275184113",
+        "name": "A. Hartman"
+      },
+      {
+        "authorId": "2307454954",
+        "name": "Bin Ni"
+      },
+      {
+        "authorId": "2307454223",
+        "name": "Kathy Korevec"
+      },
+      {
+        "authorId": "2248372643",
+        "name": "K. Schaefer"
+      },
+      {
+        "authorId": "2065977077",
+        "name": "Scott Huffman"
+      }
+    ],
+    "abstract": "This paper introduces CodeGemma, a collection of specialized open code models built on top of Gemma, capable of a variety of code and natural language generation tasks. We release three model variants. CodeGemma 7B pretrained (PT) and instruction-tuned (IT) variants have remarkably resilient natural language understanding, excel in mathematical reasoning, and match code capabilities of other open models. CodeGemma 2B is a state-of-the-art code completion model designed for fast code infilling and open-ended generation in latency-sensitive settings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b842b83a7ff5dff8e3b83915d8c15423b6085728",
+    "externalIds": {
+      "ArXiv": "2403.08295",
+      "DBLP": "journals/corr/abs-2403-08295",
+      "DOI": "10.48550/arXiv.2403.08295",
+      "CorpusId": 268379206
+    },
+    "title": "Gemma: Open Models Based on Gemini Research and Technology",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1002,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.08295, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2291067803",
+        "name": "Gemma Team Thomas Mesnard"
+      },
+      {
+        "authorId": "2275186843",
+        "name": "Cassidy Hardin"
+      },
+      {
+        "authorId": "51914693",
+        "name": "Robert Dadashi"
+      },
+      {
+        "authorId": "9692128",
+        "name": "Surya Bhupatiraju"
+      },
+      {
+        "authorId": "2273651441",
+        "name": "Shreya Pathak"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      },
+      {
+        "authorId": "2275177725",
+        "name": "Morgane Rivière"
+      },
+      {
+        "authorId": "26688118",
+        "name": "Mihir Kale"
+      },
+      {
+        "authorId": "2253158807",
+        "name": "J Christopher Love"
+      },
+      {
+        "authorId": "1775270",
+        "name": "P. Tafti"
+      },
+      {
+        "authorId": "122562941",
+        "name": "L'eonard Hussenot"
+      },
+      {
+        "authorId": "2841893",
+        "name": "A. Chowdhery"
+      },
+      {
+        "authorId": "2286998643",
+        "name": "Adam Roberts"
+      },
+      {
+        "authorId": "20407480",
+        "name": "Aditya Barua"
+      },
+      {
+        "authorId": "2180792930",
+        "name": "Alex Botev"
+      },
+      {
+        "authorId": "2275175484",
+        "name": "Alex Castro-Ros"
+      },
+      {
+        "authorId": "133666998",
+        "name": "Ambrose Slone"
+      },
+      {
+        "authorId": "2075284054",
+        "name": "Am'elie H'eliou"
+      },
+      {
+        "authorId": "2844530",
+        "name": "Andrea Tacchetti"
+      },
+      {
+        "authorId": "2265580818",
+        "name": "Anna Bulanova"
+      },
+      {
+        "authorId": "2291068272",
+        "name": "Antonia Paterson"
+      },
+      {
+        "authorId": "2291065122",
+        "name": "Beth Tsai"
+      },
+      {
+        "authorId": "2067577",
+        "name": "Bobak Shahriari"
+      },
+      {
+        "authorId": "153892869",
+        "name": "Charline Le Lan"
+      },
+      {
+        "authorId": "1415982317",
+        "name": "Christopher A. Choquette-Choo"
+      },
+      {
+        "authorId": "2221011518",
+        "name": "Clé-ment Crepy"
+      },
+      {
+        "authorId": "2266238595",
+        "name": "Daniel Cer"
+      },
+      {
+        "authorId": "7975935",
+        "name": "Daphne Ippolito"
+      },
+      {
+        "authorId": "2275179889",
+        "name": "David Reid"
+      },
+      {
+        "authorId": "118801223",
+        "name": "Elena Buchatskaya"
+      },
+      {
+        "authorId": "2291065245",
+        "name": "Eric Ni"
+      },
+      {
+        "authorId": "51210148",
+        "name": "Eric Noland"
+      },
+      {
+        "authorId": "2239111166",
+        "name": "Geng Yan"
+      },
+      {
+        "authorId": "2275183383",
+        "name": "George Tucker"
+      },
+      {
+        "authorId": "2291065684",
+        "name": "George-Christian Muraru"
+      },
+      {
+        "authorId": "2291067913",
+        "name": "Grigory Rozhdestvenskiy"
+      },
+      {
+        "authorId": "47407464",
+        "name": "H. Michalewski"
+      },
+      {
+        "authorId": "2284593233",
+        "name": "Ian Tenney"
+      },
+      {
+        "authorId": "119140047",
+        "name": "Ivan Grishchenko"
+      },
+      {
+        "authorId": "2058365883",
+        "name": "Jacob Austin"
+      },
+      {
+        "authorId": "2058168486",
+        "name": "James Keeling"
+      },
+      {
+        "authorId": "2275184618",
+        "name": "Jane Labanowski"
+      },
+      {
+        "authorId": "143783339",
+        "name": "Jean-Baptiste Lespiau"
+      },
+      {
+        "authorId": "35149729",
+        "name": "J. Stanway"
+      },
+      {
+        "authorId": "2275186701",
+        "name": "Jenny Brennan"
+      },
+      {
+        "authorId": "2275275439",
+        "name": "Jeremy Chen"
+      },
+      {
+        "authorId": "151047979",
+        "name": "Johan Ferret"
+      },
+      {
+        "authorId": "2273650801",
+        "name": "Justin Chiu"
+      },
+      {
+        "authorId": "1423275766",
+        "name": "J. Mao-Jones"
+      },
+      {
+        "authorId": "2275576896",
+        "name": "Kather-ine Lee"
+      },
+      {
+        "authorId": "2291882760",
+        "name": "Kathy Yu"
+      },
+      {
+        "authorId": "2143434227",
+        "name": "Katie Millican"
+      },
+      {
+        "authorId": "2291065624",
+        "name": "Lars Lowe Sjoesund"
+      },
+      {
+        "authorId": "2275291886",
+        "name": "Lisa Lee"
+      },
+      {
+        "authorId": "143928253",
+        "name": "Lucas Dixon"
+      },
+      {
+        "authorId": "1557386977",
+        "name": "Machel Reid"
+      },
+      {
+        "authorId": "2291068287",
+        "name": "Maciej Mikuła"
+      },
+      {
+        "authorId": "2275185968",
+        "name": "Mateo Wirth"
+      },
+      {
+        "authorId": "2275184531",
+        "name": "Michael Sharman"
+      },
+      {
+        "authorId": "2239106707",
+        "name": "Nikolai Chinaev"
+      },
+      {
+        "authorId": "2665391",
+        "name": "Nithum Thain"
+      },
+      {
+        "authorId": "1936951",
+        "name": "Olivier Bachem"
+      },
+      {
+        "authorId": "2275186577",
+        "name": "Os-car Chang"
+      },
+      {
+        "authorId": "2038523726",
+        "name": "Oscar Wahltinez"
+      },
+      {
+        "authorId": "2184744789",
+        "name": "Paige Bailey"
+      },
+      {
+        "authorId": "2275185732",
+        "name": "Paul Michel"
+      },
+      {
+        "authorId": "2291065297",
+        "name": "Petko Yotov"
+      },
+      {
+        "authorId": "7281978",
+        "name": "Pier Giuseppe Sessa"
+      },
+      {
+        "authorId": "1706980",
+        "name": "R. Chaabouni"
+      },
+      {
+        "authorId": "89066101",
+        "name": "R. Comanescu"
+      },
+      {
+        "authorId": "2291065688",
+        "name": "Reena Jana"
+      },
+      {
+        "authorId": "1508890387",
+        "name": "Rohan Anil"
+      },
+      {
+        "authorId": "2275176102",
+        "name": "Ross Mcilroy"
+      },
+      {
+        "authorId": "7247867",
+        "name": "Ruibo Liu"
+      },
+      {
+        "authorId": "2291067498",
+        "name": "Ryan Mullins"
+      },
+      {
+        "authorId": "2288823236",
+        "name": "Samuel L. Smith"
+      },
+      {
+        "authorId": "148016269",
+        "name": "Sebastian Borgeaud"
+      },
+      {
+        "authorId": "35022714",
+        "name": "Sertan Girgin"
+      },
+      {
+        "authorId": "2269733876",
+        "name": "Sholto Douglas"
+      },
+      {
+        "authorId": "2291065472",
+        "name": "Shree Pandya"
+      },
+      {
+        "authorId": "2944868",
+        "name": "Siamak Shakeri"
+      },
+      {
+        "authorId": "2289159449",
+        "name": "Soham De"
+      },
+      {
+        "authorId": "2275184700",
+        "name": "Ted Klimenko"
+      },
+      {
+        "authorId": "2146532222",
+        "name": "T. Hennigan"
+      },
+      {
+        "authorId": "2275181199",
+        "name": "Vladimir Feinberg"
+      },
+      {
+        "authorId": "3448463",
+        "name": "Wojciech Stokowiec"
+      },
+      {
+        "authorId": "47559354",
+        "name": "Yu-Hui Chen"
+      },
+      {
+        "authorId": "2275130349",
+        "name": "Zafarali Ahmed"
+      },
+      {
+        "authorId": "2275190668",
+        "name": "Zhitao Gong"
+      },
+      {
+        "authorId": "1986491804",
+        "name": "Tris Warkentin"
+      },
+      {
+        "authorId": "2291065300",
+        "name": "Ludovic Peran"
+      },
+      {
+        "authorId": "2275187490",
+        "name": "Minh Giang"
+      },
+      {
+        "authorId": "2265490908",
+        "name": "Clément Farabet"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "2265529729",
+        "name": "Jeffrey Dean"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      },
+      {
+        "authorId": "1983575",
+        "name": "Z. Ghahramani"
+      },
+      {
+        "authorId": "2291067974",
+        "name": "Douglas Eck"
+      },
+      {
+        "authorId": "2254701020",
+        "name": "Joelle Barral"
+      },
+      {
+        "authorId": "2291062354",
+        "name": "Fernando Pereira"
+      },
+      {
+        "authorId": "2275181648",
+        "name": "Eli Collins"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "22640071",
+        "name": "Noah Fiedel"
+      },
+      {
+        "authorId": "2268665228",
+        "name": "Evan Senter"
+      },
+      {
+        "authorId": "2290741315",
+        "name": "Alek Andreev"
+      },
+      {
+        "authorId": "1914502282",
+        "name": "Kathleen Kenealy"
+      }
+    ],
+    "abstract": "This work introduces Gemma, a family of lightweight, state-of-the art open models built from the research and technology used to create Gemini models. Gemma models demonstrate strong performance across academic benchmarks for language understanding, reasoning, and safety. We release two sizes of models (2 billion and 7 billion parameters), and provide both pretrained and fine-tuned checkpoints. Gemma outperforms similarly sized open models on 11 out of 18 text-based tasks, and we present comprehensive evaluations of safety and responsibility aspects of the models, alongside a detailed description of model development. We believe the responsible release of LLMs is critical for improving the safety of frontier models, and for enabling the next wave of LLM innovations.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "7304666dce9e90861ca7de928dd6826fb338fbd8",
+    "externalIds": {
+      "DBLP": "conf/coling/CuiQGZXWLSZL24",
+      "ACL": "2024.lrec-main.1293",
+      "ArXiv": "2402.17110",
+      "DOI": "10.1109/TNNLS.2024.3501335",
+      "CorpusId": 268032240,
+      "PubMed": "40030580"
+    },
+    "title": "Sinkhorn Distance Minimization for Knowledge Distillation",
+    "venue": "International Conference on Language Resources and Evaluation",
+    "year": 2024,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.17110, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2279961107",
+        "name": "Xiao Cui"
+      },
+      {
+        "authorId": "2267903811",
+        "name": "Yulei Qin"
+      },
+      {
+        "authorId": "2139833611",
+        "name": "Yuting Gao"
+      },
+      {
+        "authorId": "2267341742",
+        "name": "Enwei Zhang"
+      },
+      {
+        "authorId": "2267376632",
+        "name": "Zihan Xu"
+      },
+      {
+        "authorId": "2267388972",
+        "name": "Tong Wu"
+      },
+      {
+        "authorId": "2257346950",
+        "name": "Ke Li"
+      },
+      {
+        "authorId": "2257378361",
+        "name": "Xing Sun"
+      },
+      {
+        "authorId": "38272296",
+        "name": "Wen-gang Zhou"
+      },
+      {
+        "authorId": "2210048071",
+        "name": "Houqiang Li"
+      }
+    ],
+    "abstract": "Knowledge distillation (KD) has been widely adopted to compress large language models (LLMs). Existing KD methods investigate various divergence measures including the Kullback-Leibler (KL), reverse Kullback-Leibler (RKL), and Jensen-Shannon (JS) divergences. However, due to limitations inherent in their assumptions and definitions, these measures fail to deliver effective supervision when few distribution overlap exists between the teacher and the student. In this paper, we show that the aforementioned KL, RKL, and JS divergences respectively suffer from issues of mode-averaging, mode-collapsing, and mode-underestimation, which deteriorates logits-based KD for diverse NLP tasks. We propose the Sinkhorn Knowledge Distillation (SinKD) that exploits the Sinkhorn distance to ensure a nuanced and precise assessment of the disparity between teacher and student distributions. Besides, profit by properties of the Sinkhorn metric, we can get rid of sample-wise KD that restricts the perception of divergence in each teacher-student sample pair. Instead, we propose a batch-wise reformulation to capture geometric intricacies of distributions across samples in the high-dimensional space. Comprehensive evaluation on GLUE and SuperGLUE, in terms of comparability, validity, and generalizability, highlights our superiority over state-of-the-art methods on all kinds of LLMs with encoder-only, encoder-decoder, and decoder-only architectures.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c0d8e5ee66c279299012cc3b8d0519011b3f4998",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-01306",
+      "ArXiv": "2402.01306",
+      "CorpusId": 267406810
+    },
+    "title": "KTO: Model Alignment as Prospect Theoretic Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 954,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.01306, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10324691",
+        "name": "Kawin Ethayarajh"
+      },
+      {
+        "authorId": "2282503091",
+        "name": "Winnie Xu"
+      },
+      {
+        "authorId": "2037383772",
+        "name": "Niklas Muennighoff"
+      },
+      {
+        "authorId": "1746807",
+        "name": "Dan Jurafsky"
+      },
+      {
+        "authorId": "2111313627",
+        "name": "Douwe Kiela"
+      }
+    ],
+    "abstract": "Kahneman&Tversky's $\\textit{prospect theory}$ tells us that humans perceive random variables in a biased but well-defined manner (1992); for example, humans are famously loss-averse. We show that objectives for aligning LLMs with human feedback implicitly incorporate many of these biases -- the success of these objectives (e.g., DPO) over cross-entropy minimization can partly be ascribed to them belonging to a family of loss functions that we call $\\textit{human-aware losses}$ (HALOs). However, the utility functions these methods attribute to humans still differ from those in the prospect theory literature. Using a Kahneman-Tversky model of human utility, we propose a HALO that directly maximizes the utility of generations instead of maximizing the log-likelihood of preferences, as current methods do. We call this approach KTO, and it matches or exceeds the performance of preference-based methods at scales from 1B to 30B, despite only learning from a binary signal of whether an output is desirable. More broadly, our work suggests that there is no one HALO that is universally superior; the best loss depends on the inductive biases most appropriate for a given setting, an oft-overlooked consideration.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f3460dc3ae5cfd41099d576a3bb77411e1fc2e3f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-12036",
+      "ArXiv": "2310.12036",
+      "DOI": "10.48550/arXiv.2310.12036",
+      "CorpusId": 264288854
+    },
+    "title": "A General Theoretical Paradigm to Understand Learning from Human Preferences",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2023,
+    "citationCount": 936,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.12036, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "37666967",
+        "name": "M. G. Azar"
+      },
+      {
+        "authorId": "144845456",
+        "name": "Mark Rowland"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      },
+      {
+        "authorId": "2260679471",
+        "name": "D. Guo"
+      },
+      {
+        "authorId": "2439765",
+        "name": "Daniele Calandriello"
+      },
+      {
+        "authorId": "1806291",
+        "name": "Michal Valko"
+      },
+      {
+        "authorId": "2237802765",
+        "name": "Rémi Munos"
+      }
+    ],
+    "abstract": "The prevalent deployment of learning from human preferences through reinforcement learning (RLHF) relies on two important approximations: the first assumes that pairwise preferences can be substituted with pointwise rewards. The second assumes that a reward model trained on these pointwise rewards can generalize from collected data to out-of-distribution data sampled by the policy. Recently, Direct Preference Optimisation (DPO) has been proposed as an approach that bypasses the second approximation and learn directly a policy from collected data without the reward modelling stage. However, this method still heavily relies on the first approximation. In this paper we try to gain a deeper theoretical understanding of these practical algorithms. In particular we derive a new general objective called $\\Psi$PO for learning from human preferences that is expressed in terms of pairwise preferences and therefore bypasses both approximations. This new general objective allows us to perform an in-depth analysis of the behavior of RLHF and DPO (as special cases of $\\Psi$PO) and to identify their potential pitfalls. We then consider another special case for $\\Psi$PO by setting $\\Psi$ simply to Identity, for which we can derive an efficient optimisation procedure, prove performance guarantees and demonstrate its empirical superiority to DPO on some illustrative examples.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "860c8de4fdac38695ff6860dd15312f1079c6117",
+    "externalIds": {
+      "DBLP": "conf/iclr/WangJYLC24",
+      "ArXiv": "2309.16240",
+      "DOI": "10.48550/arXiv.2309.16240",
+      "CorpusId": 263142109
+    },
+    "title": "Beyond Reverse KL: Generalizing Direct Preference Optimization with Diverse Divergence Constraints",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 169,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.16240",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.16240, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144093796",
+        "name": "Chaoqi Wang"
+      },
+      {
+        "authorId": "2249607229",
+        "name": "Yibo Jiang"
+      },
+      {
+        "authorId": "46962597",
+        "name": "Chenghao Yang"
+      },
+      {
+        "authorId": "2140162948",
+        "name": "Han Liu"
+      },
+      {
+        "authorId": "50580847",
+        "name": "Yuxin Chen"
+      }
+    ],
+    "abstract": "The increasing capabilities of large language models (LLMs) raise opportunities for artificial general intelligence but concurrently amplify safety concerns, such as potential misuse of AI systems, necessitating effective AI alignment. Reinforcement Learning from Human Feedback (RLHF) has emerged as a promising pathway towards AI alignment but brings forth challenges due to its complexity and dependence on a separate reward model. Direct Preference Optimization (DPO) has been proposed as an alternative, and it remains equivalent to RLHF under the reverse KL regularization constraint. This paper presents $f$-DPO, a generalized approach to DPO by incorporating diverse divergence constraints. We show that under certain $f$-divergences, including Jensen-Shannon divergence, forward KL divergences and $\\alpha$-divergences, the complex relationship between the reward and optimal policy can also be simplified by addressing the Karush-Kuhn-Tucker conditions. This eliminates the need for estimating the normalizing constant in the Bradley-Terry model and enables a tractable mapping between the reward function and the optimal policy. Our approach optimizes LLMs to align with human preferences in a more efficient and supervised manner under a broad set of divergence constraints. Empirically, adopting these divergences ensures a balance between alignment performance and generation diversity. Importantly, $f$-DPO outperforms PPO-based methods in divergence efficiency, and divergence constraints directly influence expected calibration error (ECE).",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "5fc1a3a49e8f1d106118b69d1d6be3b6caa23da0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2309-16609",
+      "ArXiv": "2309.16609",
+      "DOI": "10.48550/arXiv.2309.16609",
+      "CorpusId": 263134555
+    },
+    "title": "Qwen Technical Report",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 3637,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.16609",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.16609, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "41211611",
+        "name": "Jinze Bai"
+      },
+      {
+        "authorId": "2247821453",
+        "name": "Shuai Bai"
+      },
+      {
+        "authorId": "2247867894",
+        "name": "Yunfei Chu"
+      },
+      {
+        "authorId": "2248072386",
+        "name": "Zeyu Cui"
+      },
+      {
+        "authorId": "2247877609",
+        "name": "K. Dang"
+      },
+      {
+        "authorId": "2249717428",
+        "name": "Xiaodong Deng"
+      },
+      {
+        "authorId": "2303618719",
+        "name": "Yang Fan"
+      },
+      {
+        "authorId": "2054600625",
+        "name": "Wenhang Ge"
+      },
+      {
+        "authorId": "2249483230",
+        "name": "Yu Han"
+      },
+      {
+        "authorId": "152159016",
+        "name": "Fei Huang"
+      },
+      {
+        "authorId": "151471590",
+        "name": "Binyuan Hui"
+      },
+      {
+        "authorId": "2147295496",
+        "name": "Luo Ji"
+      },
+      {
+        "authorId": "2223106060",
+        "name": "Mei Li"
+      },
+      {
+        "authorId": "35996608",
+        "name": "Junyang Lin"
+      },
+      {
+        "authorId": "2248039532",
+        "name": "Runji Lin"
+      },
+      {
+        "authorId": "7415571",
+        "name": "Dayiheng Liu"
+      },
+      {
+        "authorId": "2197482380",
+        "name": "Gao Liu"
+      },
+      {
+        "authorId": "46655401",
+        "name": "Chengqiang Lu"
+      },
+      {
+        "authorId": "1515662094",
+        "name": "K. Lu"
+      },
+      {
+        "authorId": "47793076",
+        "name": "Jianxin Ma"
+      },
+      {
+        "authorId": "47447639",
+        "name": "Rui Men"
+      },
+      {
+        "authorId": "40936467",
+        "name": "Xingzhang Ren"
+      },
+      {
+        "authorId": "19169659",
+        "name": "Xuancheng Ren"
+      },
+      {
+        "authorId": "2111727840",
+        "name": "Chuanqi Tan"
+      },
+      {
+        "authorId": "2110171536",
+        "name": "Sinan Tan"
+      },
+      {
+        "authorId": "49365463",
+        "name": "Jianhong Tu"
+      },
+      {
+        "authorId": "2155302144",
+        "name": "Peng Wang"
+      },
+      {
+        "authorId": "2217429986",
+        "name": "Shijie Wang"
+      },
+      {
+        "authorId": "38700603",
+        "name": "Wei Wang"
+      },
+      {
+        "authorId": "2247967520",
+        "name": "Shengguang Wu"
+      },
+      {
+        "authorId": "2249082188",
+        "name": "Benfeng Xu"
+      },
+      {
+        "authorId": "2110641662",
+        "name": "Jin Xu"
+      },
+      {
+        "authorId": "143936592",
+        "name": "An Yang"
+      },
+      {
+        "authorId": "2257352480",
+        "name": "Hao Yang"
+      },
+      {
+        "authorId": "37081450",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "2243424858",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "2237626195",
+        "name": "Shusheng Yang"
+      },
+      {
+        "authorId": "2153951714",
+        "name": "Yang Yao"
+      },
+      {
+        "authorId": "2249451832",
+        "name": "Bowen Yu"
+      },
+      {
+        "authorId": "48613402",
+        "name": "Yu Bowen"
+      },
+      {
+        "authorId": "2114128654",
+        "name": "Hongyi Yuan"
+      },
+      {
+        "authorId": "2112340945",
+        "name": "Zheng Yuan"
+      },
+      {
+        "authorId": "2108091429",
+        "name": "Jianwei Zhang"
+      },
+      {
+        "authorId": "2210472743",
+        "name": "Xing Zhang"
+      },
+      {
+        "authorId": "29343468",
+        "name": "Yichang Zhang"
+      },
+      {
+        "authorId": "2321656193",
+        "name": "Zhenru Zhang"
+      },
+      {
+        "authorId": "2192678144",
+        "name": "Chang Zhou"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "2141874108",
+        "name": "Xiaohuan Zhou"
+      },
+      {
+        "authorId": "2248127832",
+        "name": "Tianhang Zhu"
+      }
+    ],
+    "abstract": "Large language models (LLMs) have revolutionized the field of artificial intelligence, enabling natural language processing tasks that were previously thought to be exclusive to humans. In this work, we introduce Qwen, the first installment of our large language model series. Qwen is a comprehensive language model series that encompasses distinct models with varying parameter counts. It includes Qwen, the base pretrained language models, and Qwen-Chat, the chat models finetuned with human alignment techniques. The base language models consistently demonstrate superior performance across a multitude of downstream tasks, and the chat models, particularly those trained using Reinforcement Learning from Human Feedback (RLHF), are highly competitive. The chat models possess advanced tool-use and planning capabilities for creating agent applications, showcasing impressive performance even when compared to bigger models on complex tasks like utilizing a code interpreter. Furthermore, we have developed coding-specialized models, Code-Qwen and Code-Qwen-Chat, as well as mathematics-focused models, Math-Qwen-Chat, which are built upon base language models. These models demonstrate significantly improved performance in comparison with open-source models, and slightly fall behind the proprietary models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dd278797cae2d4ca9725d98a4e0f73b637990381",
+    "externalIds": {
+      "ArXiv": "2308.01320",
+      "DBLP": "journals/corr/abs-2308-01320",
+      "DOI": "10.48550/arXiv.2308.01320",
+      "CorpusId": 260438723
+    },
+    "title": "DeepSpeed-Chat: Easy, Fast and Affordable RLHF Training of ChatGPT-like Models at All Scales",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 111,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.01320",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.01320, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9088433",
+        "name": "Z. Yao"
+      },
+      {
+        "authorId": "3394222",
+        "name": "Reza Yazdani Aminabadi"
+      },
+      {
+        "authorId": "2537545",
+        "name": "Olatunji Ruwase"
+      },
+      {
+        "authorId": "32817044",
+        "name": "Samyam Rajbhandari"
+      },
+      {
+        "authorId": "2129511744",
+        "name": "Xiaoxia Wu"
+      },
+      {
+        "authorId": "2942686",
+        "name": "A. A. Awan"
+      },
+      {
+        "authorId": "3299496",
+        "name": "Jeff Rasley"
+      },
+      {
+        "authorId": "67016465",
+        "name": "Minjia Zhang"
+      },
+      {
+        "authorId": "2609325",
+        "name": "Conglong Li"
+      },
+      {
+        "authorId": "2059083875",
+        "name": "Connor Holmes"
+      },
+      {
+        "authorId": "2226690406",
+        "name": "Zhongzhu Zhou"
+      },
+      {
+        "authorId": "2226773110",
+        "name": "Michael Wyatt"
+      },
+      {
+        "authorId": "2226788357",
+        "name": "M. Smith"
+      },
+      {
+        "authorId": "4934433",
+        "name": "L. Kurilenko"
+      },
+      {
+        "authorId": "1406135543",
+        "name": "Heyang Qin"
+      },
+      {
+        "authorId": "2226706029",
+        "name": "Masahiro Tanaka"
+      },
+      {
+        "authorId": "2059354867",
+        "name": "S. Che"
+      },
+      {
+        "authorId": "1798309",
+        "name": "S. Song"
+      },
+      {
+        "authorId": "2300208615",
+        "name": "Yuxiong He"
+      }
+    ],
+    "abstract": "ChatGPT-like models have revolutionized various applications in artificial intelligence, from summarization and coding to translation, matching or even surpassing human performance. However, the current landscape lacks an accessible, efficient, and cost-effective end-to-end RLHF (Reinforcement Learning with Human Feedback) training pipeline for these powerful models, particularly when training at the scale of billions of parameters. This paper introduces DeepSpeed-Chat, a novel system that democratizes RLHF training, making it accessible to the AI community. DeepSpeed-Chat offers three key capabilities: an easy-to-use training and inference experience for ChatGPT-like models, a DeepSpeed-RLHF pipeline that replicates the training pipeline from InstructGPT, and a robust DeepSpeed-RLHF system that combines various optimizations for training and inference in a unified way. The system delivers unparalleled efficiency and scalability, enabling training of models with hundreds of billions of parameters in record time and at a fraction of the cost. With this development, DeepSpeed-Chat paves the way for broader access to advanced RLHF training, even for data scientists with limited resources, thereby fostering innovation and further development in the field of AI.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a669ea57529f4db630043c8c75d8f840c485d24d",
+    "externalIds": {
+      "DBLP": "journals/tmlr/LiuZXF00Y23",
+      "ArXiv": "2307.04349",
+      "DOI": "10.48550/arXiv.2307.04349",
+      "CorpusId": 259501019
+    },
+    "title": "RLTF: Reinforcement Learning from Unit Test Feedback",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 121,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.04349",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.04349, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108401097",
+        "name": "Jiate Liu"
+      },
+      {
+        "authorId": "2269198306",
+        "name": "Yiqin Zhu"
+      },
+      {
+        "authorId": "2105719095",
+        "name": "Kaiwen Xiao"
+      },
+      {
+        "authorId": "2091914469",
+        "name": "Qiang Fu"
+      },
+      {
+        "authorId": null,
+        "name": "Xiao Han"
+      },
+      {
+        "authorId": "2005150594",
+        "name": "Wei Yang"
+      },
+      {
+        "authorId": "2055648566",
+        "name": "Deheng Ye"
+      }
+    ],
+    "abstract": "The goal of program synthesis, or code generation, is to generate executable code based on given descriptions. Recently, there has been an increasing number of studies employing reinforcement learning (RL) to improve the performance of large language models (LLMs) for code. However, current representative works either rely solely on offline frameworks, limiting the exploration of new sample spaces, or fall short in the utilization of unit test signals, not accounting for specific error locations within the code. To address these issues, we propose RLTF, i.e., Reinforcement Learning from Unit Test Feedback, a novel online RL framework with unit test feedback of multi-granularity for refining code LLMs. Our approach generates data in real-time during training and simultaneously utilizes fine-grained feedback signals to guide the model towards producing higher-quality code. Extensive experiments show that RLTF achieves state-of-the-art performance on the APPS and the MBPP benchmarks. Our code is available at: https://github.com/Zyq-scut/RLTF.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2732028656ffa7c240932d38a7e134747c2aefeb",
+    "externalIds": {
+      "ArXiv": "2306.14133",
+      "DBLP": "journals/corr/abs-2306-14133",
+      "DOI": "10.48550/arXiv.2306.14133",
+      "CorpusId": 259252295
+    },
+    "title": "Provably Convergent Policy Optimization via Metric-aware Trust Region Methods",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.14133",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.14133, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2220572426",
+        "name": "Jun Song"
+      },
+      {
+        "authorId": "2903347",
+        "name": "Niao He"
+      },
+      {
+        "authorId": "46573184",
+        "name": "Lijun Ding"
+      },
+      {
+        "authorId": "2220594878",
+        "name": "Chaoyue Zhao"
+      }
+    ],
+    "abstract": "Trust-region methods based on Kullback-Leibler divergence are pervasively used to stabilize policy optimization in reinforcement learning. In this paper, we exploit more flexible metrics and examine two natural extensions of policy optimization with Wasserstein and Sinkhorn trust regions, namely Wasserstein policy optimization (WPO) and Sinkhorn policy optimization (SPO). Instead of restricting the policy to a parametric distribution class, we directly optimize the policy distribution and derive their closed-form policy updates based on the Lagrangian duality. Theoretically, we show that WPO guarantees a monotonic performance improvement, and SPO provably converges to WPO as the entropic regularizer diminishes. Moreover, we prove that with a decaying Lagrangian multiplier to the trust region constraint, both methods converge to global optimality. Experiments across tabular domains, robotic locomotion, and continuous control tasks further demonstrate the performance improvement of both approaches, more robustness of WPO to sample insufficiency, and faster convergence of SPO, over state-of-art policy gradient methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a0a79dad89857a96f8f71b14238e5237cbfc4787",
+    "externalIds": {
+      "ArXiv": "2306.05685",
+      "DBLP": "journals/corr/abs-2306-05685",
+      "DOI": "10.52202/075280-2020",
+      "CorpusId": 259129398
+    },
+    "title": "Judging LLM-as-a-judge with MT-Bench and Chatbot Arena",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8079,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.05685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "2537924",
+        "name": "Wei-Lin Chiang"
+      },
+      {
+        "authorId": "2209360681",
+        "name": "Ying Sheng"
+      },
+      {
+        "authorId": "92721493",
+        "name": "Siyuan Zhuang"
+      },
+      {
+        "authorId": "1390573666",
+        "name": "Zhanghao Wu"
+      },
+      {
+        "authorId": "2152482391",
+        "name": "Yonghao Zhuang"
+      },
+      {
+        "authorId": "143872641",
+        "name": "Zi Lin"
+      },
+      {
+        "authorId": "2141335450",
+        "name": "Zhuohan Li"
+      },
+      {
+        "authorId": "2117961435",
+        "name": "Dacheng Li"
+      },
+      {
+        "authorId": "143977260",
+        "name": "E. Xing"
+      },
+      {
+        "authorId": "145140331",
+        "name": "Haotong Zhang"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": "Evaluating large language model (LLM) based chat assistants is challenging due to their broad capabilities and the inadequacy of existing benchmarks in measuring human preferences. To address this, we explore using strong LLMs as judges to evaluate these models on more open-ended questions. We examine the usage and limitations of LLM-as-a-judge, including position, verbosity, and self-enhancement biases, as well as limited reasoning ability, and propose solutions to mitigate some of them. We then verify the agreement between LLM judges and human preferences by introducing two benchmarks: MT-bench, a multi-turn question set; and Chatbot Arena, a crowdsourced battle platform. Our results reveal that strong LLM judges like GPT-4 can match both controlled and crowdsourced human preferences well, achieving over 80% agreement, the same level of agreement between humans. Hence, LLM-as-a-judge is a scalable and explainable way to approximate human preferences, which are otherwise very expensive to obtain. Additionally, we show our benchmark and traditional benchmarks complement each other by evaluating several variants of LLaMA and Vicuna. The MT-bench questions, 3K expert votes, and 30K conversations with human preferences are publicly available at https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0d1c76d45afa012ded7ab741194baf142117c495",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18290",
+      "ArXiv": "2305.18290",
+      "DOI": "10.52202/075280-2338",
+      "CorpusId": 258959321
+    },
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "50465276",
+        "name": "Archit Sharma"
+      },
+      {
+        "authorId": "49688913",
+        "name": "E. Mitchell"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "3ab661db57d924f4ff1706e05ac807873ca00e0a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-06767",
+      "ArXiv": "2304.06767",
+      "DOI": "10.48550/arXiv.2304.06767",
+      "CorpusId": 258170300
+    },
+    "title": "RAFT: Reward rAnked FineTuning for Generative Foundation Model Alignment",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 699,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.06767",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.06767, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35279146",
+        "name": "Hanze Dong"
+      },
+      {
+        "authorId": "2275119437",
+        "name": "Wei Xiong"
+      },
+      {
+        "authorId": "46414419",
+        "name": "Deepanshu Goyal"
+      },
+      {
+        "authorId": null,
+        "name": "Rui Pan"
+      },
+      {
+        "authorId": "50826757",
+        "name": "Shizhe Diao"
+      },
+      {
+        "authorId": "50561049",
+        "name": "Jipeng Zhang"
+      },
+      {
+        "authorId": "2121340452",
+        "name": "Kashun Shum"
+      },
+      {
+        "authorId": "38144094",
+        "name": "T. Zhang"
+      }
+    ],
+    "abstract": "Generative foundation models are susceptible to implicit biases that can arise from extensive unsupervised training data. Such biases can produce suboptimal samples, skewed outcomes, and unfairness, with potentially serious consequences. Consequently, aligning these models with human ethics and preferences is an essential step toward ensuring their responsible and effective deployment in real-world applications. Prior research has primarily employed Reinforcement Learning from Human Feedback (RLHF) to address this problem, where generative models are fine-tuned with RL algorithms guided by a human-feedback-informed reward model. However, the inefficiencies and instabilities associated with RL algorithms frequently present substantial obstacles to the successful alignment, necessitating the development of a more robust and streamlined approach. To this end, we introduce a new framework, Reward rAnked FineTuning (RAFT), designed to align generative models effectively. Utilizing a reward model and a sufficient number of samples, our approach selects the high-quality samples, discarding those that exhibit undesired behavior, and subsequently enhancing the model by fine-tuning on these filtered samples. Our studies show that RAFT can effectively improve the model performance in both reward learning and other automated metrics in both large language models and diffusion models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "748698bd4387afd08594e0dc8150c2afa210d9ae",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-05302",
+      "ArXiv": "2304.05302",
+      "DOI": "10.48550/arXiv.2304.05302",
+      "CorpusId": 258059818
+    },
+    "title": "RRHF: Rank Responses to Align Language Models with Human Feedback without tears",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 511,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.05302",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.05302, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112340945",
+        "name": "Zheng Yuan"
+      },
+      {
+        "authorId": "2114128654",
+        "name": "Hongyi Yuan"
+      },
+      {
+        "authorId": "2111727840",
+        "name": "Chuanqi Tan"
+      },
+      {
+        "authorId": "2203795932",
+        "name": "Wei Wang"
+      },
+      {
+        "authorId": "2410938",
+        "name": "Songfang Huang"
+      },
+      {
+        "authorId": "51012694",
+        "name": "Feiran Huang"
+      }
+    ],
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) facilitates the alignment of large language models with human preferences, significantly enhancing the quality of interactions between humans and models. InstructGPT implements RLHF through several stages, including Supervised Fine-Tuning (SFT), reward model training, and Proximal Policy Optimization (PPO). However, PPO is sensitive to hyperparameters and requires multiple models in its standard implementation, making it hard to train and scale up to larger parameter counts. In contrast, we propose a novel learning paradigm called RRHF, which scores sampled responses from different sources via a logarithm of conditional probabilities and learns to align these probabilities with human preferences through ranking loss. RRHF can leverage sampled responses from various sources including the model responses from itself, other large language model responses, and human expert responses to learn to rank them. RRHF only needs 1 to 2 models during tuning and can efficiently align language models with human preferences robustly without complex hyperparameter tuning. Additionally, RRHF can be considered an extension of SFT and reward model training while being simpler than PPO in terms of coding, model counts, and hyperparameters. We evaluate RRHF on the Helpful and Harmless dataset, demonstrating comparable alignment performance with PPO by reward model score and human labeling. Extensive experiments show that the performance of RRHF is highly related to sampling quality which suggests RRHF is a best-of-n learner. Codes available at https://github.com/GanjinZero/RRHF.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "163b4d6a79a5b19af88b8585456363340d9efd04",
+    "externalIds": {
+      "ArXiv": "2303.08774",
+      "CorpusId": 257532815
+    },
+    "title": "GPT-4 Technical Report",
+    "venue": "",
+    "year": 2023,
+    "citationCount": 23912,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.08774, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275249853",
+        "name": "OpenAI Josh Achiam"
+      },
+      {
+        "authorId": "2275250875",
+        "name": "Steven Adler"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2274773568",
+        "name": "L. Ahmad"
+      },
+      {
+        "authorId": "2258629",
+        "name": "Ilge Akkaya"
+      },
+      {
+        "authorId": "2275244794",
+        "name": "Florencia Leoni Aleman"
+      },
+      {
+        "authorId": "2275252021",
+        "name": "D. Almeida"
+      },
+      {
+        "authorId": "2275252424",
+        "name": "Janko Altenschmidt"
+      },
+      {
+        "authorId": "2275245579",
+        "name": "S. Altman"
+      },
+      {
+        "authorId": "2275246437",
+        "name": "Shyamal Anadkat"
+      },
+      {
+        "authorId": "2275139370",
+        "name": "Red Avila"
+      },
+      {
+        "authorId": "2256699302",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "2275251659",
+        "name": "Valerie Balcom"
+      },
+      {
+        "authorId": "47626612",
+        "name": "Paul Baltescu"
+      },
+      {
+        "authorId": "2275198557",
+        "name": "Haim-ing Bao"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2275245092",
+        "name": "Jeff Belgum"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "2275245414",
+        "name": "Jake Berdine"
+      },
+      {
+        "authorId": "2275245581",
+        "name": "Gabriel Bernadett-Shapiro"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "2275251674",
+        "name": "Lenny Bogdonoff"
+      },
+      {
+        "authorId": "2275246071",
+        "name": "O. Boiko"
+      },
+      {
+        "authorId": "2275248137",
+        "name": "Made-laine Boyd"
+      },
+      {
+        "authorId": "2275245419",
+        "name": "Anna-Luisa Brakman"
+      },
+      {
+        "authorId": "2065151121",
+        "name": "Greg Brockman"
+      },
+      {
+        "authorId": "2275219628",
+        "name": "Tim Brooks"
+      },
+      {
+        "authorId": "35167962",
+        "name": "Miles Brundage"
+      },
+      {
+        "authorId": "2146257251",
+        "name": "Kevin Button"
+      },
+      {
+        "authorId": "2275157286",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "2274782053",
+        "name": "Rosie Campbell"
+      },
+      {
+        "authorId": "2275245404",
+        "name": "Andrew Cann"
+      },
+      {
+        "authorId": "2275246368",
+        "name": "Brittany Carey"
+      },
+      {
+        "authorId": "2275120298",
+        "name": "Chelsea Carlson"
+      },
+      {
+        "authorId": "144114446",
+        "name": "Rory Carmichael"
+      },
+      {
+        "authorId": "1466431052",
+        "name": "Brooke Chan"
+      },
+      {
+        "authorId": "2275545855",
+        "name": "Che Chang"
+      },
+      {
+        "authorId": "2057091285",
+        "name": "Fotis Chantzis"
+      },
+      {
+        "authorId": "2253841704",
+        "name": "Derek Chen"
+      },
+      {
+        "authorId": "2275188918",
+        "name": "Sully Chen"
+      },
+      {
+        "authorId": "2275179180",
+        "name": "Ruby Chen"
+      },
+      {
+        "authorId": "2275289833",
+        "name": "Jason Chen"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2275251158",
+        "name": "Chester Cho"
+      },
+      {
+        "authorId": "2276186593",
+        "name": "Casey Chu"
+      },
+      {
+        "authorId": "2275839391",
+        "name": "Hyung Won Chung"
+      },
+      {
+        "authorId": "2275231534",
+        "name": "Dave Cummings"
+      },
+      {
+        "authorId": "49645091",
+        "name": "Jeremiah Currier"
+      },
+      {
+        "authorId": "2276187456",
+        "name": "Yunxing Dai"
+      },
+      {
+        "authorId": "2275251205",
+        "name": "Cory Decareaux"
+      },
+      {
+        "authorId": "2275244920",
+        "name": "Thomas Degry"
+      },
+      {
+        "authorId": "2275247090",
+        "name": "Noah Deutsch"
+      },
+      {
+        "authorId": "2275251200",
+        "name": "Damien Deville"
+      },
+      {
+        "authorId": "2275244298",
+        "name": "Arka Dhar"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "2275252295",
+        "name": "Steve Dowling"
+      },
+      {
+        "authorId": "2275245491",
+        "name": "Sheila Dunning"
+      },
+      {
+        "authorId": "66821245",
+        "name": "Adrien Ecoffet"
+      },
+      {
+        "authorId": "2275245457",
+        "name": "Atty Eleti"
+      },
+      {
+        "authorId": "2146257131",
+        "name": "Tyna Eloundou"
+      },
+      {
+        "authorId": "2065430571",
+        "name": "David Farhi"
+      },
+      {
+        "authorId": "2096916416",
+        "name": "L. Fedus"
+      },
+      {
+        "authorId": "2275249996",
+        "name": "Niko Felix"
+      },
+      {
+        "authorId": "2275245820",
+        "name": "S. Fishman"
+      },
+      {
+        "authorId": "2275244914",
+        "name": "Juston Forte"
+      },
+      {
+        "authorId": "2275251173",
+        "name": "Is-abella Fulford"
+      },
+      {
+        "authorId": "2027599537",
+        "name": "Leo Gao"
+      },
+      {
+        "authorId": "2275200811",
+        "name": "Elie Georges"
+      },
+      {
+        "authorId": "2275254804",
+        "name": "C. Gibson"
+      },
+      {
+        "authorId": "2275144649",
+        "name": "Vik Goel"
+      },
+      {
+        "authorId": "2325028819",
+        "name": "Tarun Gogineni"
+      },
+      {
+        "authorId": "2261041177",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "2158366935",
+        "name": "Raphael Gontijo-Lopes"
+      },
+      {
+        "authorId": "2265066144",
+        "name": "J. Gordon"
+      },
+      {
+        "authorId": "2275250003",
+        "name": "Morgan Grafstein"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "2275247307",
+        "name": "Ryan Greene"
+      },
+      {
+        "authorId": "2275137274",
+        "name": "Joshua Gross"
+      },
+      {
+        "authorId": "2253699903",
+        "name": "S. Gu"
+      },
+      {
+        "authorId": "2276101257",
+        "name": "Yufei Guo"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "2275540338",
+        "name": "Jesse Han"
+      },
+      {
+        "authorId": "2275295848",
+        "name": "J. Harris"
+      },
+      {
+        "authorId": "2275226809",
+        "name": "Yuchen He"
+      },
+      {
+        "authorId": "2275245527",
+        "name": "Mike Heaton"
+      },
+      {
+        "authorId": "2151087994",
+        "name": "Johannes Heidecke"
+      },
+      {
+        "authorId": "2242286342",
+        "name": "Chris Hesse"
+      },
+      {
+        "authorId": "2226452668",
+        "name": "Alan Hickey"
+      },
+      {
+        "authorId": "2275246148",
+        "name": "W. Hickey"
+      },
+      {
+        "authorId": "2275245339",
+        "name": "P. Hoeschele"
+      },
+      {
+        "authorId": "103681415",
+        "name": "Brandon Houghton"
+      },
+      {
+        "authorId": "2275214107",
+        "name": "Kenny Hsu"
+      },
+      {
+        "authorId": "2275210604",
+        "name": "Shengli Hu"
+      },
+      {
+        "authorId": "2275777049",
+        "name": "Xin Hu"
+      },
+      {
+        "authorId": "39378983",
+        "name": "Joost Huizinga"
+      },
+      {
+        "authorId": "2276187117",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "2171110177",
+        "name": "Shawn Jain"
+      },
+      {
+        "authorId": "2151094350",
+        "name": "Joanne Jang"
+      },
+      {
+        "authorId": "2253471334",
+        "name": "Angela Jiang"
+      },
+      {
+        "authorId": "2275172062",
+        "name": "R. Jiang"
+      },
+      {
+        "authorId": "2275752035",
+        "name": "Haozhun Jin"
+      },
+      {
+        "authorId": "2275203081",
+        "name": "Denny Jin"
+      },
+      {
+        "authorId": "2275250083",
+        "name": "Shino Jomoto"
+      },
+      {
+        "authorId": "2275247096",
+        "name": "Billie Jonn"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "2403754",
+        "name": "Tomer Kaftan"
+      },
+      {
+        "authorId": "2275230678",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2275169038",
+        "name": "Ali Kamali"
+      },
+      {
+        "authorId": "3151440",
+        "name": "I. Kanitscheider"
+      },
+      {
+        "authorId": "2844898",
+        "name": "N. Keskar"
+      },
+      {
+        "authorId": "2152264064",
+        "name": "Tabarak Khan"
+      },
+      {
+        "authorId": "2314112114",
+        "name": "Logan Kilpatrick"
+      },
+      {
+        "authorId": "2260346092",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2149054292",
+        "name": "Christina Kim"
+      },
+      {
+        "authorId": "2275296777",
+        "name": "Yongjik Kim"
+      },
+      {
+        "authorId": "2275112980",
+        "name": "Hendrik Kirchner"
+      },
+      {
+        "authorId": "51131802",
+        "name": "J. Kiros"
+      },
+      {
+        "authorId": "2146257375",
+        "name": "Matthew Knight"
+      },
+      {
+        "authorId": "1485556711",
+        "name": "Daniel Kokotajlo"
+      },
+      {
+        "authorId": "2275246094",
+        "name": "Lukasz Kondraciuk"
+      },
+      {
+        "authorId": "1666171360",
+        "name": "Andrew Kondrich"
+      },
+      {
+        "authorId": "2317096965",
+        "name": "Aris Konstantinidis"
+      },
+      {
+        "authorId": "2275245594",
+        "name": "Kyle Kosic"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2275229877",
+        "name": "Vishal Kuo"
+      },
+      {
+        "authorId": "2275247085",
+        "name": "Michael Lampe"
+      },
+      {
+        "authorId": "2275246287",
+        "name": "Ikai Lan"
+      },
+      {
+        "authorId": "2274915115",
+        "name": "Teddy Lee"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "52152632",
+        "name": "Jade Leung"
+      },
+      {
+        "authorId": "2275256930",
+        "name": "Daniel Levy"
+      },
+      {
+        "authorId": "2275285124",
+        "name": "Chak Li"
+      },
+      {
+        "authorId": "2275176375",
+        "name": "Rachel Lim"
+      },
+      {
+        "authorId": "2275759230",
+        "name": "Molly Lin"
+      },
+      {
+        "authorId": "2253840098",
+        "name": "Stephanie L. Lin"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "2275248327",
+        "name": "Theresa Lopez"
+      },
+      {
+        "authorId": "2257272397",
+        "name": "Ryan Lowe"
+      },
+      {
+        "authorId": "2275245628",
+        "name": "Patricia Lue"
+      },
+      {
+        "authorId": "119341078",
+        "name": "A. Makanju"
+      },
+      {
+        "authorId": "2275245649",
+        "name": "Kim Malfacini"
+      },
+      {
+        "authorId": "46430291",
+        "name": "Sam Manning"
+      },
+      {
+        "authorId": "14113256",
+        "name": "Todor Markov"
+      },
+      {
+        "authorId": "2275245336",
+        "name": "Yaniv Markovski"
+      },
+      {
+        "authorId": "2114362965",
+        "name": "Bianca Martin"
+      },
+      {
+        "authorId": "2275231822",
+        "name": "Katie Mayer"
+      },
+      {
+        "authorId": "2275247045",
+        "name": "Andrew Mayne"
+      },
+      {
+        "authorId": "39593364",
+        "name": "Bob McGrew"
+      },
+      {
+        "authorId": "2047820455",
+        "name": "S. McKinney"
+      },
+      {
+        "authorId": "3028785",
+        "name": "Christine McLeavey"
+      },
+      {
+        "authorId": "2274772421",
+        "name": "Paul McMillan"
+      },
+      {
+        "authorId": "2275234856",
+        "name": "Jake McNeil"
+      },
+      {
+        "authorId": "2275210659",
+        "name": "David Medina"
+      },
+      {
+        "authorId": "2275132306",
+        "name": "Aalok Mehta"
+      },
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "2275246330",
+        "name": "Luke Metz"
+      },
+      {
+        "authorId": "2275252694",
+        "name": "Andrey Mishchenko"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2275245453",
+        "name": "Vinnie Monaco"
+      },
+      {
+        "authorId": "1404556973",
+        "name": "Evan Morikawa"
+      },
+      {
+        "authorId": "3407880",
+        "name": "Daniel P. Mossing"
+      },
+      {
+        "authorId": "2275154456",
+        "name": "Tong Mu"
+      },
+      {
+        "authorId": "2117715631",
+        "name": "M. Murati"
+      },
+      {
+        "authorId": "147746767",
+        "name": "O. Murk"
+      },
+      {
+        "authorId": "2275246116",
+        "name": "David M'ely"
+      },
+      {
+        "authorId": "3422774",
+        "name": "Ashvin Nair"
+      },
+      {
+        "authorId": "7406311",
+        "name": "Reiichiro Nakano"
+      },
+      {
+        "authorId": "2057426488",
+        "name": "Rajeev Nayak"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "2273886618",
+        "name": "R. Ngo"
+      },
+      {
+        "authorId": "2275115983",
+        "name": "Hyeonwoo Noh"
+      },
+      {
+        "authorId": "2228518120",
+        "name": "Ouyang Long"
+      },
+      {
+        "authorId": "1435765036",
+        "name": "Cullen O'Keefe"
+      },
+      {
+        "authorId": "2713380",
+        "name": "J. Pachocki"
+      },
+      {
+        "authorId": "34800652",
+        "name": "A. Paino"
+      },
+      {
+        "authorId": "2275244652",
+        "name": "Joe Palermo"
+      },
+      {
+        "authorId": "2275246178",
+        "name": "Ashley Pantuliano"
+      },
+      {
+        "authorId": "50213542",
+        "name": "Giambattista Parascandolo"
+      },
+      {
+        "authorId": "2275245818",
+        "name": "J. Parish"
+      },
+      {
+        "authorId": "2275245435",
+        "name": "Emy Parparita"
+      },
+      {
+        "authorId": "2274774915",
+        "name": "Alexandre Passos"
+      },
+      {
+        "authorId": "2068123790",
+        "name": "Mikhail Pavlov"
+      },
+      {
+        "authorId": "2275125663",
+        "name": "Andrew Peng"
+      },
+      {
+        "authorId": "2275245529",
+        "name": "Adam Perelman"
+      },
+      {
+        "authorId": "2275250075",
+        "name": "Filipe de Avila Belbute Peres"
+      },
+      {
+        "authorId": "2136008481",
+        "name": "Michael Petrov"
+      },
+      {
+        "authorId": "1463773776",
+        "name": "Henrique Pondé de Oliveira Pinto"
+      },
+      {
+        "authorId": "2275246346",
+        "name": "Michael Pokorny"
+      },
+      {
+        "authorId": "2275246814",
+        "name": "Michelle Pokrass"
+      },
+      {
+        "authorId": "144401061",
+        "name": "Vitchyr H. Pong"
+      },
+      {
+        "authorId": "2275150061",
+        "name": "Tolly Powell"
+      },
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "2151088845",
+        "name": "Boris Power"
+      },
+      {
+        "authorId": "2275243930",
+        "name": "Elizabeth Proehl"
+      },
+      {
+        "authorId": "2285654208",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2275178294",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "2261024614",
+        "name": "Aditya Ramesh"
+      },
+      {
+        "authorId": "2275225165",
+        "name": "Cameron Raymond"
+      },
+      {
+        "authorId": "2275252438",
+        "name": "F. Real"
+      },
+      {
+        "authorId": "2275252095",
+        "name": "Kendra Rimbach"
+      },
+      {
+        "authorId": "2275207240",
+        "name": "Carl Ross"
+      },
+      {
+        "authorId": "11150265",
+        "name": "Bob Rotsted"
+      },
+      {
+        "authorId": "2275250007",
+        "name": "Henri Roussez"
+      },
+      {
+        "authorId": "2260406867",
+        "name": "N. Ryder"
+      },
+      {
+        "authorId": "47204843",
+        "name": "M. Saltarelli"
+      },
+      {
+        "authorId": "2275246803",
+        "name": "Ted Sanders"
+      },
+      {
+        "authorId": "2852106",
+        "name": "Shibani Santurkar"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "2275265666",
+        "name": "Heather Schmidt"
+      },
+      {
+        "authorId": "2252874293",
+        "name": "David Schnurr"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2196579",
+        "name": "Daniel Selsam"
+      },
+      {
+        "authorId": "2275244711",
+        "name": "Kyla Sheppard"
+      },
+      {
+        "authorId": "102475503",
+        "name": "T. Sherbakov"
+      },
+      {
+        "authorId": "2275246834",
+        "name": "Jessica Shieh"
+      },
+      {
+        "authorId": "118335789",
+        "name": "S. Shoker"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "2700360",
+        "name": "Szymon Sidor"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "2275252299",
+        "name": "Jordan Sitkin"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "103422608",
+        "name": "Ian Sohl"
+      },
+      {
+        "authorId": "2901424",
+        "name": "Benjamin Sokolowsky"
+      },
+      {
+        "authorId": "2307592658",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2275245668",
+        "name": "N. Staudacher"
+      },
+      {
+        "authorId": "9927844",
+        "name": "F. Such"
+      },
+      {
+        "authorId": "2275252251",
+        "name": "Natalie Summers"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2275750817",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "145950540",
+        "name": "N. Tezak"
+      },
+      {
+        "authorId": "2151289331",
+        "name": "Madeleine Thompson"
+      },
+      {
+        "authorId": "2275252092",
+        "name": "P. Tillet"
+      },
+      {
+        "authorId": "2267339677",
+        "name": "Amin Tootoonchian"
+      },
+      {
+        "authorId": "2275249879",
+        "name": "Elizabeth Tseng"
+      },
+      {
+        "authorId": "2275249709",
+        "name": "Preston Tuggle"
+      },
+      {
+        "authorId": "2275244171",
+        "name": "Nick Turley"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "2275203310",
+        "name": "Juan Felipe Cer'on Uribe"
+      },
+      {
+        "authorId": "2275244586",
+        "name": "Andrea Vallone"
+      },
+      {
+        "authorId": "2275245661",
+        "name": "Arun Vijayvergiya"
+      },
+      {
+        "authorId": "153387869",
+        "name": "Chelsea Voss"
+      },
+      {
+        "authorId": "2275245962",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2305029155",
+        "name": "Justin Wang"
+      },
+      {
+        "authorId": "3209373",
+        "name": "Alvin Wang"
+      },
+      {
+        "authorId": "2275189326",
+        "name": "Ben Wang"
+      },
+      {
+        "authorId": "2170081200",
+        "name": "Jonathan Ward"
+      },
+      {
+        "authorId": "2253952872",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "2275244218",
+        "name": "CJ Weinmann"
+      },
+      {
+        "authorId": "2275245663",
+        "name": "Akila Welihinda"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "2275139180",
+        "name": "Jiayi Weng"
+      },
+      {
+        "authorId": "2065741038",
+        "name": "Lilian Weng"
+      },
+      {
+        "authorId": "2275252154",
+        "name": "Matt Wiethoff"
+      },
+      {
+        "authorId": "2275249733",
+        "name": "Dave Willner"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "2275244177",
+        "name": "Samuel Wolrich"
+      },
+      {
+        "authorId": "2275225207",
+        "name": "Hannah Wong"
+      },
+      {
+        "authorId": "2275245771",
+        "name": "Lauren Workman"
+      },
+      {
+        "authorId": "2275299848",
+        "name": "Sherwin Wu"
+      },
+      {
+        "authorId": "2274911253",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2307456650",
+        "name": "Michael Wu"
+      },
+      {
+        "authorId": "2275190169",
+        "name": "Kai Xiao"
+      },
+      {
+        "authorId": "2275452480",
+        "name": "Tao Xu"
+      },
+      {
+        "authorId": "2275310096",
+        "name": "Sarah Yoo"
+      },
+      {
+        "authorId": "2275593618",
+        "name": "Kevin Yu"
+      },
+      {
+        "authorId": "2275194186",
+        "name": "Qim-ing Yuan"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      },
+      {
+        "authorId": "49629836",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "2262080679",
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "2275288889",
+        "name": "Marvin Zhang"
+      },
+      {
+        "authorId": "2275545682",
+        "name": "Shengjia Zhao"
+      },
+      {
+        "authorId": "2275257857",
+        "name": "Tianhao Zheng"
+      },
+      {
+        "authorId": "2275201537",
+        "name": "Juntang Zhuang"
+      },
+      {
+        "authorId": "2275245715",
+        "name": "William Zhuk"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      }
+    ],
+    "abstract": "We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs. While less capable than humans in many real-world scenarios, GPT-4 exhibits human-level performance on various professional and academic benchmarks, including passing a simulated bar exam with a score around the top 10% of test takers. GPT-4 is a Transformer-based model pre-trained to predict the next token in a document. The post-training alignment process results in improved performance on measures of factuality and adherence to desired behavior. A core component of this project was developing infrastructure and optimization methods that behave predictably across a wide range of scales. This allowed us to accurately predict some aspects of GPT-4's performance based on models trained with no more than 1/1,000th the compute of GPT-4.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "57e849d0de13ed5f91d086936296721d4ff75a75",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-13971",
+      "ArXiv": "2302.13971",
+      "CorpusId": 257219404
+    },
+    "title": "LLaMA: Open and Efficient Foundation Language Models",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 19563,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.13971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "1490887583",
+        "name": "X. Martinet"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "47733973",
+        "name": "Timothée Lacroix"
+      },
+      {
+        "authorId": "3361236",
+        "name": "Baptiste Rozière"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "2072738644",
+        "name": "Eric Hambro"
+      },
+      {
+        "authorId": "2209986197",
+        "name": "Faisal Azhar"
+      },
+      {
+        "authorId": "2166043087",
+        "name": "Aur'elien Rodriguez"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      }
+    ],
+    "abstract": "We introduce LLaMA, a collection of foundation language models ranging from 7B to 65B parameters. We train our models on trillions of tokens, and show that it is possible to train state-of-the-art models using publicly available datasets exclusively, without resorting to proprietary and inaccessible datasets. In particular, LLaMA-13B outperforms GPT-3 (175B) on most benchmarks, and LLaMA-65B is competitive with the best models, Chinchilla-70B and PaLM-540B. We release all our models to the research community.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0a6bc37a07a37e3573d36e10cc11669eca0ff903",
+    "externalIds": {
+      "ArXiv": "2301.13816",
+      "DBLP": "journals/corr/abs-2301-13816",
+      "DOI": "10.48550/arXiv.2301.13816",
+      "CorpusId": 256416258
+    },
+    "title": "Execution-based Code Generation using Deep Reinforcement Learning",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 103,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2301.13816",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.13816, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2037848556",
+        "name": "P. Shojaee"
+      },
+      {
+        "authorId": "2171130495",
+        "name": "Aneesh Jain"
+      },
+      {
+        "authorId": "2121914227",
+        "name": "Sindhu Tipirneni"
+      },
+      {
+        "authorId": "144417522",
+        "name": "Chandan K. Reddy"
+      }
+    ],
+    "abstract": "The utilization of programming language (PL) models, pre-trained on large-scale code corpora, as a means of automating software engineering processes has demonstrated considerable potential in streamlining various code generation tasks such as code completion, code translation, and program synthesis. However, current approaches mainly rely on supervised fine-tuning objectives borrowed from text generation, neglecting unique sequence-level characteristics of code, including but not limited to compilability as well as syntactic and functional correctness. To address this limitation, we propose PPOCoder, a new framework for code generation that synergistically combines pre-trained PL models with Proximal Policy Optimization (PPO) which is a widely used deep reinforcement learning technique. By utilizing non-differentiable feedback from code execution and structure alignment, PPOCoder seamlessly integrates external code-specific knowledge into the model optimization process. It's important to note that PPOCoder is a task-agnostic and model-agnostic framework that can be used across different code generation tasks and PLs. Extensive experiments on three code generation tasks demonstrate the effectiveness of our proposed approach compared to SOTA methods, achieving significant improvements in compilation success rates and functional correctness across different PLs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "74eae12620bd1c1393e268bddcb6f129a5025166",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2209-14375",
+      "ArXiv": "2209.14375",
+      "DOI": "10.48550/arXiv.2209.14375",
+      "CorpusId": 252596089
+    },
+    "title": "Improving alignment of dialogue agents via targeted human judgements",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 662,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.14375",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.14375, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2105840001",
+        "name": "Amelia Glaese"
+      },
+      {
+        "authorId": "147687624",
+        "name": "Nat McAleese"
+      },
+      {
+        "authorId": "2186405125",
+        "name": "Maja Trkebacz"
+      },
+      {
+        "authorId": "9958912",
+        "name": "John Aslanides"
+      },
+      {
+        "authorId": "9559485",
+        "name": "Vlad Firoiu"
+      },
+      {
+        "authorId": "2311157472",
+        "name": "T. Ewalds"
+      },
+      {
+        "authorId": "94483529",
+        "name": "Maribeth Rauh"
+      },
+      {
+        "authorId": "51932191",
+        "name": "Laura Weidinger"
+      },
+      {
+        "authorId": "2159545857",
+        "name": "Martin Chadwick"
+      },
+      {
+        "authorId": "2151245633",
+        "name": "Phoebe Thacker"
+      },
+      {
+        "authorId": "2151248210",
+        "name": "Lucy Campbell-Gillingham"
+      },
+      {
+        "authorId": "9960452",
+        "name": "Jonathan Uesato"
+      },
+      {
+        "authorId": "2421691",
+        "name": "Po-Sen Huang"
+      },
+      {
+        "authorId": "89066101",
+        "name": "R. Comanescu"
+      },
+      {
+        "authorId": "47829900",
+        "name": "Fan Yang"
+      },
+      {
+        "authorId": "13070498",
+        "name": "A. See"
+      },
+      {
+        "authorId": "3491117",
+        "name": "Sumanth Dathathri"
+      },
+      {
+        "authorId": "2123241980",
+        "name": "Rory Greig"
+      },
+      {
+        "authorId": "2182971260",
+        "name": "Charlie Chen"
+      },
+      {
+        "authorId": "40514522",
+        "name": "Doug Fritz"
+      },
+      {
+        "authorId": "2186405649",
+        "name": "Jaume Sanchez Elias"
+      },
+      {
+        "authorId": "2150245910",
+        "name": "Richard Green"
+      },
+      {
+        "authorId": "2061746801",
+        "name": "Sovna Mokr'a"
+      },
+      {
+        "authorId": "2186403526",
+        "name": "Nicholas Fernando"
+      },
+      {
+        "authorId": "100927803",
+        "name": "Boxi Wu"
+      },
+      {
+        "authorId": "153531286",
+        "name": "Ra Foley"
+      },
+      {
+        "authorId": "116494324",
+        "name": "Susannah Young"
+      },
+      {
+        "authorId": "116589025",
+        "name": "Iason Gabriel"
+      },
+      {
+        "authorId": "103087275",
+        "name": "William S. Isaac"
+      },
+      {
+        "authorId": "1386957852",
+        "name": "John F. J. Mellor"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "2234342",
+        "name": "Lisa Anne Hendricks"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      }
+    ],
+    "abstract": "We present Sparrow, an information-seeking dialogue agent trained to be more helpful, correct, and harmless compared to prompted language model baselines. We use reinforcement learning from human feedback to train our models with two new additions to help human raters judge agent behaviour. First, to make our agent more helpful and harmless, we break down the requirements for good dialogue into natural language rules the agent should follow, and ask raters about each rule separately. We demonstrate that this breakdown enables us to collect more targeted human judgements of agent behaviour and allows for more efficient rule-conditional reward models. Second, our agent provides evidence from sources supporting factual claims when collecting preference judgements over model statements. For factual questions, evidence provided by Sparrow supports the sampled response 78% of the time. Sparrow is preferred more often than baselines while being more resilient to adversarial probing by humans, violating our rules only 8% of the time when probed. Finally, we conduct extensive analyses showing that though our model learns to follow our rules it can exhibit distributional biases.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0286b2736a114198b25fb5553c671c33aed5d477",
+    "externalIds": {
+      "ArXiv": "2204.05862",
+      "DBLP": "journals/corr/abs-2204-05862",
+      "DOI": "10.48550/arXiv.2204.05862",
+      "CorpusId": 248118878
+    },
+    "title": "Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 3875,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.05862",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.05862, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1486307451",
+        "name": "Yuntao Bai"
+      },
+      {
+        "authorId": "2149890773",
+        "name": "Andy Jones"
+      },
+      {
+        "authorId": "1978097132",
+        "name": "Kamal Ndousse"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2111073313",
+        "name": "Anna Chen"
+      },
+      {
+        "authorId": "2142833890",
+        "name": "Nova Dassarma"
+      },
+      {
+        "authorId": "1943097969",
+        "name": "Dawn Drain"
+      },
+      {
+        "authorId": "30176974",
+        "name": "Stanislav Fort"
+      },
+      {
+        "authorId": "2081806483",
+        "name": "Deep Ganguli"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "148070327",
+        "name": "Saurav Kadavath"
+      },
+      {
+        "authorId": "1583434563",
+        "name": "John Kernion"
+      },
+      {
+        "authorId": "2154608209",
+        "name": "Tom Conerly"
+      },
+      {
+        "authorId": "1403602266",
+        "name": "S. El-Showk"
+      },
+      {
+        "authorId": "2866708",
+        "name": "Nelson Elhage"
+      },
+      {
+        "authorId": "1573482302",
+        "name": "Zac Hatfield-Dodds"
+      },
+      {
+        "authorId": "39182747",
+        "name": "Danny Hernandez"
+      },
+      {
+        "authorId": "2162194147",
+        "name": "Tristan Hume"
+      },
+      {
+        "authorId": "2154610174",
+        "name": "Scott Johnston"
+      },
+      {
+        "authorId": "49604482",
+        "name": "Shauna Kravec"
+      },
+      {
+        "authorId": "2154608229",
+        "name": "Liane Lovitt"
+      },
+      {
+        "authorId": "2051128902",
+        "name": "Neel Nanda"
+      },
+      {
+        "authorId": "2061321863",
+        "name": "Catherine Olsson"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "2287268442",
+        "name": "Chris Olah"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      }
+    ],
+    "abstract": "We apply preference modeling and reinforcement learning from human feedback (RLHF) to ﬁnetune language models to act as helpful and harmless assistants. We ﬁnd this alignment training improves performance on almost all NLP evaluations, and is fully compatible with training for specialized skills such as python coding and summarization. We explore an iterated online mode of training, where preference models and RL policies are updated on a weekly cadence with fresh human feedback data, efﬁciently improving our datasets and models. Finally, we investigate the robustness of RLHF training, and identify a roughly linear relation between the RL reward and the square root of the KL divergence between the policy and its initialization. Alongside our main results, we perform peripheral analyses on calibration, competing objectives, and the use of OOD detection, compare our models with human writers, and provide samples from our models using prompts appearing in recent related work. Figure These plots show that PM accuracy decreases as we focus exclusively on comparisons between pairs of samples with high score. We have normalized all preference models to have the same mean score on a held-out dataset so that they’re directly comparable, and then plotted accuracy for the comparisons where both samples have scores above a speciﬁc threshold.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4402c98a2f19154da3daaec25e243644ba84ecf3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-15721",
+      "ArXiv": "2203.15721",
+      "DOI": "10.1162/tacl_a_00502",
+      "CorpusId": 247778829
+    },
+    "title": "On Decoding Strategies for Neural Text Generators",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 96,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00502/2043936/tacl_a_00502.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.15721, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2151858709",
+        "name": "Gian Wiher"
+      },
+      {
+        "authorId": "150953620",
+        "name": "Clara Meister"
+      },
+      {
+        "authorId": "2070989574",
+        "name": "Ryan Cotterell"
+      }
+    ],
+    "abstract": "Abstract When generating text from probabilistic models, the chosen decoding strategy has a profound effect on the resulting text. Yet the properties elicited by various decoding strategies do not always transfer across natural language generation tasks. For example, while mode-seeking methods like beam search perform remarkably well for machine translation, they have been observed to lead to incoherent and repetitive text in story generation. Despite such observations, the effectiveness of decoding strategies is often assessed on only a single task. This work—in contrast—provides a comprehensive analysis of the interaction between language generation tasks and decoding strategies. Specifically, we measure changes in attributes of generated text as a function of both decoding strategy and task using human and automatic evaluation. Our results reveal both previously observed and novel findings. For example, the nature of the diversity–quality trade-off in language generation is very task-specific; the length bias often attributed to beam search is not constant across tasks. https://github.com/gianwiher/decoding-NLG",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+    "externalIds": {
+      "ArXiv": "2203.02155",
+      "DBLP": "journals/corr/abs-2203-02155",
+      "DOI": "10.52202/068431-2011",
+      "CorpusId": 246426909
+    },
+    "title": "Training language models to follow instructions with human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20076,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "2061137049",
+        "name": "Diogo Almeida"
+      },
+      {
+        "authorId": "2064084601",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": null,
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2151735262",
+        "name": "Fraser Kelton"
+      },
+      {
+        "authorId": "2142365973",
+        "name": "Luke E. Miller"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      }
+    ],
+    "abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "5d49c7401c5f2337c4cc88d243ae39ed659afe64",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2202-03286",
+      "ACL": "2022.emnlp-main.225",
+      "ArXiv": "2202.03286",
+      "DOI": "10.18653/v1/2022.emnlp-main.225",
+      "CorpusId": 246634238
+    },
+    "title": "Red Teaming Language Models with Language Models",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2022,
+    "citationCount": 1026,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.emnlp-main.225.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.03286, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3439053",
+        "name": "Ethan Perez"
+      },
+      {
+        "authorId": "2148653469",
+        "name": "Saffron Huang"
+      },
+      {
+        "authorId": "2059836321",
+        "name": "Francis Song"
+      },
+      {
+        "authorId": "2072572294",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "81387328",
+        "name": "Roman Ring"
+      },
+      {
+        "authorId": "9958912",
+        "name": "John Aslanides"
+      },
+      {
+        "authorId": "2105840001",
+        "name": "Amelia Glaese"
+      },
+      {
+        "authorId": "147687624",
+        "name": "Nat McAleese"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      }
+    ],
+    "abstract": "Language Models (LMs) often cannot be deployed because of their potential to harm users in hard-to-predict ways. Prior work identifies harmful behaviors before deployment by using human annotators to hand-write test cases. However, human annotation is expensive, limiting the number and diversity of test cases. In this work, we automatically find cases where a target LM behaves in a harmful way, by generating test cases (“red teaming”) using another LM. We evaluate the target LM’s replies to generated test questions using a classifier trained to detect offensive content, uncovering tens of thousands of offensive replies in a 280B parameter LM chatbot. We explore several methods, from zero-shot generation to reinforcement learning, for generating test cases with varying levels of diversity and difficulty. Furthermore, we use prompt engineering to control LM-generated test cases to uncover a variety of other harms, automatically finding groups of people that the chatbot discusses in offensive ways, personal and hospital phone numbers generated as the chatbot’s own contact info, leakage of private training data in generated text, and harms that occur over the course of a conversation. Overall, LM-based red teaming is one promising tool (among many needed) for finding and fixing diverse, undesirable LM behaviors before impacting users.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3dc7dc1bea9a4f70c02b6759a0bda7aca0005a9e",
+    "externalIds": {
+      "ArXiv": "2112.00861",
+      "DBLP": "journals/corr/abs-2112-00861",
+      "CorpusId": 244799619
+    },
+    "title": "A General Language Assistant as a Laboratory for Alignment",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1076,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.00861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "1486307451",
+        "name": "Yuntao Bai"
+      },
+      {
+        "authorId": "2111073313",
+        "name": "Anna Chen"
+      },
+      {
+        "authorId": "1943097969",
+        "name": "Dawn Drain"
+      },
+      {
+        "authorId": "2081806483",
+        "name": "Deep Ganguli"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "2149890773",
+        "name": "Andy Jones"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "2142833890",
+        "name": "Nova Dassarma"
+      },
+      {
+        "authorId": "2866708",
+        "name": "Nelson Elhage"
+      },
+      {
+        "authorId": "1573482302",
+        "name": "Zac Hatfield-Dodds"
+      },
+      {
+        "authorId": "39182747",
+        "name": "Danny Hernandez"
+      },
+      {
+        "authorId": "1583434563",
+        "name": "John Kernion"
+      },
+      {
+        "authorId": "1978097132",
+        "name": "Kamal Ndousse"
+      },
+      {
+        "authorId": "2061321863",
+        "name": "Catherine Olsson"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "2287268442",
+        "name": "Chris Olah"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      }
+    ],
+    "abstract": "Given the broad capabilities of large language models, it should be possible to work towards a general-purpose, text-based assistant that is aligned with human values, meaning that it is helpful, honest, and harmless. As an initial foray in this direction we study simple baseline techniques and evaluations, such as prompting. We find that the benefits from modest interventions increase with model size, generalize to a variety of alignment evaluations, and do not compromise the performance of large models. Next we investigate scaling trends for several training objectives relevant to alignment, comparing imitation learning, binary discrimination, and ranked preference modeling. We find that ranked preference modeling performs much better than imitation learning, and often scales more favorably with model size. In contrast, binary discrimination typically performs and scales very similarly to imitation learning. Finally we study a `preference model pre-training' stage of training, with the goal of improving sample efficiency when finetuning on human preferences.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "77d956cdab4508d569ae5741549b78e715fd0749",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-07958",
+      "ACL": "2022.acl-long.229",
+      "ArXiv": "2109.07958",
+      "DOI": "10.18653/v1/2022.acl-long.229",
+      "CorpusId": 237532606
+    },
+    "title": "TruthfulQA: Measuring How Models Mimic Human Falsehoods",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 3149,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.acl-long.229.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.07958, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48639938",
+        "name": "Stephanie C. Lin"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "47107786",
+        "name": "Owain Evans"
+      }
+    ],
+    "abstract": "We propose a benchmark to measure whether a language model is truthful in generating answers to questions. The benchmark comprises 817 questions that span 38 categories, including health, law, finance and politics. We crafted questions that some humans would answer falsely due to a false belief or misconception. To perform well, models must avoid generating false answers learned from imitating human texts. We tested GPT-3, GPT-Neo/J, GPT-2 and a T5-based model. The best model was truthful on 58% of questions, while human performance was 94%. Models generated many false answers that mimic popular misconceptions and have the potential to deceive humans. The largest models were generally the least truthful. This contrasts with other NLP tasks, where performance improves with model size. However, this result is expected if false answers are learned from the training distribution. We suggest that scaling up models alone is less promising for improving truthfulness than fine-tuning using training objectives other than imitation of text from the web.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1ccd031f28dccfb226f6c0c588c93a97a50bf95f",
+    "externalIds": {
+      "ArXiv": "2105.09938",
+      "DBLP": "conf/nips/HendrycksBKMAGB21",
+      "CorpusId": 234790100
+    },
+    "title": "Measuring Coding Challenge Competence With APPS",
+    "venue": "NeurIPS Datasets and Benchmarks",
+    "year": 2021,
+    "citationCount": 1032,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.09938, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "148070327",
+        "name": "Saurav Kadavath"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "2054194196",
+        "name": "Akul Arora"
+      },
+      {
+        "authorId": "2099582582",
+        "name": "Ethan Guo"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "2099582785",
+        "name": "Samir Puranik"
+      },
+      {
+        "authorId": "2111909709",
+        "name": "Horace He"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "While programming is one of the most broadly applicable skills in modern society, modern machine learning models still cannot code solutions to basic problems. Despite its importance, there has been surprisingly little work on evaluating code generation, and it can be difficult to accurately assess code generation performance rigorously. To meet this challenge, we introduce APPS, a benchmark for code generation. Unlike prior work in more restricted settings, our benchmark measures the ability of models to take an arbitrary natural language specification and generate satisfactory Python code. Similar to how companies assess candidate software developers, we then evaluate models by checking their generated code on test cases. Our benchmark includes 10,000 problems, which range from having simple one-line solutions to being substantial algorithmic challenges. We fine-tune large language models on both GitHub and our training set, and we find that the prevalence of syntax errors is decreasing exponentially as models improve. Recent models such as GPT-Neo can pass approximately 20% of the test cases of introductory problems, so we find that machine learning models are now beginning to learn how to code. As the social significance of automatic code generation increases over the coming years, our benchmark can provide an important measure for tracking advancements.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "07fd366a8ebdefe54cdb57d87c81dcd22de25a91",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2012-11635",
+      "ArXiv": "2012.11635",
+      "CorpusId": 229348988
+    },
+    "title": "A Distributional Approach to Controlled Text Generation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 134,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.11635, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2065538033",
+        "name": "Muhammad Khalifa"
+      },
+      {
+        "authorId": "2218938",
+        "name": "Hady ElSahar"
+      },
+      {
+        "authorId": "2954698",
+        "name": "Marc Dymetman"
+      }
+    ],
+    "abstract": "We propose a Distributional Approach for addressing Controlled Text Generation from pre-trained Language Models (LMs). This approach permits to specify, in a single formal framework, both “pointwise” and “distributional” constraints over the target LM — to our knowledge, the first model with such generality — while minimizing KL divergence from the initial LM distribution. The optimal target distribution is then uniquely determined as an explicit EBM (Energy-Based Model) representation. From that optimal representation we then train a target controlled Autoregressive LM through an adaptive distributional variant of Policy Gradient. We conduct a first set of experiments over pointwise constraints showing the advantages of our approach over a set of baselines, in terms of obtaining a controlled LM balancing constraint satisfaction with divergence from the initial LM. We then perform experiments over distributional constraints, a unique feature of our approach, demonstrating its potential as a remedy to the problem of Bias in Language Models. Through an ablation study, we show the effectiveness of our adaptive technique for obtaining faster convergence.1",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6e1ee4042e627e17128ff38adc550c305e539a85",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2010-05380",
+      "ArXiv": "2010.05380",
+      "MAG": "3092698374",
+      "CorpusId": 222291172
+    },
+    "title": "Efficient Wasserstein Natural Gradients for Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.05380, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "52499910",
+        "name": "Theodore H. Moskovitz"
+      },
+      {
+        "authorId": "1975860",
+        "name": "M. Arbel"
+      },
+      {
+        "authorId": "3108066",
+        "name": "Ferenc Huszár"
+      },
+      {
+        "authorId": "1708497",
+        "name": "A. Gretton"
+      }
+    ],
+    "abstract": "A novel optimization approach is proposed for application to policy gradient methods and evolution strategies for reinforcement learning (RL). The procedure uses a computationally efficient Wasserstein natural gradient (WNG) descent that takes advantage of the geometry induced by a Wasserstein penalty to speed optimization. This method follows the recent theme in RL of including a divergence penalty in the objective to establish a trust region. Experiments on challenging tasks demonstrate improvements in both computational cost and performance over advanced baselines.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "399e7d8129c60818ee208f236c8dda17e876d21f",
+    "externalIds": {
+      "MAG": "3088599783",
+      "ACL": "2020.findings-emnlp.301",
+      "DBLP": "journals/corr/abs-2009-11462",
+      "ArXiv": "2009.11462",
+      "DOI": "10.18653/v1/2020.findings-emnlp.301",
+      "CorpusId": 221878771
+    },
+    "title": "RealToxicityPrompts: Evaluating Neural Toxic Degeneration in Language Models",
+    "venue": "Findings",
+    "year": 2020,
+    "citationCount": 1626,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.findings-emnlp.301.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.11462, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1962694751",
+        "name": "Samuel Gehman"
+      },
+      {
+        "authorId": "40895369",
+        "name": "Suchin Gururangan"
+      },
+      {
+        "authorId": "2729164",
+        "name": "Maarten Sap"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      }
+    ],
+    "abstract": "Pretrained neural language models (LMs) are prone to generating racist, sexist, or otherwise toxic language which hinders their safe deployment. We investigate the extent to which pretrained LMs can be prompted to generate toxic language, and the effectiveness of controllable text generation algorithms at preventing such toxic degeneration. We create and release RealToxicityPrompts, a dataset of 100K naturally occurring, sentence-level prompts derived from a large corpus of English web text, paired with toxicity scores from a widely-used toxicity classifier. Using RealToxicityPrompts, we find that pretrained LMs can degenerate into toxic text even from seemingly innocuous prompts. We empirically assess several controllable generation methods, and find that while data- or compute-intensive methods (e.g., adaptive pretraining on non-toxic data) are more effective at steering away from toxicity than simpler solutions (e.g., banning “bad” words), no current method is failsafe against neural toxic degeneration. To pinpoint the potential cause of such persistent toxic degeneration, we analyze two web text corpora used to pretrain several LMs (including GPT-2; Radford et. al, 2019), and find a significant amount of offensive, factually unreliable, and otherwise toxic content. Our work provides a test bed for evaluating toxic generations by LMs and stresses the need for better data selection processes for pretraining.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "053b1d7b97eb2c91fc3921d589c160b0923c70b1",
+    "externalIds": {
+      "MAG": "3082115681",
+      "DBLP": "journals/corr/abs-2009-01325",
+      "ArXiv": "2009.01325",
+      "CorpusId": 221665105
+    },
+    "title": "Learning to summarize from human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 3041,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.01325, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1387983862",
+        "name": "Nisan Stiennon"
+      },
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      },
+      {
+        "authorId": "153387869",
+        "name": "Chelsea Voss"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "145370786",
+        "name": "Paul Christiano"
+      }
+    ],
+    "abstract": "As language models become more powerful, training and evaluation are increasingly bottlenecked by the data and metrics used for a particular task. For example, summarization models are often trained to predict human reference summaries and evaluated using ROUGE, but both of these metrics are rough proxies for what we really care about---summary quality. In this work, we show that it is possible to significantly improve summary quality by training a model to optimize for human preferences. We collect a large, high-quality dataset of human comparisons between summaries, train a model to predict the human-preferred summary, and use that model as a reward function to fine-tune a summarization policy using reinforcement learning. We apply our method to a version of the TL;DR dataset of Reddit posts and find that our models significantly outperform both human reference summaries and much larger models fine-tuned with supervised learning alone. Our models also transfer to CNN/DM news articles, producing summaries nearly as good as the human reference without any news-specific fine-tuning. We conduct extensive analyses to understand our human feedback dataset and fine-tuned models We establish that our reward model generalizes to new datasets, and that optimizing our reward model results in better summaries than optimizing ROUGE according to humans. We hope the evidence from our paper motivates machine learning researchers to pay closer attention to how their training loss affects the model behavior they actually want.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7a15950dc71079285a4eaf195de5aadd87c41b40",
+    "externalIds": {
+      "MAG": "2973379954",
+      "DBLP": "journals/corr/abs-1909-08593",
+      "ArXiv": "1909.08593",
+      "CorpusId": 202660943
+    },
+    "title": "Fine-Tuning Language Models from Human Preferences",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 2423,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.08593, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "1387983862",
+        "name": "Nisan Stiennon"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "145370786",
+        "name": "Paul Christiano"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      }
+    ],
+    "abstract": "Reward learning enables the application of reinforcement learning (RL) to tasks where reward is defined by human judgment, building a model of reward by asking humans questions. Most work on reward learning has used simulated environments, but complex information about values is often expressed in natural language, and we believe reward learning for language is a key to making RL practical and safe for real-world tasks. In this paper, we build on advances in generative pretraining of language models to apply reward learning to four natural language tasks: continuing text with positive sentiment or physically descriptive language, and summarization tasks on the TL;DR and CNN/Daily Mail datasets. For stylistic continuation we achieve good results with only 5,000 comparisons evaluated by humans. For summarization, models trained with 60,000 comparisons copy whole sentences from the input but skip irrelevant preamble; this leads to reasonable ROUGE scores and very good performance according to our human labelers, but may be exploiting the fact that labelers rely on simple heuristics.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4a0d35989d91b3b7d2318802b1de6d10e4e6e830",
+    "externalIds": {
+      "MAG": "2969929227",
+      "DBLP": "journals/corr/abs-1908-08729",
+      "ArXiv": "1908.08729",
+      "DOI": "10.1287/EDUC.2019.0198",
+      "CorpusId": 201645099
+    },
+    "title": "Wasserstein Distributionally Robust Optimization: Theory and Applications in Machine Learning",
+    "venue": "Operations Research & Management Science in the Age of Analytics",
+    "year": 2019,
+    "citationCount": 488,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1908.08729",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.08729, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2500534",
+        "name": "D. Kuhn"
+      },
+      {
+        "authorId": "1787177",
+        "name": "Peyman Mohajerin Esfahani"
+      },
+      {
+        "authorId": "2075327618",
+        "name": "Viet Anh Nguyen"
+      },
+      {
+        "authorId": "1380260325",
+        "name": "Soroosh Shafieezadeh-Abadeh"
+      }
+    ],
+    "abstract": "Many decision problems in science, engineering and economics are affected by uncertain parameters whose distribution is only indirectly observable through samples. The goal of data-driven decision-making is to learn a decision from finitely many training samples that will perform well on unseen test samples. This learning task is difficult even if all training and test samples are drawn from the same distribution---especially if the dimension of the uncertainty is large relative to the training sample size. Wasserstein distributionally robust optimization seeks data-driven decisions that perform well under the most adverse distribution within a certain Wasserstein distance from a nominal distribution constructed from the training samples. In this tutorial we will argue that this approach has many conceptual and computational benefits. Most prominently, the optimal decisions can often be computed by solving tractable convex optimization problems, and they enjoy rigorous out-of-sample and asymptotic consistency guarantees. We will also show that Wasserstein distributionally robust optimization has interesting ramifications for statistical learning and motivates new approaches for fundamental learning tasks such as classification, regression, maximum likelihood estimation or minimum mean square error estimation, among others.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "90d8f96e2cd71a50b40992020cb65bc75f352ea1",
+    "externalIds": {
+      "ArXiv": "1909.01214",
+      "MAG": "2972005891",
+      "ACL": "D19-1307",
+      "DBLP": "journals/corr/abs-1909-01214",
+      "DOI": "10.18653/v1/D19-1307",
+      "CorpusId": 202540345
+    },
+    "title": "Better Rewards Yield Better Summaries: Learning to Summarise Without References",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2019,
+    "citationCount": 117,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D19-1307.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.01214, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052528594",
+        "name": "F. Böhm"
+      },
+      {
+        "authorId": "152128108",
+        "name": "Yang Gao"
+      },
+      {
+        "authorId": "145575695",
+        "name": "Christian M. Meyer"
+      },
+      {
+        "authorId": "15392843",
+        "name": "Ori Shapira"
+      },
+      {
+        "authorId": "7465342",
+        "name": "Ido Dagan"
+      },
+      {
+        "authorId": "1730400",
+        "name": "Iryna Gurevych"
+      }
+    ],
+    "abstract": "Reinforcement Learning (RL)based document summarisation systems yield state-of-the-art performance in terms of ROUGE scores, because they directly use ROUGE as the rewards during training. However, summaries with high ROUGE scores often receive low human judgement. To find a better reward function that can guide RL to generate human-appealing summaries, we learn a reward function from human ratings on 2,500 summaries. Our reward function only takes the document and system summary as input. Hence, once trained, it can be used to train RL based summarisation systems without using any reference summaries. We show that our learned rewards have significantly higher correlation with human ratings than previous approaches. Human evaluation experiments show that, compared to the state-of-the-art supervised-learning systems and ROUGE-as-rewards RL summarisation systems, the RL systems using our learned rewards during training generate summaries with higher human ratings. The learned reward function and our source code are available at https://github.com/yg211/summary-reward-no-reference.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "295065d942abca0711300b2b4c39829551060578",
+    "externalIds": {
+      "MAG": "2936695845",
+      "ArXiv": "1904.09675",
+      "DBLP": "journals/corr/abs-1904-09675",
+      "CorpusId": 127986044
+    },
+    "title": "BERTScore: Evaluating Text Generation with BERT",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 8359,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.09675, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "123437034",
+        "name": "Tianyi Zhang"
+      },
+      {
+        "authorId": "145461044",
+        "name": "Varsha Kishore"
+      },
+      {
+        "authorId": "24277779",
+        "name": "Felix Wu"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      },
+      {
+        "authorId": "3167681",
+        "name": "Yoav Artzi"
+      }
+    ],
+    "abstract": "We propose BERTScore, an automatic evaluation metric for text generation. Analogously to common metrics, BERTScore computes a similarity score for each token in the candidate sentence with each token in the reference sentence. However, instead of exact matches, we compute token similarity using contextual embeddings. We evaluate using the outputs of 363 machine translation and image captioning systems. BERTScore correlates better with human judgments and provides stronger model selection performance than existing metrics. Finally, we use an adversarial paraphrase detection task to show that BERTScore is more robust to challenging examples when compared to existing metrics.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "143b0fb106d11265f2af62a29d06ef74d2935124",
+    "externalIds": {
+      "ArXiv": "1806.06621",
+      "DBLP": "conf/nips/AdlerL18",
+      "MAG": "2808614141",
+      "CorpusId": 49305856
+    },
+    "title": "Banach Wasserstein GAN",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 284,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.06621, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40523747",
+        "name": "J. Adler"
+      },
+      {
+        "authorId": "21800040",
+        "name": "Sebastian Lunz"
+      }
+    ],
+    "abstract": "Wasserstein Generative Adversarial Networks (WGANs) can be used to generate realistic samples from complicated image distributions. The Wasserstein metric used in WGANs is based on a notion of distance between individual images, which induces a notion of distance between probability distributions of images. So far the community has considered $\\ell^2$ as the underlying distance. We generalize the theory of WGAN with gradient penalty to Banach spaces, allowing practitioners to select the features to emphasize in the generator. We further discuss the effect of some particular choices of underlying norms, focusing on Sobolev norms. Finally, we demonstrate a boost in performance for an appropriate choice of norm on CIFAR-10 and CelebA.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3a0d81ff7917b16156e11fe812182af82edeaa85",
+    "externalIds": {
+      "MAG": "2952172392",
+      "ArXiv": "1806.05500",
+      "DOI": "10.1146/annurev-statistics-030718-104938",
+      "CorpusId": 88523547
+    },
+    "title": "Statistical Aspects of Wasserstein Distances",
+    "venue": "Annual Review of Statistics and Its Application",
+    "year": 2018,
+    "citationCount": 920,
+    "openAccessPdf": {
+      "url": "https://www.annualreviews.org/doi/pdf/10.1146/annurev-statistics-030718-104938",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.05500, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4476282",
+        "name": "Victor M. Panaretos"
+      },
+      {
+        "authorId": "52395827",
+        "name": "Y. Zemel"
+      }
+    ],
+    "abstract": "Wasserstein distances are metrics on probability distributions inspired by the problem of optimal mass transportation. Roughly speaking, they measure the minimal effort required to reconfigure the probability mass of one distribution in order to recover the other distribution. They are ubiquitous in mathematics, with a long history that has seen them catalyze core developments in analysis, optimization, and probability. Beyond their intrinsic mathematical richness, they possess attractive features that make them a versatile tool for the statistician: They can be used to derive weak convergence and convergence of moments, and can be easily bounded; they are well-adapted to quantify a natural notion of perturbation of a probability distribution; and they seamlessly incorporate the geometry of the domain of the distributions in question, thus being useful for contrasting complex objects. Consequently, they frequently appear in the development of statistical theory and inferential methodology, and they have recently become an object of inference in themselves. In this review, we provide a snapshot of the main concepts involved in Wasserstein distances and optimal transportation, and a succinct overview of some of their many statistical aspects.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f5265e346382354887340c7b520d639162e2f598",
+    "externalIds": {
+      "ACL": "W17-4508",
+      "DBLP": "conf/emnlp/VolskePSS17",
+      "MAG": "2760781482",
+      "DOI": "10.18653/v1/W17-4508",
+      "CorpusId": 2204603
+    },
+    "title": "TL;DR: Mining Reddit to Learn Automatic Summarization",
+    "venue": "NFiS@EMNLP",
+    "year": 2017,
+    "citationCount": 267,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/W17-4508.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/W17-4508, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2605675",
+        "name": "Michael Völske"
+      },
+      {
+        "authorId": "3046200",
+        "name": "Martin Potthast"
+      },
+      {
+        "authorId": "18417916",
+        "name": "S. Syed"
+      },
+      {
+        "authorId": "144146081",
+        "name": "Benno Stein"
+      }
+    ],
+    "abstract": "Recent advances in automatic text summarization have used deep neural networks to generate high-quality abstractive summaries, but the performance of these models strongly depends on large amounts of suitable training data. We propose a new method for mining social media for author-provided summaries, taking advantage of the common practice of appending a “TL;DR” to long posts. A case study using a large Reddit crawl yields the Webis-TLDR-17 dataset, complementing existing corpora primarily from the news genre. Our technique is likely applicable to other social media sites and general web crawls.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+    "externalIds": {
+      "MAG": "2736601468",
+      "DBLP": "journals/corr/SchulmanWDRK17",
+      "ArXiv": "1707.06347",
+      "CorpusId": 28695052
+    },
+    "title": "Proximal Policy Optimization Algorithms",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 26838,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.06347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "143909660",
+        "name": "Filip Wolski"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2067138712",
+        "name": "Oleg Klimov"
+      }
+    ],
+    "abstract": "We propose a new family of policy gradient methods for reinforcement learning, which alternate between sampling data through interaction with the environment, and optimizing a \"surrogate\" objective function using stochastic gradient ascent. Whereas standard policy gradient methods perform one gradient update per data sample, we propose a novel objective function that enables multiple epochs of minibatch updates. The new methods, which we call proximal policy optimization (PPO), have some of the benefits of trust region policy optimization (TRPO), but they are much simpler to implement, more general, and have better sample complexity (empirically). Our experiments test PPO on a collection of benchmark tasks, including simulated robotic locomotion and Atari game playing, and we show that PPO outperforms other online policy gradient methods, and overall strikes a favorable balance between sample complexity, simplicity, and wall-time.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "acd87843a451d18b4dc6474ddce1ae946429eaf1",
+    "externalIds": {
+      "MAG": "2739748921",
+      "DBLP": "conf/icml/ArjovskyCB17",
+      "CorpusId": 2057420
+    },
+    "title": "Wasserstein Generative Adversarial Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 9356,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2877311",
+        "name": "Martín Arjovsky"
+      },
+      {
+        "authorId": "2127604",
+        "name": "Soumith Chintala"
+      },
+      {
+        "authorId": "52184096",
+        "name": "L. Bottou"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5bbb6f9a8204eb13070b6f033e61c84ef8ee68dd",
+    "externalIds": {
+      "MAG": "2626804490",
+      "DBLP": "journals/corr/abs-1706-03741",
+      "ArXiv": "1706.03741",
+      "CorpusId": 4787508
+    },
+    "title": "Deep Reinforcement Learning from Human Preferences",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 5010,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03741, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "26890260",
+        "name": "Miljan Martic"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "2330246606",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "For sophisticated reinforcement learning (RL) systems to interact usefully with real-world environments, we need to communicate complex goals to these systems. In this work, we explore goals defined in terms of (non-expert) human preferences between pairs of trajectory segments. We show that this approach can effectively solve complex RL tasks without access to the reward function, including Atari games and simulated robot locomotion, while providing feedback on less than one percent of our agent's interactions with the environment. This reduces the cost of human oversight far enough that it can be practically applied to state-of-the-art RL systems. To demonstrate the flexibility of our approach, we show that we can successfully train complex novel behaviors with about an hour of human time. These behaviors and environments are considerably more complex than any that have been previously learned from human feedback.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d316c82c12cf4c45f9e85211ef3d1fa62497bff8",
+    "externalIds": {
+      "MAG": "1191599655",
+      "DBLP": "journals/corr/SchulmanMLJA15",
+      "ArXiv": "1506.02438",
+      "CorpusId": 3075448
+    },
+    "title": "High-Dimensional Continuous Control Using Generalized Advantage Estimation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 4342,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.02438, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "29912342",
+        "name": "Philipp Moritz"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "Policy gradient methods are an appealing approach in reinforcement learning because they directly optimize the cumulative reward and can straightforwardly be used with nonlinear function approximators such as neural networks. The two main challenges are the large number of samples typically required, and the difficulty of obtaining stable and steady improvement despite the nonstationarity of the incoming data. We address the first challenge by using value functions to substantially reduce the variance of policy gradient estimates at the cost of some bias, with an exponentially-weighted estimator of the advantage function that is analogous to TD(lambda). We address the second challenge by using trust region optimization procedure for both the policy and the value function, which are represented by neural networks. \nOur approach yields strong empirical results on highly challenging 3D locomotion tasks, learning running gaits for bipedal and quadrupedal simulated robots, and learning a policy for getting the biped to stand up from starting out lying on the ground. In contrast to a body of prior work that uses hand-crafted policy representations, our neural network policies map directly from raw kinematics to joint torques. Our algorithm is fully model-free, and the amount of simulated experience required for the learning tasks on 3D bipeds corresponds to 1-2 weeks of real time.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c697fd0b73ec7aaeb2e75cb89cf4b8b020dd9556",
+    "externalIds": {
+      "DBLP": "conf/icml/CuturiD14",
+      "ArXiv": "1310.4375",
+      "MAG": "2949129950",
+      "CorpusId": 16786361
+    },
+    "title": "Fast Computation of Wasserstein Barycenters",
+    "venue": "International Conference on Machine Learning",
+    "year": 2013,
+    "citationCount": 802,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1310.4375, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1711979",
+        "name": "Marco Cuturi"
+      },
+      {
+        "authorId": "1701800",
+        "name": "A. Doucet"
+      }
+    ],
+    "abstract": "We present new algorithms to compute the mean of a set of empirical probability measures under the optimal transport metric. This mean, known as the Wasserstein barycenter, is the measure that minimizes the sum of its Wasserstein distances to each element in that set. We propose two original algorithms to compute Wasserstein barycenters that build upon the subgradient method. A direct implementation of these algorithms is, however, too costly because it would require the repeated resolution of large primal and dual optimal transport problems to compute subgradients. Extending the work of Cuturi (2013), we propose to smooth the Wasserstein distance used in the definition of Wasserstein barycenters with an entropic regularizer and recover in doing so a strictly convex objective whose gradients can be computed for a considerably cheaper computational cost using matrix scaling algorithms. We use these algorithms to visualize a large family of images and to solve a constrained clustering problem.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "0080118b0eb02af581ff32b85a1bb6aed7081f45",
+    "externalIds": {
+      "DBLP": "conf/nips/Cuturi13",
+      "MAG": "1511358834",
+      "ArXiv": "1306.0895",
+      "CorpusId": 15966283
+    },
+    "title": "Sinkhorn Distances: Lightspeed Computation of Optimal Transport",
+    "venue": "Neural Information Processing Systems",
+    "year": 2013,
+    "citationCount": 5240,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1306.0895, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1711979",
+        "name": "Marco Cuturi"
+      }
+    ],
+    "abstract": "Optimal transportation distances are a fundamental family of parameterized distances for histograms. Despite their appealing theoretical properties, excellent performance in retrieval tasks and intuitive formulation, their computation involves the resolution of a linear program whose cost is prohibitive whenever the histograms' dimension exceeds a few hundreds. We propose in this work a new family of optimal transportation distances that look at transportation problems from a maximum-entropy perspective. We smooth the classical optimal transportation problem with an entropic regularization term, and show that the resulting optimum is also a distance which can be computed through Sinkhorn-Knopp's matrix scaling algorithm at a speed that is several orders of magnitude faster than that of transportation solvers. We also report improved performance over classical optimal transportation distances on the MNIST benchmark problem.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "1c61f9ef06fe74505775a833ff849185757199e7",
+    "externalIds": {
+      "MAG": "2113459411",
+      "ACL": "P11-1015",
+      "DBLP": "conf/acl/MaasDPHNP11",
+      "CorpusId": 1428702
+    },
+    "title": "Learning Word Vectors for Sentiment Analysis",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2011,
+    "citationCount": 5932,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://aclanthology.org/P11-1015, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34961461",
+        "name": "Andrew L. Maas"
+      },
+      {
+        "authorId": "119816047",
+        "name": "Raymond E. Daly"
+      },
+      {
+        "authorId": "2061523260",
+        "name": "Peter T. Pham"
+      },
+      {
+        "authorId": "2110408720",
+        "name": "Dan Huang"
+      },
+      {
+        "authorId": "34699434",
+        "name": "A. Ng"
+      },
+      {
+        "authorId": "144922861",
+        "name": "Christopher Potts"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f3d4c52a3cfcc6c550fa30cc20c516e285eabf00",
+    "externalIds": {
+      "MAG": "2328111639",
+      "DOI": "10.2307/1428011",
+      "CorpusId": 124648603
+    },
+    "title": "Integral Probability Metrics and Their Generating Classes of Functions",
+    "venue": "Advances in Applied Probability",
+    "year": 1997,
+    "citationCount": 805,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2307/1428011?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2307/1428011, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143965435",
+        "name": "A. Müller"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "70e0d2487440b519b392503f4fa6b94891238c90",
+    "externalIds": {
+      "MAG": "2003447360",
+      "DOI": "10.2140/PJM.1967.21.343",
+      "CorpusId": 50329347
+    },
+    "title": "Concerning nonnegative matrices and doubly stochastic matrices",
+    "venue": "",
+    "year": 1967,
+    "citationCount": 1111,
+    "openAccessPdf": {
+      "url": "http://msp.org/pjm/1967/21-2/pjm-v21-n2-p14-s.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2140/PJM.1967.21.343?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2140/PJM.1967.21.343, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102566654",
+        "name": "Richard Sinkhorn"
+      },
+      {
+        "authorId": "102169770",
+        "name": "Paul Knopp"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a295f76c2afb7f79a970ccf086f16168d976bb93",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1710-10571",
+      "CorpusId": 195346923
+    },
+    "title": "Certifiable Distributional Robustness with Principled Adversarial Training",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 371,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2635549",
+        "name": "Aman Sinha"
+      },
+      {
+        "authorId": "40281109",
+        "name": "Hongseok Namkoong"
+      },
+      {
+        "authorId": "1734693",
+        "name": "John C. Duchi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

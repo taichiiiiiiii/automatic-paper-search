@@ -1,0 +1,5441 @@
+[
+  {
+    "paperId": "e96d3f85aa56f027e028189346e043e346f3acea",
+    "externalIds": {
+      "ACL": "2024.naacl-demo.12",
+      "DBLP": "journals/corr/abs-2306-12420",
+      "ArXiv": "2306.12420",
+      "DOI": "10.48550/arXiv.2306.12420",
+      "CorpusId": 259211821
+    },
+    "title": "LMFlow: An Extensible Toolkit for Finetuning and Inference of Large Foundation Models",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 80,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.12420",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.12420, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50826757",
+        "name": "Shizhe Diao"
+      },
+      {
+        "authorId": null,
+        "name": "Rui Pan"
+      },
+      {
+        "authorId": "35279146",
+        "name": "Hanze Dong"
+      },
+      {
+        "authorId": "2121340452",
+        "name": "Kashun Shum"
+      },
+      {
+        "authorId": "50561049",
+        "name": "Jipeng Zhang"
+      },
+      {
+        "authorId": "2275119437",
+        "name": "Wei Xiong"
+      },
+      {
+        "authorId": "38144094",
+        "name": "T. Zhang"
+      }
+    ],
+    "abstract": "Foundation models have demonstrated a great ability to achieve general human-level intelligence far beyond traditional approaches. As the technique keeps attracting attention from the AI community, more and more foundation models have become publicly available.However, most of those models exhibit a major deficiency in specialized-domain and specialized-task applications, where the step of domain- and task-aware finetuning is still required to obtain scientific language models. As the number of available foundation models and specialized tasks keeps growing, the job of training scientific language models becomes highly nontrivial. In this paper, we take the first step to address this issue. We introduce an extensible and lightweight toolkit, LMFlow, which aims to simplify the domain- and task-aware finetuning of general foundation models.LMFlow offers a complete finetuning workflow for a foundation model to support specialized training with limited computing resources.Furthermore, it supports continuous pretraining, instruction tuning, parameter-efficient finetuning, alignment tuning, inference acceleration, long context generalization, model customization, and even multimodal finetuning, along with carefully designed and extensible APIs. This toolkit has been thoroughly tested and is available at https://github.com/OptimalScale/LMFlow.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ccd94602e3acecf999d0c9ba62b1a8bc02e9f696",
+    "externalIds": {
+      "ArXiv": "2306.05087",
+      "DBLP": "journals/corr/abs-2306-05087",
+      "DOI": "10.48550/arXiv.2306.05087",
+      "CorpusId": 259108266
+    },
+    "title": "PandaLM: An Automatic Evaluation Benchmark for LLM Instruction Tuning Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 364,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.05087",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.05087, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108024279",
+        "name": "Yidong Wang"
+      },
+      {
+        "authorId": "2164113313",
+        "name": "Zhuohao Yu"
+      },
+      {
+        "authorId": "1557363420",
+        "name": "Zhengran Zeng"
+      },
+      {
+        "authorId": "2145500840",
+        "name": "Linyi Yang"
+      },
+      {
+        "authorId": "35504092",
+        "name": "Cunxiang Wang"
+      },
+      {
+        "authorId": "2051536212",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "1657285750",
+        "name": "Chaoya Jiang"
+      },
+      {
+        "authorId": "2143721734",
+        "name": "Rui Xie"
+      },
+      {
+        "authorId": "1519290245",
+        "name": "Jindong Wang"
+      },
+      {
+        "authorId": "1576441343",
+        "name": "Xingxu Xie"
+      },
+      {
+        "authorId": "145235149",
+        "name": "Wei Ye"
+      },
+      {
+        "authorId": "1705434",
+        "name": "Shikun Zhang"
+      },
+      {
+        "authorId": "2211964951",
+        "name": "Yue Zhang"
+      }
+    ],
+    "abstract": "Instruction tuning large language models (LLMs) remains a challenging task, owing to the complexity of hyperparameter selection and the difficulty involved in evaluating the tuned models. To determine the optimal hyperparameters, an automatic, robust, and reliable evaluation benchmark is essential. However, establishing such a benchmark is not a trivial task due to the challenges associated with evaluation accuracy and privacy protection. In response to these challenges, we introduce a judge large language model, named PandaLM, which is trained to distinguish the superior model given several LLMs. PandaLM's focus extends beyond just the objective correctness of responses, which is the main focus of traditional evaluation datasets. It addresses vital subjective factors such as relative conciseness, clarity, adherence to instructions, comprehensiveness, and formality. To ensure the reliability of PandaLM, we collect a diverse human-annotated test dataset, where all contexts are generated by humans and labels are aligned with human preferences. Our results indicate that PandaLM-7B achieves 93.75% of GPT-3.5's evaluation ability and 88.28% of GPT-4's in terms of F1-score on our test dataset. PandaLM enables the evaluation of LLM to be fairer but with less cost, evidenced by significant improvements achieved by models tuned through PandaLM compared to their counterparts trained with default Alpaca's hyperparameters. In addition, PandaLM does not depend on API-based evaluations, thus avoiding potential data leakage. All resources of PandaLM are released at https://github.com/WeOpenML/PandaLM.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fbd2c8089870814449f9254a711041bbae145a82",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-04751",
+      "ArXiv": "2306.04751",
+      "DOI": "10.48550/arXiv.2306.04751",
+      "CorpusId": 259108263
+    },
+    "title": "How Far Can Camels Go? Exploring the State of Instruction Tuning on Open Resources",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 488,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.04751",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.04751, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1705260",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "2056776606",
+        "name": "Hamish Ivison"
+      },
+      {
+        "authorId": "2697425",
+        "name": "Pradeep Dasigi"
+      },
+      {
+        "authorId": "2689239",
+        "name": "Jack Hessel"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "37619618",
+        "name": "Khyathi Raghavi Chandu"
+      },
+      {
+        "authorId": "30051202",
+        "name": "David Wadden"
+      },
+      {
+        "authorId": "2071601396",
+        "name": "Kelsey MacMillan"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "46181066",
+        "name": "Iz Beltagy"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "In this work we explore recent advances in instruction-tuning language models on a range of open instruction-following datasets. Despite recent claims that open models can be on par with state-of-the-art proprietary models, these claims are often accompanied by limited evaluation, making it difficult to compare models across the board and determine the utility of various resources. We provide a large set of instruction-tuned models from 6.7B to 65B parameters in size, trained on 12 instruction datasets ranging from manually curated (e.g., OpenAssistant) to synthetic and distilled (e.g., Alpaca) and systematically evaluate them on their factual knowledge, reasoning, multilinguality, coding, and open-ended instruction following abilities through a collection of automatic, model-based, and human-based metrics. We further introduce T\\\"ulu, our best performing instruction-tuned model suite finetuned on a combination of high-quality open resources. Our experiments show that different instruction-tuning datasets can uncover or enhance specific skills, while no single dataset (or combination) provides the best performance across all evaluations. Interestingly, we find that model and human preference-based evaluations fail to reflect differences in model capabilities exposed by benchmark-based evaluations, suggesting the need for the type of systemic evaluation performed in this work. Our evaluations show that the best model in any given evaluation reaches on average 87% of ChatGPT performance, and 73% of GPT-4 performance, suggesting that further investment in building better base models and instruction-tuning data is required to close the gap. We release our instruction-tuned models, including a fully finetuned 65B T\\\"ulu, along with our code, data, and evaluation framework at https://github.com/allenai/open-instruct to facilitate future research.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "38d64919ba526868a850a0e5f6239d4c474b7e7e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-17926",
+      "ArXiv": "2305.17926",
+      "DOI": "10.48550/arXiv.2305.17926",
+      "CorpusId": 258960339
+    },
+    "title": "Large Language Models are not Fair Evaluators",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 927,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.17926",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.17926, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144202874",
+        "name": "Peiyi Wang"
+      },
+      {
+        "authorId": "49192881",
+        "name": "Lei Li"
+      },
+      {
+        "authorId": "2146034504",
+        "name": "Liang Chen"
+      },
+      {
+        "authorId": "2116276849",
+        "name": "Dawei Zhu"
+      },
+      {
+        "authorId": "3186130",
+        "name": "Binghuai Lin"
+      },
+      {
+        "authorId": "2154235",
+        "name": "Yunbo Cao"
+      },
+      {
+        "authorId": "2144831944",
+        "name": "Qi Liu"
+      },
+      {
+        "authorId": "1701889",
+        "name": "Tianyu Liu"
+      },
+      {
+        "authorId": "3335836",
+        "name": "Zhifang Sui"
+      }
+    ],
+    "abstract": "In this paper, we uncover a systematic bias in the evaluation paradigm of adopting large language models~(LLMs), e.g., GPT-4, as a referee to score and compare the quality of responses generated by candidate models. We find that the quality ranking of candidate responses can be easily hacked by simply altering their order of appearance in the context. This manipulation allows us to skew the evaluation result, making one model appear considerably superior to the other, e.g., Vicuna-13B could beat ChatGPT on 66 over 80 tested queries with ChatGPT as an evaluator. To address this issue, we propose a calibration framework with three simple yet effective strategies: 1) Multiple Evidence Calibration, which requires the evaluator model to generate multiple evaluation evidence before assigning ratings; 2) Balanced Position Calibration, which aggregates results across various orders to determine the final score; 3) Human-in-the-Loop Calibration, which introduces a balanced position diversity entropy to measure the difficulty of each example and seeks human assistance when needed. We also manually annotate the\"win/tie/lose\"outcomes of responses from ChatGPT and Vicuna-13B in the Vicuna Benchmark's question prompt, and extensive experiments demonstrate that our approach successfully mitigates evaluation bias, resulting in closer alignment with human judgments. We release our code and human annotation at \\url{https://github.com/i-Eval/FairEval} to facilitate future research.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5d44f16a36ba7ae6b3d9d7c98bbc1b877e598f35",
+    "externalIds": {
+      "ArXiv": "2305.15717",
+      "DBLP": "journals/corr/abs-2305-15717",
+      "DOI": "10.48550/arXiv.2305.15717",
+      "CorpusId": 258887629
+    },
+    "title": "The False Promise of Imitating Proprietary LLMs",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 267,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.15717",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.15717, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2218767764",
+        "name": "Arnav Gudibande"
+      },
+      {
+        "authorId": "145217343",
+        "name": "Eric Wallace"
+      },
+      {
+        "authorId": "117111135",
+        "name": "Charles Burton Snell"
+      },
+      {
+        "authorId": "3468192",
+        "name": "Xinyang Geng"
+      },
+      {
+        "authorId": "2143855835",
+        "name": "Hao Liu"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "2112739650",
+        "name": "Dawn Song"
+      }
+    ],
+    "abstract": "An emerging method to cheaply improve a weaker language model is to finetune it on outputs from a stronger model, such as a proprietary system like ChatGPT (e.g., Alpaca, Self-Instruct, and others). This approach looks to cheaply imitate the proprietary model's capabilities using a weaker open-source model. In this work, we critically analyze this approach. We first finetune a series of LMs that imitate ChatGPT using varying base model sizes (1.5B--13B), data sources, and imitation data amounts (0.3M--150M tokens). We then evaluate the models using crowd raters and canonical NLP benchmarks. Initially, we were surprised by the output quality of our imitation models -- they appear far better at following instructions, and crowd workers rate their outputs as competitive with ChatGPT. However, when conducting more targeted automatic evaluations, we find that imitation models close little to none of the gap from the base LM to ChatGPT on tasks that are not heavily supported in the imitation data. We show that these performance discrepancies may slip past human raters because imitation models are adept at mimicking ChatGPT's style but not its factuality. Overall, we conclude that model imitation is a false promise: there exists a substantial capabilities gap between open and closed LMs that, with current methods, can only be bridged using an unwieldy amount of imitation data or by using more capable base LMs. In turn, we argue that the highest leverage action for improving open-source models is to tackle the difficult challenge of developing better base LMs, rather than taking the shortcut of imitating proprietary systems.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ce913026f693101e54d3ab9152e107034d81fce1",
+    "externalIds": {
+      "DBLP": "journals/tmlr/LiangBLTSYZNWKN23",
+      "DOI": "10.1111/nyas.15007",
+      "CorpusId": 253553585,
+      "PubMed": "37230490"
+    },
+    "title": "Holistic Evaluation of Language Models",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 1526,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2211.09110",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1111/nyas.15007?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1111/nyas.15007, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      },
+      {
+        "authorId": "150272855",
+        "name": "Rishi Bommasani"
+      },
+      {
+        "authorId": "2110585783",
+        "name": "Tony Lee"
+      },
+      {
+        "authorId": "2754804",
+        "name": "Dimitris Tsipras"
+      },
+      {
+        "authorId": "1914569491",
+        "name": "Dilara Soylu"
+      },
+      {
+        "authorId": "19168196",
+        "name": "Michihiro Yasunaga"
+      },
+      {
+        "authorId": "9227100",
+        "name": "Yian Zhang"
+      },
+      {
+        "authorId": "22252150",
+        "name": "D. Narayanan"
+      },
+      {
+        "authorId": "3374063",
+        "name": "Yuhuai Wu"
+      },
+      {
+        "authorId": "32423266",
+        "name": "Ananya Kumar"
+      },
+      {
+        "authorId": "51149693",
+        "name": "Benjamin Newman"
+      },
+      {
+        "authorId": "2833699",
+        "name": "Binhang Yuan"
+      },
+      {
+        "authorId": "1748871792",
+        "name": "Bobby Yan"
+      },
+      {
+        "authorId": "2146064162",
+        "name": "Ce Zhang"
+      },
+      {
+        "authorId": "133749287",
+        "name": "Christian Cosgrove"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      },
+      {
+        "authorId": "1413421064",
+        "name": "Diana Acosta-Navas"
+      },
+      {
+        "authorId": "152951058",
+        "name": "Drew A. Hudson"
+      },
+      {
+        "authorId": "49456763",
+        "name": "E. Zelikman"
+      },
+      {
+        "authorId": "41152329",
+        "name": "Esin Durmus"
+      },
+      {
+        "authorId": "8759332",
+        "name": "Faisal Ladhak"
+      },
+      {
+        "authorId": "2047004093",
+        "name": "Frieda Rong"
+      },
+      {
+        "authorId": "40046694",
+        "name": "Hongyu Ren"
+      },
+      {
+        "authorId": "18307037",
+        "name": "Huaxiu Yao"
+      },
+      {
+        "authorId": "39597242",
+        "name": "Jue Wang"
+      },
+      {
+        "authorId": "50818255",
+        "name": "Keshav Santhanam"
+      },
+      {
+        "authorId": "4773175",
+        "name": "Laurel J. Orr"
+      },
+      {
+        "authorId": "2118604716",
+        "name": "Lucia Zheng"
+      },
+      {
+        "authorId": "2186981598",
+        "name": "Mert Yuksekgonul"
+      },
+      {
+        "authorId": "51903517",
+        "name": "Mirac Suzgun"
+      },
+      {
+        "authorId": "2182172863",
+        "name": "Nathan S. Kim"
+      },
+      {
+        "authorId": "2820009",
+        "name": "Neel Guha"
+      },
+      {
+        "authorId": "22193324",
+        "name": "Niladri S. Chatterji"
+      },
+      {
+        "authorId": "144112155",
+        "name": "O. Khattab"
+      },
+      {
+        "authorId": "2071773966",
+        "name": "Peter Henderson"
+      },
+      {
+        "authorId": "144862341",
+        "name": "Qian Huang"
+      },
+      {
+        "authorId": "2121293578",
+        "name": "Ryan Chi"
+      },
+      {
+        "authorId": "46215055",
+        "name": "Sang Michael Xie"
+      },
+      {
+        "authorId": "2852106",
+        "name": "Shibani Santurkar"
+      },
+      {
+        "authorId": "25769960",
+        "name": "S. Ganguli"
+      },
+      {
+        "authorId": "2117567142",
+        "name": "Tatsunori Hashimoto"
+      },
+      {
+        "authorId": "8938047",
+        "name": "Thomas F. Icard"
+      },
+      {
+        "authorId": "123437034",
+        "name": "Tianyi Zhang"
+      },
+      {
+        "authorId": "113810201",
+        "name": "Vishrav Chaudhary"
+      },
+      {
+        "authorId": "2127971344",
+        "name": "William Wang"
+      },
+      {
+        "authorId": "2145429039",
+        "name": "Xuechen Li"
+      },
+      {
+        "authorId": "2054708905",
+        "name": "Yifan Mai"
+      },
+      {
+        "authorId": "49889860",
+        "name": "Yuhui Zhang"
+      },
+      {
+        "authorId": "2740047",
+        "name": "Yuta Koreeda"
+      }
+    ],
+    "abstract": "Language models (LMs) like GPT‐3, PaLM, and ChatGPT are the foundation for almost all major language technologies, but their capabilities, limitations, and risks are not well understood. We present Holistic Evaluation of Language Models (HELM) to improve the transparency of LMs. LMs can serve many purposes and their behavior should satisfy many desiderata. To navigate the vast space of potential scenarios and metrics, we taxonomize the space and select representative subsets. We evaluate models on 16 core scenarios and 7 metrics, exposing important trade‐offs. We supplement our core evaluation with seven targeted evaluations to deeply analyze specific aspects (including world knowledge, reasoning, regurgitation of copyrighted content, and generation of disinformation). We benchmark 30 LMs, from OpenAI, Microsoft, Google, Meta, Cohere, AI21 Labs, and others. Prior to HELM, models were evaluated on just 17.9% of the core HELM scenarios, with some prominent models not sharing a single scenario in common. We improve this to 96.0%: all 30 models are now benchmarked under the same standardized conditions. Our evaluation surfaces 25 top‐level findings. For full transparency, we release all raw model prompts and completions publicly. HELM is a living benchmark for the community, continuously updated with new scenarios, metrics, and models https://crfm.stanford.edu/helm/latest/.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "32ac52069e562d4f900afee70bdca63f53461481",
+    "externalIds": {
+      "ArXiv": "2305.14314",
+      "DBLP": "journals/corr/abs-2305-14314",
+      "DOI": "10.48550/arXiv.2305.14314",
+      "CorpusId": 258841328
+    },
+    "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 4362,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.14314",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.14314, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3239480",
+        "name": "Tim Dettmers"
+      },
+      {
+        "authorId": "51152502",
+        "name": "Artidoro Pagnoni"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We present QLoRA, an efficient finetuning approach that reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU while preserving full 16-bit finetuning task performance. QLoRA backpropagates gradients through a frozen, 4-bit quantized pretrained language model into Low Rank Adapters~(LoRA). Our best model family, which we name Guanaco, outperforms all previous openly released models on the Vicuna benchmark, reaching 99.3% of the performance level of ChatGPT while only requiring 24 hours of finetuning on a single GPU. QLoRA introduces a number of innovations to save memory without sacrificing performance: (a) 4-bit NormalFloat (NF4), a new data type that is information theoretically optimal for normally distributed weights (b) double quantization to reduce the average memory footprint by quantizing the quantization constants, and (c) paged optimziers to manage memory spikes. We use QLoRA to finetune more than 1,000 models, providing a detailed analysis of instruction following and chatbot performance across 8 instruction datasets, multiple model types (LLaMA, T5), and model scales that would be infeasible to run with regular finetuning (e.g. 33B and 65B parameter models). Our results show that QLoRA finetuning on a small high-quality dataset leads to state-of-the-art results, even when using smaller models than the previous SoTA. We provide a detailed analysis of chatbot performance based on both human and GPT-4 evaluations showing that GPT-4 evaluations are a cheap and reasonable alternative to human evaluation. Furthermore, we find that current chatbot benchmarks are not trustworthy to accurately evaluate the performance levels of chatbots. A lemon-picked analysis demonstrates where Guanaco fails compared to ChatGPT. We release all of our models and code, including CUDA kernels for 4-bit training.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "cb6cc7d28d06a0d7c0d3f0d7ee551bbc86dbc3aa",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-14387",
+      "ArXiv": "2305.14387",
+      "DOI": "10.48550/arXiv.2305.14387",
+      "CorpusId": 258865545
+    },
+    "title": "AlpacaFarm: A Simulation Framework for Methods that Learn from Human Feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 839,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.14387",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.14387, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47367640",
+        "name": "Yann Dubois"
+      },
+      {
+        "authorId": "2145429039",
+        "name": "Xuechen Li"
+      },
+      {
+        "authorId": "46199305",
+        "name": "Rohan Taori"
+      },
+      {
+        "authorId": "2146332594",
+        "name": "Tianyi Zhang"
+      },
+      {
+        "authorId": "2708454",
+        "name": "Ishaan Gulrajani"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      },
+      {
+        "authorId": "1730156",
+        "name": "Carlos Guestrin"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      },
+      {
+        "authorId": "2117567142",
+        "name": "Tatsunori Hashimoto"
+      }
+    ],
+    "abstract": "Large language models (LLMs) such as ChatGPT have seen widespread adoption due to their strong instruction-following abilities. Developing these LLMs involves a complex yet poorly understood workflow requiring training with human feedback. Replicating and understanding this instruction-following requires tackling three major challenges: the high cost of data collection, the lack of trustworthy evaluation, and the absence of reference method implementations. We address these challenges with AlpacaFarm, a simulator that enables research and development for learning from feedback at a low cost. First, we design LLM prompts to simulate human feedback that are 50x cheaper than crowdworkers and display high agreement with humans. Second, we propose an automatic evaluation and validate it against human instructions obtained on real-world interactions. Third, we contribute reference implementations for several methods (PPO, DPO, best-of-n, expert iteration, and more) that learn from pairwise feedback. Finally, as an end-to-end validation of AlpacaFarm, we train and evaluate eleven models on 10k pairs of real human feedback and show that rankings of models trained in AlpacaFarm match rankings of models trained on human data. As a demonstration of the research possible in AlpacaFarm, we find that methods that use a reward model can substantially improve over supervised fine-tuning and that our reference PPO implementation leads to a +10% improvement in win-rate against Davinci003. We release all components of AlpacaFarm at https://github.com/tatsu-lab/alpaca_farm.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b6d6c33298b852cf63edac233deca70530d69a2a",
+    "externalIds": {
+      "ArXiv": "2305.10403",
+      "DBLP": "journals/corr/abs-2305-10403",
+      "CorpusId": 258740735
+    },
+    "title": "PaLM 2 Technical Report",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 1481,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.10403, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1508890387",
+        "name": "Rohan Anil"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2345617",
+        "name": "Orhan Firat"
+      },
+      {
+        "authorId": "145657834",
+        "name": "Melvin Johnson"
+      },
+      {
+        "authorId": "150077954",
+        "name": "Dmitry Lepikhin"
+      },
+      {
+        "authorId": "2063982295",
+        "name": "Alexandre Passos"
+      },
+      {
+        "authorId": "2944868",
+        "name": "Siamak Shakeri"
+      },
+      {
+        "authorId": "2779842",
+        "name": "Emanuel Taropa"
+      },
+      {
+        "authorId": "2184744789",
+        "name": "Paige Bailey"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      },
+      {
+        "authorId": "144652649",
+        "name": "Eric Chu"
+      },
+      {
+        "authorId": "144797264",
+        "name": "J. Clark"
+      },
+      {
+        "authorId": "2121764",
+        "name": "Laurent El Shafey"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "1398655031",
+        "name": "K. Meier-Hellstern"
+      },
+      {
+        "authorId": "2159632445",
+        "name": "Gaurav Mishra"
+      },
+      {
+        "authorId": "2057453483",
+        "name": "Erica Moreira"
+      },
+      {
+        "authorId": "3175815",
+        "name": "Mark Omernick"
+      },
+      {
+        "authorId": "2148473059",
+        "name": "Kevin Robinson"
+      },
+      {
+        "authorId": "2884561",
+        "name": "Sebastian Ruder"
+      },
+      {
+        "authorId": "97947517",
+        "name": "Yi Tay"
+      },
+      {
+        "authorId": "8867471",
+        "name": "Kefan Xiao"
+      },
+      {
+        "authorId": "2145139570",
+        "name": "Yuanzhong Xu"
+      },
+      {
+        "authorId": "2108259297",
+        "name": "Yujing Zhang"
+      },
+      {
+        "authorId": "2124016663",
+        "name": "Gustavo Hernández Abrego"
+      },
+      {
+        "authorId": "2447669",
+        "name": "Junwhan Ahn"
+      },
+      {
+        "authorId": "2058365883",
+        "name": "Jacob Austin"
+      },
+      {
+        "authorId": "152399055",
+        "name": "P. Barham"
+      },
+      {
+        "authorId": "35025872",
+        "name": "Jan A. Botha"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "1791585",
+        "name": "Siddhartha Brahma"
+      },
+      {
+        "authorId": "2061319157",
+        "name": "K. Brooks"
+      },
+      {
+        "authorId": "1754926",
+        "name": "Michele Catasta"
+      },
+      {
+        "authorId": "8259400",
+        "name": "Yongzhou Cheng"
+      },
+      {
+        "authorId": "144507724",
+        "name": "Colin Cherry"
+      },
+      {
+        "authorId": "1415982317",
+        "name": "Christopher A. Choquette-Choo"
+      },
+      {
+        "authorId": "2841893",
+        "name": "A. Chowdhery"
+      },
+      {
+        "authorId": "16185770",
+        "name": "C. Crépy"
+      },
+      {
+        "authorId": "2160404",
+        "name": "Shachi Dave"
+      },
+      {
+        "authorId": "3226635",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "50991767",
+        "name": "Sunipa Dev"
+      },
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "2146515892",
+        "name": "M. D'iaz"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "52136425",
+        "name": "Ethan Dyer"
+      },
+      {
+        "authorId": "2275181199",
+        "name": "Vladimir Feinberg"
+      },
+      {
+        "authorId": "2061128350",
+        "name": "Fan Feng"
+      },
+      {
+        "authorId": "2217683542",
+        "name": "Vlad Fienber"
+      },
+      {
+        "authorId": "35307070",
+        "name": "Markus Freitag"
+      },
+      {
+        "authorId": "143936294",
+        "name": "Xavier García"
+      },
+      {
+        "authorId": "3159346",
+        "name": "Sebastian Gehrmann"
+      },
+      {
+        "authorId": "2216606820",
+        "name": "Lucas González"
+      },
+      {
+        "authorId": "2284681044",
+        "name": "Guy Gur-Ari"
+      },
+      {
+        "authorId": "38424357",
+        "name": "S. Hand"
+      },
+      {
+        "authorId": "2070487928",
+        "name": "Hadi Hashemi"
+      },
+      {
+        "authorId": "2153400663",
+        "name": "Le Hou"
+      },
+      {
+        "authorId": "113828976",
+        "name": "Joshua Howland"
+      },
+      {
+        "authorId": "145615257",
+        "name": "A. Hu"
+      },
+      {
+        "authorId": "2134586809",
+        "name": "Jeffrey Hui"
+      },
+      {
+        "authorId": "2042559",
+        "name": "Jeremy Hurwitz"
+      },
+      {
+        "authorId": "2090818",
+        "name": "M. Isard"
+      },
+      {
+        "authorId": "3407108",
+        "name": "Abe Ittycheriah"
+      },
+      {
+        "authorId": "40844378",
+        "name": "Matthew Jagielski"
+      },
+      {
+        "authorId": "2072954952",
+        "name": "W. Jia"
+      },
+      {
+        "authorId": "1914502282",
+        "name": "Kathleen Kenealy"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "2131614068",
+        "name": "Sneha Kudugunta"
+      },
+      {
+        "authorId": "2217498722",
+        "name": "Chang Lan"
+      },
+      {
+        "authorId": "3844009",
+        "name": "Katherine Lee"
+      },
+      {
+        "authorId": "2110173692",
+        "name": "Benjamin Lee"
+      },
+      {
+        "authorId": "2053810539",
+        "name": "Eric Li"
+      },
+      {
+        "authorId": "67185451",
+        "name": "Mu-Li Li"
+      },
+      {
+        "authorId": "2157336744",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "2261797906",
+        "name": "Yaguang Li"
+      },
+      {
+        "authorId": "46276037",
+        "name": "Jun Yu Li"
+      },
+      {
+        "authorId": "8939217",
+        "name": "Hyeontaek Lim"
+      },
+      {
+        "authorId": "2152782198",
+        "name": "Han Lin"
+      },
+      {
+        "authorId": "2145286367",
+        "name": "Zhong-Zhong Liu"
+      },
+      {
+        "authorId": "2155134",
+        "name": "Frederick Liu"
+      },
+      {
+        "authorId": "2090812426",
+        "name": "M. Maggioni"
+      },
+      {
+        "authorId": "3158336",
+        "name": "Aroma Mahendru"
+      },
+      {
+        "authorId": "2124977868",
+        "name": "Joshua Maynez"
+      },
+      {
+        "authorId": "40055795",
+        "name": "Vedant Misra"
+      },
+      {
+        "authorId": "1998473",
+        "name": "Maysam Moussalem"
+      },
+      {
+        "authorId": "81408931",
+        "name": "Zachary Nado"
+      },
+      {
+        "authorId": "4111313",
+        "name": "John Nham"
+      },
+      {
+        "authorId": "2139700936",
+        "name": "Eric Ni"
+      },
+      {
+        "authorId": "2064161903",
+        "name": "A. Nystrom"
+      },
+      {
+        "authorId": "119389860",
+        "name": "Alicia Parrish"
+      },
+      {
+        "authorId": "97905921",
+        "name": "Marie Pellat"
+      },
+      {
+        "authorId": "35930544",
+        "name": "M. Polacek"
+      },
+      {
+        "authorId": "2636739",
+        "name": "Oleksandr Polozov"
+      },
+      {
+        "authorId": "2161431901",
+        "name": "Reiner Pope"
+      },
+      {
+        "authorId": "2383133",
+        "name": "Siyuan Qiao"
+      },
+      {
+        "authorId": "49849144",
+        "name": "Emily Reif"
+      },
+      {
+        "authorId": "2217682955",
+        "name": "Bryan Richter"
+      },
+      {
+        "authorId": "47718053",
+        "name": "Parker Riley"
+      },
+      {
+        "authorId": "144001469",
+        "name": "A. Ros"
+      },
+      {
+        "authorId": "39788470",
+        "name": "Aurko Roy"
+      },
+      {
+        "authorId": "4125424",
+        "name": "Brennan Saeta"
+      },
+      {
+        "authorId": "2099325594",
+        "name": "R. Samuel"
+      },
+      {
+        "authorId": "65828391",
+        "name": "R. Shelby"
+      },
+      {
+        "authorId": "133666998",
+        "name": "Ambrose Slone"
+      },
+      {
+        "authorId": "2842148",
+        "name": "D. Smilkov"
+      },
+      {
+        "authorId": "48165870",
+        "name": "David R. So"
+      },
+      {
+        "authorId": "5478609",
+        "name": "Daniela Sohn"
+      },
+      {
+        "authorId": "148152480",
+        "name": "Simon Tokumine"
+      },
+      {
+        "authorId": "2085587569",
+        "name": "Dasha Valter"
+      },
+      {
+        "authorId": "2053781980",
+        "name": "Vijay Vasudevan"
+      },
+      {
+        "authorId": "4529644",
+        "name": "Kiran Vodrahalli"
+      },
+      {
+        "authorId": "2397434858",
+        "name": "Xuezhi Wang"
+      },
+      {
+        "authorId": "2164862499",
+        "name": "Pidong Wang"
+      },
+      {
+        "authorId": null,
+        "name": "Zirui Wang"
+      },
+      {
+        "authorId": "41154933",
+        "name": "Tao Wang"
+      },
+      {
+        "authorId": "1771118",
+        "name": "J. Wieting"
+      },
+      {
+        "authorId": "3374063",
+        "name": "Yuhuai Wu"
+      },
+      {
+        "authorId": "2117101585",
+        "name": "Ke Xu"
+      },
+      {
+        "authorId": "2137713222",
+        "name": "Yunhan Xu"
+      },
+      {
+        "authorId": "46426732",
+        "name": "L. Xue"
+      },
+      {
+        "authorId": "49114546",
+        "name": "Pengcheng Yin"
+      },
+      {
+        "authorId": "2329018321",
+        "name": "Jiahui Yu"
+      },
+      {
+        "authorId": "2116788331",
+        "name": "Qiaoling Zhang"
+      },
+      {
+        "authorId": "2275574241",
+        "name": "Steven Zheng"
+      },
+      {
+        "authorId": "1996097443",
+        "name": "Ce Zheng"
+      },
+      {
+        "authorId": "101829183",
+        "name": "Wei Zhou"
+      },
+      {
+        "authorId": "65855107",
+        "name": "Denny Zhou"
+      },
+      {
+        "authorId": "1754497",
+        "name": "Slav Petrov"
+      },
+      {
+        "authorId": "48607963",
+        "name": "Yonghui Wu"
+      }
+    ],
+    "abstract": "We introduce PaLM 2, a new state-of-the-art language model that has better multilingual and reasoning capabilities and is more compute-efficient than its predecessor PaLM. PaLM 2 is a Transformer-based model trained using a mixture of objectives. Through extensive evaluations on English and multilingual language, and reasoning tasks, we demonstrate that PaLM 2 has significantly improved quality on downstream tasks across different model sizes, while simultaneously exhibiting faster and more efficient inference compared to PaLM. This improved efficiency enables broader deployment while also allowing the model to respond faster, for a more natural pace of interaction. PaLM 2 demonstrates robust reasoning capabilities exemplified by large improvements over PaLM on BIG-Bench and other reasoning tasks. PaLM 2 exhibits stable performance on a suite of responsible AI evaluations, and enables inference-time control over toxicity without additional overhead or impact on other capabilities. Overall, PaLM 2 achieves state-of-the-art performance across a diverse set of tasks and capabilities. When discussing the PaLM 2 family, it is important to distinguish between pre-trained models (of various sizes), fine-tuned variants of these models, and the user-facing products that use these models. In particular, user-facing products typically include additional pre- and post-processing steps. Additionally, the underlying models may evolve over time. Therefore, one should not expect the performance of user-facing products to exactly match the results reported in this report.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "03055978e278960de9fbb5c648b1779ef9f26cd1",
+    "externalIds": {
+      "ArXiv": "2305.01937",
+      "DBLP": "conf/acl/ChiangL23",
+      "ACL": "2023.acl-long.870",
+      "DOI": "10.48550/arXiv.2305.01937",
+      "CorpusId": 258461287
+    },
+    "title": "Can Large Language Models Be an Alternative to Human Evaluations?",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 957,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.01937",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.01937, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1992777064",
+        "name": "Cheng-Han Chiang"
+      },
+      {
+        "authorId": "1706104",
+        "name": "Hung-yi Lee"
+      }
+    ],
+    "abstract": "Human evaluation is indispensable and inevitable for assessing the quality of texts generated by machine learning models or written by humans. However, human evaluation is very difficult to reproduce and its quality is notoriously unstable, hindering fair comparisons among different natural language processing (NLP) models and algorithms.Recently, large language models (LLMs) have demonstrated exceptional performance on unseen tasks when only the task instructions are provided.In this paper, we explore if such an ability of the LLMs can be used as an alternative to human evaluation.We present the LLMs with the exact same instructions, samples to be evaluated, and questions used to conduct human evaluation, and then ask the LLMs to generate responses to those questions; we dub this LLM evaluation.We use human evaluation and LLM evaluation to evaluate the texts in two NLP tasks: open-ended story generation and adversarial attacks.We show that the result of LLM evaluation is consistent with the results obtained by expert human evaluation: the texts rated higher by human experts are also rated higher by the LLMs.We also find that the results of LLM evaluation are stable over different formatting of the task instructions and the sampling algorithm used to generate the answer.We are the first to show the potential of using LLMs to assess the quality of texts and discuss the limitations and ethical considerations of LLM evaluation.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "08a80cb34d785258c770acecd302ab41ead46eed",
+    "externalIds": {
+      "DBLP": "conf/iclr/XuSZG0FTLJ24",
+      "ArXiv": "2304.12244",
+      "CorpusId": 258298159
+    },
+    "title": "WizardLM: Empowering Large Pre-Trained Language Models to Follow Complex Instructions",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 1202,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.12244, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46747953",
+        "name": "Can Xu"
+      },
+      {
+        "authorId": "2112549330",
+        "name": "Qingfeng Sun"
+      },
+      {
+        "authorId": "2052687880",
+        "name": "Kai Zheng"
+      },
+      {
+        "authorId": "2442662",
+        "name": "Xiubo Geng"
+      },
+      {
+        "authorId": "2215218765",
+        "name": "Pu Zhao"
+      },
+      {
+        "authorId": "147062881",
+        "name": "Jiazhan Feng"
+      },
+      {
+        "authorId": "8801869",
+        "name": "Chongyang Tao"
+      },
+      {
+        "authorId": "2086994543",
+        "name": "Daxin Jiang"
+      }
+    ],
+    "abstract": "Training large language models (LLMs) with open-domain instruction following data brings colossal success. However, manually creating such instruction data is very time-consuming and labor-intensive. Moreover, humans may struggle to produce high-complexity instructions. In this paper, we show an avenue for creating large amounts of instruction data with varying levels of complexity using LLM instead of humans. Starting with an initial set of instructions, we use our proposed Evol-Instruct to rewrite them step by step into more complex instructions. Then, we mix all generated instruction data to fine-tune LLaMA. We call the resulting model WizardLM. Human evaluations on a complexity-balanced test bed and Vicuna's testset show that instructions from Evol-Instruct are superior to human-created ones. By analyzing the human evaluation results of the high complexity part, we demonstrate that outputs from our WizardLM are preferred to outputs from OpenAI ChatGPT. In GPT-4 automatic evaluation, WizardLM achieves more than 90\\% capacity of ChatGPT on 17 out of 29 skills. Even though WizardLM still lags behind ChatGPT in some aspects, our findings suggest that fine-tuning with AI-evolved instructions is a promising direction for enhancing LLMs. Our code and data are public at https://github.com/nlpxucan/WizardLM",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ae736662f64d56f3ab1894fbd9c45f8f37251843",
+    "externalIds": {
+      "ArXiv": "2304.07327",
+      "DBLP": "journals/corr/abs-2304-07327",
+      "DOI": "10.48550/arXiv.2304.07327",
+      "CorpusId": 258179434
+    },
+    "title": "OpenAssistant Conversations - Democratizing Large Language Model Alignment",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 836,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.07327",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.07327, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3996967",
+        "name": "Andreas Kopf"
+      },
+      {
+        "authorId": "3442443",
+        "name": "Yannic Kilcher"
+      },
+      {
+        "authorId": "2151176536",
+        "name": "Dimitri von Rutte"
+      },
+      {
+        "authorId": "2051417741",
+        "name": "Sotiris Anagnostidis"
+      },
+      {
+        "authorId": "2028219138",
+        "name": "Zhi Rui Tam"
+      },
+      {
+        "authorId": "144077726",
+        "name": "K. Stevens"
+      },
+      {
+        "authorId": "2214578068",
+        "name": "A. Barhoum"
+      },
+      {
+        "authorId": "2172713311",
+        "name": "Nguyen Minh Duc"
+      },
+      {
+        "authorId": "2214578066",
+        "name": "Oliver Stanley"
+      },
+      {
+        "authorId": "1806432005",
+        "name": "Rich'ard Nagyfi"
+      },
+      {
+        "authorId": "2214583051",
+        "name": "ES Shahul"
+      },
+      {
+        "authorId": "2262043362",
+        "name": "S. Suri"
+      },
+      {
+        "authorId": "2214579295",
+        "name": "David Glushkov"
+      },
+      {
+        "authorId": "2162808789",
+        "name": "A. Dantuluri"
+      },
+      {
+        "authorId": "2069950640",
+        "name": "Andrew Maguire"
+      },
+      {
+        "authorId": "2137341362",
+        "name": "Christoph Schuhmann"
+      },
+      {
+        "authorId": "2214587659",
+        "name": "Huu Nguyen"
+      },
+      {
+        "authorId": "102888911",
+        "name": "A. Mattick"
+      }
+    ],
+    "abstract": "Aligning large language models (LLMs) with human preferences has proven to drastically improve usability and has driven rapid adoption as demonstrated by ChatGPT. Alignment techniques such as supervised fine-tuning (SFT) and reinforcement learning from human feedback (RLHF) greatly reduce the required skill and domain knowledge to effectively harness the capabilities of LLMs, increasing their accessibility and utility across various domains. However, state-of-the-art alignment techniques like RLHF rely on high-quality human feedback data, which is expensive to create and often remains proprietary. In an effort to democratize research on large-scale alignment, we release OpenAssistant Conversations, a human-generated, human-annotated assistant-style conversation corpus consisting of 161,443 messages in 35 different languages, annotated with 461,292 quality ratings, resulting in over 10,000 complete and fully annotated conversation trees. The corpus is a product of a worldwide crowd-sourcing effort involving over 13,500 volunteers. Models trained on OpenAssistant Conversations show consistent improvements on standard benchmarks over respective base models. We release our code and data under a fully permissive licence.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "68c834c19cd126bbd6d25a3572d7205cfed76271",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-06364",
+      "ArXiv": "2304.06364",
+      "DOI": "10.48550/arXiv.2304.06364",
+      "CorpusId": 258108259
+    },
+    "title": "AGIEval: A Human-Centric Benchmark for Evaluating Foundation Models",
+    "venue": "NAACL-HLT",
+    "year": 2023,
+    "citationCount": 804,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.06364",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.06364, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "81970097",
+        "name": "Wanjun Zhong"
+      },
+      {
+        "authorId": "1717462692",
+        "name": "Ruixiang Cui"
+      },
+      {
+        "authorId": "2214448244",
+        "name": "Yiduo Guo"
+      },
+      {
+        "authorId": "3887469",
+        "name": "Yaobo Liang"
+      },
+      {
+        "authorId": "2115338656",
+        "name": "Shuai Lu"
+      },
+      {
+        "authorId": "2214155529",
+        "name": "Yanlin Wang"
+      },
+      {
+        "authorId": "2282542305",
+        "name": "A. Saied"
+      },
+      {
+        "authorId": "2109136147",
+        "name": "Weizhu Chen"
+      },
+      {
+        "authorId": "46429989",
+        "name": "Nan Duan"
+      }
+    ],
+    "abstract": "Evaluating the general abilities of foundation models to tackle human-level tasks is a vital aspect of their development and application in the pursuit of Artificial General Intelligence (AGI). Traditional benchmarks, which rely on artificial datasets, may not accurately represent human-level capabilities. In this paper, we introduce AGIEval, a novel benchmark specifically designed to assess foundation model in the context of human-centric standardized exams, such as college entrance exams, law school admission tests, math competitions, and lawyer qualification tests. We evaluate several state-of-the-art foundation models, including GPT-4, ChatGPT, and Text-Davinci-003, using this benchmark. Impressively, GPT-4 surpasses average human performance on SAT, LSAT, and math competitions, attaining a 95% accuracy rate on the SAT Math test and a 92.5% accuracy on the English test of the Chinese national college entrance exam. This demonstrates the extraordinary performance of contemporary foundation models. In contrast, we also find that GPT-4 is less proficient in tasks that require complex reasoning or specific domain knowledge. Our comprehensive analyses of model capabilities (understanding, knowledge, reasoning, and calculation) reveal these models' strengths and limitations, providing valuable insights into future directions for enhancing their general capabilities. By concentrating on tasks pertinent to human cognition and decision-making, our benchmark delivers a more meaningful and robust evaluation of foundation models' performance in real-world scenarios. The data, code, and all model outputs are released in https://github.com/ruixiangcui/AGIEval.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9e8cb8c91a0acb6e661b58ad724aa758490f2bea",
+    "externalIds": {
+      "ArXiv": "2304.03277",
+      "DBLP": "journals/corr/abs-2304-03277",
+      "CorpusId": 257985497
+    },
+    "title": "Instruction Tuning with GPT-4",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 797,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.03277, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1780690",
+        "name": "Baolin Peng"
+      },
+      {
+        "authorId": "2109737569",
+        "name": "Chunyuan Li"
+      },
+      {
+        "authorId": "50462546",
+        "name": "Pengcheng He"
+      },
+      {
+        "authorId": "1947267",
+        "name": "Michel Galley"
+      },
+      {
+        "authorId": "48441311",
+        "name": "Jianfeng Gao"
+      }
+    ],
+    "abstract": "Prior work has shown that finetuning large language models (LLMs) using machine-generated instruction-following data enables such models to achieve remarkable zero-shot capabilities on new tasks, and no human-written instructions are needed. In this paper, we present the first attempt to use GPT-4 to generate instruction-following data for LLM finetuning. Our early experiments on instruction-tuned LLaMA models show that the 52K English and Chinese instruction-following data generated by GPT-4 leads to superior zero-shot performance on new tasks to the instruction-following data generated by previous state-of-the-art models. We also collect feedback and comparison data from GPT-4 to enable a comprehensive evaluation and reward model training. We make our data generated using GPT-4 as well as our codebase publicly available.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a9e155fda1d97baa2b8712f580cc61887cc64e9b",
+    "externalIds": {
+      "PubMedCentral": "10372638",
+      "DBLP": "journals/corr/abs-2303-15056",
+      "ArXiv": "2303.15056",
+      "DOI": "10.1073/pnas.2305016120",
+      "CorpusId": 257766307,
+      "PubMed": "37463210"
+    },
+    "title": "ChatGPT outperforms crowd workers for text-annotation tasks",
+    "venue": "Proceedings of the National Academy of Sciences of the United States of America",
+    "year": 2023,
+    "citationCount": 1425,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1073/pnas.2305016120",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.15056, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46210729",
+        "name": "F. Gilardi"
+      },
+      {
+        "authorId": "2253532",
+        "name": "Meysam Alizadeh"
+      },
+      {
+        "authorId": "69039257",
+        "name": "M. Kubli"
+      }
+    ],
+    "abstract": "Many NLP applications require manual text annotations for a variety of tasks, notably to train classifiers or evaluate the performance of unsupervised models. Depending on the size and degree of complexity, the tasks may be conducted by crowd workers on platforms such as MTurk as well as trained annotators, such as research assistants. Using four samples of tweets and news articles (n = 6,183), we show that ChatGPT outperforms crowd workers for several annotation tasks, including relevance, stance, topics, and frame detection. Across the four datasets, the zero-shot accuracy of ChatGPT exceeds that of crowd workers by about 25 percentage points on average, while ChatGPT’s intercoder agreement exceeds that of both crowd workers and trained annotators for all tasks. Moreover, the per-annotation cost of ChatGPT is less than $0.003—about thirty times cheaper than MTurk. These results demonstrate the potential of large language models to drastically increase the efficiency of text classification.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8dbd57469bb32e6d57f23f5e765bf1c9ac8e080c",
+    "externalIds": {
+      "ArXiv": "2303.12712",
+      "DBLP": "journals/corr/abs-2303-12712",
+      "CorpusId": 257663729
+    },
+    "title": "Sparks of Artificial General Intelligence: Early experiments with GPT-4",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 4109,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.12712, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "121645690",
+        "name": "Sébastien Bubeck"
+      },
+      {
+        "authorId": "143754359",
+        "name": "Varun Chandrasekaran"
+      },
+      {
+        "authorId": "2315830",
+        "name": "Ronen Eldan"
+      },
+      {
+        "authorId": "120962807",
+        "name": "J. Gehrke"
+      },
+      {
+        "authorId": "2064595436",
+        "name": "Eric Horvitz"
+      },
+      {
+        "authorId": "1783184",
+        "name": "Ece Kamar"
+      },
+      {
+        "authorId": "2397827688",
+        "name": "Peter Lee"
+      },
+      {
+        "authorId": "2109308930",
+        "name": "Y. Lee"
+      },
+      {
+        "authorId": "152244300",
+        "name": "Yuan-Fang Li"
+      },
+      {
+        "authorId": "23451726",
+        "name": "Scott M. Lundberg"
+      },
+      {
+        "authorId": "2268494857",
+        "name": "Harsha Nori"
+      },
+      {
+        "authorId": "2247662718",
+        "name": "Hamid Palangi"
+      },
+      {
+        "authorId": "78846919",
+        "name": "Marco Tulio Ribeiro"
+      },
+      {
+        "authorId": "144884116",
+        "name": "Yi Zhang"
+      }
+    ],
+    "abstract": "Artificial intelligence (AI) researchers have been developing and refining large language models (LLMs) that exhibit remarkable capabilities across a variety of domains and tasks, challenging our understanding of learning and cognition. The latest model developed by OpenAI, GPT-4, was trained using an unprecedented scale of compute and data. In this paper, we report on our investigation of an early version of GPT-4, when it was still in active development by OpenAI. We contend that (this early version of) GPT-4 is part of a new cohort of LLMs (along with ChatGPT and Google's PaLM for example) that exhibit more general intelligence than previous AI models. We discuss the rising capabilities and implications of these models. We demonstrate that, beyond its mastery of language, GPT-4 can solve novel and difficult tasks that span mathematics, coding, vision, medicine, law, psychology and more, without needing any special prompting. Moreover, in all of these tasks, GPT-4's performance is strikingly close to human-level performance, and often vastly surpasses prior models such as ChatGPT. Given the breadth and depth of GPT-4's capabilities, we believe that it could reasonably be viewed as an early (yet still incomplete) version of an artificial general intelligence (AGI) system. In our exploration of GPT-4, we put special emphasis on discovering its limitations, and we discuss the challenges ahead for advancing towards deeper and more comprehensive versions of AGI, including the possible need for pursuing a new paradigm that moves beyond next-word prediction. We conclude with reflections on societal influences of the recent technological leap and future research directions.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "57e849d0de13ed5f91d086936296721d4ff75a75",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-13971",
+      "ArXiv": "2302.13971",
+      "CorpusId": 257219404
+    },
+    "title": "LLaMA: Open and Efficient Foundation Language Models",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 19563,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.13971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "1490887583",
+        "name": "X. Martinet"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "47733973",
+        "name": "Timothée Lacroix"
+      },
+      {
+        "authorId": "3361236",
+        "name": "Baptiste Rozière"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "2072738644",
+        "name": "Eric Hambro"
+      },
+      {
+        "authorId": "2209986197",
+        "name": "Faisal Azhar"
+      },
+      {
+        "authorId": "2166043087",
+        "name": "Aur'elien Rodriguez"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      }
+    ],
+    "abstract": "We introduce LLaMA, a collection of foundation language models ranging from 7B to 65B parameters. We train our models on trillions of tokens, and show that it is possible to train state-of-the-art models using publicly available datasets exclusively, without resorting to proprietary and inaccessible datasets. In particular, LLaMA-13B outperforms GPT-3 (175B) on most benchmarks, and LLaMA-65B is competitive with the best models, Chinchilla-70B and PaLM-540B. We release all our models to the research community.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "7cfb88ee7babd5cd717c525f8b642776c47c59cd",
+    "externalIds": {
+      "DBLP": "conf/www/HuangKA23a",
+      "ArXiv": "2302.07736",
+      "DOI": "10.1145/3543873.3587368",
+      "CorpusId": 256868854
+    },
+    "title": "Is ChatGPT better than Human Annotators? Potential and Limitations of ChatGPT in Explaining Implicit Hate Speech",
+    "venue": "The Web Conference",
+    "year": 2023,
+    "citationCount": 329,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2302.07736",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.07736, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2184704313",
+        "name": "Fan Huang"
+      },
+      {
+        "authorId": "2592694",
+        "name": "Haewoon Kwak"
+      },
+      {
+        "authorId": "2088546758",
+        "name": "Jisun An"
+      }
+    ],
+    "abstract": "Recent studies have alarmed that many online hate speeches are implicit. With its subtle nature, the explainability of the detection of such hateful speech has been a challenging problem. In this work, we examine whether ChatGPT can be used for providing natural language explanations (NLEs) for implicit hateful speech detection. We design our prompt to elicit concise ChatGPT-generated NLEs and conduct user studies to evaluate their qualities by comparison with human-written NLEs. We discuss the potential and limitations of ChatGPT in the context of implicit hateful speech research.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f2b0017ddd77fa38760a18145e63553105a1a236",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2301-13688",
+      "ArXiv": "2301.13688",
+      "DOI": "10.48550/arXiv.2301.13688",
+      "CorpusId": 256415991
+    },
+    "title": "The Flan Collection: Designing Data and Methods for Effective Instruction Tuning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 906,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.13688",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.13688, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "29909347",
+        "name": "S. Longpre"
+      },
+      {
+        "authorId": "2153400663",
+        "name": "Le Hou"
+      },
+      {
+        "authorId": "144244743",
+        "name": "Tu Vu"
+      },
+      {
+        "authorId": "1991019030",
+        "name": "Albert Webson"
+      },
+      {
+        "authorId": "3351938",
+        "name": "Hyung Won Chung"
+      },
+      {
+        "authorId": "144447820",
+        "name": "Yi Tay"
+      },
+      {
+        "authorId": "65855107",
+        "name": "Denny Zhou"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "119640649",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "145625142",
+        "name": "Adam Roberts"
+      }
+    ],
+    "abstract": "We study the design decisions of publicly available instruction tuning methods, and break down the development of Flan 2022 (Chung et al., 2022). Through careful ablation studies on the Flan Collection of tasks and methods, we tease apart the effect of design decisions which enable Flan-T5 to outperform prior work by 3-17%+ across evaluation settings. We find task balancing and enrichment techniques are overlooked but critical to effective instruction tuning, and in particular, training with mixed prompt settings (zero-shot, few-shot, and chain-of-thought) actually yields stronger (2%+) performance in all settings. In further experiments, we show Flan-T5 requires less finetuning to converge higher and faster than T5 on single downstream tasks, motivating instruction-tuned models as more computationally-efficient starting checkpoints for new tasks. Finally, to accelerate research on instruction tuning, we make the Flan 2022 collection of datasets, templates, and methods publicly available at https://github.com/google-research/FLAN/tree/main/flan/v2.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e65b346d442e9962a4276dc1c1af2956d9d5f1eb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-10560",
+      "ArXiv": "2212.10560",
+      "ACL": "2023.acl-long.754",
+      "DOI": "10.48550/arXiv.2212.10560",
+      "CorpusId": 254877310
+    },
+    "title": "Self-Instruct: Aligning Language Models with Self-Generated Instructions",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 3128,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2212.10560",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.10560, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1705260",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "2156538832",
+        "name": "Yeganeh Kordi"
+      },
+      {
+        "authorId": "1817207",
+        "name": "Swaroop Mishra"
+      },
+      {
+        "authorId": "94500147",
+        "name": "Alisa Liu"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "1783281",
+        "name": "Daniel Khashabi"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "Large “instruction-tuned” language models (i.e., finetuned to respond to instructions) have demonstrated a remarkable ability to generalize zero-shot to new tasks. Nevertheless, they depend heavily on human-written instruction data that is often limited in quantity, diversity, and creativity, therefore hindering the generality of the tuned model. We introduce Self-Instruct, a framework for improving the instruction-following capabilities of pretrained language models by bootstrapping off their own generations. Our pipeline generates instructions, input, and output samples from a language model, then filters invalid or similar ones before using them to finetune the original model. Applying our method to the vanilla GPT3, we demonstrate a 33% absolute improvement over the original model on Super-NaturalInstructions, on par with the performance of InstructGPT-001, which was trained with private user data and human annotations. For further evaluation, we curate a set of expert-written instructions for novel tasks, and show through human evaluation that tuning GPT3 with Self-Instruct outperforms using existing public instruction datasets by a large margin, leaving only a 5% absolute gap behind InstructGPT-001. Self-Instruct provides an almost annotation-free method for aligning pre-trained language models with instructions, and we release our large synthetic dataset to facilitate future studies on instruction tuning.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fa65e9eecf98dbd0a6a67fbd3fcc035de0badd6c",
+    "externalIds": {
+      "DBLP": "conf/acl/FengSX00T0L23",
+      "ACL": "2023.acl-long.405",
+      "ArXiv": "2211.05719",
+      "DOI": "10.48550/arXiv.2211.05719",
+      "CorpusId": 253447251
+    },
+    "title": "MMDialog: A Large-scale Multi-turn Dialogue Dataset Towards Multi-modal Open-domain Conversation",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 72,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2211.05719",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.05719, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "147062881",
+        "name": "Jiazhan Feng"
+      },
+      {
+        "authorId": "2112549330",
+        "name": "Qingfeng Sun"
+      },
+      {
+        "authorId": "46747953",
+        "name": "Can Xu"
+      },
+      {
+        "authorId": "2007757792",
+        "name": "Pu Zhao"
+      },
+      {
+        "authorId": "2322385900",
+        "name": "Yaming Yang"
+      },
+      {
+        "authorId": "8801869",
+        "name": "Chongyang Tao"
+      },
+      {
+        "authorId": "144060462",
+        "name": "Dongyan Zhao"
+      },
+      {
+        "authorId": "2793487",
+        "name": "Qingwei Lin"
+      }
+    ],
+    "abstract": "Responding with multi-modal content has been recognized as an essential capability for an intelligent conversational agent. In this paper, we introduce the MMDialog dataset to facilitate multi-modal conversation better. MMDialog is composed of a curated set of 1.08 million real-world dialogues with 1.53 million unique images across 4,184 topics. MMDialog has two main and unique advantages. First, it is the largest multi-modal conversation dataset by the number of dialogues by 88x. Second, it contains massive topics to generalize the open domain. To build an engaging dialogue system with this dataset, we propose and normalize two response prediction tasks based on retrieval and generative scenarios. In addition, we build two baselines for the above tasks with state-of-the-art techniques and report their experimental performance. We also propose a novel evaluation metric MM-Relevance to measure the multi-modal responses. Our dataset is available in https://github.com/victorsungo/MMDialog.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "bd1331b233e84bab7eba503abc60b31ac08e7881",
+    "externalIds": {
+      "ArXiv": "2206.04615",
+      "DBLP": "journals/corr/abs-2206-04615",
+      "CorpusId": 263625818
+    },
+    "title": "Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 2377,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.04615, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2169175069",
+        "name": "Aarohi Srivastava"
+      },
+      {
+        "authorId": "2188497",
+        "name": "Abhinav Rastogi"
+      },
+      {
+        "authorId": "1484043592",
+        "name": "Abhishek Rao"
+      },
+      {
+        "authorId": "2248610",
+        "name": "Abu Awal Md Shoeb"
+      },
+      {
+        "authorId": "144948925",
+        "name": "Abubakar Abid"
+      },
+      {
+        "authorId": "2064150446",
+        "name": "Adam Fisch"
+      },
+      {
+        "authorId": "2254150367",
+        "name": "Adam R. Brown"
+      },
+      {
+        "authorId": "2253463637",
+        "name": "Adam Santoro"
+      },
+      {
+        "authorId": "2254858472",
+        "name": "Aditya Gupta"
+      },
+      {
+        "authorId": "1388513000",
+        "name": "Adrià Garriga-Alonso"
+      },
+      {
+        "authorId": "2169552920",
+        "name": "Agnieszka Kluska"
+      },
+      {
+        "authorId": "102549875",
+        "name": "Aitor Lewkowycz"
+      },
+      {
+        "authorId": "2253472327",
+        "name": "Akshat Agarwal"
+      },
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "2253525058",
+        "name": "A. Ray"
+      },
+      {
+        "authorId": "46236380",
+        "name": "Alex Warstadt"
+      },
+      {
+        "authorId": "49502890",
+        "name": "Alexander W. Kocurek"
+      },
+      {
+        "authorId": "150920423",
+        "name": "Ali Safaya"
+      },
+      {
+        "authorId": "30615457",
+        "name": "Ali Tazarv"
+      },
+      {
+        "authorId": "2253627565",
+        "name": "Alice Xiang"
+      },
+      {
+        "authorId": "119389860",
+        "name": "Alicia Parrish"
+      },
+      {
+        "authorId": "2253756381",
+        "name": "Allen Nie"
+      },
+      {
+        "authorId": "2254089780",
+        "name": "Aman Hussain"
+      },
+      {
+        "authorId": "2220750220",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2169546807",
+        "name": "A. Dsouza"
+      },
+      {
+        "authorId": "133666998",
+        "name": "Ambrose Slone"
+      },
+      {
+        "authorId": "1397271551",
+        "name": "Ameet Rahane"
+      },
+      {
+        "authorId": "2169441753",
+        "name": "Anantharaman S. Iyer"
+      },
+      {
+        "authorId": "39552848",
+        "name": "Anders Andreassen"
+      },
+      {
+        "authorId": "3064807",
+        "name": "Andrea Madotto"
+      },
+      {
+        "authorId": "2065039862",
+        "name": "Andrea Santilli"
+      },
+      {
+        "authorId": "2169579494",
+        "name": "Andreas Stuhlmuller"
+      },
+      {
+        "authorId": "2253757717",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2253744892",
+        "name": "A. La"
+      },
+      {
+        "authorId": "32322945",
+        "name": "Andrew Kyle Lampinen"
+      },
+      {
+        "authorId": "1380103052",
+        "name": "Andy Zou"
+      },
+      {
+        "authorId": "2253471334",
+        "name": "Angela Jiang"
+      },
+      {
+        "authorId": "13336152",
+        "name": "Angelica Chen"
+      },
+      {
+        "authorId": "2064058890",
+        "name": "Anh Vuong"
+      },
+      {
+        "authorId": "2110763559",
+        "name": "Animesh Gupta"
+      },
+      {
+        "authorId": "1411423941",
+        "name": "Anna Gottardi"
+      },
+      {
+        "authorId": "1596822208",
+        "name": "Antonio Norelli"
+      },
+      {
+        "authorId": "47851456",
+        "name": "Anu Venkatesh"
+      },
+      {
+        "authorId": "1396646913",
+        "name": "Arash Gholamidavoodi"
+      },
+      {
+        "authorId": "2265068115",
+        "name": "A. Tabassum"
+      },
+      {
+        "authorId": "2253477913",
+        "name": "Arul Menezes"
+      },
+      {
+        "authorId": "1417449913",
+        "name": "Arun Kirubarajan"
+      },
+      {
+        "authorId": "3567738",
+        "name": "A. Mullokandov"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      },
+      {
+        "authorId": "103829114",
+        "name": "Austin Herrick"
+      },
+      {
+        "authorId": "1388010852",
+        "name": "Avia Efrat"
+      },
+      {
+        "authorId": "2253752451",
+        "name": "Aykut Erdem"
+      },
+      {
+        "authorId": "2169560863",
+        "name": "Ayla Karakacs"
+      },
+      {
+        "authorId": "2253506707",
+        "name": "B. R. Roberts"
+      },
+      {
+        "authorId": "25229391",
+        "name": "B. S. Loe"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "2169579430",
+        "name": "Bartlomiej Bojanowski"
+      },
+      {
+        "authorId": "2169579156",
+        "name": "Batuhan Ozyurt"
+      },
+      {
+        "authorId": "2127328167",
+        "name": "Behnam Hedayatnia"
+      },
+      {
+        "authorId": "3007442",
+        "name": "Behnam Neyshabur"
+      },
+      {
+        "authorId": "2911198",
+        "name": "Benjamin Inden"
+      },
+      {
+        "authorId": "1405867539",
+        "name": "Benno Stein"
+      },
+      {
+        "authorId": "3407537",
+        "name": "Berk Ekmekci"
+      },
+      {
+        "authorId": "51583409",
+        "name": "Bill Yuchen Lin"
+      },
+      {
+        "authorId": "1759660",
+        "name": "B. Howald"
+      },
+      {
+        "authorId": "2253742181",
+        "name": "Bryan Orinion"
+      },
+      {
+        "authorId": "2113828270",
+        "name": "Cameron Diao"
+      },
+      {
+        "authorId": "2169579131",
+        "name": "Cameron Dour"
+      },
+      {
+        "authorId": "2253742142",
+        "name": "Catherine Stinson"
+      },
+      {
+        "authorId": "2080698457",
+        "name": "Cedrick Argueta"
+      },
+      {
+        "authorId": "2169282994",
+        "name": "C'esar Ferri Ram'irez"
+      },
+      {
+        "authorId": "2253649838",
+        "name": "Chandan Singh"
+      },
+      {
+        "authorId": "2310228872",
+        "name": "Charles Rathkopf"
+      },
+      {
+        "authorId": "83262128",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "2064619864",
+        "name": "Chitta Baral"
+      },
+      {
+        "authorId": "2115397918",
+        "name": "Chiyu Wu"
+      },
+      {
+        "authorId": "1763608",
+        "name": "Chris Callison-Burch"
+      },
+      {
+        "authorId": "1451646307",
+        "name": "Chris Waites"
+      },
+      {
+        "authorId": "2253721294",
+        "name": "Christian Voigt"
+      },
+      {
+        "authorId": "2250402802",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "2253742954",
+        "name": "Christopher Potts"
+      },
+      {
+        "authorId": "1381594105",
+        "name": "Cindy Ramirez"
+      },
+      {
+        "authorId": "2253680456",
+        "name": "Clara E. Rivera"
+      },
+      {
+        "authorId": "2056776870",
+        "name": "Clemencia Siro"
+      },
+      {
+        "authorId": "2402716",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "2169255641",
+        "name": "Courtney Ashcraft"
+      },
+      {
+        "authorId": "3360992",
+        "name": "Cristina Garbacea"
+      },
+      {
+        "authorId": "2311890249",
+        "name": "Damien Sileo"
+      },
+      {
+        "authorId": "2758616",
+        "name": "Dan Garrette"
+      },
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "2051801993",
+        "name": "D. Kilman"
+      },
+      {
+        "authorId": "2249759427",
+        "name": "Dan Roth"
+      },
+      {
+        "authorId": "2253572738",
+        "name": "Daniel Freeman"
+      },
+      {
+        "authorId": "1783281",
+        "name": "Daniel Khashabi"
+      },
+      {
+        "authorId": "2052679852",
+        "name": "Daniel Levy"
+      },
+      {
+        "authorId": "1802312462",
+        "name": "D. Gonz'alez"
+      },
+      {
+        "authorId": "6472480",
+        "name": "Danielle R. Perszyk"
+      },
+      {
+        "authorId": "39182747",
+        "name": "Danny Hernandez"
+      },
+      {
+        "authorId": "2255489905",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "7975935",
+        "name": "Daphne Ippolito"
+      },
+      {
+        "authorId": "2343272216",
+        "name": "Dar Gilboa"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "97501513",
+        "name": "D. Drakard"
+      },
+      {
+        "authorId": "3046220",
+        "name": "David Jurgens"
+      },
+      {
+        "authorId": "2852125",
+        "name": "Debajyoti Datta"
+      },
+      {
+        "authorId": "2081806483",
+        "name": "Deep Ganguli"
+      },
+      {
+        "authorId": "51889641",
+        "name": "Denis Emelin"
+      },
+      {
+        "authorId": "2193599771",
+        "name": "Denis Kleyko"
+      },
+      {
+        "authorId": "2253742671",
+        "name": "Deniz Yuret"
+      },
+      {
+        "authorId": "2253841704",
+        "name": "Derek Chen"
+      },
+      {
+        "authorId": "1390031652",
+        "name": "Derek Tam"
+      },
+      {
+        "authorId": "3449411",
+        "name": "Dieuwke Hupkes"
+      },
+      {
+        "authorId": "2253641873",
+        "name": "Diganta Misra"
+      },
+      {
+        "authorId": "2169553550",
+        "name": "Dilyar Buzan"
+      },
+      {
+        "authorId": "51127600",
+        "name": "Dimitri Coelho Mollo"
+      },
+      {
+        "authorId": "2254124345",
+        "name": "Diyi Yang"
+      },
+      {
+        "authorId": "2253883759",
+        "name": "Dong-Ho Lee"
+      },
+      {
+        "authorId": "2253751766",
+        "name": "Dylan Schrader"
+      },
+      {
+        "authorId": "2362276",
+        "name": "Ekaterina Shutova"
+      },
+      {
+        "authorId": "8132903",
+        "name": "E. D. Cubuk"
+      },
+      {
+        "authorId": "153401294",
+        "name": "Elad Segal"
+      },
+      {
+        "authorId": "83195245",
+        "name": "Eleanor Hagerman"
+      },
+      {
+        "authorId": "2057742918",
+        "name": "Elizabeth Barnes"
+      },
+      {
+        "authorId": "2339361939",
+        "name": "Elizabeth Donoway"
+      },
+      {
+        "authorId": "2949185",
+        "name": "Ellie Pavlick"
+      },
+      {
+        "authorId": "2257170785",
+        "name": "E. Rodolà"
+      },
+      {
+        "authorId": "2253753565",
+        "name": "Emma Lam"
+      },
+      {
+        "authorId": "2253520497",
+        "name": "Eric Chu"
+      },
+      {
+        "authorId": "2090511698",
+        "name": "Eric Tang"
+      },
+      {
+        "authorId": "152330322",
+        "name": "Erkut Erdem"
+      },
+      {
+        "authorId": "48025720",
+        "name": "Ernie Chang"
+      },
+      {
+        "authorId": "2253469028",
+        "name": "Ethan A. Chi"
+      },
+      {
+        "authorId": "52136425",
+        "name": "Ethan Dyer"
+      },
+      {
+        "authorId": "87911177",
+        "name": "E. Jerzak"
+      },
+      {
+        "authorId": "2047591327",
+        "name": "Ethan Kim"
+      },
+      {
+        "authorId": "102184064",
+        "name": "Eunice Engefu Manyasi"
+      },
+      {
+        "authorId": "23913513",
+        "name": "Evgenii Zheltonozhskii"
+      },
+      {
+        "authorId": "2253581486",
+        "name": "Fanyue Xia"
+      },
+      {
+        "authorId": "16851583",
+        "name": "Fatemeh Siar"
+      },
+      {
+        "authorId": "2126497260",
+        "name": "Fernando Mart'inez-Plumed"
+      },
+      {
+        "authorId": "2169302468",
+        "name": "Francesca Happ'e"
+      },
+      {
+        "authorId": "1565641737",
+        "name": "François Chollet"
+      },
+      {
+        "authorId": "2047004093",
+        "name": "Frieda Rong"
+      },
+      {
+        "authorId": "2159632445",
+        "name": "Gaurav Mishra"
+      },
+      {
+        "authorId": "9162688",
+        "name": "Genta Indra Winata"
+      },
+      {
+        "authorId": "144608002",
+        "name": "Gerard de Melo"
+      },
+      {
+        "authorId": "2067996",
+        "name": "Germán Kruszewski"
+      },
+      {
+        "authorId": "50213542",
+        "name": "Giambattista Parascandolo"
+      },
+      {
+        "authorId": "2253744058",
+        "name": "Giorgio Mariani"
+      },
+      {
+        "authorId": "2143229090",
+        "name": "Gloria Xinyue Wang"
+      },
+      {
+        "authorId": "2169561208",
+        "name": "Gonzalo Jaimovitch-L'opez"
+      },
+      {
+        "authorId": "2253742347",
+        "name": "Gregor Betz"
+      },
+      {
+        "authorId": "2284681044",
+        "name": "Guy Gur-Ari"
+      },
+      {
+        "authorId": "2148236997",
+        "name": "Hana Galijasevic"
+      },
+      {
+        "authorId": "2254029693",
+        "name": "Hannah Kim"
+      },
+      {
+        "authorId": "2516777",
+        "name": "Hannah Rashkin"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "18138802",
+        "name": "Harsh Mehta"
+      },
+      {
+        "authorId": "81356189",
+        "name": "H. Bogar"
+      },
+      {
+        "authorId": "66652934",
+        "name": "Henry Shevlin"
+      },
+      {
+        "authorId": "2328410308",
+        "name": "Hinrich Schutze"
+      },
+      {
+        "authorId": "2252055381",
+        "name": "H. Yakura"
+      },
+      {
+        "authorId": "2253956610",
+        "name": "Hongming Zhang"
+      },
+      {
+        "authorId": "2084554416",
+        "name": "Hugh Mee Wong"
+      },
+      {
+        "authorId": "2175479575",
+        "name": "Ian Ng"
+      },
+      {
+        "authorId": "146990369",
+        "name": "Isaac Noble"
+      },
+      {
+        "authorId": "2253757620",
+        "name": "Jaap Jumelet"
+      },
+      {
+        "authorId": "67288781",
+        "name": "Jack Geissinger"
+      },
+      {
+        "authorId": "1583434563",
+        "name": "John Kernion"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2253808003",
+        "name": "Jaehoon Lee"
+      },
+      {
+        "authorId": "1843342",
+        "name": "J. Fisac"
+      },
+      {
+        "authorId": "2253938438",
+        "name": "James B. Simon"
+      },
+      {
+        "authorId": "39465522",
+        "name": "James Koppel"
+      },
+      {
+        "authorId": "2254106317",
+        "name": "James Zheng"
+      },
+      {
+        "authorId": "2240530524",
+        "name": "James Zou"
+      },
+      {
+        "authorId": "2169553526",
+        "name": "Jan Koco'n"
+      },
+      {
+        "authorId": "2148444557",
+        "name": "Jana Thompson"
+      },
+      {
+        "authorId": "2253742801",
+        "name": "Janelle Wingfield"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      },
+      {
+        "authorId": "2133262330",
+        "name": "J. Radom"
+      },
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "80842917",
+        "name": "Jason Phang"
+      },
+      {
+        "authorId": "2253952872",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "2965424",
+        "name": "J. Yosinski"
+      },
+      {
+        "authorId": "2848048",
+        "name": "Jekaterina Novikova"
+      },
+      {
+        "authorId": "2169562378",
+        "name": "Jelle Bosscher"
+      },
+      {
+        "authorId": "2253582254",
+        "name": "J. Marsh"
+      },
+      {
+        "authorId": "2253951784",
+        "name": "Jeremy Kim"
+      },
+      {
+        "authorId": "2169553864",
+        "name": "Jeroen Taal"
+      },
+      {
+        "authorId": "2253555236",
+        "name": "Jesse Engel"
+      },
+      {
+        "authorId": "122367036",
+        "name": "Jesujoba Oluwadara Alabi"
+      },
+      {
+        "authorId": "2254142854",
+        "name": "Jiacheng Xu"
+      },
+      {
+        "authorId": "2250159648",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "82706161",
+        "name": "Jillian Tang"
+      },
+      {
+        "authorId": "147175687",
+        "name": "Jane W Waweru"
+      },
+      {
+        "authorId": "31502027",
+        "name": "John Burden"
+      },
+      {
+        "authorId": "2253928282",
+        "name": "John Miller"
+      },
+      {
+        "authorId": "2075220382",
+        "name": "John U. Balis"
+      },
+      {
+        "authorId": "2253742887",
+        "name": "Jonathan Batchelder"
+      },
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      },
+      {
+        "authorId": "2146695800",
+        "name": "Jorg Frohberg"
+      },
+      {
+        "authorId": "120419790",
+        "name": "Jos Rozen"
+      },
+      {
+        "authorId": "1398777358",
+        "name": "J. Hernández-Orallo"
+      },
+      {
+        "authorId": "2169583246",
+        "name": "Joseph Boudeman"
+      },
+      {
+        "authorId": "2253742339",
+        "name": "J. Guerr"
+      },
+      {
+        "authorId": "2169419125",
+        "name": "Joseph Jones"
+      },
+      {
+        "authorId": "2250220321",
+        "name": "Joshua B. Tenenbaum"
+      },
+      {
+        "authorId": "38219739",
+        "name": "Joshua S. Rule"
+      },
+      {
+        "authorId": "119803865",
+        "name": "Joyce Chua"
+      },
+      {
+        "authorId": "2007286374",
+        "name": "Kamil Kanclerz"
+      },
+      {
+        "authorId": "2924113",
+        "name": "Karen Livescu"
+      },
+      {
+        "authorId": "48778049",
+        "name": "K. Krauth"
+      },
+      {
+        "authorId": "145916630",
+        "name": "Karthik Gopalakrishnan"
+      },
+      {
+        "authorId": "2169583196",
+        "name": "Katerina Ignatyeva"
+      },
+      {
+        "authorId": "2253742520",
+        "name": "K. Markert"
+      },
+      {
+        "authorId": "4834571",
+        "name": "Kaustubh D. Dhole"
+      },
+      {
+        "authorId": "1700980",
+        "name": "Kevin Gimpel"
+      },
+      {
+        "authorId": "98151280",
+        "name": "K. Omondi"
+      },
+      {
+        "authorId": "2034344309",
+        "name": "K. Mathewson"
+      },
+      {
+        "authorId": "2169579399",
+        "name": "Kristen Chiafullo"
+      },
+      {
+        "authorId": "94055272",
+        "name": "Ksenia Shkaruta"
+      },
+      {
+        "authorId": "50812160",
+        "name": "Kumar Shridhar"
+      },
+      {
+        "authorId": "2049410219",
+        "name": "Kyle McDonell"
+      },
+      {
+        "authorId": "46666605",
+        "name": "Kyle Richardson"
+      },
+      {
+        "authorId": "2049583158",
+        "name": "Laria Reynolds"
+      },
+      {
+        "authorId": "2027599537",
+        "name": "Leo Gao"
+      },
+      {
+        "authorId": "72436283",
+        "name": "Li Zhang"
+      },
+      {
+        "authorId": "83863037",
+        "name": "Liam Dugan"
+      },
+      {
+        "authorId": "3444092",
+        "name": "Lianhui Qin"
+      },
+      {
+        "authorId": "1572944977",
+        "name": "Lidia Contreras-Ochando"
+      },
+      {
+        "authorId": "49933077",
+        "name": "Louis-philippe Morency"
+      },
+      {
+        "authorId": "2253396046",
+        "name": "Luca Moschella"
+      },
+      {
+        "authorId": "134309836",
+        "name": "Luca Lam"
+      },
+      {
+        "authorId": "2253759995",
+        "name": "Lucy Noble"
+      },
+      {
+        "authorId": "2253541812",
+        "name": "Ludwig Schmidt"
+      },
+      {
+        "authorId": "2253917827",
+        "name": "Luheng He"
+      },
+      {
+        "authorId": "2169579445",
+        "name": "Luis Oliveros Col'on"
+      },
+      {
+        "authorId": "2096458",
+        "name": "Luke Metz"
+      },
+      {
+        "authorId": "2126865294",
+        "name": "Lutfi Kerem cSenel"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "2729164",
+        "name": "Maarten Sap"
+      },
+      {
+        "authorId": "41096186",
+        "name": "Maartje ter Hoeve"
+      },
+      {
+        "authorId": "77751476",
+        "name": "Maheen Farooqi"
+      },
+      {
+        "authorId": "1779225",
+        "name": "Manaal Faruqui"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "2169579697",
+        "name": "Marco Baturan"
+      },
+      {
+        "authorId": "2202507568",
+        "name": "Marco Marelli"
+      },
+      {
+        "authorId": "1388826344",
+        "name": "Marco Maru"
+      },
+      {
+        "authorId": "2253743804",
+        "name": "Maria Jose Ram’irez Quintana"
+      },
+      {
+        "authorId": "46445780",
+        "name": "M. Tolkiehn"
+      },
+      {
+        "authorId": "24068173",
+        "name": "Mario Giulianelli"
+      },
+      {
+        "authorId": "2253999321",
+        "name": "Martha Lewis"
+      },
+      {
+        "authorId": "3046200",
+        "name": "Martin Potthast"
+      },
+      {
+        "authorId": "2240527814",
+        "name": "Matthew L. Leavitt"
+      },
+      {
+        "authorId": "145072133",
+        "name": "Matthias Hagen"
+      },
+      {
+        "authorId": "2072397293",
+        "name": "M. Schubert"
+      },
+      {
+        "authorId": "2399139",
+        "name": "Medina Baitemirova"
+      },
+      {
+        "authorId": "2253743368",
+        "name": "Melody Arnaud"
+      },
+      {
+        "authorId": "1410273721",
+        "name": "M. McElrath"
+      },
+      {
+        "authorId": "2253753325",
+        "name": "Michael A. Yee"
+      },
+      {
+        "authorId": "2253473243",
+        "name": "M. Cohen"
+      },
+      {
+        "authorId": "2253764442",
+        "name": "Michael Gu"
+      },
+      {
+        "authorId": "51260702",
+        "name": "Michael Ivanitskiy"
+      },
+      {
+        "authorId": "2169579231",
+        "name": "Michael Starritt"
+      },
+      {
+        "authorId": "2253690372",
+        "name": "M. Strube"
+      },
+      {
+        "authorId": "2169561132",
+        "name": "Michal Swkedrowski"
+      },
+      {
+        "authorId": "2253475117",
+        "name": "Michele Bevilacqua"
+      },
+      {
+        "authorId": "19168196",
+        "name": "Michihiro Yasunaga"
+      },
+      {
+        "authorId": "26688118",
+        "name": "Mihir Kale"
+      },
+      {
+        "authorId": "2253762090",
+        "name": "Mike Cain"
+      },
+      {
+        "authorId": "2254456411",
+        "name": "Mimee Xu"
+      },
+      {
+        "authorId": "51903517",
+        "name": "Mirac Suzgun"
+      },
+      {
+        "authorId": "2253473026",
+        "name": "Mitch Walker"
+      },
+      {
+        "authorId": "2074227875",
+        "name": "Monica Tiwari"
+      },
+      {
+        "authorId": "2253762115",
+        "name": "Mohit Bansal"
+      },
+      {
+        "authorId": "2035522904",
+        "name": "Moin Aminnaseri"
+      },
+      {
+        "authorId": "22245981",
+        "name": "Mor Geva"
+      },
+      {
+        "authorId": "151114702",
+        "name": "Mozhdeh Gheini"
+      },
+      {
+        "authorId": "2007825839",
+        "name": "T. MukundVarma"
+      },
+      {
+        "authorId": "2253599901",
+        "name": "Nanyun Peng"
+      },
+      {
+        "authorId": "2253474896",
+        "name": "Nathan A. Chi"
+      },
+      {
+        "authorId": "40221187",
+        "name": "Nayeon Lee"
+      },
+      {
+        "authorId": "2169562637",
+        "name": "Neta Gur-Ari Krakover"
+      },
+      {
+        "authorId": "2070244342",
+        "name": "Nicholas Cameron"
+      },
+      {
+        "authorId": "2253607509",
+        "name": "Nicholas Roberts"
+      },
+      {
+        "authorId": "2249758958",
+        "name": "Nick Doiron"
+      },
+      {
+        "authorId": "2253719808",
+        "name": "Nicole Martinez"
+      },
+      {
+        "authorId": "10666396",
+        "name": "Nikita Nangia"
+      },
+      {
+        "authorId": "40015417",
+        "name": "Niklas Deckers"
+      },
+      {
+        "authorId": "2037383772",
+        "name": "Niklas Muennighoff"
+      },
+      {
+        "authorId": "2844898",
+        "name": "N. Keskar"
+      },
+      {
+        "authorId": "2121286996",
+        "name": "Niveditha Iyer"
+      },
+      {
+        "authorId": "40832517",
+        "name": "Noah Constant"
+      },
+      {
+        "authorId": "22640071",
+        "name": "Noah Fiedel"
+      },
+      {
+        "authorId": "2253657042",
+        "name": "Nuan Wen"
+      },
+      {
+        "authorId": "2253742723",
+        "name": "Oliver Zhang"
+      },
+      {
+        "authorId": "2138307026",
+        "name": "Omar Agha"
+      },
+      {
+        "authorId": "2169583261",
+        "name": "Omar Elbaghdadi"
+      },
+      {
+        "authorId": "2253752918",
+        "name": "Omer Levy"
+      },
+      {
+        "authorId": "47107786",
+        "name": "Owain Evans"
+      },
+      {
+        "authorId": "145163583",
+        "name": "Pablo Antonio Moreno Casares"
+      },
+      {
+        "authorId": "1453712240",
+        "name": "P. Doshi"
+      },
+      {
+        "authorId": "40539650",
+        "name": "Pascale Fung"
+      },
+      {
+        "authorId": "28130078",
+        "name": "P. Liang"
+      },
+      {
+        "authorId": "2039154",
+        "name": "Paul Vicol"
+      },
+      {
+        "authorId": null,
+        "name": "Pegah Alipoormolabashi"
+      },
+      {
+        "authorId": "2253656797",
+        "name": "Peiyuan Liao"
+      },
+      {
+        "authorId": "2249641250",
+        "name": "Percy Liang"
+      },
+      {
+        "authorId": "2113642717",
+        "name": "Peter Chang"
+      },
+      {
+        "authorId": "2654106",
+        "name": "P. Eckersley"
+      },
+      {
+        "authorId": "41022736",
+        "name": "Phu Mon Htut"
+      },
+      {
+        "authorId": "46221673",
+        "name": "P. Hwang"
+      },
+      {
+        "authorId": "1413772109",
+        "name": "P. Milkowski"
+      },
+      {
+        "authorId": "2414098",
+        "name": "P. Patil"
+      },
+      {
+        "authorId": "1713436",
+        "name": "Pouya Pezeshkpour"
+      },
+      {
+        "authorId": "2051972539",
+        "name": "Priti Oli"
+      },
+      {
+        "authorId": "2286285875",
+        "name": "Qiaozhu Mei"
+      },
+      {
+        "authorId": "1904906987",
+        "name": "Qing Lyu"
+      },
+      {
+        "authorId": "2256591945",
+        "name": "Qinlang Chen"
+      },
+      {
+        "authorId": "2004401966",
+        "name": "Rabin Banjade"
+      },
+      {
+        "authorId": "2238019263",
+        "name": "Rachel Etta Rudolph"
+      },
+      {
+        "authorId": "39303368",
+        "name": "Raefer Gabriel"
+      },
+      {
+        "authorId": "2169583577",
+        "name": "Rahel Habacker"
+      },
+      {
+        "authorId": "2253742845",
+        "name": "Ramon Risco"
+      },
+      {
+        "authorId": "2249763478",
+        "name": "Raphael Milliere"
+      },
+      {
+        "authorId": "144914264",
+        "name": "Rhythm Garg"
+      },
+      {
+        "authorId": "2056119463",
+        "name": "Richard Barnes"
+      },
+      {
+        "authorId": "2278009",
+        "name": "R. Saurous"
+      },
+      {
+        "authorId": "83976651",
+        "name": "Riku Arakawa"
+      },
+      {
+        "authorId": "2143515065",
+        "name": "Robbe Raymaekers"
+      },
+      {
+        "authorId": "2253563490",
+        "name": "Robert Frank"
+      },
+      {
+        "authorId": "2169583539",
+        "name": "Rohan Sikand"
+      },
+      {
+        "authorId": "39068839",
+        "name": "Roman Novak"
+      },
+      {
+        "authorId": "2143205525",
+        "name": "Roman Sitelew"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "48757909",
+        "name": "Rosanne Liu"
+      },
+      {
+        "authorId": "2169442080",
+        "name": "Rowan Jacobs"
+      },
+      {
+        "authorId": "2255464042",
+        "name": "Rui Zhang"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      },
+      {
+        "authorId": "2121293578",
+        "name": "Ryan Chi"
+      },
+      {
+        "authorId": "2110680870",
+        "name": "Ryan Lee"
+      },
+      {
+        "authorId": "2096414946",
+        "name": "Ryan Stovall"
+      },
+      {
+        "authorId": "2131107966",
+        "name": "R. Teehan"
+      },
+      {
+        "authorId": "2170120947",
+        "name": "Rylan Yang"
+      },
+      {
+        "authorId": "2256771265",
+        "name": "Sahib Singh"
+      },
+      {
+        "authorId": "2253519805",
+        "name": "Saif Mohammad"
+      },
+      {
+        "authorId": "51177395",
+        "name": "Sajant Anand"
+      },
+      {
+        "authorId": "14149388",
+        "name": "Sam Dillavou"
+      },
+      {
+        "authorId": "88728159",
+        "name": "Sam Shleifer"
+      },
+      {
+        "authorId": "2844243",
+        "name": "Sam Wiseman"
+      },
+      {
+        "authorId": "46173414",
+        "name": "Samuel Gruetter"
+      },
+      {
+        "authorId": "2137213671",
+        "name": "Samuel R. Bowman"
+      },
+      {
+        "authorId": "2601641",
+        "name": "S. Schoenholz"
+      },
+      {
+        "authorId": "2254097408",
+        "name": "Sanghyun Han"
+      },
+      {
+        "authorId": "1412838170",
+        "name": "Sanjeev Kwatra"
+      },
+      {
+        "authorId": "121266477",
+        "name": "Sarah A. Rous"
+      },
+      {
+        "authorId": "3022427",
+        "name": "Sarik Ghazarian"
+      },
+      {
+        "authorId": "2143032877",
+        "name": "Sayan Ghosh"
+      },
+      {
+        "authorId": "2253475225",
+        "name": "Sean Casey"
+      },
+      {
+        "authorId": "32306415",
+        "name": "Sebastian Bischoff"
+      },
+      {
+        "authorId": "3159346",
+        "name": "Sebastian Gehrmann"
+      },
+      {
+        "authorId": "2067227206",
+        "name": "Sebastian Schuster"
+      },
+      {
+        "authorId": "2162733",
+        "name": "Sepideh Sadeghi"
+      },
+      {
+        "authorId": "1832987156",
+        "name": "Shadi S. Hamdan"
+      },
+      {
+        "authorId": "2111057669",
+        "name": "Sharon Zhou"
+      },
+      {
+        "authorId": "2253588064",
+        "name": "Shashank Srivastava"
+      },
+      {
+        "authorId": "2113258914",
+        "name": "Sherry Shi"
+      },
+      {
+        "authorId": "2108410562",
+        "name": "Shikhar Singh"
+      },
+      {
+        "authorId": "30462410",
+        "name": "Shima Asaadi"
+      },
+      {
+        "authorId": "2253699903",
+        "name": "S. Gu"
+      },
+      {
+        "authorId": "2169561291",
+        "name": "Shubh Pachchigar"
+      },
+      {
+        "authorId": "2634203",
+        "name": "Shubham Toshniwal"
+      },
+      {
+        "authorId": "33145619",
+        "name": "Shyam Upadhyay"
+      },
+      {
+        "authorId": "2169422265",
+        "name": "Shyamolima Debnath"
+      },
+      {
+        "authorId": "2944868",
+        "name": "Siamak Shakeri"
+      },
+      {
+        "authorId": "2169583327",
+        "name": "Simon Thormeyer"
+      },
+      {
+        "authorId": "1972186",
+        "name": "S. Melzi"
+      },
+      {
+        "authorId": "2256152032",
+        "name": "Siva Reddy"
+      },
+      {
+        "authorId": "118798524",
+        "name": "S. Makini"
+      },
+      {
+        "authorId": "2255599173",
+        "name": "Soo-Hwan Lee"
+      },
+      {
+        "authorId": "5910521",
+        "name": "Spencer Bradley Torene"
+      },
+      {
+        "authorId": "1659275411",
+        "name": "Sriharsha Hatwar"
+      },
+      {
+        "authorId": "2250013696",
+        "name": "S. Dehaene"
+      },
+      {
+        "authorId": "102987414",
+        "name": "Stefan Divic"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "103476203",
+        "name": "Stella Biderman"
+      },
+      {
+        "authorId": "2253840098",
+        "name": "Stephanie L. Lin"
+      },
+      {
+        "authorId": "2253781922",
+        "name": "Stephen Prasad"
+      },
+      {
+        "authorId": "2238331992",
+        "name": "Steven T Piantadosi"
+      },
+      {
+        "authorId": "1692491",
+        "name": "Stuart M. Shieber"
+      },
+      {
+        "authorId": "2169554101",
+        "name": "Summer Misherghi"
+      },
+      {
+        "authorId": "2886725",
+        "name": "Svetlana Kiritchenko"
+      },
+      {
+        "authorId": "1817207",
+        "name": "Swaroop Mishra"
+      },
+      {
+        "authorId": "51223875",
+        "name": "Tal Linzen"
+      },
+      {
+        "authorId": "32303439",
+        "name": "Tal Schuster"
+      },
+      {
+        "authorId": "2149201962",
+        "name": "Tao Li"
+      },
+      {
+        "authorId": "2256865416",
+        "name": "T. Yu"
+      },
+      {
+        "authorId": "2253522954",
+        "name": "Tariq Ali"
+      },
+      {
+        "authorId": "2253575091",
+        "name": "Tatsunori Hashimoto"
+      },
+      {
+        "authorId": "2134514770",
+        "name": "Te-Lin Wu"
+      },
+      {
+        "authorId": "88367918",
+        "name": "T. Desbordes"
+      },
+      {
+        "authorId": "2169561552",
+        "name": "Theodore Rothschild"
+      },
+      {
+        "authorId": "145127341",
+        "name": "Thomas Phan"
+      },
+      {
+        "authorId": "2255375735",
+        "name": "Tianle Wang"
+      },
+      {
+        "authorId": "101592141",
+        "name": "Tiberius Nkinyili"
+      },
+      {
+        "authorId": "32246932",
+        "name": "Timo Schick"
+      },
+      {
+        "authorId": "98873736",
+        "name": "T. Kornev"
+      },
+      {
+        "authorId": "2169579934",
+        "name": "T. Tunduny"
+      },
+      {
+        "authorId": "2697953",
+        "name": "Tobias Gerstenberg"
+      },
+      {
+        "authorId": "2107372733",
+        "name": "T. Chang"
+      },
+      {
+        "authorId": "10729963",
+        "name": "Trishala Neeraj"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "2253757587",
+        "name": "Tyler Shultz"
+      },
+      {
+        "authorId": "50482645",
+        "name": "Uri Shaham"
+      },
+      {
+        "authorId": "40055795",
+        "name": "Vedant Misra"
+      },
+      {
+        "authorId": "2373007748",
+        "name": "Vera Demberg"
+      },
+      {
+        "authorId": "2169580169",
+        "name": "Victoria Nyamai"
+      },
+      {
+        "authorId": "24025563",
+        "name": "Vikas Raunak"
+      },
+      {
+        "authorId": "96641652",
+        "name": "V. Ramasesh"
+      },
+      {
+        "authorId": "2670978",
+        "name": "Vinay Uday Prabhu"
+      },
+      {
+        "authorId": "2044959912",
+        "name": "Vishakh Padmakumar"
+      },
+      {
+        "authorId": "3052879",
+        "name": "Vivek Srikumar"
+      },
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      },
+      {
+        "authorId": "2058848938",
+        "name": "W. Saunders"
+      },
+      {
+        "authorId": "2115212355",
+        "name": "William Zhang"
+      },
+      {
+        "authorId": "2143514461",
+        "name": "Wout Vossen"
+      },
+      {
+        "authorId": "2256826104",
+        "name": "Xiang Ren"
+      },
+      {
+        "authorId": "2253762061",
+        "name": "Xiaoyu Tong"
+      },
+      {
+        "authorId": "1500662261",
+        "name": "Xinran Zhao"
+      },
+      {
+        "authorId": "2255396948",
+        "name": "Xinyi Wu"
+      },
+      {
+        "authorId": "2144058688",
+        "name": "Xudong Shen"
+      },
+      {
+        "authorId": "3261470",
+        "name": "Yadollah Yaghoobzadeh"
+      },
+      {
+        "authorId": "3051598",
+        "name": "Yair Lakretz"
+      },
+      {
+        "authorId": "2258804099",
+        "name": "Yangqiu Song"
+      },
+      {
+        "authorId": "12383244",
+        "name": "Yasaman Bahri"
+      },
+      {
+        "authorId": "2253903625",
+        "name": "Yejin Choi"
+      },
+      {
+        "authorId": "2108652034",
+        "name": "Yichi Yang"
+      },
+      {
+        "authorId": "2256343174",
+        "name": "Yiding Hao"
+      },
+      {
+        "authorId": "2253813584",
+        "name": "Yifu Chen"
+      },
+      {
+        "authorId": "2083259",
+        "name": "Yonatan Belinkov"
+      },
+      {
+        "authorId": "2118739951",
+        "name": "Yu Hou"
+      },
+      {
+        "authorId": "2118739951",
+        "name": "Yu Hou"
+      },
+      {
+        "authorId": "1486307451",
+        "name": "Yuntao Bai"
+      },
+      {
+        "authorId": "2169561434",
+        "name": "Zachary Seid"
+      },
+      {
+        "authorId": "2254023165",
+        "name": "Zhuoye Zhao"
+      },
+      {
+        "authorId": "37571937",
+        "name": "Zijian Wang"
+      },
+      {
+        "authorId": "1390877819",
+        "name": "Zijie J. Wang"
+      },
+      {
+        "authorId": "2257550085",
+        "name": "Zirui Wang"
+      },
+      {
+        "authorId": "2253894469",
+        "name": "Ziyi Wu"
+      }
+    ],
+    "abstract": "Language models demonstrate both quantitative improvement and new qualitative capabilities with increasing scale. Despite their potentially transformative impact, these new capabilities are as yet poorly characterized. In order to inform future research, prepare for disruptive new model capabilities, and ameliorate socially harmful effects, it is vital that we understand the present and near-future capabilities and limitations of language models. To address this challenge, we introduce the Beyond the Imitation Game benchmark (BIG-bench). BIG-bench currently consists of 204 tasks, contributed by 450 authors across 132 institutions. Task topics are diverse, drawing problems from linguistics, childhood development, math, common-sense reasoning, biology, physics, social bias, software development, and beyond. BIG-bench focuses on tasks that are believed to be beyond the capabilities of current language models. We evaluate the behavior of OpenAI's GPT models, Google-internal dense transformer architectures, and Switch-style sparse transformers on BIG-bench, across model sizes spanning millions to hundreds of billions of parameters. In addition, a team of human expert raters performed all tasks in order to provide a strong baseline. Findings include: model performance and calibration both improve with scale, but are poor in absolute terms (and when compared with rater performance); performance is remarkably similar across model classes, though with benefits from sparsity; tasks that improve gradually and predictably commonly involve a large knowledge or memorization component, whereas tasks that exhibit\"breakthrough\"behavior at a critical scale often involve multiple steps or components, or brittle metrics; social bias typically increases with scale in settings with ambiguous context, but this can be improved with prompting.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "87c5b281fa43e6f27191b20a8dd694eda1126336",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2205-14135",
+      "ArXiv": "2205.14135",
+      "DOI": "10.52202/068431-1189",
+      "CorpusId": 249151871
+    },
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 4098,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.14135, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      },
+      {
+        "authorId": "49577833",
+        "name": "Daniel Y. Fu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "1755572",
+        "name": "A. Rudra"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "Transformers are slow and memory-hungry on long sequences, since the time and memory complexity of self-attention are quadratic in sequence length. Approximate attention methods have attempted to address this problem by trading off model quality to reduce the compute complexity, but often do not achieve wall-clock speedup. We argue that a missing principle is making attention algorithms IO-aware -- accounting for reads and writes between levels of GPU memory. We propose FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce the number of memory reads/writes between GPU high bandwidth memory (HBM) and GPU on-chip SRAM. We analyze the IO complexity of FlashAttention, showing that it requires fewer HBM accesses than standard attention, and is optimal for a range of SRAM sizes. We also extend FlashAttention to block-sparse attention, yielding an approximate attention algorithm that is faster than any existing approximate attention method. FlashAttention trains Transformers faster than existing baselines: 15% end-to-end wall-clock speedup on BERT-large (seq. length 512) compared to the MLPerf 1.1 training speed record, 3$\\times$ speedup on GPT-2 (seq. length 1K), and 2.4$\\times$ speedup on long-range arena (seq. length 1K-4K). FlashAttention and block-sparse FlashAttention enable longer context in Transformers, yielding higher quality models (0.7 better perplexity on GPT-2 and 6.4 points of lift on long-document classification) and entirely new capabilities: the first Transformers to achieve better-than-chance performance on the Path-X challenge (seq. length 16K, 61.4% accuracy) and Path-256 (seq. length 64K, 63.1% accuracy).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "06d7cb8c8816360feb33c3367073e0ef66d7d0b0",
+    "externalIds": {
+      "ACL": "2022.emnlp-main.340",
+      "ArXiv": "2204.07705",
+      "DBLP": "conf/emnlp/WangMAKMNADASPK22",
+      "DOI": "10.18653/v1/2022.emnlp-main.340",
+      "CorpusId": 253098274
+    },
+    "title": "Super-NaturalInstructions: Generalization via Declarative Instructions on 1600+ NLP Tasks",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2022,
+    "citationCount": 1069,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.emnlp-main.340.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.07705, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1705260",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "1817207",
+        "name": "Swaroop Mishra"
+      },
+      {
+        "authorId": "1805993128",
+        "name": "Pegah Alipoormolabashi"
+      },
+      {
+        "authorId": "2156538832",
+        "name": "Yeganeh Kordi"
+      },
+      {
+        "authorId": "2162779320",
+        "name": "Amirreza Mirzaei"
+      },
+      {
+        "authorId": "1667817604",
+        "name": "Anjana Arunkumar"
+      },
+      {
+        "authorId": "2063938464",
+        "name": "Arjun Ashok"
+      },
+      {
+        "authorId": "2162779517",
+        "name": "Arut Selvan Dhanasekaran"
+      },
+      {
+        "authorId": "2064353087",
+        "name": "Atharva Naik"
+      },
+      {
+        "authorId": "1689466093",
+        "name": "David Stap"
+      },
+      {
+        "authorId": "2074097046",
+        "name": "Eshaan Pathak"
+      },
+      {
+        "authorId": "8458211",
+        "name": "Giannis Karamanolakis"
+      },
+      {
+        "authorId": "2162779839",
+        "name": "H. Lai"
+      },
+      {
+        "authorId": "93841942",
+        "name": "I. Purohit"
+      },
+      {
+        "authorId": "9377739",
+        "name": "Ishani Mondal"
+      },
+      {
+        "authorId": "2110871234",
+        "name": "Jacob Anderson"
+      },
+      {
+        "authorId": "2158994272",
+        "name": "Kirby Kuznia"
+      },
+      {
+        "authorId": "2162779709",
+        "name": "Krima Doshi"
+      },
+      {
+        "authorId": "81331041",
+        "name": "Maitreya Patel"
+      },
+      {
+        "authorId": "50494955",
+        "name": "Kuntal Kumar Pal"
+      },
+      {
+        "authorId": "40879549",
+        "name": "M. Moradshahi"
+      },
+      {
+        "authorId": "1423660254",
+        "name": "Mihir Parmar"
+      },
+      {
+        "authorId": "1576655836",
+        "name": "Mirali Purohit"
+      },
+      {
+        "authorId": "2067056655",
+        "name": "Neeraj Varshney"
+      },
+      {
+        "authorId": "2162781785",
+        "name": "Phani Rohitha Kaza"
+      },
+      {
+        "authorId": "39765564",
+        "name": "Pulkit Verma"
+      },
+      {
+        "authorId": "2159207824",
+        "name": "Ravsehaj Singh Puri"
+      },
+      {
+        "authorId": "72254820",
+        "name": "Rushang Karia"
+      },
+      {
+        "authorId": "51479145",
+        "name": "Shailaja Keyur Sampat"
+      },
+      {
+        "authorId": "1380075136",
+        "name": "Savan Doshi"
+      },
+      {
+        "authorId": "2112127876",
+        "name": "Siddhartha Mishra"
+      },
+      {
+        "authorId": "2150098899",
+        "name": "Sujan Reddy"
+      },
+      {
+        "authorId": "19255781",
+        "name": "Sumanta Patro"
+      },
+      {
+        "authorId": "2126503480",
+        "name": "Tanay Dixit"
+      },
+      {
+        "authorId": "2144058688",
+        "name": "Xudong Shen"
+      },
+      {
+        "authorId": "2064619864",
+        "name": "Chitta Baral"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "1783281",
+        "name": "Daniel Khashabi"
+      }
+    ],
+    "abstract": "How well can NLP models generalize to a variety of unseen tasks when provided with task instructions? To address this question, we first introduce Super-NaturalInstructions, a benchmark of 1,616 diverse NLP tasks and their expert-written instructions. Our collection covers 76 distinct task types, including but not limited to classification, extraction, infilling, sequence tagging, text rewriting, and text composition. This large and diverse collection of tasks enables rigorous benchmarking of cross-task generalization under instructions—training models to follow instructions on a subset of tasks and evaluating them on the remaining unseen ones.Furthermore, we build Tk-Instruct, a transformer model trained to follow a variety of in-context instructions (plain language task definitions or k-shot examples). Our experiments show that Tk-Instruct outperforms existing instruction-following models such as InstructGPT by over 9% on our benchmark despite being an order of magnitude smaller. We further analyze generalization as a function of various scaling parameters, such as the number of observed tasks, the number of instances per task, and model sizes. We hope our dataset and model facilitate future progress towards more general-purpose NLP models.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "0286b2736a114198b25fb5553c671c33aed5d477",
+    "externalIds": {
+      "ArXiv": "2204.05862",
+      "DBLP": "journals/corr/abs-2204-05862",
+      "DOI": "10.48550/arXiv.2204.05862",
+      "CorpusId": 248118878
+    },
+    "title": "Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 3875,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.05862",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.05862, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1486307451",
+        "name": "Yuntao Bai"
+      },
+      {
+        "authorId": "2149890773",
+        "name": "Andy Jones"
+      },
+      {
+        "authorId": "1978097132",
+        "name": "Kamal Ndousse"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2111073313",
+        "name": "Anna Chen"
+      },
+      {
+        "authorId": "2142833890",
+        "name": "Nova Dassarma"
+      },
+      {
+        "authorId": "1943097969",
+        "name": "Dawn Drain"
+      },
+      {
+        "authorId": "30176974",
+        "name": "Stanislav Fort"
+      },
+      {
+        "authorId": "2081806483",
+        "name": "Deep Ganguli"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "148070327",
+        "name": "Saurav Kadavath"
+      },
+      {
+        "authorId": "1583434563",
+        "name": "John Kernion"
+      },
+      {
+        "authorId": "2154608209",
+        "name": "Tom Conerly"
+      },
+      {
+        "authorId": "1403602266",
+        "name": "S. El-Showk"
+      },
+      {
+        "authorId": "2866708",
+        "name": "Nelson Elhage"
+      },
+      {
+        "authorId": "1573482302",
+        "name": "Zac Hatfield-Dodds"
+      },
+      {
+        "authorId": "39182747",
+        "name": "Danny Hernandez"
+      },
+      {
+        "authorId": "2162194147",
+        "name": "Tristan Hume"
+      },
+      {
+        "authorId": "2154610174",
+        "name": "Scott Johnston"
+      },
+      {
+        "authorId": "49604482",
+        "name": "Shauna Kravec"
+      },
+      {
+        "authorId": "2154608229",
+        "name": "Liane Lovitt"
+      },
+      {
+        "authorId": "2051128902",
+        "name": "Neel Nanda"
+      },
+      {
+        "authorId": "2061321863",
+        "name": "Catherine Olsson"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "2287268442",
+        "name": "Chris Olah"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      }
+    ],
+    "abstract": "We apply preference modeling and reinforcement learning from human feedback (RLHF) to ﬁnetune language models to act as helpful and harmless assistants. We ﬁnd this alignment training improves performance on almost all NLP evaluations, and is fully compatible with training for specialized skills such as python coding and summarization. We explore an iterated online mode of training, where preference models and RL policies are updated on a weekly cadence with fresh human feedback data, efﬁciently improving our datasets and models. Finally, we investigate the robustness of RLHF training, and identify a roughly linear relation between the RL reward and the square root of the KL divergence between the policy and its initialization. Alongside our main results, we perform peripheral analyses on calibration, competing objectives, and the use of OOD detection, compare our models with human writers, and provide samples from our models using prompts appearing in recent related work. Figure These plots show that PM accuracy decreases as we focus exclusively on comparisons between pairs of samples with high score. We have normalized all preference models to have the same mean score on a held-out dataset so that they’re directly comparable, and then plotted accuracy for the comparisons where both samples have scores above a speciﬁc threshold.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+    "externalIds": {
+      "ArXiv": "2203.02155",
+      "DBLP": "journals/corr/abs-2203-02155",
+      "DOI": "10.52202/068431-2011",
+      "CorpusId": 246426909
+    },
+    "title": "Training language models to follow instructions with human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20076,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "2061137049",
+        "name": "Diogo Almeida"
+      },
+      {
+        "authorId": "2064084601",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": null,
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2151735262",
+        "name": "Fraser Kelton"
+      },
+      {
+        "authorId": "2142365973",
+        "name": "Luke E. Miller"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      }
+    ],
+    "abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1b6e810ce0afd0dd093f789d2b2742d047e316d5",
+    "externalIds": {
+      "DBLP": "conf/nips/Wei0SBIXCLZ22",
+      "ArXiv": "2201.11903",
+      "DOI": "10.52202/068431-1800",
+      "CorpusId": 246411621
+    },
+    "title": "Chain of Thought Prompting Elicits Reasoning in Large Language Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 17543,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.11903, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "119640649",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "2275277634",
+        "name": "Xuezhi Wang"
+      },
+      {
+        "authorId": "1714772",
+        "name": "Dale Schuurmans"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "2226805",
+        "name": "Ed H. Chi"
+      },
+      {
+        "authorId": "144956443",
+        "name": "F. Xia"
+      },
+      {
+        "authorId": "1998340269",
+        "name": "Quoc Le"
+      },
+      {
+        "authorId": "65855107",
+        "name": "Denny Zhou"
+      }
+    ],
+    "abstract": "We explore how generating a chain of thought -- a series of intermediate reasoning steps -- significantly improves the ability of large language models to perform complex reasoning. In particular, we show how such reasoning abilities emerge naturally in sufficiently large language models via a simple method called chain of thought prompting, where a few chain of thought demonstrations are provided as exemplars in prompting. Experiments on three large language models show that chain of thought prompting improves performance on a range of arithmetic, commonsense, and symbolic reasoning tasks. The empirical gains can be striking. For instance, prompting a 540B-parameter language model with just eight chain of thought exemplars achieves state of the art accuracy on the GSM8K benchmark of math word problems, surpassing even finetuned GPT-3 with a verifier.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d6045d2ccc9c09ca1671348de86d07da6bc28eea",
+    "externalIds": {
+      "ArXiv": "2110.14168",
+      "DBLP": "journals/corr/abs-2110-14168",
+      "CorpusId": 239998651
+    },
+    "title": "Training Verifiers to Solve Math Word Problems",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 8257,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.14168, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6062736",
+        "name": "K. Cobbe"
+      },
+      {
+        "authorId": "13622184",
+        "name": "Vineet Kosaraju"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3407285",
+        "name": "Matthias Plappert"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "7406311",
+        "name": "Reiichiro Nakano"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      }
+    ],
+    "abstract": "State-of-the-art language models can match human performance on many tasks, but they still struggle to robustly perform multi-step mathematical reasoning. To diagnose the failures of current models and support research, we introduce GSM8K, a dataset of 8.5K high quality linguistically diverse grade school math word problems. We find that even the largest transformer models fail to achieve high test performance, despite the conceptual simplicity of this problem distribution. To increase performance, we propose training verifiers to judge the correctness of model completions. At test time, we generate many candidate solutions and select the one ranked highest by the verifier. We demonstrate that verification significantly improves performance on GSM8K, and we provide strong empirical evidence that verification scales more effectively with increased data than a finetuning baseline.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "77d956cdab4508d569ae5741549b78e715fd0749",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-07958",
+      "ACL": "2022.acl-long.229",
+      "ArXiv": "2109.07958",
+      "DOI": "10.18653/v1/2022.acl-long.229",
+      "CorpusId": 237532606
+    },
+    "title": "TruthfulQA: Measuring How Models Mimic Human Falsehoods",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 3149,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.acl-long.229.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.07958, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48639938",
+        "name": "Stephanie C. Lin"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "47107786",
+        "name": "Owain Evans"
+      }
+    ],
+    "abstract": "We propose a benchmark to measure whether a language model is truthful in generating answers to questions. The benchmark comprises 817 questions that span 38 categories, including health, law, finance and politics. We crafted questions that some humans would answer falsely due to a false belief or misconception. To perform well, models must avoid generating false answers learned from imitating human texts. We tested GPT-3, GPT-Neo/J, GPT-2 and a T5-based model. The best model was truthful on 58% of questions, while human performance was 94%. Models generated many false answers that mimic popular misconceptions and have the potential to deceive humans. The largest models were generally the least truthful. This contrasts with other NLP tasks, where performance improves with model size. However, this result is expected if false answers are learned from the training distribution. We suggest that scaling up models alone is less promising for improving truthfulness than fine-tuning using training objectives other than imitation of text from the web.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ff0b2681d7b05e16c46dfb71d980cc2f605907cd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-01652",
+      "ArXiv": "2109.01652",
+      "CorpusId": 237416585
+    },
+    "title": "Finetuned Language Models Are Zero-Shot Learners",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 4941,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.01652, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144026731",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "2286156826",
+        "name": "Vincent Y. Zhao"
+      },
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "40625240",
+        "name": "Adams Wei Yu"
+      },
+      {
+        "authorId": "144104130",
+        "name": "Brian Lester"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "This paper explores a simple method for improving the zero-shot learning abilities of language models. We show that instruction tuning -- finetuning language models on a collection of tasks described via instructions -- substantially improves zero-shot performance on unseen tasks. We take a 137B parameter pretrained language model and instruction-tune it on over 60 NLP tasks verbalized via natural language instruction templates. We evaluate this instruction-tuned model, which we call FLAN, on unseen task types. FLAN substantially improves the performance of its unmodified counterpart and surpasses zero-shot 175B GPT-3 on 20 of 25 tasks that we evaluate. FLAN even outperforms few-shot GPT-3 by a large margin on ANLI, RTE, BoolQ, AI2-ARC, OpenbookQA, and StoryCloze. Ablation studies reveal that number of finetuning datasets, model scale, and natural language instructions are key to the success of instruction tuning.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "acbdbf49f9bc3f151b93d9ca9a06009f4f6eb269",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-03374",
+      "ArXiv": "2107.03374",
+      "CorpusId": 235755472
+    },
+    "title": "Evaluating Large Language Models Trained on Code",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 9224,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.03374, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "153930486",
+        "name": "Qiming Yuan"
+      },
+      {
+        "authorId": "2117715024",
+        "name": "Henrique Pondé"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      },
+      {
+        "authorId": "144632352",
+        "name": "Harrison Edwards"
+      },
+      {
+        "authorId": "51178856",
+        "name": "Yura Burda"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "2065151121",
+        "name": "Greg Brockman"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "41158993",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2136008481",
+        "name": "Michael Petrov"
+      },
+      {
+        "authorId": "2103414",
+        "name": "Heidy Khlaaf"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "1466431052",
+        "name": "Brooke Chan"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2068123790",
+        "name": "Mikhail Pavlov"
+      },
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "2275252092",
+        "name": "P. Tillet"
+      },
+      {
+        "authorId": "9927844",
+        "name": "F. Such"
+      },
+      {
+        "authorId": "80876468",
+        "name": "D. Cummings"
+      },
+      {
+        "authorId": "3407285",
+        "name": "Matthias Plappert"
+      },
+      {
+        "authorId": "2117714459",
+        "name": "Fotios Chantzis"
+      },
+      {
+        "authorId": "2057742918",
+        "name": "Elizabeth Barnes"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "39121861",
+        "name": "William H. Guss"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "2256699302",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "150298413",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "153480842",
+        "name": "A. Carr"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "2318703608",
+        "name": "Josh Achiam"
+      },
+      {
+        "authorId": "40055795",
+        "name": "Vedant Misra"
+      },
+      {
+        "authorId": "1404556973",
+        "name": "Evan Morikawa"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "3555117",
+        "name": "M. Knight"
+      },
+      {
+        "authorId": "35167962",
+        "name": "Miles Brundage"
+      },
+      {
+        "authorId": "2117715631",
+        "name": "M. Murati"
+      },
+      {
+        "authorId": "2059169400",
+        "name": "Katie Mayer"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "39593364",
+        "name": "Bob McGrew"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      }
+    ],
+    "abstract": "We introduce Codex, a GPT language model fine-tuned on publicly available code from GitHub, and study its Python code-writing capabilities. A distinct production version of Codex powers GitHub Copilot. On HumanEval, a new evaluation set we release to measure functional correctness for synthesizing programs from docstrings, our model solves 28.8% of the problems, while GPT-3 solves 0% and GPT-J solves 11.4%. Furthermore, we find that repeated sampling from the model is a surprisingly effective strategy for producing working solutions to difficult prompts. Using this method, we solve 70.2% of our problems with 100 samples per problem. Careful investigation of our model reveals its limitations, including difficulty with docstrings describing long chains of operations and with binding operations to variables. Finally, we discuss the potential broader impacts of deploying powerful code generation technologies, covering safety, security, and economics.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cbdb45fc16b0885905b91d84281c310e6cb49e9c",
+    "externalIds": {
+      "ArXiv": "2104.08773",
+      "ACL": "2022.acl-long.244",
+      "DBLP": "conf/acl/MishraKBH22",
+      "DOI": "10.18653/v1/2022.acl-long.244",
+      "CorpusId": 237421373
+    },
+    "title": "Cross-Task Generalization via Natural Language Crowdsourcing Instructions",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 884,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.acl-long.244.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.08773, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1817207",
+        "name": "Swaroop Mishra"
+      },
+      {
+        "authorId": "1783281",
+        "name": "Daniel Khashabi"
+      },
+      {
+        "authorId": "2064619864",
+        "name": "Chitta Baral"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "Humans (e.g., crowdworkers) have a remarkable ability in solving different tasks, by simply reading textual instructions that define them and looking at a few examples. Despite the success of the conventional supervised learning on individual datasets, such models often struggle with generalization across tasks (e.g., a question-answering system cannot solve classification tasks). A long-standing challenge in AI is to build a model that learns a new task by understanding the human-readable instructions that define it. To study this, we introduce NATURAL INSTRUCTIONS, a dataset of 61 distinct tasks, their human-authored instructions, and 193k task instances (input-output pairs). The instructions are obtained from crowdsourcing instructions used to create existing NLP datasets and mapped to a unified schema. Using this meta-dataset, we measure cross-task generalization by training models on seen tasks and measuring generalization to the remaining unseen ones. We adopt generative pre-trained language models to encode task-specific instructions along with input and generate task output. Our results indicate that models benefit from instructions when evaluated in terms of generalization to unseen tasks (19% better for models utilizing instructions). These models, however, are far behind an estimated performance upperbound indicating significant room for more progress in this direction.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "77a096d80eb4dd4ccd103d1660c5a5498f7d026b",
+    "externalIds": {
+      "ACL": "2021.naacl-main.324",
+      "MAG": "3171654528",
+      "DBLP": "journals/corr/abs-2104-14337",
+      "ArXiv": "2104.14337",
+      "DOI": "10.18653/V1/2021.NAACL-MAIN.324",
+      "CorpusId": 233444226
+    },
+    "title": "Dynabench: Rethinking Benchmarking in NLP",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 514,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.naacl-main.324.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.14337, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1743722",
+        "name": "Douwe Kiela"
+      },
+      {
+        "authorId": "153408953",
+        "name": "Max Bartolo"
+      },
+      {
+        "authorId": "40383658",
+        "name": "Yixin Nie"
+      },
+      {
+        "authorId": "9264826",
+        "name": "Divyansh Kaushik"
+      },
+      {
+        "authorId": "80833908",
+        "name": "Atticus Geiger"
+      },
+      {
+        "authorId": "47039337",
+        "name": "Zhengxuan Wu"
+      },
+      {
+        "authorId": "2737827",
+        "name": "Bertie Vidgen"
+      },
+      {
+        "authorId": "119869488",
+        "name": "Grusha Prasad"
+      },
+      {
+        "authorId": null,
+        "name": "Amanpreet Singh"
+      },
+      {
+        "authorId": "1422035486",
+        "name": "Pratik Ringshia"
+      },
+      {
+        "authorId": "1736107",
+        "name": "Zhiyi Ma"
+      },
+      {
+        "authorId": "1500242049",
+        "name": "Tristan Thrush"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "2138053020",
+        "name": "Zeerak Talat"
+      },
+      {
+        "authorId": "1918552",
+        "name": "Pontus Stenetorp"
+      },
+      {
+        "authorId": "3422908",
+        "name": "Robin Jia"
+      },
+      {
+        "authorId": "143977268",
+        "name": "Mohit Bansal"
+      },
+      {
+        "authorId": "144922861",
+        "name": "Christopher Potts"
+      },
+      {
+        "authorId": "2110032535",
+        "name": "Adina Williams"
+      }
+    ],
+    "abstract": "We introduce Dynabench, an open-source platform for dynamic dataset creation and model benchmarking. Dynabench runs in a web browser and supports human-and-model-in-the-loop dataset creation: annotators seek to create examples that a target model will misclassify, but that another person will not. In this paper, we argue that Dynabench addresses a critical need in our community: contemporary models quickly achieve outstanding performance on benchmark tasks but nonetheless fail on simple challenge examples and falter in real-world scenarios. With Dynabench, dataset creation, model development, and model assessment can directly inform each other, leading to more robust and informative benchmarks. We report on four initial NLP tasks, illustrating these concepts and highlighting the promise of the platform, and address potential objections to dynamic benchmarking as a new standard for the field.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "814a4f680b9ba6baba23b93499f4b48af1a27678",
+    "externalIds": {
+      "ArXiv": "2009.03300",
+      "DBLP": "journals/corr/abs-2009-03300",
+      "MAG": "3083410900",
+      "CorpusId": 221516475
+    },
+    "title": "Measuring Massive Multitask Language Understanding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 7786,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.03300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "1380103052",
+        "name": "Andy Zou"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "We propose a new test to measure a text model's multitask accuracy. The test covers 57 tasks including elementary mathematics, US history, computer science, law, and more. To attain high accuracy on this test, models must possess extensive world knowledge and problem solving ability. We find that while most recent models have near random-chance accuracy, the very largest GPT-3 model improves over random chance by almost 20 percentage points on average. However, on every one of the 57 tasks, the best models still need substantial improvements before they can reach expert-level accuracy. Models also have lopsided performance and frequently do not know when they are wrong. Worse, they still have near-random accuracy on some socially important subjects such as morality and law. By comprehensively evaluating the breadth and depth of a model's academic and professional understanding, our test can be used to analyze models across many tasks and to identify important shortcomings.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "01e85c1cebcb6111e1b255ab57c45d3bfcafe737",
+    "externalIds": {
+      "MAG": "3103621845",
+      "DBLP": "journals/corr/abs-2004-14602",
+      "ArXiv": "2004.14602",
+      "ACL": "2020.emnlp-main.84",
+      "DOI": "10.18653/v1/2020.emnlp-main.84",
+      "CorpusId": 216868500
+    },
+    "title": "Look at the First Sentence: Position Bias in Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2020,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.emnlp-main.84.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.14602, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22670284",
+        "name": "Miyoung Ko"
+      },
+      {
+        "authorId": "46664096",
+        "name": "Jinhyuk Lee"
+      },
+      {
+        "authorId": "3087706",
+        "name": "Hyunjae Kim"
+      },
+      {
+        "authorId": "1390543205",
+        "name": "Gangwoo Kim"
+      },
+      {
+        "authorId": "144323862",
+        "name": "Jaewoo Kang"
+      }
+    ],
+    "abstract": "Many extractive question answering models are trained to predict start and end positions of answers. The choice of predicting answers as positions is mainly due to its simplicity and effectiveness. In this study, we hypothesize that when the distribution of the answer positions is highly skewed in the training set (e.g., answers lie only in the k-th sentence of each passage), QA models predicting answers as positions learn spurious positional cues and fail to give answers in different positions. We first illustrate this position bias in popular extractive QA models such as BiDAF and BERT and thoroughly examine how position bias propagates through each layer of BERT. To safely deliver position information without position bias, we train models with various de-biasing methods including entropy regularization and bias ensembling. Among them, we found that using the prior distribution of answer positions as a bias model is very effective at reducing position bias recovering the performance of BERT from 35.24% to 81.17% when trained on a biased SQuAD dataset.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8b0f27bb594b1eaaf493eaf1e2ee723a2b0a19ad",
+    "externalIds": {
+      "MAG": "2946609015",
+      "DBLP": "journals/corr/abs-1905-07830",
+      "ACL": "P19-1472",
+      "ArXiv": "1905.07830",
+      "DOI": "10.18653/v1/P19-1472",
+      "CorpusId": 159041722
+    },
+    "title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 3988,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1472.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.07830, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Recent work by Zellers et al. (2018) introduced a new task of commonsense natural language inference: given an event description such as “A woman sits at a piano,” a machine must select the most likely followup: “She sets her fingers on the keys.” With the introduction of BERT, near human-level performance was reached. Does this mean that machines can perform human level commonsense inference? In this paper, we show that commonsense inference still proves difficult for even state-of-the-art models, by presenting HellaSwag, a new challenge dataset. Though its questions are trivial for humans (>95% accuracy), state-of-the-art models struggle (<48%). We achieve this via Adversarial Filtering (AF), a data collection paradigm wherein a series of discriminators iteratively select an adversarial set of machine-generated wrong answers. AF proves to be surprisingly robust. The key insight is to scale up the length and complexity of the dataset examples towards a critical ‘Goldilocks’ zone wherein generated text is ridiculous to humans, yet often misclassified by state-of-the-art models. Our construction of HellaSwag, and its resulting difficulty, sheds light on the inner workings of deep pretrained models. More broadly, it suggests a new path forward for NLP research, in which benchmarks co-evolve with the evolving state-of-the-art in an adversarial way, so as to present ever-harder challenges.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "990a7b4eceedb6e053e6386269481bdfc42a1094",
+    "externalIds": {
+      "MAG": "2888296173",
+      "DBLP": "journals/tacl/ReddyCM19",
+      "ACL": "Q19-1016",
+      "ArXiv": "1808.07042",
+      "DOI": "10.1162/tacl_a_00266",
+      "CorpusId": 52055325
+    },
+    "title": "CoQA: A Conversational Question Answering Challenge",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2018,
+    "citationCount": 1384,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00266/1923252/tacl_a_00266.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.07042, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145732771",
+        "name": "Siva Reddy"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      }
+    ],
+    "abstract": "Humans gather information through conversations involving a series of interconnected questions and answers. For machines to assist in information gathering, it is therefore essential to enable them to answer conversational questions. We introduce CoQA, a novel dataset for building Conversational Question Answering systems. Our dataset contains 127k questions with answers, obtained from 8k conversations about text passages from seven diverse domains. The questions are conversational, and the answers are free-form text with their corresponding evidence highlighted in the passage. We analyze CoQA in depth and show that conversational questions have challenging phenomena not present in existing reading comprehension datasets (e.g., coreference and pragmatic reasoning). We evaluate strong dialogue and reading comprehension models on CoQA. The best system obtains an F1 score of 65.4%, which is 23.4 points behind human performance (88.8%), indicating that there is ample room for improvement. We present CoQA as a challenge to the community at https://stanfordnlp.github.io/coqa.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "88bb0a28bb58d847183ec505dda89b63771bb495",
+    "externalIds": {
+      "ArXiv": "1803.05457",
+      "DBLP": "journals/corr/abs-1803-05457",
+      "MAG": "2794325560",
+      "CorpusId": 3922816
+    },
+    "title": "Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 4431,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.05457, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "3390191",
+        "name": "Isaac Cowhey"
+      },
+      {
+        "authorId": "1741101",
+        "name": "Oren Etzioni"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      },
+      {
+        "authorId": "3393851",
+        "name": "Carissa Schoenick"
+      },
+      {
+        "authorId": "3385516",
+        "name": "Oyvind Tafjord"
+      }
+    ],
+    "abstract": "We present a new question set, text corpus, and baselines assembled to encourage AI research in advanced question answering. Together, these constitute the AI2 Reasoning Challenge (ARC), which requires far more powerful knowledge and reasoning than previous challenges such as SQuAD or SNLI. The ARC question set is partitioned into a Challenge Set and an Easy Set, where the Challenge Set contains only questions answered incorrectly by both a retrieval-based algorithm and a word co-occurence algorithm. The dataset contains only natural, grade-school science questions (authored for human tests), and is the largest public-domain set of this kind (7,787 questions). We test several baselines on the Challenge Set, including leading neural models from the SQuAD and SNLI tasks, and find that none are able to significantly outperform a random baseline, reflecting the difficult nature of this task. We are also releasing the ARC Corpus, a corpus of 14M science sentences relevant to the task, and implementations of the three neural baseline models tested. Can your model perform better? We pose ARC as a challenge to the community.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c9359c13b4f4b058380e4ea3387044012e65bd2a",
+    "externalIds": {
+      "DBLP": "conf/wsdm/WangGBMN18",
+      "MAG": "2769473018",
+      "DOI": "10.1145/3159652.3159732",
+      "CorpusId": 21054674
+    },
+    "title": "Position Bias Estimation for Unbiased Learning to Rank in Personal Search",
+    "venue": "Web Search and Data Mining",
+    "year": 2018,
+    "citationCount": 294,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3159652.3159732?download=true",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3159652.3159732?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3159652.3159732, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1526973500",
+        "name": "Xuanhui Wang"
+      },
+      {
+        "authorId": "3254779",
+        "name": "Nadav Golbandi"
+      },
+      {
+        "authorId": "1815447",
+        "name": "Michael Bendersky"
+      },
+      {
+        "authorId": "1680617",
+        "name": "Donald Metzler"
+      },
+      {
+        "authorId": "1763978",
+        "name": "Marc Najork"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "60b05f32c32519a809f21642ef1eb3eaf3848008",
+    "externalIds": {
+      "MAG": "2154652894",
+      "ACL": "W04-1013",
+      "CorpusId": 964287
+    },
+    "title": "ROUGE: A Package for Automatic Evaluation of Summaries",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2004,
+    "citationCount": 20081,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://aclanthology.org/W04-1013, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1781574",
+        "name": "Chin-Yew Lin"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d7da009f457917aa381619facfa5ffae9329a6e9",
+    "externalIds": {
+      "DBLP": "conf/acl/PapineniRWZ02",
+      "MAG": "2101105183",
+      "ACL": "P02-1040",
+      "DOI": "10.3115/1073083.1073135",
+      "CorpusId": 11080756
+    },
+    "title": "Bleu: a Method for Automatic Evaluation of Machine Translation",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2002,
+    "citationCount": 32834,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.3115/1073083.1073135",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/P02-1040, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3323275",
+        "name": "Kishore Papineni"
+      },
+      {
+        "authorId": "46924970",
+        "name": "Salim Roukos"
+      },
+      {
+        "authorId": "144582029",
+        "name": "T. Ward"
+      },
+      {
+        "authorId": "2587983",
+        "name": "Wei-Jing Zhu"
+      }
+    ],
+    "abstract": "Human evaluations of machine translation are extensive but expensive. Human evaluations can take months to finish and involve human labor that can not be reused. We propose a method of automatic machine translation evaluation that is quick, inexpensive, and language-independent, that correlates highly with human evaluation, and that has little marginal cost per run. We present this method as an automated understudy to skilled human judges which substitutes for them when there is need for quick or frequent evaluations.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "370964709528375a857ee62cd1f4e27963272e53",
+    "externalIds": {
+      "MAG": "2164438751",
+      "DOI": "10.1521/SOCO.1986.4.4.353",
+      "CorpusId": 146345744
+    },
+    "title": "Evaluations of Self and Others: Self-Enhancement Biases in Social Judgments",
+    "venue": "",
+    "year": 1986,
+    "citationCount": 900,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1521/SOCO.1986.4.4.353?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1521/SOCO.1986.4.4.353, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2203324622",
+        "name": "Jonathon D. Brown"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "26471911cd3128631775b6bc99cb386baa488f50",
+    "externalIds": {
+      "MAG": "2332764446",
+      "DOI": "10.1177/002224378402100210",
+      "CorpusId": 147259862
+    },
+    "title": "Position Bias in Multiple-Choice Questions",
+    "venue": "",
+    "year": 1984,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1177/002224378402100210?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1177/002224378402100210, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "69525554",
+        "name": "N. Blunch"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "dc8ae6245631af4eb0fab238a7e791fd75258cae",
+    "externalIds": {
+      "DOI": "10.2466/pr0.1975.36.3.919",
+      "CorpusId": 219951677
+    },
+    "title": "Punctuality",
+    "venue": "",
+    "year": 1975,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2466/pr0.1975.36.3.919?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2466/pr0.1975.36.3.919, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2219864956",
+        "name": "S. S. Ahmed"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d7ac84d30ec956f5fee0a9aa36defc2ce2eb5877",
+    "externalIds": {
+      "DBLP": "conf/nsdi/YangWLCBKZLMSS23",
+      "CorpusId": 258559424
+    },
+    "title": "SkyPilot: An Intercloud Broker for Sky Computing",
+    "venue": "Symposium on Networked Systems Design and Implementation",
+    "year": 2023,
+    "citationCount": 111,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2109479107",
+        "name": "Zongheng Yang"
+      },
+      {
+        "authorId": "1390573666",
+        "name": "Zhanghao Wu"
+      },
+      {
+        "authorId": "1491203133",
+        "name": "Michael Luo"
+      },
+      {
+        "authorId": "2537924",
+        "name": "Wei-Lin Chiang"
+      },
+      {
+        "authorId": "1875774",
+        "name": "Romil Bhardwaj"
+      },
+      {
+        "authorId": "2021195836",
+        "name": "Woosuk Kwon"
+      },
+      {
+        "authorId": "92721493",
+        "name": "Siyuan Zhuang"
+      },
+      {
+        "authorId": "2113951250",
+        "name": "Frank Sifei Luan"
+      },
+      {
+        "authorId": "2148612552",
+        "name": "Gautam Mittal"
+      },
+      {
+        "authorId": "143838343",
+        "name": "S. Shenker"
+      },
+      {
+        "authorId": "2326149473",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "92e121c6e114fe3cfb89370df03847c66a9b4e28",
+    "externalIds": {
+      "CorpusId": 199370376
+    },
+    "title": "An Adversarial Winograd Schema Challenge at Scale",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 2999,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2325708",
+        "name": "Keisuke Sakaguchi"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "1857797",
+        "name": "Chandra Bhagavatula"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "821b4a9b6bc684a8d34f2e4bf2769c7343320691",
+    "externalIds": {
+      "MAG": "2138160287",
+      "DOI": "10.1016/J.OBHDP.2005.06.001",
+      "CorpusId": 145153607
+    },
+    "title": "Center-of-inattention: Position biases in decision-making",
+    "venue": "",
+    "year": 2006,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "http://www.ana-valenzuela.com/wp-content/uploads/2010/02/paper-6.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/J.OBHDP.2005.06.001?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/J.OBHDP.2005.06.001, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "5946051",
+        "name": "Priya Raghubir"
+      },
+      {
+        "authorId": "115007838",
+        "name": "A. Valenzuela"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "02a7934091f175478997de36739f68304fadb891",
+    "externalIds": {
+      "DOI": "10.3368/er.2.2.101a",
+      "CorpusId": 71658874
+    },
+    "title": "Meetings",
+    "venue": "Restoration & Management Notes",
+    "year": 1984,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.3368/er.2.2.101a?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3368/er.2.2.101a, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

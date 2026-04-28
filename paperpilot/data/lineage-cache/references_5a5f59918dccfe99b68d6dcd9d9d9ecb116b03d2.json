@@ -1,0 +1,2013 @@
+[
+  {
+    "paperId": "f13eacfeded3ea59700b1f3c08858076d6f381af",
+    "externalIds": {
+      "ArXiv": "2601.20198",
+      "DBLP": "journals/corr/abs-2601-20198",
+      "DOI": "10.48550/arXiv.2601.20198",
+      "CorpusId": 285101748
+    },
+    "title": "DeRaDiff: Denoising Time Realignment of Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.20198, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2407210551",
+        "name": "Ratnavibusena Don Shahain Manujith"
+      },
+      {
+        "authorId": "2267877984",
+        "name": "Yang Zhang"
+      },
+      {
+        "authorId": "2267728071",
+        "name": "Teoh Tze Tzun"
+      },
+      {
+        "authorId": "2256995496",
+        "name": "Kenji Kawaguchi"
+      }
+    ],
+    "abstract": "Recent advances align diffusion models with human preferences to increase aesthetic appeal and mitigate artifacts and biases. Such methods aim to maximize a conditional output distribution aligned with higher rewards whilst not drifting far from a pretrained prior. This is commonly enforced by KL (Kullback Leibler) regularization. As such, a central issue still remains: how does one choose the right regularization strength? Too high of a strength leads to limited alignment and too low of a strength leads to\"reward hacking\". This renders the task of choosing the correct regularization strength highly non-trivial. Existing approaches sweep over this hyperparameter by aligning a pretrained model at multiple regularization strengths and then choose the best strength. Unfortunately, this is prohibitively expensive. We introduce DeRaDiff, a denoising time realignment procedure that, after aligning a pretrained model once, modulates the regularization strength during sampling to emulate models trained at other regularization strengths without any additional training or finetuning. Extending decoding-time realignment from language to diffusion models, DeRaDiff operates over iterative predictions of continuous latents by replacing the reverse step reference distribution by a geometric mixture of an aligned and reference posterior, thus giving rise to a closed form update under common schedulers and a single tunable parameter, lambda, for on the fly control. Our experiments show that across multiple text image alignment and image-quality metrics, our method consistently provides a strong approximation for models aligned entirely from scratch at different regularization strengths. Thus, our method yields an efficient way to search for the optimal strength, eliminating the need for expensive alignment sweeps and thereby substantially reducing computational costs.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "e7d2a95fdb7c6ec2f902e42b39218dd74cfc6ef4",
+    "externalIds": {
+      "DBLP": "journals/tit/WangXBJZ25",
+      "DOI": "10.1109/TIT.2025.3581454",
+      "CorpusId": 270063053
+    },
+    "title": "Theoretical Study of Conflict-Avoidant Multi-Objective Reinforcement Learning",
+    "venue": "IEEE Transactions on Information Theory",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TIT.2025.3581454?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TIT.2025.3581454, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2218229013",
+        "name": "Yudan Wang"
+      },
+      {
+        "authorId": "2272946125",
+        "name": "Peiyao Xiao"
+      },
+      {
+        "authorId": "2286867321",
+        "name": "Hao Ban"
+      },
+      {
+        "authorId": "2272008500",
+        "name": "Kaiyi Ji"
+      },
+      {
+        "authorId": "2303398215",
+        "name": "Shaofeng Zou"
+      }
+    ],
+    "abstract": "Multi-objective reinforcement learning (MORL) has shown great promise in many real-world applications. Existing MORL algorithms often aim to learn a policy that optimizes individual objective functions simultaneously with a given prior preference (or weights) on different objectives. However, these methods often suffer from the issue of <italic>gradient conflict</italic> such that the objectives with larger gradients dominate the update direction, resulting in a performance degeneration on other objectives. In this paper, we develop a novel dynamic weighting multi-objective actor-critic algorithm (MOAC) under two options of sub-procedures named as conflict-avoidant (CA) and faster convergence (FC) in objective weight updates. MOAC-CA aims to find a CA update direction that maximizes the minimum value improvement among objectives, and MOAC-FC targets at a much faster convergence rate. We provide a comprehensive finite-time convergence analysis for both algorithms. We show that MOAC-CA can find a <inline-formula> <tex-math notation=\"LaTeX\">$\\epsilon +\\epsilon _{\\text {app}}$ </tex-math></inline-formula>-accurate Pareto stationary policy using <inline-formula> <tex-math notation=\"LaTeX\">$\\mathcal {O}({\\epsilon ^{-5}})$ </tex-math></inline-formula> samples, while ensuring a small <inline-formula> <tex-math notation=\"LaTeX\">$\\epsilon +\\sqrt {\\epsilon _{\\text {app}}}$ </tex-math></inline-formula>-level CA distance (defined as the distance to the CA direction), where <inline-formula> <tex-math notation=\"LaTeX\">$\\epsilon _{\\text {app}}$ </tex-math></inline-formula> is the function approximation error. The analysis also shows that MOAC-FC improves the sample complexity to <inline-formula> <tex-math notation=\"LaTeX\">$\\mathcal {O}(\\epsilon ^{-3})$ </tex-math></inline-formula>, but with a constant-level CA distance. Our experiments on MT10 demonstrate the improved performance of our algorithms over existing MORL methods with fixed preference.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6fc4c08d74bafdb78150dfcda158930ac477123b",
+    "externalIds": {
+      "ArXiv": "2505.18547",
+      "DBLP": "journals/corr/abs-2505-18547",
+      "DOI": "10.48550/arXiv.2505.18547",
+      "CorpusId": 278905652
+    },
+    "title": "Diffusion Blend: Inference-Time Multi-Preference Alignment for Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.18547, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2331127078",
+        "name": "Mingrui Cheng"
+      },
+      {
+        "authorId": "2291141822",
+        "name": "Fatemeh Doudi"
+      },
+      {
+        "authorId": "1956081",
+        "name": "D. Kalathil"
+      },
+      {
+        "authorId": "2262443787",
+        "name": "Mohammad Ghavamzadeh"
+      },
+      {
+        "authorId": "2108176947",
+        "name": "P. Kumar"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) algorithms have been used recently to align diffusion models with downstream objectives such as aesthetic quality and text-image consistency by fine-tuning them to maximize a single reward function under a fixed KL regularization. However, this approach is inherently restrictive in practice, where alignment must balance multiple, often conflicting objectives. Moreover, user preferences vary across prompts, individuals, and deployment contexts, with varying tolerances for deviation from a pre-trained base model. We address the problem of inference-time multi-preference alignment: given a set of basis reward functions and a reference KL regularization strength, can we design a fine-tuning procedure so that, at inference time, it can generate images aligned with any user-specified linear combination of rewards and regularization, without requiring additional fine-tuning? We propose Diffusion Blend, a novel approach to solve inference-time multi-preference alignment by blending backward diffusion processes associated with fine-tuned models, and we instantiate this approach with two algorithms: DB-MPA for multi-reward alignment and DB-KLA for KL regularization control. Extensive experiments show that Diffusion Blend algorithms consistently outperform relevant baselines and closely match or exceed the performance of individually fine-tuned models, enabling efficient, user-driven alignment at inference-time. The code is available at https://github.com/bluewoods127/DB-2025.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "72a2e7333f432ba2dde838d33f249d8a251a002c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-00968",
+      "ArXiv": "2502.00968",
+      "DOI": "10.48550/arXiv.2502.00968",
+      "CorpusId": 276094284
+    },
+    "title": "CoDe: Blockwise Control for Denoising Diffusion Models",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2025,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.00968, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262082949",
+        "name": "Anuj Singh"
+      },
+      {
+        "authorId": "2294314856",
+        "name": "Sayak Mukherjee"
+      },
+      {
+        "authorId": "2258964830",
+        "name": "Ahmad Beirami"
+      },
+      {
+        "authorId": "2273946416",
+        "name": "H. J. Rad"
+      }
+    ],
+    "abstract": "Aligning diffusion models to downstream tasks often requires finetuning new models or gradient-based guidance at inference time to enable sampling from the reward-tilted posterior. In this work, we explore a simple inference-time gradient-free guidance approach, called controlled denoising (CoDe), that circumvents the need for differentiable guidance functions and model finetuning. CoDe is a blockwise sampling method applied during intermediate denoising steps, allowing for alignment with downstream rewards. Our experiments demonstrate that, despite its simplicity, CoDe offers a favorable trade-off between reward alignment, prompt instruction following, and inference cost, achieving a competitive performance against the state-of-the-art baselines. Our code is available at: https://github.com/anujinho/code.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "672b7ebea68189e7c372ef84d31408d82a3b3e6b",
+    "externalIds": {
+      "ArXiv": "2501.05803",
+      "DBLP": "conf/iclr/KimKP25",
+      "CorpusId": 275458278
+    },
+    "title": "Test-time Alignment of Diffusion Models without Reward Over-optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.05803, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2339714051",
+        "name": "Sunwoo Kim"
+      },
+      {
+        "authorId": "2185339408",
+        "name": "Minkyu Kim"
+      },
+      {
+        "authorId": "2329152902",
+        "name": "Dongmin Park"
+      }
+    ],
+    "abstract": "Diffusion models excel in generative tasks, but aligning them with specific objectives while maintaining their versatility remains challenging. Existing fine-tuning methods often suffer from reward over-optimization, while approximate guidance approaches fail to optimize target rewards effectively. Addressing these limitations, we propose a training-free, test-time method based on Sequential Monte Carlo (SMC) to sample from the reward-aligned target distribution. Our approach, tailored for diffusion sampling and incorporating tempering techniques, achieves comparable or superior target rewards to fine-tuning methods while preserving diversity and cross-reward generalization. We demonstrate its effectiveness in single-reward optimization, multi-objective scenarios, and online black-box optimization. This work offers a robust solution for aligning diffusion models with diverse downstream objectives without compromising their general capabilities. Code is available at https://github.com/krafton-ai/DAS.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "af1562eb85e7929d46881b8b725df24e32f8fade",
+    "externalIds": {
+      "DBLP": "conf/nips/YeLHXLLMZE24",
+      "ArXiv": "2409.15761",
+      "DOI": "10.48550/arXiv.2409.15761",
+      "CorpusId": 272832564
+    },
+    "title": "TFG: Unified Training-Free Guidance for Diffusion Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.15761, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2322625100",
+        "name": "Haotian Ye"
+      },
+      {
+        "authorId": "2257447835",
+        "name": "Haowei Lin"
+      },
+      {
+        "authorId": "2320845290",
+        "name": "Jiaqi Han"
+      },
+      {
+        "authorId": "2257420991",
+        "name": "Minkai Xu"
+      },
+      {
+        "authorId": "2308266914",
+        "name": "Sheng Liu"
+      },
+      {
+        "authorId": "2257367774",
+        "name": "Yitao Liang"
+      },
+      {
+        "authorId": "2257367982",
+        "name": "Jianzhu Ma"
+      },
+      {
+        "authorId": "2283249105",
+        "name": "James Zou"
+      },
+      {
+        "authorId": "2302797121",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Given an unconditional diffusion model and a predictor for a target property of interest (e.g., a classifier), the goal of training-free guidance is to generate samples with desirable target properties without additional training. Existing methods, though effective in various individual applications, often lack theoretical grounding and rigorous testing on extensive benchmarks. As a result, they could even fail on simple tasks, and applying them to a new problem becomes unavoidably difficult. This paper introduces a novel algorithmic framework encompassing existing methods as special cases, unifying the study of training-free guidance into the analysis of an algorithm-agnostic design space. Via theoretical and empirical investigation, we propose an efficient and effective hyper-parameter searching strategy that can be readily applied to any downstream task. We systematically benchmark across 7 diffusion models on 16 tasks with 40 targets, and improve performance by 8.5% on average. Our framework and benchmark offer a solid foundation for conditional generation in a training-free manner.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a673ef39237e227381fccf5b1d154d96de428f1d",
+    "externalIds": {
+      "ArXiv": "2408.08252",
+      "DBLP": "journals/corr/abs-2408-08252",
+      "DOI": "10.48550/arXiv.2408.08252",
+      "CorpusId": 271874728
+    },
+    "title": "Derivative-Free Guidance in Continuous and Discrete Diffusion Models with Soft Value-Based Decoding",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 108,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.08252, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2316174045",
+        "name": "Xiner Li"
+      },
+      {
+        "authorId": "2109850978",
+        "name": "Yulai Zhao"
+      },
+      {
+        "authorId": "2316174231",
+        "name": "Chenyu Wang"
+      },
+      {
+        "authorId": "19205151",
+        "name": "Gabriele Scalia"
+      },
+      {
+        "authorId": "38086241",
+        "name": "Gökçen Eraslan"
+      },
+      {
+        "authorId": "2316197774",
+        "name": "Surag Nair"
+      },
+      {
+        "authorId": "6785594",
+        "name": "Tommaso Biancalani"
+      },
+      {
+        "authorId": "2253597033",
+        "name": "Aviv Regev"
+      },
+      {
+        "authorId": "2286303828",
+        "name": "Sergey Levine"
+      },
+      {
+        "authorId": "2279021651",
+        "name": "Masatoshi Uehara"
+      }
+    ],
+    "abstract": "Diffusion models excel at capturing the natural design spaces of images, molecules, DNA, RNA, and protein sequences. However, rather than merely generating designs that are natural, we often aim to optimize downstream reward functions while preserving the naturalness of these design spaces. Existing methods for achieving this goal often require ``differentiable'' proxy models (\\textit{e.g.}, classifier guidance or DPS) or involve computationally expensive fine-tuning of diffusion models (\\textit{e.g.}, classifier-free guidance, RL-based fine-tuning). In our work, we propose a new method to address these challenges. Our algorithm is an iterative sampling method that integrates soft value functions, which looks ahead to how intermediate noisy states lead to high rewards in the future, into the standard inference procedure of pre-trained diffusion models. Notably, our approach avoids fine-tuning generative models and eliminates the need to construct differentiable models. This enables us to (1) directly utilize non-differentiable features/reward feedback, commonly used in many scientific domains, and (2) apply our method to recent discrete diffusion models in a principled way. Finally, we demonstrate the effectiveness of our algorithm across several domains, including image generation, molecule generation, and DNA/RNA sequence generation. The code is available at \\href{https://github.com/masa-ue/SVDD}{https://github.com/masa-ue/SVDD}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "aa59b834711645f768e58b904a3585c2ba935973",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-13734",
+      "ArXiv": "2407.13734",
+      "DOI": "10.48550/arXiv.2407.13734",
+      "CorpusId": 271270725
+    },
+    "title": "Understanding Reinforcement Learning-Based Fine-Tuning of Diffusion Models: A Tutorial and Review",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 68,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.13734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2279021651",
+        "name": "Masatoshi Uehara"
+      },
+      {
+        "authorId": "2109850978",
+        "name": "Yulai Zhao"
+      },
+      {
+        "authorId": "6785594",
+        "name": "Tommaso Biancalani"
+      },
+      {
+        "authorId": "2286303828",
+        "name": "Sergey Levine"
+      }
+    ],
+    "abstract": "This tutorial provides a comprehensive survey of methods for fine-tuning diffusion models to optimize downstream reward functions. While diffusion models are widely known to provide excellent generative modeling capability, practical applications in domains such as biology require generating samples that maximize some desired metric (e.g., translation efficiency in RNA, docking score in molecules, stability in protein). In these cases, the diffusion model can be optimized not only to generate realistic samples but also to explicitly maximize the measure of interest. Such methods are based on concepts from reinforcement learning (RL). We explain the application of various RL algorithms, including PPO, differentiable optimization, reward-weighted MLE, value-weighted sampling, and path consistency learning, tailored specifically for fine-tuning diffusion models. We aim to explore fundamental aspects such as the strengths and limitations of different RL-based fine-tuning algorithms across various scenarios, the benefits of RL-based fine-tuning compared to non-RL-based approaches, and the formal objectives of RL-based fine-tuning (target distributions). Additionally, we aim to examine their connections with related topics such as classifier guidance, Gflownets, flow-based diffusion models, path integral control theory, and sampling from unnormalized distributions such as MCMC. The code of this tutorial is available at https://github.com/masa-ue/RLfinetuning_Diffusion_Bioseq",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8b89036b5136b081867fbec089801b2bd4ab0685",
+    "externalIds": {
+      "ArXiv": "2406.18853",
+      "DBLP": "conf/nips/ShiCHLHSD24",
+      "DOI": "10.48550/arXiv.2406.18853",
+      "CorpusId": 270764846
+    },
+    "title": "Decoding-Time Language Model Alignment with Multiple Objectives",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 87,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.18853, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2253399644",
+        "name": "Ruizhe Shi"
+      },
+      {
+        "authorId": "1556022677",
+        "name": "Yifang Chen"
+      },
+      {
+        "authorId": "2112209725",
+        "name": "Yushi Hu"
+      },
+      {
+        "authorId": "2261363520",
+        "name": "Alisa Liu"
+      },
+      {
+        "authorId": "2264251662",
+        "name": "Hanna Hajishirzi"
+      },
+      {
+        "authorId": "2261399966",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "2273538448",
+        "name": "S. Du"
+      }
+    ],
+    "abstract": "Aligning language models (LMs) to human preferences has emerged as a critical pursuit, enabling these models to better serve diverse user needs. Existing methods primarily focus on optimizing LMs for a single reward function, limiting their adaptability to varied objectives. Here, we propose $\\textbf{multi-objective decoding (MOD)}$, a decoding-time algorithm that outputs the next token from a linear combination of predictions of all base models, for any given weightings over different objectives. We exploit a common form among a family of $f$-divergence regularized alignment approaches (such as PPO, DPO, and their variants) to identify a closed-form solution by Legendre transform, and derive an efficient decoding strategy. Theoretically, we show why existing approaches can be sub-optimal even in natural settings and obtain optimality guarantees for our method. Empirical results demonstrate the effectiveness of the algorithm. For example, compared to a parameter-merging baseline, MOD achieves 12.8% overall reward improvement when equally optimizing towards $3$ objectives. Moreover, we experiment with MOD on combining three fully-finetuned LLMs of different model sizes, each aimed at different objectives such as safety, coding, and general user preference. Unlike traditional methods that require careful curation of a mixture of datasets to achieve comprehensive improvement, we can quickly experiment with preference weightings using MOD to find the best combination of models. Our best combination reduces toxicity on Toxigen to nearly 0% and achieves 7.9--33.3% improvement across other three metrics ($\\textit{i.e.}$, Codex@1, GSM-COT, BBH-COT).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "de155abe5132819b8cf7414fc964e7df799b7d64",
+    "externalIds": {
+      "ArXiv": "2405.19440",
+      "DBLP": "conf/iclr/ZhangXZJ25",
+      "CorpusId": 270123493
+    },
+    "title": "MGDA Converges under Generalized Smoothness, Provably",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.19440, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256972850",
+        "name": "Qi Zhang"
+      },
+      {
+        "authorId": "2272946125",
+        "name": "Peiyao Xiao"
+      },
+      {
+        "authorId": "2303398215",
+        "name": "Shaofeng Zou"
+      },
+      {
+        "authorId": "2272008500",
+        "name": "Kaiyi Ji"
+      }
+    ],
+    "abstract": "Multi-objective optimization (MOO) is receiving more attention in various fields such as multi-task learning. Recent works provide some effective algorithms with theoretical analysis but they are limited by the standard $L$-smooth or bounded-gradient assumptions, which typically do not hold for neural networks, such as Long short-term memory (LSTM) models and Transformers. In this paper, we study a more general and realistic class of generalized $\\ell$-smooth loss functions, where $\\ell$ is a general non-decreasing function of gradient norm. We revisit and analyze the fundamental multiple gradient descent algorithm (MGDA) and its stochastic version with double sampling for solving the generalized $\\ell$-smooth MOO problems, which approximate the conflict-avoidant (CA) direction that maximizes the minimum improvement among objectives. We provide a comprehensive convergence analysis of these algorithms and show that they converge to an $\\epsilon$-accurate Pareto stationary point with a guaranteed $\\epsilon$-level average CA distance (i.e., the gap between the updating direction and the CA direction) over all iterations, where totally $\\mathcal{O}(\\epsilon^{-2})$ and $\\mathcal{O}(\\epsilon^{-4})$ samples are needed for deterministic and stochastic settings, respectively. We prove that they can also guarantee a tighter $\\epsilon$-level CA distance in each iteration using more samples. Moreover, we analyze an efficient variant of MGDA named MGDA-FA using only $\\mathcal{O}(1)$ time and space, while achieving the same performance guarantee as MGDA.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8f2254fb38cfc8f79524fd1cd2609124808f2c8c",
+    "externalIds": {
+      "ArXiv": "2404.11999",
+      "DBLP": "conf/icml/ZengLMYZW24",
+      "DOI": "10.48550/arXiv.2404.11999",
+      "CorpusId": 269214026
+    },
+    "title": "Token-level Direct Preference Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.11999, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2297444639",
+        "name": "Yongcheng Zeng"
+      },
+      {
+        "authorId": "2297437972",
+        "name": "Guoqing Liu"
+      },
+      {
+        "authorId": "2275596860",
+        "name": "Weiyu Ma"
+      },
+      {
+        "authorId": "2292898878",
+        "name": "Ning Yang"
+      },
+      {
+        "authorId": "2247479851",
+        "name": "Haifeng Zhang"
+      },
+      {
+        "authorId": "2386604138",
+        "name": "Jun Wang"
+      }
+    ],
+    "abstract": "Fine-tuning pre-trained Large Language Models (LLMs) is essential to align them with human values and intentions. This process often utilizes methods like pairwise comparisons and KL divergence against a reference LLM, focusing on the evaluation of full answers generated by the models. However, the generation of these responses occurs in a token level, following a sequential, auto-regressive fashion. In this paper, we introduce Token-level Direct Preference Optimization (TDPO), a novel approach to align LLMs with human preferences by optimizing policy at the token level. Unlike previous methods, which face challenges in divergence efficiency, TDPO incorporates forward KL divergence constraints for each token, improving alignment and diversity. Utilizing the Bradley-Terry model for a token-based reward system, TDPO enhances the regulation of KL divergence, while preserving simplicity without the need for explicit reward modeling. Experimental results across various text tasks demonstrate TDPO's superior performance in balancing alignment with generation diversity. Notably, fine-tuning with TDPO strikes a better balance than DPO in the controlled sentiment generation and single-turn dialogue datasets, and significantly improves the quality of generated responses compared to both DPO and PPO-based RLHF methods. Our code is open-sourced at https://github.com/Vance0124/Token-level-Direct-Preference-Optimization.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "44162aa2763c88a384d9c51d60eafcc59277a1c9",
+    "externalIds": {
+      "DBLP": "conf/icml/LiuGBCBLHDVB24",
+      "ArXiv": "2402.02992",
+      "DOI": "10.48550/arXiv.2402.02992",
+      "CorpusId": 267411998
+    },
+    "title": "Decoding-time Realignment of Language Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 68,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.02992, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281864351",
+        "name": "Tianlin Liu"
+      },
+      {
+        "authorId": "2283016358",
+        "name": "Shangmin Guo"
+      },
+      {
+        "authorId": "134284317",
+        "name": "L. Bianco"
+      },
+      {
+        "authorId": "2439765",
+        "name": "Daniele Calandriello"
+      },
+      {
+        "authorId": "2282534128",
+        "name": "Quentin Berthet"
+      },
+      {
+        "authorId": "2283854295",
+        "name": "Felipe Llinares-López"
+      },
+      {
+        "authorId": "2282530111",
+        "name": "Jessica Hoffmann"
+      },
+      {
+        "authorId": "2282533189",
+        "name": "Lucas Dixon"
+      },
+      {
+        "authorId": "1806291",
+        "name": "Michal Valko"
+      },
+      {
+        "authorId": "2281742464",
+        "name": "Mathieu Blondel"
+      }
+    ],
+    "abstract": "Aligning language models with human preferences is crucial for reducing errors and biases in these models. Alignment techniques, such as reinforcement learning from human feedback (RLHF), are typically cast as optimizing a tradeoff between human preference rewards and a proximity regularization term that encourages staying close to the unaligned model. Selecting an appropriate level of regularization is critical: insufficient regularization can lead to reduced model capabilities due to reward hacking, whereas excessive regularization hinders alignment. Traditional methods for finding the optimal regularization level require retraining multiple models with varying regularization strengths. This process, however, is resource-intensive, especially for large models. To address this challenge, we propose decoding-time realignment (DeRa), a simple method to explore and evaluate different regularization strengths in aligned models without retraining. DeRa enables control over the degree of alignment, allowing users to smoothly transition between unaligned and aligned models. It also enhances the efficiency of hyperparameter tuning by enabling the identification of effective regularization strengths using a validation dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f5275c61736781d236abe6700b822f1ea62f982e",
+    "externalIds": {
+      "ArXiv": "2311.12908",
+      "DBLP": "conf/cvpr/WallaceDRZLPEXJ24",
+      "DOI": "10.1109/CVPR52733.2024.00786",
+      "CorpusId": 265352136
+    },
+    "title": "Diffusion Model Alignment Using Direct Preference Optimization",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 661,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2311.12908",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.12908, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152823401",
+        "name": "Bram Wallace"
+      },
+      {
+        "authorId": "2267728871",
+        "name": "Meihua Dang"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "2249592181",
+        "name": "Linqi Zhou"
+      },
+      {
+        "authorId": "2261494043",
+        "name": "Aaron Lou"
+      },
+      {
+        "authorId": "3234247",
+        "name": "Senthil Purushwalkam"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2267728986",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "2708940",
+        "name": "Shafiq R. Joty"
+      },
+      {
+        "authorId": "2265756339",
+        "name": "Nikhil Naik"
+      }
+    ],
+    "abstract": "Large language models (LLMs) are fine-tuned using human comparison data with Reinforcement Learning from Human Feedback (RLHF) methods to make them better aligned with users' preferences. In contrast to LLMs, human preference learning has not been widely explored in text-to-image diffusion models; the best existing approach is to fine-tune a pretrained model using carefully curated high quality images and captions to improve visual appeal and text alignment. We propose Diffusion-DPO, a method to align diffusion models to human preferences by directly optimizing on human comparison data. Diffusion-DPO is adapted from the recently developed Direct Preference Optimization (DPO) [36], a simpler alternative to RLHF which directly optimizes a policy that best satisfies human preferences under a classification objective. We re-formulate DPO to account for a diffusion model notion of likelihood, utilizing the evidence lower bound to derive a differentiable objective. Using the Pick-a-Pic dataset of 851K crowdsourced pairwise preferences, we fine-tune the base model of the state-of-the-art Stable Diffusion XL (SDXL)-1.0 model with Diffusion-DPO. Our fine-tuned base model significantly outperforms both base SDXL-1.0 and the larger SDXL-1.0 model consisting of an additional refinement model in human evaluation, improving visual appeal and prompt alignment. We also develop a variant that uses AI feedback and has comparable performance to training on human preferences, opening the door for scaling of diffusion model alignment methods.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a395f1c0910a5622f6faaefb5b27e87bb1617759",
+    "externalIds": {
+      "ArXiv": "2309.17400",
+      "DBLP": "conf/iclr/ClarkVSF24",
+      "DOI": "10.48550/arXiv.2309.17400",
+      "CorpusId": 263310957
+    },
+    "title": "Directly Fine-Tuning Diffusion Models on Differentiable Rewards",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 373,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.17400",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.17400, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2249537352",
+        "name": "Kevin Clark"
+      },
+      {
+        "authorId": "2039154",
+        "name": "Paul Vicol"
+      },
+      {
+        "authorId": "1754860",
+        "name": "Kevin Swersky"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      }
+    ],
+    "abstract": "We present Direct Reward Fine-Tuning (DRaFT), a simple and effective method for fine-tuning diffusion models to maximize differentiable reward functions, such as scores from human preference models. We first show that it is possible to backpropagate the reward function gradient through the full sampling procedure, and that doing so achieves strong performance on a variety of rewards, outperforming reinforcement learning-based approaches. We then propose more efficient variants of DRaFT: DRaFT-K, which truncates backpropagation to only the last K steps of sampling, and DRaFT-LV, which obtains lower-variance gradient estimates for the case when K=1. We show that our methods work well for a variety of reward functions and can be used to substantially improve the aesthetic quality of images generated by Stable Diffusion 1.4. Finally, we draw connections between our approach and prior work, providing a unifying perspective on the design space of gradient-based fine-tuning algorithms.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0e2f8491b7af5f715c8ac7e3a7fd96494bd417d8",
+    "externalIds": {
+      "DBLP": "conf/nips/RameCDGSSC23",
+      "ArXiv": "2306.04488",
+      "DOI": "10.48550/arXiv.2306.04488",
+      "CorpusId": 259096117
+    },
+    "title": "Rewarded soups: towards Pareto-optimal alignment by interpolating weights fine-tuned on diverse rewards",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 232,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.04488",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.04488, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "26384385",
+        "name": "Alexandre Ramé"
+      },
+      {
+        "authorId": "1637414390",
+        "name": "Guillaume Couairon"
+      },
+      {
+        "authorId": "2067292515",
+        "name": "Mustafa Shukor"
+      },
+      {
+        "authorId": "41020827",
+        "name": "Corentin Dancette"
+      },
+      {
+        "authorId": "2131867883",
+        "name": "Jean-Baptiste Gaya"
+      },
+      {
+        "authorId": "145159652",
+        "name": "L. Soulier"
+      },
+      {
+        "authorId": "51021910",
+        "name": "M. Cord"
+      }
+    ],
+    "abstract": "Foundation models are first pre-trained on vast unsupervised datasets and then fine-tuned on labeled data. Reinforcement learning, notably from human feedback (RLHF), can further align the network with the intended usage. Yet the imperfections in the proxy reward may hinder the training and lead to suboptimal results; the diversity of objectives in real-world tasks and human opinions exacerbate the issue. This paper proposes embracing the heterogeneity of diverse rewards by following a multi-policy strategy. Rather than focusing on a single a priori reward, we aim for Pareto-optimal generalization across the entire space of preferences. To this end, we propose rewarded soup, first specializing multiple networks independently (one for each proxy reward) and then interpolating their weights linearly. This succeeds empirically because we show that the weights remain linearly connected when fine-tuned on diverse rewards from a shared pre-trained initialization. We demonstrate the effectiveness of our approach for text-to-text (summarization, Q&A, helpful assistant, review), text-image (image captioning, text-to-image generation, visual grounding, VQA), and control (locomotion) tasks. We hope to enhance the alignment of deep models, and how they interact with the world in all its diversity.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "ba1c8e1d51dc8a2685d2f0ddc146c54ef7d61d23",
+    "externalIds": {
+      "DBLP": "conf/nips/ChenFYC23",
+      "ArXiv": "2305.20057",
+      "DOI": "10.48550/arXiv.2305.20057",
+      "CorpusId": 258987364
+    },
+    "title": "Three-Way Trade-Off in Multi-Objective Learning: Optimization, Generalization and Conflict-Avoidance",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 39,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.20057",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.20057, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46307667",
+        "name": "Lisha Chen"
+      },
+      {
+        "authorId": "2085030646",
+        "name": "H. Fernando"
+      },
+      {
+        "authorId": "144359603",
+        "name": "Yiming Ying"
+      },
+      {
+        "authorId": "2117182150",
+        "name": "Tianyi Chen"
+      }
+    ],
+    "abstract": "Multi-objective learning (MOL) problems often arise in emerging machine learning problems when there are multiple learning criteria, data modalities, or learning tasks. Different from single-objective learning, one of the critical challenges in MOL is the potential conflict among different objectives during the iterative optimization process. Recent works have developed various dynamic weighting algorithms for MOL such as MGDA and its variants, where the central idea is to find an update direction that avoids conflicts among objectives. Albeit its appealing intuition, empirical studies show that dynamic weighting methods may not always outperform static ones. To understand this theory-practical gap, we focus on a new stochastic variant of MGDA - the Multi-objective gradient with Double sampling (MoDo) algorithm, and study the generalization performance of the dynamic weighting-based MoDo and its interplay with optimization through the lens of algorithm stability. Perhaps surprisingly, we find that the key rationale behind MGDA -- updating along conflict-avoidant direction - may hinder dynamic weighting algorithms from achieving the optimal ${\\cal O}(1/\\sqrt{n})$ population risk, where $n$ is the number of training samples. We further demonstrate the impact of the variability of dynamic weights on the three-way trade-off among optimization, generalization, and conflict avoidance that is unique in MOL. We showcase the generality of our theoretical framework by analyzing other existing stochastic MOL algorithms under the framework. Experiments on various multi-task learning benchmarks are performed to demonstrate the practical applicability. Code is available at https://github.com/heshandevaka/Trade-Off-MOL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0d1c76d45afa012ded7ab741194baf142117c495",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18290",
+      "ArXiv": "2305.18290",
+      "DOI": "10.52202/075280-2338",
+      "CorpusId": 258959321
+    },
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "50465276",
+        "name": "Archit Sharma"
+      },
+      {
+        "authorId": "49688913",
+        "name": "E. Mitchell"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "60ad0e8febb6930f2c0b94955514ea0cebbf58b4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18409",
+      "ArXiv": "2305.18409",
+      "DOI": "10.48550/arXiv.2305.18409",
+      "CorpusId": 258967281
+    },
+    "title": "Direction-oriented Multi-objective Learning: Simple and Provable Stochastic Algorithms",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 38,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.18409",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18409, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2331624",
+        "name": "Peiyao Xiao"
+      },
+      {
+        "authorId": "1752861343",
+        "name": "Hao Ban"
+      },
+      {
+        "authorId": "24006255",
+        "name": "Kaiyi Ji"
+      }
+    ],
+    "abstract": "Multi-objective optimization (MOO) has become an influential framework in many machine learning problems with multiple objectives such as learning with multiple criteria and multi-task learning (MTL). In this paper, we propose a new direction-oriented multi-objective problem by regularizing the common descent direction within a neighborhood of a direction that optimizes a linear combination of objectives such as the average loss in MTL. This formulation includes GD and MGDA as special cases, enjoys the direction-oriented benefit as in CAGrad, and facilitates the design of stochastic algorithms. To solve this problem, we propose Stochastic Direction-oriented Multi-objective Gradient descent (SDMGrad) with simple SGD type of updates, and its variant SDMGrad-OS with an efficient objective sampling in the setting where the number of objectives is large. For a constant-level regularization parameter $\\lambda$, we show that SDMGrad and SDMGrad-OS provably converge to a Pareto stationary point with improved complexities and milder assumptions. For an increasing $\\lambda$, this convergent point reduces to a stationary point of the linear combination of objectives. We demonstrate the superior performance of the proposed methods in a series of tasks on multi-task supervised learning and reinforcement learning. Code is provided at https://github.com/ml-opt-lab/sdmgrad.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a553bf27d801d09f667fe121c0ba9632257f364b",
+    "externalIds": {
+      "DBLP": "conf/nips/FanWDLRBAG0L23",
+      "ArXiv": "2305.16381",
+      "DOI": "10.48550/arXiv.2305.16381",
+      "CorpusId": 258947323
+    },
+    "title": "DPOK: Reinforcement Learning for Fine-tuning Text-to-Image Diffusion Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 370,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.16381",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.16381, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2344807639",
+        "name": "Ying Fan"
+      },
+      {
+        "authorId": "145695607",
+        "name": "Olivia Watkins"
+      },
+      {
+        "authorId": "144894286",
+        "name": "Yuqing Du"
+      },
+      {
+        "authorId": "2143855835",
+        "name": "Hao Liu"
+      },
+      {
+        "authorId": "2060597867",
+        "name": "M. Ryu"
+      },
+      {
+        "authorId": "145646162",
+        "name": "Craig Boutilier"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1678622",
+        "name": "M. Ghavamzadeh"
+      },
+      {
+        "authorId": "2115495251",
+        "name": "Kangwook Lee"
+      },
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      }
+    ],
+    "abstract": "Learning from human feedback has been shown to improve text-to-image models. These techniques first learn a reward function that captures what humans care about in the task and then improve the models based on the learned reward function. Even though relatively simple approaches (e.g., rejection sampling based on reward scores) have been investigated, fine-tuning text-to-image models with the reward function remains challenging. In this work, we propose using online reinforcement learning (RL) to fine-tune text-to-image models. We focus on diffusion models, defining the fine-tuning task as an RL problem, and updating the pre-trained text-to-image diffusion models using policy gradient to maximize the feedback-trained reward. Our approach, coined DPOK, integrates policy optimization with KL regularization. We conduct an analysis of KL regularization for both RL fine-tuning and supervised fine-tuning. In our experiments, we show that DPOK is generally superior to supervised fine-tuning with respect to both image-text alignment and image quality. Our code is available at https://github.com/google-research/google-research/tree/master/dpok.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "d8c78221e4366d6a72a6b3e41e35b706cc45c01d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-13301",
+      "ArXiv": "2305.13301",
+      "DOI": "10.48550/arXiv.2305.13301",
+      "CorpusId": 258833251
+    },
+    "title": "Training Diffusion Models with Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 799,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.13301",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.13301, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2069483822",
+        "name": "Kevin Black"
+      },
+      {
+        "authorId": "35163402",
+        "name": "Michael Janner"
+      },
+      {
+        "authorId": "15394275",
+        "name": "Yilun Du"
+      },
+      {
+        "authorId": "2000906",
+        "name": "Ilya Kostrikov"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Diffusion models are a class of flexible generative models trained with an approximation to the log-likelihood objective. However, most use cases of diffusion models are not concerned with likelihoods, but instead with downstream objectives such as human-perceived image quality or drug effectiveness. In this paper, we investigate reinforcement learning methods for directly optimizing diffusion models for such objectives. We describe how posing denoising as a multi-step decision-making problem enables a class of policy gradient algorithms, which we refer to as denoising diffusion policy optimization (DDPO), that are more effective than alternative reward-weighted likelihood approaches. Empirically, DDPO is able to adapt text-to-image diffusion models to objectives that are difficult to express via prompting, such as image compressibility, and those derived from human feedback, such as aesthetic quality. Finally, we show that DDPO can improve prompt-image alignment using feedback from a vision-language model without the need for additional data collection or human annotation. The project's website can be found at http://rl-diffusion.github.io .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1b2355c3c674b26a977768a91a164384ad51bbb1",
+    "externalIds": {
+      "ArXiv": "2304.05977",
+      "DBLP": "journals/corr/abs-2304-05977",
+      "DOI": "10.48550/arXiv.2304.05977",
+      "CorpusId": 258079316
+    },
+    "title": "ImageReward: Learning and Evaluating Human Preferences for Text-to-Image Generation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 919,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.05977",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.05977, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2214082934",
+        "name": "Jiazheng Xu"
+      },
+      {
+        "authorId": "2111312892",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2118477855",
+        "name": "Yuchen Wu"
+      },
+      {
+        "authorId": "2214060402",
+        "name": "Yuxuan Tong"
+      },
+      {
+        "authorId": "2214217084",
+        "name": "Qinkai Li"
+      },
+      {
+        "authorId": "2055623340",
+        "name": "Ming Ding"
+      },
+      {
+        "authorId": "2148911956",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "2047998",
+        "name": "Yuxiao Dong"
+      }
+    ],
+    "abstract": "We present a comprehensive solution to learn and improve text-to-image models from human preference feedback. To begin with, we build ImageReward -- the first general-purpose text-to-image human preference reward model -- to effectively encode human preferences. Its training is based on our systematic annotation pipeline including rating and ranking, which collects 137k expert comparisons to date. In human evaluation, ImageReward outperforms existing scoring models and metrics, making it a promising automatic metric for evaluating text-to-image synthesis. On top of it, we propose Reward Feedback Learning (ReFL), a direct tuning algorithm to optimize diffusion models against a scorer. Both automatic and human evaluation support ReFL's advantages over compared methods. All code and datasets are provided at \\url{https://github.com/THUDM/ImageReward}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9550076d9930dd3533ab9276126f1a9265fad7b4",
+    "externalIds": {
+      "ArXiv": "2303.14420",
+      "DBLP": "conf/iccv/WuSZZL23",
+      "DOI": "10.1109/ICCV51070.2023.00200",
+      "CorpusId": 257767281
+    },
+    "title": "Human Preference Score: Better Aligning Text-to-image Models with Human Preference",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 316,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.14420, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2124853327",
+        "name": "Xiaoshi Wu"
+      },
+      {
+        "authorId": "11837959",
+        "name": "Keqiang Sun"
+      },
+      {
+        "authorId": "2075369514",
+        "name": "Feng Zhu"
+      },
+      {
+        "authorId": "145638781",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "47893312",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Recent years have witnessed a rapid growth of deep generative models, with text-to-image models gaining significant attention from the public. However, existing models often generate images that do not align well with human preferences, such as awkward combinations of limbs and facial expressions. To address this issue, we collect a dataset of human choices on generated images from the Stable Foundation Discord channel. Our experiments demonstrate that current evaluation metrics for generative models do not correlate well with human choices. Thus, we train a human preference classifier with the collected dataset and derive a Human Preference Score (HPS) based on the classifier. Using HPS, we propose a simple yet effective method to adapt Stable Diffusion to better align with human preferences. Our experiments show that HPS outperforms CLIP in predicting human choices and has good generalization capability toward images generated from other models. By tuning Stable Diffusion with the guidance of HPS, the adapted model is able to generate images that are more preferred by human users. The project page is available here: https://tgxs002.github.io/alignsd-web/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d7c1f382fc3aa5e8da9fcad94f30c6dc1f8eb3f8",
+    "externalIds": {
+      "ArXiv": "2303.14302",
+      "DBLP": "journals/corr/abs-2303-14302",
+      "DOI": "10.1109/CVPR52729.2023.00968",
+      "CorpusId": 257766298
+    },
+    "title": "VILA: Learning Image Aesthetics from User Comments with Vision-Language Pretraining",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 90,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.14302",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.14302, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49287230",
+        "name": "Junjie Ke"
+      },
+      {
+        "authorId": "9085797",
+        "name": "Keren Ye"
+      },
+      {
+        "authorId": "2279043438",
+        "name": "Jiahui Yu"
+      },
+      {
+        "authorId": "48607963",
+        "name": "Yonghui Wu"
+      },
+      {
+        "authorId": "1718280",
+        "name": "P. Milanfar"
+      },
+      {
+        "authorId": "1454990616",
+        "name": "Feng Yang"
+      }
+    ],
+    "abstract": "Assessing the aesthetics of an image is challenging, as it is influenced by multiple factors including composition, color, style, and high-level semantics. Existing image aesthetic assessment (IAA) methods primarily rely on human-labeled rating scores, which oversimplify the visual aesthetic information that humans perceive. Conversely, user comments offer more comprehensive information and are a more natural way to express human opinions and preferences regarding image aesthetics. In light of this, we propose learning image aesthetics from user comments, and exploring vision-language pretraining methods to learn multimodal aesthetic representations. Specifically, we pretrain an image-text encoder-decoder model with image-comment pairs, using contrastive and generative objectives to learn rich and generic aesthetic semantics without human labels. To efficiently adapt the pretrained model for downstream IAA tasks, we further propose a lightweight rank-based adapter that employs text as an anchor to learn the aesthetic ranking concept. Our results show that our pretrained aesthetic vision-language model outperforms prior works on image aesthetic captioning over the AVA-Captions dataset, and it has powerful zero-shot capability for aesthetic tasks such as zero-shot style classification and zero-shot IAA, surpassing many supervised baselines. With only minimal finetuning parameters using the proposed adapter module, our model achieves state-of-the-art IAA performance over the AVA dataset. 11Our model is available at https://github.com/google-research/google-research/tree/master/VILA",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ce06533ecc98ba221a4db427738884c6a6af6eee",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2303-09833",
+      "ArXiv": "2303.09833",
+      "DOI": "10.1109/ICCV51070.2023.02118",
+      "CorpusId": 257622962
+    },
+    "title": "FreeDoM: Training-Free Energy-Guided Conditional Diffusion Model",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 306,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.09833",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.09833, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116420946",
+        "name": "Jiwen Yu"
+      },
+      {
+        "authorId": "2158606267",
+        "name": "Yinhuai Wang"
+      },
+      {
+        "authorId": "2109529407",
+        "name": "Chen Zhao"
+      },
+      {
+        "authorId": "2931652",
+        "name": "Bernard Ghanem"
+      },
+      {
+        "authorId": "2151813845",
+        "name": "Jian Zhang"
+      }
+    ],
+    "abstract": "Recently, conditional diffusion models have gained popularity in numerous applications due to their exceptional generation ability. However, many existing methods are training-required. They need to train a time-dependent classifier or a condition-dependent score estimator, which increases the cost of constructing conditional diffusion models and is inconvenient to transfer across different conditions. Some current works aim to overcome this limitation by proposing training-free solutions, but most can only be applied to a specific category of tasks and not to more general conditions. In this work, we propose a training-Free conditional Diffusion Model (FreeDoM) used for various conditions. Specifically, we leverage off-the-shelf pretrained networks, such as a face detection model, to construct time-independent energy functions, which guide the generation process without requiring training. Furthermore, because the construction of the energy function is very flexible and adaptable to various conditions, our proposed FreeDoM has a broader range of applications than existing training-free methods. FreeDoM is advantageous in its simplicity, effectiveness, and low cost. Experiments demonstrate that FreeDoM is effective for various conditions and suitable for diffusion models of diverse data domains, including image and latent code domains. Code is available at https://github.com/vvictoryuki/FreeDoM.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1e4b6567ff66de6cdcbe58c863538241e2f62b45",
+    "externalIds": {
+      "ArXiv": "2302.12192",
+      "DBLP": "journals/corr/abs-2302-12192",
+      "DOI": "10.48550/arXiv.2302.12192",
+      "CorpusId": 257102772
+    },
+    "title": "Aligning Text-to-Image Models using Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 437,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.12192",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.12192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      },
+      {
+        "authorId": "2143855835",
+        "name": "Hao Liu"
+      },
+      {
+        "authorId": "2060597867",
+        "name": "M. Ryu"
+      },
+      {
+        "authorId": "145695607",
+        "name": "Olivia Watkins"
+      },
+      {
+        "authorId": "144894286",
+        "name": "Yuqing Du"
+      },
+      {
+        "authorId": "145646162",
+        "name": "Craig Boutilier"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1678622",
+        "name": "M. Ghavamzadeh"
+      },
+      {
+        "authorId": "2046135",
+        "name": "S. Gu"
+      }
+    ],
+    "abstract": "Deep generative models have shown impressive results in text-to-image synthesis. However, current text-to-image models often generate images that are inadequately aligned with text prompts. We propose a fine-tuning method for aligning such models using human feedback, comprising three stages. First, we collect human feedback assessing model output alignment from a set of diverse text prompts. We then use the human-labeled image-text dataset to train a reward function that predicts human feedback. Lastly, the text-to-image model is fine-tuned by maximizing reward-weighted likelihood to improve image-text alignment. Our method generates objects with specified colors, counts and backgrounds more accurately than the pre-trained model. We also analyze several design choices and find that careful investigations on such design choices are important in balancing the alignment-fidelity tradeoffs. Our results demonstrate the potential for learning from human feedback to significantly improve text-to-image models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d24b4f34197df0257390b57f02537e6ce3284f2e",
+    "externalIds": {
+      "ArXiv": "2302.07121",
+      "DBLP": "conf/iclr/BansalCSSGGG24",
+      "DOI": "10.1109/CVPRW59228.2023.00091",
+      "CorpusId": 256846836
+    },
+    "title": "Universal Guidance for Diffusion Models",
+    "venue": "2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2023,
+    "citationCount": 433,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.07121",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.07121, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7364835",
+        "name": "Arpit Bansal"
+      },
+      {
+        "authorId": "37286392",
+        "name": "Hong-Min Chu"
+      },
+      {
+        "authorId": "102604362",
+        "name": "Avi Schwarzschild"
+      },
+      {
+        "authorId": "2500202",
+        "name": "Soumyadip Sengupta"
+      },
+      {
+        "authorId": "121592562",
+        "name": "Micah Goldblum"
+      },
+      {
+        "authorId": "8284185",
+        "name": "Jonas Geiping"
+      },
+      {
+        "authorId": "1962083",
+        "name": "T. Goldstein"
+      }
+    ],
+    "abstract": "Typical diffusion models are trained to accept a particular form of conditioning, most commonly text, and cannot be conditioned on other modalities without retraining. In this work, we propose a universal guidance algorithm that enables diffusion models to be controlled by arbitrary guidance modalities without the need to retrain any use-specific components. We show that our algorithm successfully generates quality images with guidance functions including segmentation, face recognition, object detection, and classifier signals. Code is available at github.com/arpitbansal297/Universal-Guided-Diffusion.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4d81c33b295c092016ac236cfd32020a5bb70b97",
+    "externalIds": {
+      "ArXiv": "2212.09611",
+      "DBLP": "conf/nips/HaoC0W23",
+      "DOI": "10.48550/arXiv.2212.09611",
+      "CorpusId": 254853701
+    },
+    "title": "Optimizing Prompts for Text-to-Image Generation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 258,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2212.09611",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.09611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34128716",
+        "name": "Y. Hao"
+      },
+      {
+        "authorId": "46221722",
+        "name": "Zewen Chi"
+      },
+      {
+        "authorId": "145307652",
+        "name": "Li Dong"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      }
+    ],
+    "abstract": "Well-designed prompts can guide text-to-image models to generate amazing images. However, the performant prompts are often model-specific and misaligned with user input. Instead of laborious human engineering, we propose prompt adaptation, a general framework that automatically adapts original user input to model-preferred prompts. Specifically, we first perform supervised fine-tuning with a pretrained language model on a small collection of manually engineered prompts. Then we use reinforcement learning to explore better prompts. We define a reward function that encourages the policy to generate more aesthetically pleasing images while preserving the original user intentions. Experimental results on Stable Diffusion show that our method outperforms manual prompt engineering in terms of both automatic metrics and human preference ratings. Moreover, reinforcement learning further boosts performance, especially on out-of-domain prompts. The pretrained checkpoints are available at https://aka.ms/promptist. The demo can be found at https://aka.ms/promptist-demo.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7a55e20aa5306526053590c4899bd7c7777dfa30",
+    "externalIds": {
+      "DBLP": "conf/nips/Zhou0K0022",
+      "ArXiv": "2206.05357",
+      "DOI": "10.48550/arXiv.2206.05357",
+      "CorpusId": 249625674
+    },
+    "title": "Anchor-Changing Regularized Natural Policy Gradient for Multi-Objective Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.05357",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.05357, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35641550",
+        "name": "Ruida Zhou"
+      },
+      {
+        "authorId": "34252696",
+        "name": "Tao-Wen Liu"
+      },
+      {
+        "authorId": "1956081",
+        "name": "D. Kalathil"
+      },
+      {
+        "authorId": "151478680",
+        "name": "P. Kumar"
+      },
+      {
+        "authorId": "2072927001",
+        "name": "Chao Tian"
+      }
+    ],
+    "abstract": "We study policy optimization for Markov decision processes (MDPs) with multiple reward value functions, which are to be jointly optimized according to given criteria such as proportional fairness (smooth concave scalarization), hard constraints (constrained MDP), and max-min trade-off. We propose an Anchor-changing Regularized Natural Policy Gradient (ARNPG) framework, which can systematically incorporate ideas from well-performing first-order methods into the design of policy optimization algorithms for multi-objective MDP problems. Theoretically, the designed algorithms based on the ARNPG framework achieve $\\tilde{O}(1/T)$ global convergence with exact gradients. Empirically, the ARNPG-guided algorithms also demonstrate superior performance compared to some existing policy gradient-based approaches in both exact gradients and sample-based scenarios.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9695824d7a01fad57ba9c01d7d76a519d78d65e7",
+    "externalIds": {
+      "ArXiv": "2205.11487",
+      "DBLP": "journals/corr/abs-2205-11487",
+      "DOI": "10.48550/arXiv.2205.11487",
+      "CorpusId": 248986576
+    },
+    "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 8123,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.11487",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.11487, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51497543",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2054003577",
+        "name": "Saurabh Saxena"
+      },
+      {
+        "authorId": "2111917831",
+        "name": "Lala Li"
+      },
+      {
+        "authorId": "21040156",
+        "name": "Jay Whang"
+      },
+      {
+        "authorId": "40081727",
+        "name": "Emily L. Denton"
+      },
+      {
+        "authorId": "81419386",
+        "name": "Seyed Kamyar Seyed Ghasemipour"
+      },
+      {
+        "authorId": "143990191",
+        "name": "Burcu Karagol Ayan"
+      },
+      {
+        "authorId": "1982213",
+        "name": "S. S. Mahdavi"
+      },
+      {
+        "authorId": "143826364",
+        "name": "Raphael Gontijo Lopes"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "We present Imagen, a text-to-image diffusion model with an unprecedented degree of photorealism and a deep level of language understanding. Imagen builds on the power of large transformer language models in understanding text and hinges on the strength of diffusion models in high-fidelity image generation. Our key discovery is that generic large language models (e.g. T5), pretrained on text-only corpora, are surprisingly effective at encoding text for image synthesis: increasing the size of the language model in Imagen boosts both sample fidelity and image-text alignment much more than increasing the size of the image diffusion model. Imagen achieves a new state-of-the-art FID score of 7.27 on the COCO dataset, without ever training on COCO, and human raters find Imagen samples to be on par with the COCO data itself in image-text alignment. To assess text-to-image models in greater depth, we introduce DrawBench, a comprehensive and challenging benchmark for text-to-image models. With DrawBench, we compare Imagen with recent methods including VQ-GAN+CLIP, Latent Diffusion Models, and DALL-E 2, and find that human raters prefer Imagen over other models in side-by-side comparisons, both in terms of sample quality and image-text alignment. See https://imagen.research.google/ for an overview of the results.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c57293882b2561e1ba03017902df9fc2f289dea2",
+    "externalIds": {
+      "ArXiv": "2204.06125",
+      "DBLP": "journals/corr/abs-2204-06125",
+      "DOI": "10.48550/arXiv.2204.06125",
+      "CorpusId": 248097655
+    },
+    "title": "Hierarchical Text-Conditional Image Generation with CLIP Latents",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 8830,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.06125",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.06125, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "30414789",
+        "name": "C. Chu"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      }
+    ],
+    "abstract": "Contrastive models like CLIP have been shown to learn robust representations of images that capture both semantics and style. To leverage these representations for image generation, we propose a two-stage model: a prior that generates a CLIP image embedding given a text caption, and a decoder that generates an image conditioned on the image embedding. We show that explicitly generating image representations improves image diversity with minimal loss in photorealism and caption similarity. Our decoders conditioned on image representations can also produce variations of an image that preserve both its semantics and style, while varying the non-essential details absent from the image representation. Moreover, the joint embedding space of CLIP enables language-guided image manipulations in a zero-shot fashion. We use diffusion models for the decoder and experiment with both autoregressive and diffusion models for the prior, finding that the latter are computationally more efficient and produce higher-quality samples.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+    "externalIds": {
+      "ArXiv": "2203.02155",
+      "DBLP": "journals/corr/abs-2203-02155",
+      "DOI": "10.52202/068431-2011",
+      "CorpusId": 246426909
+    },
+    "title": "Training language models to follow instructions with human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20076,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "2061137049",
+        "name": "Diogo Almeida"
+      },
+      {
+        "authorId": "2064084601",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": null,
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2151735262",
+        "name": "Fraser Kelton"
+      },
+      {
+        "authorId": "2142365973",
+        "name": "Luke E. Miller"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      }
+    ],
+    "abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c10075b3746a9f3dd5811970e93c8ca3ad39b39d",
+    "externalIds": {
+      "ArXiv": "2112.10752",
+      "DBLP": "journals/corr/abs-2112-10752",
+      "DOI": "10.1109/CVPR52688.2022.01042",
+      "CorpusId": 245335280
+    },
+    "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 23885,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2112.10752",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.10752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      },
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "2053482699",
+        "name": "Dominik Lorenz"
+      },
+      {
+        "authorId": "35175531",
+        "name": "Patrick Esser"
+      },
+      {
+        "authorId": "1796707",
+        "name": "B. Ommer"
+      }
+    ],
+    "abstract": "By decomposing the image formation process into a sequential application of denoising autoencoders, diffusion models (DMs) achieve state-of-the-art synthesis results on image data and beyond. Additionally, their formulation allows for a guiding mechanism to control the image generation process without retraining. However, since these models typically operate directly in pixel space, optimization of powerful DMs often consumes hundreds of GPU days and inference is expensive due to sequential evaluations. To enable DM training on limited computational resources while retaining their quality and flexibility, we apply them in the latent space of powerful pretrained autoencoders. In contrast to previous work, training diffusion models on such a representation allows for the first time to reach a near-optimal point between complexity reduction and detail preservation, greatly boosting visual fidelity. By introducing cross-attention layers into the model architecture, we turn diffusion models into powerful and flexible generators for general conditioning inputs such as text or bounding boxes and high-resolution synthesis becomes possible in a convolutional manner. Our latent diffusion models (LDMs) achieve new state of the art scores for image inpainting and class-conditional image synthesis and highly competitive performance on various tasks, including unconditional image generation, text-to-image synthesis, and super-resolution, while significantly reducing computational requirements compared to pixel-based DMs.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "94bcd712aed610b8eaeccc57136d65ec988356f2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-00630",
+      "ArXiv": "2107.00630",
+      "CorpusId": 235694314
+    },
+    "title": "Variational Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1454,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.00630, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117266525",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2117261512",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "2117259766",
+        "name": "Ben Poole"
+      },
+      {
+        "authorId": "2112615253",
+        "name": "Jonathan Ho"
+      }
+    ],
+    "abstract": "Diffusion-based generative models have demonstrated a capacity for perceptually impressive synthesis, but can they also be great likelihood-based models? We answer this in the affirmative, and introduce a family of diffusion-based generative models that obtain state-of-the-art likelihoods on standard image density estimation benchmarks. Unlike other diffusion-based models, our method allows for efficient optimization of the noise schedule jointly with the rest of the model. We show that the variational lower bound (VLB) simplifies to a remarkably short expression in terms of the signal-to-noise ratio of the diffused data, thereby improving our theoretical understanding of this model class. Using this insight, we prove an equivalence between several models proposed in the literature. In addition, we show that the continuous-time VLB is invariant to the noise schedule, except for the signal-to-noise ratio at its endpoints. This enables us to learn a noise schedule that minimizes the variance of the resulting VLB estimator, leading to faster optimization. Combining these advances with architectural improvements, we obtain state-of-the-art likelihoods on image density estimation benchmarks, outperforming autoregressive models that have dominated these benchmarks for many years, with often significantly faster optimization. In addition, we show how to use the model as part of a bits-back compression scheme, and demonstrate lossless compression rates close to the theoretical optimum. Code is available at https://github.com/google-research/vdm .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29734,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "671441f065e0efe26bdcd18296f4743ae3d2d72a",
+    "externalIds": {
+      "MAG": "2969489701",
+      "DBLP": "journals/corr/abs-1908-08342",
+      "ArXiv": "1908.08342",
+      "CorpusId": 201319046
+    },
+    "title": "A Generalized Algorithm for Multi-Objective Reinforcement Learning and Policy Adaptation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 345,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.08342, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22296032",
+        "name": "Runzhe Yang"
+      },
+      {
+        "authorId": "9998857",
+        "name": "Xingyuan Sun"
+      },
+      {
+        "authorId": "144958935",
+        "name": "Karthik Narasimhan"
+      }
+    ],
+    "abstract": "We introduce a new algorithm for multi-objective reinforcement learning (MORL) with linear preferences, with the goal of enabling few-shot adaptation to new tasks. In MORL, the aim is to learn policies over multiple competing objectives whose relative importance (preferences) is unknown to the agent. While this alleviates dependence on scalar reward design, the expected return of a policy can change significantly with varying preferences, making it challenging to learn a single model to produce optimal policies under different preference conditions. We propose a generalized version of the Bellman equation to learn a single parametric representation for optimal policies over the space of all possible preferences. After an initial learning phase, our agent can execute the optimal policy under any given preference, or automatically infer an underlying preference with very few samples. Experiments across four different domains demonstrate the effectiveness of our approach.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2dcef55a07f8607a819c21fe84131ea269cc2e3c",
+    "externalIds": {
+      "MAG": "2129069237",
+      "DBLP": "journals/corr/Sohl-DicksteinW15",
+      "ArXiv": "1503.03585",
+      "CorpusId": 14888175
+    },
+    "title": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 9689,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.03585, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "2144479710",
+        "name": "Eric A. Weiss"
+      },
+      {
+        "authorId": "2333223",
+        "name": "Niru Maheswaranathan"
+      },
+      {
+        "authorId": "25769960",
+        "name": "S. Ganguli"
+      }
+    ],
+    "abstract": "A central problem in machine learning involves modeling complex data-sets using highly flexible families of probability distributions in which learning, sampling, inference, and evaluation are still analytically or computationally tractable. Here, we develop an approach that simultaneously achieves both flexibility and tractability. The essential idea, inspired by non-equilibrium statistical physics, is to systematically and slowly destroy structure in a data distribution through an iterative forward diffusion process. We then learn a reverse diffusion process that restores structure in data, yielding a highly flexible and tractable generative model of the data. This approach allows us to rapidly learn, sample from, and evaluate probabilities in deep generative models with thousands of layers or time steps, as well as to compute conditional and posterior probabilities under the learned model. We additionally release an open source reference implementation of the algorithm.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "449532187c94af3dd3aa55e16d2c50f7854d2199",
+    "externalIds": {
+      "MAG": "1771410628",
+      "ArXiv": "1502.05477",
+      "DBLP": "conf/icml/SchulmanLAJM15",
+      "CorpusId": 16046818
+    },
+    "title": "Trust Region Policy Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 7828,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.05477, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "29912342",
+        "name": "Philipp Moritz"
+      }
+    ],
+    "abstract": "In this article, we describe a method for optimizing control policies, with guaranteed monotonic improvement. By making several approximations to the theoretically-justified scheme, we develop a practical algorithm, called Trust Region Policy Optimization (TRPO). This algorithm is effective for optimizing large nonlinear policies such as neural networks. Our experiments demonstrate its robust performance on a wide variety of tasks: learning simulated robotic swimming, hopping, and walking gaits; and playing Atari games using images of the screen as input. Despite its approximations that deviate from the theory, TRPO tends to give monotonic improvement, with little tuning of hyperparameters.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a82795a372cec5266e7247054e9aace8f3b6a4f3",
+    "externalIds": {
+      "MAG": "2102660061",
+      "ArXiv": "1402.0590",
+      "DBLP": "journals/jair/RoijersVWD13",
+      "DOI": "10.1613/jair.3987",
+      "CorpusId": 14478191
+    },
+    "title": "A Survey of Multi-Objective Sequential Decision-Making",
+    "venue": "Journal of Artificial Intelligence Research",
+    "year": 2013,
+    "citationCount": 786,
+    "openAccessPdf": {
+      "url": "https://www.jair.org/index.php/jair/article/download/10836/25862",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1402.0590, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1917202",
+        "name": "D. Roijers"
+      },
+      {
+        "authorId": "1990124",
+        "name": "P. Vamplew"
+      },
+      {
+        "authorId": "1766767",
+        "name": "Shimon Whiteson"
+      },
+      {
+        "authorId": "3327913",
+        "name": "Richard Dazeley"
+      }
+    ],
+    "abstract": "Sequential decision-making problems with multiple objectives arise naturally in practice and pose unique challenges for research in decision-theoretic planning and learning, which has largely focused on single-objective settings. This article surveys algorithms designed for sequential decision-making problems with multiple objectives. Though there is a growing body of literature on this subject, little of it makes explicit under what circumstances special methods are needed to solve multi-objective problems. Therefore, we identify three distinct scenarios in which converting such a problem to a single-objective one is impossible, infeasible, or undesirable. Furthermore, we propose a taxonomy that classifies multi-objective methods according to the applicable scenario, the nature of the scalarization function (which projects multi-objective values to scalar ones), and the type of policies considered. We show how these factors determine the nature of an optimal solution, which can be a single policy, a convex hull, or a Pareto front. Using this taxonomy, we survey the literature on multi-objective methods for planning and learning. Finally, we discuss key applications of such methods and outline opportunities for future work.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b7ef79008d87bce38144b6f1a06e36870e1c2449",
+    "externalIds": {
+      "MAG": "2060727197",
+      "DOI": "10.1016/J.CRMA.2012.03.014",
+      "CorpusId": 120459561
+    },
+    "title": "Multiple-gradient descent algorithm (MGDA) for multiobjective optimization",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 544,
+    "openAccessPdf": {
+      "url": "http://www.numdam.org/item/10.1016/j.crma.2012.03.014.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/J.CRMA.2012.03.014?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/J.CRMA.2012.03.014, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115165",
+        "name": "J. Désidéri"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f8337024e0de4902fe559f70196f66002087df51",
+    "externalIds": {
+      "DBLP": "conf/iclr/HanSSXYL024",
+      "CorpusId": 271745991
+    },
+    "title": "Training-free Multi-objective Diffusion Model for 3D Molecule Generation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2280774419",
+        "name": "Xu Han"
+      },
+      {
+        "authorId": "145663545",
+        "name": "Caihua Shan"
+      },
+      {
+        "authorId": "2152966656",
+        "name": "Yifei Shen"
+      },
+      {
+        "authorId": "2315244828",
+        "name": "Can Xu"
+      },
+      {
+        "authorId": "2387875455",
+        "name": "Han Yang"
+      },
+      {
+        "authorId": "2261684063",
+        "name": "Xiang Li"
+      },
+      {
+        "authorId": "2315485441",
+        "name": "Dongsheng Li"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "464df3e306a5b9a6a7131a582637aaef3de058f2",
+    "externalIds": {
+      "DBLP": "conf/icml/SongZYM0KCV23",
+      "CorpusId": 260957043
+    },
+    "title": "Loss-Guided Diffusion Models for Plug-and-Play Controllable Generation",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 221,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2112626470",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "94615164",
+        "name": "Qinsheng Zhang"
+      },
+      {
+        "authorId": "1989015",
+        "name": "Hongxu Yin"
+      },
+      {
+        "authorId": "33002157",
+        "name": "M. Mardani"
+      },
+      {
+        "authorId": "1596793949",
+        "name": "Ming-Yu Liu"
+      },
+      {
+        "authorId": "2376331464",
+        "name": "Jan Kautz"
+      },
+      {
+        "authorId": "2307051814",
+        "name": "Yongxin Chen"
+      },
+      {
+        "authorId": "2122700133",
+        "name": "Arash Vahdat"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c434a618949c83c6b6423e655e0c4cbdd49481a8",
+    "externalIds": {
+      "DBLP": "conf/nips/KadkhodaieS21",
+      "CorpusId": 240225810
+    },
+    "title": "Stochastic Solutions for Linear Inverse Problems using the Prior Implicit in a Denoiser",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 182,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "119460793",
+        "name": "Zahra Kadkhodaie"
+      },
+      {
+        "authorId": "1689350",
+        "name": "Eero P. Simoncelli"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]
