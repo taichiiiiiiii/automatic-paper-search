@@ -1,0 +1,3709 @@
+[
+  {
+    "paperId": "8666f9f379389a5dff31e72fb0f992a37763ba41",
+    "externalIds": {
+      "ArXiv": "2203.11147",
+      "DBLP": "journals/corr/abs-2203-11147",
+      "DOI": "10.48550/arXiv.2203.11147",
+      "CorpusId": 247594830
+    },
+    "title": "Teaching language models to support answers with verified quotes",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 324,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.11147",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.11147, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "1994939814",
+        "name": "Maja Trebacz"
+      },
+      {
+        "authorId": "148305440",
+        "name": "Vladimir Mikulik"
+      },
+      {
+        "authorId": "9958912",
+        "name": "John Aslanides"
+      },
+      {
+        "authorId": "2059836321",
+        "name": "Francis Song"
+      },
+      {
+        "authorId": "2159545857",
+        "name": "Martin Chadwick"
+      },
+      {
+        "authorId": "2143471164",
+        "name": "Mia Glaese"
+      },
+      {
+        "authorId": "116494324",
+        "name": "Susannah Young"
+      },
+      {
+        "authorId": "2151248210",
+        "name": "Lucy Campbell-Gillingham"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      },
+      {
+        "authorId": "147687624",
+        "name": "Nat McAleese"
+      }
+    ],
+    "abstract": "Recent large language models often answer factual questions correctly. But users can't trust any given claim a model makes without fact-checking, because language models can hallucinate convincing nonsense. In this work we use reinforcement learning from human preferences (RLHP) to train\"open-book\"QA models that generate answers whilst also citing specific evidence for their claims, which aids in the appraisal of correctness. Supporting evidence is drawn from multiple documents found via a search engine, or from a single user-provided document. Our 280 billion parameter model, GopherCite, is able to produce answers with high quality supporting evidence and abstain from answering when unsure. We measure the performance of GopherCite by conducting human evaluation of answers to questions in a subset of the NaturalQuestions and ELI5 datasets. The model's response is found to be high-quality 80\\% of the time on this Natural Questions subset, and 67\\% of the time on the ELI5 subset. Abstaining from the third of questions for which it is most unsure improves performance to 90\\% and 80\\% respectively, approaching human baselines. However, analysis on the adversarial TruthfulQA dataset shows why citation is only one part of an overall strategy for safety and trustworthiness: not all claims supported by evidence are true."
+  },
+  {
+    "paperId": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+    "externalIds": {
+      "ArXiv": "2203.02155",
+      "DBLP": "journals/corr/abs-2203-02155",
+      "DOI": "10.52202/068431-2011",
+      "CorpusId": 246426909
+    },
+    "title": "Training language models to follow instructions with human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20068,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "2061137049",
+        "name": "Diogo Almeida"
+      },
+      {
+        "authorId": "2064084601",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": null,
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2151735262",
+        "name": "Fraser Kelton"
+      },
+      {
+        "authorId": "2142365973",
+        "name": "Luke E. Miller"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      }
+    ],
+    "abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent."
+  },
+  {
+    "paperId": "a6f5b8f114b3eabbcd7f3f62091a481ca6f7f243",
+    "externalIds": {
+      "ArXiv": "2202.07785",
+      "DBLP": "conf/fat/GanguliHLABCCDD22",
+      "DOI": "10.1145/3531146.3533229",
+      "CorpusId": 246867298
+    },
+    "title": "Predictability and Surprise in Large Generative Models",
+    "venue": "Conference on Fairness, Accountability and Transparency",
+    "year": 2022,
+    "citationCount": 351,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3531146.3533229",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.07785, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2081806415",
+        "name": "Deep Ganguli"
+      },
+      {
+        "authorId": "39182747",
+        "name": "Danny Hernandez"
+      },
+      {
+        "authorId": "2154608229",
+        "name": "Liane Lovitt"
+      },
+      {
+        "authorId": "2142833890",
+        "name": "Nova Dassarma"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "2149890773",
+        "name": "Andy Jones"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "1583434563",
+        "name": "John Kernion"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "1486307451",
+        "name": "Yuntao Bai"
+      },
+      {
+        "authorId": "2111073313",
+        "name": "Anna Chen"
+      },
+      {
+        "authorId": "2154608209",
+        "name": "Tom Conerly"
+      },
+      {
+        "authorId": "1943097969",
+        "name": "Dawn Drain"
+      },
+      {
+        "authorId": "2866708",
+        "name": "Nelson Elhage"
+      },
+      {
+        "authorId": "2154609053",
+        "name": "S. E. Showk"
+      },
+      {
+        "authorId": "30176974",
+        "name": "Stanislav Fort"
+      },
+      {
+        "authorId": "1573482302",
+        "name": "Zac Hatfield-Dodds"
+      },
+      {
+        "authorId": "2154610174",
+        "name": "Scott Johnston"
+      },
+      {
+        "authorId": "49604482",
+        "name": "Shauna Kravec"
+      },
+      {
+        "authorId": "2051128902",
+        "name": "Neel Nanda"
+      },
+      {
+        "authorId": "1978097132",
+        "name": "Kamal Ndousse"
+      },
+      {
+        "authorId": "2061321863",
+        "name": "Catherine Olsson"
+      },
+      {
+        "authorId": "2154608472",
+        "name": "D. Amodei"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "2287268442",
+        "name": "Chris Olah"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      }
+    ],
+    "abstract": "Large-scale pre-training has recently emerged as a technique for creating capable, general-purpose, generative models such as GPT-3, Megatron-Turing NLG, Gopher, and many others. In this paper, we highlight a counterintuitive property of such models and discuss the policy implications of this property. Namely, these generative models have a paradoxical combination of predictable loss on a broad training distribution (as embodied in their ”scaling laws”), and unpredictable specific capabilities, inputs, and outputs. We believe that the high-level predictability and appearance of useful capabilities drives rapid development of such models, while the unpredictable qualities make it difficult to anticipate the consequences of model deployment. We go through examples of how this combination can lead to socially harmful behavior with examples from the literature and real world observations, and we also perform two novel experiments to illustrate our point about harms from unpredictability. Furthermore, we analyze how these conflicting properties combine to give model developers various motivations for deploying these models, and challenges that can hinder deployment. We conclude with a list of possible interventions the AI community may take to increase the chance of these models having a beneficial impact. We intend for this paper to be useful to policymakers who want to understand and regulate AI systems, technologists who care about the potential policy impact of their work, funders who want to support work addressing these challenges, and academics who want to analyze, critique, and potentially develop large generative models."
+  },
+  {
+    "paperId": "5d49c7401c5f2337c4cc88d243ae39ed659afe64",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2202-03286",
+      "ACL": "2022.emnlp-main.225",
+      "ArXiv": "2202.03286",
+      "DOI": "10.18653/v1/2022.emnlp-main.225",
+      "CorpusId": 246634238
+    },
+    "title": "Red Teaming Language Models with Language Models",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2022,
+    "citationCount": 1020,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.emnlp-main.225.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.03286, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3439053",
+        "name": "Ethan Perez"
+      },
+      {
+        "authorId": "2148653469",
+        "name": "Saffron Huang"
+      },
+      {
+        "authorId": "2059836321",
+        "name": "Francis Song"
+      },
+      {
+        "authorId": "2072572294",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "81387328",
+        "name": "Roman Ring"
+      },
+      {
+        "authorId": "9958912",
+        "name": "John Aslanides"
+      },
+      {
+        "authorId": "2105840001",
+        "name": "Amelia Glaese"
+      },
+      {
+        "authorId": "147687624",
+        "name": "Nat McAleese"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      }
+    ],
+    "abstract": "Language Models (LMs) often cannot be deployed because of their potential to harm users in hard-to-predict ways. Prior work identifies harmful behaviors before deployment by using human annotators to hand-write test cases. However, human annotation is expensive, limiting the number and diversity of test cases. In this work, we automatically find cases where a target LM behaves in a harmful way, by generating test cases (“red teaming”) using another LM. We evaluate the target LM’s replies to generated test questions using a classifier trained to detect offensive content, uncovering tens of thousands of offensive replies in a 280B parameter LM chatbot. We explore several methods, from zero-shot generation to reinforcement learning, for generating test cases with varying levels of diversity and difficulty. Furthermore, we use prompt engineering to control LM-generated test cases to uncover a variety of other harms, automatically finding groups of people that the chatbot discusses in offensive ways, personal and hospital phone numbers generated as the chatbot’s own contact info, leakage of private training data in generated text, and harms that occur over the course of a conversation. Overall, LM-based red teaming is one promising tool (among many needed) for finding and fixing diverse, undesirable LM behaviors before impacting users."
+  },
+  {
+    "paperId": "b3848d32f7294ec708627897833c4097eb4d8778",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2201-08239",
+      "ArXiv": "2201.08239",
+      "CorpusId": 246063428
+    },
+    "title": "LaMDA: Language Models for Dialog Applications",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 1858,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.08239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9501591",
+        "name": "R. Thoppilan"
+      },
+      {
+        "authorId": "1490889580",
+        "name": "Daniel De Freitas"
+      },
+      {
+        "authorId": "2115876918",
+        "name": "Jamie Hall"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "1490888815",
+        "name": "Apoorv Kulshreshtha"
+      },
+      {
+        "authorId": "2061550",
+        "name": "Heng-Tze Cheng"
+      },
+      {
+        "authorId": "2150572756",
+        "name": "A. Jin"
+      },
+      {
+        "authorId": "2150572221",
+        "name": "Taylor Bos"
+      },
+      {
+        "authorId": "2150777298",
+        "name": "Leslie W. Baker"
+      },
+      {
+        "authorId": "144708948",
+        "name": "Yu Du"
+      },
+      {
+        "authorId": "2261797906",
+        "name": "Yaguang Li"
+      },
+      {
+        "authorId": "8386466",
+        "name": "Hongrae Lee"
+      },
+      {
+        "authorId": "2115689465",
+        "name": "H. Zheng"
+      },
+      {
+        "authorId": "3010652",
+        "name": "Amin Ghafouri"
+      },
+      {
+        "authorId": "2150572520",
+        "name": "Marcelo Menegali"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "150077954",
+        "name": "Dmitry Lepikhin"
+      },
+      {
+        "authorId": "47901308",
+        "name": "James Qin"
+      },
+      {
+        "authorId": "7167328",
+        "name": "Dehao Chen"
+      },
+      {
+        "authorId": "2145139570",
+        "name": "Yuanzhong Xu"
+      },
+      {
+        "authorId": "2111317372",
+        "name": "Zhifeng Chen"
+      },
+      {
+        "authorId": "145625142",
+        "name": "Adam Roberts"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "2152948655",
+        "name": "Chung-Ching Chang"
+      },
+      {
+        "authorId": "115361655",
+        "name": "I. Krivokon"
+      },
+      {
+        "authorId": "69540629",
+        "name": "W. Rusch"
+      },
+      {
+        "authorId": "144851733",
+        "name": "Marc Pickett"
+      },
+      {
+        "authorId": "1398655031",
+        "name": "K. Meier-Hellstern"
+      },
+      {
+        "authorId": "144844426",
+        "name": "M. Morris"
+      },
+      {
+        "authorId": "2155007",
+        "name": "Tulsee Doshi"
+      },
+      {
+        "authorId": "2150575477",
+        "name": "Renelito Delos Santos"
+      },
+      {
+        "authorId": "2145151992",
+        "name": "Toju Duke"
+      },
+      {
+        "authorId": "152181934",
+        "name": "J. Søraker"
+      },
+      {
+        "authorId": "70326942",
+        "name": "Ben Zevenbergen"
+      },
+      {
+        "authorId": "3331141",
+        "name": "Vinodkumar Prabhakaran"
+      },
+      {
+        "authorId": "2152965375",
+        "name": "Mark Díaz"
+      },
+      {
+        "authorId": "2044655623",
+        "name": "Ben Hutchinson"
+      },
+      {
+        "authorId": "2053872069",
+        "name": "Kristen Olson"
+      },
+      {
+        "authorId": "145142660",
+        "name": "Alejandra Molina"
+      },
+      {
+        "authorId": "1413971055",
+        "name": "Erin Hoffman-John"
+      },
+      {
+        "authorId": "2108300711",
+        "name": "Josh Lee"
+      },
+      {
+        "authorId": "1745337",
+        "name": "Lora Aroyo"
+      },
+      {
+        "authorId": "22167999",
+        "name": "Ravi Rajakumar"
+      },
+      {
+        "authorId": "1724714282",
+        "name": "Alena Butryna"
+      },
+      {
+        "authorId": "48024953",
+        "name": "Matthew Lamm"
+      },
+      {
+        "authorId": "104146486",
+        "name": "V. Kuzmina"
+      },
+      {
+        "authorId": "2067536215",
+        "name": "Joseph Fenton"
+      },
+      {
+        "authorId": "2112929869",
+        "name": "Aaron Cohen"
+      },
+      {
+        "authorId": "144864136",
+        "name": "R. Bernstein"
+      },
+      {
+        "authorId": "2186634",
+        "name": "R. Kurzweil"
+      },
+      {
+        "authorId": "1453482151",
+        "name": "Blaise Aguera-Arcas"
+      },
+      {
+        "authorId": "40498222",
+        "name": "Claire Cui"
+      },
+      {
+        "authorId": "2098130534",
+        "name": "M. Croak"
+      },
+      {
+        "authorId": "2226805",
+        "name": "Ed H. Chi"
+      },
+      {
+        "authorId": "1998340269",
+        "name": "Quoc Le"
+      }
+    ],
+    "abstract": "We present LaMDA: Language Models for Dialog Applications. LaMDA is a family of Transformer-based neural language models specialized for dialog, which have up to 137B parameters and are pre-trained on 1.56T words of public dialog data and web text. While model scaling alone can improve quality, it shows less improvements on safety and factual grounding. We demonstrate that fine-tuning with annotated data and enabling the model to consult external knowledge sources can lead to significant improvements towards the two key challenges of safety and factual grounding. The first challenge, safety, involves ensuring that the model's responses are consistent with a set of human values, such as preventing harmful suggestions and unfair bias. We quantify safety using a metric based on an illustrative set of human values, and we find that filtering candidate responses using a LaMDA classifier fine-tuned with a small amount of crowdworker-annotated data offers a promising approach to improving model safety. The second challenge, factual grounding, involves enabling the model to consult external knowledge sources, such as an information retrieval system, a language translator, and a calculator. We quantify factuality using a groundedness metric, and we find that our approach enables the model to generate responses grounded in known sources, rather than responses that merely sound plausible. Finally, we explore the use of LaMDA in the domains of education and content recommendations, and analyze their helpfulness and role consistency."
+  },
+  {
+    "paperId": "eb90986ff64e3b5e7b5e33dc9501032058c6738e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2201-07012",
+      "ArXiv": "2201.07012",
+      "CorpusId": 246035946
+    },
+    "title": "Adversarial vulnerability of powerful near out-of-distribution detection",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.07012, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "30176974",
+        "name": "Stanislav Fort"
+      }
+    ],
+    "abstract": "There has been a significant progress in detecting out-of-distribution (OOD) inputs in neural networks recently, primarily due to the use of large models pretrained on large datasets, and an emerging use of multi-modality. We show a severe adversarial vulnerability of even the strongest current OOD detection techniques. With a small, targeted perturbation to the input pixels, we can change the image assignment from an in-distribution to an out-distribution, and vice versa, easily. In particular, we demonstrate severe adversarial vulnerability on the challenging near OOD CIFAR-100 vs CIFAR-10 task, as well as on the far OOD CIFAR-100 vs SVHN. We study the adversarial robustness of several post-processing techniques, including the simple baseline of Maximum of Softmax Probabilities (MSP), the Mahalanobis distance, and the newly proposed \\textit{Relative} Mahalanobis distance. By comparing the loss of OOD detection performance at various perturbation strengths, we demonstrate the beneficial effect of using ensembles of OOD detectors, and the use of the \\textit{Relative} Mahalanobis distance over other post-processing methods. In addition, we show that even strong zero-shot OOD detection using CLIP and multi-modality suffers from a severe lack of adversarial robustness as well. Our code is available at https://github.com/stanislavfort/adversaries_to_OOD_detection"
+  },
+  {
+    "paperId": "10b9ca173c665e3f2c322c2d5ce9b9d433fe4629",
+    "externalIds": {
+      "ArXiv": "2201.03544",
+      "DBLP": "conf/iclr/PanBS22",
+      "CorpusId": 245837268
+    },
+    "title": "The Effects of Reward Misspecification: Mapping and Mitigating Misaligned Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 289,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.03544, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064029812",
+        "name": "Alexander Pan"
+      },
+      {
+        "authorId": "144383716",
+        "name": "K. Bhatia"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "Reward hacking -- where RL agents exploit gaps in misspecified reward functions -- has been widely observed, but not yet systematically studied. To understand how reward hacking arises, we construct four RL environments with misspecified rewards. We investigate reward hacking as a function of agent capabilities: model capacity, action space resolution, observation space noise, and training time. More capable agents often exploit reward misspecifications, achieving higher proxy reward and lower true reward than less capable agents. Moreover, we find instances of phase transitions: capability thresholds at which the agent's behavior qualitatively shifts, leading to a sharp decrease in the true reward. Such phase transitions pose challenges to monitoring the safety of ML systems. To address this, we propose an anomaly detection task for aberrant policies and offer several baseline detectors."
+  },
+  {
+    "paperId": "a1d1983a7b19845141e6505bd32dc395e5a136ba",
+    "externalIds": {
+      "ArXiv": "2201.02177",
+      "DBLP": "journals/corr/abs-2201-02177",
+      "CorpusId": 245769834
+    },
+    "title": "Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 575,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.02177, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "3080409",
+        "name": "Yuri Burda"
+      },
+      {
+        "authorId": "144632352",
+        "name": "Harrison Edwards"
+      },
+      {
+        "authorId": "2256699302",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "40055795",
+        "name": "Vedant Misra"
+      }
+    ],
+    "abstract": "In this paper we propose to study generalization of neural networks on small algorithmically generated datasets. In this setting, questions about data efficiency, memorization, generalization, and speed of learning can be studied in great detail. In some situations we show that neural networks learn through a process of\"grokking\"a pattern in the data, improving generalization performance from random chance level to perfect generalization, and that this improvement in generalization can happen well past the point of overfitting. We also study generalization as a function of dataset size and find that smaller datasets require increasing amounts of optimization for generalization. We argue that these datasets provide a fertile ground for studying a poorly understood aspect of deep learning: generalization of overparametrized neural networks beyond memorization of the finite training dataset."
+  },
+  {
+    "paperId": "2f3efe44083af91cef562c1a3451eee2f8601d22",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2112-09332",
+      "ArXiv": "2112.09332",
+      "CorpusId": 245329531
+    },
+    "title": "WebGPT: Browser-assisted question-answering with human feedback",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1779,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.09332, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7406311",
+        "name": "Reiichiro Nakano"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2228518120",
+        "name": "Ouyang Long"
+      },
+      {
+        "authorId": "2149054292",
+        "name": "Christina Kim"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "150298413",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "13622184",
+        "name": "Vineet Kosaraju"
+      },
+      {
+        "authorId": "2058848938",
+        "name": "W. Saunders"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "6062736",
+        "name": "K. Cobbe"
+      },
+      {
+        "authorId": "2146257131",
+        "name": "Tyna Eloundou"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2146257251",
+        "name": "Kevin Button"
+      },
+      {
+        "authorId": "2146257375",
+        "name": "Matthew Knight"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      }
+    ],
+    "abstract": "We fine-tune GPT-3 to answer long-form questions using a text-based web-browsing environment, which allows the model to search and navigate the web. By setting up the task so that it can be performed by humans, we are able to train models on the task using imitation learning, and then optimize answer quality with human feedback. To make human evaluation of factual accuracy easier, models must collect references while browsing in support of their answers. We train and evaluate our models on ELI5, a dataset of questions asked by Reddit users. Our best model is obtained by fine-tuning GPT-3 using behavior cloning, and then performing rejection sampling against a reward model trained to predict human preferences. This model's answers are preferred by humans 56% of the time to those of our human demonstrators, and 69% of the time to the highest-voted answer from Reddit."
+  },
+  {
+    "paperId": "002c256d30d6be4b23d365a8de8ae0e67e4c9641",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2112-04426",
+      "ArXiv": "2112.04426",
+      "CorpusId": 244954723
+    },
+    "title": "Improving language models by retrieving from trillions of tokens",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 1611,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.04426, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "148016269",
+        "name": "Sebastian Borgeaud"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "46616544",
+        "name": "Jordan Hoffmann"
+      },
+      {
+        "authorId": "2072572294",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "2143538252",
+        "name": "Eliza Rutherford"
+      },
+      {
+        "authorId": "2143434227",
+        "name": "Katie Millican"
+      },
+      {
+        "authorId": "47568983",
+        "name": "George van den Driessche"
+      },
+      {
+        "authorId": "143783339",
+        "name": "Jean-Baptiste Lespiau"
+      },
+      {
+        "authorId": "2143374656",
+        "name": "Bogdan Damoc"
+      },
+      {
+        "authorId": "31993415",
+        "name": "Aidan Clark"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "40895205",
+        "name": "Aurelia Guy"
+      },
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "81387328",
+        "name": "Roman Ring"
+      },
+      {
+        "authorId": "4629007",
+        "name": "T. Hennigan"
+      },
+      {
+        "authorId": "2148653469",
+        "name": "Saffron Huang"
+      },
+      {
+        "authorId": "108173905",
+        "name": "Lorenzo Maggiore"
+      },
+      {
+        "authorId": "2115601070",
+        "name": "Chris Jones"
+      },
+      {
+        "authorId": "51042571",
+        "name": "Albin Cassirer"
+      },
+      {
+        "authorId": "2065040422",
+        "name": "Andy Brock"
+      },
+      {
+        "authorId": "35550664",
+        "name": "Michela Paganini"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "2217144",
+        "name": "Simon Osindero"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "34269227",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      }
+    ],
+    "abstract": "We enhance auto-regressive language models by conditioning on document chunks retrieved from a large corpus, based on local similarity with preceding tokens. With a $2$ trillion token database, our Retrieval-Enhanced Transformer (RETRO) obtains comparable performance to GPT-3 and Jurassic-1 on the Pile, despite using 25$\\times$ fewer parameters. After fine-tuning, RETRO performance translates to downstream knowledge-intensive tasks such as question answering. RETRO combines a frozen Bert retriever, a differentiable encoder and a chunked cross-attention mechanism to predict tokens based on an order of magnitude more data than what is typically consumed during training. We typically train RETRO from scratch, yet can also rapidly RETROfit pre-trained transformers with retrieval and still achieve good performance. Our work opens up new avenues for improving language models through explicit memory at unprecedented scale."
+  },
+  {
+    "paperId": "68f141724814839d556a989646194be88641b143",
+    "externalIds": {
+      "ArXiv": "2112.11446",
+      "DBLP": "journals/corr/abs-2112-11446",
+      "CorpusId": 245353475
+    },
+    "title": "Scaling Language Models: Methods, Analysis & Insights from Training Gopher",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1584,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.11446, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34269227",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "148016269",
+        "name": "Sebastian Borgeaud"
+      },
+      {
+        "authorId": "2072572294",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "2143434227",
+        "name": "Katie Millican"
+      },
+      {
+        "authorId": "46616544",
+        "name": "Jordan Hoffmann"
+      },
+      {
+        "authorId": "2059836321",
+        "name": "Francis Song"
+      },
+      {
+        "authorId": "9958912",
+        "name": "John Aslanides"
+      },
+      {
+        "authorId": "2057025033",
+        "name": "Sarah Henderson"
+      },
+      {
+        "authorId": "81387328",
+        "name": "Roman Ring"
+      },
+      {
+        "authorId": "116494324",
+        "name": "Susannah Young"
+      },
+      {
+        "authorId": "2143538252",
+        "name": "Eliza Rutherford"
+      },
+      {
+        "authorId": "2146532222",
+        "name": "T. Hennigan"
+      },
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "51042571",
+        "name": "Albin Cassirer"
+      },
+      {
+        "authorId": "2067745837",
+        "name": "Richard Powell"
+      },
+      {
+        "authorId": "47568983",
+        "name": "George van den Driessche"
+      },
+      {
+        "authorId": "2234342",
+        "name": "Lisa Anne Hendricks"
+      },
+      {
+        "authorId": "94483529",
+        "name": "Maribeth Rauh"
+      },
+      {
+        "authorId": "2421691",
+        "name": "Po-Sen Huang"
+      },
+      {
+        "authorId": "2105840001",
+        "name": "Amelia Glaese"
+      },
+      {
+        "authorId": "1851564",
+        "name": "Johannes Welbl"
+      },
+      {
+        "authorId": "3491117",
+        "name": "Sumanth Dathathri"
+      },
+      {
+        "authorId": "2148653469",
+        "name": "Saffron Huang"
+      },
+      {
+        "authorId": "9960452",
+        "name": "Jonathan Uesato"
+      },
+      {
+        "authorId": "1386957852",
+        "name": "John F. J. Mellor"
+      },
+      {
+        "authorId": "39051054",
+        "name": "I. Higgins"
+      },
+      {
+        "authorId": "3433026",
+        "name": "Antonia Creswell"
+      },
+      {
+        "authorId": "147687624",
+        "name": "Nat McAleese"
+      },
+      {
+        "authorId": "2147235306",
+        "name": "Amy Wu"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "35880964",
+        "name": "Siddhant M. Jayakumar"
+      },
+      {
+        "authorId": "118801223",
+        "name": "Elena Buchatskaya"
+      },
+      {
+        "authorId": "2508525",
+        "name": "D. Budden"
+      },
+      {
+        "authorId": "2146531039",
+        "name": "Esme Sutherland"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "35550664",
+        "name": "Michela Paganini"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      },
+      {
+        "authorId": "2335017587",
+        "name": "L. Martens"
+      },
+      {
+        "authorId": "1737850",
+        "name": "Xiang Lorraine Li"
+      },
+      {
+        "authorId": "3376845",
+        "name": "A. Kuncoro"
+      },
+      {
+        "authorId": "3208081",
+        "name": "Aida Nematzadeh"
+      },
+      {
+        "authorId": "1980809",
+        "name": "E. Gribovskaya"
+      },
+      {
+        "authorId": "119050937",
+        "name": "Domenic Donato"
+      },
+      {
+        "authorId": "2672644",
+        "name": "Angeliki Lazaridou"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "143783339",
+        "name": "Jean-Baptiste Lespiau"
+      },
+      {
+        "authorId": "2010057",
+        "name": "M. Tsimpoukelli"
+      },
+      {
+        "authorId": "84052496",
+        "name": "N. Grigorev"
+      },
+      {
+        "authorId": "40514522",
+        "name": "Doug Fritz"
+      },
+      {
+        "authorId": "2070364520",
+        "name": "Thibault Sottiaux"
+      },
+      {
+        "authorId": "2146532125",
+        "name": "Mantas Pajarskas"
+      },
+      {
+        "authorId": "3408089",
+        "name": "Tobias Pohlen"
+      },
+      {
+        "authorId": "5145075",
+        "name": "Z. Gong"
+      },
+      {
+        "authorId": "1393948967",
+        "name": "Daniel Toyama"
+      },
+      {
+        "authorId": "1413221272",
+        "name": "Cyprien de Masson d'Autume"
+      },
+      {
+        "authorId": "47002813",
+        "name": "Yujia Li"
+      },
+      {
+        "authorId": "114261380",
+        "name": "Tayfun Terzi"
+      },
+      {
+        "authorId": "148305440",
+        "name": "Vladimir Mikulik"
+      },
+      {
+        "authorId": "2256699276",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "31993415",
+        "name": "Aidan Clark"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "40895205",
+        "name": "Aurelia Guy"
+      },
+      {
+        "authorId": "2115601070",
+        "name": "Chris Jones"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "2124469920",
+        "name": "Matthew G. Johnson"
+      },
+      {
+        "authorId": "3135881",
+        "name": "Blake A. Hechtman"
+      },
+      {
+        "authorId": "51932191",
+        "name": "Laura Weidinger"
+      },
+      {
+        "authorId": "116589025",
+        "name": "Iason Gabriel"
+      },
+      {
+        "authorId": "103087275",
+        "name": "William S. Isaac"
+      },
+      {
+        "authorId": "49860549",
+        "name": "Edward Lockhart"
+      },
+      {
+        "authorId": "2217144",
+        "name": "Simon Osindero"
+      },
+      {
+        "authorId": "2554988",
+        "name": "Laura Rimell"
+      },
+      {
+        "authorId": "1745899",
+        "name": "Chris Dyer"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "34122449",
+        "name": "Kareem W. Ayoub"
+      },
+      {
+        "authorId": "35149729",
+        "name": "J. Stanway"
+      },
+      {
+        "authorId": "121282413",
+        "name": "L. Bennett"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      }
+    ],
+    "abstract": "Language modelling provides a step towards intelligent communication systems by harnessing large repositories of written human knowledge to better predict and understand the world. In this paper, we present an analysis of Transformer-based language model performance across a wide range of model scales -- from models with tens of millions of parameters up to a 280 billion parameter model called Gopher. These models are evaluated on 152 diverse tasks, achieving state-of-the-art performance across the majority. Gains from scale are largest in areas such as reading comprehension, fact-checking, and the identification of toxic language, but logical and mathematical reasoning see less benefit. We provide a holistic analysis of the training dataset and model's behaviour, covering the intersection of model scale with bias and toxicity. Finally we discuss the application of language models to AI safety and the mitigation of downstream harms."
+  },
+  {
+    "paperId": "3dc7dc1bea9a4f70c02b6759a0bda7aca0005a9e",
+    "externalIds": {
+      "ArXiv": "2112.00861",
+      "DBLP": "journals/corr/abs-2112-00861",
+      "CorpusId": 244799619
+    },
+    "title": "A General Language Assistant as a Laboratory for Alignment",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1076,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.00861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "1486307451",
+        "name": "Yuntao Bai"
+      },
+      {
+        "authorId": "2111073313",
+        "name": "Anna Chen"
+      },
+      {
+        "authorId": "1943097969",
+        "name": "Dawn Drain"
+      },
+      {
+        "authorId": "2081806483",
+        "name": "Deep Ganguli"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "2149890773",
+        "name": "Andy Jones"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "2142833890",
+        "name": "Nova Dassarma"
+      },
+      {
+        "authorId": "2866708",
+        "name": "Nelson Elhage"
+      },
+      {
+        "authorId": "1573482302",
+        "name": "Zac Hatfield-Dodds"
+      },
+      {
+        "authorId": "39182747",
+        "name": "Danny Hernandez"
+      },
+      {
+        "authorId": "1583434563",
+        "name": "John Kernion"
+      },
+      {
+        "authorId": "1978097132",
+        "name": "Kamal Ndousse"
+      },
+      {
+        "authorId": "2061321863",
+        "name": "Catherine Olsson"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "2287268442",
+        "name": "Chris Olah"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      }
+    ],
+    "abstract": "Given the broad capabilities of large language models, it should be possible to work towards a general-purpose, text-based assistant that is aligned with human values, meaning that it is helpful, honest, and harmless. As an initial foray in this direction we study simple baseline techniques and evaluations, such as prompting. We find that the benefits from modest interventions increase with model size, generalize to a variety of alignment evaluations, and do not compromise the performance of large models. Next we investigate scaling trends for several training objectives relevant to alignment, comparing imitation learning, binary discrimination, and ranked preference modeling. We find that ranked preference modeling performs much better than imitation learning, and often scales more favorably with model size. In contrast, binary discrimination typically performs and scales very similarly to imitation learning. Finally we study a `preference model pre-training' stage of training, with the goal of improving sample efficiency when finetuning on human preferences."
+  },
+  {
+    "paperId": "7d5c661fa9a4255ee087e861f820564ea2e2bd6b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2110-08193",
+      "ArXiv": "2110.08193",
+      "ACL": "2022.findings-acl.165",
+      "DOI": "10.18653/v1/2022.findings-acl.165",
+      "CorpusId": 239010011
+    },
+    "title": "BBQ: A hand-built bias benchmark for question answering",
+    "venue": "Findings",
+    "year": 2021,
+    "citationCount": 709,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.findings-acl.165.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.08193, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "119389860",
+        "name": "Alicia Parrish"
+      },
+      {
+        "authorId": "13336152",
+        "name": "Angelica Chen"
+      },
+      {
+        "authorId": "10666396",
+        "name": "Nikita Nangia"
+      },
+      {
+        "authorId": "2044959912",
+        "name": "Vishakh Padmakumar"
+      },
+      {
+        "authorId": "80842917",
+        "name": "Jason Phang"
+      },
+      {
+        "authorId": "2148444557",
+        "name": "Jana Thompson"
+      },
+      {
+        "authorId": "41022736",
+        "name": "Phu Mon Htut"
+      },
+      {
+        "authorId": "1799822",
+        "name": "Sam Bowman"
+      }
+    ],
+    "abstract": "It is well documented that NLP models learn social biases, but little work has been done on how these biases manifest in model outputs for applied tasks like question answering (QA). We introduce the Bias Benchmark for QA (BBQ), a dataset of question-sets constructed by the authors that highlight attested social biases against people belonging to protected classes along nine social dimensions relevant for U.S. English-speaking contexts. Our task evaluate model responses at two levels: (i) given an under-informative context, we test how strongly responses reflect social biases, and (ii) given an adequately informative context, we test whether the model’s biases override a correct answer choice. We find that models often rely on stereotypes when the context is under-informative, meaning the model’s outputs consistently reproduce harmful biases in this setting. Though models are more accurate when the context provides an informative answer, they still rely on stereotypes and average up to 3.4 percentage points higher accuracy when the correct answer aligns with a social bias than when it conflicts, with this difference widening to over 5 points on examples targeting gender for most models tested."
+  },
+  {
+    "paperId": "05c2e1ee203be217f100d2da05bdcc52004f00b6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-13916",
+      "ArXiv": "2109.13916",
+      "CorpusId": 238198240
+    },
+    "title": "Unsolved Problems in ML Safety",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 372,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.13916, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "2365115776",
+        "name": "Nicholas Carlini"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "Machine learning (ML) systems are rapidly increasing in size, are acquiring new capabilities, and are increasingly deployed in high-stakes settings. As with other powerful technologies, safety for ML should be a leading research priority. In response to emerging safety challenges in ML, such as those introduced by recent large-scale models, we provide a new roadmap for ML Safety and refine the technical problems that the field needs to address. We present four problems ready for research, namely withstanding hazards (\"Robustness\"), identifying hazards (\"Monitoring\"), reducing inherent model hazards (\"Alignment\"), and reducing systemic hazards (\"Systemic Safety\"). Throughout, we clarify each problem's motivation and provide concrete research directions."
+  },
+  {
+    "paperId": "77d956cdab4508d569ae5741549b78e715fd0749",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-07958",
+      "ACL": "2022.acl-long.229",
+      "ArXiv": "2109.07958",
+      "DOI": "10.18653/v1/2022.acl-long.229",
+      "CorpusId": 237532606
+    },
+    "title": "TruthfulQA: Measuring How Models Mimic Human Falsehoods",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 3146,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.acl-long.229.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.07958, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48639938",
+        "name": "Stephanie C. Lin"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "47107786",
+        "name": "Owain Evans"
+      }
+    ],
+    "abstract": "We propose a benchmark to measure whether a language model is truthful in generating answers to questions. The benchmark comprises 817 questions that span 38 categories, including health, law, finance and politics. We crafted questions that some humans would answer falsely due to a false belief or misconception. To perform well, models must avoid generating false answers learned from imitating human texts. We tested GPT-3, GPT-Neo/J, GPT-2 and a T5-based model. The best model was truthful on 58% of questions, while human performance was 94%. Models generated many false answers that mimic popular misconceptions and have the potential to deceive humans. The largest models were generally the least truthful. This contrasts with other NLP tasks, where performance improves with model size. However, this result is expected if false answers are learned from the training distribution. We suggest that scaling up models alone is less promising for improving truthfulness than fine-tuning using training objectives other than imitation of text from the web."
+  },
+  {
+    "paperId": "acbdbf49f9bc3f151b93d9ca9a06009f4f6eb269",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-03374",
+      "ArXiv": "2107.03374",
+      "CorpusId": 235755472
+    },
+    "title": "Evaluating Large Language Models Trained on Code",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 9219,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.03374, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "153930486",
+        "name": "Qiming Yuan"
+      },
+      {
+        "authorId": "2117715024",
+        "name": "Henrique Pondé"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      },
+      {
+        "authorId": "144632352",
+        "name": "Harrison Edwards"
+      },
+      {
+        "authorId": "51178856",
+        "name": "Yura Burda"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "2065151121",
+        "name": "Greg Brockman"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "41158993",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2136008481",
+        "name": "Michael Petrov"
+      },
+      {
+        "authorId": "2103414",
+        "name": "Heidy Khlaaf"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "1466431052",
+        "name": "Brooke Chan"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2068123790",
+        "name": "Mikhail Pavlov"
+      },
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "2275252092",
+        "name": "P. Tillet"
+      },
+      {
+        "authorId": "9927844",
+        "name": "F. Such"
+      },
+      {
+        "authorId": "80876468",
+        "name": "D. Cummings"
+      },
+      {
+        "authorId": "3407285",
+        "name": "Matthias Plappert"
+      },
+      {
+        "authorId": "2117714459",
+        "name": "Fotios Chantzis"
+      },
+      {
+        "authorId": "2057742918",
+        "name": "Elizabeth Barnes"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "39121861",
+        "name": "William H. Guss"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "2256699302",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "150298413",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "153480842",
+        "name": "A. Carr"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "2318703608",
+        "name": "Josh Achiam"
+      },
+      {
+        "authorId": "40055795",
+        "name": "Vedant Misra"
+      },
+      {
+        "authorId": "1404556973",
+        "name": "Evan Morikawa"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "3555117",
+        "name": "M. Knight"
+      },
+      {
+        "authorId": "35167962",
+        "name": "Miles Brundage"
+      },
+      {
+        "authorId": "2117715631",
+        "name": "M. Murati"
+      },
+      {
+        "authorId": "2059169400",
+        "name": "Katie Mayer"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "39593364",
+        "name": "Bob McGrew"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      }
+    ],
+    "abstract": "We introduce Codex, a GPT language model fine-tuned on publicly available code from GitHub, and study its Python code-writing capabilities. A distinct production version of Codex powers GitHub Copilot. On HumanEval, a new evaluation set we release to measure functional correctness for synthesizing programs from docstrings, our model solves 28.8% of the problems, while GPT-3 solves 0% and GPT-J solves 11.4%. Furthermore, we find that repeated sampling from the model is a surprisingly effective strategy for producing working solutions to difficult prompts. Using this method, we solve 70.2% of our problems with 100 samples per problem. Careful investigation of our model reveals its limitations, including difficulty with docstrings describing long chains of operations and with binding operations to variables. Finally, we discuss the potential broader impacts of deploying powerful code generation technologies, covering safety, security, and economics."
+  },
+  {
+    "paperId": "d624bc273821c871f899d8256a34be40c09fc3cd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-10328",
+      "ArXiv": "2106.10328",
+      "CorpusId": 235489789
+    },
+    "title": "Process for Adapting Language Models to Society (PALMS) with Values-Targeted Datasets",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 265,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.10328, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1404060690",
+        "name": "Irene Solaiman"
+      },
+      {
+        "authorId": "1468636850",
+        "name": "Christy Dennison"
+      }
+    ],
+    "abstract": "Language models can generate harmful and biased outputs and exhibit undesirable behavior according to a given cultural context. We propose a Process for Adapting Language Models to Society (PALMS) with Values-Targeted Datasets, an iterative process to significantly change model behavior by crafting and fine-tuning on a dataset that reflects a predetermined set of target values. We evaluate our process using three metrics: quantitative metrics with human evaluations that score output adherence to a target value, toxicity scoring on outputs; and qualitative metrics analyzing the most common word associated with a given social category. Through each iteration, we add additional training dataset examples based on observed shortcomings from evaluations. PALMS performs significantly better on all metrics compared to baseline and control models for a broad range of GPT-3 language model sizes without compromising capability integrity. We find that the effectiveness of PALMS increases with model size. We show that significantly adjusting language model behavior is feasible with a small, hand-curated dataset."
+  },
+  {
+    "paperId": "4c7d664761c359cffd20c9d555031271ec67ab3c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-09022",
+      "ArXiv": "2106.09022",
+      "CorpusId": 235458597
+    },
+    "title": "A Simple Fix to Mahalanobis Distance for Improving Near-OOD Detection",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 290,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.09022, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "92095972",
+        "name": "Jie Jessie Ren"
+      },
+      {
+        "authorId": "30176974",
+        "name": "Stanislav Fort"
+      },
+      {
+        "authorId": "2108345570",
+        "name": "J. Liu"
+      },
+      {
+        "authorId": "23360006",
+        "name": "A. Roy"
+      },
+      {
+        "authorId": "151216770",
+        "name": "Shreyas Padhy"
+      },
+      {
+        "authorId": "40627523",
+        "name": "Balaji Lakshminarayanan"
+      }
+    ],
+    "abstract": "Mahalanobis distance (MD) is a simple and popular post-processing method for detecting out-of-distribution (OOD) inputs in neural networks. We analyze its failure modes for near-OOD detection and propose a simple fix called relative Mahalanobis distance (RMD) which improves performance and is more robust to hyperparameter choice. On a wide selection of challenging vision, language, and biology OOD benchmarks (CIFAR-100 vs CIFAR-10, CLINC OOD intent detection, Genomics OOD), we show that RMD meaningfully improves upon MD performance (by up to 15% AUROC on genomics OOD)."
+  },
+  {
+    "paperId": "c3ddd90b53dc797029c4576af01b9c35bb846a44",
+    "externalIds": {
+      "DBLP": "conf/nips/FortRL21",
+      "ArXiv": "2106.03004",
+      "CorpusId": 235358891
+    },
+    "title": "Exploring the Limits of Out-of-Distribution Detection",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 408,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.03004, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "30176974",
+        "name": "Stanislav Fort"
+      },
+      {
+        "authorId": "92095972",
+        "name": "Jie Jessie Ren"
+      },
+      {
+        "authorId": "40627523",
+        "name": "Balaji Lakshminarayanan"
+      }
+    ],
+    "abstract": "Near out-of-distribution detection (OOD) is a major challenge for deep neural networks. We demonstrate that large-scale pre-trained transformers can significantly improve the state-of-the-art (SOTA) on a range of near OOD tasks across different data modalities. For instance, on CIFAR-100 vs CIFAR-10 OOD detection, we improve the AUROC from 85% (current SOTA) to more than 96% using Vision Transformers pre-trained on ImageNet-21k. On a challenging genomics OOD detection benchmark, we improve the AUROC from 66% to 77% using transformers and unsupervised pre-training. To further improve performance, we explore the few-shot outlier exposure setting where a few examples from outlier classes may be available; we show that pre-trained transformers are particularly well-suited for outlier exposure, and that the AUROC of OOD detection on CIFAR-100 vs CIFAR-10 can be improved to 98.7% with just 1 image per OOD class, and 99.46% with 10 images per OOD class. For multi-modal image-text pre-trained transformers such as CLIP, we explore a new way of using just the names of outlier classes as a sole source of information without any accompanying images, and show that this outperforms previous SOTA on standard vision OOD benchmark tasks."
+  },
+  {
+    "paperId": "ca2f1088d3e581b2c6c75cf0ebc96506d620f64d",
+    "externalIds": {
+      "DBLP": "conf/fat/BenderGMS21",
+      "DOI": "10.1145/3442188.3445922",
+      "CorpusId": 262580630
+    },
+    "title": "On the Dangers of Stochastic Parrots: Can Language Models Be Too Big? 🦜",
+    "venue": "Conference on Fairness, Accountability and Transparency",
+    "year": 2021,
+    "citationCount": 7017,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3442188.3445922",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3442188.3445922?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3442188.3445922, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2471699",
+        "name": "Emily M. Bender"
+      },
+      {
+        "authorId": "2076288",
+        "name": "Timnit Gebru"
+      },
+      {
+        "authorId": "1584940075",
+        "name": "Angelina McMillan-Major"
+      },
+      {
+        "authorId": "2246048745",
+        "name": "Shmargaret Shmitchell"
+      }
+    ],
+    "abstract": "The past 3 years of work in NLP have been characterized by the development and deployment of ever larger language models, especially for English. BERT, its variants, GPT-2/3, and others, most recently Switch-C, have pushed the boundaries of the possible both through architectural innovations and through sheer size. Using these pretrained models and the methodology of fine-tuning them for specific tasks, researchers have extended the state of the art on a wide array of tasks as measured by leaderboards on specific benchmarks for English. In this paper, we take a step back and ask: How big is too big? What are the possible risks associated with this technology and what paths are available for mitigating those risks? We provide recommendations including weighing the environmental and financial costs first, investing resources into curating and carefully documenting datasets rather than ingesting everything on the web, carrying out pre-development exercises evaluating how the planned approach fits into research and development goals and supports stakeholder values, and encouraging research directions beyond ever larger language models."
+  },
+  {
+    "paperId": "4383a975c09b72ba2f1a77cd779bb6965dbfb2fb",
+    "externalIds": {
+      "ArXiv": "2102.01293",
+      "DBLP": "journals/corr/abs-2102-01293",
+      "CorpusId": 231749962
+    },
+    "title": "Scaling Laws for Transfer",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 300,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.01293, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39182747",
+        "name": "Danny Hernandez"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      }
+    ],
+    "abstract": "We study empirical scaling laws for transfer learning between distributions in an unsupervised, fine-tuning setting. When we train increasingly large neural networks from-scratch on a fixed-size dataset, they eventually become data-limited and stop improving in performance (cross-entropy loss). When we do the same for models pre-trained on a large language dataset, the slope in performance gains is merely reduced rather than going to zero. We calculate the effective data\"transferred\"from pre-training by determining how much data a transformer of the same size would have required to achieve the same loss when training from scratch. In other words, we focus on units of data while holding everything else fixed. We find that the effective data transferred is described well in the low data regime by a power-law of parameter count and fine-tuning dataset size. We believe the exponents in these power-laws correspond to measures of the generality of a model and proximity of distributions (in a directed rather than symmetric sense). We find that pre-training effectively multiplies the fine-tuning dataset size. Transfer, like overall performance, scales predictably in terms of parameters, data, and compute."
+  },
+  {
+    "paperId": "3efbcfeeb0ea1051a71101d3318da4411081f0b8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2010-14701",
+      "ArXiv": "2010.14701",
+      "MAG": "3095645723",
+      "CorpusId": 225094178
+    },
+    "title": "Scaling Laws for Autoregressive Generative Modeling",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 593,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.14701, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "102493084",
+        "name": "Mor Katz"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "2119404536",
+        "name": "Jacob Jackson"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      }
+    ],
+    "abstract": "We identify empirical scaling laws for the cross-entropy loss in four domains: generative image modeling, video modeling, multimodal image$\\leftrightarrow$text models, and mathematical problem solving. In all cases autoregressive Transformers smoothly improve in performance as model size and compute budgets increase, following a power-law plus constant scaling law. The optimal model size also depends on the compute budget through a power-law, with exponents that are nearly universal across all data domains. \nThe cross-entropy loss has an information theoretic interpretation as $S($True$) + D_{\\mathrm{KL}}($True$||$Model$)$, and the empirical scaling laws suggest a prediction for both the true data distribution's entropy and the KL divergence between the true and model distributions. With this interpretation, billion-parameter Transformers are nearly perfect models of the YFCC100M image distribution downsampled to an $8\\times 8$ resolution, and we can forecast the model size needed to achieve any given reducible loss (ie $D_{\\mathrm{KL}}$) in nats/image for other resolutions. \nWe find a number of additional scaling laws in specific domains: (a) we identify a scaling relation for the mutual information between captions and images in multimodal models, and show how to answer the question \"Is a picture worth a thousand words?\"; (b) in the case of mathematical problem solving, we identify scaling laws for model performance when extrapolating beyond the training distribution; (c) we finetune generative image models for ImageNet classification and find smooth scaling of the classification loss and error rate, even as the generative loss levels off. Taken together, these results strengthen the case that scaling laws have important implications for neural network performance, including on downstream tasks."
+  },
+  {
+    "paperId": "4fa24cc5b17e8ff1eb5a01fd37a9d267a57ac563",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2010-07079",
+      "ArXiv": "2010.07079",
+      "MAG": "3093233911",
+      "CorpusId": 222341902
+    },
+    "title": "Recipes for Safety in Open-domain Chatbots",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.07079, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2155954521",
+        "name": "Jing Xu"
+      },
+      {
+        "authorId": "3092435",
+        "name": "Da Ju"
+      },
+      {
+        "authorId": "6649233",
+        "name": "Margaret Li"
+      },
+      {
+        "authorId": "90841478",
+        "name": "Y-Lan Boureau"
+      },
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      },
+      {
+        "authorId": "31461304",
+        "name": "Emily Dinan"
+      }
+    ],
+    "abstract": "Models trained on large unlabeled corpora of human interactions will learn patterns and mimic behaviors therein, which include offensive or otherwise toxic behavior and unwanted biases. We investigate a variety of methods to mitigate these issues in the context of open-domain generative dialogue models. We introduce a new human-and-model-in-the-loop framework for both training safer models and for evaluating them, as well as a novel method to distill safety considerations inside generative models without the use of an external classifier at deployment time. We conduct experiments comparing these methods and find our new techniques are (i) safer than existing models as measured by automatic and human evaluations while (ii) maintaining usability metrics such as engagingness relative to the state of the art. We then discuss the limitations of this work by analyzing failure cases of our models."
+  },
+  {
+    "paperId": "814a4f680b9ba6baba23b93499f4b48af1a27678",
+    "externalIds": {
+      "ArXiv": "2009.03300",
+      "DBLP": "journals/corr/abs-2009-03300",
+      "MAG": "3083410900",
+      "CorpusId": 221516475
+    },
+    "title": "Measuring Massive Multitask Language Understanding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 7781,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.03300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "1380103052",
+        "name": "Andy Zou"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "We propose a new test to measure a text model's multitask accuracy. The test covers 57 tasks including elementary mathematics, US history, computer science, law, and more. To attain high accuracy on this test, models must possess extensive world knowledge and problem solving ability. We find that while most recent models have near random-chance accuracy, the very largest GPT-3 model improves over random chance by almost 20 percentage points on average. However, on every one of the 57 tasks, the best models still need substantial improvements before they can reach expert-level accuracy. Models also have lopsided performance and frequently do not know when they are wrong. Worse, they still have near-random accuracy on some socially important subjects such as morality and law. By comprehensively evaluating the breadth and depth of a model's academic and professional understanding, our test can be used to analyze models across many tasks and to identify important shortcomings."
+  },
+  {
+    "paperId": "65906e6027246ae9e4ecd18d6e019a24505c842e",
+    "externalIds": {
+      "ArXiv": "2008.02275",
+      "MAG": "3047185145",
+      "DBLP": "journals/corr/abs-2008-02275",
+      "CorpusId": 220968818
+    },
+    "title": "Aligning AI With Shared Human Values",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 869,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2008.02275, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "2651789",
+        "name": "Andrew Critch"
+      },
+      {
+        "authorId": "46276596",
+        "name": "J. Li"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "We show how to assess a language model's knowledge of basic concepts of morality. We introduce the ETHICS dataset, a new benchmark that spans concepts in justice, well-being, duties, virtues, and commonsense morality. Models predict widespread moral judgments about diverse text scenarios. This requires connecting physical and social world knowledge to value judgements, a capability that may enable us to steer chatbot outputs or eventually regularize open-ended reinforcement learning agents. With the ETHICS dataset, we find that current language models have a promising but incomplete understanding of basic ethical knowledge. Our work shows that progress can be made on machine ethics today, and it provides a steppingstone toward AI that is aligned with human values."
+  },
+  {
+    "paperId": "94192bcdf3507e3543910c03b16bd06c5338fd47",
+    "externalIds": {
+      "MAG": "3041609598",
+      "ArXiv": "2007.05566",
+      "DBLP": "journals/corr/abs-2007-05566",
+      "CorpusId": 220495728
+    },
+    "title": "Contrastive Training for Improved Out-of-Distribution Detection",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 265,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.05566, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46258792",
+        "name": "Jim Winkens"
+      },
+      {
+        "authorId": "3407947",
+        "name": "Rudy Bunel"
+      },
+      {
+        "authorId": "23360006",
+        "name": "A. Roy"
+      },
+      {
+        "authorId": "49860489",
+        "name": "Robert Stanforth"
+      },
+      {
+        "authorId": "144223091",
+        "name": "Vivek Natarajan"
+      },
+      {
+        "authorId": "48072655",
+        "name": "J. Ledsam"
+      },
+      {
+        "authorId": "1811412312",
+        "name": "Patricia MacWilliams"
+      },
+      {
+        "authorId": "143967473",
+        "name": "Pushmeet Kohli"
+      },
+      {
+        "authorId": "6413143",
+        "name": "A. Karthikesalingam"
+      },
+      {
+        "authorId": "51011129",
+        "name": "Simon A. A. Kohl"
+      },
+      {
+        "authorId": "122347685",
+        "name": "taylan. cemgil"
+      },
+      {
+        "authorId": "143648071",
+        "name": "S. Eslami"
+      },
+      {
+        "authorId": "1737326",
+        "name": "O. Ronneberger"
+      }
+    ],
+    "abstract": "Reliable detection of out-of-distribution (OOD) inputs is increasingly understood to be a precondition for deployment of machine learning systems. This paper proposes and investigates the use of contrastive training to boost OOD detection performance. Unlike leading methods for OOD detection, our approach does not require access to examples labeled explicitly as OOD, which can be difficult to collect in practice. We show in extensive experiments that contrastive training significantly helps OOD detection performance on a number of common benchmarks. By introducing and employing the Confusion Log Probability (CLP) score, which quantifies the difficulty of the OOD detection task by capturing the similarity of inlier and outlier datasets, we show that our method especially improves performance in the `near OOD' classes -- a particularly challenging setting for previous methods."
+  },
+  {
+    "paperId": "298f67a9719e74192296fa2428776c46161a256a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2006-10108",
+      "ArXiv": "2006.10108",
+      "MAG": "3035898727",
+      "CorpusId": 219792902
+    },
+    "title": "Simple and Principled Uncertainty Estimation with Deterministic Deep Learning via Distance Awareness",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 551,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.10108, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "29833921",
+        "name": "Jeremiah Zhe Liu"
+      },
+      {
+        "authorId": "143872641",
+        "name": "Zi Lin"
+      },
+      {
+        "authorId": "151216770",
+        "name": "Shreyas Padhy"
+      },
+      {
+        "authorId": "47497262",
+        "name": "Dustin Tran"
+      },
+      {
+        "authorId": "2113816700",
+        "name": "Tania Bedrax-Weiss"
+      },
+      {
+        "authorId": "40627523",
+        "name": "Balaji Lakshminarayanan"
+      }
+    ],
+    "abstract": "Bayesian neural networks (BNN) and deep ensembles are principled approaches to estimate the predictive uncertainty of a deep learning model. However their practicality in real-time, industrial-scale applications are limited due to their heavy memory and inference cost. This motivates us to study principled approaches to high-quality uncertainty estimation that require only a single deep neural network (DNN). By formalizing the uncertainty quantification as a minimax learning problem, we first identify input distance awareness, i.e., the model's ability to quantify the distance of a testing example from the training data in the input space, as a necessary condition for a DNN to achieve high-quality (i.e., minimax optimal) uncertainty estimation. We then propose Spectral-normalized Neural Gaussian Process (SNGP), a simple method that improves the distance-awareness ability of modern DNNs, by adding a weight normalization step during training and replacing the output layer with a Gaussian process. On a suite of vision and language understanding tasks and on modern architectures (Wide-ResNet and BERT), SNGP is competitive with deep ensembles in prediction, calibration and out-of-domain detection, and outperforms the other single-model approaches."
+  },
+  {
+    "paperId": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
+    "externalIds": {
+      "ArXiv": "2005.14165",
+      "DBLP": "conf/nips/BrownMRSKDNSSAA20",
+      "MAG": "3030163527",
+      "CorpusId": 218971783
+    },
+    "title": "Language Models are Few-Shot Learners",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 57132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.14165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2065894334",
+        "name": "Melanie Subbiah"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from simple instructions - something which current NLP systems still largely struggle to do. Here we show that scaling up language models greatly improves task-agnostic, few-shot performance, sometimes even reaching competitiveness with prior state-of-the-art fine-tuning approaches. Specifically, we train GPT-3, an autoregressive language model with 175 billion parameters, 10x more than any previous non-sparse language model, and test its performance in the few-shot setting. For all tasks, GPT-3 is applied without any gradient updates or fine-tuning, with tasks and few-shot demonstrations specified purely via text interaction with the model. GPT-3 achieves strong performance on many NLP datasets, including translation, question-answering, and cloze tasks, as well as several tasks that require on-the-fly reasoning or domain adaptation, such as unscrambling words, using a novel word in a sentence, or performing 3-digit arithmetic. At the same time, we also identify some datasets where GPT-3's few-shot learning still struggles, as well as some datasets where GPT-3 faces methodological issues related to training on large web corpora. Finally, we find that GPT-3 can generate samples of news articles which human evaluators have difficulty distinguishing from articles written by humans. We discuss broader societal impacts of this finding and of GPT-3 in general."
+  },
+  {
+    "paperId": "659bf9ce7175e1ec266ff54359e2bd76e0b7ff31",
+    "externalIds": {
+      "DBLP": "conf/nips/LewisPPPKGKLYR020",
+      "MAG": "3027879771",
+      "ArXiv": "2005.11401",
+      "CorpusId": 218869575
+    },
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 13216,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.11401, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "3439053",
+        "name": "Ethan Perez"
+      },
+      {
+        "authorId": "1716179427",
+        "name": "Aleksandara Piktus"
+      },
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "2067091563",
+        "name": "Vladimir Karpukhin"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "103131985",
+        "name": "Heinrich Kuttler"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "144105277",
+        "name": "Wen-tau Yih"
+      },
+      {
+        "authorId": "2620211",
+        "name": "Tim Rocktäschel"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "1743722",
+        "name": "Douwe Kiela"
+      }
+    ],
+    "abstract": "Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when fine-tuned on downstream NLP tasks. However, their ability to access and precisely manipulate knowledge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-specific architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre-trained models with a differentiable access mechanism to explicit non-parametric memory can overcome this issue, but have so far been only investigated for extractive downstream tasks. We explore a general-purpose fine-tuning recipe for retrieval-augmented generation (RAG) -- models which combine pre-trained parametric and non-parametric memory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We compare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, the other can use different passages per token. We fine-tune and evaluate our models on a wide range of knowledge-intensive NLP tasks and set the state-of-the-art on three open domain QA tasks, outperforming parametric seq2seq models and task-specific retrieve-and-extract architectures. For language generation tasks, we find that RAG models generate more specific, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline."
+  },
+  {
+    "paperId": "549e8e5eea04b301cbb805f5502afffef492d344",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2003-12506",
+      "MAG": "3013716952",
+      "ArXiv": "2003.12506",
+      "DOI": "10.1007/978-3-030-58580-8_7",
+      "CorpusId": 214692974
+    },
+    "title": "Hybrid Models for Open Set Recognition",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 207,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.12506, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108699357",
+        "name": "Hongjie Zhang"
+      },
+      {
+        "authorId": "145476833",
+        "name": "Ang Li"
+      },
+      {
+        "authorId": "2117062812",
+        "name": "Jie Guo"
+      },
+      {
+        "authorId": "1720424",
+        "name": "Yanwen Guo"
+      }
+    ],
+    "abstract": "Open set recognition requires a classifier to detect samples not belonging to any of the classes in its training set. Existing methods fit a probability distribution to the training samples on their embedding space and detect outliers according to this distribution. The embedding space is often obtained from a discriminative classifier. However, such discriminative representation focuses only on known classes, which may not be critical for distinguishing the unknown classes. We argue that the representation space should be jointly learned from the inlier classifier and the density estimator (served as an outlier detector). We propose the OpenHybrid framework, which is composed of an encoder to encode the input data into a joint embedding space, a classifier to classify samples to inlier classes, and a flow-based density estimator to detect whether a sample belongs to the unknown category. A typical problem of existing flow-based models is that they may assign a higher likelihood to outliers. However, we empirically observe that such an issue does not occur in our experiments when learning a joint representation for discriminative and generative components. Experiments on standard open set benchmarks also reveal that an end-to-end trained OpenHybrid model significantly outperforms state-of-the-art methods and flow-based baselines."
+  },
+  {
+    "paperId": "832fff14d2ed50eb7969c4c4b976c35776548f56",
+    "externalIds": {
+      "ArXiv": "2002.08909",
+      "MAG": "3034671305",
+      "DBLP": "conf/icml/GuuLTPC20",
+      "CorpusId": 211204736
+    },
+    "title": "REALM: Retrieval-Augmented Language Model Pre-Training",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2915,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.08909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "9941702",
+        "name": "Zora Tung"
+      },
+      {
+        "authorId": "2616463",
+        "name": "Panupong Pasupat"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      }
+    ],
+    "abstract": "Language model pre-training has been shown to capture a surprising amount of world knowledge, crucial for NLP tasks such as question answering. However, this knowledge is stored implicitly in the parameters of a neural network, requiring ever-larger networks to cover more facts. \nTo capture knowledge in a more modular and interpretable way, we augment language model pre-training with a latent knowledge retriever, which allows the model to retrieve and attend over documents from a large corpus such as Wikipedia, used during pre-training, fine-tuning and inference. For the first time, we show how to pre-train such a knowledge retriever in an unsupervised manner, using masked language modeling as the learning signal and backpropagating through a retrieval step that considers millions of documents. \nWe demonstrate the effectiveness of Retrieval-Augmented Language Model pre-training (REALM) by fine-tuning on the challenging task of Open-domain Question Answering (Open-QA). We compare against state-of-the-art models for both explicit and implicit knowledge storage on three popular Open-QA benchmarks, and find that we outperform all previous methods by a significant margin (4-16% absolute accuracy), while also providing qualitative benefits such as interpretability and modularity."
+  },
+  {
+    "paperId": "e6c561d02500b2596a230b341a8eb8b921ca5bf2",
+    "externalIds": {
+      "MAG": "3001279689",
+      "ArXiv": "2001.08361",
+      "DBLP": "journals/corr/abs-2001-08361",
+      "CorpusId": 210861095
+    },
+    "title": "Scaling Laws for Neural Language Models",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 7641,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.08361, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "We study empirical scaling laws for language model performance on the cross-entropy loss. The loss scales as a power-law with model size, dataset size, and the amount of compute used for training, with some trends spanning more than seven orders of magnitude. Other architectural details such as network width or depth have minimal effects within a wide range. Simple equations govern the dependence of overfitting on model/dataset size and the dependence of training speed on model size. These relationships allow us to determine the optimal allocation of a fixed compute budget. Larger models are significantly more sample-efficient, such that optimally compute-efficient training involves training very large models on a relatively modest amount of data and stopping significantly before convergence."
+  },
+  {
+    "paperId": "3c8a456509e6c0805354bd40a35e3f2dbf8069b1",
+    "externalIds": {
+      "MAG": "2970971581",
+      "DBLP": "journals/corr/abs-1912-01703",
+      "ArXiv": "1912.01703",
+      "CorpusId": 202786778
+    },
+    "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 51318,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.01703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3407277",
+        "name": "Adam Paszke"
+      },
+      {
+        "authorId": "39793298",
+        "name": "Sam Gross"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "1977806",
+        "name": "Adam Lerer"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "114250963",
+        "name": "Gregory Chanan"
+      },
+      {
+        "authorId": "2059271276",
+        "name": "Trevor Killeen"
+      },
+      {
+        "authorId": "3370429",
+        "name": "Zeming Lin"
+      },
+      {
+        "authorId": "3365851",
+        "name": "N. Gimelshein"
+      },
+      {
+        "authorId": "3029482",
+        "name": "L. Antiga"
+      },
+      {
+        "authorId": "3050846",
+        "name": "Alban Desmaison"
+      },
+      {
+        "authorId": "1473151134",
+        "name": "Andreas Köpf"
+      },
+      {
+        "authorId": "2052812305",
+        "name": "E. Yang"
+      },
+      {
+        "authorId": "2253681376",
+        "name": "Zachary DeVito"
+      },
+      {
+        "authorId": "10707709",
+        "name": "Martin Raison"
+      },
+      {
+        "authorId": "41203992",
+        "name": "Alykhan Tejani"
+      },
+      {
+        "authorId": "22236100",
+        "name": "Sasank Chilamkurthy"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "152599430",
+        "name": "Lu Fang"
+      },
+      {
+        "authorId": "2113829116",
+        "name": "Junjie Bai"
+      },
+      {
+        "authorId": "2127604",
+        "name": "Soumith Chintala"
+      }
+    ],
+    "abstract": "Deep learning frameworks have often focused on either usability or speed, but not both. PyTorch is a machine learning library that shows that these two goals are in fact compatible: it was designed from first principles to support an imperative and Pythonic programming style that supports code as a model, makes debugging easy and is consistent with other popular scientific computing libraries, while remaining efficient and supporting hardware accelerators such as GPUs. In this paper, we detail the principles that drove the implementation of PyTorch and how they are reflected in its architecture. We emphasize that every aspect of PyTorch is a regular Python program under the full control of its user. We also explain how the careful and pragmatic implementation of the key components of its runtime enables them to work together to achieve compelling performance. We demonstrate the efficiency of individual subsystems, as well as the overall speed of PyTorch on several commonly used benchmarks."
+  },
+  {
+    "paperId": "a54b56af24bb4873ed0163b77df63b92bd018ddc",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1910-01108",
+      "ArXiv": "1910.01108",
+      "MAG": "2978017171",
+      "CorpusId": 203626972
+    },
+    "title": "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 9537,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.01108, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51918868",
+        "name": "Victor Sanh"
+      },
+      {
+        "authorId": "1380459402",
+        "name": "Lysandre Debut"
+      },
+      {
+        "authorId": "40811585",
+        "name": "Julien Chaumond"
+      },
+      {
+        "authorId": "50335211",
+        "name": "Thomas Wolf"
+      }
+    ],
+    "abstract": "As Transfer Learning from large-scale pre-trained models becomes more prevalent in Natural Language Processing (NLP), operating these large models in on-the-edge and/or under constrained computational training or inference budgets remains challenging. In this work, we propose a method to pre-train a smaller general-purpose language representation model, called DistilBERT, which can then be fine-tuned with good performances on a wide range of tasks like its larger counterparts. While most prior work investigated the use of distillation for building task-specific models, we leverage knowledge distillation during the pre-training phase and show that it is possible to reduce the size of a BERT model by 40%, while retaining 97% of its language understanding capabilities and being 60% faster. To leverage the inductive biases learned by larger models during pre-training, we introduce a triple loss combining language modeling, distillation and cosine-distance losses. Our smaller, faster and lighter model is cheaper to pre-train and we demonstrate its capabilities for on-device computations in a proof-of-concept experiment and a comparative on-device study."
+  },
+  {
+    "paperId": "d28c18a3c2a0afdc0a8634d18345af8d36e1f948",
+    "externalIds": {
+      "MAG": "2977026452",
+      "DBLP": "journals/corr/abs-1909-12673",
+      "ArXiv": "1909.12673",
+      "CorpusId": 203592013
+    },
+    "title": "A Constructive Prediction of the Generalization Error Across Scales",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 264,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.12673, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1380165568",
+        "name": "Jonathan S. Rosenfeld"
+      },
+      {
+        "authorId": "32928116",
+        "name": "Amir Rosenfeld"
+      },
+      {
+        "authorId": "2083259",
+        "name": "Yonatan Belinkov"
+      },
+      {
+        "authorId": "2613669",
+        "name": "N. Shavit"
+      }
+    ],
+    "abstract": "The dependency of the generalization error of neural networks on model and dataset size is of critical importance both in practice and for understanding the theory of neural networks. Nevertheless, the functional form of this dependency remains elusive. In this work, we present a functional form which approximates well the generalization error in practice. Capitalizing on the successful concept of model scaling (e.g., width, depth), we are able to simultaneously construct such a form and specify the exact models which can attain it across model/data scales. Our construction follows insights obtained from observations conducted over a range of model/data scales, in various model types and datasets, in vision and language tasks. We show that the form both fits the observations well across scales, and provides accurate predictions from small- to large-scale models and data."
+  },
+  {
+    "paperId": "661d142c23cb2a3207d5f1ba2ac7ff61f2d4fb2f",
+    "externalIds": {
+      "MAG": "2954698171",
+      "DBLP": "conf/pldi/TilletKC19",
+      "DOI": "10.1145/3315508.3329973",
+      "CorpusId": 184488182
+    },
+    "title": "Triton: an intermediate language and compiler for tiled neural network computations",
+    "venue": "MAPL@PLDI",
+    "year": 2019,
+    "citationCount": 663,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3315508.3329973?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3315508.3329973, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2365256215",
+        "name": "Philippe Tillet"
+      },
+      {
+        "authorId": "2105859614",
+        "name": "Hsiang-Tsung Kung"
+      },
+      {
+        "authorId": "2042941",
+        "name": "David D. Cox"
+      }
+    ],
+    "abstract": "The validation and deployment of novel research ideas in the field of Deep Learning is often limited by the availability of efficient compute kernels for certain basic primitives. In particular, operations that cannot leverage existing vendor libraries (e.g., cuBLAS, cuDNN) are at risk of facing poor device utilization unless custom implementations are written by experts – usually at the expense of portability. For this reason, the development of new programming abstractions for specifying custom Deep Learning workloads at a minimal performance cost has become crucial. We present Triton, a language and compiler centered around the concept of tile, i.e., statically shaped multi-dimensional sub-arrays. Our approach revolves around (1) a C-based language and an LLVM-based intermediate representation (IR) for expressing tensor programs in terms of operations on parametric tile variables and (2) a set of novel tile-level optimization passes for compiling these programs into efficient GPU code. We demonstrate how Triton can be used to build portable implementations of matrix multiplication and convolution kernels on par with hand-tuned vendor libraries (cuBLAS / cuDNN), or for efficiently implementing recent research ideas such as shift convolutions."
+  },
+  {
+    "paperId": "8b0f27bb594b1eaaf493eaf1e2ee723a2b0a19ad",
+    "externalIds": {
+      "MAG": "2946609015",
+      "DBLP": "journals/corr/abs-1905-07830",
+      "ACL": "P19-1472",
+      "ArXiv": "1905.07830",
+      "DOI": "10.18653/v1/P19-1472",
+      "CorpusId": 159041722
+    },
+    "title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 3987,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1472.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.07830, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Recent work by Zellers et al. (2018) introduced a new task of commonsense natural language inference: given an event description such as “A woman sits at a piano,” a machine must select the most likely followup: “She sets her fingers on the keys.” With the introduction of BERT, near human-level performance was reached. Does this mean that machines can perform human level commonsense inference? In this paper, we show that commonsense inference still proves difficult for even state-of-the-art models, by presenting HellaSwag, a new challenge dataset. Though its questions are trivial for humans (>95% accuracy), state-of-the-art models struggle (<48%). We achieve this via Adversarial Filtering (AF), a data collection paradigm wherein a series of discriminators iteratively select an adversarial set of machine-generated wrong answers. AF proves to be surprisingly robust. The key insight is to scale up the length and complexity of the dataset examples towards a critical ‘Goldilocks’ zone wherein generated text is ridiculous to humans, yet often misclassified by state-of-the-art models. Our construction of HellaSwag, and its resulting difficulty, sheds light on the inner workings of deep pretrained models. More broadly, it suggests a new path forward for NLP research, in which benchmarks co-evolve with the evolving state-of-the-art in an adversarial way, so as to present ever-harder challenges."
+  },
+  {
+    "paperId": "083afaf8c8eb4d3f61a884221b340c3436c4bc13",
+    "externalIds": {
+      "MAG": "2914554687",
+      "ArXiv": "1909.01736",
+      "DBLP": "journals/corr/abs-1909-01736",
+      "DOI": "10.1145/3293883.3295710",
+      "CorpusId": 59617568
+    },
+    "title": "Beyond human-level accuracy: computational challenges in deep learning",
+    "venue": "ACM SIGPLAN Symposium on Principles & Practice of Parallel Programming",
+    "year": 2019,
+    "citationCount": 82,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.01736, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3130228",
+        "name": "Joel Hestness"
+      },
+      {
+        "authorId": "2774880",
+        "name": "Newsha Ardalani"
+      },
+      {
+        "authorId": "2040049",
+        "name": "G. Diamos"
+      }
+    ],
+    "abstract": "Deep learning (DL) research yields accuracy and product improvements from both model architecture changes and scale: larger data sets and models, and more computation. For hardware design, it is difficult to predict DL model changes. However, recent prior work shows that as dataset sizes grow, DL model accuracy and model size grow predictably. This paper leverages the prior work to project the dataset and model size growth required to advance DL accuracy beyond human-level, to frontier targets defined by machine learning experts. Datasets will need to grow 33--971×, while models will need to grow 6.6--456× to achieve target accuracies. We further characterize and project the computational requirements to train these applications at scale. Our characterization reveals an important segmentation of DL training challenges for recurrent neural networks (RNNs) that contrasts with prior studies of deep convolutional networks. RNNs will have comparatively moderate operational intensities and very large memory footprint requirements. In contrast to emerging accelerator designs, large-scale RNN training characteristics suggest designs with significantly larger memory capacity and on-chip caches."
+  },
+  {
+    "paperId": "a40aefcfe164e95d86d14fe7c3d0a2a726fc2218",
+    "externalIds": {
+      "MAG": "2949738940",
+      "DBLP": "journals/corr/abs-1902-02767",
+      "ArXiv": "1902.02767",
+      "CorpusId": 59608690
+    },
+    "title": "Hybrid Models with Deep and Invertible Features",
+    "venue": "International Conference on Machine Learning",
+    "year": 2019,
+    "citationCount": 105,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1902.02767, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2289611072",
+        "name": "Eric T. Nalisnick"
+      },
+      {
+        "authorId": "2063980545",
+        "name": "Akihiro Matsukawa"
+      },
+      {
+        "authorId": "1725303",
+        "name": "Y. Teh"
+      },
+      {
+        "authorId": "2953236",
+        "name": "Dilan Görür"
+      },
+      {
+        "authorId": "40627523",
+        "name": "Balaji Lakshminarayanan"
+      }
+    ],
+    "abstract": "We propose a neural hybrid model consisting of a linear model defined on a set of features computed by a deep, invertible transformation (i.e. a normalizing flow). An attractive property of our model is that both p(features), the density of the features, and p(targets | features), the predictive distribution, can be computed exactly in a single feed-forward pass. We show that our hybrid model, despite the invertibility constraints, achieves similar accuracy to purely predictive models. Moreover the generative component remains a good model of the input features despite the hybrid optimization objective. This offers additional capabilities such as detection of out-of-distribution inputs and enabling semi-supervised learning. The availability of the exact joint density p(targets, features) also allows us to compute many quantities readily, making our hybrid model a useful building block for downstream applications of probabilistic deep learning."
+  },
+  {
+    "paperId": "2d8c97db4bae00ff243d122b957091a236a697a7",
+    "externalIds": {
+      "MAG": "2951883849",
+      "DBLP": "journals/corr/abs-1812-04606",
+      "ArXiv": "1812.04606",
+      "CorpusId": 54558282
+    },
+    "title": "Deep Anomaly Detection with Outlier Exposure",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 1729,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.04606, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "144299726",
+        "name": "Thomas G. Dietterich"
+      }
+    ],
+    "abstract": "It is important to detect anomalous inputs when deploying machine learning systems. The use of larger and more complex inputs in deep learning magnifies the difficulty of distinguishing between anomalous and in-distribution examples. At the same time, diverse image and text data are available in enormous quantities. We propose leveraging these data to improve deep anomaly detection by training anomaly detectors against an auxiliary dataset of outliers, an approach we call Outlier Exposure (OE). This enables anomaly detectors to generalize and detect unseen anomalies. In extensive experiments on natural language processing and small- and large-scale vision tasks, we find that Outlier Exposure significantly improves detection performance. We also observe that cutting-edge generative models trained on CIFAR-10 may assign higher likelihoods to SVHN images than to CIFAR-10 images; we use OE to mitigate this issue. We also analyze the flexibility and robustness of Outlier Exposure, and identify characteristics of the auxiliary dataset that improve performance."
+  },
+  {
+    "paperId": "1536e8958697c5364f68b2e2448905dbbeb3a0ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1809-02789",
+      "MAG": "2952396187",
+      "ACL": "D18-1260",
+      "ArXiv": "1809.02789",
+      "DOI": "10.18653/v1/D18-1260",
+      "CorpusId": 52183757
+    },
+    "title": "Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 2319,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1260.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.02789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      }
+    ],
+    "abstract": "We present a new kind of question answering dataset, OpenBookQA, modeled after open book exams for assessing human understanding of a subject. The open book that comes with our questions is a set of 1326 elementary level science facts. Roughly 6000 questions probe an understanding of these facts and their application to novel situations. This requires combining an open book fact (e.g., metals conduct electricity) with broad common knowledge (e.g., a suit of armor is made of metal) obtained from other sources. While existing QA datasets over documents or knowledge bases, being generally self-contained, focus on linguistic understanding, OpenBookQA probes a deeper understanding of both the topic—in the context of common knowledge—and the language it is expressed in. Human performance on OpenBookQA is close to 92%, but many state-of-the-art pre-trained QA methods perform surprisingly poorly, worse than several simple neural baselines we develop. Our oracle experiments designed to circumvent the knowledge retrieval bottleneck demonstrate the value of both the open book and additional facts. We leave it as a challenge to solve the retrieval problem in this multi-hop setting and to close the large gap to human performance."
+  },
+  {
+    "paperId": "d03ca175e2b2745126e792fdc31dfadae4c63afa",
+    "externalIds": {
+      "ArXiv": "1807.03888",
+      "DBLP": "journals/corr/abs-1807-03888",
+      "MAG": "2867167548",
+      "CorpusId": 49667948
+    },
+    "title": "A Simple Unified Framework for Detecting Out-of-Distribution Samples and Adversarial Attacks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 2523,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.03888, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      },
+      {
+        "authorId": "2208511",
+        "name": "Kibok Lee"
+      },
+      {
+        "authorId": "1697141",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "143720148",
+        "name": "Jinwoo Shin"
+      }
+    ],
+    "abstract": "Detecting test samples drawn sufficiently far away from the training distribution statistically or adversarially is a fundamental requirement for deploying a good classifier in many real-world machine learning applications. However, deep neural networks with the softmax classifier are known to produce highly overconfident posterior distributions even for such abnormal samples. In this paper, we propose a simple yet effective method for detecting any abnormal samples, which is applicable to any pre-trained softmax neural classifier. We obtain the class conditional Gaussian distributions with respect to (low- and upper-level) features of the deep models under Gaussian discriminant analysis, which result in a confidence score based on the Mahalanobis distance. While most prior methods have been evaluated for detecting either out-of-distribution or adversarial samples, but not both, the proposed method achieves the state-of-the-art performances for both cases in our experiments. Moreover, we found that our proposed method is more robust in harsh cases, e.g., when the training dataset has noisy labels or small number of samples. Finally, we show that the proposed method enjoys broader usage by applying it to class-incremental learning: whenever out-of-distribution samples are detected, our classification rule can incorporate new classes well without further training deep models."
+  },
+  {
+    "paperId": "88bb0a28bb58d847183ec505dda89b63771bb495",
+    "externalIds": {
+      "ArXiv": "1803.05457",
+      "DBLP": "journals/corr/abs-1803-05457",
+      "MAG": "2794325560",
+      "CorpusId": 3922816
+    },
+    "title": "Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 4430,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.05457, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "3390191",
+        "name": "Isaac Cowhey"
+      },
+      {
+        "authorId": "1741101",
+        "name": "Oren Etzioni"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      },
+      {
+        "authorId": "3393851",
+        "name": "Carissa Schoenick"
+      },
+      {
+        "authorId": "3385516",
+        "name": "Oyvind Tafjord"
+      }
+    ],
+    "abstract": "We present a new question set, text corpus, and baselines assembled to encourage AI research in advanced question answering. Together, these constitute the AI2 Reasoning Challenge (ARC), which requires far more powerful knowledge and reasoning than previous challenges such as SQuAD or SNLI. The ARC question set is partitioned into a Challenge Set and an Easy Set, where the Challenge Set contains only questions answered incorrectly by both a retrieval-based algorithm and a word co-occurence algorithm. The dataset contains only natural, grade-school science questions (authored for human tests), and is the largest public-domain set of this kind (7,787 questions). We test several baselines on the Challenge Set, including leading neural models from the SQuAD and SNLI tasks, and find that none are able to significantly outperform a random baseline, reflecting the difficult nature of this task. We are also releasing the ARC Corpus, a corpus of 14M science sentences relevant to the task, and implementations of the three neural baseline models tested. Can your model perform better? We pose ARC as a challenge to the community."
+  },
+  {
+    "paperId": "a24d72bd0d08d515cb3e26f94131d33ad6c861db",
+    "externalIds": {
+      "MAG": "2951222957",
+      "DBLP": "journals/corr/abs-1711-09050",
+      "ArXiv": "1711.09050",
+      "DOI": "10.1145/3278721.3278777",
+      "CorpusId": 33499714
+    },
+    "title": "Ethical Challenges in Data-Driven Dialogue Systems",
+    "venue": "AAAI/ACM Conference on AI, Ethics, and Society",
+    "year": 2017,
+    "citationCount": 189,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1711.09050",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.09050, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40068904",
+        "name": "Peter Henderson"
+      },
+      {
+        "authorId": "40910779",
+        "name": "Koustuv Sinha"
+      },
+      {
+        "authorId": "1411255298",
+        "name": "Nicolas Angelard-Gontier"
+      },
+      {
+        "authorId": "145604319",
+        "name": "Nan Rosemary Ke"
+      },
+      {
+        "authorId": "47001277",
+        "name": "G. Fried"
+      },
+      {
+        "authorId": "2054294",
+        "name": "Ryan Lowe"
+      },
+      {
+        "authorId": "145134886",
+        "name": "Joelle Pineau"
+      }
+    ],
+    "abstract": "The use of dialogue systems as a medium for human-machine interaction is an increasingly prevalent paradigm. A growing number of dialogue systems use conversation strategies that are learned from large datasets. There are well documented instances where interactions with these system have resulted in biased or even offensive conversations due to the data-driven training process. Here, we highlight potential ethical issues that arise in dialogue systems research, including: implicit biases in data-driven systems, the rise of adversarial examples, potential sources of privacy violations, safety concerns, special considerations for reinforcement learning systems, and reproducibility concerns. We also suggest areas stemming from these issues that deserve further investigation. Through this initial survey, we hope to spur research leading to robust, safe, and ethically sound dialogue systems."
+  },
+  {
+    "paperId": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+    "externalIds": {
+      "MAG": "2736601468",
+      "DBLP": "journals/corr/SchulmanWDRK17",
+      "ArXiv": "1707.06347",
+      "CorpusId": 28695052
+    },
+    "title": "Proximal Policy Optimization Algorithms",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 26829,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.06347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "143909660",
+        "name": "Filip Wolski"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2067138712",
+        "name": "Oleg Klimov"
+      }
+    ],
+    "abstract": "We propose a new family of policy gradient methods for reinforcement learning, which alternate between sampling data through interaction with the environment, and optimizing a \"surrogate\" objective function using stochastic gradient ascent. Whereas standard policy gradient methods perform one gradient update per data sample, we propose a novel objective function that enables multiple epochs of minibatch updates. The new methods, which we call proximal policy optimization (PPO), have some of the benefits of trust region policy optimization (TRPO), but they are much simpler to implement, more general, and have better sample complexity (empirically). Our experiments test PPO on a collection of benchmark tasks, including simulated robotic locomotion and Atari game playing, and we show that PPO outperforms other online policy gradient methods, and overall strikes a favorable balance between sample complexity, simplicity, and wall-time."
+  },
+  {
+    "paperId": "d65ce2b8300541414bfe51d03906fca72e93523c",
+    "externalIds": {
+      "MAG": "2950953798",
+      "ArXiv": "1706.04599",
+      "DBLP": "journals/corr/GuoPSW17",
+      "CorpusId": 28671436
+    },
+    "title": "On Calibration of Modern Neural Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 7752,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.04599, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144993411",
+        "name": "Chuan Guo"
+      },
+      {
+        "authorId": "10804137",
+        "name": "Geoff Pleiss"
+      },
+      {
+        "authorId": "2117103358",
+        "name": "Yu Sun"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      }
+    ],
+    "abstract": "Confidence calibration -- the problem of predicting probability estimates representative of the true correctness likelihood -- is important for classification models in many applications. We discover that modern neural networks, unlike those from a decade ago, are poorly calibrated. Through extensive experiments, we observe that depth, width, weight decay, and Batch Normalization are important factors influencing calibration. We evaluate the performance of various post-processing calibration methods on state-of-the-art architectures with image and document classification datasets. Our analysis and experiments not only offer insights into neural network learning, but also provide a simple and straightforward recipe for practical settings: on most datasets, temperature scaling -- a single-parameter variant of Platt Scaling -- is surprisingly effective at calibrating predictions."
+  },
+  {
+    "paperId": "547c854985629cfa9404a5ba8ca29367b5f8c25f",
+    "externalIds": {
+      "ArXiv": "1706.02690",
+      "MAG": "2952116804",
+      "DBLP": "conf/iclr/LiangLS18",
+      "CorpusId": 3526391
+    },
+    "title": "Enhancing The Reliability of Out-of-distribution Image Detection in Neural Networks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 2444,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.02690, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3075943",
+        "name": "Shiyu Liang"
+      },
+      {
+        "authorId": "1527103472",
+        "name": "Yixuan Li"
+      },
+      {
+        "authorId": "143808204",
+        "name": "R. Srikant"
+      }
+    ],
+    "abstract": "We consider the problem of detecting out-of-distribution images in neural networks. We propose ODIN, a simple and effective method that does not require any change to a pre-trained neural network. Our method is based on the observation that using temperature scaling and adding small perturbations to the input can separate the softmax score distributions between in- and out-of-distribution images, allowing for more effective detection. We show in a series of experiments that ODIN is compatible with diverse network architectures and datasets. It consistently outperforms the baseline approach by a large margin, establishing a new state-of-the-art performance on this task. For example, ODIN reduces the false positive rate from the baseline 34.7% to 4.3% on the DenseNet (applied to CIFAR-10) when the true positive rate is 95%."
+  },
+  {
+    "paperId": "f010affab57b5fcf1cd6be23df79d8ec98c7289c",
+    "externalIds": {
+      "MAG": "2612431505",
+      "ArXiv": "1705.03551",
+      "ACL": "P17-1147",
+      "DBLP": "journals/corr/JoshiCWZ17",
+      "DOI": "10.18653/v1/P17-1147",
+      "CorpusId": 26501419
+    },
+    "title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 3685,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P17-1147.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      },
+      {
+        "authorId": "1780531",
+        "name": "Daniel S. Weld"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We present TriviaQA, a challenging reading comprehension dataset containing over 650K question-answer-evidence triples. TriviaQA includes 95K question-answer pairs authored by trivia enthusiasts and independently gathered evidence documents, six per question on average, that provide high quality distant supervision for answering the questions. We show that, in comparison to other recently introduced large-scale datasets, TriviaQA (1) has relatively complex, compositional questions, (2) has considerable syntactic and lexical variability between questions and corresponding answer-evidence sentences, and (3) requires more cross sentence reasoning to find answers. We also present two baseline algorithms: a feature-based classifier and a state-of-the-art neural network, that performs well on SQuAD reading comprehension. Neither approach comes close to human performance (23% and 40% vs. 80%), suggesting that TriviaQA is a challenging testbed that is worth significant future study."
+  },
+  {
+    "paperId": "802168a81571dde28f5ddb94d84677bc007afa7b",
+    "externalIds": {
+      "DBLP": "conf/nips/Lakshminarayanan17",
+      "ArXiv": "1612.01474",
+      "MAG": "2963238274",
+      "CorpusId": 6294674
+    },
+    "title": "Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 7318,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.01474, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40627523",
+        "name": "Balaji Lakshminarayanan"
+      },
+      {
+        "authorId": "1863250",
+        "name": "A. Pritzel"
+      },
+      {
+        "authorId": "1723876",
+        "name": "C. Blundell"
+      }
+    ],
+    "abstract": "Deep neural networks (NNs) are powerful black box predictors that have recently achieved impressive performance on a wide spectrum of tasks. Quantifying predictive uncertainty in NNs is a challenging and yet unsolved problem. Bayesian NNs, which learn a distribution over weights, are currently the state-of-the-art for estimating predictive uncertainty; however these require significant modifications to the training procedure and are computationally expensive compared to standard (non-Bayesian) NNs. We propose an alternative to Bayesian NNs that is simple to implement, readily parallelizable, requires very little hyperparameter tuning, and yields high quality predictive uncertainty estimates. Through a series of experiments on classification and regression benchmarks, we demonstrate that our method produces well-calibrated uncertainty estimates which are as good or better than approximate Bayesian NNs. To assess robustness to dataset shift, we evaluate the predictive uncertainty on test examples from known and unknown distributions, and show that our method is able to express higher uncertainty on out-of-distribution examples. We demonstrate the scalability of our method by evaluating predictive uncertainty estimates on ImageNet."
+  },
+  {
+    "paperId": "6ff2a434578ff2746b9283e45abf296887f48a2d",
+    "externalIds": {
+      "DBLP": "journals/corr/HendrycksG16c",
+      "ArXiv": "1610.02136",
+      "MAG": "2952053192",
+      "CorpusId": 13046179
+    },
+    "title": "A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 4195,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.02136, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "1700980",
+        "name": "Kevin Gimpel"
+      }
+    ],
+    "abstract": "We consider the two related problems of detecting if an example is misclassified or out-of-distribution. We present a simple baseline that utilizes probabilities from softmax distributions. Correctly classified examples tend to have greater maximum softmax probabilities than erroneously classified and out-of-distribution examples, allowing for their detection. We assess performance by defining several tasks in computer vision, natural language processing, and automatic speech recognition, showing the effectiveness of this baseline across all. We then show the baseline can sometimes be surpassed, demonstrating the room for future research on these underexplored detection tasks."
+  },
+  {
+    "paperId": "e86f71ca2948d17b003a5f068db1ecb2b77827f7",
+    "externalIds": {
+      "DBLP": "journals/corr/AmodeiOSCSM16",
+      "ArXiv": "1606.06565",
+      "MAG": "2462906003",
+      "CorpusId": 10242377
+    },
+    "title": "Concrete Problems in AI Safety",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 3023,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.06565, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "2287268442",
+        "name": "Chris Olah"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "30415265",
+        "name": "Dandelion Mané"
+      }
+    ],
+    "abstract": "Rapid progress in machine learning and artificial intelligence (AI) has brought increasing attention to the potential impacts of AI technologies on society. In this paper we discuss one such potential impact: the problem of accidents in machine learning systems, defined as unintended and harmful behavior that may emerge from poor design of real-world AI systems. We present a list of five practical research problems related to accident risk, categorized according to whether the problem originates from having the wrong objective function (\"avoiding side effects\" and \"avoiding reward hacking\"), an objective function that is too expensive to evaluate frequently (\"scalable supervision\"), or undesirable behavior during the learning process (\"safe exploration\" and \"distributional shift\"). We review previous work in these areas as well as suggesting research directions with a focus on relevance to cutting-edge AI systems. Finally, we consider the high-level question of how to think most productively about the safety of forward-looking applications of AI."
+  },
+  {
+    "paperId": "5ed791f810da580c78df6a052c6b9f2e258f6b0a",
+    "externalIds": {
+      "MAG": "2952915793",
+      "ArXiv": "1606.06031",
+      "DBLP": "conf/acl/PapernoKLPBPBBF16",
+      "ACL": "P16-1144",
+      "DOI": "10.18653/v1/P16-1144",
+      "CorpusId": 2381275
+    },
+    "title": "The LAMBADA dataset: Word prediction requiring a broad discourse context",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2016,
+    "citationCount": 1019,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.18653/v1/p16-1144",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.06031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2129425",
+        "name": "Denis Paperno"
+      },
+      {
+        "authorId": "2067996",
+        "name": "Germán Kruszewski"
+      },
+      {
+        "authorId": "2672644",
+        "name": "Angeliki Lazaridou"
+      },
+      {
+        "authorId": "3422089",
+        "name": "Q. N. Pham"
+      },
+      {
+        "authorId": "145040726",
+        "name": "R. Bernardi"
+      },
+      {
+        "authorId": "3422247",
+        "name": "Sandro Pezzelle"
+      },
+      {
+        "authorId": "145283199",
+        "name": "Marco Baroni"
+      },
+      {
+        "authorId": "1807810",
+        "name": "Gemma Boleda"
+      },
+      {
+        "authorId": "144151273",
+        "name": "R. Fernández"
+      }
+    ],
+    "abstract": "We introduce LAMBADA, a dataset to evaluate the capabilities of computational models for text understanding by means of a word prediction task. LAMBADA is a collection of narrative passages sharing the characteristic that human subjects are able to guess their last word if they are exposed to the whole passage, but not if they only see the last sentence preceding the target word. To succeed on LAMBADA, computational models cannot simply rely on local context, but must be able to keep track of information in the broader discourse. We show that LAMBADA exemplifies a wide range of linguistic phenomena, and that none of several state-of-the-art language models reaches accuracy above 1% on this novel benchmark. We thus propose LAMBADA as a challenging test set, meant to encourage the development of new models capable of genuine understanding of broad context in natural language text."
+  },
+  {
+    "paperId": "b584309dccafe64a7d6b96f064554330cbe1bbd3",
+    "externalIds": {
+      "DBLP": "conf/iclr/RamaseshLD22",
+      "CorpusId": 251648120
+    },
+    "title": "Effect of scale on catastrophic forgetting in neural networks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 212,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "96641652",
+        "name": "V. Ramasesh"
+      },
+      {
+        "authorId": "102549875",
+        "name": "Aitor Lewkowycz"
+      },
+      {
+        "authorId": "52136425",
+        "name": "Ethan Dyer"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "d801ea85c8d0c80aaf2499a040b22173b3b7ce26",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-14111",
+      "CorpusId": 235254477
+    },
+    "title": "Objective Robustness in Deep Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2106415442",
+        "name": "Jack Koch"
+      },
+      {
+        "authorId": "2106415649",
+        "name": "L. Langosco"
+      },
+      {
+        "authorId": "147132443",
+        "name": "J. Pfau"
+      },
+      {
+        "authorId": "2118971168",
+        "name": "J. Le"
+      },
+      {
+        "authorId": "2106414883",
+        "name": "Lee D. Sharkey"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "e2d8b558de50eb0cc9ce5dddc73c26a9d0971150",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-03023",
+      "CorpusId": 234095748
+    },
+    "title": "On-the-Fly Controlled Text Generation with Experts and Anti-Experts",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "94500147",
+        "name": "Alisa Liu"
+      },
+      {
+        "authorId": null,
+        "name": "Maarten Sap"
+      },
+      {
+        "authorId": "50085131",
+        "name": "Ximing Lu"
+      },
+      {
+        "authorId": "2705113",
+        "name": "Swabha Swayamdipta"
+      },
+      {
+        "authorId": "1857797",
+        "name": "Chandra Bhagavatula"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "507a7a2946e449faa9bc9a4ea9076f80b131cdc9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2110-07574",
+      "CorpusId": 238857096
+    },
+    "title": "Delphi: Towards Machine Ethics and Norms",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2112504145",
+        "name": "Liwei Jiang"
+      },
+      {
+        "authorId": "2012510",
+        "name": "Jena D. Hwang"
+      },
+      {
+        "authorId": "1857797",
+        "name": "Chandra Bhagavatula"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "39191185",
+        "name": "Maxwell Forbes"
+      },
+      {
+        "authorId": "32196774",
+        "name": "Jon Borchardt"
+      },
+      {
+        "authorId": "50685571",
+        "name": "Jenny T Liang"
+      },
+      {
+        "authorId": "1741101",
+        "name": "Oren Etzioni"
+      },
+      {
+        "authorId": "2729164",
+        "name": "Maarten Sap"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": null
+  }
+]
