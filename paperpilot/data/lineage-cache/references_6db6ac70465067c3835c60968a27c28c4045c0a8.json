@@ -1,0 +1,2120 @@
+[
+  {
+    "paperId": "7809f2f509b5bd1ce3d8b9a89ef25a755dd729a2",
+    "externalIds": {
+      "ArXiv": "2109.02974",
+      "DBLP": "journals/corr/abs-2109-02974",
+      "DOI": "10.1109/ICCV48922.2021.01378",
+      "CorpusId": 237431154
+    },
+    "title": "FuseFormer: Fusing Fine-Grained Information in Transformers for Video Inpainting",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 165,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2109.02974",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.02974, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144207288",
+        "name": "R. Liu"
+      },
+      {
+        "authorId": "153807698",
+        "name": "Hanming Deng"
+      },
+      {
+        "authorId": "2155605310",
+        "name": "Yangyi Huang"
+      },
+      {
+        "authorId": "2119204728",
+        "name": "Xiaoyu Shi"
+      },
+      {
+        "authorId": "152309485",
+        "name": "Lewei Lu"
+      },
+      {
+        "authorId": "8397576",
+        "name": "Wenxiu Sun"
+      },
+      {
+        "authorId": "93768810",
+        "name": "Xiaogang Wang"
+      },
+      {
+        "authorId": "3304536",
+        "name": "Jifeng Dai"
+      },
+      {
+        "authorId": "47893312",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Transformer, as a strong and flexible architecture for modelling long-range relations, has been widely explored in vision tasks. However, when used in video inpainting that requires fine-grained representation, existed method still suffers from yielding blurry edges in detail due to the hard patch splitting. Here we aim to tackle this problem by proposing FuseFormer, a Transformer model designed for video inpainting via fine-grained feature fusion based on novel Soft Split and Soft Composition operations. The soft split divides feature map into many patches with given overlapping interval. On the contrary, the soft composition operates by stitching different patches into a whole feature map where pixels in overlapping regions are summed up. These two modules are first used in tokenization before Transformer layers and de-tokenization after Transformer layers, for effective mapping between tokens and features. Therefore, sub-patch level information interaction is enabled for more effective feature propagation between neighboring patches, resulting in synthesizing vivid content for hole regions in videos. Moreover, in FuseFormer, we elaborately insert the soft composition and soft split into the feed-forward network, enabling the 1D linear layers to have the capability of modelling 2D structure. And, the sub-patch level feature fusion ability is further enhanced. In both quantitative and qualitative evaluations, our proposed FuseFormer surpasses state-of-the-art methods. We also conduct detailed analysis to examine its superiority. Code and pretrained models are available at https://github.com/ruiliu-ai/FuseFormer.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "abb5a7a655fabc8c97302f57984c9fbffb95af48",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-13967",
+      "ArXiv": "2107.13967",
+      "CorpusId": 236493171
+    },
+    "title": "PPT Fusion: Pyramid Patch Transformerfor a Case Study in Image Fusion",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 47,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.13967, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2048756240",
+        "name": "Yu Fu"
+      },
+      {
+        "authorId": null,
+        "name": "TianYang Xu"
+      },
+      {
+        "authorId": "33270642",
+        "name": "Xiaojun Wu"
+      },
+      {
+        "authorId": "145801638",
+        "name": "J. Kittler"
+      }
+    ],
+    "abstract": "The Transformer architecture has witnessed a rapid development in recent years, outperforming the CNN architectures in many computer vision tasks, as exemplified by the Vision Transformers (ViT) for image classification. However, existing visual transformer models aim to extract semantic information for high-level tasks, such as classification and detection.These methods ignore the importance of the spatial resolution of the input image, thus sacrificing the local correlation information of neighboring pixels. In this paper, we propose a Patch Pyramid Transformer(PPT) to effectively address the above issues.Specifically, we first design a Patch Transformer to transform the image into a sequence of patches, where transformer encoding is performed for each patch to extract local representations. In addition, we construct a Pyramid Transformer to effectively extract the non-local information from the entire image. After obtaining a set of multi-scale, multi-dimensional, and multi-angle features of the original image, we design the image reconstruction network to ensure that the features can be reconstructed into the original input. To validate the effectiveness, we apply the proposed Patch Pyramid Transformer to image fusion tasks. The experimental results demonstrate its superior performance, compared to the state-of-the-art fusion approaches, achieving the best results on several evaluation indicators. Thanks to the underlying representational capacity of the PPT network, it can directly be applied to different image fusion tasks without redesigning or retraining the network.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "48ec7f1bcf8953ac472384bcea88bc38774508f0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-09011",
+      "ArXiv": "2107.09011",
+      "DOI": "10.1109/ICIP46576.2022.9897280",
+      "CorpusId": 236087620
+    },
+    "title": "Image Fusion Transformer",
+    "venue": "International Conference on Information Photonics",
+    "year": 2021,
+    "citationCount": 185,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2107.09011",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.09011, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51005492",
+        "name": "V. Vibashan"
+      },
+      {
+        "authorId": "144958260",
+        "name": "Jeya Maria Jose Valanarasu"
+      },
+      {
+        "authorId": "144477698",
+        "name": "Poojan Oza"
+      },
+      {
+        "authorId": "1741177",
+        "name": "Vishal M. Patel"
+      }
+    ],
+    "abstract": "In image fusion, images obtained from different sensors are fused to generate a single image with enhanced information. In recent years, state-of-the-art methods have adopted Convolution Neural Networks (CNNs) to encode meaningful features for image fusion. Specifically, CNN-based methods perform image fusion by fusing local features. However, they do not consider long-range dependencies that are present in the image. Transformer-based models are designed to overcome this by modelling the long-range dependencies with the help of self-attention mechanism. This motivates us to propose a novel Image Fusion Transformer (IFT) where we develop a transformer-based multi-scale fusion strategy that attends to both local and long-range information (or global context). The proposed method follows a two-stage training approach. In the first stage, we train an auto-encoder to extract deep features at multiple scales. In the second stage, multi-scale features are fused using a Spatio-Transformer (ST) fusion strategy. The ST fusion blocks are comprised of a CNN and a transformer branch which captures local and long-range features, respectively. Extensive experiments on multiple benchmark datasets show that the proposed method performs better than many competitive fusion algorithms. Furthermore, we show the effectiveness of the proposed ST fusion strategy with an ablation analysis.1",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "64ac6c834bee275eb17f9a34d58ebf18e0f98e6a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-02191",
+      "ArXiv": "2107.02191",
+      "CorpusId": 235742858
+    },
+    "title": "TransformerFusion: Monocular RGB Scene Reconstruction using Transformers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 175,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.02191, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1753866253",
+        "name": "Aljavz Bovzivc"
+      },
+      {
+        "authorId": "134594565",
+        "name": "Pablo Rodríguez Palafox"
+      },
+      {
+        "authorId": "2058610268",
+        "name": "Justus Thies"
+      },
+      {
+        "authorId": "2208531",
+        "name": "Angela Dai"
+      },
+      {
+        "authorId": "2209612",
+        "name": "M. Nießner"
+      }
+    ],
+    "abstract": "We introduce TransformerFusion, a transformer-based 3D scene reconstruction approach. From an input monocular RGB video, the video frames are processed by a transformer network that fuses the observations into a volumetric feature grid representing the scene; this feature grid is then decoded into an implicit 3D scene representation. Key to our approach is the transformer architecture that enables the network to learn to attend to the most relevant image frames for each 3D location in the scene, supervised only by the scene reconstruction task. Features are fused in a coarse-to-fine fashion, storing fine-level features only where needed, requiring lower memory storage and enabling fusion at interactive rates. The feature grid is then decoded to a higher-resolution scene reconstruction, using an MLP-based surface occupancy prediction from interpolated coarse-to-fine 3D features. Our approach results in an accurate surface reconstruction, outperforming state-of-the-art multi-view stereo depth estimation methods, fully-convolutional 3D reconstruction approaches, and approaches using LSTM- or GRU-based recurrent networks for video sequence fusion.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f1902f99c53781601061d794d957f77982753352",
+    "externalIds": {
+      "ArXiv": "2107.00135",
+      "DBLP": "conf/nips/NagraniYAJSS21",
+      "CorpusId": 235694621
+    },
+    "title": "Attention Bottlenecks for Multimodal Fusion",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 765,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.00135, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "19263506",
+        "name": "Arsha Nagrani"
+      },
+      {
+        "authorId": "2115298670",
+        "name": "Shan Yang"
+      },
+      {
+        "authorId": "31638576",
+        "name": "Anurag Arnab"
+      },
+      {
+        "authorId": "35996413",
+        "name": "A. Jansen"
+      },
+      {
+        "authorId": "2462253",
+        "name": "C. Schmid"
+      },
+      {
+        "authorId": "1491624845",
+        "name": "Chen Sun"
+      }
+    ],
+    "abstract": "Humans perceive the world by concurrently processing and fusing high-dimensional inputs from multiple modalities such as vision and audio. Machine perception models, in stark contrast, are typically modality-specific and optimised for unimodal benchmarks, and hence late-stage fusion of final representations or predictions from each modality (`late-fusion') is still a dominant paradigm for multimodal video classification. Instead, we introduce a novel transformer based architecture that uses `fusion bottlenecks' for modality fusion at multiple layers. Compared to traditional pairwise self-attention, our model forces information between different modalities to pass through a small number of bottleneck latents, requiring the model to collate and condense the most relevant information in each modality and only share what is necessary. We find that such a strategy improves fusion performance, at the same time reducing computational cost. We conduct thorough ablation studies, and achieve state-of-the-art results on multiple audio-visual classification benchmarks including Audioset, Epic-Kitchens and VGGSound. All code and models will be released.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "dbdcabd0444ad50b68ee09e30f39b66e9068f5d2",
+    "externalIds": {
+      "DBLP": "conf/nips/RaoZLLZH21",
+      "ArXiv": "2106.02034",
+      "CorpusId": 235313562
+    },
+    "title": "DynamicViT: Efficient Vision Transformers with Dynamic Token Sparsification",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1039,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.02034, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39358728",
+        "name": "Yongming Rao"
+      },
+      {
+        "authorId": "2118223312",
+        "name": "Wenliang Zhao"
+      },
+      {
+        "authorId": "67215934",
+        "name": "Benlin Liu"
+      },
+      {
+        "authorId": "1697700",
+        "name": "Jiwen Lu"
+      },
+      {
+        "authorId": "49178343",
+        "name": "Jie Zhou"
+      },
+      {
+        "authorId": "1793529",
+        "name": "Cho-Jui Hsieh"
+      }
+    ],
+    "abstract": "Attention is sparse in vision transformers. We observe the final prediction in vision transformers is only based on a subset of most informative tokens, which is sufficient for accurate image recognition. Based on this observation, we propose a dynamic token sparsification framework to prune redundant tokens progressively and dynamically based on the input. Specifically, we devise a lightweight prediction module to estimate the importance score of each token given the current features. The module is added to different layers to prune redundant tokens hierarchically. To optimize the prediction module in an end-to-end manner, we propose an attention masking strategy to differentiably prune a token by blocking its interactions with other tokens. Benefiting from the nature of self-attention, the unstructured sparse tokens are still hardware friendly, which makes our framework easy to achieve actual speed-up. By hierarchically pruning 66% of the input tokens, our method greatly reduces 31%~37% FLOPs and improves the throughput by over 40% while the drop of accuracy is within 0.5% for various vision transformers. Equipped with the dynamic token sparsification framework, DynamicViT models can achieve very competitive complexity/accuracy trade-offs compared to state-of-the-art CNNs and vision transformers on ImageNet. Code is available at https://github.com/raoyongming/DynamicViT",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9d1934ea1bd69d928d17e05d44495d42edf8601d",
+    "externalIds": {
+      "DBLP": "conf/nips/FangLWFQWNL21",
+      "ArXiv": "2106.00666",
+      "CorpusId": 235265945
+    },
+    "title": "You Only Look at One Sequence: Rethinking Transformer in Vision through Object Detection",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 401,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.00666, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51499848",
+        "name": "Yuxin Fang"
+      },
+      {
+        "authorId": "2060439659",
+        "name": "Bencheng Liao"
+      },
+      {
+        "authorId": "2443233",
+        "name": "Xinggang Wang"
+      },
+      {
+        "authorId": "50882585",
+        "name": "Jiemin Fang"
+      },
+      {
+        "authorId": "9083070",
+        "name": "Jiyang Qi"
+      },
+      {
+        "authorId": "2106506628",
+        "name": "Rui Wu"
+      },
+      {
+        "authorId": "2056283222",
+        "name": "Jianwei Niu"
+      },
+      {
+        "authorId": "2109194747",
+        "name": "Wenyu Liu"
+      }
+    ],
+    "abstract": "Can Transformer perform 2D object- and region-level recognition from a pure sequence-to-sequence perspective with minimal knowledge about the 2D spatial structure? To answer this question, we present You Only Look at One Sequence (YOLOS), a series of object detection models based on the vanilla Vision Transformer with the fewest possible modifications, region priors, as well as inductive biases of the target task. We find that YOLOS pre-trained on the mid-sized ImageNet-1k dataset only can already achieve quite competitive performance on the challenging COCO object detection benchmark, e.g., YOLOS-Base directly adopted from BERT-Base architecture can obtain 42.0 box AP on COCO val. We also discuss the impacts as well as limitations of current pre-train schemes and model scaling strategies for Transformer in vision through YOLOS. Code and pre-trained models are available at https://github.com/hustvl/YOLOS.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "e3d7778a47c6cab4ea1ef3ee9d19ec1510c15c60",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-15203",
+      "ArXiv": "2105.15203",
+      "CorpusId": 235254713
+    },
+    "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 7942,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.15203, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "41020000",
+        "name": "Enze Xie"
+      },
+      {
+        "authorId": "71074736",
+        "name": "Wenhai Wang"
+      },
+      {
+        "authorId": "1751019",
+        "name": "Zhiding Yu"
+      },
+      {
+        "authorId": "2047844",
+        "name": "Anima Anandkumar"
+      },
+      {
+        "authorId": "2974008",
+        "name": "J. Álvarez"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      }
+    ],
+    "abstract": "We present SegFormer, a simple, efficient yet powerful semantic segmentation framework which unifies Transformers with lightweight multilayer perception (MLP) decoders. SegFormer has two appealing features: 1) SegFormer comprises a novel hierarchically structured Transformer encoder which outputs multiscale features. It does not need positional encoding, thereby avoiding the interpolation of positional codes which leads to decreased performance when the testing resolution differs from training. 2) SegFormer avoids complex decoders. The proposed MLP decoder aggregates information from different layers, and thus combining both local attention and global attention to render powerful representations. We show that this simple and lightweight design is the key to efficient segmentation on Transformers. We scale our approach up to obtain a series of models from SegFormer-B0 to SegFormer-B5, reaching significantly better performance and efficiency than previous counterparts. For example, SegFormer-B4 achieves 50.3% mIoU on ADE20K with 64M parameters, being 5x smaller and 2.2% better than the previous best method. Our best model, SegFormer-B5, achieves 84.0% mIoU on Cityscapes validation set and shows excellent zero-shot robustness on Cityscapes-C. Code will be released at: github.com/NVlabs/SegFormer.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "c0559fc7e7d6ea0f783ba791ddd5deaa74cf58a9",
+    "externalIds": {
+      "ArXiv": "2104.09224",
+      "DBLP": "journals/corr/abs-2104-09224",
+      "DOI": "10.1109/CVPR46437.2021.00700",
+      "CorpusId": 233148602
+    },
+    "title": "Multi-Modal Fusion Transformer for End-to-End Autonomous Driving",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 700,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2104.09224",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.09224, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054035262",
+        "name": "Aditya Prakash"
+      },
+      {
+        "authorId": "31352445",
+        "name": "Kashyap Chitta"
+      },
+      {
+        "authorId": "47237027",
+        "name": "Andreas Geiger"
+      }
+    ],
+    "abstract": "How should representations from complementary sensors be integrated for autonomous driving? Geometry-based sensor fusion has shown great promise for perception tasks such as object detection and motion forecasting. However, for the actual driving task, the global context of the 3D scene is key, e.g. a change in traffic light state can affect the behavior of a vehicle geometrically distant from that traffic light. Geometry alone may therefore be insufficient for effectively fusing representations in end-to-end driving models. In this work, we demonstrate that imitation learning policies based on existing sensor fusion methods under-perform in the presence of a high density of dynamic agents and complex scenarios, which require global contextual reasoning, such as handling traffic oncoming from multiple directions at uncontrolled intersections. Therefore, we propose TransFuser, a novel Multi-Modal Fusion Transformer, to integrate image and LiDAR representations using attention. We experimentally validate the efficacy of our approach in urban settings involving complex scenarios using the CARLA urban driving simulator. Our approach achieves state-of-the-art driving performance while reducing collisions by 76% compared to geometry-based fusion.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c2cf5e5f21cca7045be719afce6bf66cc2934370",
+    "externalIds": {
+      "ArXiv": "2104.00678",
+      "DBLP": "conf/iccv/Liu000021",
+      "DOI": "10.1109/ICCV48922.2021.00294",
+      "CorpusId": 232478413
+    },
+    "title": "Group-Free 3D Object Detection via Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 365,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2104.00678",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.00678, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109371439",
+        "name": "Ze Liu"
+      },
+      {
+        "authorId": "2148904543",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "2112823372",
+        "name": "Yue Cao"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2068199383",
+        "name": "Xin Tong"
+      }
+    ],
+    "abstract": "Recently, directly detecting 3D objects from 3D point clouds has received increasing attention. To extract object representation from an irregular point cloud, existing methods usually take a point grouping step to assign the points to an object candidate so that a PointNet-like network could be used to derive object features from the grouped points. However, the inaccurate point assignments caused by the hand-crafted grouping scheme decrease the performance of 3D object detection.In this paper, we present a simple yet effective method for directly detecting 3D objects from the 3D point cloud. Instead of grouping local points to each object candidate, our method computes the feature of an object from all the points in the point cloud with the help of an attention mechanism in the Transformers [42], where the contribution of each point is automatically learned in the network training. With an improved attention stacking scheme, our method fuses object features in different stages and generates more accurate object detection results. With few bells and whistles, the proposed method achieves state-of-the-art 3D object detection performance on two widely used benchmarks, Scan-Net V2 and SUN RGB-D. The code and models are publicly available at https://github.com/zeliu98/Group-Free-3D",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "6e8f35c6d54acb14109c9b792a62609eac8a7b5e",
+    "externalIds": {
+      "ArXiv": "2102.07074",
+      "DBLP": "conf/nips/JiangCW21",
+      "CorpusId": 235421596
+    },
+    "title": "TransGAN: Two Pure Transformers Can Make One Strong GAN, and That Can Scale Up",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 484,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.07074, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Yifan Jiang"
+      },
+      {
+        "authorId": "3307026",
+        "name": "Shiyu Chang"
+      },
+      {
+        "authorId": "2969311",
+        "name": "Zhangyang Wang"
+      }
+    ],
+    "abstract": "The recent explosive interest on transformers has suggested their potential to become powerful\"universal\"models for computer vision tasks, such as classification, detection, and segmentation. While those attempts mainly study the discriminative models, we explore transformers on some more notoriously difficult vision tasks, e.g., generative adversarial networks (GANs). Our goal is to conduct the first pilot study in building a GAN completely free of convolutions, using only pure transformer-based architectures. Our vanilla GAN architecture, dubbed TransGAN, consists of a memory-friendly transformer-based generator that progressively increases feature resolution, and correspondingly a multi-scale discriminator to capture simultaneously semantic contexts and low-level textures. On top of them, we introduce the new module of grid self-attention for alleviating the memory bottleneck further, in order to scale up TransGAN to high-resolution generation. We also develop a unique training recipe including a series of techniques that can mitigate the training instability issues of TransGAN, such as data augmentation, modified normalization, and relative position encoding. Our best architecture achieves highly competitive performance compared to current state-of-the-art GANs using convolutional backbones. Specifically, TransGAN sets new state-of-the-art inception score of 10.43 and FID of 18.28 on STL-10, outperforming StyleGAN-V2. When it comes to higher-resolution (e.g. 256 x 256) generation tasks, such as on CelebA-HQ and LSUN-Church, TransGAN continues to produce diverse visual examples with high fidelity and impressive texture details. In addition, we dive deep into the transformer-based generation models to understand how their behaviors differ from convolutional ones, by visualizing training dynamics. The code is available at https://github.com/VITA-Group/TransGAN.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0839722fb5369c0abaff8515bfc08299efc790a1",
+    "externalIds": {
+      "ArXiv": "2102.03334",
+      "DBLP": "journals/corr/abs-2102-03334",
+      "CorpusId": 231839613
+    },
+    "title": "ViLT: Vision-and-Language Transformer Without Convolution or Region Supervision",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 2244,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.03334, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2382193",
+        "name": "Wonjae Kim"
+      },
+      {
+        "authorId": "65842988",
+        "name": "Bokyung Son"
+      },
+      {
+        "authorId": "14972026",
+        "name": "Ildoo Kim"
+      }
+    ],
+    "abstract": "Vision-and-Language Pre-training (VLP) has improved performance on various joint vision-and-language downstream tasks. Current approaches to VLP heavily rely on image feature extraction processes, most of which involve region supervision (e.g., object detection) and the convolutional architecture (e.g., ResNet). Although disregarded in the literature, we find it problematic in terms of both (1) efficiency/speed, that simply extracting input features requires much more computation than the multimodal interaction steps; and (2) expressive power, as it is upper bounded to the expressive power of the visual embedder and its predefined visual vocabulary. In this paper, we present a minimal VLP model, Vision-and-Language Transformer (ViLT), monolithic in the sense that the processing of visual inputs is drastically simplified to just the same convolution-free manner that we process textual inputs. We show that ViLT is up to tens of times faster than previous VLP models, yet with competitive or better downstream task performance. Our code and pre-trained weights are available at https://github.com/dandelin/vilt.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d29430adccb805ab57b349afa8553954347b3197",
+    "externalIds": {
+      "ArXiv": "2012.15840",
+      "DBLP": "conf/cvpr/ZhengLZZLWFFXT021",
+      "DOI": "10.1109/CVPR46437.2021.00681",
+      "CorpusId": 229924195
+    },
+    "title": "Rethinking Semantic Segmentation from a Sequence-to-Sequence Perspective with Transformers",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 3587,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2012.15840",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.15840, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40895011",
+        "name": "Sixiao Zheng"
+      },
+      {
+        "authorId": "31727033",
+        "name": "Jiachen Lu"
+      },
+      {
+        "authorId": "3459894",
+        "name": "Hengshuang Zhao"
+      },
+      {
+        "authorId": "2171228",
+        "name": "Xiatian Zhu"
+      },
+      {
+        "authorId": "79454234",
+        "name": "Zekun Luo"
+      },
+      {
+        "authorId": "2628601",
+        "name": "Yabiao Wang"
+      },
+      {
+        "authorId": "35782003",
+        "name": "Yanwei Fu"
+      },
+      {
+        "authorId": "1384556269",
+        "name": "Jianfeng Feng"
+      },
+      {
+        "authorId": "145406421",
+        "name": "T. Xiang"
+      },
+      {
+        "authorId": "143635540",
+        "name": "Philip H. S. Torr"
+      },
+      {
+        "authorId": "48459110",
+        "name": "Li Zhang"
+      }
+    ],
+    "abstract": "Most recent semantic segmentation methods adopt a fully-convolutional network (FCN) with an encoder-decoder architecture. The encoder progressively reduces the spatial resolution and learns more abstract/semantic visual concepts with larger receptive fields. Since context modeling is critical for segmentation, the latest efforts have been focused on increasing the receptive field, through either dilated/atrous convolutions or inserting attention modules. However, the encoder-decoder based FCN architecture remains unchanged. In this paper, we aim to provide an alternative perspective by treating semantic segmentation as a sequence-to-sequence prediction task. Specifically, we deploy a pure transformer (i.e., without convolution and resolution reduction) to encode an image as a sequence of patches. With the global context modeled in every layer of the transformer, this encoder can be combined with a simple decoder to provide a powerful segmentation model, termed SEgmentation TRansformer (SETR). Extensive experiments show that SETR achieves new state of the art on ADE20K (50.28% mIoU), Pascal Context (55.83% mIoU) and competitive results on Cityscapes. Particularly, we achieve the first position in the highly competitive ADE20K test server leaderboard on the day of submission.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "51110c76a6e470a86f409e8d9c9b4629788b5fba",
+    "externalIds": {
+      "MAG": "3100676321",
+      "DBLP": "conf/nips/WangHSXRH20",
+      "ArXiv": "2011.05005",
+      "CorpusId": 226289841
+    },
+    "title": "Deep Multimodal Fusion by Channel Exchanging",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 296,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.05005, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Yikai Wang"
+      },
+      {
+        "authorId": "123175679",
+        "name": "Wenbing Huang"
+      },
+      {
+        "authorId": "2323566",
+        "name": "Fuchun Sun"
+      },
+      {
+        "authorId": "1754673",
+        "name": "Tingyang Xu"
+      },
+      {
+        "authorId": "48537464",
+        "name": "Yu Rong"
+      },
+      {
+        "authorId": "1768190",
+        "name": "Junzhou Huang"
+      }
+    ],
+    "abstract": "Deep multimodal fusion by using multiple sources of data for classification or regression has exhibited a clear advantage over the unimodal counterpart on various applications. Yet, current methods including aggregation-based and alignment-based fusion are still inadequate in balancing the trade-off between inter-modal fusion and intra-modal processing, incurring a bottleneck of performance improvement. To this end, this paper proposes Channel-Exchanging-Network (CEN), a parameter-free multimodal fusion framework that dynamically exchanges channels between sub-networks of different modalities. Specifically, the channel exchanging process is self-guided by individual channel importance that is measured by the magnitude of Batch-Normalization (BN) scaling factor during training. The validity of such exchanging process is also guaranteed by sharing convolutional filters yet keeping separate BN layers across modalities, which, as an add-on benefit, allows our multimodal architecture to be almost as compact as a unimodal network. Extensive experiments on semantic segmentation via RGB-D data and image translation through multi-domain input verify the effectiveness of our CEN compared to current state-of-the-art methods. Detailed ablation studies have also been carried out, which provably affirm the advantage of each component we propose. Our code is available at https://github.com/yikaiw/CEN.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+    "externalIds": {
+      "ArXiv": "2010.11929",
+      "MAG": "3119786062",
+      "DBLP": "conf/iclr/DosovitskiyB0WZ21",
+      "CorpusId": 225039882
+    },
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 61132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "3319373",
+        "name": "Dirk Weissenborn"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "2274215058",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "46352821",
+        "name": "M. Minderer"
+      },
+      {
+        "authorId": "2280399",
+        "name": "G. Heigold"
+      },
+      {
+        "authorId": "1802148",
+        "name": "S. Gelly"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ad6ab45aff7d6a390a070fc3c1149db05771f26f",
+    "externalIds": {
+      "MAG": "3093327960",
+      "DBLP": "journals/corr/abs-2108-05009",
+      "ArXiv": "2108.05009",
+      "DOI": "10.1145/3394171.3413621",
+      "CorpusId": 222278328
+    },
+    "title": "Learning Deep Multimodal Feature Representation with Asymmetric Multi-layer Fusion",
+    "venue": "ACM Multimedia",
+    "year": 2020,
+    "citationCount": 65,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2108.05009",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.05009, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Yikai Wang"
+      },
+      {
+        "authorId": "143823065",
+        "name": "F. Sun"
+      },
+      {
+        "authorId": "123554573",
+        "name": "Ming Lu"
+      },
+      {
+        "authorId": "2021251",
+        "name": "Anbang Yao"
+      }
+    ],
+    "abstract": "We propose a compact and effective framework to fuse multimodal features at multiple layers in a single network. The framework consists of two innovative fusion schemes. Firstly, unlike existing multimodal methods that necessitate individual encoders for different modalities, we verify that multimodal features can be learnt within a shared single network by merely maintaining modality-specific batch normalization layers in the encoder, which also enables implicit fusion via joint feature representation learning. Secondly, we propose a bidirectional multi-layer fusion scheme, where multimodal features can be exploited progressively. To take advantage of such scheme, we introduce two asymmetric fusion operations including channel shuffle and pixel shift, which learn different fused features with respect to different fusion directions. These two operations are parameter-free and strengthen the multimodal feature interactions across channels as well as enhance the spatial feature discrimination within channels. We conduct extensive experiments on semantic segmentation and image translation tasks, based on three publicly available datasets covering diverse modalities. Results indicate that our proposed framework is general, compact and is superior to state-of-the-art fusion frameworks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "39ca8f8ff28cc640e3b41a6bd7814ab85c586504",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2010-04159",
+      "MAG": "3092462694",
+      "ArXiv": "2010.04159",
+      "CorpusId": 222208633
+    },
+    "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 7285,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.04159, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2578924",
+        "name": "Xizhou Zhu"
+      },
+      {
+        "authorId": "145499378",
+        "name": "Weijie Su"
+      },
+      {
+        "authorId": "152309485",
+        "name": "Lewei Lu"
+      },
+      {
+        "authorId": "2183101614",
+        "name": "Bin Li"
+      },
+      {
+        "authorId": "93768810",
+        "name": "Xiaogang Wang"
+      },
+      {
+        "authorId": "3304536",
+        "name": "Jifeng Dai"
+      }
+    ],
+    "abstract": "DETR has been recently proposed to eliminate the need for many hand-designed components in object detection while demonstrating good performance. However, it suffers from slow convergence and limited feature spatial resolution, due to the limitation of Transformer attention modules in processing image feature maps. To mitigate these issues, we proposed Deformable DETR, whose attention modules only attend to a small set of key sampling points around a reference. Deformable DETR can achieve better performance than DETR (especially on small objects) with 10$\\times$ less training epochs. Extensive experiments on the COCO benchmark demonstrate the effectiveness of our approach. Code shall be released.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "092872756944590e26815086cf1046c53e8b5ab4",
+    "externalIds": {
+      "MAG": "3096754345",
+      "DBLP": "journals/corr/abs-2006-05682",
+      "ArXiv": "2006.05682",
+      "DOI": "10.1007/978-3-030-58610-2_19",
+      "CorpusId": 219559368
+    },
+    "title": "H3DNet: 3D Object Detection Using Hybrid Geometric Primitives",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 232,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.05682, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3467579",
+        "name": "Zaiwei Zhang"
+      },
+      {
+        "authorId": "145986708",
+        "name": "Bo Sun"
+      },
+      {
+        "authorId": "27642839",
+        "name": "Haitao Yang"
+      },
+      {
+        "authorId": "151485038",
+        "name": "Qi-Xing Huang"
+      }
+    ],
+    "abstract": "We introduce H3DNet, which takes a colorless 3D point cloud as input and outputs a collection of oriented object bounding boxes (or BB) and their semantic labels. The critical idea of H3DNet is to predict a hybrid set of geometric primitives, i.e., BB centers, BB face centers, and BB edge centers. We show how to convert the predicted geometric primitives into object proposals by defining a distance function between an object and the geometric primitives. This distance function enables continuous optimization of object proposals, and its local minimums provide high-fidelity object proposals. H3DNet then utilizes a matching and refinement module to classify object proposals into detected objects and fine-tune the geometric parameters of the detected objects. The hybrid set of geometric primitives not only provides more accurate signals for object detection than using a single type of geometric primitives, but it also provides an overcomplete set of constraints on the resulting 3D layout. Therefore, H3DNet can tolerate outliers in predicted geometric primitives. Our model achieves state-of-the-art 3D detection results on two large datasets with real 3D scans, ScanNet and SUN RGB-D.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ad37644ee77f4d46ad719cc512d30e5cfc200a81",
+    "externalIds": {
+      "MAG": "3034579518",
+      "DBLP": "conf/cvpr/ChenLSYCW20",
+      "DOI": "10.1109/cvpr42600.2020.00047",
+      "CorpusId": 219964818
+    },
+    "title": "A Hierarchical Graph Network for 3D Object Detection on Point Clouds",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 164,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/cvpr42600.2020.00047?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/cvpr42600.2020.00047, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1391200997",
+        "name": "Jintai Chen"
+      },
+      {
+        "authorId": "1720761653",
+        "name": "Biwen Lei"
+      },
+      {
+        "authorId": "1716615350",
+        "name": "Qingyu Song"
+      },
+      {
+        "authorId": "36887453",
+        "name": "Haochao Ying"
+      },
+      {
+        "authorId": "1743881",
+        "name": "D. Chen"
+      },
+      {
+        "authorId": "2145136039",
+        "name": "Jian Wu"
+      }
+    ],
+    "abstract": "3D object detection on point clouds finds many applications. However, most known point cloud object detection methods did not adequately accommodate the characteristics (e.g., sparsity) of point clouds, and thus some key semantic information (e.g., shape information) is not well captured. In this paper, we propose a new graph convolution (GConv) based hierarchical graph network (HGNet) for 3D object detection, which processes raw point clouds directly to predict 3D bounding boxes. HGNet effectively captures the relationship of the points and utilizes the multi-level semantics for object detection. Specially, we propose a novel shape-attentive GConv (SA-GConv) to capture the local shape features, by modelling the relative geometric positions of points to describe object shapes. An SA-GConv based U-shape network captures the multi-level features, which are mapped into an identical feature space by an improved voting module and then further utilized to generate proposals. Next, a new GConv based Proposal Reasoning Module reasons on the proposals considering the global scene semantics, and the bounding boxes are then predicted. Consequently, our new framework outperforms state-of-the-art methods on two large-scale point cloud datasets, by ~4% mean average precision (mAP) on SUN RGB-D and by ~3% mAP on ScanNet-V2.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fa2189b9ba9b4679be99cbfa4e1b8bc21d0f5c6c",
+    "externalIds": {
+      "DBLP": "conf/eccv/GwakCS20",
+      "ArXiv": "2006.12356",
+      "MAG": "3037078045",
+      "DOI": "10.1007/978-3-030-58548-8_18",
+      "CorpusId": 219965670
+    },
+    "title": "Generative Sparse Detection Networks for 3D Single-shot Object Detection",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 128,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.12356, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39813007",
+        "name": "JunYoung Gwak"
+      },
+      {
+        "authorId": "2144103",
+        "name": "C. Choy"
+      },
+      {
+        "authorId": "1702137",
+        "name": "S. Savarese"
+      }
+    ],
+    "abstract": "3D object detection has been widely studied due to its potential applicability to many promising areas such as robotics and augmented reality. Yet, the sparse nature of the 3D data poses unique challenges to this task. Most notably, the observable surface of the 3D point clouds is disjoint from the center of the instance to ground the bounding box prediction on. To this end, we propose Generative Sparse Detection Network (GSDN), a fully-convolutional single-shot sparse detection network that efficiently generates the support for object proposals. The key component of our model is a generative sparse tensor decoder, which uses a series of transposed convolutions and pruning layers to expand the support of sparse tensors while discarding unlikely object centers to maintain minimal runtime and memory footprint. GSDN can process unprecedentedly large-scale inputs with a single fully-convolutional feed-forward pass, thus does not require the heuristic post-processing stage that stitches results from sliding windows as other previous methods have. We validate our approach on three 3D indoor datasets including the large-scale 3D indoor reconstruction dataset where our method outperforms the state-of-the-art methods by a relative improvement of 7.14% while being 3.78 times faster than the best prior work.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "962dc29fdc3fbdc5930a10aba114050b82fe5a3e",
+    "externalIds": {
+      "MAG": "3096609285",
+      "DBLP": "conf/eccv/CarionMSUKZ20",
+      "ArXiv": "2005.12872",
+      "DOI": "10.1007/978-3-030-58452-8_13",
+      "CorpusId": 218889832
+    },
+    "title": "End-to-End Object Detection with Transformers",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 17822,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.12872, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422899",
+        "name": "Nicolas Carion"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "2282478",
+        "name": "Gabriel Synnaeve"
+      },
+      {
+        "authorId": "1746841",
+        "name": "Nicolas Usunier"
+      },
+      {
+        "authorId": "144843400",
+        "name": "Alexander Kirillov"
+      },
+      {
+        "authorId": "2134433",
+        "name": "Sergey Zagoruyko"
+      }
+    ],
+    "abstract": "We present a new method that views object detection as a direct set prediction problem. Our approach streamlines the detection pipeline, effectively removing the need for many hand-designed components like a non-maximum suppression procedure or anchor generation that explicitly encode our prior knowledge about the task. The main ingredients of the new framework, called DEtection TRansformer or DETR, are a set-based global loss that forces unique predictions via bipartite matching, and a transformer encoder-decoder architecture. Given a fixed small set of learned object queries, DETR reasons about the relations of the objects and the global image context to directly output the final set of predictions in parallel. The new model is conceptually simple and does not require a specialized library, unlike many other modern detectors. DETR demonstrates accuracy and run-time performance on par with the well-established and highly-optimized Faster RCNN baseline on the challenging COCO object detection dataset. Moreover, DETR can be easily generalized to produce panoptic segmentation in a unified manner. We show that it significantly outperforms competitive baselines. Training code and pretrained models are available at this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "08eb8f94e7031fc09286153db9e320c4d9590246",
+    "externalIds": {
+      "MAG": "2910281775",
+      "DBLP": "journals/pami/LinLMSR20",
+      "DOI": "10.1109/TPAMI.2019.2893630",
+      "CorpusId": 58949981,
+      "PubMed": "30668461"
+    },
+    "title": "RefineNet: Multi-Path Refinement Networks for Dense Prediction",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2020,
+    "citationCount": 152,
+    "openAccessPdf": {
+      "url": "https://digital.library.adelaide.edu.au/dspace/bitstream/2440/125724/2/hdl_125724.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPAMI.2019.2893630?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPAMI.2019.2893630, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2604251",
+        "name": "Guosheng Lin"
+      },
+      {
+        "authorId": "2254178",
+        "name": "Fayao Liu"
+      },
+      {
+        "authorId": "34761498",
+        "name": "Anton Milan"
+      },
+      {
+        "authorId": "1780381",
+        "name": "Chunhua Shen"
+      },
+      {
+        "authorId": "145950884",
+        "name": "I. Reid"
+      }
+    ],
+    "abstract": "Recently, very deep convolutional neural networks (CNNs) have shown outstanding performance in object recognition and have also been the first choice for dense prediction problems such as semantic segmentation and depth estimation. However, repeated subsampling operations like pooling or convolution striding in deep CNNs lead to a significant decrease in the initial image resolution. Here, we present RefineNet, a generic multi-path refinement network that explicitly exploits all the information available along the down-sampling process to enable high-resolution prediction using long-range residual connections. In this way, the deeper layers that capture high-level semantic features can be directly refined using fine-grained features from earlier convolutions. The individual components of RefineNet employ residual connections following the identity mapping mindset, which allows for effective end-to-end training. Further, we introduce chained residual pooling, which captures rich background context in an efficient manner. We carry out comprehensive experiments on semantic segmentation which is a dense classification problem and achieve good performance on seven public datasets. We further apply our method for depth estimation and demonstrate the effectiveness of our method on dense regression problems.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "24dedfafea0c95c78fd64bb2f68a716f5be3c367",
+    "externalIds": {
+      "MAG": "3034428269",
+      "DBLP": "journals/corr/abs-2004-05679",
+      "ArXiv": "2004.05679",
+      "DOI": "10.1109/cvpr42600.2020.01046",
+      "CorpusId": 214816776
+    },
+    "title": "MLCVNet: Multi-Level Context VoteNet for 3D Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 202,
+    "openAccessPdf": {
+      "url": "https://orca.cardiff.ac.uk/id/eprint/130653/1/MLCVNet-CVPR2020.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.05679, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47245198",
+        "name": "Qian Xie"
+      },
+      {
+        "authorId": "7827503",
+        "name": "Yu-Kun Lai"
+      },
+      {
+        "authorId": "2149265937",
+        "name": "Jing Wu"
+      },
+      {
+        "authorId": "9514016",
+        "name": "Zhoutao Wang"
+      },
+      {
+        "authorId": null,
+        "name": "Yiming Zhang"
+      },
+      {
+        "authorId": "145264199",
+        "name": "Kai Xu"
+      },
+      {
+        "authorId": "40470625",
+        "name": "Jun Wang"
+      }
+    ],
+    "abstract": "In this paper, we address the 3D object detection task by capturing multi-level contextual information with the self-attention mechanism and multi-scale feature fusion. Most existing 3D object detection methods recognize objects individually, without giving any consideration on contextual information between these objects. Comparatively, we propose Multi-Level Context VoteNet (MLCVNet) to recognize 3D objects correlatively, building on the state-of-the-art VoteNet. We introduce three context modules into the voting and classifying stages of VoteNet to encode contextual information at different levels. Specifically, a Patch-to-Patch Context (PPC) module is employed to capture contextual information between the point patches, before voting for their corresponding object centroid points. Subsequently, an Object-to-Object Context (OOC) module is incorporated before the proposal and classification stage, to capture the contextual information between object candidates. Finally, a Global Scene Context (GSC) module is designed to learn the global scene context. We demonstrate these by capturing contextual information at patch, object and scene levels. Our method is an effective way to promote detection accuracy, achieving new state-of-the-art detection performance on challenging 3D object detection datasets, i.e., SUN RGBD and ScanNet. We also release our code at https://github.com/NUAAXQ/MLCVNet.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "542cc4840603fc36dccb08567d1ee753fbe0e236",
+    "externalIds": {
+      "DBLP": "conf/cvpr/EngelmannBFLN20",
+      "MAG": "3034430142",
+      "ArXiv": "2003.13867",
+      "DOI": "10.1109/CVPR42600.2020.00905",
+      "CorpusId": 214727628
+    },
+    "title": "3D-MPA: Multi-Proposal Aggregation for 3D Semantic Instance Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2003.13867",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.13867, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3414491",
+        "name": "Francis Engelmann"
+      },
+      {
+        "authorId": "2046665",
+        "name": "M. Bokeloh"
+      },
+      {
+        "authorId": "50706340",
+        "name": "A. Fathi"
+      },
+      {
+        "authorId": "1789756",
+        "name": "B. Leibe"
+      },
+      {
+        "authorId": "2209612",
+        "name": "M. Nießner"
+      }
+    ],
+    "abstract": "We present 3D-MPA, a method for instance segmentation on 3D point clouds. Given an input point cloud, we propose an object-centric approach where each point votes for its object center. We sample object proposals from the predicted object centers. Then, we learn proposal features from grouped point features that voted for the same object center. A graph convolutional network introduces inter-proposal relations, providing higher-level feature learning in addition to the lower-level point features. Each proposal comprises a semantic label, a set of associated points over which we define a foreground-background mask, an objectness score and aggregation features. Previous works usually perform non-maximum-suppression (NMS) over proposals to obtain the final object detections or semantic instances. However, NMS can discard potentially correct predictions. Instead, our approach keeps all proposals and groups them together based on the learned aggregation features. We show that grouping proposals improves over NMS and outperforms previous state-of-the-art methods on the tasks of 3D object detection and semantic instance segmentation on the ScanNetV2 benchmark and the S3DIS dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ddb42aace56362ea9725a33815a64bb213d0329a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2001-10692",
+      "ArXiv": "2001.10692",
+      "MAG": "3003352491",
+      "DOI": "10.1109/CVPR42600.2020.00446",
+      "CorpusId": 210943036
+    },
+    "title": "ImVoteNet: Boosting 3D Object Detection in Point Clouds With Image Votes",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 295,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2001.10692",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.10692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144329939",
+        "name": "C. Qi"
+      },
+      {
+        "authorId": "1639441927",
+        "name": "Xinlei Chen"
+      },
+      {
+        "authorId": "2528439",
+        "name": "O. Litany"
+      },
+      {
+        "authorId": "51352814",
+        "name": "L. Guibas"
+      }
+    ],
+    "abstract": "3D object detection has seen quick progress thanks to advances in deep learning on point clouds. A few recent works have even shown state-of-the-art performance with just point clouds input (e.g. VoteNet). However, point cloud data have inherent limitations. They are sparse, lack color information and often suffer from sensor noise. Images, on the other hand, have high resolution and rich texture. Thus they can complement the 3D geometry provided by point clouds. Yet how to effectively use image information to assist point cloud based detection is still an open question. In this work, we build on top of VoteNet and propose a 3D detection architecture called ImVoteNet specialized for RGB-D scenes. ImVoteNet is based on fusing 2D votes in images and 3D votes in point clouds. Compared to prior work on multi-modal detection, we explicitly extract both geometric and semantic features from the 2D images. We leverage camera parameters to lift these features to 3D. To improve the synergy of 2D-3D feature fusion, we also propose a multi-tower training scheme. We validate our model on the challenging SUN RGB-D dataset, advancing state-of-the-art results by 5.7 mAP. We also provide rich ablation studies to analyze the contribution of each design choice.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4d22e56c688b18b9e28fd20dc31a31c3594aad1f",
+    "externalIds": {
+      "MAG": "3002271958",
+      "DBLP": "journals/corr/abs-2001-11657",
+      "ArXiv": "2001.11657",
+      "DOI": "10.1109/tip.2020.2967577",
+      "CorpusId": 210945630,
+      "PubMed": "31995485"
+    },
+    "title": "Modality Compensation Network: Cross-Modal Adaptation for Action Recognition",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2020,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2001.11657",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.11657, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3384254",
+        "name": "Sijie Song"
+      },
+      {
+        "authorId": "41127426",
+        "name": "Jiaying Liu"
+      },
+      {
+        "authorId": "3128506",
+        "name": "Yanghao Li"
+      },
+      {
+        "authorId": "35310979",
+        "name": "Zongming Guo"
+      }
+    ],
+    "abstract": "With the prevalence of RGB-D cameras, multi-modal video data have become more available for human action recognition. One main challenge for this task lies in how to effectively leverage their complementary information. In this work, we propose a Modality Compensation Network (MCN) to explore the relationships of different modalities, and boost the representations for human action recognition. We regard RGB/optical flow videos as source modalities, skeletons as auxiliary modality. Our goal is to extract more discriminative features from source modalities, with the help of auxiliary modality. Built on deep Convolutional Neural Networks (CNN) and Long Short Term Memory (LSTM) networks, our model bridges data from source and auxiliary modalities by a modality adaptation block to achieve adaptive representation learning, that the network learns to compensate for the loss of skeletons at test time and even at training time. We explore multiple adaptation schemes to narrow the distance between source and auxiliary modal distributions from different levels, according to the alignment of source and auxiliary data in training. In addition, skeletons are only required in the training phase. Our model is able to improve the recognition performance with source data when testing. Experimental results reveal that MCN outperforms state-of-the-art approaches on four widely-used action recognition benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3c8a456509e6c0805354bd40a35e3f2dbf8069b1",
+    "externalIds": {
+      "MAG": "2970971581",
+      "DBLP": "journals/corr/abs-1912-01703",
+      "ArXiv": "1912.01703",
+      "CorpusId": 202786778
+    },
+    "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 51318,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.01703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3407277",
+        "name": "Adam Paszke"
+      },
+      {
+        "authorId": "39793298",
+        "name": "Sam Gross"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "1977806",
+        "name": "Adam Lerer"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "114250963",
+        "name": "Gregory Chanan"
+      },
+      {
+        "authorId": "2059271276",
+        "name": "Trevor Killeen"
+      },
+      {
+        "authorId": "3370429",
+        "name": "Zeming Lin"
+      },
+      {
+        "authorId": "3365851",
+        "name": "N. Gimelshein"
+      },
+      {
+        "authorId": "3029482",
+        "name": "L. Antiga"
+      },
+      {
+        "authorId": "3050846",
+        "name": "Alban Desmaison"
+      },
+      {
+        "authorId": "1473151134",
+        "name": "Andreas Köpf"
+      },
+      {
+        "authorId": "2052812305",
+        "name": "E. Yang"
+      },
+      {
+        "authorId": "2253681376",
+        "name": "Zachary DeVito"
+      },
+      {
+        "authorId": "10707709",
+        "name": "Martin Raison"
+      },
+      {
+        "authorId": "41203992",
+        "name": "Alykhan Tejani"
+      },
+      {
+        "authorId": "22236100",
+        "name": "Sasank Chilamkurthy"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "152599430",
+        "name": "Lu Fang"
+      },
+      {
+        "authorId": "2113829116",
+        "name": "Junjie Bai"
+      },
+      {
+        "authorId": "2127604",
+        "name": "Soumith Chintala"
+      }
+    ],
+    "abstract": "Deep learning frameworks have often focused on either usability or speed, but not both. PyTorch is a machine learning library that shows that these two goals are in fact compatible: it was designed from first principles to support an imperative and Pythonic programming style that supports code as a model, makes debugging easy and is consistent with other popular scientific computing libraries, while remaining efficient and supporting hardware accelerators such as GPUs. In this paper, we detail the principles that drove the implementation of PyTorch and how they are reflected in its architecture. We emphasize that every aspect of PyTorch is a regular Python program under the full control of its user. We also explain how the careful and pragmatic implementation of the key components of its runtime enables them to work together to achieve compelling performance. We demonstrate the efficiency of individual subsystems, as well as the overall speed of PyTorch on several commonly used benchmarks.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "4aa6298b606941a282d735fa3143da293199d2ca",
+    "externalIds": {
+      "ArXiv": "1908.08530",
+      "MAG": "2995460200",
+      "DBLP": "conf/iclr/SuZCLLWD20",
+      "CorpusId": 201317624
+    },
+    "title": "VL-BERT: Pre-training of Generic Visual-Linguistic Representations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 1821,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.08530, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145499378",
+        "name": "Weijie Su"
+      },
+      {
+        "authorId": "2578924",
+        "name": "Xizhou Zhu"
+      },
+      {
+        "authorId": "2112823372",
+        "name": "Yue Cao"
+      },
+      {
+        "authorId": "2156072370",
+        "name": "Bin Li"
+      },
+      {
+        "authorId": "152309485",
+        "name": "Lewei Lu"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      },
+      {
+        "authorId": "3304536",
+        "name": "Jifeng Dai"
+      }
+    ],
+    "abstract": "We introduce a new pre-trainable generic representation for visual-linguistic tasks, called Visual-Linguistic BERT (VL-BERT for short). VL-BERT adopts the simple yet powerful Transformer model as the backbone, and extends it to take both visual and linguistic embedded features as input. In it, each element of the input is either of a word from the input sentence, or a region-of-interest (RoI) from the input image. It is designed to fit for most of the visual-linguistic downstream tasks. To better exploit the generic representation, we pre-train VL-BERT on the massive-scale Conceptual Captions dataset, together with text-only corpus. Extensive empirical analysis demonstrates that the pre-training procedure can better align the visual-linguistic clues and benefit the downstream tasks, such as visual commonsense reasoning, visual question answering and referring expression comprehension. It is worth noting that VL-BERT achieved the first place of single model on the leaderboard of the VCR benchmark. Code is released at \\url{this https URL}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e60da8d3a79801a3ccbf1abcdd001bb6e001b267",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1904-09664",
+      "MAG": "2988715931",
+      "ArXiv": "1904.09664",
+      "DOI": "10.1109/ICCV.2019.00937",
+      "CorpusId": 127956465
+    },
+    "title": "Deep Hough Voting for 3D Object Detection in Point Clouds",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 1463,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1904.09664",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.09664, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144329939",
+        "name": "C. Qi"
+      },
+      {
+        "authorId": "2528439",
+        "name": "O. Litany"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "51352814",
+        "name": "L. Guibas"
+      }
+    ],
+    "abstract": "Current 3D object detection methods are heavily influenced by 2D detectors. In order to leverage architectures in 2D detectors, they often convert 3D point clouds to regular grids (i.e., to voxel grids or to bird's eye view images), or rely on detection in 2D images to propose 3D boxes. Few works have attempted to directly detect objects in point clouds. In this work, we return to first principles to construct a 3D detection pipeline for point cloud data and as generic as possible. However, due to the sparse nature of the data -- samples from 2D manifolds in 3D space -- we face a major challenge when directly predicting bounding box parameters from scene points: a 3D object centroid can be far from any surface point thus hard to regress accurately in one step. To address the challenge, we propose VoteNet, an end-to-end 3D object detection network based on a synergy of deep point set networks and Hough voting. Our model achieves state-of-the-art 3D detection on two large datasets of real 3D scans, ScanNet and SUN RGB-D with a simple design, compact model size and high efficiency. Remarkably, VoteNet outperforms previous methods by using purely geometric information without relying on color images.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e7f38c56f2aa53319418bc86271f3a86b05a1167",
+    "externalIds": {
+      "MAG": "3099155473",
+      "ArXiv": "1808.03833",
+      "DBLP": "journals/corr/abs-1808-03833",
+      "DOI": "10.1007/s11263-019-01188-y",
+      "CorpusId": 51978247
+    },
+    "title": "Self-Supervised Model Adaptation for Multimodal Semantic Segmentation",
+    "venue": "International Journal of Computer Vision",
+    "year": 2018,
+    "citationCount": 280,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1808.03833",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.03833, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2609831",
+        "name": "Abhinav Valada"
+      },
+      {
+        "authorId": "19173320",
+        "name": "Rohit Mohan"
+      },
+      {
+        "authorId": "2106871731",
+        "name": "Wolfram Burgard"
+      }
+    ],
+    "abstract": "Learning to reliably perceive and understand the scene is an integral enabler for robots to operate in the real-world. This problem is inherently challenging due to the multitude of object types as well as appearance changes caused by varying illumination and weather conditions. Leveraging complementary modalities can enable learning of semantically richer representations that are resilient to such perturbations. Despite the tremendous progress in recent years, most multimodal convolutional neural network approaches directly concatenate feature maps from individual modality streams rendering the model incapable of focusing only on the relevant complementary information for fusion. To address this limitation, we propose a mutimodal semantic segmentation framework that dynamically adapts the fusion of modality-specific features while being sensitive to the object category, spatial location and scene context in a self-supervised manner. Specifically, we propose an architecture consisting of two modality-specific encoder streams that fuse intermediate encoder representations into a single decoder using our proposed self-supervised model adaptation fusion mechanism which optimally combines complementary features. As intermediate representations are not aligned across modalities, we introduce an attention scheme for better correlation. In addition, we propose a computationally efficient unimodal segmentation architecture termed AdapNet++ that incorporates a new encoder with multiscale residual units and an efficient atrous spatial pyramid pooling that has a larger effective receptive field with more than 10×\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$10\\,\\times $$\\end{document} fewer parameters, complemented with a strong decoder with a multi-resolution supervision scheme that recovers high-resolution details. Comprehensive empirical evaluations on Cityscapes, Synthia, SUN RGB-D, ScanNet and Freiburg Forest benchmarks demonstrate that both our unimodal and multimodal architectures achieve state-of-the-art performance while simultaneously being efficient in terms of parameters and inference time as well as demonstrating substantial robustness in adverse perceptual conditions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2fe2cfd98e232f1396f01881853ed6b3d5e37d65",
+    "externalIds": {
+      "MAG": "2966617434",
+      "ArXiv": "1804.08328",
+      "DBLP": "conf/ijcai/ZamirSSGMS19",
+      "DOI": "10.1109/CVPR.2018.00391",
+      "CorpusId": 5046249
+    },
+    "title": "Taskonomy: Disentangling Task Transfer Learning",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1362,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1804.08328",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.08328, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40029556",
+        "name": "Amir Zamir"
+      },
+      {
+        "authorId": "46389228",
+        "name": "Alexander Sax"
+      },
+      {
+        "authorId": "41187419",
+        "name": "Bokui (William) Shen"
+      },
+      {
+        "authorId": "51352814",
+        "name": "L. Guibas"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      },
+      {
+        "authorId": "1702137",
+        "name": "S. Savarese"
+      }
+    ],
+    "abstract": "Do visual tasks have a relationship, or are they unrelated? For instance, could having surface normals simplify estimating the depth of an image? Intuition answers these questions positively, implying existence of a structure among visual tasks. Knowing this structure has notable values; it is the concept underlying transfer learning and provides a principled way for identifying redundancies across tasks, e.g., to seamlessly reuse supervision among related tasks or solve many tasks in one system without piling up the complexity. We proposes a fully computational approach for modeling the structure of space of visual tasks. This is done via finding (first and higher-order) transfer learning dependencies across a dictionary of twenty six 2D, 2.5D, 3D, and semantic tasks in a latent space. The product is a computational taxonomic map for task transfer learning. We study the consequences of this structure, e.g. nontrivial emerged relationships, and exploit them to reduce the demand for labeled data. We provide a set of tools for computing and probing this taxonomical structure including a solver users can employ to find supervision policies for their use cases.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9723066a5587e6267d8abfd7feefd0637a5a211c",
+    "externalIds": {
+      "MAG": "2951480694",
+      "DBLP": "conf/iclr/BinkowskiSAG18",
+      "ArXiv": "1801.01401",
+      "CorpusId": 3531856
+    },
+    "title": "Demystifying MMD GANs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 1942,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.01401, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9961753",
+        "name": "Mikolaj Binkowski"
+      },
+      {
+        "authorId": "36326783",
+        "name": "Danica J. Sutherland"
+      },
+      {
+        "authorId": "1975860",
+        "name": "M. Arbel"
+      },
+      {
+        "authorId": "1708497",
+        "name": "A. Gretton"
+      }
+    ],
+    "abstract": "We investigate the training and performance of generative adversarial networks using the Maximum Mean Discrepancy (MMD) as critic, termed MMD GANs. As our main theoretical contribution, we clarify the situation with bias in GAN loss functions raised by recent work: we show that gradient estimators used in the optimization process for both MMD GANs and Wasserstein GANs are unbiased, but learning a discriminator based on samples leads to biased gradients for the generator parameters. We also discuss the issue of kernel choice for the MMD critic, and characterize the kernel corresponding to the energy distance used for the Cramer GAN critic. Being an integral probability metric, the MMD benefits from training strategies recently developed for Wasserstein GANs. In experiments, the MMD GAN is able to employ a smaller critic network than the Wasserstein GAN, resulting in a simpler and faster-training algorithm with matching performance. We also propose an improved measure of GAN convergence, the Kernel Inception Distance, and show how to use it to dynamically adapt learning rates during GAN training.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e637eb1ddf31f8d43287b881d622fff4174758a5",
+    "externalIds": {
+      "DBLP": "conf/iccv/LeePH17",
+      "MAG": "2775906317",
+      "DOI": "10.1109/ICCV.2017.533",
+      "CorpusId": 7240840
+    },
+    "title": "RDFNet: RGB-D Multi-level Residual Feature Fusion for Indoor Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 332,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2017.533?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2017.533, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "66593660",
+        "name": "Seungyong Lee"
+      },
+      {
+        "authorId": "2118885041",
+        "name": "Seong-Jin Park"
+      },
+      {
+        "authorId": "1748683",
+        "name": "K. Hong"
+      }
+    ],
+    "abstract": "In multi-class indoor semantic segmentation using RGB-D data, it has been shown that incorporating depth feature into RGB feature is helpful to improve segmentation accuracy. However, previous studies have not fully exploited the potentials of multi-modal feature fusion, e.g., simply concatenating RGB and depth features or averaging RGB and depth score maps. To learn the optimal fusion of multimodal features, this paper presents a novel network that extends the core idea of residual learning to RGB-D semantic segmentation. Our network effectively captures multilevel RGB-D CNN features by including multi-modal feature fusion blocks and multi-level feature refinement blocks. Feature fusion blocks learn residual RGB and depth features and their combinations to fully exploit the complementary characteristics of RGB and depth data. Feature refinement blocks learn the combination of fused features from multiple levels to enable high-resolution prediction. Our network can efficiently train discriminative multi-level features from each modality end-to-end by taking full advantage of skip-connections. Our comprehensive experiments demonstrate that the proposed architecture achieves the state-of-the-art accuracy on two challenging RGB-D indoor datasets, NYUDv2 and SUN RGB-D.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "231af7dc01a166cac3b5b01ca05778238f796e41",
+    "externalIds": {
+      "MAG": "2963981733",
+      "DBLP": "conf/nips/HeuselRUNH17",
+      "CorpusId": 326772
+    },
+    "title": "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 17789,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2445103",
+        "name": "M. Heusel"
+      },
+      {
+        "authorId": "19219270",
+        "name": "Hubert Ramsauer"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "37082831",
+        "name": "Bernhard Nessler"
+      },
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174052,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8674494bd7a076286b905912d26d47f7501c4046",
+    "externalIds": {
+      "DBLP": "conf/nips/QiYSG17",
+      "MAG": "2950697424",
+      "ArXiv": "1706.02413",
+      "CorpusId": 1745976
+    },
+    "title": "PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 13838,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.02413, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144329939",
+        "name": "C. Qi"
+      },
+      {
+        "authorId": "47782132",
+        "name": "L. Yi"
+      },
+      {
+        "authorId": "144914140",
+        "name": "Hao Su"
+      },
+      {
+        "authorId": "51352814",
+        "name": "L. Guibas"
+      }
+    ],
+    "abstract": "Few prior works study deep learning on point sets. PointNet by Qi et al. is a pioneer in this direction. However, by design PointNet does not capture local structures induced by the metric space points live in, limiting its ability to recognize fine-grained patterns and generalizability to complex scenes. In this work, we introduce a hierarchical neural network that applies PointNet recursively on a nested partitioning of the input point set. By exploiting metric space distances, our network is able to learn local features with increasing contextual scales. With further observation that point sets are usually sampled with varying densities, which results in greatly decreased performance for networks trained on uniform densities, we propose novel set learning layers to adaptively combine features from multiple scales. Experiments show that our network called PointNet++ is able to learn deep point set features efficiently and robustly. In particular, results significantly better than state-of-the-art have been obtained on challenging benchmarks of 3D point clouds.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e52e37cd91366f07df1f98e88f87010f494dd16e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DaiCSHFN17",
+      "MAG": "2594519801",
+      "ArXiv": "1702.04405",
+      "DOI": "10.1109/CVPR.2017.261",
+      "CorpusId": 7684883
+    },
+    "title": "ScanNet: Richly-Annotated 3D Reconstructions of Indoor Scenes",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 5330,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1702.04405",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.04405, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2208531",
+        "name": "Angela Dai"
+      },
+      {
+        "authorId": "145830541",
+        "name": "Angel X. Chang"
+      },
+      {
+        "authorId": "2295141",
+        "name": "M. Savva"
+      },
+      {
+        "authorId": "49034306",
+        "name": "Maciej Halber"
+      },
+      {
+        "authorId": "1807080",
+        "name": "T. Funkhouser"
+      },
+      {
+        "authorId": "2209612",
+        "name": "M. Nießner"
+      }
+    ],
+    "abstract": "A key requirement for leveraging supervised deep learning methods is the availability of large, labeled datasets. Unfortunately, in the context of RGB-D scene understanding, very little data is available &#x2013; current datasets cover a small range of scene views and have limited semantic annotations. To address this issue, we introduce ScanNet, an RGB-D video dataset containing 2.5M views in 1513 scenes annotated with 3D camera poses, surface reconstructions, and semantic segmentations. To collect this data, we designed an easy-to-use and scalable RGB-D capture system that includes automated surface reconstruction and crowdsourced semantic annotation. We show that using this data helps achieve state-of-the-art performance on several 3D scene understanding tasks, including 3D object classification, semantic voxel labeling, and CAD model retrieval.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9360ce51ec055c05fd0384343792c58363383952",
+    "externalIds": {
+      "DBLP": "conf/accv/HazirbasMDC16",
+      "MAG": "2587989515",
+      "DOI": "10.1007/978-3-319-54181-5_14",
+      "CorpusId": 178063
+    },
+    "title": "FuseNet: Incorporating Depth into Semantic Segmentation via Fusion-Based CNN Architecture",
+    "venue": "Asian Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 836,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-319-54181-5_14?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-319-54181-5_14, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3322806",
+        "name": "C. Hazirbas"
+      },
+      {
+        "authorId": "2562254",
+        "name": "Lingni Ma"
+      },
+      {
+        "authorId": "1847505",
+        "name": "Csaba Domokos"
+      },
+      {
+        "authorId": "1695302",
+        "name": "D. Cremers"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "23ffaa0fe06eae05817f527a47ac3291077f9e58",
+    "externalIds": {
+      "MAG": "2183341477",
+      "DBLP": "conf/cvpr/SzegedyVISW16",
+      "ArXiv": "1512.00567",
+      "DOI": "10.1109/CVPR.2016.308",
+      "CorpusId": 206593880
+    },
+    "title": "Rethinking the Inception Architecture for Computer Vision",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 30685,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1512.00567",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.00567, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "3282833",
+        "name": "Z. Wojna"
+      }
+    ],
+    "abstract": "Convolutional networks are at the core of most state of-the-art computer vision solutions for a wide variety of tasks. Since 2014 very deep convolutional networks started to become mainstream, yielding substantial gains in various benchmarks. Although increased model size and computational cost tend to translate to immediate quality gains for most tasks (as long as enough labeled data is provided for training), computational efficiency and low parameter count are still enabling factors for various use cases such as mobile vision and big-data scenarios. Here we are exploring ways to scale up networks in ways that aim at utilizing the added computation as efficiently as possible by suitably factorized convolutions and aggressive regularization. We benchmark our methods on the ILSVRC 2012 classification challenge validation set demonstrate substantial gains over the state of the art: 21:2% top-1 and 5:6% top-5 error for single frame evaluation using a network with a computational cost of 5 billion multiply-adds per inference and with using less than 25 million parameters. With an ensemble of 4 models and multi-crop evaluation, we report 3:5% top-5 error and 17:3% top-1 error on the validation set and 3:6% top-5 error on the official test set.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b73e2d40da901ad3da3813670a51c52803d7af7e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/SongLX15",
+      "MAG": "1923184257",
+      "DOI": "10.1109/CVPR.2015.7298655",
+      "CorpusId": 6242669
+    },
+    "title": "SUN RGB-D: A RGB-D scene understanding benchmark suite",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 2049,
+    "openAccessPdf": {
+      "url": "http://vision.cs.princeton.edu/projects/2015/SUNrgbd/paper.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2015.7298655?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2015.7298655, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3340170",
+        "name": "Shuran Song"
+      },
+      {
+        "authorId": "39243526",
+        "name": "Samuel P. Lichtenberg"
+      },
+      {
+        "authorId": "40599257",
+        "name": "Jianxiong Xiao"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "6fc6803df5f9ae505cae5b2f178ade4062c768d0",
+    "externalIds": {
+      "DBLP": "journals/corr/ShelhamerLD16",
+      "MAG": "2952632681",
+      "ArXiv": "1411.4038",
+      "DOI": "10.1109/CVPR.2015.7298965",
+      "CorpusId": 1629541
+    },
+    "title": "Fully convolutional networks for semantic segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 41592,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1411.4038",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.4038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1782282",
+        "name": "Evan Shelhamer"
+      },
+      {
+        "authorId": "2117314646",
+        "name": "Jonathan Long"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "Convolutional networks are powerful visual models that yield hierarchies of features. We show that convolutional networks by themselves, trained end-to-end, pixels-to-pixels, exceed the state-of-the-art in semantic segmentation. Our key insight is to build “fully convolutional” networks that take input of arbitrary size and produce correspondingly-sized output with efficient inference and learning. We define and detail the space of fully convolutional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models. We adapt contemporary classification networks (AlexNet [20], the VGG net [31], and GoogLeNet [32]) into fully convolutional networks and transfer their learned representations by fine-tuning [3] to the segmentation task. We then define a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed segmentations. Our fully convolutional network achieves state-of-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one fifth of a second for a typical image.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b9d35e88d4dc2156469446270fd67b8e45ca7811",
+    "externalIds": {
+      "DBLP": "conf/cvpr/GuptaAM13",
+      "MAG": "2067912884",
+      "DOI": "10.1109/CVPR.2013.79",
+      "CorpusId": 12061055
+    },
+    "title": "Perceptual Organization and Recognition of Indoor Scenes from RGB-D Images",
+    "venue": "2013 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2013,
+    "citationCount": 648,
+    "openAccessPdf": {
+      "url": "http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/papers/gam_cvpr2013.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2013.79?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2013.79, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144157872",
+        "name": "Saurabh Gupta"
+      },
+      {
+        "authorId": "1778133",
+        "name": "Pablo Arbeláez"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c1994ba5946456fc70948c549daf62363f13fa2d",
+    "externalIds": {
+      "MAG": "125693051",
+      "DBLP": "conf/eccv/SilbermanHKF12",
+      "DOI": "10.1007/978-3-642-33715-4_54",
+      "CorpusId": 545361
+    },
+    "title": "Indoor Segmentation and Support Inference from RGBD Images",
+    "venue": "European Conference on Computer Vision",
+    "year": 2012,
+    "citationCount": 6478,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/978-3-642-33715-4_54.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-33715-4_54?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-33715-4_54, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2286640",
+        "name": "N. Silberman"
+      },
+      {
+        "authorId": "2433269",
+        "name": "Derek Hoiem"
+      },
+      {
+        "authorId": "143967473",
+        "name": "Pushmeet Kohli"
+      },
+      {
+        "authorId": "2276554",
+        "name": "R. Fergus"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c8b25fab5608c3e033d34b4483ec47e68ba109b7",
+    "externalIds": {
+      "DBLP": "conf/iccv/LiuL00W0LG21",
+      "ArXiv": "2103.14030",
+      "DOI": "10.1109/ICCV48922.2021.00986",
+      "CorpusId": 232352874
+    },
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 31374,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2103.14030",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.14030, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109371439",
+        "name": "Ze Liu"
+      },
+      {
+        "authorId": "51091819",
+        "name": "Yutong Lin"
+      },
+      {
+        "authorId": "2112823372",
+        "name": "Yue Cao"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2107995927",
+        "name": "Yixuan Wei"
+      },
+      {
+        "authorId": "2148904543",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "145676588",
+        "name": "Stephen Lin"
+      },
+      {
+        "authorId": "2261753424",
+        "name": "B. Guo"
+      }
+    ],
+    "abstract": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection. This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size. These qualities of Swin Transformer make it compatible with a broad range of vision tasks, including image classification (87.3 top-1 accuracy on ImageNet-1K) and dense prediction tasks such as object detection (58.7 box AP and 51.1 mask AP on COCO test-dev) and semantic segmentation (53.5 mIoU on ADE20K val). Its performance surpasses the previous state-of-the-art by a large margin of +2.7 box AP and +2.6 mask AP on COCO, and +3.2 mIoU on ADE20K, demonstrating the potential of Transformer-based models as vision backbones. The hierarchical design and the shifted window approach also prove beneficial for all-MLP architectures. The code and models are publicly available at https://github.com/microsoft/Swin-Transformer.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9af62668cb87f11fffb53a194588c8158fde6b00",
+    "externalIds": {
+      "CorpusId": 260505212
+    },
+    "title": "DynamicViT: Efﬁcient Vision Transformers with Dynamic Token Sparsiﬁcation",
+    "venue": "",
+    "year": 2021,
+    "citationCount": 308,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

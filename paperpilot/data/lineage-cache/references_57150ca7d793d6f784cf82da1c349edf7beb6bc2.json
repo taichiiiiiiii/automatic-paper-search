@@ -1,0 +1,3247 @@
+[
+  {
+    "paperId": "430bab3890e1e52c4c1f74900b0e408e47a1cb8f",
+    "externalIds": {
+      "DBLP": "conf/iclr/ParkK22",
+      "ArXiv": "2202.06709",
+      "CorpusId": 246823327
+    },
+    "title": "How Do Vision Transformers Work?",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 650,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.06709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150248298",
+        "name": "Namuk Park"
+      },
+      {
+        "authorId": "2917665",
+        "name": "Songkuk Kim"
+      }
+    ],
+    "abstract": "The success of multi-head self-attentions (MSAs) for computer vision is now indisputable. However, little is known about how MSAs work. We present fundamental explanations to help better understand the nature of MSAs. In particular, we demonstrate the following properties of MSAs and Vision Transformers (ViTs): (1) MSAs improve not only accuracy but also generalization by flattening the loss landscapes. Such improvement is primarily attributable to their data specificity, not long-range dependency. On the other hand, ViTs suffer from non-convex losses. Large datasets and loss landscape smoothing methods alleviate this problem; (2) MSAs and Convs exhibit opposite behaviors. For example, MSAs are low-pass filters, but Convs are high-pass filters. Therefore, MSAs and Convs are complementary; (3) Multi-stage neural networks behave like a series connection of small individual models. In addition, MSAs at the end of a stage play a key role in prediction. Based on these insights, we propose AlterNet, a model in which Conv blocks at the end of a stage are replaced with MSA blocks. AlterNet outperforms CNNs not only in large data regimes but also in small data regimes. The code is available at https://github.com/xxxnell/how-do-vits-work.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f454f6b5f2ca9749ddf442eb5134612ef7f758c1",
+    "externalIds": {
+      "ArXiv": "2110.00476",
+      "DBLP": "journals/corr/abs-2110-00476",
+      "CorpusId": 238252949
+    },
+    "title": "ResNet strikes back: An improved training procedure in timm",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 600,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.00476, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113839396",
+        "name": "Ross Wightman"
+      },
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "2065248680",
+        "name": "Herv'e J'egou"
+      }
+    ],
+    "abstract": "The influential Residual Networks designed by He et al. remain the gold-standard architecture in numerous scientific publications. They typically serve as the default architecture in studies, or as baselines when new architectures are proposed. Yet there has been significant progress on best practices for training neural networks since the inception of the ResNet architecture in 2015. Novel optimization&data-augmentation have increased the effectiveness of the training recipes. In this paper, we re-evaluate the performance of the vanilla ResNet-50 when trained with a procedure that integrates such advances. We share competitive training settings and pre-trained models in the timm open-source library, with the hope that they will serve as better baselines for future work. For instance, with our more demanding training setting, a vanilla ResNet-50 reaches 80.4% top-1 accuracy at resolution 224x224 on ImageNet-val without extra data or distillation. We also report the performance achieved with popular models with our training procedure.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "83238f3402fc4a7c4efa48bae180d81cabed23ee",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-00301",
+      "ArXiv": "2109.00301",
+      "ACL": "2022.acl-long.375",
+      "CorpusId": 237412971
+    },
+    "title": "\\infty-former: Infinite Memory Transformer",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.00301, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144869806",
+        "name": "Pedro Henrique Martins"
+      },
+      {
+        "authorId": "2566656",
+        "name": "Zita Marinho"
+      },
+      {
+        "authorId": "145644643",
+        "name": "André F. T. Martins"
+      }
+    ],
+    "abstract": "Transformers are unable to model long-term memories effectively, since the amount of computation they need to perform grows with the context length. While variations of efficient transformers have been proposed, they all have a finite memory capacity and are forced to drop old information. In this paper, we propose the \\infty-former, which extends the vanilla transformer with an unbounded long-term memory. By making use of a continuous-space attention mechanism to attend over the long-term memory, the \\infty-former’s attention complexity becomes independent of the context length, trading off memory length with precision.In order to control where precision is more important, \\infty-former maintains “sticky memories,” being able to model arbitrarily long contexts while keeping the computation budget fixed.Experiments on a synthetic sorting task, language modeling, and document grounded dialogue generation demonstrate the \\infty-former’s ability to retain information from long sequences.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "39b492db00faead70bc3f4fb4b0364d94398ffdb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-08810",
+      "ArXiv": "2108.08810",
+      "CorpusId": 237213700
+    },
+    "title": "Do Vision Transformers See Like Convolutional Neural Networks?",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1327,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.08810, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40297238",
+        "name": "M. Raghu"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "2145179541",
+        "name": "Chiyuan Zhang"
+      },
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) have so far been the de-facto model for visual data. Recent work has shown that (Vision) Transformer models (ViT) can achieve comparable or even superior performance on image classification tasks. This raises a central question: how are Vision Transformers solving these tasks? Are they acting like convolutional networks, or learning entirely different visual representations? Analyzing the internal representation structure of ViTs and CNNs on image classification benchmarks, we find striking differences between the two architectures, such as ViT having more uniform representations across all layers. We explore how these differences arise, finding crucial roles played by self-attention, which enables early aggregation of global information, and ViT residual connections, which strongly propagate features from lower to higher layers. We study the ramifications for spatial localization, demonstrating ViTs successfully preserve input spatial information, with noticeable effects from different classification methods. Finally, we study the effect of (pretraining) dataset scale on intermediate features and transfer learning, and conclude with a discussion on connections to new architectures such as the MLP-Mixer.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a9c214e846188adb645021cd7b1964b8ea1fef6f",
+    "externalIds": {
+      "DBLP": "conf/iccv/WuPCFC21",
+      "ArXiv": "2107.14222",
+      "DOI": "10.1109/iccv48922.2021.00988",
+      "CorpusId": 236493453
+    },
+    "title": "Rethinking and Improving Relative Position Encoding for Vision Transformer",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 422,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2107.14222",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.14222, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115597973",
+        "name": "Kan Wu"
+      },
+      {
+        "authorId": "2484788",
+        "name": "Houwen Peng"
+      },
+      {
+        "authorId": "1476766004",
+        "name": "Minghao Chen"
+      },
+      {
+        "authorId": "3247966",
+        "name": "Jianlong Fu"
+      },
+      {
+        "authorId": "47636228",
+        "name": "Hongyang Chao"
+      }
+    ],
+    "abstract": "Relative position encoding (RPE) is important for transformer to capture sequence ordering of input tokens. General efficacy has been proven in natural language processing. However, in computer vision, its efficacy is not well studied and even remains controversial, e.g., whether relative position encoding can work equally well as absolute position? In order to clarify this, we first review existing relative position encoding methods and analyze their pros and cons when applied in vision transformers. We then propose new relative position encoding methods dedicated to 2D images, called image RPE (iRPE). Our methods consider directional relative distance modeling as well as the interactions between queries and relative position embeddings in self-attention mechanism. The proposed iRPE methods are simple and lightweight. They can be easily plugged into transformer blocks. Experiments demonstrate that solely due to the proposed encoding methods, DeiT [21] and DETR [1] obtain up to 1.5% (top-1 Acc) and 1.3% (mAP) stable improvements over their original versions on ImageNet and COCO respectively, without tuning any extra hyperparameters such as learning rate and weight decay. Our ablation and analysis also yield interesting findings, some of which run counter to previous understanding. Code and models are open-sourced at https://github.com/microsoft/Cream/tree/main/iRPE.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f75cddf2d42ed01b34686704eb3504becef67442",
+    "externalIds": {
+      "ArXiv": "2107.10224",
+      "DBLP": "conf/iclr/ChenXGCLL22",
+      "CorpusId": 236154781
+    },
+    "title": "CycleMLP: A MLP-like Architecture for Dense Prediction",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.10224, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107977968",
+        "name": "Shoufa Chen"
+      },
+      {
+        "authorId": "41020000",
+        "name": "Enze Xie"
+      },
+      {
+        "authorId": "102482926",
+        "name": "Chongjian Ge"
+      },
+      {
+        "authorId": "152335674",
+        "name": "Ding Liang"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      }
+    ],
+    "abstract": "This paper presents a simple MLP-like architecture, CycleMLP, which is a versatile backbone for visual recognition and dense predictions. As compared to modern MLP architectures, e.g., MLP-Mixer, ResMLP, and gMLP, whose architectures are correlated to image size and thus are infeasible in object detection and segmentation, CycleMLP has two advantages compared to modern approaches. (1) It can cope with various image sizes. (2) It achieves linear computational complexity to image size by using local windows. In contrast, previous MLPs have $O(N^2)$ computations due to fully spatial connections. We build a family of models which surpass existing MLPs and even state-of-the-art Transformer-based models, e.g., Swin Transformer, while using fewer parameters and FLOPs. We expand the MLP-like models' applicability, making them a versatile backbone for dense prediction tasks. CycleMLP achieves competitive results on object detection, instance segmentation, and semantic segmentation. In particular, CycleMLP-Tiny outperforms Swin-Tiny by 1.3% mIoU on ADE20K dataset with fewer FLOPs. Moreover, CycleMLP also shows excellent zero-shot robustness on ImageNet-C dataset. Code is available at https://github.com/ShoufaChen/CycleMLP.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "761240b06248b9836ee564bdab61559c84b681ed",
+    "externalIds": {
+      "ArXiv": "2107.06263",
+      "DBLP": "conf/cvpr/Guo0WT00X22",
+      "DOI": "10.1109/CVPR52688.2022.01186",
+      "CorpusId": 235829175
+    },
+    "title": "CMT: Convolutional Neural Networks Meet Vision Transformers",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 905,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2107.06263",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.06263, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2148899357",
+        "name": "Jianyuan Guo"
+      },
+      {
+        "authorId": "3826388",
+        "name": "Kai Han"
+      },
+      {
+        "authorId": "2109295256",
+        "name": "Han Wu"
+      },
+      {
+        "authorId": "9196284",
+        "name": "Chang Xu"
+      },
+      {
+        "authorId": "103603255",
+        "name": "Yehui Tang"
+      },
+      {
+        "authorId": "1691522",
+        "name": "Chunjing Xu"
+      },
+      {
+        "authorId": "2108702980",
+        "name": "Yunhe Wang"
+      }
+    ],
+    "abstract": "Vision transformers have been successfully applied to image recognition tasks due to their ability to capture long-range dependencies within an image. However, there are still gaps in both performance and computational cost between transformers and existing convolutional neural networks (CNNs). In this paper, we aim to address this issue and develop a network that can outperform not only the canonical transformers, but also the high-performance convolutional models. We propose a new transformer based hybrid network by taking advantage of transformers to capture long-range dependencies, and of CNNs to extract local information. Furthermore, we scale it to obtain a family of models, called CMTs, obtaining much better trade-off for accuracy and efficiency than previous CNN-based and transformer-based models. In particular, our CMT-S achieves 83.5% top-1 accuracy on ImageNet, while being 14x and 2x smaller on FLOPs than the existing DeiT and EfficientNet, respectively. The proposed CMT-S also generalizes well on CIFAR10 (99.2%), CIFAR100 (91.7%), Flowers (98.7%), and other challenging vision datasets such as COCO (44.3% mAP), with considerably less computational cost.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9b6af0e358e76d22f209c75b1702c3e6ea7815b1",
+    "externalIds": {
+      "DBLP": "conf/nips/RaoZZLZ21",
+      "ArXiv": "2107.00645",
+      "CorpusId": 235694359
+    },
+    "title": "Global Filter Networks for Image Classification",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 661,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.00645, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39358728",
+        "name": "Yongming Rao"
+      },
+      {
+        "authorId": "2118223312",
+        "name": "Wenliang Zhao"
+      },
+      {
+        "authorId": "2118932732",
+        "name": "Zheng Zhu"
+      },
+      {
+        "authorId": "1697700",
+        "name": "Jiwen Lu"
+      },
+      {
+        "authorId": "49640256",
+        "name": "Jie Zhou"
+      }
+    ],
+    "abstract": "Recent advances in self-attention and pure multi-layer perceptrons (MLP) models for vision have shown great potential in achieving promising performance with fewer inductive biases. These models are generally based on learning interaction among spatial locations from raw data. The complexity of self-attention and MLP grows quadratically as the image size increases, which makes these models hard to scale up when high-resolution features are required. In this paper, we present the Global Filter Network (GFNet), a conceptually simple yet computationally efficient architecture, that learns long-term spatial dependencies in the frequency domain with log-linear complexity. Our architecture replaces the self-attention layer in vision transformers with three key operations: a 2D discrete Fourier transform, an element-wise multiplication between frequency-domain features and learnable global filters, and a 2D inverse Fourier transform. We exhibit favorable accuracy/complexity trade-offs of our models on both ImageNet and downstream tasks. Our results demonstrate that GFNet can be a very competitive alternative to transformer-style models and CNNs in efficiency, generalization ability and robustness. Code is available at https://github.com/raoyongming/GFNet",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2435ffb8ed3212156d6b6f19f633a861399cf30e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-12368",
+      "ArXiv": "2106.12368",
+      "DOI": "10.1109/TPAMI.2022.3145427",
+      "CorpusId": 235606034,
+      "PubMed": "35077359"
+    },
+    "title": "Vision Permutator: A Permutable MLP-Like Architecture for Visual Recognition",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 242,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2106.12368",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.12368, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3298532",
+        "name": "Qibin Hou"
+      },
+      {
+        "authorId": "145062296",
+        "name": "Zihang Jiang"
+      },
+      {
+        "authorId": "2087091296",
+        "name": "Li Yuan"
+      },
+      {
+        "authorId": "1557350184",
+        "name": "Mingg-Ming Cheng"
+      },
+      {
+        "authorId": "143653681",
+        "name": "Shuicheng Yan"
+      },
+      {
+        "authorId": "1698982",
+        "name": "Jiashi Feng"
+      }
+    ],
+    "abstract": "In this paper, we present Vision Permutator, a conceptually simple and data efficient MLP-like architecture for visual recognition. By realizing the importance of the positional information carried by 2D feature representations, unlike recent MLP-like models that encode the spatial information along the flattened spatial dimensions, Vision Permutator separately encodes the feature representations along the height and width dimensions with linear projections. This allows Vision Permutator to capture long-range dependencies and meanwhile avoid the attention building process in transformers. The outputs are then aggregated in a mutually complementing manner to form expressive representations. We show that our Vision Permutators are formidable competitors to convolutional neural networks (CNNs) and vision transformers. Without the dependence on spatial convolutions or attention mechanisms, Vision Permutator achieves 81.5% top-1 accuracy on ImageNet without extra large-scale training data (e.g., ImageNet-22k) using only 25M learnable parameters, which is much better than most CNNs and vision transformers under the same model size constraint. When scaling up to 88M, it attains 83.2% top-1 accuracy, greatly improving the performance of recent state-of-the-art MLP-like networks for visual recognition. We hope this work could encourage research on rethinking the way of encoding spatial information and facilitate the development of MLP-like models. PyTorch/MindSpore/Jittor code is available at https://github.com/Andrew-Qibin/VisionPermutator.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8602fd5b0ac73bb422f238b265479f363c0ffe61",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-03714",
+      "ArXiv": "2106.03714",
+      "CorpusId": 235358315
+    },
+    "title": "Refiner: Refining Self-attention for Vision Transformers",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 69,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.03714, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "18119920",
+        "name": "Daquan Zhou"
+      },
+      {
+        "authorId": "145356288",
+        "name": "Yujun Shi"
+      },
+      {
+        "authorId": "2064621368",
+        "name": "Bingyi Kang"
+      },
+      {
+        "authorId": "23476952",
+        "name": "Weihao Yu"
+      },
+      {
+        "authorId": "97234041",
+        "name": "Zihang Jiang"
+      },
+      {
+        "authorId": "2118204528",
+        "name": "Yuan Li"
+      },
+      {
+        "authorId": "2103483",
+        "name": "Xiaojie Jin"
+      },
+      {
+        "authorId": "3298532",
+        "name": "Qibin Hou"
+      },
+      {
+        "authorId": "1698982",
+        "name": "Jiashi Feng"
+      }
+    ],
+    "abstract": "Vision Transformers (ViTs) have shown competitive accuracy in image classification tasks compared with CNNs. Yet, they generally require much more data for model pre-training. Most of recent works thus are dedicated to designing more complex architectures or training methods to address the data-efficiency issue of ViTs. However, few of them explore improving the self-attention mechanism, a key factor distinguishing ViTs from CNNs. Different from existing works, we introduce a conceptually simple scheme, called refiner, to directly refine the self-attention maps of ViTs. Specifically, refiner explores attention expansion that projects the multi-head attention maps to a higher-dimensional space to promote their diversity. Further, refiner applies convolutions to augment local patterns of the attention maps, which we show is equivalent to a distributed local attention features are aggregated locally with learnable kernels and then globally aggregated with self-attention. Extensive experiments demonstrate that refiner works surprisingly well. Significantly, it enables ViTs to achieve 86% top-1 classification accuracy on ImageNet with only 81M parameters.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e3a3e85c5a32af29e13b3561f6cf070de70651de",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-08050",
+      "ArXiv": "2105.08050",
+      "CorpusId": 234742218
+    },
+    "title": "Pay Attention to MLPs",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 842,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.08050, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2391802",
+        "name": "Hanxiao Liu"
+      },
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "48165870",
+        "name": "David R. So"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Transformers have become one of the most important architectural innovations in deep learning and have enabled many breakthroughs over the past few years. Here we propose a simple network architecture, gMLP, based on MLPs with gating, and show that it can perform as well as Transformers in key language and vision applications. Our comparisons show that self-attention is not critical for Vision Transformers, as gMLP can achieve the same accuracy. For BERT, our model achieves parity with Transformers on pretraining perplexity and is better on some downstream NLP tasks. On finetuning tasks where gMLP performs worse, making the gMLP model substantially larger can close the gap with Transformers. In general, our experiments show that gMLP can scale as well as Transformers over increased data and compute.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1f133158a8973fb33fea188f20517cd7e69bfe7f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-03824",
+      "ACL": "2022.naacl-main.319",
+      "ArXiv": "2105.03824",
+      "DOI": "10.18653/v1/2022.naacl-main.319",
+      "CorpusId": 234336004
+    },
+    "title": "FNet: Mixing Tokens with Fourier Transforms",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 694,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.naacl-main.319.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.03824, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1405626394",
+        "name": "J. Lee-Thorp"
+      },
+      {
+        "authorId": "1643737606",
+        "name": "J. Ainslie"
+      },
+      {
+        "authorId": "2085636189",
+        "name": "Ilya Eckstein"
+      },
+      {
+        "authorId": "1722671",
+        "name": "Santiago Ontañón"
+      }
+    ],
+    "abstract": "We show that Transformer encoder architectures can be sped up, with limited accuracy costs, by replacing the self-attention sublayers with simple linear transformations that “mix” input tokens. Most surprisingly, we find that replacing the self-attention sublayer in a Transformer encoder with a standard, unparameterized Fourier Transform achieves 92-97% of the accuracy of BERT counterparts on the GLUE benchmark, but trains 80% faster on GPUs and 70% faster on TPUs at standard 512 input lengths. At longer input lengths, our FNet model is significantly faster: when compared to the “efficient Transformers” on the Long Range Arena benchmark, FNet matches the accuracy of the most accurate models, while outpacing the fastest models across all sequence lengths on GPUs (and across relatively shorter lengths on TPUs). Finally, FNet has a light memory footprint and is particularly efficient at smaller model sizes; for a fixed speed and accuracy budget, small FNet models outperform Transformer counterparts.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "48a6aadf7fd6a1de64a6971ae3eeb24aae007bb5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-03404",
+      "ArXiv": "2105.03404",
+      "DOI": "10.1109/TPAMI.2022.3206148",
+      "CorpusId": 234094263,
+      "PubMed": "36094972"
+    },
+    "title": "ResMLP: Feedforward Networks for Image Classification With Data-Efficient Training",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 858,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2105.03404",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.03404, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "2329288",
+        "name": "Piotr Bojanowski"
+      },
+      {
+        "authorId": "2062862676",
+        "name": "Mathilde Caron"
+      },
+      {
+        "authorId": "51021910",
+        "name": "M. Cord"
+      },
+      {
+        "authorId": "1388811741",
+        "name": "Alaaeldin El-Nouby"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "2282478",
+        "name": "Gabriel Synnaeve"
+      },
+      {
+        "authorId": "34602236",
+        "name": "Jakob Verbeek"
+      },
+      {
+        "authorId": "2065248680",
+        "name": "Herv'e J'egou"
+      }
+    ],
+    "abstract": "We present ResMLP, an architecture built entirely upon multi-layer perceptrons for image classification. It is a simple residual network that alternates (i) a linear layer in which image patches interact, independently and identically across channels, and (ii) a two-layer feed-forward network in which channels interact independently per patch. When trained with a modern training strategy using heavy data-augmentation and optionally distillation, it attains surprisingly good accuracy/complexity trade-offs on ImageNet. We also train ResMLP models in a self-supervised setup, to further remove priors from employing a labelled dataset. Finally, by adapting our model to machine translation we achieve surprisingly good results. We share pre-trained models and our code based on the Timm library.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "67571d29190faea9fbd104acd16274f8c4edf254",
+    "externalIds": {
+      "ArXiv": "2105.01601",
+      "DBLP": "conf/nips/TolstikhinHKBZU21",
+      "CorpusId": 233714958
+    },
+    "title": "MLP-Mixer: An all-MLP Architecture for Vision",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 3510,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.01601, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3121264",
+        "name": "I. Tolstikhin"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "1470947219",
+        "name": "Jessica Yung"
+      },
+      {
+        "authorId": "51027911",
+        "name": "Daniel Keysers"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "34302129",
+        "name": "M. Lučić"
+      },
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) are the go-to model for computer vision. Recently, attention-based networks, such as the Vision Transformer, have also become popular. In this paper we show that while convolutions and attention are both sufficient for good performance, neither of them are necessary. We present MLP-Mixer, an architecture based exclusively on multi-layer perceptrons (MLPs). MLP-Mixer contains two types of layers: one with MLPs applied independently to image patches (i.e.\"mixing\"the per-location features), and one with MLPs applied across patches (i.e.\"mixing\"spatial information). When trained on large datasets, or with modern regularization schemes, MLP-Mixer attains competitive scores on image classification benchmarks, with pre-training and inference cost comparable to state-of-the-art models. We hope that these results spark further research beyond the realms of well established CNNs and Transformers.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b364cdb02d18b9d9a3c097f5ea446f7e9ab10325",
+    "externalIds": {
+      "ArXiv": "2103.17239",
+      "DBLP": "conf/iccv/TouvronCSSJ21",
+      "DOI": "10.1109/ICCV48922.2021.00010",
+      "CorpusId": 232428161
+    },
+    "title": "Going deeper with Image Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 1266,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.17239",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.17239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "51021910",
+        "name": "M. Cord"
+      },
+      {
+        "authorId": "3469062",
+        "name": "Alexandre Sablayrolles"
+      },
+      {
+        "authorId": "2282478",
+        "name": "Gabriel Synnaeve"
+      },
+      {
+        "authorId": "2065248680",
+        "name": "Herv'e J'egou"
+      }
+    ],
+    "abstract": "Transformers have been recently adapted for large scale image classification, achieving high scores shaking up the long supremacy of convolutional neural networks. However the optimization of vision transformers has been little studied so far. In this work, we build and optimize deeper transformer networks for image classification. In particular, we investigate the interplay of architecture and optimization of such dedicated transformers. We make two architecture changes that significantly improve the accuracy of deep transformers. This leads us to produce models whose performance does not saturate early with more depth, for in-stance we obtain 86.5% top-1 accuracy on Imagenet when training with no external data, we thus attain the current sate of the art with less floating-point operations and parameters. Our best model establishes the new state of the art on Imagenet with Reassessed labels and Imagenet-V2 / match frequency, in the setting with no additional training data. We share our code and models1.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e775e649d815a02373eac840cf5e33a04ff85c95",
+    "externalIds": {
+      "ArXiv": "2103.15808",
+      "DBLP": "conf/iccv/WuXCLDY021",
+      "DOI": "10.1109/ICCV48922.2021.00009",
+      "CorpusId": 232417787
+    },
+    "title": "CvT: Introducing Convolutions to Vision Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 2384,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2103.15808",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.15808, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119019500",
+        "name": "Haiping Wu"
+      },
+      {
+        "authorId": "2054421528",
+        "name": "Bin Xiao"
+      },
+      {
+        "authorId": "40589056",
+        "name": "N. Codella"
+      },
+      {
+        "authorId": "2152968847",
+        "name": "Mengchen Liu"
+      },
+      {
+        "authorId": "3386593",
+        "name": "Xiyang Dai"
+      },
+      {
+        "authorId": "145347147",
+        "name": "Lu Yuan"
+      },
+      {
+        "authorId": "2152828578",
+        "name": "Lei Zhang"
+      }
+    ],
+    "abstract": "We present in this paper a new architecture, named Convolutional vision Transformer (CvT), that improves Vision Transformer (ViT) in performance and efficiency by introducing convolutions into ViT to yield the best of both de-signs. This is accomplished through two primary modifications: a hierarchy of Transformers containing a new convolutional token embedding, and a convolutional Transformer block leveraging a convolutional projection. These changes introduce desirable properties of convolutional neural networks (CNNs) to the ViT architecture (i.e. shift, scale, and distortion invariance) while maintaining the merits of Transformers (i.e. dynamic attention, global context, and better generalization). We validate CvT by conducting extensive experiments, showing that this approach achieves state-of-the-art performance over other Vision Transformers and ResNets on ImageNet-1k, with fewer parameters and lower FLOPs. In addition, performance gains are maintained when pretrained on larger datasets (e.g. ImageNet-22k) and fine-tuned to downstream tasks. Pretrained on ImageNet-22k, our CvT-W24 obtains a top-1 accuracy of 87.7% on the ImageNet-1k val set. Finally, our results show that the positional encoding, a crucial component in existing Vision Transformers, can be safely re-moved in our model, simplifying the design for higher resolution vision tasks. Code will be released at https://github.com/microsoft/CvT.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "91e8117e7ebc966bc76de2cb52ec717d2acdb1a4",
+    "externalIds": {
+      "DBLP": "conf/cvpr/VaswaniRSPHS21",
+      "ArXiv": "2103.12731",
+      "DOI": "10.1109/CVPR46437.2021.01270",
+      "CorpusId": 232320340
+    },
+    "title": "Scaling Local Self-Attention for Parameter Efficient Visual Backbones",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 467,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.12731",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.12731, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1630664874",
+        "name": "A. Vaswani"
+      },
+      {
+        "authorId": "3377142",
+        "name": "Prajit Ramachandran"
+      },
+      {
+        "authorId": "41207614",
+        "name": "A. Srinivas"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "3135881",
+        "name": "Blake A. Hechtman"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      }
+    ],
+    "abstract": "Self-attention has the promise of improving computer vision systems due to parameter-independent scaling of receptive fields and content-dependent interactions, in contrast to parameter-dependent scaling and content-independent interactions of convolutions. Self-attention models have recently been shown to have encouraging improvements on accuracy-parameter trade-offs compared to baseline convolutional models such as ResNet-50. In this work, we develop self-attention models that can outperform not just the canonical baseline models, but even the high-performing convolutional models. We propose two extensions to self-attention that, in conjunction with a more efficient implementation of self-attention, improve the speed, memory usage, and accuracy of these models. We leverage these improvements to develop a new self-attention model family, HaloNets, which reach state-of-the-art accuracies on the parameter-limited setting of the ImageNet classification benchmark. In preliminary transfer learning experiments, we find that HaloNet models outperform much larger models and have better inference performance. On harder tasks such as object detection and instance segmentation, our simple local self-attention and convolutional hybrids show improvements over very strong baselines. These results mark another step in demonstrating the efficacy of self-attention models on settings traditionally dominated by convolutions. 1",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "610b302950a19acef1c45456111dcd495f638c18",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-10697",
+      "MAG": "3137278571",
+      "ArXiv": "2103.10697",
+      "DOI": "10.1088/1742-5468/ac9830",
+      "CorpusId": 232290742
+    },
+    "title": "ConViT: improving vision transformers with soft convolutional inductive biases",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 1017,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.10697",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.10697, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1400419176",
+        "name": "Stéphane d'Ascoli"
+      },
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "2028252288",
+        "name": "Matthew L. Leavitt"
+      },
+      {
+        "authorId": "4690624",
+        "name": "Ari S. Morcos"
+      },
+      {
+        "authorId": "2188423",
+        "name": "G. Biroli"
+      },
+      {
+        "authorId": "2246570",
+        "name": "Levent Sagun"
+      }
+    ],
+    "abstract": "Convolutional architectures have proven to be extremely successful for vision tasks. Their hard inductive biases enable sample-efficient learning, but come at the cost of a potentially lower performance ceiling. Vision transformers rely on more flexible self-attention layers, and have recently outperformed CNNs for image classification. However, they require costly pre-training on large external datasets or distillation from pre-trained convolutional networks. In this paper, we ask the following question: is it possible to combine the strengths of these two architectures while avoiding their respective limitations? To this end, we introduce gated positional self-attention (GPSA), a form of positional self-attention which can be equipped with a ‘soft’ convolutional inductive bias. We initialize the GPSA layers to mimic the locality of convolutional layers, then give each attention head the freedom to escape locality by adjusting a gating parameter regulating the attention paid to position versus content information. The resulting convolutional-like ViT architecture, ConViT, outperforms the DeiT (Touvron et al 2020 arXiv:2012.12877) on ImageNet, while offering a much improved sample efficiency. We further investigate the role of locality in learning by first quantifying how it is encouraged in vanilla self-attention layers, then analyzing how it has escaped in GPSA layers. We conclude by presenting various ablations to better understand the success of the ConViT. Our code and models are released publicly at https://github.com/facebookresearch/convit.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "dfb37e6216e792bf6bd5a30c0fc7ad55df1cb71e",
+    "externalIds": {
+      "DBLP": "conf/icml/DongCL21",
+      "ArXiv": "2103.03404",
+      "CorpusId": 232134936
+    },
+    "title": "Attention is Not All You Need: Pure Attention Loses Rank Doubly Exponentially with Depth",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 518,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.03404, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145595795",
+        "name": "Yihe Dong"
+      },
+      {
+        "authorId": "51440515",
+        "name": "Jean-Baptiste Cordonnier"
+      },
+      {
+        "authorId": "1966031",
+        "name": "Andreas Loukas"
+      }
+    ],
+    "abstract": "Attention-based architectures have become ubiquitous in machine learning, yet our understanding of the reasons for their effectiveness remains limited. This work proposes a new way to understand self-attention networks: we show that their output can be decomposed into a sum of smaller terms, each involving the operation of a sequence of attention heads across layers. Using this decomposition, we prove that self-attention possesses a strong inductive bias towards\"token uniformity\". Specifically, without skip connections or multi-layer perceptrons (MLPs), the output converges doubly exponentially to a rank-1 matrix. On the other hand, skip connections and MLPs stop the output from degeneration. Our experiments verify the identified convergence phenomena on different variants of standard transformer architectures.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "0ae67202f0584afccefa770865d14a46655d2975",
+    "externalIds": {
+      "DBLP": "conf/nips/HanXWGXW21",
+      "ArXiv": "2103.00112",
+      "CorpusId": 232076027
+    },
+    "title": "Transformer in Transformer",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 2133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.00112, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3826388",
+        "name": "Kai Han"
+      },
+      {
+        "authorId": "1569696821",
+        "name": "An Xiao"
+      },
+      {
+        "authorId": "145344139",
+        "name": "E. Wu"
+      },
+      {
+        "authorId": "2148899357",
+        "name": "Jianyuan Guo"
+      },
+      {
+        "authorId": "1691522",
+        "name": "Chunjing Xu"
+      },
+      {
+        "authorId": "2108702980",
+        "name": "Yunhe Wang"
+      }
+    ],
+    "abstract": "Transformer is a new kind of neural architecture which encodes the input data as powerful features via the attention mechanism. Basically, the visual transformers first divide the input images into several local patches and then calculate both representations and their relationship. Since natural images are of high complexity with abundant detail and color information, the granularity of the patch dividing is not fine enough for excavating features of objects in different scales and locations. In this paper, we point out that the attention inside these local patches are also essential for building visual transformers with high performance and we explore a new architecture, namely, Transformer iN Transformer (TNT). Specifically, we regard the local patches (e.g., 16$\\times$16) as\"visual sentences\"and present to further divide them into smaller patches (e.g., 4$\\times$4) as\"visual words\". The attention of each word will be calculated with other words in the given visual sentence with negligible computational costs. Features of both words and sentences will be aggregated to enhance the representation ability. Experiments on several benchmarks demonstrate the effectiveness of the proposed TNT architecture, e.g., we achieve an 81.5% top-1 accuracy on the ImageNet, which is about 1.7% higher than that of the state-of-the-art visual transformer with similar computational cost. The PyTorch code is available at https://github.com/huawei-noah/CV-Backbones, and the MindSpore code is available at https://gitee.com/mindspore/models/tree/master/research/cv/TNT.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8fb1c04dab87ca6c116495e4d03c46c9547e4ec3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-12122",
+      "ArXiv": "2102.12122",
+      "DOI": "10.1109/ICCV48922.2021.00061",
+      "CorpusId": 232035922
+    },
+    "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 4872,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2102.12122",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.12122, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "71074736",
+        "name": "Wenhai Wang"
+      },
+      {
+        "authorId": "41020000",
+        "name": "Enze Xie"
+      },
+      {
+        "authorId": null,
+        "name": "Xiang Li"
+      },
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "50982078",
+        "name": "Kaitao Song"
+      },
+      {
+        "authorId": "152335674",
+        "name": "Ding Liang"
+      },
+      {
+        "authorId": "144720255",
+        "name": "Tong Lu"
+      },
+      {
+        "authorId": "144389940",
+        "name": "P. Luo"
+      },
+      {
+        "authorId": "144082425",
+        "name": "Ling Shao"
+      }
+    ],
+    "abstract": "Although convolutional neural networks (CNNs) have achieved great success in computer vision, this work investigates a simpler, convolution-free backbone network use-fid for many dense prediction tasks. Unlike the recently-proposed Vision Transformer (ViT) that was designed for image classification specifically, we introduce the Pyramid Vision Transformer (PVT), which overcomes the difficulties of porting Transformer to various dense prediction tasks. PVT has several merits compared to current state of the arts. (1) Different from ViT that typically yields low-resolution outputs and incurs high computational and memory costs, PVT not only can be trained on dense partitions of an image to achieve high output resolution, which is important for dense prediction, but also uses a progressive shrinking pyramid to reduce the computations of large feature maps. (2) PVT inherits the advantages of both CNN and Transformer, making it a unified backbone for various vision tasks without convolutions, where it can be used as a direct replacement for CNN backbones. (3) We validate PVT through extensive experiments, showing that it boosts the performance of many downstream tasks, including object detection, instance and semantic segmentation. For example, with a comparable number of parameters, PVT+RetinaNet achieves 40.4 AP on the COCO dataset, surpassing ResNet50+RetinNet (36.3 AP) by 4.1 absolute AP (see Figure 2). We hope that PVT could, serre as an alternative and useful backbone for pixel-level predictions and facilitate future research.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "dbe077f8521ecbe0a1477d6148c726d4f053d9c9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2101-11986",
+      "ArXiv": "2101.11986",
+      "DOI": "10.1109/ICCV48922.2021.00060",
+      "CorpusId": 231719476
+    },
+    "title": "Tokens-to-Token ViT: Training Vision Transformers from Scratch on ImageNet",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 2450,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2101.11986",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.11986, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2087091296",
+        "name": "Li Yuan"
+      },
+      {
+        "authorId": "2144861793",
+        "name": "Yunpeng Chen"
+      },
+      {
+        "authorId": null,
+        "name": "Tao Wang"
+      },
+      {
+        "authorId": "23476952",
+        "name": "Weihao Yu"
+      },
+      {
+        "authorId": "145356288",
+        "name": "Yujun Shi"
+      },
+      {
+        "authorId": "40983412",
+        "name": "Francis E. H. Tay"
+      },
+      {
+        "authorId": "33221685",
+        "name": "Jiashi Feng"
+      },
+      {
+        "authorId": "143653681",
+        "name": "Shuicheng Yan"
+      }
+    ],
+    "abstract": "Transformers, which are popular for language modeling, have been explored for solving vision tasks recently, e.g., the Vision Transformer (ViT) for image classification. The ViT model splits each image into a sequence of tokens with fixed length and then applies multiple Transformer layers to model their global relation for classification. However, ViT achieves inferior performance to CNNs when trained from scratch on a midsize dataset like ImageNet. We find it is because: 1) the simple tokenization of input images fails to model the important local structure such as edges and lines among neighboring pixels, leading to low training sample efficiency; 2) the redundant attention backbone design of ViT leads to limited feature richness for fixed computation budgets and limited training samples. To overcome such limitations, we propose a new Tokens-To-Token Vision Transformer (T2T-VTT), which incorporates 1) a layer-wise Tokens-to-Token (T2T) transformation to progressively structurize the image to tokens by recursively aggregating neighboring Tokens into one Token (Tokens-to-Token), such that local structure represented by surrounding tokens can be modeled and tokens length can be reduced; 2) an efficient backbone with a deep-narrow structure for vision transformer motivated by CNN architecture design after empirical study. Notably, T2T-ViT reduces the parameter count and MACs of vanilla ViT by half, while achieving more than 3.0% improvement when trained from scratch on ImageNet. It also outperforms ResNets and achieves comparable performance with MobileNets by directly training on ImageNet. For example, T2T-ViT with comparable size to ResNet50 (21.5M parameters) can achieve 83.3% top1 accuracy in image resolution 384x384 on ImageNet.1",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ad7ddcc14984caae308c397f1a589aae75d4ab71",
+    "externalIds": {
+      "ArXiv": "2012.12877",
+      "DBLP": "journals/corr/abs-2012-12877",
+      "CorpusId": 229363322
+    },
+    "title": "Training data-efficient image transformers & distillation through attention",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 8916,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.12877, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "51021910",
+        "name": "M. Cord"
+      },
+      {
+        "authorId": "3271933",
+        "name": "Matthijs Douze"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "3469062",
+        "name": "Alexandre Sablayrolles"
+      },
+      {
+        "authorId": "2065248680",
+        "name": "Herv'e J'egou"
+      }
+    ],
+    "abstract": "Recently, neural networks purely based on attention were shown to address image understanding tasks such as image classification. However, these visual transformers are pre-trained with hundreds of millions of images using an expensive infrastructure, thereby limiting their adoption. In this work, we produce a competitive convolution-free transformer by training on Imagenet only. We train them on a single computer in less than 3 days. Our reference vision transformer (86M parameters) achieves top-1 accuracy of 83.1% (single-crop evaluation) on ImageNet with no external data. More importantly, we introduce a teacher-student strategy specific to transformers. It relies on a distillation token ensuring that the student learns from the teacher through attention. We show the interest of this token-based distillation, especially when using a convnet as a teacher. This leads us to report results competitive with convnets for both Imagenet (where we obtain up to 85.2% accuracy) and when transferring to other tasks. We share our code and models.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+    "externalIds": {
+      "ArXiv": "2010.11929",
+      "MAG": "3119786062",
+      "DBLP": "conf/iclr/DosovitskiyB0WZ21",
+      "CorpusId": 225039882
+    },
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 61132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "3319373",
+        "name": "Dirk Weissenborn"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "2274215058",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "46352821",
+        "name": "M. Minderer"
+      },
+      {
+        "authorId": "2280399",
+        "name": "G. Heigold"
+      },
+      {
+        "authorId": "1802148",
+        "name": "S. Gelly"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "bc022dbb37b1bbf3905a7404d19c03ccbf6b81a8",
+    "externalIds": {
+      "MAG": "3034445277",
+      "DBLP": "conf/icml/ChenRC0JLS20",
+      "CorpusId": 219781060
+    },
+    "title": "Generative Pretraining From Pixels",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 1766,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "150970919",
+        "name": "D. Luan"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "09e69bf0926e55cd277a3ef5b1450ba083719cb9",
+    "externalIds": {
+      "ArXiv": "2006.07214",
+      "MAG": "3106100672",
+      "DBLP": "conf/nips/MartinsFTNAF20",
+      "CorpusId": 219636190
+    },
+    "title": "Sparse and Continuous Attention Mechanisms",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 50,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.07214, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145644643",
+        "name": "André F. T. Martins"
+      },
+      {
+        "authorId": "145188499",
+        "name": "Marcos Vinícius Treviso"
+      },
+      {
+        "authorId": "1748971692",
+        "name": "António Farinhas"
+      },
+      {
+        "authorId": "2114966",
+        "name": "Vlad Niculae"
+      },
+      {
+        "authorId": "2075330932",
+        "name": "Mário A. T. Figueiredo"
+      },
+      {
+        "authorId": "35537344",
+        "name": "P. Aguiar"
+      }
+    ],
+    "abstract": "Exponential families are widely used in machine learning; they include many distributions in continuous and discrete domains (e.g., Gaussian, Dirichlet, Poisson, and categorical distributions via the softmax transformation). Distributions in each of these families have fixed support. In contrast, for finite domains, there has been recent work on sparse alternatives to softmax (e.g. sparsemax and alpha-entmax), which have varying support, being able to assign zero probability to irrelevant categories. This paper expands that work in two directions: first, we extend alpha-entmax to continuous domains, revealing a link with Tsallis statistics and deformed exponential families. Second, we introduce continuous-domain attention mechanisms, deriving efficient gradient backpropagation algorithms for alpha in {1,2}. Experiments on attention-based text classification, machine translation, and visual question answering illustrate the use of continuous attention in 1D and 2D, showing that it allows attending to time intervals and compact regions.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
+    "externalIds": {
+      "ArXiv": "2005.14165",
+      "DBLP": "conf/nips/BrownMRSKDNSSAA20",
+      "MAG": "3030163527",
+      "CorpusId": 218971783
+    },
+    "title": "Language Models are Few-Shot Learners",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 57132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.14165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2065894334",
+        "name": "Melanie Subbiah"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from simple instructions - something which current NLP systems still largely struggle to do. Here we show that scaling up language models greatly improves task-agnostic, few-shot performance, sometimes even reaching competitiveness with prior state-of-the-art fine-tuning approaches. Specifically, we train GPT-3, an autoregressive language model with 175 billion parameters, 10x more than any previous non-sparse language model, and test its performance in the few-shot setting. For all tasks, GPT-3 is applied without any gradient updates or fine-tuning, with tasks and few-shot demonstrations specified purely via text interaction with the model. GPT-3 achieves strong performance on many NLP datasets, including translation, question-answering, and cloze tasks, as well as several tasks that require on-the-fly reasoning or domain adaptation, such as unscrambling words, using a novel word in a sentence, or performing 3-digit arithmetic. At the same time, we also identify some datasets where GPT-3's few-shot learning still struggles, as well as some datasets where GPT-3 faces methodological issues related to training on large web corpora. Finally, we find that GPT-3 can generate samples of news articles which human evaluators have difficulty distinguishing from articles written by humans. We discuss broader societal impacts of this finding and of GPT-3 in general.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "962dc29fdc3fbdc5930a10aba114050b82fe5a3e",
+    "externalIds": {
+      "MAG": "3096609285",
+      "DBLP": "conf/eccv/CarionMSUKZ20",
+      "ArXiv": "2005.12872",
+      "DOI": "10.1007/978-3-030-58452-8_13",
+      "CorpusId": 218889832
+    },
+    "title": "End-to-End Object Detection with Transformers",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 17822,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.12872, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422899",
+        "name": "Nicolas Carion"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "2282478",
+        "name": "Gabriel Synnaeve"
+      },
+      {
+        "authorId": "1746841",
+        "name": "Nicolas Usunier"
+      },
+      {
+        "authorId": "144843400",
+        "name": "Alexander Kirillov"
+      },
+      {
+        "authorId": "2134433",
+        "name": "Sergey Zagoruyko"
+      }
+    ],
+    "abstract": "We present a new method that views object detection as a direct set prediction problem. Our approach streamlines the detection pipeline, effectively removing the need for many hand-designed components like a non-maximum suppression procedure or anchor generation that explicitly encode our prior knowledge about the task. The main ingredients of the new framework, called DEtection TRansformer or DETR, are a set-based global loss that forces unique predictions via bipartite matching, and a transformer encoder-decoder architecture. Given a fixed small set of learned object queries, DETR reasons about the relations of the objects and the global image context to directly output the final set of predictions in parallel. The new model is conceptually simple and does not require a specialized library, unlike many other modern detectors. DETR demonstrates accuracy and run-time performance on par with the well-established and highly-optimized Faster RCNN baseline on the challenging COCO object detection dataset. Moreover, DETR can be easily generalized to produce panoptic segmentation in a unified manner. We show that it significantly outperforms competitive baselines. Training code and pretrained models are available at this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2709167f1c3a03fa5b970a665ea48ed243aab582",
+    "externalIds": {
+      "ArXiv": "2003.13678",
+      "DBLP": "conf/cvpr/RadosavovicKGHD20",
+      "MAG": "3016265891",
+      "DOI": "10.1109/cvpr42600.2020.01044",
+      "CorpusId": 214714446
+    },
+    "title": "Designing Network Design Spaces",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 2093,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2003.13678",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.13678, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "30407997",
+        "name": "Ilija Radosavovic"
+      },
+      {
+        "authorId": "26610238",
+        "name": "Raj Prateek Kosaraju"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      }
+    ],
+    "abstract": "In this work, we present a new network design paradigm. Our goal is to help advance the understanding of network design and discover design principles that generalize across settings. Instead of focusing on designing individual network instances, we design network design spaces that parametrize populations of networks. The overall process is analogous to classic manual design of networks, but elevated to the design space level. Using our methodology we explore the structure aspect of network design and arrive at a low-dimensional design space consisting of simple, regular networks that we call RegNet. The core insight of the RegNet parametrization is surprisingly simple: widths and depths of good networks can be explained by a quantized linear function. We analyze the RegNet design space and arrive at interesting findings that do not match the current practice of network design. The RegNet design space provides simple and fast networks that work well across a wide range of flop regimes. Under comparable training settings and flops, the RegNet models outperform the popular EfficientNet models while being up to 5x faster on GPUs.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "87f6a7c014ce206ac5b57299c07e10667d194b39",
+    "externalIds": {
+      "MAG": "3102631365",
+      "ArXiv": "1909.13719",
+      "DBLP": "conf/cvpr/CubukZSL20",
+      "DOI": "10.1109/CVPRW50498.2020.00359",
+      "CorpusId": 208006202
+    },
+    "title": "Randaugment: Practical automated data augmentation with a reduced search space",
+    "venue": "2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2019,
+    "citationCount": 4154,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1909.13719",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.13719, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8132903",
+        "name": "E. D. Cubuk"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Recent work on automated augmentation strategies has led to state-of-the-art results in image classification and object detection. An obstacle to a large-scale adoption of these methods is that they require a separate and expensive search phase. A common way to overcome the expense of the search phase was to use a smaller proxy task. However, it was not clear if the optimized hyperparameters found on the proxy task are also optimal for the actual task. In this work, we rethink the process of designing automated augmentation strategies. We find that while previous work required a search for both magnitude and probability of each operation independently, it is sufficient to only search for a single distortion magnitude that jointly controls all operations. We hence propose a simplified search space that vastly reduces the computational expense of automated augmentation, and permits the removal of a separate proxy task.Despite the simplifications, our method achieves equal or better performance over previous automated augmentation strategies on on CIFAR-10/100, SVHN, ImageNet and COCO datasets. EfficientNet-B7, we achieve 85.0% accuracy, a 1.0% increase over baseline augmentation, a 0.6% improvement over AutoAugment on the ImageNet dataset. With EfficientNet-B8, we achieve 85.4% accuracy on ImageNet, which matches a previous result that used 3.5B extra images. On object detection, the same method as classification leads to 1.0-1.3% improvement over baseline augmentation. Code will be made available online.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c2c083df88e88223e1a411e61040b94c233b1b63",
+    "externalIds": {
+      "MAG": "2950141105",
+      "DBLP": "journals/corr/abs-1906-07155",
+      "ArXiv": "1906.07155",
+      "CorpusId": 189927886
+    },
+    "title": "MMDetection: Open MMLab Detection Toolbox and Benchmark",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 3372,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.07155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152568027",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": null,
+        "name": "Jiaqi Wang"
+      },
+      {
+        "authorId": "49968574",
+        "name": "Jiangmiao Pang"
+      },
+      {
+        "authorId": "50206929",
+        "name": "Yuhang Cao"
+      },
+      {
+        "authorId": "2112718966",
+        "name": "Yu Xiong"
+      },
+      {
+        "authorId": "2108536754",
+        "name": "Xiaoxiao Li"
+      },
+      {
+        "authorId": "2115306116",
+        "name": "Shuyang Sun"
+      },
+      {
+        "authorId": "66165285",
+        "name": "Wansen Feng"
+      },
+      {
+        "authorId": "2117940996",
+        "name": "Ziwei Liu"
+      },
+      {
+        "authorId": "1690418794",
+        "name": "Jiarui Xu"
+      },
+      {
+        "authorId": "143644345",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "48573140",
+        "name": "Dazhi Cheng"
+      },
+      {
+        "authorId": "47894545",
+        "name": "Chenchen Zhu"
+      },
+      {
+        "authorId": "46806979",
+        "name": "Tianheng Cheng"
+      },
+      {
+        "authorId": "123227784",
+        "name": "Qijie Zhao"
+      },
+      {
+        "authorId": "40940627",
+        "name": "Buyu Li"
+      },
+      {
+        "authorId": "145574672",
+        "name": "Xin Lu"
+      },
+      {
+        "authorId": "2070269717",
+        "name": "Rui Zhu"
+      },
+      {
+        "authorId": "2119299240",
+        "name": "Yue Wu"
+      },
+      {
+        "authorId": "25096379",
+        "name": "KC Jimmy"
+      },
+      {
+        "authorId": "3304536",
+        "name": "Jifeng Dai"
+      },
+      {
+        "authorId": "1688516",
+        "name": "Jingdong Wang"
+      },
+      {
+        "authorId": "1788070",
+        "name": "Jianping Shi"
+      },
+      {
+        "authorId": "3001348",
+        "name": "Wanli Ouyang"
+      },
+      {
+        "authorId": "1717179",
+        "name": "Chen Change Loy"
+      },
+      {
+        "authorId": "1807606",
+        "name": "Dahua Lin"
+      }
+    ],
+    "abstract": "We present MMDetection, an object detection toolbox that contains a rich set of object detection and instance segmentation methods as well as related components and modules. The toolbox started from a codebase of MMDet team who won the detection track of COCO Challenge 2018. It gradually evolves into a unified platform that covers many popular detection methods and contemporary modules. It not only includes training and inference codes, but also provides weights for more than 200 network models. We believe this toolbox is by far the most complete detection toolbox. In this paper, we introduce the various features of this toolbox. In addition, we also conduct a benchmarking study on different methods, components, and their hyper-parameters. We wish that the toolbox and benchmark could serve the growing research community by providing a flexible toolkit to reimplement existing methods and develop their own new detectors. Code and models are available at this https URL. The project is under active development and we will keep this document updated.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d6dccb5d71fbb6f5765f89633ba3a8e6809a720d",
+    "externalIds": {
+      "MAG": "2970389371",
+      "DBLP": "conf/nips/ParmarRVBLS19",
+      "ArXiv": "1906.05909",
+      "CorpusId": 189897750
+    },
+    "title": "Stand-Alone Self-Attention in Vision Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 1348,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.05909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3377142",
+        "name": "Prajit Ramachandran"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "6639036",
+        "name": "Anselm Levskaya"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      }
+    ],
+    "abstract": "Convolutions are a fundamental building block of modern computer vision systems. Recent approaches have argued for going beyond convolutions in order to capture long-range dependencies. These efforts focus on augmenting convolutional models with content-based interactions, such as self-attention and non-local means, to achieve gains on a number of vision tasks. The natural question that arises is whether attention can be a stand-alone primitive for vision models instead of serving as just an augmentation on top of convolutions. In developing and testing a pure self-attention vision model, we verify that self-attention can indeed be an effective stand-alone layer. A simple procedure of replacing all instances of spatial convolutions with a form of self-attention applied to ResNet model produces a fully self-attentional model that outperforms the baseline on ImageNet classification with 12% fewer FLOPS and 29% fewer parameters. On COCO object detection, a pure self-attention model matches the mAP of a baseline RetinaNet while having 39% fewer FLOPS and 34% fewer parameters. Detailed ablation studies demonstrate that self-attention is especially impactful when used in later layers. These results establish that stand-alone self-attention is an important addition to the vision practitioner's toolbox.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ed17929e66da7f8fbc3666bf5eb613d302ddde0c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1905-04899",
+      "ArXiv": "1905.04899",
+      "MAG": "2992308087",
+      "DOI": "10.1109/ICCV.2019.00612",
+      "CorpusId": 152282661
+    },
+    "title": "CutMix: Regularization Strategy to Train Strong Classifiers With Localizable Features",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 5822,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1905.04899",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.04899, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2151587",
+        "name": "Sangdoo Yun"
+      },
+      {
+        "authorId": "2086576",
+        "name": "Dongyoon Han"
+      },
+      {
+        "authorId": "2390510",
+        "name": "Seong Joon Oh"
+      },
+      {
+        "authorId": "2647582",
+        "name": "Sanghyuk Chun"
+      },
+      {
+        "authorId": "3338475",
+        "name": "Junsuk Choe"
+      },
+      {
+        "authorId": "2347316",
+        "name": "Y. Yoo"
+      }
+    ],
+    "abstract": "Regional dropout strategies have been proposed to enhance performance of convolutional neural network classifiers. They have proved to be effective for guiding the model to attend on less discriminative parts of objects (e.g. leg as opposed to head of a person), thereby letting the network generalize better and have better object localization capabilities. On the other hand, current methods for regional dropout removes informative pixels on training images by overlaying a patch of either black pixels or random noise. Such removal is not desirable because it suffers from information loss causing inefficiency in training. We therefore propose the CutMix augmentation strategy: patches are cut and pasted among training images where the ground truth labels are also mixed proportionally to the area of the patches. By making efficient use of training pixels and retaining the regularization effect of regional dropout, CutMix consistently outperforms state-of-the-art augmentation strategies on CIFAR and ImageNet classification tasks, as well as on ImageNet weakly-supervised localization task. Moreover, unlike previous augmentation methods, our CutMix-trained ImageNet classifier, when used as a pretrained model, results in consistent performance gain in Pascal detection and MS-COCO image captioning benchmarks. We also show that CutMix can improve the model robustness against input corruptions and its out-of distribution detection performance.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "a84906dbd4d6640f918d0b6ed2a7313dda0d55f1",
+    "externalIds": {
+      "MAG": "2910628332",
+      "DBLP": "journals/corr/abs-1901-02446",
+      "ArXiv": "1901.02446",
+      "DOI": "10.1109/CVPR.2019.00656",
+      "CorpusId": 57721164
+    },
+    "title": "Panoptic Feature Pyramid Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 1485,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1901.02446",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.02446, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144843400",
+        "name": "Alexander Kirillov"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      }
+    ],
+    "abstract": "The recently introduced panoptic segmentation task has renewed our community's interest in unifying the tasks of instance segmentation (for thing classes) and semantic segmentation (for stuff classes). However, current state-of-the-art methods for this joint task use separate and dissimilar networks for instance and semantic segmentation, without performing any shared computation. In this work, we aim to unify these methods at the architectural level, designing a single network for both tasks. Our approach is to endow Mask R-CNN, a popular instance segmentation method, with a semantic segmentation branch using a shared Feature Pyramid Network (FPN) backbone. Surprisingly, this simple baseline not only remains effective for instance segmentation, but also yields a lightweight, top-performing method for semantic segmentation. In this work, we perform a detailed study of this minimally extended version of Mask R-CNN with FPN, which we refer to as Panoptic FPN, and show it is a robust and accurate baseline for both tasks. Given its effectiveness and conceptual simplicity, we hope our method can serve as a strong baseline and aid future research in panoptic segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b7339c1deeb617c894cc08c92ed8c2d4ab14b4b5",
+    "externalIds": {
+      "MAG": "2889614720",
+      "DBLP": "conf/nips/ChenKLYF18",
+      "ArXiv": "1810.11579",
+      "CorpusId": 53106274
+    },
+    "title": "A2-Nets: Double Attention Networks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 598,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.11579, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144861793",
+        "name": "Yunpeng Chen"
+      },
+      {
+        "authorId": "1944225",
+        "name": "Yannis Kalantidis"
+      },
+      {
+        "authorId": "2109020391",
+        "name": "Jianshu Li"
+      },
+      {
+        "authorId": "143653681",
+        "name": "Shuicheng Yan"
+      },
+      {
+        "authorId": "33221685",
+        "name": "Jiashi Feng"
+      }
+    ],
+    "abstract": "Learning to capture long-range relations is fundamental to image/video recognition. Existing CNN models generally rely on increasing depth to model such relations which is highly inefficient. In this work, we propose the \"double attention block\", a novel component that aggregates and propagates informative global features from the entire spatio-temporal space of input images/videos, enabling subsequent convolution layers to access features from the entire space efficiently. The component is designed with a double attention mechanism in two steps, where the first step gathers features from the entire space into a compact set through second-order attention pooling and the second step adaptively selects and distributes features to each location via another attention. The proposed double attention block is easy to adopt and can be plugged into existing deep neural networks conveniently. We conduct extensive ablation studies and experiments on both image and video recognition tasks for evaluating its performance. On the image recognition task, a ResNet-50 equipped with our double attention blocks outperforms a much larger ResNet-152 architecture on ImageNet-1k dataset with over 40% less the number of parameters and less FLOPs. On the action recognition task, our proposed model achieves the state-of-the-art results on the Kinetics and UCF-101 datasets with significantly higher efficiency than recent works.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d08b35243edc5be07387a9ed218070b31e502901",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1803-08494",
+      "ArXiv": "1803.08494",
+      "MAG": "2795783309",
+      "DOI": "10.1007/s11263-019-01198-w",
+      "CorpusId": 4076251
+    },
+    "title": "Group Normalization",
+    "venue": "International Journal of Computer Vision",
+    "year": 2018,
+    "citationCount": 4284,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.08494, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "98264506",
+        "name": "Yuxin Wu"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      }
+    ],
+    "abstract": "Batch Normalization (BN) is a milestone technique in the development of deep learning, enabling various networks to train. However, normalizing along the batch dimension introduces problems—BN’s error increases rapidly when the batch size becomes smaller, caused by inaccurate batch statistics estimation. This limits BN’s usage for training larger models and transferring features to computer vision tasks including detection, segmentation, and video, which require small batches constrained by memory consumption. In this paper, we present Group Normalization (GN) as a simple alternative to BN. GN divides the channels into groups and computes within each group the mean and variance for normalization. GN’s computation is independent of batch sizes, and its accuracy is stable in a wide range of batch sizes. On ResNet-50 trained in ImageNet, GN has 10.6% lower error than its BN counterpart when using a batch size of 2; when using typical batch sizes, GN is comparably good with BN and outperforms other normalization variants. Moreover, GN can be naturally transferred from pre-training to fine-tuning. GN can outperform its BN-based counterparts for object detection and segmentation in COCO (https://github.com/facebookresearch/Detectron/blob/master/projects/GN), and for video classification in Kinetics, showing that GN can effectively replace the powerful BN in a variety of tasks. GN can be easily implemented by a few lines of code in modern libraries.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d07284a6811f1b2745d91bdb06b040b57f226882",
+    "externalIds": {
+      "MAG": "2950541952",
+      "DBLP": "conf/iclr/LoshchilovH19",
+      "CorpusId": 53592270
+    },
+    "title": "Decoupled Weight Decay Regularization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 33038,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "4feef0fd284feb1233399b400eb897f59ec92755",
+    "externalIds": {
+      "MAG": "2765407302",
+      "DBLP": "journals/corr/abs-1710-09412",
+      "ArXiv": "1710.09412",
+      "CorpusId": 3162051
+    },
+    "title": "mixup: Beyond Empirical Risk Minimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 11599,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.09412, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108880169",
+        "name": "Hongyi Zhang"
+      },
+      {
+        "authorId": "5723508",
+        "name": "Moustapha Cissé"
+      },
+      {
+        "authorId": "2921469",
+        "name": "Yann Dauphin"
+      },
+      {
+        "authorId": "1401804750",
+        "name": "David Lopez-Paz"
+      }
+    ],
+    "abstract": "Large deep neural networks are powerful, but exhibit undesirable behaviors such as memorization and sensitivity to adversarial examples. In this work, we propose mixup, a simple learning principle to alleviate these issues. In essence, mixup trains a neural network on convex combinations of pairs of examples and their labels. By doing so, mixup regularizes the neural network to favor simple linear behavior in-between training examples. Our experiments on the ImageNet-2012, CIFAR-10, CIFAR-100, Google commands and UCI datasets show that mixup improves the generalization of state-of-the-art neural network architectures. We also find that mixup reduces the memorization of corrupt labels, increases the robustness to adversarial examples, and stabilizes the training of generative adversarial networks.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2788a2461ed0067e2f7aaa63c449a24a237ec341",
+    "externalIds": {
+      "MAG": "2747685395",
+      "DBLP": "journals/corr/abs-1708-04896",
+      "ArXiv": "1708.04896",
+      "DOI": "10.1609/AAAI.V34I07.7000",
+      "CorpusId": 2035600
+    },
+    "title": "Random Erasing Data Augmentation",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2017,
+    "citationCount": 4122,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/7000/6854",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1708.04896, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2069512103",
+        "name": "Zhun Zhong"
+      },
+      {
+        "authorId": "144802394",
+        "name": "Liang Zheng"
+      },
+      {
+        "authorId": "3374337",
+        "name": "Guoliang Kang"
+      },
+      {
+        "authorId": "8086812",
+        "name": "Shaozi Li"
+      },
+      {
+        "authorId": "7179962",
+        "name": "Yi Yang"
+      }
+    ],
+    "abstract": "In this paper, we introduce Random Erasing, a new data augmentation method for training the convolutional neural network (CNN). In training, Random Erasing randomly selects a rectangle region in an image and erases its pixels with random values. In this process, training images with various levels of occlusion are generated, which reduces the risk of over-fitting and makes the model robust to occlusion. Random Erasing is parameter learning free, easy to implement, and can be integrated with most of the CNN-based recognition models. Albeit simple, Random Erasing is complementary to commonly used data augmentation techniques such as random cropping and flipping, and yields consistent improvement over strong baselines in image classification, object detection and person re-identification. Code is available at: https://github.com/zhunzhong07/Random-Erasing.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "79cfb51a51fc093f66aac8e858afe2e14d4a1f20",
+    "externalIds": {
+      "MAG": "2950100464",
+      "DBLP": "journals/corr/abs-1708-02002",
+      "DOI": "10.1109/ICCV.2017.324",
+      "CorpusId": 47252984
+    },
+    "title": "Focal Loss for Dense Object Detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 30995,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1708.02002",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2017.324?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2017.324, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "47316088",
+        "name": "Priya Goyal"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2a5667702b0f1ff77dde8fb3e2e10d4e05e8de9d",
+    "externalIds": {
+      "MAG": "2737258237",
+      "DBLP": "conf/cvpr/ZhouZPFB017",
+      "DOI": "10.1109/CVPR.2017.544",
+      "CorpusId": 5636055
+    },
+    "title": "Scene Parsing through ADE20K Dataset",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 3781,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2017.544?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2017.544, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "47940821",
+        "name": "Hang Zhao"
+      },
+      {
+        "authorId": "143872936",
+        "name": "Xavier Puig"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      },
+      {
+        "authorId": "2063937685",
+        "name": "Adela Barriuso"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174052,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1a0912bb76777469295bb2c059faee907e7f3258",
+    "externalIds": {
+      "ArXiv": "1703.06870",
+      "CorpusId": 54465873
+    },
+    "title": "Mask R-CNN",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 31572,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.06870, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2082991",
+        "name": "Georgia Gkioxari"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We present a conceptually simple, flexible, and general framework for object instance segmentation. Our approach efficiently detects objects in an image while simultaneously generating a high-quality segmentation mask for each instance. The method, called Mask R-CNN, extends Faster R-CNN by adding a branch for predicting an object mask in parallel with the existing branch for bounding box recognition. Mask R-CNN is simple to train and adds only a small overhead to Faster R-CNN, running at 5 fps. Moreover, Mask R-CNN is easy to generalize to other tasks, e.g., allowing us to estimate human poses in the same framework. We show top results in all three tracks of the COCO suite of challenges, including instance segmentation, bounding-box object detection, and person keypoint detection. Without tricks, Mask R-CNN outperforms all existing, single-model entries on every task, including the COCO 2016 challenge winners. We hope our simple and effective approach will serve as a solid baseline and help ease future research in instance-level recognition. Code will be made available.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b587ee7c802a5bd222a69090f59285e0dfdb29f1",
+    "externalIds": {
+      "MAG": "2962834855",
+      "ArXiv": "1702.03118",
+      "DBLP": "journals/corr/ElfwingUD17",
+      "DOI": "10.1016/j.neunet.2017.12.012",
+      "CorpusId": 6940861,
+      "PubMed": "29395652"
+    },
+    "title": "Sigmoid-Weighted Linear Units for Neural Network Function Approximation in Reinforcement Learning",
+    "venue": "Neural Networks",
+    "year": 2017,
+    "citationCount": 2433,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.neunet.2017.12.012",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.03118, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2169762",
+        "name": "Stefan Elfwing"
+      },
+      {
+        "authorId": "1773761",
+        "name": "E. Uchibe"
+      },
+      {
+        "authorId": "1714997",
+        "name": "K. Doya"
+      }
+    ],
+    "abstract": "In recent years, neural networks have enjoyed a renaissance as function approximators in reinforcement learning. Two decades after Tesauro's TD-Gammon achieved near top-level human performance in backgammon, the deep reinforcement learning algorithm DQN achieved human-level performance in many Atari 2600 games. The purpose of this study is twofold. First, we propose two activation functions for neural network function approximation in reinforcement learning: the sigmoid-weighted linear unit (SiLU) and its derivative function (dSiLU). The activation of the SiLU is computed by the sigmoid function multiplied by its input. Second, we suggest that the more traditional approach of using on-policy learning with eligibility traces, instead of experience replay, and softmax action selection can be competitive with DQN, without the need for a separate target network. We validate our proposed approach by, first, achieving new state-of-the-art results in both stochastic SZ-Tetris and Tetris with a small 10 × 10 board, using TD(λ) learning and shallow dSiLU network agents, and, then, by outperforming DQN in the Atari 2600 domain by using a deep Sarsa(λ) agent with SiLU and dSiLU hidden units.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f6e0856b4a9199fa968ac00da612a9407b5cb85c",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XieGDTH17",
+      "MAG": "2953328958",
+      "ArXiv": "1611.05431",
+      "DOI": "10.1109/CVPR.2017.634",
+      "CorpusId": 8485068
+    },
+    "title": "Aggregated Residual Transformations for Deep Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 11565,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1611.05431",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.05431, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "144035504",
+        "name": "Z. Tu"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      }
+    ],
+    "abstract": "We present a simple, highly modularized network architecture for image classification. Our network is constructed by repeating a building block that aggregates a set of transformations with the same topology. Our simple design results in a homogeneous, multi-branch architecture that has only a few hyper-parameters to set. This strategy exposes a new dimension, which we call cardinality (the size of the set of transformations), as an essential factor in addition to the dimensions of depth and width. On the ImageNet-1K dataset, we empirically show that even under the restricted condition of maintaining complexity, increasing cardinality is able to improve classification accuracy. Moreover, increasing cardinality is more effective than going deeper or wider when we increase the capacity. Our models, named ResNeXt, are the foundations of our entry to the ILSVRC 2016 classification task in which we secured 2nd place. We further investigate ResNeXt on an ImageNet-5K set and the COCO detection set, also showing better results than its ResNet counterpart. The code and models are publicly available online.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "5582bebed97947a41e3ddd9bd1f284b73f1648c2",
+    "externalIds": {
+      "MAG": "2962858109",
+      "DBLP": "conf/iccv/SelvarajuCDVPB17",
+      "ArXiv": "1610.02391",
+      "DOI": "10.1007/s11263-019-01228-7",
+      "CorpusId": 15019293
+    },
+    "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization",
+    "venue": "International Journal of Computer Vision",
+    "year": 2016,
+    "citationCount": 26169,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1610.02391",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.02391, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35100058",
+        "name": "Ramprasaath R. Selvaraju"
+      },
+      {
+        "authorId": "2313517",
+        "name": "Abhishek Das"
+      },
+      {
+        "authorId": "8137017",
+        "name": "Ramakrishna Vedantam"
+      },
+      {
+        "authorId": "144354133",
+        "name": "Michael Cogswell"
+      },
+      {
+        "authorId": "153432684",
+        "name": "Devi Parikh"
+      },
+      {
+        "authorId": "1746610",
+        "name": "Dhruv Batra"
+      }
+    ],
+    "abstract": "We propose a technique for producing ‘visual explanations’ for decisions from a large class of Convolutional Neural Network (CNN)-based models, making them more transparent and explainable. Our approach—Gradient-weighted Class Activation Mapping (Grad-CAM), uses the gradients of any target concept (say ‘dog’ in a classification network or a sequence of words in captioning network) flowing into the final convolutional layer to produce a coarse localization map highlighting the important regions in the image for predicting the concept. Unlike previous approaches, Grad-CAM is applicable to a wide variety of CNN model-families: (1) CNNs with fully-connected layers (e.g.VGG), (2) CNNs used for structured outputs (e.g.captioning), (3) CNNs used in tasks with multi-modal inputs (e.g.visual question answering) or reinforcement learning, all without architectural changes or re-training. We combine Grad-CAM with existing fine-grained visualizations to create a high-resolution class-discriminative visualization, Guided Grad-CAM, and apply it to image classification, image captioning, and visual question answering (VQA) models, including ResNet-based architectures. In the context of image classification models, our visualizations (a) lend insights into failure modes of these models (showing that seemingly unreasonable predictions have reasonable explanations), (b) outperform previous methods on the ILSVRC-15 weakly-supervised localization task, (c) are robust to adversarial perturbations, (d) are more faithful to the underlying model, and (e) help achieve model generalization by identifying dataset bias. For image captioning and VQA, our visualizations show that even non-attention based models learn to localize discriminative regions of input image. We devise a way to identify important neurons through Grad-CAM and combine it with neuron names (Bau et al. in Computer vision and pattern recognition, 2017) to provide textual explanations for model decisions. Finally, we design and conduct human studies to measure if Grad-CAM explanations help users establish appropriate trust in predictions from deep networks and show that Grad-CAM helps untrained users successfully discern a ‘stronger’ deep network from a ‘weaker’ one even when both make identical predictions. Our code is available at https://github.com/ramprs/grad-cam/, along with a demo on CloudCV (Agrawal et al., in: Mobile cloud visual media computing, pp 265–290. Springer, 2015) (http://gradcam.cloudcv.org) and a video at http://youtu.be/COjUB9Izk6E.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5b6ec746d309b165f9f9def873a2375b6fb40f3d",
+    "externalIds": {
+      "MAG": "2531409750",
+      "DBLP": "conf/cvpr/Chollet17",
+      "ArXiv": "1610.02357",
+      "DOI": "10.1109/CVPR.2017.195",
+      "CorpusId": 2375110
+    },
+    "title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 17471,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1610.02357",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.02357, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1565641737",
+        "name": "François Chollet"
+      }
+    ],
+    "abstract": "We present an interpretation of Inception modules in convolutional neural networks as being an intermediate step in-between regular convolution and the depthwise separable convolution operation (a depthwise convolution followed by a pointwise convolution). In this light, a depthwise separable convolution can be understood as an Inception module with a maximally large number of towers. This observation leads us to propose a novel deep convolutional neural network architecture inspired by Inception, where Inception modules have been replaced with depthwise separable convolutions. We show that this architecture, dubbed Xception, slightly outperforms Inception V3 on the ImageNet dataset (which Inception V3 was designed for), and significantly outperforms Inception V3 on a larger image classification dataset comprising 350 million images and 17,000 classes. Since the Xception architecture has the same number of parameters as Inception V3, the performance gains are not due to increased capacity but rather to a more efficient use of model parameters.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "97fb4e3d45bb098e27e0071448b6152217bd35a5",
+    "externalIds": {
+      "MAG": "3037932933",
+      "ArXiv": "1607.06450",
+      "DBLP": "journals/corr/BaKH16",
+      "CorpusId": 8236317
+    },
+    "title": "Layer Normalization",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 12344,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1607.06450, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      },
+      {
+        "authorId": "51131802",
+        "name": "J. Kiros"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "Training state-of-the-art, deep neural networks is computationally expensive. One way to reduce the training time is to normalize the activities of the neurons. A recently introduced technique called batch normalization uses the distribution of the summed input to a neuron over a mini-batch of training cases to compute a mean and variance which are then used to normalize the summed input to that neuron on each training case. This significantly reduces the training time in feed-forward neural networks. However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks. In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case. Like batch normalization, we also give each neuron its own adaptive bias and gain which are applied after the normalization but before the non-linearity. Unlike batch normalization, layer normalization performs exactly the same computation at training and test times. It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step. Layer normalization is very effective at stabilizing the hidden state dynamics in recurrent networks. Empirically, we show that layer normalization can substantially reduce the training time compared with previously published techniques.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "de5e7320729f5d3cbb6709eb6329ec41ace8c95d",
+    "externalIds": {
+      "ArXiv": "1606.08415",
+      "MAG": "2899663614",
+      "CorpusId": 125617073
+    },
+    "title": "Gaussian Error Linear Units (GELUs)",
+    "venue": "",
+    "year": 2016,
+    "citationCount": 6645,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.08415, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "1700980",
+        "name": "Kevin Gimpel"
+      }
+    ],
+    "abstract": "We propose the Gaussian Error Linear Unit (GELU), a high-performing neural network activation function. The GELU activation function is $x\\Phi(x)$, where $\\Phi(x)$ the standard Gaussian cumulative distribution function. The GELU nonlinearity weights inputs by their value, rather than gates inputs by their sign as in ReLUs ($x\\mathbf{1}_{x>0}$). We perform an empirical evaluation of the GELU nonlinearity against the ReLU and ELU activations and find performance improvements across all considered computer vision, natural language processing, and speech tasks.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cab372bc3824780cce20d9dd1c22d4df39ed081a",
+    "externalIds": {
+      "ArXiv": "1606.00915",
+      "MAG": "2952865063",
+      "DBLP": "journals/pami/ChenPKMY18",
+      "DOI": "10.1109/TPAMI.2017.2699184",
+      "CorpusId": 3429309,
+      "PubMed": "28463186"
+    },
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 20749,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1606.00915",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.00915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7 percent mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "51db1f3c8dfc7d4077da39c96bb90a6358128111",
+    "externalIds": {
+      "ArXiv": "1603.09382",
+      "DBLP": "conf/eccv/HuangSLSW16",
+      "MAG": "2949892913",
+      "DOI": "10.1007/978-3-319-46493-0_39",
+      "CorpusId": 6773885
+    },
+    "title": "Deep Networks with Stochastic Depth",
+    "venue": "European Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 2631,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1603.09382, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143983679",
+        "name": "Gao Huang"
+      },
+      {
+        "authorId": "2117103358",
+        "name": "Yu Sun"
+      },
+      {
+        "authorId": "2109168016",
+        "name": "Zhuang Liu"
+      },
+      {
+        "authorId": "3371029",
+        "name": "Daniel Sedra"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      }
+    ],
+    "abstract": "Very deep convolutional networks with hundreds of layers have led to significant reductions in error on competitive benchmarks. Although the unmatched expressiveness of the many layers can be highly desirable at test time, training very deep networks comes with its own set of challenges. The gradients can vanish, the forward flow often diminishes, and the training time can be painfully slow. To address these problems, we propose stochastic depth, a training procedure that enables the seemingly contradictory setup to train short networks and use deep networks at test time. We start with very deep networks but during training, for each mini-batch, randomly drop a subset of layers and bypass them with the identity function. This simple approach complements the recent success of residual networks. It reduces training time substantially and improves the test error significantly on almost all data sets that we used for evaluation. With stochastic depth we can increase the depth of residual networks even beyond 1200 layers and still yield meaningful improvements in test error (4.91 % on CIFAR-10).",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226101,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "23ffaa0fe06eae05817f527a47ac3291077f9e58",
+    "externalIds": {
+      "MAG": "2183341477",
+      "DBLP": "conf/cvpr/SzegedyVISW16",
+      "ArXiv": "1512.00567",
+      "DOI": "10.1109/CVPR.2016.308",
+      "CorpusId": 206593880
+    },
+    "title": "Rethinking the Inception Architecture for Computer Vision",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 30685,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1512.00567",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.00567, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "3282833",
+        "name": "Z. Wojna"
+      }
+    ],
+    "abstract": "Convolutional networks are at the core of most state of-the-art computer vision solutions for a wide variety of tasks. Since 2014 very deep convolutional networks started to become mainstream, yielding substantial gains in various benchmarks. Although increased model size and computational cost tend to translate to immediate quality gains for most tasks (as long as enough labeled data is provided for training), computational efficiency and low parameter count are still enabling factors for various use cases such as mobile vision and big-data scenarios. Here we are exploring ways to scale up networks in ways that aim at utilizing the added computation as efficiently as possible by suitably factorized convolutions and aggressive regularization. We benchmark our methods on the ILSVRC 2012 classification challenge validation set demonstrate substantial gains over the state of the art: 21:2% top-1 and 5:6% top-5 error for single frame evaluation using a network with a computational cost of 5 billion multiply-adds per inference and with using less than 25 million parameters. With an ensemble of 4 models and multi-crop evaluation, we report 3:5% top-5 error and 17:3% top-1 error on the validation set and 3:6% top-5 error on the official test set.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "995c5f5e62614fcb4d2796ad2faab969da51713e",
+    "externalIds": {
+      "MAG": "1836465849",
+      "ArXiv": "1502.03167",
+      "DBLP": "conf/icml/IoffeS15",
+      "CorpusId": 5808102
+    },
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 46486,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03167, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      }
+    ],
+    "abstract": "Training Deep Neural Networks is complicated by the fact that the distribution of each layer's inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities. We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs. Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization, and in some cases eliminates the need for Dropout. Applied to a state-of-the-art image classification model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a significant margin. Using an ensemble of batch-normalized networks, we improve upon the best published result on ImageNet classification: reaching 4.82% top-5 test error, exceeding the accuracy of human raters.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "externalIds": {
+      "MAG": "2964121744",
+      "DBLP": "journals/corr/KingmaB14",
+      "ArXiv": "1412.6980",
+      "CorpusId": 6628106
+    },
+    "title": "Adam: A Method for Stochastic Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 165295,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "eb42cf88027de515750f230b23b1a057dc782108",
+    "externalIds": {
+      "MAG": "2949429431",
+      "ArXiv": "1409.1556",
+      "DBLP": "journals/corr/SimonyanZ14a",
+      "CorpusId": 14124313
+    },
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 110767,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.1556, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "In this work we investigate the effect of the convolutional network depth on its accuracy in the large-scale image recognition setting. Our main contribution is a thorough evaluation of networks of increasing depth using an architecture with very small (3x3) convolution filters, which shows that a significant improvement on the prior-art configurations can be achieved by pushing the depth to 16-19 weight layers. These findings were the basis of our ImageNet Challenge 2014 submission, where our team secured the first and the second places in the localisation and classification tracks respectively. We also show that our representations generalise well to other datasets, where they achieve state-of-the-art results. We have made our two best-performing ConvNet models publicly available to facilitate further research on the use of deep visual representations in computer vision.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "71b7178df5d2b112d07e45038cb5637208659ff7",
+    "externalIds": {
+      "ArXiv": "1405.0312",
+      "DBLP": "conf/eccv/LinMBHPRDZ14",
+      "MAG": "2952122856",
+      "DOI": "10.1007/978-3-319-10602-1_48",
+      "CorpusId": 14113767
+    },
+    "title": "Microsoft COCO: Common Objects in Context",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 52004,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2F978-3-319-10602-1_48.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1405.0312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "48966748",
+        "name": "James Hays"
+      },
+      {
+        "authorId": "1690922",
+        "name": "P. Perona"
+      },
+      {
+        "authorId": "1770537",
+        "name": "Deva Ramanan"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "1699161",
+        "name": "C. L. Zitnick"
+      }
+    ],
+    "abstract": "We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "abd1c342495432171beb7ca8fd9551ef13cbd0ff",
+    "externalIds": {
+      "DBLP": "conf/nips/KrizhevskySH12",
+      "MAG": "2618530766",
+      "DOI": "10.1145/3065386",
+      "CorpusId": 195908774
+    },
+    "title": "ImageNet classification with deep convolutional neural networks",
+    "venue": "Communications of the ACM",
+    "year": 2012,
+    "citationCount": 128378,
+    "openAccessPdf": {
+      "url": "http://dl.acm.org/ft_gateway.cfm?id=3065386&type=pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3065386?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3065386, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "4dbc68cf2e14155edb6da0def30661aca8c96c22",
+    "externalIds": {
+      "DBLP": "conf/icann/MamaletG12",
+      "MAG": "77200240",
+      "DOI": "10.1007/978-3-642-33266-1_8",
+      "CorpusId": 17018486
+    },
+    "title": "Simplifying ConvNets for Fast Learning",
+    "venue": "International Conference on Artificial Neural Networks",
+    "year": 2012,
+    "citationCount": 143,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-33266-1_8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-33266-1_8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2408697",
+        "name": "Franck Mamalet"
+      },
+      {
+        "authorId": "144723337",
+        "name": "Christophe Garcia"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "a538b05ebb01a40323997629e171c91aa28b8e2f",
+    "externalIds": {
+      "MAG": "1665214252",
+      "DBLP": "conf/icml/NairH10",
+      "CorpusId": 15539264
+    },
+    "title": "Rectified Linear Units Improve Restricted Boltzmann Machines",
+    "venue": "International Conference on Machine Learning",
+    "year": 2010,
+    "citationCount": 18605,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2073603971",
+        "name": "Vinod Nair"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ea9d2a2b4ce11aaf85136840c65f3bc9c03ab649",
+    "externalIds": {
+      "MAG": "2606251538",
+      "DBLP": "journals/jmlr/GlorotB10",
+      "CorpusId": 5575601
+    },
+    "title": "Understanding the difficulty of training deep feedforward neural networks",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2010,
+    "citationCount": 19112,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3119801",
+        "name": "Xavier Glorot"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DengDSLL009",
+      "MAG": "2108598243",
+      "DOI": "10.1109/CVPR.2009.5206848",
+      "CorpusId": 57246310
+    },
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2009,
+    "citationCount": 72462,
+    "openAccessPdf": {
+      "url": "http://www.image-net.org/papers/imagenet_cvpr09.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2009.5206848?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2009.5206848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144847596",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "94451829",
+        "name": "K. Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "319f22bd5abfd67ac15988aa5c7f705f018c3ccd",
+    "externalIds": {
+      "MAG": "2154642048",
+      "DOI": "10.1016/B978-1-4832-1446-7.50035-2",
+      "CorpusId": 62245742
+    },
+    "title": "Learning internal representations by error propagation",
+    "venue": "",
+    "year": 1986,
+    "citationCount": 21215,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/B978-1-4832-1446-7.50035-2?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/B978-1-4832-1446-7.50035-2, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2681887",
+        "name": "D. Rumelhart"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "2116648700",
+        "name": "Ronald J. Williams"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9b486c647916df9f8be0f8d4fc5c94c493bfaa80",
+    "externalIds": {
+      "MAG": "2008353316",
+      "DOI": "10.2307/1419730",
+      "CorpusId": 62710001
+    },
+    "title": "PRINCIPLES OF NEURODYNAMICS. PERCEPTRONS AND THE THEORY OF BRAIN MECHANISMS",
+    "venue": "",
+    "year": 1963,
+    "citationCount": 2583,
+    "openAccessPdf": {
+      "url": "http://hdl.handle.net/2027/mdp.39015039846566",
+      "status": "GREEN",
+      "license": "public-domain",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2307/1419730?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2307/1419730, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51083130",
+        "name": "F. Rosenblatt"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c8b25fab5608c3e033d34b4483ec47e68ba109b7",
+    "externalIds": {
+      "DBLP": "conf/iccv/LiuL00W0LG21",
+      "ArXiv": "2103.14030",
+      "DOI": "10.1109/ICCV48922.2021.00986",
+      "CorpusId": 232352874
+    },
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 31374,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2103.14030",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.14030, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109371439",
+        "name": "Ze Liu"
+      },
+      {
+        "authorId": "51091819",
+        "name": "Yutong Lin"
+      },
+      {
+        "authorId": "2112823372",
+        "name": "Yue Cao"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2107995927",
+        "name": "Yixuan Wei"
+      },
+      {
+        "authorId": "2148904543",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "145676588",
+        "name": "Stephen Lin"
+      },
+      {
+        "authorId": "2261753424",
+        "name": "B. Guo"
+      }
+    ],
+    "abstract": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection. This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size. These qualities of Swin Transformer make it compatible with a broad range of vision tasks, including image classification (87.3 top-1 accuracy on ImageNet-1K) and dense prediction tasks such as object detection (58.7 box AP and 51.1 mask AP on COCO test-dev) and semantic segmentation (53.5 mIoU on ADE20K val). Its performance surpasses the previous state-of-the-art by a large margin of +2.7 box AP and +2.6 mask AP on COCO, and +3.2 mIoU on ADE20K, demonstrating the potential of Transformer-based models as vision backbones. The hierarchical design and the shifted window approach also prove beneficial for all-MLP architectures. The code and models are publicly available at https://github.com/microsoft/Swin-Transformer.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+    "externalIds": {
+      "MAG": "2951055169",
+      "ACL": "N19-1423",
+      "DBLP": "journals/corr/abs-1810-04805",
+      "ArXiv": "1810.04805",
+      "DOI": "10.18653/v1/N19-1423",
+      "CorpusId": 52967399
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 113527,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.04805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "cccc0a4817fd5f6d8758c66b4065a23897d49f1d",
+    "externalIds": {
+      "MAG": "2322002063",
+      "DOI": "10.2307/2312103",
+      "CorpusId": 61566132
+    },
+    "title": "Principles of neurodynamics",
+    "venue": "",
+    "year": 1962,
+    "citationCount": 2519,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2307/2312103?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2307/2312103, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49637194",
+        "name": "A. Mullin"
+      },
+      {
+        "authorId": "51083130",
+        "name": "F. Rosenblatt"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

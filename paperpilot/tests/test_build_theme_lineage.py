@@ -1044,9 +1044,14 @@ def test_build_theme_lineage_makes_zero_classify_calls(tmp_path, monkeypatch):
         )
 
     payload = json.loads(out_path.read_text())
-    rels = sorted(e["rel"] for e in payload["edges"])
-    assert rels == ["baseline_only", "extends"], (
-        f"expected intent-derived edges, got: {payload['edges']}"
+    rels = sorted({e["rel"] for e in payload["edges"]})
+    # The BFS-derived edges (p1→seed methodology, p2→seed background) must
+    # both be present; cross-node may add more edges between p1/p2 since
+    # the test's fetch_related stub returns [p1, p2] for any caller. We
+    # care that the intent-derived relations are picked up correctly, not
+    # the exact count.
+    assert "extends" in rels and "baseline_only" in rels, (
+        f"expected at least extends + baseline_only from intents, got: {rels}"
     )
     # The acceptance criteria: NO LLM calls fired during the build.
     assert provider.chat_calls == [], (
@@ -1055,4 +1060,170 @@ def test_build_theme_lineage_makes_zero_classify_calls(tmp_path, monkeypatch):
     )
     assert provider.classify_calls == [], (
         f"expected zero classify_relation calls, got {len(provider.classify_calls)}"
+    )
+
+
+# ---- Cross-node edges (#54) -------------------------------------------------
+
+
+def test_build_adds_cross_node_edges(tmp_path: Path, monkeypatch):
+    """Issue #54: when two nodes already in the graph cite each other,
+    the cross-node pass must add an edge that BFS missed.
+
+    Setup: 2 seeds (s1, s2) where s1 cites s2 (s2 is in s1's references).
+    BFS produces (s2_parent → s2) but never (s2 → s1). Cross-node should
+    detect the in-graph citation and add it.
+    """
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+
+    s1 = _mk_s2_paper("seed1", title="Newer paper", year=2023)
+    s2 = _mk_s2_paper("seed2", title="Older paper", year=2020)
+    p_for_s2 = {
+        **_mk_s2_paper("p_s2", year=2018),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+    # The cross-node-only edge: s1 cites s2 → after collection, derive
+    # an edge from s2 (parent) → s1 (child). _intents must be set so
+    # derive_relation produces a relation.
+    s2_in_s1_refs = {
+        **_mk_s2_paper("seed2", title="Older paper", year=2020),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+
+    def fake_fetch_related(paper_id, kind, limit):
+        if kind != "references":
+            return []
+        if paper_id == "seed1":
+            # During the cross-node pass: seed1's refs include seed2.
+            return [s2_in_s1_refs]
+        if paper_id == "seed2":
+            # During BFS: seed2's parents.
+            return [p_for_s2]
+        return []
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([s1, s2]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            side_effect=fake_fetch_related,
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=2, width=4, since_year=None
+        )
+    payload = json.loads(out_path.read_text())
+    edge_pairs = {(e["src"], e["dst"]) for e in payload["edges"]}
+    # BFS edge: p_s2 → seed2 (parent of seed2)
+    assert ("p_s2", "seed2") in edge_pairs
+    # Cross-node edge: seed2 → seed1 (because seed1 cites seed2)
+    assert ("seed2", "seed1") in edge_pairs, (
+        f"cross-node should add seed2→seed1, got: {edge_pairs}"
+    )
+
+
+def test_build_cross_node_does_not_duplicate_existing_edges(
+    tmp_path: Path, monkeypatch
+):
+    """If BFS already produced (parent → seed), the cross-node pass must
+    NOT add a duplicate when the same parent shows up in references."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2023)
+    parent = {
+        **_mk_s2_paper("parent", year=2018),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+
+    def fake_fetch_related(paper_id, kind, limit):
+        if kind != "references":
+            return []
+        # Both seed (BFS) and parent (cross-node pass) have refs that lead
+        # to the same parent node.
+        if paper_id == "seed":
+            return [parent]
+        if paper_id == "parent":
+            return []
+        return []
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            side_effect=fake_fetch_related,
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=1, width=4, since_year=None
+        )
+    payload = json.loads(out_path.read_text())
+    pairs = [(e["src"], e["dst"]) for e in payload["edges"]]
+    assert pairs.count(("parent", "seed")) == 1, (
+        f"expected exactly one parent→seed edge, got: {pairs}"
+    )
+
+
+def test_build_cross_node_skips_non_influential_in_graph_refs(
+    tmp_path: Path, monkeypatch
+):
+    """isInfluential=False refs in the cross-node pass must be dropped
+    just like in BFS — derive_relation returns None for them."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    s1 = _mk_s2_paper("seed1", year=2023)
+    s2 = _mk_s2_paper("seed2", year=2020)
+
+    # s1 → s2 cite, but flagged non-influential. Cross-node must skip.
+    s2_as_ref = {
+        **_mk_s2_paper("seed2", year=2020),
+        "_is_influential": False,
+        "_intents": ["background"],
+    }
+
+    def fake_fetch_related(paper_id, kind, limit):
+        if paper_id == "seed1" and kind == "references":
+            return [s2_as_ref]
+        return []
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([s1, s2]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            side_effect=fake_fetch_related,
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=2, width=4, since_year=None
+        )
+    payload = json.loads(out_path.read_text())
+    edge_pairs = {(e["src"], e["dst"]) for e in payload["edges"]}
+    assert ("seed2", "seed1") not in edge_pairs, (
+        "non-influential cross-node ref must not produce an edge"
     )

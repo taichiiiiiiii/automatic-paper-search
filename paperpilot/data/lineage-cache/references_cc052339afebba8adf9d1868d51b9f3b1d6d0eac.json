@@ -1,0 +1,3740 @@
+[
+  {
+    "paperId": "6d9f24b36291e2a8f9869754c787b06767c7a8c7",
+    "externalIds": {
+      "DBLP": "conf/iccv/XieXLY021",
+      "DOI": "10.1109/ICCV48922.2021.00720",
+      "CorpusId": 244045248
+    },
+    "title": "Few-Shot Semantic Segmentation with Cyclic Memory Network",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 70,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV48922.2021.00720?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV48922.2021.00720, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3057896",
+        "name": "Guosen Xie"
+      },
+      {
+        "authorId": "2054473409",
+        "name": "Huan Xiong"
+      },
+      {
+        "authorId": "2146651410",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2436931",
+        "name": "Yazhou Yao"
+      },
+      {
+        "authorId": "144951205",
+        "name": "Ling Shao"
+      },
+      {
+        "authorId": "2390982913",
+        "name": "Mohamed bin Zayed"
+      }
+    ],
+    "abstract": "Few-shot semantic segmentation (FSS) is an important task for novel (unseen) object segmentation under the data-scarcity scenario. However, most FSS methods rely on unidirectional feature aggregation, e.g., from support prototypes to get the query prediction, and from high-resolution features to guide the low-resolution ones. This usually fails to fully capture the cross-resolution feature relationships and thus leads to inaccurate estimates of the query objects. To resolve the above dilemma, we propose a cyclic memory network (CMN) to directly learn to read abundant support information from all resolution features in a cyclic manner. Specifically, we first generate N pairs (key and value) of multi-resolution query features guided by the support feature and its mask. Next, we circularly take one pair of these features as the query to be segmented, and the rest N-1 pairs are written into an external memory accordingly, i.e., this leave-one-out process is conducted for N times. In each cycle, the query feature is updated by collaboratively matching its key and value with the memory, which can elegantly cover all the spatial locations from different resolutions. Furthermore, we incorporate the query feature re-adding and the query feature recursive updating mechanisms into the memory reading operation. CMN, equipped with these merits, can thus capture cross-resolution relationships and better handle the object appearance and scale variations in FSS. Experiments on PASCAL-5i and COCO-20i well validate the effectiveness of our model for FSS.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "52633e4bf5951950e5b71810c3127d2b1b0054d2",
+    "externalIds": {
+      "DBLP": "conf/iccv/ZhangD21",
+      "DOI": "10.1109/ICCV48922.2021.00689",
+      "CorpusId": 244102343
+    },
+    "title": "Prototypical Matching and Open Set Rejection for Zero-Shot Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 85,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV48922.2021.00689?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV48922.2021.00689, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153730466",
+        "name": "Hui Zhang"
+      },
+      {
+        "authorId": "49441320",
+        "name": "Henghui Ding"
+      }
+    ],
+    "abstract": "The DCNN methods in addressing semantic segmentation demand vast amount of pixel-wise annotated training samples. In this work, we present zero-shot semantic segmentation, which aims to identify not only the seen classes contained in training but also the novel classes that have never been seen. We adopt a stringent inductive setting in which only the instances of seen classes are accessible during training. We propose an open-aware prototypical matching approach to accomplish the segmentation. The prototypical way extracts the visual representations by a set of prototypes, making it convenient and flexible to add new unseen classes. A prototype projection is trained to map the semantic representations towards prototypes based on seen instances, and will generate prototypes for unseen classes. Moreover, an open-set rejection is utilized to detect objects that do not belong to any seen classes, which greatly reduces the misclassification of unseen objects into seen classes due to the lack of seen training instances. We apply the framework on two segmentation datasets, Pascal VOC 2012 and Pascal Context, and achieve impressively state-of-the-art performance.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "97775d560a2fb57c7ff4aea9f6aed4e6dca8aedc",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-05221",
+      "ArXiv": "2109.05221",
+      "DOI": "10.1109/TPAMI.2022.3233884",
+      "CorpusId": 237492010,
+      "PubMed": "37018584"
+    },
+    "title": "Convolutional Hough Matching Networks for Robust and Efficient Visual Correspondence",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2109.05221",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.05221, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067799001",
+        "name": "Juhong Min"
+      },
+      {
+        "authorId": "2119244714",
+        "name": "Seungwook Kim"
+      },
+      {
+        "authorId": "72643925",
+        "name": "Minsu Cho"
+      }
+    ],
+    "abstract": "Despite advances in feature representation, leveraging geometric relations is crucial for establishing reliable visual correspondences under large variations of images. In this work we introduce a Hough transform perspective on convolutional matching and propose an effective geometric matching algorithm, dubbed Convolutional Hough Matching (CHM). The method distributes similarities of candidate matches over a geometric transformation space and evaluates them in a convolutional manner. We cast it into a trainable neural layer with a semi-isotropic high-dimensional kernel, which learns non-rigid matching with a small number of interpretable parameters. To further improve the efficiency of high-dimensional voting, we also propose to use an efficient kernel decomposition with center-pivot neighbors, which significantly sparsifies the proposed semi-isotropic kernels without performance degradation. To validate the proposed techniques, we develop the neural network with CHM layers that perform convolutional matching in the space of translation and scaling. Our method sets a new state of the art on standard benchmarks for semantic visual correspondence, proving its strong robustness to challenging intra-class variations.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "98905c56b820287462fded935c888d24db88cc7b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-08518",
+      "ArXiv": "2108.08518",
+      "DOI": "10.1109/TMM.2022.3187855",
+      "CorpusId": 237213664
+    },
+    "title": "Few-Shot Segmentation With Optimal Transport Matching and Message Flow",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2021,
+    "citationCount": 61,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2108.08518",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.08518, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109585766",
+        "name": "Weide Liu"
+      },
+      {
+        "authorId": "2115811693",
+        "name": "Chi Zhang"
+      },
+      {
+        "authorId": "49441320",
+        "name": "Henghui Ding"
+      },
+      {
+        "authorId": "34985695",
+        "name": "Tzu-Yi Hung"
+      },
+      {
+        "authorId": "2604251",
+        "name": "Guosheng Lin"
+      }
+    ],
+    "abstract": "We tackle the challenging task of few-shot segmentation in this work. It is essential for few-shot semantic segmentation to fully utilize the support information. Previous methods typically adopt masked average pooling over the support feature to extract the support clues as a global vector, usually dominated by the salient part and lost certain essential clues. In this work, we argue that every support pixel’s information is desired to be transferred to all query pixels and propose a Correspondence Matching Network (CMNet) with an Optimal Transport Matching module to mine out the correspondence between the query and support images. Besides, it is critical to fully utilize both local and global information from the annotated support images. To this end, we propose a Message Flow module to propagate the message along the inner-flow inside the same image and cross-flow between support and query images, which greatly helps enhance the local feature representations. Experiments on PASCAL VOC 2012, MS COCO, and FSS-1000 datasets show that our network achieves new state-of-the-art few-shot segmentation performance.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result"
+    ]
+  },
+  {
+    "paperId": "39b492db00faead70bc3f4fb4b0364d94398ffdb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-08810",
+      "ArXiv": "2108.08810",
+      "CorpusId": 237213700
+    },
+    "title": "Do Vision Transformers See Like Convolutional Neural Networks?",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1327,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.08810, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40297238",
+        "name": "M. Raghu"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "2145179541",
+        "name": "Chiyuan Zhang"
+      },
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) have so far been the de-facto model for visual data. Recent work has shown that (Vision) Transformer models (ViT) can achieve comparable or even superior performance on image classification tasks. This raises a central question: how are Vision Transformers solving these tasks? Are they acting like convolutional networks, or learning entirely different visual representations? Analyzing the internal representation structure of ViTs and CNNs on image classification benchmarks, we find striking differences between the two architectures, such as ViT having more uniform representations across all layers. We explore how these differences arise, finding crucial roles played by self-attention, which enables early aggregation of global information, and ViT residual connections, which strongly propagate features from lower to higher layers. We study the ramifications for spatial localization, demonstrating ViTs successfully preserve input spatial information, with noticeable effects from different classification methods. Finally, we study the effect of (pretraining) dataset scale on intermediate features and transfer learning, and conclude with a discussion on connections to new architectures such as the MLP-Mixer.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2aed105fc8fdce011a7eb320cbc5ef2557c5b0a3",
+    "externalIds": {
+      "DBLP": "conf/iccv/LuHZ0SX21",
+      "ArXiv": "2108.03032",
+      "DOI": "10.1109/ICCV48922.2021.00862",
+      "CorpusId": 236950782
+    },
+    "title": "Simpler is Better: Few-shot Semantic Segmentation with Classifier Weight Transformer",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 229,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2108.03032",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.03032, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9702077",
+        "name": "Zhihe Lu"
+      },
+      {
+        "authorId": "47287647",
+        "name": "Sen He"
+      },
+      {
+        "authorId": "2116163653",
+        "name": "Xiatian Zhu"
+      },
+      {
+        "authorId": "2152827279",
+        "name": "Li Zhang"
+      },
+      {
+        "authorId": "2115712433",
+        "name": "Yi-Zhe Song"
+      },
+      {
+        "authorId": "145406421",
+        "name": "T. Xiang"
+      }
+    ],
+    "abstract": "A few-shot semantic segmentation model is typically composed of a CNN encoder, a CNN decoder and a simple classifier (separating foreground and background pixels). Most existing methods meta-learn all three model components for fast adaptation to a new class. However, given that as few as a single support set image is available, effective model adaption of all three components to the new class is extremely challenging. In this work we propose to simplify the meta-learning task by focusing solely on the simplest component – the classifier, whilst leaving the en-coder and decoder to pre-training. We hypothesize that if we pretrain an off-the-shelf segmentation model over a set of diverse training classes with sufficient annotations, the encoder and decoder can capture rich discriminative features applicable for any unseen classes, rendering the sub-sequent meta-learning stage unnecessary. For the classifier meta-learning, we introduce a Classifier Weight Transformer (CWT) designed to dynamically adapt the support-set trained classifier’s weights to each query image in an inductive way. Extensive experiments on two standard bench-marks show that despite its simplicity, our method outperforms the state-of-the-art alternatives, often by a large margin. Code is available on https://github.com/zhiheLu/CWT-for-FSS.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f1a58eed968686cac400aae935b8d69c20178037",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-02266",
+      "ArXiv": "2108.02266",
+      "CorpusId": 236924335
+    },
+    "title": "Boosting Few-shot Semantic Segmentation with Transformers",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.02266, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "15839174",
+        "name": "Guolei Sun"
+      },
+      {
+        "authorId": "71222785",
+        "name": "Yun Liu"
+      },
+      {
+        "authorId": "145270228",
+        "name": "Jingyun Liang"
+      },
+      {
+        "authorId": "1681236",
+        "name": "L. Gool"
+      }
+    ],
+    "abstract": "Due to the fact that fully supervised semantic segmentation methods require sufficient fully-labeled data to work well and can not generalize to unseen classes, few-shot segmentation has attracted lots of research attention. Previous arts extract features from support and query images, which are processed jointly before making predictions on query images. The whole process is based on convolutional neural networks (CNN), leading to the problem that only local information is used. In this paper, we propose a TRansformer-based Few-shot Semantic segmentation method (TRFS). Specifically, our model consists of two modules: Global Enhancement Module (GEM) and Local Enhancement Module (LEM). GEM adopts transformer blocks to exploit global information, while LEM utilizes conventional convolutions to exploit local information, across query and support features. Both GEM and LEM are complementary, helping to learn better feature representations for segmenting query images. Extensive experiments on PASCAL-5i and COCO datasets show that our approach achieves new state-of-the-art performance, demonstrating its effectiveness.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "c225c0d191d66dbb8240bbd1ef1214c1a59fab78",
+    "externalIds": {
+      "DBLP": "conf/iccv/ZhaoSJZGY21",
+      "ArXiv": "2108.00211",
+      "DOI": "10.1109/ICCV48922.2021.00334",
+      "CorpusId": 236772600
+    },
+    "title": "Multi-scale Matching Networks for Semantic Correspondence",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2108.00211",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.00211, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2003812225",
+        "name": "Dongyang Zhao"
+      },
+      {
+        "authorId": "1500648889",
+        "name": "Ziyang Song"
+      },
+      {
+        "authorId": "2150431989",
+        "name": "Zhenghao Ji"
+      },
+      {
+        "authorId": "22658530",
+        "name": "Gangming Zhao"
+      },
+      {
+        "authorId": "2390300",
+        "name": "Weifeng Ge"
+      },
+      {
+        "authorId": "1841911",
+        "name": "Yizhou Yu"
+      }
+    ],
+    "abstract": "Deep features have been proven powerful in building accurate dense semantic correspondences in various previous works. However, the multi-scale and pyramidal hierarchy of convolutional neural networks has not been well studied to learn discriminative pixel-level features for semantic correspondence. In this paper, we propose a multi-scale matching network that is sensitive to tiny semantic differences between neighboring pixels. We follow the coarse-to-fine matching strategy and build a top-down feature and matching enhancement scheme that is coupled with the multi-scale hierarchy of deep convolutional neural networks. During feature enhancement, intra-scale enhancement fuses same-resolution feature maps from multiple layers together via local self-attention and cross-scale enhancement hallucinates higher-resolution feature maps along the top-down pathway. Besides, we learn complementary matching details at different scales thus the overall matching score is refined by features of different semantic levels gradually. Our multi-scale matching network can be trained end-to-end easily with few additional learnable parameters. Experimental results demonstrate that the proposed method achieves state-of-the-art performance on three popular benchmarks with high computational efficiency. The code has been released at https://github.com/wintersun661/MMNet.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7b664a306b7d2f68dd816ea1d6586cf3472d75c1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-14881",
+      "ArXiv": "2106.14881",
+      "CorpusId": 235658393
+    },
+    "title": "Early Convolutions Help Transformers See Better",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 912,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.14881, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "15727192",
+        "name": "Tete Xiao"
+      },
+      {
+        "authorId": "152964870",
+        "name": "Mannat Singh"
+      },
+      {
+        "authorId": "13131689",
+        "name": "Eric Mintun"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "Vision transformer (ViT) models exhibit substandard optimizability. In particular, they are sensitive to the choice of optimizer (AdamW vs. SGD), optimizer hyperparameters, and training schedule length. In comparison, modern convolutional neural networks are easier to optimize. Why is this the case? In this work, we conjecture that the issue lies with the patchify stem of ViT models, which is implemented by a stride-p p*p convolution (p=16 by default) applied to the input image. This large-kernel plus large-stride convolution runs counter to typical design choices of convolutional layers in neural networks. To test whether this atypical design choice causes an issue, we analyze the optimization behavior of ViT models with their original patchify stem versus a simple counterpart where we replace the ViT stem by a small number of stacked stride-two 3*3 convolutions. While the vast majority of computation in the two ViT designs is identical, we find that this small change in early visual processing results in markedly different training behavior in terms of the sensitivity to optimization settings as well as the final model accuracy. Using a convolutional stem in ViT dramatically increases optimization stability and also improves peak performance (by ~1-2% top-1 accuracy on ImageNet-1k), while maintaining flops and runtime. The improvement can be observed across the wide spectrum of model complexities (from 1G to 36G flops) and dataset scales (from ImageNet-1k to ImageNet-21k). These findings lead us to recommend using a standard, lightweight convolutional stem for ViT models in this regime as a more robust architectural choice compared to the original ViT model design.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9f4b69762ffb1ba42b573fd4ced996f3153e21c0",
+    "externalIds": {
+      "DBLP": "conf/nips/DaiLLT21",
+      "ArXiv": "2106.04803",
+      "CorpusId": 235376986
+    },
+    "title": "CoAtNet: Marrying Convolution and Attention for All Data Sizes",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1564,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.04803, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "2391802",
+        "name": "Hanxiao Liu"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "120805419",
+        "name": "Mingxing Tan"
+      }
+    ],
+    "abstract": "Transformers have attracted increasing interests in computer vision, but they still fall behind state-of-the-art convolutional networks. In this work, we show that while Transformers tend to have larger model capacity, their generalization can be worse than convolutional networks due to the lack of the right inductive bias. To effectively combine the strengths from both architectures, we present CoAtNets(pronounced\"coat\"nets), a family of hybrid models built from two key insights: (1) depthwise Convolution and self-Attention can be naturally unified via simple relative attention; (2) vertically stacking convolution layers and attention layers in a principled way is surprisingly effective in improving generalization, capacity and efficiency. Experiments show that our CoAtNets achieve state-of-the-art performance under different resource constraints across various datasets: Without extra data, CoAtNet achieves 86.0% ImageNet top-1 accuracy; When pre-trained with 13M images from ImageNet-21K, our CoAtNet achieves 88.56% top-1 accuracy, matching ViT-huge pre-trained with 300M images from JFT-300M while using 23x less data; Notably, when we further scale up CoAtNet with JFT-3B, it achieves 90.88% top-1 accuracy on ImageNet, establishing a new state-of-the-art result.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fbcbe5a222786f38a1c69c3487b4edf8ca469934",
+    "externalIds": {
+      "ArXiv": "2106.04108",
+      "DBLP": "journals/corr/abs-2106-04108",
+      "CorpusId": 235368266
+    },
+    "title": "Fully Transformer Networks for Semantic Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 47,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.04108, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51307434",
+        "name": "Sitong Wu"
+      },
+      {
+        "authorId": "2112663859",
+        "name": "Tianyi Wu"
+      },
+      {
+        "authorId": "2107728780",
+        "name": "Fangjian Lin"
+      },
+      {
+        "authorId": "2671378",
+        "name": "Sheng Tian"
+      },
+      {
+        "authorId": "2067614206",
+        "name": "Guodong Guo"
+      }
+    ],
+    "abstract": "Transformers have shown impressive performance in various natural language processing and computer vision tasks, due to the capability of modeling long-range dependencies. Recent progress has demonstrated that combining such Transformers with CNN-based semantic image segmentation models is very promising. However, it is not well studied yet on how well a pure Transformer based approach can achieve for image segmentation. In this work, we explore a novel framework for semantic image segmentation, which is encoder-decoder based Fully Transformer Networks (FTN). Specifically, we first propose a Pyramid Group Transformer (PGT) as the encoder for progressively learning hierarchical features, meanwhile reducing the computation complexity of the standard Visual Transformer (ViT). Then, we propose a Feature Pyramid Transformer (FPT) to fuse semantic-level and spatial-level information from multiple levels of the PGT encoder for semantic image segmentation. Surprisingly, this simple baseline can achieve better results on multiple challenging semantic segmentation and face parsing benchmarks, including PASCAL Context, ADE20K, COCOStuff, and CelebAMask-HQ. The source code will be released on https://github.com/BR-IDL/PaddleViT.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ca62a92a6e0a77f728ad425966b04bf266ebd5ba",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-03090",
+      "ArXiv": "2106.03090",
+      "DOI": "10.1109/ICCV48922.2021.00976",
+      "CorpusId": 235358697
+    },
+    "title": "Deep Matching Prior: Test-Time Optimization for Dense Correspondence",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2106.03090",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.03090, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "15827883",
+        "name": "Sunghwan Hong"
+      },
+      {
+        "authorId": "2099537",
+        "name": "Seungryong Kim"
+      }
+    ],
+    "abstract": "Conventional techniques to establish dense correspondences across visually or semantically similar images focused on designing a task-specific matching prior, which is difficult to model in general. To overcome this, recent learning-based methods have attempted to learn a good matching prior within a model itself on large training data. The performance improvement was apparent, but the need for sufficient training data and intensive learning hinders their applicability. Moreover, using the fixed model at test time does not account for the fact that a pair of images may require their own prior, thus providing limited performance and poor generalization to unseen images.In this paper, we show that an image pair-specific prior can be captured by solely optimizing the untrained matching networks on an input pair of images. Tailored for such test-time optimization for dense correspondence, we present a residual matching network and a confidence-aware contrastive loss to guarantee a meaningful convergence. Experiments demonstrate that our framework, dubbed Deep Matching Prior (DMP), is competitive, or even outperforms, against the latest learning-based methods on several benchmarks for geometric matching and semantic matching, even though it requires neither large training data nor intensive learning. With the networks pre-trained, DMP attains state-of-the-art performance on all benchmarks.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "4bc31c896b2a61d1963829678dbcf144b4826e53",
+    "externalIds": {
+      "DBLP": "conf/nips/ChoHJLSK21",
+      "ArXiv": "2106.02520",
+      "CorpusId": 239886012
+    },
+    "title": "CATs: Cost Aggregation Transformers for Visual Correspondence",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 120,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.02520, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109470172",
+        "name": "Seokju Cho"
+      },
+      {
+        "authorId": "15827883",
+        "name": "Sunghwan Hong"
+      },
+      {
+        "authorId": "9535835",
+        "name": "Sangryul Jeon"
+      },
+      {
+        "authorId": "46357976",
+        "name": "Yunsung Lee"
+      },
+      {
+        "authorId": "144442279",
+        "name": "K. Sohn"
+      },
+      {
+        "authorId": "2099537",
+        "name": "Seungryong Kim"
+      }
+    ],
+    "abstract": "We propose a novel cost aggregation network, called Cost Aggregation Transformers (CATs), to find dense correspondences between semantically similar images with additional challenges posed by large intra-class appearance and geometric variations. Cost aggregation is a highly important process in matching tasks, which the matching accuracy depends on the quality of its output. Compared to hand-crafted or CNN-based methods addressing the cost aggregation, in that either lacks robustness to severe deformations or inherit the limitation of CNNs that fail to discriminate incorrect matches due to limited receptive fields, CATs explore global consensus among initial correlation map with the help of some architectural designs that allow us to fully leverage self-attention mechanism. Specifically, we include appearance affinity modeling to aid the cost aggregation process in order to disambiguate the noisy initial correlation maps and propose multi-level aggregation to efficiently capture different semantics from hierarchical feature representations. We then combine with swapping self-attention technique and residual connections not only to enforce consistent matching but also to ease the learning process, which we find that these result in an apparent performance boost. We conduct experiments to demonstrate the effectiveness of the proposed model over the latest methods and provide extensive ablation studies. Project page is available at : https://sunghwanhong.github.io/CATs/.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "d7f2a424056b43718b25aa9dc1074923bd258be6",
+    "externalIds": {
+      "DBLP": "conf/nips/ZhangKYW21",
+      "ArXiv": "2106.02320",
+      "CorpusId": 235352909
+    },
+    "title": "Few-Shot Segmentation via Cycle-Consistent Transformer",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 263,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.02320, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1500404926",
+        "name": "Gengwei Zhang"
+      },
+      {
+        "authorId": "3374337",
+        "name": "Guoliang Kang"
+      },
+      {
+        "authorId": "49020088",
+        "name": "Yunchao Wei"
+      },
+      {
+        "authorId": "7179962",
+        "name": "Yi Yang"
+      }
+    ],
+    "abstract": "Few-shot segmentation aims to train a segmentation model that can fast adapt to novel classes with few exemplars. The conventional training paradigm is to learn to make predictions on query images conditioned on the features from support images. Previous methods only utilized the semantic-level prototypes of support images as conditional information. These methods cannot utilize all pixel-wise support information for the query predictions, which is however critical for the segmentation task. In this paper, we focus on utilizing pixel-wise relationships between support and query images to facilitate the few-shot segmentation task. We design a novel Cycle-Consistent TRansformer (CyCTR) module to aggregate pixel-wise support features into query ones. CyCTR performs cross-attention between features from different images, i.e. support and query images. We observe that there may exist unexpected irrelevant pixel-level support features. Directly performing cross-attention may aggregate these features from support to query and bias the query features. Thus, we propose using a novel cycle-consistent attention mechanism to filter out possible harmful support features and encourage query features to attend to the most informative pixels from support images. Experiments on all few-shot segmentation benchmarks demonstrate that our proposed CyCTR leads to remarkable improvement compared to previous state-of-the-art methods. Specifically, on Pascal-$5^i$ and COCO-$20^i$ datasets, we achieve 67.5% and 45.6% mIoU for 5-shot segmentation, outperforming previous state-of-the-art methods by 5.6% and 7.1% respectively.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "7a5be45c05299f535640b116273981eb44d810b7",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XieLX021",
+      "DOI": "10.1109/CVPR46437.2021.00543",
+      "CorpusId": 235679100
+    },
+    "title": "Scale-Aware Graph Neural Network for Few-Shot Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 171,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR46437.2021.00543?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR46437.2021.00543, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3057896",
+        "name": "Guosen Xie"
+      },
+      {
+        "authorId": "2146651410",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2054473409",
+        "name": "Huan Xiong"
+      },
+      {
+        "authorId": "144082425",
+        "name": "Ling Shao"
+      }
+    ],
+    "abstract": "Few-shot semantic segmentation (FSS) aims to segment unseen class objects given very few densely-annotated support images from the same class. Existing FSS methods find the query object by using support prototypes or by directly relying on heuristic multi-scale feature fusion. However, they fail to fully leverage the high-order appearance relationships between multi-scale features among the support-query image pairs, thus leading to an inaccurate localization of the query objects. To tackle the above challenge, we propose an end-to-end scale-aware graph neural network (SAGNN) by reasoning the cross-scale relations among the support-query images for FSS. Specifically, a scale-aware graph is first built by taking support-induced multi-scale query features as nodes and, meanwhile, each edge is modeled as the pairwise interaction of its connected nodes. By progressive message passing over this graph, SAGNN is capable of capturing cross-scale relations and overcoming object variations (e.g., appearance, scale and location), and can thus learn more precise node embeddings. This in turn enables it to predict more accurate foreground objects. Moreover, to make full use of the location relations across scales for the query image, a novel self-node collaboration mechanism is proposed to enrich the current node, which endows SAGNN the ability of perceiving different resolutions of the same objects. Extensive experiments on PASCAL-5i and COCO-20i show that SAGNN achieves state-of-the-art results.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e17529c6ce6099f95358da16d92b109ca7490446",
+    "externalIds": {
+      "DBLP": "conf/cvpr/LeeDFS21",
+      "DOI": "10.1109/CVPR46437.2021.01295",
+      "CorpusId": 235719539
+    },
+    "title": "PatchMatch-Based Neighborhood Consensus for Semantic Correspondence",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 47,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR46437.2021.01295?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR46437.2021.01295, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2155776517",
+        "name": "Jae Yong Lee"
+      },
+      {
+        "authorId": "2962572",
+        "name": "Joseph DeGol"
+      },
+      {
+        "authorId": "2245862",
+        "name": "Victor Fragoso"
+      },
+      {
+        "authorId": "1757937",
+        "name": "Sudipta N. Sinha"
+      }
+    ],
+    "abstract": "We address estimating dense correspondences between two images depicting different but semantically related scenes. End-to-end trainable deep neural networks incorporating neighborhood consensus cues are currently the best methods for this task. However, these architectures require exhaustive matching and 4D convolutions over matching costs for all pairs of feature map pixels. This makes them computationally expensive. We present a more efficient neighborhood consensus approach based on PatchMatch. For higher accuracy, we propose to use a learned local 4D scoring function for evaluating candidates during the PatchMatch iterations. We have devised an approach to jointly train the scoring function and the feature extraction modules by embedding them into a proxy model which is end-to-end differentiable. The modules are trained in a supervised setting using a cross-entropy loss to directly incorporate sparse keypoint supervision. Our evaluation on PF-Pascal and SPair-71K shows that our method significantly outperforms the state-of-the-art on both datasets while also being faster and using less memory.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "67571d29190faea9fbd104acd16274f8c4edf254",
+    "externalIds": {
+      "ArXiv": "2105.01601",
+      "DBLP": "conf/nips/TolstikhinHKBZU21",
+      "CorpusId": 233714958
+    },
+    "title": "MLP-Mixer: An all-MLP Architecture for Vision",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 3510,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.01601, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3121264",
+        "name": "I. Tolstikhin"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "1470947219",
+        "name": "Jessica Yung"
+      },
+      {
+        "authorId": "51027911",
+        "name": "Daniel Keysers"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "34302129",
+        "name": "M. Lučić"
+      },
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) are the go-to model for computer vision. Recently, attention-based networks, such as the Vision Transformer, have also become popular. In this paper we show that while convolutions and attention are both sufficient for good performance, neither of them are necessary. We present MLP-Mixer, an architecture based exclusively on multi-layer perceptrons (MLPs). MLP-Mixer contains two types of layers: one with MLPs applied independently to image patches (i.e.\"mixing\"the per-location features), and one with MLPs applied across patches (i.e.\"mixing\"spatial information). When trained on large datasets, or with modern regularization schemes, MLP-Mixer attains competitive scores on image classification benchmarks, with pre-training and inference cost comparable to state-of-the-art models. We hope that these results spark further research beyond the realms of well established CNNs and Transformers.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "0cbfd6647f906c9cf82ecafdfbbdc2a317af8467",
+    "externalIds": {
+      "ArXiv": "2104.01893",
+      "DBLP": "journals/corr/abs-2104-01893",
+      "DOI": "10.1109/CVPR46437.2021.00823",
+      "CorpusId": 233025288
+    },
+    "title": "Adaptive Prototype Learning and Allocation for Few-Shot Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 482,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2104.01893",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.01893, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108550321",
+        "name": "Gen Li"
+      },
+      {
+        "authorId": "2745026",
+        "name": "V. Jampani"
+      },
+      {
+        "authorId": "1403581832",
+        "name": "Laura Sevilla-Lara"
+      },
+      {
+        "authorId": "3232265",
+        "name": "Deqing Sun"
+      },
+      {
+        "authorId": "2117145463",
+        "name": "Jonghyun Kim"
+      },
+      {
+        "authorId": "1722566",
+        "name": "Joongkyu Kim"
+      }
+    ],
+    "abstract": "Prototype learning is extensively used for few-shot segmentation. Typically, a single prototype is obtained from the support feature by averaging the global object information. However, using one prototype to represent all the information may lead to ambiguities. In this paper, we propose two novel modules, named superpixel-guided clustering (SGC) and guided prototype allocation (GPA), for multiple prototype extraction and allocation. Specifically, SGC is a parameter-free and training-free approach, which extracts more representative prototypes by aggregating similar feature vectors, while GPA is able to select matched prototypes to provide more accurate guidance. By integrating the SGC and GPA together, we propose the Adaptive Superpixel-guided Network (ASGNet), which is a lightweight model and adapts to object scale and shape variation. In addition, our network can easily generalize to k-shot segmentation with substantial improvement and no additional computational cost. In particular, our evaluations on COCO demonstrate that ASGNet surpasses the state-of-the-art method by 5% in 5-shot segmentation.1",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "daff4bcfe3125b2a5f06d2f99724e182a4304633",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2104-01538",
+      "ArXiv": "2104.01538",
+      "DOI": "10.1109/ICCV48922.2021.00686",
+      "CorpusId": 233025275
+    },
+    "title": "Hypercorrelation Squeeze for Few-Shot Segmenation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 411,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.01538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067799001",
+        "name": "Juhong Min"
+      },
+      {
+        "authorId": "2088167050",
+        "name": "Dahyun Kang"
+      },
+      {
+        "authorId": "72643925",
+        "name": "Minsu Cho"
+      }
+    ],
+    "abstract": "Few-shot semantic segmentation aims at learning to segment a target object from a query image using only a few annotated support images of the target class. This challenging task requires to understand diverse levels of visual cues and analyze fine-grained correspondence relations between the query and the support images. To address the problem, we propose Hypercorrelation Squeeze Networks (HSNet) that leverages multi-level feature correlation and efficient 4D convolutions. It extracts diverse features from different levels of intermediate convolutional layers and constructs a collection of 4D correlation tensors, i.e., hypercorrelations. Using efficient center-pivot 4D convolutions in a pyramidal architecture, the method gradually squeezes high-level semantic and low-level geometric cues of the hypercorrelation into precise segmentation masks in coarse-to-fine manner. The significant performance improvements on standard few-shot segmentation benchmarks of PASCAL-5i, COCO-20i, and FSS-1000 verify the efficacy of the proposed method.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "50eb5344f5a7cbc9b40b8a515cc941a29e8b4f41",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-16129",
+      "ArXiv": "2103.16129",
+      "DOI": "10.1109/CVPR46437.2021.00821",
+      "CorpusId": 232417101
+    },
+    "title": "Self-Guided and Cross-Guided Learning for Few-Shot Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 219,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.16129",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.16129, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48335370",
+        "name": "Bingfeng Zhang"
+      },
+      {
+        "authorId": "2825865",
+        "name": "Jimin Xiao"
+      },
+      {
+        "authorId": "2061138768",
+        "name": "Terry Qin"
+      }
+    ],
+    "abstract": "Few-shot segmentation has been attracting a lot of attention due to its effectiveness to segment unseen object classes with a few annotated samples. Most existing approaches use masked Global Average Pooling (GAP) to encode an annotated support image to a feature vector to facilitate query image segmentation. However, this pipeline unavoidably loses some discriminative information due to the average operation. In this paper, we propose a simple but effective self-guided learning approach, where the lost critical information is mined. Specifically, through making an initial prediction for the annotated support image, the covered and uncovered foreground regions are encoded to the primary and auxiliary support vectors using masked GAP, respectively. By aggregating both primary and auxiliary support vectors, better segmentation performances are obtained on query images. Enlightened by our self-guided module for 1-shot segmentation, we propose a cross-guided module for multiple shot segmentation, where the final mask is fused using predictions from multiple annotated samples with high-quality support vectors contributing more and vice versa. This module improves the final prediction in the inference stage without re-training. Extensive experiments show that our approach achieves new state-of-the-art performances on both PASCAL-5i and COCO-20i datasets. Source code is available at https://github.com/zbf1991/SCL.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "1f6a771d44ade285d8b6508b85848d6d06fa1dc8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-15402",
+      "ArXiv": "2103.15402",
+      "DOI": "10.1109/ICCV48922.2021.00860",
+      "CorpusId": 232404521
+    },
+    "title": "Mining Latent Classes for Few-shot Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 152,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.15402",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.15402, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108637046",
+        "name": "Lihe Yang"
+      },
+      {
+        "authorId": "2070259407",
+        "name": "W. Zhuo"
+      },
+      {
+        "authorId": "1785352346",
+        "name": "Lei Qi"
+      },
+      {
+        "authorId": "2475959",
+        "name": "Yinghuan Shi"
+      },
+      {
+        "authorId": "145644819",
+        "name": "Yang Gao"
+      }
+    ],
+    "abstract": "Few-shot segmentation (FSS) aims to segment unseen classes given only a few annotated samples. Existing methods suffer the problem of feature undermining, i.e., potential novel classes are treated as background during training phase. Our method aims to alleviate this problem and enhance the feature embedding on latent novel classes. In our work, we propose a novel joint-training framework. Based on conventional episodic training on support-query pairs, we introduce an additional mining branch that exploits latent novel classes via transferable sub-clusters, and a new rectification technique on both background and fore-ground categories to enforce more stable prototypes. Over and above that, our transferable sub-cluster has the ability to leverage extra unlabeled data for further feature enhancement. Extensive experiments on two FSS benchmarks demonstrate that our method outperforms previous state-of-the-art by a large margin of 3.7% mIOU on PASCAL-5i and 7.0% mIOU on COCO-20i at the cost of 74% fewer parameters and 2.5x faster inference speed. The source code is available at https://github.com/LiheYoung/MiningFSS.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "1536febbc3e15d51642991797f6ce624838a468e",
+    "externalIds": {
+      "ArXiv": "2103.14167",
+      "DBLP": "journals/corr/abs-2103-14167",
+      "DOI": "10.1109/ICCV48922.2021.00615",
+      "CorpusId": 232380104
+    },
+    "title": "COTR: Correspondence Transformer for Matching Across Images",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 317,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.14167",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.14167, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1753694704",
+        "name": "Wei Jiang"
+      },
+      {
+        "authorId": "1995333",
+        "name": "Eduard Trulls"
+      },
+      {
+        "authorId": "2536361",
+        "name": "J. Hosang"
+      },
+      {
+        "authorId": "1796480",
+        "name": "Andrea Tagliasacchi"
+      },
+      {
+        "authorId": "2906716",
+        "name": "K. M. Yi"
+      }
+    ],
+    "abstract": "We propose a novel framework for finding correspondences in images based on a deep neural network that, given two images and a query point in one of them, finds its correspondence in the other. By doing so, one has the option to query only the points of interest and retrieve sparse correspondences, or to query all points in an image and obtain dense mappings. Importantly, in order to capture both local and global priors, and to let our model relate between image regions using the most relevant among said priors, we realize our network using a transformer. At inference time, we apply our correspondence network by recursively zooming in around the estimates, yielding a multiscale pipeline able to provide highly-accurate correspondences. Our method significantly outperforms the state of the art on both sparse and dense correspondence problems on multiple datasets and tasks, ranging from wide-baseline stereo to optical flow, without any retraining for a specific dataset. We commit to releasing data, code, and all the tools necessary to train from scratch and ensure reproducibility.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "610b302950a19acef1c45456111dcd495f638c18",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-10697",
+      "MAG": "3137278571",
+      "ArXiv": "2103.10697",
+      "DOI": "10.1088/1742-5468/ac9830",
+      "CorpusId": 232290742
+    },
+    "title": "ConViT: improving vision transformers with soft convolutional inductive biases",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 1017,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.10697",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.10697, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1400419176",
+        "name": "Stéphane d'Ascoli"
+      },
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "2028252288",
+        "name": "Matthew L. Leavitt"
+      },
+      {
+        "authorId": "4690624",
+        "name": "Ari S. Morcos"
+      },
+      {
+        "authorId": "2188423",
+        "name": "G. Biroli"
+      },
+      {
+        "authorId": "2246570",
+        "name": "Levent Sagun"
+      }
+    ],
+    "abstract": "Convolutional architectures have proven to be extremely successful for vision tasks. Their hard inductive biases enable sample-efficient learning, but come at the cost of a potentially lower performance ceiling. Vision transformers rely on more flexible self-attention layers, and have recently outperformed CNNs for image classification. However, they require costly pre-training on large external datasets or distillation from pre-trained convolutional networks. In this paper, we ask the following question: is it possible to combine the strengths of these two architectures while avoiding their respective limitations? To this end, we introduce gated positional self-attention (GPSA), a form of positional self-attention which can be equipped with a ‘soft’ convolutional inductive bias. We initialize the GPSA layers to mimic the locality of convolutional layers, then give each attention head the freedom to escape locality by adjusting a gating parameter regulating the attention paid to position versus content information. The resulting convolutional-like ViT architecture, ConViT, outperforms the DeiT (Touvron et al 2020 arXiv:2012.12877) on ImageNet, while offering a much improved sample efficiency. We further investigate the role of locality in learning by first quantifying how it is encouraged in vanilla self-attention layers, then analyzing how it has escaped in GPSA layers. We conclude by presenting various ablations to better understand the success of the ConViT. Our code and models are released publicly at https://github.com/facebookresearch/convit.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8fb1c04dab87ca6c116495e4d03c46c9547e4ec3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-12122",
+      "ArXiv": "2102.12122",
+      "DOI": "10.1109/ICCV48922.2021.00061",
+      "CorpusId": 232035922
+    },
+    "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 4872,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2102.12122",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.12122, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "71074736",
+        "name": "Wenhai Wang"
+      },
+      {
+        "authorId": "41020000",
+        "name": "Enze Xie"
+      },
+      {
+        "authorId": null,
+        "name": "Xiang Li"
+      },
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "50982078",
+        "name": "Kaitao Song"
+      },
+      {
+        "authorId": "152335674",
+        "name": "Ding Liang"
+      },
+      {
+        "authorId": "144720255",
+        "name": "Tong Lu"
+      },
+      {
+        "authorId": "144389940",
+        "name": "P. Luo"
+      },
+      {
+        "authorId": "144082425",
+        "name": "Ling Shao"
+      }
+    ],
+    "abstract": "Although convolutional neural networks (CNNs) have achieved great success in computer vision, this work investigates a simpler, convolution-free backbone network use-fid for many dense prediction tasks. Unlike the recently-proposed Vision Transformer (ViT) that was designed for image classification specifically, we introduce the Pyramid Vision Transformer (PVT), which overcomes the difficulties of porting Transformer to various dense prediction tasks. PVT has several merits compared to current state of the arts. (1) Different from ViT that typically yields low-resolution outputs and incurs high computational and memory costs, PVT not only can be trained on dense partitions of an image to achieve high output resolution, which is important for dense prediction, but also uses a progressive shrinking pyramid to reduce the computations of large feature maps. (2) PVT inherits the advantages of both CNN and Transformer, making it a unified backbone for various vision tasks without convolutions, where it can be used as a direct replacement for CNN backbones. (3) We validate PVT through extensive experiments, showing that it boosts the performance of many downstream tasks, including object detection, instance and semantic segmentation. For example, with a comparable number of parameters, PVT+RetinaNet achieves 40.4 AP on the COCO dataset, surpassing ResNet50+RetinNet (36.3 AP) by 4.1 absolute AP (see Figure 2). We hope that PVT could, serre as an alternative and useful backbone for pixel-level predictions and facilitate future research.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "6fa1cfc4f97f03a8485692418c7aa1a06c574a85",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-03902",
+      "ArXiv": "2102.03902",
+      "DOI": "10.1609/aaai.v35i16.17664",
+      "CorpusId": 231847231,
+      "PubMed": "34745767"
+    },
+    "title": "Nyströmformer: A Nyström-Based Algorithm for Approximating Self-Attention",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2021,
+    "citationCount": 671,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/17664/17471",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.03902, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2760194",
+        "name": "Yunyang Xiong"
+      },
+      {
+        "authorId": "35292426",
+        "name": "Zhanpeng Zeng"
+      },
+      {
+        "authorId": "39072588",
+        "name": "Rudrasis Chakraborty"
+      },
+      {
+        "authorId": "120805419",
+        "name": "Mingxing Tan"
+      },
+      {
+        "authorId": "2064481572",
+        "name": "G. Fung"
+      },
+      {
+        "authorId": "47002659",
+        "name": "Yin Li"
+      },
+      {
+        "authorId": "144711711",
+        "name": "Vikas Singh"
+      }
+    ],
+    "abstract": "Transformers have emerged as a powerful tool for a broad range of natural language processing tasks. A key component that drives the impressive performance of Transformers is the self-attention mechanism that encodes the influence or dependence of other tokens on each specific token. While beneficial, the quadratic complexity of self-attention on the input sequence length has limited its application to longer sequences - a topic being actively studied in the community. To address this limitation, we propose Nyströmformer - a model that exhibits favorable scalability as a function of sequence length. Our idea is based on adapting the Nyström method to approximate standard self-attention with O(n) complexity. The scalability of Nyströmformer enables application to longer sequences with thousands of tokens. We perform evaluations on multiple downstream tasks on the GLUE benchmark and IMDB reviews with standard sequence length, and find that our Nyströmformer performs comparably, or in a few cases, even slightly better, than standard self-attention. On longer sequence tasks in the Long Range Arena (LRA) benchmark, Nyströmformer performs favorably relative to other efficient self-attention methods. Our code is available at https://github.com/mlpen/Nystromformer.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "756940081880a162c59c6db40a9e7f39b2dc68b6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2012-06166",
+      "MAG": "3112314064",
+      "ArXiv": "2012.06166",
+      "DOI": "10.1109/CVPR46437.2021.01376",
+      "CorpusId": 228372977
+    },
+    "title": "Few-Shot Segmentation Without Meta-Learning: A Good Transductive Inference Is All You Need?",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 234,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2012.06166",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.06166, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1583144397",
+        "name": "Malik Boudiaf"
+      },
+      {
+        "authorId": "2401403",
+        "name": "H. Kervadec"
+      },
+      {
+        "authorId": "9403301",
+        "name": "Imtiaz Masud Ziko"
+      },
+      {
+        "authorId": "1743922",
+        "name": "P. Piantanida"
+      },
+      {
+        "authorId": "144019647",
+        "name": "Ismail Ben Ayed"
+      },
+      {
+        "authorId": "144702316",
+        "name": "J. Dolz"
+      }
+    ],
+    "abstract": "We show that the way inference is performed in few-shot segmentation tasks has a substantial effect on performances—an aspect often overlooked in the literature in favor of the meta-learning paradigm. We introduce a transductive inference for a given query image, leveraging the statistics of its unlabeled pixels, by optimizing a new loss containing three complementary terms: i) the cross-entropy on the labeled support pixels; ii) the Shannon entropy of the posteriors on the unlabeled query-image pixels; and iii) a global KL-divergence regularizer based on the proportion of the predicted foreground. As our inference uses a simple linear classifier of the extracted features, its computational load is comparable to inductive inference and can be used on top of any base training. Foregoing episodic training and using only standard cross-entropy training on the base classes, our inference yields competitive performances on standard benchmarks in the 1-shot scenarios. As the number of available shots increases, the gap in performances widens: on PASCAL-5i, our method brings about 5% and 6% improvements over the state-of-the-art, in the 5- and 10-shot scenarios, respectively. Furthermore, we introduce a new setting that includes domain shifts, where the base and novel classes are drawn from different datasets. Our method achieves the best performances in this more realistic setting. Our code is freely available online: https://github.com/mboudiaf/RePRI-for-Few-Shot-Segmentation.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+    "externalIds": {
+      "ArXiv": "2010.11929",
+      "MAG": "3119786062",
+      "DBLP": "conf/iclr/DosovitskiyB0WZ21",
+      "CorpusId": 225039882
+    },
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 61132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "3319373",
+        "name": "Dirk Weissenborn"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "2274215058",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "46352821",
+        "name": "M. Minderer"
+      },
+      {
+        "authorId": "2280399",
+        "name": "G. Heigold"
+      },
+      {
+        "authorId": "1802148",
+        "name": "S. Gelly"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "798e6e0ac92a79c2159a451d900966ffcf0c4ff5",
+    "externalIds": {
+      "DBLP": "conf/eccv/YangLLJY20",
+      "ArXiv": "2008.03898",
+      "MAG": "3108189450",
+      "DOI": "10.1007/978-3-030-58598-3_45",
+      "CorpusId": 221089994
+    },
+    "title": "Prototype Mixture Models for Few-shot Semantic Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 465,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2008.03898, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119658784",
+        "name": "Boyu Yang"
+      },
+      {
+        "authorId": "2118484407",
+        "name": "Chang Liu"
+      },
+      {
+        "authorId": "1491798621",
+        "name": "Bohao Li"
+      },
+      {
+        "authorId": "24350293",
+        "name": "Jianbin Jiao"
+      },
+      {
+        "authorId": "1694936",
+        "name": "Qixiang Ye"
+      }
+    ],
+    "abstract": "Few-shot segmentation is challenging because objects within the support and query images could significantly differ in appearance and pose. Using a single prototype acquired directly from the support image to segment the query image causes semantic ambiguity. In this paper, we propose prototype mixture models (PMMs), which correlate diverse image regions with multiple prototypes to enforce the prototype-based semantic representation. Estimated by an Expectation-Maximization algorithm, PMMs incorporate rich channel-wised and spatial semantics from limited support images. Utilized as representations as well as classifiers, PMMs fully leverage the semantics to activate objects in the query image while depressing background regions in a duplex manner. Extensive experiments on Pascal VOC and MS-COCO datasets show that PMMs significantly improve upon state-of-the-arts. Particularly, PMMs improve 5-shot segmentation performance on MS-COCO by up to 5.82\\% with only a moderate cost for model size and inference speed.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "afec16fd5c4859d25ad805d5e15702cd24ee85fa",
+    "externalIds": {
+      "MAG": "3047258141",
+      "ArXiv": "2008.01449",
+      "DBLP": "journals/pami/TianZSYLJ22",
+      "DOI": "10.1109/tpami.2020.3013717",
+      "CorpusId": 220961511,
+      "PubMed": "32750843"
+    },
+    "title": "Prior Guided Feature Enrichment Network for Few-Shot Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2020,
+    "citationCount": 684,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2008.01449",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2008.01449, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "148438070",
+        "name": "Zhuotao Tian"
+      },
+      {
+        "authorId": "3459894",
+        "name": "Hengshuang Zhao"
+      },
+      {
+        "authorId": "38826848",
+        "name": "Michelle Shu"
+      },
+      {
+        "authorId": "2373742377",
+        "name": "Zhicheng Yang"
+      },
+      {
+        "authorId": "47731271",
+        "name": "Ruiyu Li"
+      },
+      {
+        "authorId": "1729056",
+        "name": "Jiaya Jia"
+      }
+    ],
+    "abstract": "State-of-the-art semantic segmentation methods require sufficient labeled data to achieve good results and hardly work on unseen classes without fine-tuning. Few-shot segmentation is thus proposed to tackle this problem by learning a model that quickly adapts to new classes with a few labeled support samples. Theses frameworks still face the challenge of generalization ability reduction on unseen classes due to inappropriate use of high-level semantic information of training classes and spatial inconsistency between query and support targets. To alleviate these issues, we propose the Prior Guided Feature Enrichment Network (PFENet). It consists of novel designs of (1) a training-free prior mask generation method that not only retains generalization power but also improves model performance and (2) Feature Enrichment Module (FEM) that overcomes spatial inconsistency by adaptively enriching query features with support features and prior masks. Extensive experiments on PASCAL-5<inline-formula><tex-math notation=\"LaTeX\">$^i$</tex-math><alternatives><mml:math><mml:msup><mml:mrow/><mml:mi>i</mml:mi></mml:msup></mml:math><inline-graphic xlink:href=\"tian-ieq1-3013717.gif\"/></alternatives></inline-formula> and COCO prove that the proposed prior generation method and FEM both improve the baseline method significantly. Our PFENet also outperforms state-of-the-art methods by a large margin without efficiency loss. It is surprising that our model even generalizes to cases without labeled support samples.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background",
+      "result"
+    ]
+  },
+  {
+    "paperId": "d818ef688dc99222ceeec367309bd98ef618e52b",
+    "externalIds": {
+      "MAG": "3043896310",
+      "DBLP": "conf/eccv/MinLPC20",
+      "ArXiv": "2007.10587",
+      "DOI": "10.1007/978-3-030-58555-6_21",
+      "CorpusId": 220665709
+    },
+    "title": "Learning to Compose Hypercolumns for Visual Correspondence",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 86,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.10587, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067799001",
+        "name": "Juhong Min"
+      },
+      {
+        "authorId": "2108693459",
+        "name": "Jongmin Lee"
+      },
+      {
+        "authorId": "144189388",
+        "name": "J. Ponce"
+      },
+      {
+        "authorId": "72643925",
+        "name": "Minsu Cho"
+      }
+    ],
+    "abstract": "Feature representation plays a crucial role in visual correspondence, and recent methods for image matching resort to deeply stacked convolutional layers. These models, however, are both monolithic and static in the sense that they typically use a specific level of features, e.g., the output of the last layer, and adhere to it regardless of the images to match. In this work, we introduce a novel approach to visual correspondence that dynamically composes effective features by leveraging relevant layers conditioned on the images to match. Inspired by both multi-layer feature composition in object detection and adaptive inference architectures in classification, the proposed method, dubbed Dynamic Hyperpixel Flow, learns to compose hypercolumn features on the fly by selecting a small number of relevant layers from a deep convolutional neural network. We demonstrate the effectiveness on the task of semantic correspondence, i.e., establishing correspondences between images depicting different instances of the same object or scene category. Experiments on standard benchmarks show that the proposed method greatly improves matching performance over the state of the art in an adaptive and efficient manner.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "1e88135a462f5a55e2ac76575853446b00f5313e",
+    "externalIds": {
+      "ArXiv": "2007.06309",
+      "MAG": "3106906018",
+      "DBLP": "conf/eccv/LiuZZH20",
+      "DOI": "10.1007/978-3-030-58545-7_9",
+      "CorpusId": 220496413
+    },
+    "title": "Part-aware Prototype Network for Few-shot Semantic Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 396,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.06309, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108078299",
+        "name": "Yongfei Liu"
+      },
+      {
+        "authorId": "2190289791",
+        "name": "Xiangyi Zhang"
+      },
+      {
+        "authorId": "1734973476",
+        "name": "Songyang Zhang"
+      },
+      {
+        "authorId": "33913193",
+        "name": "Xuming He"
+      }
+    ],
+    "abstract": "Few-shot semantic segmentation aims to learn to segment new object classes with only a few annotated examples, which has a wide range of real-world applications. Most existing methods either focus on the restrictive setting of one-way few-shot segmentation or suffer from incomplete coverage of object regions. In this paper, we propose a novel few-shot semantic segmentation framework based on the prototype representation. Our key idea is to decompose the holistic class representation into a set of part-aware prototypes, capable of capturing diverse and fine-grained object features. In addition, we propose to leverage unlabeled data to enrich our part-aware prototypes, resulting in better modeling of intra-class variations of semantic objects. We develop a novel graph neural network model to generate and enhance the proposed part-aware prototypes based on labeled and unlabeled images. Extensive experimental evaluations on two benchmarks show that our method outperforms the prior art with a sizable margin.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "6f68e1bb253925d8431588555d3010419f322e04",
+    "externalIds": {
+      "DBLP": "conf/icml/KatharopoulosV020",
+      "MAG": "3037798801",
+      "ArXiv": "2006.16236",
+      "CorpusId": 220250819
+    },
+    "title": "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2638,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.16236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3493855",
+        "name": "Angelos Katharopoulos"
+      },
+      {
+        "authorId": "2992087",
+        "name": "Apoorv Vyas"
+      },
+      {
+        "authorId": "143958923",
+        "name": "Nikolaos Pappas"
+      },
+      {
+        "authorId": "116272138",
+        "name": "Franccois Fleuret"
+      }
+    ],
+    "abstract": "Transformers achieve remarkable performance in several tasks but due to their quadratic complexity, with respect to the input's length, they are prohibitively slow for very long sequences. To address this limitation, we express the self-attention as a linear dot-product of kernel feature maps and make use of the associativity property of matrix products to reduce the complexity from $\\mathcal{O}\\left(N^2\\right)$ to $\\mathcal{O}\\left(N\\right)$, where $N$ is the sequence length. We show that this formulation permits an iterative implementation that dramatically accelerates autoregressive transformers and reveals their relationship to recurrent neural networks. Our linear transformers achieve similar performance to vanilla transformers and they are up to 4000x faster on autoregressive prediction of very long sequences.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result"
+    ]
+  },
+  {
+    "paperId": "c0b79e6a5fd88ef13aa4780df5aae0aaa6b2be87",
+    "externalIds": {
+      "MAG": "3033529678",
+      "DBLP": "journals/corr/abs-2006-04768",
+      "ArXiv": "2006.04768",
+      "CorpusId": 219530577
+    },
+    "title": "Linformer: Self-Attention with Linear Complexity",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 2220,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.04768, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2096387",
+        "name": "Sinong Wang"
+      },
+      {
+        "authorId": "46708422",
+        "name": "Belinda Z. Li"
+      },
+      {
+        "authorId": "2072010",
+        "name": "Madian Khabsa"
+      },
+      {
+        "authorId": "2087117615",
+        "name": "Han Fang"
+      },
+      {
+        "authorId": "2110815489",
+        "name": "Hao Ma"
+      }
+    ],
+    "abstract": "Large transformer models have shown extraordinary success in achieving state-of-the-art results in many natural language processing applications. However, training and deploying these models can be prohibitively costly for long sequences, as the standard self-attention mechanism of the Transformer uses $O(n^2)$ time and space with respect to sequence length. In this paper, we demonstrate that the self-attention mechanism can be approximated by a low-rank matrix. We further exploit this finding to propose a new self-attention mechanism, which reduces the overall self-attention complexity from $O(n^2)$ to $O(n)$ in both time and space. The resulting linear transformer, the \\textit{Linformer}, performs on par with standard Transformer models, while being much more memory- and time-efficient.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1c991369f9834b994da6bb2755584861a399b39d",
+    "externalIds": {
+      "MAG": "3035242260",
+      "DBLP": "conf/cvpr/LiuZYY20",
+      "DOI": "10.1109/cvpr42600.2020.00452",
+      "CorpusId": 219872462
+    },
+    "title": "Semantic Correspondence as an Optimal Transport Problem",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 166,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/cvpr42600.2020.00452?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/cvpr42600.2020.00452, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108078469",
+        "name": "Yanbin Liu"
+      },
+      {
+        "authorId": "2948393",
+        "name": "Linchao Zhu"
+      },
+      {
+        "authorId": "50142992",
+        "name": "M. Yamada"
+      },
+      {
+        "authorId": "2048438762",
+        "name": "Yi Yang"
+      }
+    ],
+    "abstract": "Establishing dense correspondences across semantically similar images is a challenging task. Due to the large intra-class variation and background clutter, two common issues occur in current approaches. First, many pixels in a source image are assigned to one target pixel, i.e., many to one matching. Second, some object pixels are assigned to the background pixels, i.e., background matching. We solve the first issue by global feature matching, which maximizes the total matching correlations between images to obtain a global optimal matching matrix. The row sum and column sum constraints are enforced on the matching matrix to induce a balanced solution, thus suppressing the many to one matching. We solve the second issue by applying a staircase function on the class activation maps to re-weight the importance of pixels into four levels from foreground to background. The whole procedure is combined into a unified optimal transport algorithm by converting the maximization problem to the optimal transport formulation and incorporating the staircase weights into optimal transport algorithm to act as empirical distributions. The proposed algorithm achieves state-of-the-art performance on four benchmark datasets. Notably, a 26\\% relative improvement is achieved on the large-scale SPair-71k dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0a72954f5d1270e702ae7047bacf8126f753e073",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2005-10821",
+      "ArXiv": "2005.10821",
+      "MAG": "3028392891",
+      "CorpusId": 218763375
+    },
+    "title": "Hierarchical Multi-Scale Attention for Semantic Segmentation",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 492,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.10821, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "29955511",
+        "name": "Andrew Tao"
+      },
+      {
+        "authorId": "2062793285",
+        "name": "Karan Sapra"
+      },
+      {
+        "authorId": "2301680",
+        "name": "Bryan Catanzaro"
+      }
+    ],
+    "abstract": "Multi-scale inference is commonly used to improve the results of semantic segmentation. Multiple images scales are passed through a network and then the results are combined with averaging or max pooling. In this work, we present an attention-based approach to combining multi-scale predictions. We show that predictions at certain scales are better at resolving particular failures modes, and that the network learns to favor those scales for such cases in order to generate better predictions. Our attention mechanism is hierarchical, which enables it to be roughly 4x more memory efficient to train than other recent approaches. In addition to enabling faster training, this allows us to train with larger crop sizes which leads to greater model accuracy. We demonstrate the result of our method on two datasets: Cityscapes and Mapillary Vistas. For Cityscapes, which has a large number of weakly labelled images, we also leverage auto-labelling to improve generalization. Using our approach we achieve a new state-of-the-art results in both Mapillary (61.1 IOU val) and Cityscapes (85.1 IOU test).",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1628a19ca39fd65ff4d9cb83cceceb99a3d864b5",
+    "externalIds": {
+      "MAG": "3034438741",
+      "ArXiv": "2005.02551",
+      "DBLP": "journals/corr/abs-2005-02551",
+      "DOI": "10.1109/cvpr42600.2020.00891",
+      "CorpusId": 218516678
+    },
+    "title": "CascadePSP: Toward Class-Agnostic and Very High-Resolution Segmentation via Global and Local Refinement",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2005.02551",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.02551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1677159147",
+        "name": "Ho Kei Cheng"
+      },
+      {
+        "authorId": "2110900195",
+        "name": "Jihoon Chung"
+      },
+      {
+        "authorId": "5068280",
+        "name": "Yu-Wing Tai"
+      },
+      {
+        "authorId": "2088295",
+        "name": "Chi-Keung Tang"
+      }
+    ],
+    "abstract": "State-of-the-art semantic segmentation methods were almost exclusively trained on images within a fixed resolution range. These segmentations are inaccurate for very high-resolution images since using bicubic upsampling of low-resolution segmentation does not adequately capture high-resolution details along object boundaries. In this paper, we propose a novel approach to address the high-resolution segmentation problem without using any high-resolution training data. The key insight is our CascadePSP network which refines and corrects local boundaries whenever possible. Although our network is trained with low-resolution segmentation data, our method is applicable to any resolution even for very high-resolution images larger than 4K. We present quantitative and qualitative studies on different datasets to show that CascadePSP can reveal pixel-accurate segmentation boundaries using our novel refinement module without any finetuning. Thus, our method can be regarded as class-agnostic. Finally, we demonstrate the application of our model to scene parsing in multi-class segmentation.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7df09dc2e363e1928078e82759a226b7991e5f69",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2004-10566",
+      "MAG": "3092135995",
+      "ArXiv": "2004.10566",
+      "DOI": "10.1007/978-3-030-58545-7_35",
+      "CorpusId": 216056155
+    },
+    "title": "Efficient Neighbourhood Consensus Networks via Submanifold Sparse Convolutions",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 197,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.10566, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10999676",
+        "name": "Ignacio Rocco"
+      },
+      {
+        "authorId": "2065840140",
+        "name": "Relja Arandjelovi'c"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      }
+    ],
+    "abstract": "In this work we target the problem of estimating accurately localised correspondences between a pair of images. We adopt the recent Neighbourhood Consensus Networks that have demonstrated promising performance for difficult correspondence problems and propose modifications to overcome their main limitations: large memory consumption, large inference time and poorly localised correspondences. Our proposed modifications can reduce the memory footprint and execution time more than $10\\times$, with equivalent results. This is achieved by sparsifying the correlation tensor containing tentative matches, and its subsequent processing with a 4D CNN using submanifold sparse convolutions. Localisation accuracy is significantly improved by processing the input images in higher resolution, which is possible due to the reduced memory footprint, and by a novel two-stage correspondence relocalisation module. The proposed Sparse-NCNet method obtains state-of-the-art results on the HPatches Sequences and InLoc visual localisation benchmarks, and competitive results in the Aachen Day-Night benchmark.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "868d79deac2e74d7ead8faaf35b64b471b22855c",
+    "externalIds": {
+      "ArXiv": "2003.12059",
+      "DBLP": "journals/corr/abs-2003-12059",
+      "MAG": "3035578028",
+      "DOI": "10.1109/cvpr42600.2020.01021",
+      "CorpusId": 214667589
+    },
+    "title": "Correspondence Networks With Adaptive Neighbourhood Consensus",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 98,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2003.12059",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.12059, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1690899",
+        "name": "Shuda Li"
+      },
+      {
+        "authorId": "2335536188",
+        "name": "Kai Han"
+      },
+      {
+        "authorId": "1594026265",
+        "name": "Theo W. Costain"
+      },
+      {
+        "authorId": "1405452388",
+        "name": "Henry Howard-Jenkins"
+      },
+      {
+        "authorId": "2824784",
+        "name": "V. Prisacariu"
+      }
+    ],
+    "abstract": "In this paper, we tackle the task of establishing dense visual correspondences between images containing objects of the same category. This is a challenging task due to large intra-class variations and a lack of dense pixel level annotations. We propose a convolutional neural network architecture, called adaptive neighbourhood consensus network (ANC-Net), that can be trained end-to-end with sparse key-point annotations, to handle this challenge. At the core of ANC-Net is our proposed non-isotropic 4D convolution kernel, which forms the building block for the adaptive neighbourhood consensus module for robust matching. We also introduce a simple and efficient multi-scale self-similarity module in ANC-Net to make the learned feature robust to intra-class variations. Furthermore, we propose a novel orthogonal loss that can enforce the one-to-one matching constraint. We thoroughly evaluate the effectiveness of our method on various benchmarks, where it substantially outperforms state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "9ed4354b3ad083fed66459fea3f1d2f1d297f96e",
+    "externalIds": {
+      "ArXiv": "2003.10658",
+      "DBLP": "conf/cvpr/LiuZLL20",
+      "MAG": "3034985049",
+      "DOI": "10.1109/cvpr42600.2020.00422",
+      "CorpusId": 214623458
+    },
+    "title": "CRNet: Cross-Reference Networks for Few-Shot Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 235,
+    "openAccessPdf": {
+      "url": "https://dr.ntu.edu.sg/bitstream/10356/144247/2/weide%2001916.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.10658, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109585766",
+        "name": "Weide Liu"
+      },
+      {
+        "authorId": "144876211",
+        "name": "Chi Zhang"
+      },
+      {
+        "authorId": "2604251",
+        "name": "Guosheng Lin"
+      },
+      {
+        "authorId": "2254178",
+        "name": "Fayao Liu"
+      }
+    ],
+    "abstract": "Over the past few years, state-of-the-art image segmentation algorithms are based on deep convolutional neural networks. To render a deep network with the ability to understand a concept, humans need to collect a large amount of pixel-level annotated data to train the models, which is time-consuming and tedious. Recently, few-shot segmentation is proposed to solve this problem. Few-shot segmentation aims to learn a segmentation model that can be generalized to novel classes with only a few training images. In this paper, we propose a cross-reference network (CRNet) for few-shot segmentation. Unlike previous works which only predict the mask in the query image, our proposed model concurrently makes predictions for both the support image and the query image. With a cross-reference mechanism, our network can better find the co-occurrent objects in two images, thus helping the few-shot segmentation task. We also develop a mask refinement module to recurrently refine the prediction of the foreground regions. For the k-shot learning, we propose to finetune parts of networks to take advantage of multiple labeled support images. Experiments on the PASCAL VOC 2012 dataset show that our network achieves state-of-the-art performance.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "73f2e46efc7114d32d4b3df526d14a75a9cfbe7d",
+    "externalIds": {
+      "MAG": "3035477606",
+      "DBLP": "conf/cvpr/TruongDT20",
+      "ArXiv": "1912.05524",
+      "DOI": "10.1109/cvpr42600.2020.00629",
+      "CorpusId": 209202711
+    },
+    "title": "GLU-Net: Global-Local Universal Network for Dense Flow and Correspondences",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 243,
+    "openAccessPdf": {
+      "url": "https://www.research-collection.ethz.ch/bitstream/20.500.11850/455563/4/GLUNet_CVPR.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.05524, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153399953",
+        "name": "Prune Truong"
+      },
+      {
+        "authorId": "2488938",
+        "name": "Martin Danelljan"
+      },
+      {
+        "authorId": "1732855",
+        "name": "R. Timofte"
+      }
+    ],
+    "abstract": "Establishing dense correspondences between a pair of images is an important and general problem, covering geometric matching, optical flow and semantic correspondences. While these applications share fundamental challenges, such as large displacements, pixel-accuracy, and appearance changes, they are currently addressed with specialized network architectures, designed for only one particular task. This severely limits the generalization capabilities of such networks to new scenarios, where e.g. robustness to larger displacements or higher accuracy is required. In this work, we propose a universal network architecture that is directly applicable to all the aforementioned dense correspondence problems. We achieve both high accuracy and robustness to large displacements by investigating the combined use of global and local correlation layers. We further propose an adaptive resolution strategy, allowing our network to operate on virtually any input image resolution. The proposed GLU-Net achieves state-of-the-art performance for geometric and semantic matching as well as optical flow, when using the same network and weights. Code and trained models are available at https://github.com/PruneTruong/GLU-Net.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2c3754b7e4e770edafae70a35ab4ab2f1cd8e6e5",
+    "externalIds": {
+      "DBLP": "conf/iccv/ZhangLLGWY19",
+      "MAG": "2983850069",
+      "DOI": "10.1109/ICCV.2019.00968",
+      "CorpusId": 204973537
+    },
+    "title": "Pyramid Graph Networks With Connection Attentions for Region-Based One-Shot Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 351,
+    "openAccessPdf": {
+      "url": "https://dr.ntu.edu.sg/bitstream/10356/144393/2/gusoheng%20paper3%20iccv%202019.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2019.00968?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2019.00968, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144876211",
+        "name": "Chi Zhang"
+      },
+      {
+        "authorId": "2604251",
+        "name": "Guosheng Lin"
+      },
+      {
+        "authorId": "2254178",
+        "name": "Fayao Liu"
+      },
+      {
+        "authorId": "150147144",
+        "name": "Jiushuang Guo"
+      },
+      {
+        "authorId": "8277017",
+        "name": "Qingyao Wu"
+      },
+      {
+        "authorId": "145786594",
+        "name": "Rui Yao"
+      }
+    ],
+    "abstract": "One-shot image segmentation aims to undertake the segmentation task of a novel class with only one training image available. The difficulty lies in that image segmentation has structured data representations, which yields a many-to-many message passing problem. Previous methods often simplify it to a one-to-many problem by squeezing support data to a global descriptor. However, a mixed global representation drops the data structure and information of individual elements. In this paper, we propose to model structured segmentation data with graphs and apply attentive graph reasoning to propagate label information from support data to query data. The graph attention mechanism could establish the element-to-element correspondence across structured data by learning attention weights between connected graph nodes. To capture correspondence at different semantic levels, we further propose a pyramid-like structure that models different sizes of image regions as graph nodes and undertakes graph reasoning at different levels. Experiments on PASCAL VOC 2012 dataset demonstrate that our proposed network significantly outperforms the baseline method and leads to new state-of-the-art performance on 1-shot and 5-shot segmentation benchmarks.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "931c9f7860dc8909b339c816020241c3b7fb0451",
+    "externalIds": {
+      "DBLP": "conf/iccv/NguyenT19",
+      "MAG": "2981787211",
+      "ArXiv": "1909.13140",
+      "DOI": "10.1109/ICCV.2019.00071",
+      "CorpusId": 203593252
+    },
+    "title": "Feature Weighting and Boosting for Few-Shot Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 401,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1909.13140",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.13140, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144295869",
+        "name": "Khoi Duc Minh Nguyen"
+      },
+      {
+        "authorId": "143856428",
+        "name": "S. Todorovic"
+      }
+    ],
+    "abstract": "This paper is about few-shot segmentation of foreground objects in images. We train a CNN on small subsets of training images, each mimicking the few-shot setting. In each subset, one image serves as the query and the other(s) as support image(s) with ground-truth segmentation. The CNN first extracts feature maps from the query and support images. Then, a class feature vector is computed as an average of the support's feature maps over the known foreground. Finally, the target object is segmented in the query image by using a cosine similarity between the class feature vector and the query's feature map. We make two contributions by: (1) Improving discriminativeness of features so their activations are high on the foreground and low elsewhere; and (2) Boosting inference with an ensemble of experts guided with the gradient of loss incurred when segmenting the support images in testing. Our evaluations on the PASCAL-5i and COCO-20i datasets demonstrate that we significantly outperform existing approaches.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "0172967e6e822cdb89ecd418586008ac831c41cc",
+    "externalIds": {
+      "MAG": "2982121679",
+      "ArXiv": "1909.03444",
+      "DBLP": "conf/iccv/HuangWZYH19",
+      "DOI": "10.1109/ICCV.2019.00210",
+      "CorpusId": 202538736
+    },
+    "title": "Dynamic Context Correspondence Network for Semantic Alignment",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 97,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1909.03444",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.03444, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "24027493",
+        "name": "Shuaiyi Huang"
+      },
+      {
+        "authorId": "47598664",
+        "name": "Qiuyue Wang"
+      },
+      {
+        "authorId": "1734973476",
+        "name": "Songyang Zhang"
+      },
+      {
+        "authorId": "2261106",
+        "name": "Shipeng Yan"
+      },
+      {
+        "authorId": "33913193",
+        "name": "Xuming He"
+      }
+    ],
+    "abstract": "Establishing semantic correspondence is a core problem in computer vision and remains challenging due to large intra-class variations and lack of annotated data. In this paper, we aim to incorporate global semantic context in a flexible manner to overcome the limitations of prior work that relies on local semantic representations. To this end, we first propose a context-aware semantic representation that incorporates spatial layout for robust matching against local ambiguities. We then develop a novel dynamic fusion strategy based on attention mechanism to weave the advantages of both local and context features by integrating semantic cues from multiple scales. We instantiate our strategy by designing an end-to-end learnable deep network, named as Dynamic Context Correspondence Network (DCCNet). To train the network, we adopt a multi-auxiliary task loss to improve the efficiency of our weakly-supervised learning procedure. Our approach achieves superior or competitive performance over previous methods on several challenging datasets, including PF-Pascal, PF-Willow, and TSS, demonstrating its effectiveness and generality.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cb70ff3a4e51cdf8f83680b3e9105856eaf8dd3f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1908-10543",
+      "MAG": "2970350341",
+      "ArXiv": "1908.10543",
+      "CorpusId": 201653520
+    },
+    "title": "SPair-71k: A Large-scale Benchmark for Semantic Correspondence",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 167,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.10543, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067799001",
+        "name": "Juhong Min"
+      },
+      {
+        "authorId": "2108693459",
+        "name": "Jongmin Lee"
+      },
+      {
+        "authorId": "144189388",
+        "name": "J. Ponce"
+      },
+      {
+        "authorId": "72643925",
+        "name": "Minsu Cho"
+      }
+    ],
+    "abstract": "Establishing visual correspondences under large intra-class variations, which is often referred to as semantic correspondence or semantic matching, remains a challenging problem in computer vision. Despite its significance, however, most of the datasets for semantic correspondence are limited to a small amount of image pairs with similar viewpoints and scales. In this paper, we present a new large-scale benchmark dataset of semantically paired images, SPair-71k, which contains 70,958 image pairs with diverse variations in viewpoint and scale. Compared to previous datasets, it is significantly larger in number and contains more accurate and richer annotations. We believe this dataset will provide a reliable testbed to study the problem of semantic correspondence and will help to advance research in this area. We provide the results of recent methods on our new dataset as baselines for further research. Our benchmark is available online at this http URL",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "346f813f3aee101cc288da86c2cf9aad024bb32a",
+    "externalIds": {
+      "MAG": "2969082793",
+      "DBLP": "conf/iccv/WangLZZF19",
+      "ArXiv": "1908.06391",
+      "DOI": "10.1109/ICCV.2019.00929",
+      "CorpusId": 201070109
+    },
+    "title": "PANet: Few-Shot Image Semantic Segmentation With Prototype Alignment",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 1400,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1908.06391",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.06391, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2393792699",
+        "name": "Kaixin Wang"
+      },
+      {
+        "authorId": "123200208",
+        "name": "J. Liew"
+      },
+      {
+        "authorId": "50817744",
+        "name": "Yingtian Zou"
+      },
+      {
+        "authorId": "18119920",
+        "name": "Daquan Zhou"
+      },
+      {
+        "authorId": "33221685",
+        "name": "Jiashi Feng"
+      }
+    ],
+    "abstract": "Despite the great progress made by deep CNNs in image semantic segmentation, they typically require a large number of densely-annotated images for training and are difficult to generalize to unseen object categories. Few-shot segmentation has thus been developed to learn to perform segmentation from only a few annotated examples. In this paper, we tackle the challenging few-shot segmentation problem from a metric learning perspective and present PANet, a novel prototype alignment network to better utilize the information of the support set. Our PANet learns class-specific prototype representations from a few support images within an embedding space and then performs segmentation over the query images through matching each pixel to the learned prototypes. With non-parametric metric learning, PANet offers high-quality prototypes that are representative for each semantic class and meanwhile discriminative for different classes. Moreover, PANet introduces a prototype alignment regularization between support and query. With this, PANet fully exploits knowledge from the support and provides better generalization on few-shot segmentation. Significantly, our model achieves the mIoU score of 48.1% and 55.7% on PASCAL-5i for 1-shot and 5-shot settings respectively, surpassing the state-of-the-art method by 1.8% and 8.6%.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a2981eb638f16ea8e7bb3a8063661a90e568663a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1908-06537",
+      "MAG": "2969139878",
+      "ArXiv": "1908.06537",
+      "DOI": "10.1109/ICCV.2019.00349",
+      "CorpusId": 201070119
+    },
+    "title": "Hyperpixel Flow: Semantic Correspondence With Multi-Layer Neural Features",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 120,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1908.06537",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.06537, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067799001",
+        "name": "Juhong Min"
+      },
+      {
+        "authorId": "2108693459",
+        "name": "Jongmin Lee"
+      },
+      {
+        "authorId": "144189388",
+        "name": "J. Ponce"
+      },
+      {
+        "authorId": "72643925",
+        "name": "Minsu Cho"
+      }
+    ],
+    "abstract": "Establishing visual correspondences under large intra-class variations requires analyzing images at different levels, from features linked to semantics and context to local patterns, while being invariant to instance-specific details. To tackle these challenges, we represent images by “hyperpixels” that leverage a small number of relevant features selected among early to late layers of a convolutional neural network. Taking advantage of the condensed features of hyperpixels, we develop an effective real-time matching algorithm based on Hough geometric voting. The proposed method, hyperpixel flow, sets a new state of the art on three standard benchmarks as well as a new dataset, SPair-71k, which contains a significantly larger number of image pairs than existing datasets, with more accurate and richer annotations for in-depth analysis.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "0cb53a5ef780f037c1f2fd7de1f748b3f81726bc",
+    "externalIds": {
+      "DBLP": "conf/cvpr/LiWCTT20",
+      "MAG": "2965729941",
+      "ArXiv": "1907.12347",
+      "DOI": "10.1109/cvpr42600.2020.00294",
+      "CorpusId": 198967567
+    },
+    "title": "FSS-1000: A 1000-Class Dataset for Few-Shot Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 306,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1907.12347",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.12347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151239498",
+        "name": "Tianhan Wei"
+      },
+      {
+        "authorId": "47057383",
+        "name": "Xiang Li"
+      },
+      {
+        "authorId": "1519027929",
+        "name": "Yau Pun Chen"
+      },
+      {
+        "authorId": "5068280",
+        "name": "Yu-Wing Tai"
+      },
+      {
+        "authorId": "2088295",
+        "name": "Chi-Keung Tang"
+      }
+    ],
+    "abstract": "Over the past few years, we have witnessed the success of deep learning in image recognition thanks to the availability of large-scale human-annotated datasets such as PASCAL VOC, ImageNet, and COCO. Although these datasets have covered a wide range of object categories, there are still a significant number of objects that are not included. Can we perform the same task without a lot of human annotations? In this paper, we are interested in few-shot object segmentation where the number of annotated training examples are limited to 5 only. To evaluate and validate the performance of our approach, we have built a few-shot segmentation dataset, FSS-1000, which consists of 1000 object classes with pixelwise annotation of ground-truth segmentation. Unique in FSS-1000, our dataset contains significant number of objects that have never been seen or annotated in previous datasets, such as tiny daily objects, merchandise, cartoon characters, logos, etc. We build our baseline model using standard backbone networks such as VGG-16, ResNet-101, and Inception. To our surprise, we found that training our model from scratch using FSS-1000 achieves comparable and even better results than training with weights pre-trained by ImageNet which is more than 100 times larger than FSS-1000. Both our approach and dataset are simple, effective, and easily extensible to learn segmentation of new object classes given very few annotated training examples. Dataset is available at https://github.com/HKUSTCV/FSS-1000",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "061d6d5f3df0db70b12f9e90bec327e19b7259c1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1904-11491",
+      "MAG": "2983446232",
+      "ArXiv": "1904.11491",
+      "DOI": "10.1109/ICCV.2019.00356",
+      "CorpusId": 131776850
+    },
+    "title": "Local Relation Networks for Image Recognition",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 554,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.11491",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.11491, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2148904543",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "2090394064",
+        "name": "Zhenda Xie"
+      },
+      {
+        "authorId": "145676588",
+        "name": "Stephen Lin"
+      }
+    ],
+    "abstract": "The convolution layer has been the dominant feature extractor in computer vision for years. However, the spatial aggregation in convolution is basically a pattern matching process that applies fixed filters which are inefficient at modeling visual elements with varying spatial distributions. This paper presents a new image feature extractor, called the local relation layer, that adaptively determines aggregation weights based on the compositional relationship of local pixel pairs. With this relational approach, it can composite visual elements into higher-level entities in a more efficient manner that benefits semantic inference. A network built with local relation layers, called the Local Relation Network (LR-Net), is found to provide greater modeling capacity than its counterpart built with regular convolution on large-scale recognition tasks such as ImageNet classification.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "832ac3846cec3f6d58b840490094271f0420807e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/LeeKPH19",
+      "MAG": "2953209580",
+      "ArXiv": "1904.01810",
+      "DOI": "10.1109/CVPR.2019.00238",
+      "CorpusId": 102352941
+    },
+    "title": "SFNet: Learning Object-Aware Semantic Correspondence",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 161,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1904.01810",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.01810, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118598993",
+        "name": "Junghyup Lee"
+      },
+      {
+        "authorId": null,
+        "name": "Dohyung Kim"
+      },
+      {
+        "authorId": "144189388",
+        "name": "J. Ponce"
+      },
+      {
+        "authorId": "38723538",
+        "name": "Bumsub Ham"
+      }
+    ],
+    "abstract": "We address the problem of semantic correspondence, that is, establishing a dense flow field between images depicting different instances of the same object or scene category. We propose to use images annotated with binary foreground masks and subjected to synthetic geometric deformations to train a convolutional neural network (CNN) for this task. Using these masks as part of the supervisory signal offers a good compromise between semantic flow methods, where the amount of training data is limited by the cost of manually selecting point correspondences, and semantic alignment ones, where the regression of a single global geometric transformation between images may be sensitive to image-specific details such as background clutter. We propose a new CNN architecture, dubbed SFNet, which implements this idea. It leverages a new and differentiable version of the argmax function for end-to-end training, with a loss that combines mask and flow consistency with smoothness terms. Experimental results demonstrate the effectiveness of our approach, which significantly outperforms the state of the art on standard benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "91b33e7a08fa030abf7ba550972b6f4944d9b7cc",
+    "externalIds": {
+      "MAG": "2918771273",
+      "ArXiv": "1903.02351",
+      "DBLP": "conf/cvpr/ZhangLLYS19",
+      "DOI": "10.1109/CVPR.2019.00536",
+      "CorpusId": 70349904
+    },
+    "title": "CANet: Class-Agnostic Segmentation Networks With Iterative Refinement and Attentive Few-Shot Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 656,
+    "openAccessPdf": {
+      "url": "https://dr.ntu.edu.sg/bitstream/10356/144391/2/gusoheng%20paper1%20cvpr%202019.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1903.02351, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144876211",
+        "name": "Chi Zhang"
+      },
+      {
+        "authorId": "2604251",
+        "name": "Guosheng Lin"
+      },
+      {
+        "authorId": "2254178",
+        "name": "Fayao Liu"
+      },
+      {
+        "authorId": "145786594",
+        "name": "Rui Yao"
+      },
+      {
+        "authorId": "1780381",
+        "name": "Chunhua Shen"
+      }
+    ],
+    "abstract": "Recent progress in semantic segmentation is driven by deep Convolutional Neural Networks and large-scale labeled image datasets. However, data labeling for pixel-wise segmentation is tedious and costly. Moreover, a trained model can only make predictions within a set of pre-defined classes. In this paper, we present CANet, a class-agnostic segmentation network that performs few-shot segmentation on new classes with only a few annotated images available. Our network consists of a two-branch dense comparison module which performs multi-level feature comparison between the support image and the query image, and an iterative optimization module which iteratively refines the predicted results. Furthermore, we introduce an attention mechanism to effectively fuse information from multiple support examples under the setting of k-shot learning. Experiments on PASCAL VOC 2012 show that our method achieves a mean Intersection-over-Union score of 55.4% for 1-shot segmentation and 57.1% for 5-shot segmentation, outperforming state-of-the-art methods by a large margin of 14.6% and 13.2%, respectively.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "abcf2e58d54b71455c5d6a807fee54c489164c77",
+    "externalIds": {
+      "MAG": "2964073646",
+      "DBLP": "conf/nips/RoccoCATPS18",
+      "ArXiv": "1810.10510",
+      "CorpusId": 53084192
+    },
+    "title": "Neighbourhood Consensus Networks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 437,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.10510, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10999676",
+        "name": "Ignacio Rocco"
+      },
+      {
+        "authorId": "2543016",
+        "name": "Mircea Cimpoi"
+      },
+      {
+        "authorId": "2299479",
+        "name": "Relja Arandjelović"
+      },
+      {
+        "authorId": "34395018",
+        "name": "A. Torii"
+      },
+      {
+        "authorId": "1758039",
+        "name": "T. Pajdla"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      }
+    ],
+    "abstract": "We address the problem of finding reliable dense correspondences between a pair of images. This is a challenging task due to strong appearance differences between the corresponding scene elements and ambiguities generated by repetitive patterns. The contributions of this work are threefold. First, inspired by the classic idea of disambiguating feature matches using semi-local constraints, we develop an end-to-end trainable convolutional neural network architecture that identifies sets of spatially consistent matches by analyzing neighbourhood consensus patterns in the 4D space of all possible correspondences between a pair of images without the need for a global geometric model. Second, we demonstrate that the model can be trained effectively from weak supervision in the form of matching and non-matching image pairs without the need for costly manual annotation of point to point correspondences. Third, we show the proposed neighbourhood consensus network can be applied to a range of matching tasks including both category- and instance-level matching, obtaining the state-of-the-art results on the PF Pascal dataset and the InLoc indoor visual localization benchmark.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9217e28b2273eb3b26e4e9b7b498b4661e6e09f5",
+    "externalIds": {
+      "ArXiv": "1802.02611",
+      "MAG": "2787091153",
+      "DBLP": "journals/corr/abs-1802-02611",
+      "DOI": "10.1007/978-3-030-01234-2_49",
+      "CorpusId": 3638670
+    },
+    "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 16313,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.02611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "1844940337",
+        "name": "Yukun Zhu"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "3302320",
+        "name": "Florian Schroff"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "Spatial pyramid pooling module or encode-decoder structure are used in deep neural networks for semantic segmentation task. The former networks are able to encode multi-scale contextual information by probing the incoming features with filters or pooling operations at multiple rates and multiple effective fields-of-view, while the latter networks can capture sharper object boundaries by gradually recovering the spatial information. In this work, we propose to combine the advantages from both methods. Specifically, our proposed model, DeepLabv3+, extends DeepLabv3 by adding a simple yet effective decoder module to refine the segmentation results especially along object boundaries. We further explore the Xception model and apply the depthwise separable convolution to both Atrous Spatial Pyramid Pooling and decoder modules, resulting in a faster and stronger encoder-decoder network. We demonstrate the effectiveness of the proposed model on PASCAL VOC 2012 and Cityscapes datasets, achieving the test set performance of 89.0\\% and 82.1\\% without any post-processing. Our paper is accompanied with a publicly available reference implementation of the proposed models in Tensorflow at \\url{this https URL}.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5bc2624a73da20133996c9d416080517367f645f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1712-06861",
+      "MAG": "2949591202",
+      "ArXiv": "1712.06861",
+      "DOI": "10.1109/CVPR.2018.00723",
+      "CorpusId": 1840436
+    },
+    "title": "End-to-End Weakly-Supervised Semantic Alignment",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 189,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1712.06861",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1712.06861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10999676",
+        "name": "Ignacio Rocco"
+      },
+      {
+        "authorId": "2299479",
+        "name": "Relja Arandjelović"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      }
+    ],
+    "abstract": "We tackle the task of semantic alignment where the goal is to compute dense semantic correspondence aligning two images depicting objects of the same category. This is a challenging task due to large intra-class variation, changes in viewpoint and background clutter. We present the following three principal contributions. First, we develop a convolutional neural network architecture for semantic alignment that is trainable in an end-to-end manner from weak image-level supervision in the form of matching image pairs. The outcome is that parameters are learnt from rich appearance variation present in different but semantically related images without the need for tedious manual annotation of correspondences at training time. Second, the main component of this architecture is a differentiable soft inlier scoring module, inspired by the RANSAC inlier scoring procedure, that computes the quality of the alignment based on only geometrically consistent correspondences thereby reducing the effect of background clutter. Third, we demonstrate that the proposed approach achieves state-of-the-art performance on multiple standard benchmarks for semantic alignment.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6a0aaefce8a27a8727d896fa444ba27558b2d381",
+    "externalIds": {
+      "MAG": "2775315796",
+      "DBLP": "journals/corr/abs-1711-11575",
+      "ArXiv": "1711.11575",
+      "DOI": "10.1109/CVPR.2018.00378",
+      "CorpusId": 37158713
+    },
+    "title": "Relation Networks for Object Detection",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 1322,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1711.11575",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.11575, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "30107062",
+        "name": "Jiayuan Gu"
+      },
+      {
+        "authorId": "2148904543",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "3304536",
+        "name": "Jifeng Dai"
+      },
+      {
+        "authorId": "1732264",
+        "name": "Yichen Wei"
+      }
+    ],
+    "abstract": "Although it is well believed for years that modeling relations between objects would help object recognition, there has not been evidence that the idea is working in the deep learning era. All state-of-the-art object detection systems still rely on recognizing object instances individually, without exploiting their relations during learning. This work proposes an object relation module. It processes a set of objects simultaneously through interaction between their appearance feature and geometry, thus allowing modeling of their relations. It is lightweight and in-place. It does not require additional supervision and is easy to embed in existing networks. It is shown effective on improving object recognition and duplicate removal steps in the modern object detection pipeline. It verifies the efficacy of modeling object relations in CNN based detection. It gives rise to the first fully end-to-end object detector.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d07284a6811f1b2745d91bdb06b040b57f226882",
+    "externalIds": {
+      "MAG": "2950541952",
+      "DBLP": "conf/iclr/LoshchilovH19",
+      "CorpusId": 53592270
+    },
+    "title": "Decoupled Weight Decay Regularization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 33038,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "54c802e7dadac855de06725bf146cdf20319e46b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1709-02371",
+      "MAG": "2963782415",
+      "ArXiv": "1709.02371",
+      "DOI": "10.1109/CVPR.2018.00931",
+      "CorpusId": 30824366
+    },
+    "title": "PWC-Net: CNNs for Optical Flow Using Pyramid, Warping, and Cost Volume",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 2787,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1709.02371",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1709.02371, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3232265",
+        "name": "Deqing Sun"
+      },
+      {
+        "authorId": "38101706",
+        "name": "Xiaodong Yang"
+      },
+      {
+        "authorId": "39793900",
+        "name": "Ming-Yu Liu"
+      },
+      {
+        "authorId": "2376331450",
+        "name": "Jan Kautz"
+      }
+    ],
+    "abstract": "We present a compact but effective CNN model for optical flow, called PWC-Net. PWC-Net has been designed according to simple and well-established principles: pyramidal processing, warping, and the use of a cost volume. Cast in a learnable feature pyramid, PWC-Net uses the current optical flow estimate to warp the CNN features of the second image. It then uses the warped features and features of the first image to construct a cost volume, which is processed by a CNN to estimate the optical flow. PWC-Net is 17 times smaller in size and easier to train than the recent FlowNet2 model. Moreover, it outperforms all published optical flow methods on the MPI Sintel final pass and KITTI 2015 benchmarks, running at about 35 fps on Sintel resolution (1024 Ã— 436) images. Our models are available on our project website.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "3f0214808397b0adbc14a5139bc8d811019a23e1",
+    "externalIds": {
+      "MAG": "2754560798",
+      "DBLP": "journals/corr/abs-1709-03410",
+      "ArXiv": "1709.03410",
+      "DOI": "10.5244/C.31.167",
+      "CorpusId": 23237949
+    },
+    "title": "One-Shot Learning for Semantic Segmentation",
+    "venue": "British Machine Vision Conference",
+    "year": 2017,
+    "citationCount": 866,
+    "openAccessPdf": {
+      "url": "http://www.bmva.org/bmvc/2017/papers/paper167/paper167.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1709.03410, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2966051",
+        "name": "Amirreza Shaban"
+      },
+      {
+        "authorId": "2791509",
+        "name": "Shray Bansal"
+      },
+      {
+        "authorId": "46270580",
+        "name": "Z. Liu"
+      },
+      {
+        "authorId": "21472040",
+        "name": "Irfan Essa"
+      },
+      {
+        "authorId": "3288815",
+        "name": "Byron Boots"
+      }
+    ],
+    "abstract": "Low-shot learning methods for image classification support learning from sparse data. We extend these techniques to support dense semantic image segmentation. Specifically, we train a network that, given a small set of annotated images, produces parameters for a Fully Convolutional Network (FCN). We use this FCN to perform dense pixel-level prediction on a test image for the new semantic class. Our architecture shows a 25% relative meanIoU improvement compared to the best baseline methods for one-shot segmentation on unseen classes in the PASCAL VOC 2012 dataset and is at least 3 times faster.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174052,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "aeac8eecf1cadda77c821e004dcbc6a72ef99297",
+    "externalIds": {
+      "DBLP": "journals/pami/HamCSP18",
+      "MAG": "2950001648",
+      "ArXiv": "1703.07144",
+      "DOI": "10.1109/TPAMI.2017.2724510",
+      "CorpusId": 215806408,
+      "PubMed": "28708543"
+    },
+    "title": "Proposal Flow: Semantic Correspondences from Object Proposals",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2017,
+    "citationCount": 146,
+    "openAccessPdf": {
+      "url": "https://hal.inria.fr/hal-01644132/file/proposal_flow_revised.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.07144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38723538",
+        "name": "Bumsub Ham"
+      },
+      {
+        "authorId": "72643925",
+        "name": "Minsu Cho"
+      },
+      {
+        "authorId": "2462253",
+        "name": "C. Schmid"
+      },
+      {
+        "authorId": "144189388",
+        "name": "J. Ponce"
+      }
+    ],
+    "abstract": "Finding image correspondences remains a challenging problem in the presence of intra-class variations and large changes in scene layout. Semantic flow methods are designed to handle images depicting different instances of the same object or scene category. We introduce a novel approach to semantic flow, dubbed proposal flow, that establishes reliable correspondences using object proposals. Unlike prevailing semantic flow approaches that operate on pixels or regularly sampled local regions, proposal flow benefits from the characteristics of modern object proposals, that exhibit high repeatability at multiple scales, and can take advantage of both local and geometric consistency constraints among proposals. We also show that the corresponding sparse proposal flow can effectively be transformed into a conventional dense flow field. We introduce two new challenging datasets that can be used to evaluate both general semantic flow techniques and region-based approaches such as proposal flow. We use these benchmarks to compare different matching algorithms, object proposals, and region features within proposal flow, to the state of the art in semantic flow. This comparison, along with experiments on standard datasets, demonstrates that proposal flow significantly outperforms existing semantic flow methods in various settings.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "0ad6c1aed733b59c54f220216409e934e0f11242",
+    "externalIds": {
+      "MAG": "2953142863",
+      "DBLP": "conf/cvpr/RoccoAS17",
+      "ArXiv": "1703.05593",
+      "DOI": "10.1109/CVPR.2017.12",
+      "CorpusId": 1824134
+    },
+    "title": "Convolutional Neural Network Architecture for Geometric Matching",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 582,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1703.05593",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.05593, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2065198709",
+        "name": "Ignacio Rocco"
+      },
+      {
+        "authorId": "2299479",
+        "name": "Relja Arandjelović"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      }
+    ],
+    "abstract": "We address the problem of determining correspondences between two images in agreement with a geometric model such as an affine or thin-plate spline transformation, and estimating its parameters. The contributions of this work are three-fold. First, we propose a convolutional neural network architecture for geometric matching. The architecture is based on three main components that mimic the standard steps of feature extraction, matching and simultaneous inlier detection and model parameter estimation, while being trainable end-to-end. Second, we demonstrate that the network parameters can be trained from synthetically generated imagery without the need for manual annotation and that our matching layer significantly increases generalization capabilities to never seen before images. Finally, we show that the same model can perform both instance-level and category-level matching giving state-of-the-art results on the challenging Proposal Flow dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c269858a7bb34e8350f2442ccf37797856ae9bca",
+    "externalIds": {
+      "DBLP": "conf/nips/SnellSZ17",
+      "ArXiv": "1703.05175",
+      "MAG": "2950537964",
+      "CorpusId": 309759
+    },
+    "title": "Prototypical Networks for Few-shot Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 9766,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.05175, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39770136",
+        "name": "Jake Snell"
+      },
+      {
+        "authorId": "1754860",
+        "name": "Kevin Swersky"
+      },
+      {
+        "authorId": "1804104",
+        "name": "R. Zemel"
+      }
+    ],
+    "abstract": "We propose Prototypical Networks for the problem of few-shot classification, where a classifier must generalize to new classes not seen in the training set, given only a small number of examples of each new class. Prototypical Networks learn a metric space in which classification can be performed by computing distances to prototype representations of each class. Compared to recent approaches for few-shot learning, they reflect a simpler inductive bias that is beneficial in this limited-data regime, and achieve excellent results. We provide an analysis showing that some simple design decisions can yield substantial improvements over recent approaches involving complicated architectural choices and meta-learning. We further extend Prototypical Networks to zero-shot learning and achieve state-of-the-art results on the CU-Birds dataset.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "cb43585df43d74225e70570a114967fc2b0fac08",
+    "externalIds": {
+      "DBLP": "journals/corr/KimMHJLS17",
+      "ArXiv": "1702.00926",
+      "MAG": "2949997773",
+      "DOI": "10.1109/CVPR.2017.73",
+      "CorpusId": 2038500
+    },
+    "title": "FCSS: Fully Convolutional Self-Similarity for Dense Semantic Correspondence",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 137,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1702.00926",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.00926, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2099537",
+        "name": "Seungryong Kim"
+      },
+      {
+        "authorId": "2065130",
+        "name": "Dongbo Min"
+      },
+      {
+        "authorId": "38723538",
+        "name": "Bumsub Ham"
+      },
+      {
+        "authorId": "9535835",
+        "name": "Sangryul Jeon"
+      },
+      {
+        "authorId": "145676588",
+        "name": "Stephen Lin"
+      },
+      {
+        "authorId": "144442279",
+        "name": "K. Sohn"
+      }
+    ],
+    "abstract": "We present a descriptor, called fully convolutional self-similarity (FCSS), for dense semantic correspondence. To robustly match points among different instances within the same object class, we formulate FCSS using local self-similarity (LSS) within a fully convolutional network. In contrast to existing CNN-based descriptors, FCSS is inherently insensitive to intra-class appearance variations because of its LSS-based structure, while maintaining the precise localization ability of deep neural networks. The sampling patterns of local structure and the self-similarity measure are jointly learned within the proposed network in an end-to-end and multi-scale manner. As training data for semantic correspondence is rather limited, we propose to leverage object candidate priors provided in existing image datasets and also correspondence consistency between object pairs to enable weakly-supervised learning. Experiments demonstrate that FCSS outperforms conventional handcrafted descriptors and CNN-based descriptors on various benchmarks.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "29c887794eed2ca9462638ff853e6fe1ab91d5d8",
+    "externalIds": {
+      "MAG": "2753160622",
+      "DBLP": "conf/iclr/RaviL17",
+      "CorpusId": 67413369
+    },
+    "title": "Optimization as a Model for Few-Shot Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 3664,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "49517463",
+        "name": "S. Ravi"
+      },
+      {
+        "authorId": "1777528",
+        "name": "H. Larochelle"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "97fb4e3d45bb098e27e0071448b6152217bd35a5",
+    "externalIds": {
+      "MAG": "3037932933",
+      "ArXiv": "1607.06450",
+      "DBLP": "journals/corr/BaKH16",
+      "CorpusId": 8236317
+    },
+    "title": "Layer Normalization",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 12344,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1607.06450, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      },
+      {
+        "authorId": "51131802",
+        "name": "J. Kiros"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "Training state-of-the-art, deep neural networks is computationally expensive. One way to reduce the training time is to normalize the activities of the neurons. A recently introduced technique called batch normalization uses the distribution of the summed input to a neuron over a mini-batch of training cases to compute a mean and variance which are then used to normalize the summed input to that neuron on each training case. This significantly reduces the training time in feed-forward neural networks. However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks. In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case. Like batch normalization, we also give each neuron its own adaptive bias and gain which are applied after the normalization but before the non-linearity. Unlike batch normalization, layer normalization performs exactly the same computation at training and test times. It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step. Layer normalization is very effective at stabilizing the hidden state dynamics in recurrent networks. Empirically, we show that layer normalization can substantially reduce the training time compared with previously published techniques.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "be1bb4e4aa1fcf70281b4bd24d8cd31c04864bb6",
+    "externalIds": {
+      "MAG": "2963341924",
+      "DBLP": "conf/nips/VinyalsBLKW16",
+      "ArXiv": "1606.04080",
+      "CorpusId": 8909022
+    },
+    "title": "Matching Networks for One Shot Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 8280,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.04080, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "1723876",
+        "name": "C. Blundell"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      }
+    ],
+    "abstract": "Learning from a few examples remains a key challenge in machine learning. Despite recent advances in important domains such as vision and language, the standard supervised deep learning paradigm does not offer a satisfactory solution for learning new concepts rapidly from little data. In this work, we employ ideas from metric learning based on deep neural features and from recent advances that augment neural networks with external memories. Our framework learns a network that maps a small labelled support set and an unlabelled example to its label, obviating the need for fine-tuning to adapt to new class types. We then define one-shot learning problems on vision (using Omniglot, ImageNet) and language tasks. Our algorithm improves one-shot accuracy on ImageNet from 87.6% to 93.2% and from 88.0% to 93.8% on Omniglot compared to competing approaches. We also demonstrate the usefulness of the same model on language modeling by introducing a one-shot task on the Penn Treebank.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "cab372bc3824780cce20d9dd1c22d4df39ed081a",
+    "externalIds": {
+      "ArXiv": "1606.00915",
+      "MAG": "2952865063",
+      "DBLP": "journals/pami/ChenPKMY18",
+      "DOI": "10.1109/TPAMI.2017.2699184",
+      "CorpusId": 3429309,
+      "PubMed": "28463186"
+    },
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 20749,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1606.00915",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.00915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7 percent mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226101,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "8b97247d9e097c82e47b406bc6282fa4fc2c58ed",
+    "externalIds": {
+      "ArXiv": "1511.05065",
+      "MAG": "2566812041",
+      "DBLP": "journals/corr/HamCSP15",
+      "DOI": "10.1109/CVPR.2016.378",
+      "CorpusId": 6050505
+    },
+    "title": "Proposal Flow",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 152,
+    "openAccessPdf": {
+      "url": "https://hal.archives-ouvertes.fr/hal-01240281/file/proposal_flow.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.05065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38723538",
+        "name": "Bumsub Ham"
+      },
+      {
+        "authorId": "72643925",
+        "name": "Minsu Cho"
+      },
+      {
+        "authorId": "2462253",
+        "name": "C. Schmid"
+      },
+      {
+        "authorId": "144189388",
+        "name": "J. Ponce"
+      }
+    ],
+    "abstract": "Finding image correspondences remains a challenging problem in the presence of intra-class variations and large changes in scene layout. Semantic flow methods are designed to handle images depicting different instances of the same object or scene category. We introduce a novel approach to semantic flow, dubbed proposal flow, that establishes reliable correspondences using object proposals. Unlike prevailing semantic flow approaches that operate on pixels or regularly sampled local regions, proposal flow benefits from the characteristics of modern object proposals, that exhibit high repeatability at multiple scales, and can take advantage of both local and geometric consistency constraints among proposals. We also show that proposal flow can effectively be transformed into a conventional dense flow field. We introduce a new dataset that can be used to evaluate both general semantic flow techniques and region-based approaches such as proposal flow. We use this benchmark to compare different matching algorithms, object proposals, and region features within proposal flow, to the state of the art in semantic flow. This comparison, along with experiments on standard datasets, demonstrates that proposal flow significantly outperforms existing semantic flow methods in various settings.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "cf986bfe13a24d4739f95df3a856a3c6e4ed4c1c",
+    "externalIds": {
+      "MAG": "2952637581",
+      "DBLP": "conf/iccv/NohHH15",
+      "ArXiv": "1505.04366",
+      "DOI": "10.1109/ICCV.2015.178",
+      "CorpusId": 623137
+    },
+    "title": "Learning Deconvolution Network for Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 4337,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1505.04366",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.04366, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2018393",
+        "name": "Hyeonwoo Noh"
+      },
+      {
+        "authorId": "2241528",
+        "name": "Seunghoon Hong"
+      },
+      {
+        "authorId": "40030651",
+        "name": "Bohyung Han"
+      }
+    ],
+    "abstract": "We propose a novel semantic segmentation algorithm by learning a deep deconvolution network. We learn the network on top of the convolutional layers adopted from VGG 16-layer net. The deconvolution network is composed of deconvolution and unpooling layers, which identify pixelwise class labels and predict segmentation masks. We apply the trained network to each proposal in an input image, and construct the final semantic segmentation map by combining the results from all proposals in a simple manner. The proposed algorithm mitigates the limitations of the existing methods based on fully convolutional networks by integrating deep deconvolution network and proposal-wise prediction, our segmentation method typically identifies detailed structures and handles objects in multiple scales naturally. Our network demonstrates outstanding performance in PASCAL VOC 2012 dataset, and we achieve the best accuracy (72.5%) among the methods trained without using Microsoft COCO dataset through ensemble with the fully convolutional network.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6fc6803df5f9ae505cae5b2f178ade4062c768d0",
+    "externalIds": {
+      "DBLP": "journals/corr/ShelhamerLD16",
+      "MAG": "2952632681",
+      "ArXiv": "1411.4038",
+      "DOI": "10.1109/CVPR.2015.7298965",
+      "CorpusId": 1629541
+    },
+    "title": "Fully convolutional networks for semantic segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 41592,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1411.4038",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.4038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1782282",
+        "name": "Evan Shelhamer"
+      },
+      {
+        "authorId": "2117314646",
+        "name": "Jonathan Long"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "Convolutional networks are powerful visual models that yield hierarchies of features. We show that convolutional networks by themselves, trained end-to-end, pixels-to-pixels, exceed the state-of-the-art in semantic segmentation. Our key insight is to build “fully convolutional” networks that take input of arbitrary size and produce correspondingly-sized output with efficient inference and learning. We define and detail the space of fully convolutional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models. We adapt contemporary classification networks (AlexNet [20], the VGG net [31], and GoogLeNet [32]) into fully convolutional networks and transfer their learned representations by fine-tuning [3] to the segmentation task. We then define a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed segmentations. Our fully convolutional network achieves state-of-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one fifth of a second for a typical image.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "eb42cf88027de515750f230b23b1a057dc782108",
+    "externalIds": {
+      "MAG": "2949429431",
+      "ArXiv": "1409.1556",
+      "DBLP": "journals/corr/SimonyanZ14a",
+      "CorpusId": 14124313
+    },
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 110767,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.1556, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "In this work we investigate the effect of the convolutional network depth on its accuracy in the large-scale image recognition setting. Our main contribution is a thorough evaluation of networks of increasing depth using an architecture with very small (3x3) convolution filters, which shows that a significant improvement on the prior-art configurations can be achieved by pushing the depth to 16-19 weight layers. These findings were the basis of our ImageNet Challenge 2014 submission, where our team secured the first and the second places in the localisation and classification tracks respectively. We also show that our representations generalise well to other datasets, where they achieve state-of-the-art results. We have made our two best-performing ConvNet models publicly available to facilitate further research on the use of deep visual representations in computer vision.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "342786659379879f58bf5c4ff43c84c83a6a7389",
+    "externalIds": {
+      "ArXiv": "1407.1808",
+      "DBLP": "conf/eccv/HariharanAGM14",
+      "MAG": "2950612966",
+      "DOI": "10.1007/978-3-319-10584-0_20",
+      "CorpusId": 9272368
+    },
+    "title": "Simultaneous Detection and Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 1335,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/978-3-319-10584-0_20.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1407.1808, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1790580",
+        "name": "Bharath Hariharan"
+      },
+      {
+        "authorId": "1778133",
+        "name": "Pablo Arbeláez"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      }
+    ],
+    "abstract": "We aim to detect all instances of a category in an image and, for each instance, mark the pixels that belong to it. We call this task Simultaneous Detection and Segmentation (SDS). Unlike classical bounding box detection, SDS requires a segmentation and not just a box. Unlike classical semantic segmentation, we require individual object instances. We build on recent work that uses convolutional neural networks to classify category-independent region proposals (R-CNN [16]), introducing a novel architecture tailored for SDS. We then use category-specific, top-down figure-ground predictions to refine our bottom-up proposals. We show a 7 point boost (16% relative) over our baselines on SDS, a 5 point boost (10% relative) over state-of-the-art on semantic segmentation, and state-of-the-art performance in object detection. Finally, we provide diagnostic tools that unpack performance and provide directions for future work.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "71b7178df5d2b112d07e45038cb5637208659ff7",
+    "externalIds": {
+      "ArXiv": "1405.0312",
+      "DBLP": "conf/eccv/LinMBHPRDZ14",
+      "MAG": "2952122856",
+      "DOI": "10.1007/978-3-319-10602-1_48",
+      "CorpusId": 14113767
+    },
+    "title": "Microsoft COCO: Common Objects in Context",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 52004,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2F978-3-319-10602-1_48.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1405.0312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "48966748",
+        "name": "James Hays"
+      },
+      {
+        "authorId": "1690922",
+        "name": "P. Perona"
+      },
+      {
+        "authorId": "1770537",
+        "name": "Deva Ramanan"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "1699161",
+        "name": "C. L. Zitnick"
+      }
+    ],
+    "abstract": "We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model.",
+    "_is_influential": true,
+    "_intents": [
+      "result"
+    ]
+  },
+  {
+    "paperId": "f908d2fb9cfcaff17030a912e4811fb02aaeec03",
+    "externalIds": {
+      "MAG": "2148534289",
+      "DBLP": "journals/pami/HosniRBRG13",
+      "DOI": "10.1109/CVPR.2011.5995372",
+      "CorpusId": 1680724,
+      "PubMed": "22848130"
+    },
+    "title": "Fast cost-volume filtering for visual correspondence and beyond",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2011,
+    "citationCount": 1178,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2011.5995372?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2011.5995372, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2086328",
+        "name": "Christoph Rhemann"
+      },
+      {
+        "authorId": "3115485",
+        "name": "A. Hosni"
+      },
+      {
+        "authorId": "2873656",
+        "name": "M. Bleyer"
+      },
+      {
+        "authorId": "1756036",
+        "name": "C. Rother"
+      },
+      {
+        "authorId": "1990797",
+        "name": "M. Gelautz"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DengDSLL009",
+      "MAG": "2108598243",
+      "DOI": "10.1109/CVPR.2009.5206848",
+      "CorpusId": 57246310
+    },
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2009,
+    "citationCount": 72462,
+    "openAccessPdf": {
+      "url": "http://www.image-net.org/papers/imagenet_cvpr09.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2009.5206848?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2009.5206848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144847596",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "94451829",
+        "name": "K. Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "28e4b8ebbdb0e80f03b6f0578deeb38694af081e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/PhilbinCISZ07",
+      "MAG": "2141362318",
+      "DOI": "10.1109/CVPR.2007.383172",
+      "CorpusId": 12203312
+    },
+    "title": "Object retrieval with large vocabularies and fast spatial matching",
+    "venue": "2007 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2007,
+    "citationCount": 3304,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2007.383172?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2007.383172, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2066819269",
+        "name": "James Philbin"
+      },
+      {
+        "authorId": "1700928",
+        "name": "Ondřej Chum"
+      },
+      {
+        "authorId": "2090818",
+        "name": "M. Isard"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d2f78c2b2b325d72f359d4c797c9aab6a8e60942",
+    "externalIds": {
+      "MAG": "2104974755",
+      "DBLP": "journals/ijcv/ScharsteinS02",
+      "DOI": "10.1023/A:1014573219977",
+      "CorpusId": 195859047
+    },
+    "title": "A Taxonomy and Evaluation of Dense Two-Frame Stereo Correspondence Algorithms",
+    "venue": "Proceedings IEEE Workshop on Stereo and Multi-Baseline Vision (SMBV 2001)",
+    "year": 2001,
+    "citationCount": 8050,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1023/A:1014573219977?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1023/A:1014573219977, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1709053",
+        "name": "D. Scharstein"
+      },
+      {
+        "authorId": "1717841",
+        "name": "R. Szeliski"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "99f91b786e83497a100b059cbb58917406459ebd",
+    "externalIds": {
+      "DBLP": "journals/jcisd/TetkoLL95",
+      "MAG": "2010611103",
+      "DOI": "10.1021/ci00027a006",
+      "CorpusId": 17856855
+    },
+    "title": "Neural network studies, 1. Comparison of overfitting and overtraining",
+    "venue": "Journal of chemical information and computer sciences",
+    "year": 1995,
+    "citationCount": 680,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1021/ci00027a006?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1021/ci00027a006, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1708726",
+        "name": "I. Tetko"
+      },
+      {
+        "authorId": "35069983",
+        "name": "D. Livingstone"
+      },
+      {
+        "authorId": "2639983",
+        "name": "A. Luik"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "6954a6bb9d6f3e365b26b694c963ae1d62a03444",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-09084",
+      "ArXiv": "2108.09084",
+      "CorpusId": 237266377
+    },
+    "title": "Fastformer: Additive Attention Can Be All You Need",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 154,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.09084, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "15161448",
+        "name": "Chuhan Wu"
+      },
+      {
+        "authorId": "2397264",
+        "name": "Fangzhao Wu"
+      },
+      {
+        "authorId": "50329599",
+        "name": "Tao Qi"
+      },
+      {
+        "authorId": "1731776",
+        "name": "Yongfeng Huang"
+      }
+    ],
+    "abstract": "Transformer is a powerful model for text understanding. However, it is inefficient due to its quadratic complexity to input sequence length. Although there are many methods on Transformer acceleration, they are still either inefficient on long sequences or not effective enough. In this paper, we propose Fastformer, which is an efficient Transformer model based on additive attention. In Fastformer, instead of modeling the pair-wise interactions between tokens, we first use additive attention mechanism to model global contexts, and then further transform each token representation based on its interaction with global context representations. In this way, Fastformer can achieve effective context modeling with linear complexity. Extensive experiments on five datasets show that Fastformer is much more efficient than many existing Transformer models and can meanwhile achieve comparable or even better long text modeling performance.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result"
+    ]
+  },
+  {
+    "paperId": "c8b25fab5608c3e033d34b4483ec47e68ba109b7",
+    "externalIds": {
+      "DBLP": "conf/iccv/LiuL00W0LG21",
+      "ArXiv": "2103.14030",
+      "DOI": "10.1109/ICCV48922.2021.00986",
+      "CorpusId": 232352874
+    },
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 31374,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2103.14030",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.14030, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109371439",
+        "name": "Ze Liu"
+      },
+      {
+        "authorId": "51091819",
+        "name": "Yutong Lin"
+      },
+      {
+        "authorId": "2112823372",
+        "name": "Yue Cao"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2107995927",
+        "name": "Yixuan Wei"
+      },
+      {
+        "authorId": "2148904543",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "145676588",
+        "name": "Stephen Lin"
+      },
+      {
+        "authorId": "2261753424",
+        "name": "B. Guo"
+      }
+    ],
+    "abstract": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection. This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size. These qualities of Swin Transformer make it compatible with a broad range of vision tasks, including image classification (87.3 top-1 accuracy on ImageNet-1K) and dense prediction tasks such as object detection (58.7 box AP and 51.1 mask AP on COCO test-dev) and semantic segmentation (53.5 mIoU on ADE20K val). Its performance surpasses the previous state-of-the-art by a large margin of +2.7 box AP and +2.6 mask AP on COCO, and +3.2 mIoU on ADE20K, demonstrating the potential of Transformer-based models as vision backbones. The hierarchical design and the shifted window approach also prove beneficial for all-MLP architectures. The code and models are publicly available at https://github.com/microsoft/Swin-Transformer.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2742eb419e9b332ca1c881e91c40caa69f70c789",
+    "externalIds": {
+      "DBLP": "conf/eccv/WangZHYCZ20",
+      "MAG": "3108187451",
+      "DOI": "10.1007/978-3-030-58601-0_43",
+      "CorpusId": 221757772
+    },
+    "title": "Few-Shot Semantic Segmentation with Democratic Attention Networks",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 230,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-030-58601-0_43?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-030-58601-0_43, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48017277",
+        "name": "Haochen Wang"
+      },
+      {
+        "authorId": "2108095077",
+        "name": "Xudong Zhang"
+      },
+      {
+        "authorId": "46972432",
+        "name": "Yutao Hu"
+      },
+      {
+        "authorId": "2108810606",
+        "name": "Yandan Yang"
+      },
+      {
+        "authorId": "40916581",
+        "name": "Xianbin Cao"
+      },
+      {
+        "authorId": "34798935",
+        "name": "Xiantong Zhen"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b91cf3d7db07c7b8930b91526136a60b88c69e21",
+    "externalIds": {
+      "MAG": "3095145867",
+      "DBLP": "conf/eccv/JeonMKCS20",
+      "DOI": "10.1007/978-3-030-58604-1_38",
+      "CorpusId": 226239787
+    },
+    "title": "Guided Semantic Flow",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-030-58604-1_38?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-030-58604-1_38, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9535835",
+        "name": "Sangryul Jeon"
+      },
+      {
+        "authorId": "2065130",
+        "name": "Dongbo Min"
+      },
+      {
+        "authorId": "2099537",
+        "name": "Seungryong Kim"
+      },
+      {
+        "authorId": "1938789772",
+        "name": "Jihwan Choe"
+      },
+      {
+        "authorId": "144442279",
+        "name": "K. Sohn"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "17d3f0abff5569768e890afb8633d5f29bb9c289",
+    "externalIds": {
+      "MAG": "2893918048",
+      "DBLP": "conf/bmvc/DongX18",
+      "CorpusId": 52284769
+    },
+    "title": "Few-Shot Semantic Segmentation with Prototype Learning",
+    "venue": "British Machine Vision Conference",
+    "year": 2018,
+    "citationCount": 551,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "40960220",
+        "name": "Nanqing Dong"
+      },
+      {
+        "authorId": "143977260",
+        "name": "E. Xing"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  }
+]
