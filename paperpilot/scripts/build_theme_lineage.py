@@ -172,11 +172,13 @@ def _add_cross_node_edges(
             if not (_is_anchor(citing_id) or _is_anchor(ref_id)):
                 continue
             # Edge convention is parent → child. References = ancestors;
-            # cited paper is the parent, citing paper is the child.
+            # cited paper is the parent (= ref), citing paper is the
+            # child (= node already in graph).
             edge_key = (ref_id, citing_id)
             if edge_key in existing:
                 continue
-            cls = derive_relation(ref)
+            citing_node = nodes.get(citing_id)
+            cls = derive_relation(ref, parent=ref, child=citing_node)
             if cls is None:
                 continue
             edges.append({
@@ -191,26 +193,77 @@ def _add_cross_node_edges(
     return added
 
 
-def derive_relation(parent: dict) -> dict | None:
-    """Heuristic relation classifier — replaces the LLM classify call.
+def derive_relation(
+    intent_record: dict,
+    *,
+    parent: dict | None = None,
+    child: dict | None = None,
+) -> dict | None:
+    """Heuristic LLM-free relation classifier.
 
-    Returns ``None`` when the parent should be skipped entirely (S2
-    flagged it as not influential to the citing paper). Otherwise picks
-    a relation enum based on the S2 ``intents`` array, falling back to
-    ``extends`` when intents are missing or empty.
+    ``intent_record`` is the S2 paper dict that carries the
+    ``_is_influential`` / ``_intents`` fields lifted by ``fetch_related``.
+    ``parent`` (older) and ``child`` (newer) are the two endpoints of
+    the edge — used for the year / citation heuristic when intents
+    don't pin down a category.
+
+    Direction conventions:
+      * BFS (references): the cited paper carries intents; parent =
+        intent_record, child = the citing paper currently being processed.
+      * Descendants (citations): the citing paper carries intents;
+        parent = the seed, child = intent_record (the citer).
+      * Cross-node: parent = intent_record (cited), child = the citing
+        node already in the graph.
+
+    Returns ``None`` when S2 flagged the citation as non-influential.
+
+    #80: refines the previous default-everything-to-``extends`` path
+    with a year + citation contrast pass that picks ``supersedes`` /
+    ``successor`` / ``contrasts`` / ``ablation`` when intents are
+    missing. Cuts the "all extends" appearance the user reported on
+    the SemSeg tree.
     """
-    if parent.get("_is_influential") is False:
+    if intent_record.get("_is_influential") is False:
         return None
-    intents = parent.get("_intents") or []
+    intents = intent_record.get("_intents") or []
     intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
     for keyword, relation, rationale in _INTENT_RELATION_MAP:
         if keyword in intents_set:
-            return {
-                "relation": relation,
-                "confidence": _DERIVED_CONFIDENCE,
-                "rationale": rationale,
-            }
+            return _make_derived(relation, rationale)
+
+    # No intents — try year + citation contrast.
+    if parent is not None and child is not None:
+        py = parent.get("year")
+        cy = child.get("year")
+        pc = parent.get("citationCount") or parent.get("citation_count") or 0
+        cc = child.get("citationCount") or child.get("citation_count") or 0
+        if isinstance(py, int) and isinstance(cy, int):
+            delta = cy - py
+            if delta >= 3 and pc > 100 and cc >= pc * 1.5:
+                return _make_derived(
+                    "supersedes",
+                    "論文 B は論文 A の手法を置き換える改良版として提案されている。",
+                )
+            if delta <= 1 and pc > 100 and 0.5 <= cc / max(pc, 1) <= 2.0:
+                return _make_derived(
+                    "contrasts",
+                    "論文 B は論文 A と根本的に異なるアプローチを提案している。",
+                )
+            if delta <= 2 and cc < 100 and pc > 1000:
+                return _make_derived(
+                    "ablation",
+                    "論文 B は論文 A の構成要素を分析・ablation している。",
+                )
+            if 1 <= delta <= 5:
+                return _make_derived(
+                    "successor",
+                    "論文 B は論文 A の研究ラインを継承し自然に発展させている。",
+                )
     relation, rationale = _DEFAULT_DERIVED
+    return _make_derived(relation, rationale)
+
+
+def _make_derived(relation: str, rationale: str) -> dict:
     return {
         "relation": relation,
         "confidence": _DERIVED_CONFIDENCE,
@@ -445,7 +498,9 @@ def build_theme_lineage(
             # edge), and otherwise picks a relation enum + rationale by
             # mapping the intents array via _INTENT_RELATION_MAP.
             classify_attempted += 1
-            cls = derive_relation(parent)
+            # BFS: parent (cited) carries intents; current is the citing
+            # child being processed (parent → current edge).
+            cls = derive_relation(parent, parent=parent, child=current)
             if cls is not None:
                 classify_succeeded += 1
                 edges.append(
@@ -493,7 +548,10 @@ def build_theme_lineage(
                 nodes[cid] = to_node(
                     child, trending=_is_trending(child, current_year)
                 )
-            cls = derive_relation(child)
+            # Descendants direction: seed → child edge. The CHILD carries
+            # intents (S2 citations endpoint annotates the citing paper).
+            # parent=seed (older), child=child (newer) for year/cite logic.
+            cls = derive_relation(child, parent=seed, child=child)
             if cls is None:
                 continue
             if any(e["src"] == sid and e["dst"] == cid for e in edges):
