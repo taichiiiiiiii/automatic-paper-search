@@ -28,7 +28,9 @@ const RELATION_LABEL_JA = {
 };
 
 const NODE_W = 260;
-const NODE_H = 168;
+// #63: 168 → 192 to fit 2-line TLDR clamp under the existing rows
+// without re-introducing the title/authors/meta overflow #56 fixed.
+const NODE_H = 192;
 const ROW_GAP = 80;        // vertical gap between year rows
 const SIBLING_GAP = 28;    // horizontal gap between within-year siblings
 const PADDING = 56;
@@ -588,11 +590,17 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     } else if (p.doi && /^[\w./-]+$/.test(p.doi)) {
       paperUrl = `https://doi.org/${encodeURIComponent(p.doi)}`;
     }
+    // #63: TLDR is the abstract head ≤ 140 chars — show it 2-line-clamped
+    // under the title so users can size up a paper without clicking.
+    const tldrHtml = p.tldr
+      ? `<div class="node-card__tldr">${escapeHtml(p.tldr)}</div>`
+      : "";
     card.innerHTML = `
       <div class="node-card__venue">
         <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
       </div>
       <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
+      ${tldrHtml}
       <div class="node-card__authors">${escapeHtml(authors)}</div>
       <div class="node-card__meta">${cits}${starsHtml}</div>
     `;
