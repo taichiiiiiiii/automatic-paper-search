@@ -67,6 +67,8 @@ const state = {
   ),
   // #61: search query (lowercased). Empty string = no filter applied.
   searchQuery: "",
+  // #62: year-range filter. null/null = no filter applied.
+  yearRange: { min: null, max: null },
 };
 
 // #61: matchesSearch — case-insensitive needle in title / authors / venue.
@@ -83,6 +85,17 @@ function matchesSearch(node, q) {
   return false;
 }
 
+// #62: matchesYear — true when node.year is within [min, max] inclusive.
+// Null bounds (no filter) and unknown years (year not numeric) both pass.
+function matchesYear(node, min, max) {
+  if (min == null && max == null) return true;
+  const y = node.year;
+  if (typeof y !== "number") return true; // unknown-year nodes always shown
+  if (min != null && y < min) return false;
+  if (max != null && y > max) return false;
+  return true;
+}
+
 const els = {
   svg: document.getElementById("lineage-svg"),
   canvas: document.getElementById("canvas"),
@@ -94,6 +107,10 @@ const els = {
   picker: document.getElementById("theme-picker"),
   meta: document.getElementById("theme-meta"),
   searchInput: document.getElementById("theme-search-input"),
+  yearMin: document.getElementById("year-range-min"),
+  yearMax: document.getElementById("year-range-max"),
+  yearMinLabel: document.getElementById("year-range-min-label"),
+  yearMaxLabel: document.getElementById("year-range-max-label"),
 };
 
 // ---- Manifest / URL plumbing ----
@@ -234,8 +251,56 @@ async function init() {
   renderFilterChips();
   bindFilterBar();
   bindSearch();
+  setupYearRange();
+  bindYearRange();
   render();
 }
+
+// #62: derive min/max from the loaded data and seed the two range inputs.
+// Idempotent — safe to call again on theme switch.
+function setupYearRange() {
+  if (!els.yearMin || !els.yearMax) return;
+  const years = (state.data?.nodes || [])
+    .map((n) => n.year)
+    .filter((y) => typeof y === "number");
+  if (years.length === 0) {
+    document.getElementById("year-range")?.style.setProperty("display", "none");
+    return;
+  }
+  const minY = Math.min(...years);
+  const maxY = Math.max(...years);
+  for (const inp of [els.yearMin, els.yearMax]) {
+    inp.min = String(minY);
+    inp.max = String(maxY);
+    inp.step = "1";
+  }
+  els.yearMin.value = String(minY);
+  els.yearMax.value = String(maxY);
+  state.yearRange.min = minY;
+  state.yearRange.max = maxY;
+  if (els.yearMinLabel) els.yearMinLabel.textContent = String(minY);
+  if (els.yearMaxLabel) els.yearMaxLabel.textContent = String(maxY);
+}
+
+function bindYearRange() {
+  if (!els.yearMin || !els.yearMax) return;
+  let pending = null;
+  const onInput = () => {
+    let lo = Number(els.yearMin.value);
+    let hi = Number(els.yearMax.value);
+    // Keep handles ordered — if the user drags past, swap.
+    if (lo > hi) [lo, hi] = [hi, lo];
+    state.yearRange.min = lo;
+    state.yearRange.max = hi;
+    if (els.yearMinLabel) els.yearMinLabel.textContent = String(lo);
+    if (els.yearMaxLabel) els.yearMaxLabel.textContent = String(hi);
+    clearTimeout(pending);
+    pending = setTimeout(render, 80);
+  };
+  els.yearMin.addEventListener("input", onInput);
+  els.yearMax.addEventListener("input", onInput);
+}
+
 
 // #61: search-box wiring. Debounced re-render so each keystroke doesn't
 // rebuild the whole SVG.
@@ -354,12 +419,21 @@ function render() {
   const { nodes, edges } = state.data;
   const visibleEdges = (edges || []).filter((e) => state.visibleRelations.has(e.rel));
   const layout = layoutChronological(nodes);
-  // #61: compute the search-match set once and hand to drawSvg so it can
-  // mark non-matching cards + their incident edges as faded. Layout still
-  // includes every node so the chronological grid stays stable as the
-  // user types.
-  const matchSet = state.searchQuery
-    ? new Set(nodes.filter((n) => matchesSearch(n, state.searchQuery)).map((n) => n.id))
+  // #61 / #62: combine search and year filters into a single match set
+  // so drawSvg only needs one predicate. Filters are applied to nodes
+  // (not the layout itself) so the chronological grid stays stable as
+  // the user adjusts either control.
+  const hasFilter = state.searchQuery
+    || state.yearRange.min != null || state.yearRange.max != null;
+  const matchSet = hasFilter
+    ? new Set(
+        nodes
+          .filter((n) =>
+            matchesSearch(n, state.searchQuery)
+              && matchesYear(n, state.yearRange.min, state.yearRange.max),
+          )
+          .map((n) => n.id),
+      )
     : null;
   drawSvg(layout, visibleEdges, matchSet);
 }
