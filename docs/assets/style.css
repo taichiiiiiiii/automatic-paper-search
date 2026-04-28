@@ -1361,11 +1361,11 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 /* Theme nodes: slightly more compact than deep cards (no TLDR) so the
    chronological grid stays scannable across many year rows. */
 .node-card--theme {
-  /* Match theme.js NODE_H 192 minus the foreignObject ↔ card 4px gutter
-     (2px each side). 178px keeps the venue badge + 3-line title +
-     2-line TLDR + authors + meta visible without overflowing the SVG. */
+  /* Match theme.js NODE_H 216 minus the foreignObject ↔ card gutter.
+     Bumped from 178 in #79 — the previous value clipped the bottom
+     meta row (📖 cite count + ⭐ stars) on long-title cards. */
   width: 100%;
-  min-height: 178px;
+  min-height: 200px;
   padding: 0.6rem 0.75rem;
   word-break: break-word;
   overflow-wrap: break-word;
