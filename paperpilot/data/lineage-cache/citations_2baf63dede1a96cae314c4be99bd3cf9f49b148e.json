@@ -1,0 +1,3031 @@
+[
+  {
+    "paperId": "1e971392bb9de5e136ef1598ef135678680f42a8",
+    "externalIds": {
+      "ArXiv": "2604.21911",
+      "CorpusId": 287702582
+    },
+    "title": "When Prompts Override Vision: Prompt-Induced Hallucinations in LVLMs",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.21911, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2305821420",
+        "name": "Pegah Khayatan"
+      },
+      {
+        "authorId": "7355688",
+        "name": "Jayneel Parekh"
+      },
+      {
+        "authorId": "3190846",
+        "name": "Arnaud Dapogny"
+      },
+      {
+        "authorId": "2067292515",
+        "name": "Mustafa Shukor"
+      },
+      {
+        "authorId": "1902919",
+        "name": "A. Newson"
+      },
+      {
+        "authorId": "2260814209",
+        "name": "Matthieu Cord"
+      }
+    ],
+    "abstract": "Despite impressive progress in capabilities of large vision-language models (LVLMs), these systems remain vulnerable to hallucinations, i.e., outputs that are not grounded in the visual input. Prior work has attributed hallucinations in LVLMs to factors such as limitations of the vision backbone or the dominance of the language component, yet the relative importance of these factors remains unclear. To resolve this ambiguity, We propose HalluScope, a benchmark to better understand the extent to which different factors induce hallucinations. Our analysis indicates that hallucinations largely stem from excessive reliance on textual priors and background knowledge, especially information introduced through textual instructions. To mitigate hallucinations induced by textual instruction priors, we propose HalluVL-DPO, a framework for fine-tuning off-the-shelf LVLMs towards more visually grounded responses. HalluVL-DPO leverages preference optimization using a curated training dataset that we construct, guiding the model to prefer grounded responses over hallucinated ones. We demonstrate that our optimized model effectively mitigates the targeted hallucination failure mode, while preserving or improving performance on other hallucination benchmarks and visual capability evaluations. To support reproducibility and further research, we will publicly release our evaluation benchmark, preference training dataset, and code at https://pegah-kh.github.io/projects/prompts-override-vision/ .",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "eb31722d1bdd2b6e8fc6f013980233faaad983b3",
+    "externalIds": {
+      "ArXiv": "2604.18512",
+      "CorpusId": 287635445
+    },
+    "title": "S2H-DPO: Hardness-Aware Preference Optimization for Vision-Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.18512, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2070358683",
+        "name": "Nitish Shukla"
+      },
+      {
+        "authorId": "2230701705",
+        "name": "Surgan Jandial"
+      },
+      {
+        "authorId": "2331858558",
+        "name": "Arun Ross"
+      }
+    ],
+    "abstract": "Vision-Language Models (VLMs) have demonstrated remarkable progress in single-image understanding, yet effective reasoning across multiple images remains challenging. We identify a critical capability gap in existing multi-image alignment approaches: current methods focus primarily on localized reasoning with pre-specified image indices (``Look at Image 3 and...''), bypassing the essential skills of global visual search and autonomous cross-image comparison. To address this limitation, we introduce a Simple-to-Hard (S2H) learning framework that systematically constructs multi-image preference data across three hierarchical reasoning levels requiring an increasing level of capabilities: (1) single-image localized reasoning, (2) multi-image localized comparison, and (3) global visual search. Unlike prior work that relies on model-specific attributes, such as hallucinations or attention heuristics, to generate preference pairs, our approach leverages prompt-driven complexity to create chosen/rejected pairs that are applicable across different models. Through extensive evaluations on LLaVA and Qwen-VL models, we show that our diverse multi-image reasoning data significantly enhances multi-image reasoning performance, yielding significant improvements over baseline methods across benchmarks. Importantly, our approach maintains strong single-image reasoning performance while simultaneously strengthening multi-image understanding capabilities, thus advancing the state of the art for holistic visual preference alignment.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "2f11f738d285cfc80dfaeb25b376d114b18b6197",
+    "externalIds": {
+      "ArXiv": "2604.14129",
+      "CorpusId": 287480933
+    },
+    "title": "Don't Let the Video Speak: Audio-Contrastive Preference Optimization for Audio-Visual Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.14129, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2306254492",
+        "name": "Ami Baid"
+      },
+      {
+        "authorId": "2268760036",
+        "name": "Zihui Xue"
+      },
+      {
+        "authorId": "2273978066",
+        "name": "Kristen Grauman"
+      }
+    ],
+    "abstract": "While Audio-Visual Language Models (AVLMs) have achieved remarkable progress over recent years, their reliability is bottlenecked by cross-modal hallucination. A particularly pervasive manifestation is video-driven audio hallucination: models routinely exploit visual shortcuts to hallucinate expected sounds, discarding true auditory evidence. To counteract this deeply ingrained visual dominance, we propose Audio-Contrastive Preference Optimization (ACPO). This dual-axis preference learning framework introduces an output-contrastive objective to penalize visual descriptions masquerading as audio facts, alongside an input-contrastive objective that swaps audio tracks to explicitly penalize generation invariant to the true auditory signal. Extensive experiments demonstrate that ACPO establishes highly faithful audio grounding and mitigates audio hallucination without compromising overarching multimodal capabilities.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "30646cf92351e5b587c4419c2ffb0dd5059cf0eb",
+    "externalIds": {
+      "ArXiv": "2604.12424",
+      "CorpusId": 287436304
+    },
+    "title": "Decoding by Perturbation: Mitigating MLLM Hallucinations via Dynamic Textual Perturbation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.12424, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2405064325",
+        "name": "Sihang Jia"
+      },
+      {
+        "authorId": "2164167780",
+        "name": "Shuliang Liu"
+      },
+      {
+        "authorId": "2327607088",
+        "name": "Songbo Yang"
+      },
+      {
+        "authorId": "2262511952",
+        "name": "Yibo Yan"
+      },
+      {
+        "authorId": "2067663351",
+        "name": "Xin Zou"
+      },
+      {
+        "authorId": "2357106592",
+        "name": "Xuming Hu"
+      }
+    ],
+    "abstract": "Multimodal Large Language Models frequently suffer from inference hallucinations, partially stemming from language priors dominating visual evidence. Existing training-free mitigation methods either perturb the visual representation and deviate from the natural image distribution, or enforce intrusive manipulations that compromise the model's inherent generative fluency. We introduce a novel perspective that multimodal hallucination manifests as the hypersensitivity of visual grounding to textual phrasing during the decoding phase. Building on this insight, we propose Decoding by Perturbation (DeP), a training-free framework mitigating prior-induced hallucinations via controlled textual interventions. DeP employs a dynamic probe applying multi-level textual perturbations to elicit latent language priors. Leveraging attention variance, it enhances stable evidence regions while suppressing suspicious noise in the feature space. Furthermore, it constructs an interpretable prior drift direction using logits statistics to counteract probability biases from textual co-occurrences. Extensive experiments confirm DeP effectively reduces hallucinations and achieves superior performance across multiple benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "619ef8ea184ac657c700a75eadf66e68d290c046",
+    "externalIds": {
+      "ArXiv": "2604.00455",
+      "CorpusId": 287021995
+    },
+    "title": "First Logit Boosting: Visual Grounding Method to Mitigate Object Hallucination in Large Vision-Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.00455, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2314969223",
+        "name": "Ji-Gyeong Ha"
+      },
+      {
+        "authorId": "2327363568",
+        "name": "Jong-oh Baek"
+      },
+      {
+        "authorId": "2385358630",
+        "name": "Jinhyun So"
+      }
+    ],
+    "abstract": "Recent Large Vision-Language Models (LVLMs) have demonstrated remarkable performance across various multimodal tasks that require understanding both visual and linguistic inputs. However, object hallucination -- the generation of nonexistent objects in answers -- remains a persistent challenge. Although several approaches such as retraining and external grounding methods have been proposed to mitigate this issue, they still suffer from high data costs or structural complexity. Training-free methods such as Contrastive Decoding (CD) are more cost-effective, avoiding additional training or external models, but still suffer from long-term decay, where visual grounding weakens and language priors dominate as the generation progresses. In this paper, we propose First Logit Boosting (FLB), a simple yet effective training-free technique designed to alleviate long-term decay in LVLMs. FLB stores the logit of the first generated token and adds it to subsequent token predictions, effectively mitigating long-term decay of visual information. We observe that FLB (1) sustains the visual information embedded in the first token throughout generation, and (2) suppresses hallucinated words through the stabilizing effect of the ``The''token. Experimental results show that FLB significantly reduces object hallucination across various tasks, benchmarks, and backbone models. Notably, it causes negligible inference overhead, making it highly applicable to real-time multimodal systems. Code is available at https://github.com/jiwooha20/FLB",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a10cdfb036a76f7b57c230a937646a6377ddd625",
+    "externalIds": {
+      "ArXiv": "2603.29405",
+      "CorpusId": 286976886
+    },
+    "title": "Hallucination-aware intermediate representation edit in large vision-language models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.29405, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2134989055",
+        "name": "Wei Suo"
+      },
+      {
+        "authorId": "2324800080",
+        "name": "Han Zhang"
+      },
+      {
+        "authorId": "2279241699",
+        "name": "Lijun Zhang"
+      },
+      {
+        "authorId": "2302475019",
+        "name": "Ji Ma"
+      },
+      {
+        "authorId": "2279282868",
+        "name": "Peng Wang"
+      },
+      {
+        "authorId": "2290443425",
+        "name": "Yanning Zhang"
+      }
+    ],
+    "abstract": "Large Vision-Language Models have demonstrated exceptional performance in multimodal reasoning and complex scene understanding. However, these models still face significant hallucination issues, where outputs contradict visual facts. Recent research on hallucination mitigation has focused on retraining methods and Contrastive Decoding (CD) methods. While both methods perform well, retraining methods require substantial training resources, and CD methods introduce dual inference overhead. These factors hinder their practical applicability. To address the above issue, we propose a framework for dynamically detecting hallucination representations and performing hallucination-eliminating edits on these representations. With minimal additional computational cost, we achieve state-of-the-art performance on existing benchmarks. Extensive experiments demonstrate the effectiveness of our approach, highlighting its efficient and robust hallucination elimination capability and its powerful controllability over hallucinations. Code is available at https://github.com/ASGO-MM/HIRE",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ca75e7af9e094cd0b48ced62bea6a6c0f1a68d35",
+    "externalIds": {
+      "ArXiv": "2603.27898",
+      "CorpusId": 286975014
+    },
+    "title": "SAGE: Sink-Aware Grounded Decoding for Multimodal Hallucination Mitigation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.27898, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1445906803",
+        "name": "Tripti Shukla"
+      },
+      {
+        "authorId": "145276578",
+        "name": "Z. Kira"
+      }
+    ],
+    "abstract": "Large vision-language models (VLMs) frequently suffer from hallucinations, generating content that is inconsistent with visual inputs. Existing methods typically address this problem through post-hoc filtering, additional training objectives, or external verification, but they do not intervene during the decoding process when hallucinations arise. In this work, we introduce SAGE, a Sink-Aware Grounded Decoding framework that mitigates hallucinations by dynamically modulating self-attention during generation. Hallucinations are strongly correlated with attention sink tokens - punctuation or function tokens that accumulate disproportionate attention despite carrying limited semantic content. SAGE leverages these tokens as anchors to monitor grounding reliability in real time. At each sink trigger, the method extracts semantic concepts from the generated sequence, estimates their visual grounding using both self-attention maps and gradient-based attribution, and measures their spatial agreement. Based on this signal, self-attention distributions are adaptively sharpened or broadened to reinforce grounded regions or suppress unreliable ones. Extensive experiments across diverse hallucination benchmarks demonstrate that SAGE consistently outperforms existing decoding strategies, achieving substantial reductions in hallucination while preserving descriptive coverage, without requiring model retraining or architectural modifications. Our method achieves an average relative improvement of 10.65% on MSCOCO and 7.19% on AMBER across diverse VLM architectures, demonstrating consistent gains in hallucination mitigation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a4cb35e85f2b8c33e478a6621769ec0801cfa8aa",
+    "externalIds": {
+      "ArXiv": "2603.24484",
+      "CorpusId": 286776037
+    },
+    "title": "Video-Only ToM: Enhancing Theory of Mind in Multimodal Large Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.24484, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2331168884",
+        "name": "Siqi Liu"
+      },
+      {
+        "authorId": "2322400078",
+        "name": "Xinyang Li"
+      },
+      {
+        "authorId": "1486438257",
+        "name": "Bochao Zou"
+      },
+      {
+        "authorId": "26973936",
+        "name": "Junbao Zhuo"
+      },
+      {
+        "authorId": "2152615223",
+        "name": "Huimin Ma"
+      },
+      {
+        "authorId": "2164324897",
+        "name": "Jiansheng Chen"
+      }
+    ],
+    "abstract": "As large language models (LLMs) continue to advance, there is increasing interest in their ability to infer human mental states and demonstrate a human-like Theory of Mind (ToM). Most existing ToM evaluations, however, are centered on text-based inputs, while scenarios relying solely on visual information receive far less attention. This leaves a gap, since real-world human-AI interaction typically requires multimodal understanding. In addition, many current methods regard the model as a black box and rarely probe how its internal attention behaves in multiple-choice question answering (QA). The impact of LLM hallucinations on such tasks is also underexplored from an interpretability perspective. To address these issues, we introduce VisionToM, a vision-oriented intervention framework designed to strengthen task-aware reasoning. The core idea is to compute intervention vectors that align visual representations with the correct semantic targets, thereby steering the model's attention through different layers of visual features. This guidance reduces the model's reliance on spurious linguistic priors, leading to more reliable multimodal language model (MLLM) outputs and better QA performance. Experiments on the EgoToM benchmark-an egocentric, real-world video dataset for ToM with three multiple-choice QA settings-demonstrate that our method substantially improves the ToM abilities of MLLMs. Furthermore, results on an additional open-ended generation task show that VisionToM enables MLLMs to produce free-form explanations that more accurately capture agents'mental states, pushing machine-human collaboration toward greater alignment.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c7194f4a2810863544911a6e459ae70e52932e82",
+    "externalIds": {
+      "ArXiv": "2603.17662",
+      "CorpusId": 286643692
+    },
+    "title": "FINER: MLLMs Hallucinate under Fine-grained Negative Queries",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.17662, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2333358145",
+        "name": "Rui Xiao"
+      },
+      {
+        "authorId": "2333410632",
+        "name": "Sanghwan Kim"
+      },
+      {
+        "authorId": "2256223080",
+        "name": "Yongqin Xian"
+      },
+      {
+        "authorId": "1854487018",
+        "name": "Zeynep Akata"
+      },
+      {
+        "authorId": "40894329",
+        "name": "S. Alaniz"
+      }
+    ],
+    "abstract": "Multimodal large language models (MLLMs) struggle with hallucinations, particularly with fine-grained queries, a challenge underrepresented by existing benchmarks that focus on coarse image-related questions. We introduce FIne-grained NEgative queRies (FINER), alongside two benchmarks: FINER-CompreCap and FINER-DOCCI. Using FINER, we analyze hallucinations across four settings: multi-object, multi-attribute, multi-relation, and ``what''questions. Our benchmarks reveal that MLLMs hallucinate when fine-grained mismatches co-occur with genuinely present elements in the image. To address this, we propose FINER-Tuning, leveraging Direct Preference Optimization (DPO) on FINER-inspired data. Finetuning four frontier MLLMs with FINER-Tuning yields up to 24.2\\% gains (InternVL3.5-14B) on hallucinations from our benchmarks, while simultaneously improving performance on eight existing hallucination suites, and enhancing general multimodal capabilities across six benchmarks. Code, benchmark, and models are available at \\href{https://explainableml.github.io/finer-project/}{https://explainableml.github.io/finer-project/}.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "fa218d5310d0652bc3a6c0fb551538c179184d74",
+    "externalIds": {
+      "ArXiv": "2603.13628",
+      "CorpusId": 286568168
+    },
+    "title": "Locatability-Guided Adaptive Reasoning for Image Geo-Localization with Vision-Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.13628, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2332297394",
+        "name": "Boting Yu"
+      },
+      {
+        "authorId": "2339244625",
+        "name": "Fengze Yang"
+      },
+      {
+        "authorId": "2339235774",
+        "name": "Yiming Liu"
+      },
+      {
+        "authorId": "2344189223",
+        "name": "Chao Wang"
+      },
+      {
+        "authorId": "2371008229",
+        "name": "Xuewen Luo"
+      },
+      {
+        "authorId": "2304525323",
+        "name": "Tao Li"
+      },
+      {
+        "authorId": "2306522809",
+        "name": "Ruimin Ke"
+      },
+      {
+        "authorId": "2371087644",
+        "name": "Xiaofang Zhou"
+      },
+      {
+        "authorId": "2338981360",
+        "name": "Chenxi Liu"
+      }
+    ],
+    "abstract": "The emergence of Vision-Language Models (VLMs) has introduced new paradigms for global image geo-localization through retrieval-augmented generation (RAG) and reasoning-driven inference. However, RAG methods are constrained by retrieval database quality, while reasoning-driven approaches fail to internalize image locatability, relying on inefficient, fixed-depth reasoning paths that increase hallucinations and degrade accuracy. To overcome these limitations, we introduce an Optimized Locatability Score that quantifies an image's suitability for deep reasoning in geo-localization. Using this metric, we curate Geo-ADAPT-51K, a locatability-stratified reasoning dataset enriched with augmented reasoning trajectories for complex visual scenes. Building on this foundation, we propose a two-stage Group Relative Policy Optimization (GRPO) curriculum with customized reward functions that regulate adaptive reasoning depth, visual grounding, and hierarchical geographical accuracy. Our framework, Geo-ADAPT, learns an adaptive reasoning policy, achieves state-of-the-art performance across multiple geo-localization benchmarks, and substantially reduces hallucinations by reasoning both adaptively and efficiently.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "32e1af9bb444526232a4107d6de0e602d70930c0",
+    "externalIds": {
+      "ArXiv": "2603.07048",
+      "CorpusId": 286371970
+    },
+    "title": "Looking Back and Forth: Cross-Image Attention Calibration and Attentive Preference Learning for Multi-Image Hallucination Mitigation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.07048, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2400056010",
+        "name": "Xiaochen Yang"
+      },
+      {
+        "authorId": "2283440238",
+        "name": "Hao Fang"
+      },
+      {
+        "authorId": "2282967403",
+        "name": "Jiawei Kong"
+      },
+      {
+        "authorId": "2398860589",
+        "name": "Yaoxin Mao"
+      },
+      {
+        "authorId": "2304399293",
+        "name": "Bin Chen"
+      },
+      {
+        "authorId": "2240063099",
+        "name": "Shutao Xia"
+      }
+    ],
+    "abstract": "Although large vision-language models (LVLMs) have demonstrated remarkable capabilities, they are prone to hallucinations in multi-image tasks. We attribute this issue to limitations in existing attention mechanisms and insufficient cross-image modeling. Inspired by this, we propose a structured hallucination mitigation framework involving Cross-Image Attention calibration and Preference Learning (CAPL). CAPL explicitly enhances inter-image interactions at the architectural level while reinforcing reliance on genuine cross-image evidence during training, thereby improving the model's perception and modeling of cross-image associations. Specifically, we (i) introduce a selectable image token interaction attention mechanism to establish fine-grained cross-image entity alignment and information flow; (ii) design a cross-image modeling-based preference optimization strategy that contrasts reasoning outcomes under full inter-image interaction and those obtained when images are mutually invisible, encouraging the model to ground its predictions in authentic visual evidence and mitigating erroneous inferences driven by textual priors. Experimental results demonstrate that CAPL consistently improves performance across multiple model architectures, achieving stable gains on both multi-image hallucination and general benchmarks. Notably, performance on single-image visual tasks remains stable or slightly improves, indicating strong generalization capability.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "facac9352a4ae4775480889877bf646ba1d471ba",
+    "externalIds": {
+      "ArXiv": "2603.04908",
+      "CorpusId": 286256387
+    },
+    "title": "AdaIAT: Adaptively Increasing Attention to Generated Text to Alleviate Hallucinations in LVLM",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.04908, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2292781238",
+        "name": "Liangqi Zhong"
+      },
+      {
+        "authorId": "2323725020",
+        "name": "Ziqiang He"
+      },
+      {
+        "authorId": "2304079111",
+        "name": "Jibin Zheng"
+      },
+      {
+        "authorId": "2335658571",
+        "name": "Jin Li"
+      },
+      {
+        "authorId": "2321658220",
+        "name": "Z. J. Wang"
+      },
+      {
+        "authorId": "2309009043",
+        "name": "Xiangui Kang"
+      }
+    ],
+    "abstract": "Hallucination has been a significant impediment to the development and application of current Large Vision-Language Models (LVLMs). To mitigate hallucinations, one intuitive and effective way is to directly increase attention weights to image tokens during inference. Although this effectively reduces the hallucination rate, it often induces repetitive descriptions. To address this, we first conduct an analysis of attention patterns and reveal that real object tokens tend to assign higher attention to the generated text than hallucinated ones. This inspires us to leverage the generated text, which contains instruction-related visual information and contextual knowledge, to alleviate hallucinations while maintaining linguistic coherence. We therefore propose Attention to Generated Text (IAT) and demonstrate that it significantly reduces the hallucination rate while avoiding repetitive descriptions. To prevent naive amplification from impairing the inherent prediction capabilities of LVLMs, we further explore Adaptive IAT (AdaIAT) that employs a layer-wise threshold to control intervention time and fine-grained amplification magnitude tailored to the characteristics of each attention head. Both analysis and experiments demonstrate the effectiveness of AdaIAT. Results of several LVLMs show that AdaIAT effectively alleviates hallucination (reducing hallucination rates $C_S$ and $C_I$ on LLaVA-1.5 by 35.8% and 37.1%, respectively) while preserving linguistic performance and prediction capability, achieving an attractive trade-off.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e1e478922f2f4564f5de98f79df553d6de68d7dd",
+    "externalIds": {
+      "ArXiv": "2602.22469",
+      "DBLP": "journals/corr/abs-2602-22469",
+      "DOI": "10.48550/arXiv.2602.22469",
+      "CorpusId": 286083066
+    },
+    "title": "Beyond Dominant Patches: Spatial Credit Redistribution For Grounded Vision-Language Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.22469, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2420179081",
+        "name": "Niamul Hassan Samin"
+      },
+      {
+        "authorId": "2288115635",
+        "name": "Md. Arifur Rahman"
+      },
+      {
+        "authorId": "2347043943",
+        "name": "Abdullah Ibne Hanif Arean"
+      },
+      {
+        "authorId": "147123980",
+        "name": "Juena Ahmed Noshin"
+      },
+      {
+        "authorId": "2283777481",
+        "name": "Md Ashikur Rahman"
+      }
+    ],
+    "abstract": "Vision-Language Models (VLMs) often hallucinate objects that are not present in the input image. We identify a contributing cause of this behavior, which we term spatial credit collapse: in early transformer layers, hidden-state activation concentrates on a small number of visual patches, suppressing surrounding contextual evidence and increasing reliance on language priors. Across seven models we observe a strong correlation between visual attention entropy and hallucination rate (r = -0.65, p<0.001), suggesting that reduced spatial credit diversity contributes to hallucination. To address this issue we propose Spatial Credit Redistribution (SCR), a training-free inference-time method. SCR uses a lightweight two-pass procedure. A diagnostic pass identifies the top-K high-attention source patches and their spatial neighbors. A redistribution pass then scales each source by 1/lambda (~0.91) and injects a (lambda - 1) weighted copy of its hidden state into neighboring patches, restoring suppressed visual context without modifying model weights. Because the diagnostic pass is performed once per image and reused across the output sequence, the added latency is negligible (<0.5 ms per token for 100-token responses). We evaluate SCR across seven model configurations from four VLM families (Chameleon, LLaVA-1.5, Qwen-VL/Qwen2-VL, and InternVL2) on five benchmarks: POPE, CHAIR, MME, HallusionBench, and AMBER. SCR reduces POPE-Adversarial hallucination by 4.6-6.0 percentage points and CHAIR-s by 41-51 percent while preserving caption quality (CIDEr drop<=0.8). Compared with prior inference-time methods including OPERA, VCD, OA-VCD, DoLa, VLI, SID, and CRoPS, SCR achieves a better trade-off between hallucination reduction, generation quality, and latency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cb43a9beda23912338986fa03082f0767f7808dc",
+    "externalIds": {
+      "DOI": "10.1109/ICAIIC68212.2026.11454196",
+      "CorpusId": 287030191
+    },
+    "title": "Fine-Grained Rewards for Visual CoT: Mitigating Hallucinations in Vision-Language Models",
+    "venue": "Digital Signal Processing and Signal Processing Education Workshop",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICAIIC68212.2026.11454196?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICAIIC68212.2026.11454196, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2329583529",
+        "name": "Jimyung Park"
+      },
+      {
+        "authorId": "2146867754",
+        "name": "Minhyuk Jeong"
+      },
+      {
+        "authorId": "2285250348",
+        "name": "Dongjun Kim"
+      },
+      {
+        "authorId": "2427168181",
+        "name": "Hyunjun Yuh"
+      },
+      {
+        "authorId": "2066643742",
+        "name": "Jeonghoon Mo"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) often hallucinate objects, relations, or attributes not grounded in the input image. Existing approaches such as cross-entropy training and response-level preference optimization (e.g., RLHF, DPO) fail to explicitly target hallucinations within the reasoning process. We propose a fine-grained reinforcement learning framework for Visual Chain-of-Thought (CoT), decomposing responses into [objects] → [relations] → [answer] with stage-specific rewards. Using Group Relative Preference Optimization (GRPO), our method directly penalizes hallucinations at each stage while ensuring stable training. Experiments on POPE and VQAv2 show substantial hallucination reduction with competitive task performance, demonstrating the benefit of stage-wise penalization for aligning LVLM reasoning with visual evidence.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "84def1c6aa9a1e4ba2bf4f49b0e0dbb66f45a5b6",
+    "externalIds": {
+      "ArXiv": "2602.13600",
+      "DBLP": "journals/corr/abs-2602-13600",
+      "DOI": "10.48550/arXiv.2602.13600",
+      "CorpusId": 285615456
+    },
+    "title": "AdaVBoost: Mitigating Hallucinations in LVLMs via Token-Level Adaptive Visual Attention Boosting",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.13600, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2304521825",
+        "name": "Jiacheng Zhang"
+      },
+      {
+        "authorId": "2412001561",
+        "name": "Feng Liu"
+      },
+      {
+        "authorId": "2356268297",
+        "name": "Chao Du"
+      },
+      {
+        "authorId": "2348451895",
+        "name": "Tianyu Pang"
+      }
+    ],
+    "abstract": "Visual attention boosting has emerged as a promising direction for mitigating hallucinations in Large Vision-Language Models (LVLMs), where existing methods primarily focus on where to boost by applying a predefined scaling to the attention of method-specific visual tokens during autoregressive generation. In this paper, we identify a fundamental trade-off in these methods: a predefined scaling factor can be too weak at some generation steps, leaving hallucinations unresolved, yet too strong at others, leading to new hallucinations. Motivated by this finding, we propose AdaVBoost, a token-level visual attention boosting framework that adaptively determines how much attention to boost at each generation step. Specifically, we introduce Visual Grounding Entropy (VGE) to estimate hallucination risk, which leverages visual grounding as a complementary signal to capture evidence mismatches beyond entropy. Guided by VGE, AdaVBoost applies stronger visual attention boosting to high-risk tokens and weaker boosting to low-risk tokens, enabling token-level adaptive intervention at each generation step. Extensive experiments show that AdaVBoost significantly outperforms baseline methods across multiple LVLMs and hallucination benchmarks.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "5cf3fd013c09e5f63ca39c453a55f9f673c51c33",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-11824",
+      "ArXiv": "2602.11824",
+      "DOI": "10.48550/arXiv.2602.11824",
+      "CorpusId": 285540291
+    },
+    "title": "Revis: Sparse Latent Steering to Mitigate Object Hallucination in Large Vision-Language Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.11824, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2408452849",
+        "name": "Jialin Wu"
+      },
+      {
+        "authorId": "2297759012",
+        "name": "Wei Shi"
+      },
+      {
+        "authorId": "2408479405",
+        "name": "Han Shen"
+      },
+      {
+        "authorId": "2316637398",
+        "name": "Peigui Qi"
+      },
+      {
+        "authorId": "2266842792",
+        "name": "Kunsheng Tang"
+      },
+      {
+        "authorId": "2394293925",
+        "name": "Zhicong Huang"
+      },
+      {
+        "authorId": "2386630976",
+        "name": "Binghao Wang"
+      },
+      {
+        "authorId": "2408693393",
+        "name": "Zhou Yang"
+      }
+    ],
+    "abstract": "Despite the advanced capabilities of Large Vision-Language Models (LVLMs), they frequently suffer from object hallucination. One reason is that visual features and pretrained textual representations often become intertwined in the deeper network layers. To address this, we propose REVIS, a training-free framework designed to explicitly re-activate this suppressed visual information. Rooted in latent space geometry, REVIS extracts the pure visual information vector via orthogonal projection and employs a calibrated strategy to perform sparse intervention only at the precise depth where suppression occurs. This surgical approach effectively restores visual information with minimal computational cost. Empirical evaluations on standard benchmarks demonstrate that REVIS reduces object hallucination rates by approximately 19% compared to state-of-the-art baselines, while preserving general reasoning capabilities.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ef2fea2d40ec0459559ff1bd82e107377ab3de08",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-10425",
+      "ArXiv": "2602.10425",
+      "DOI": "10.48550/arXiv.2602.10425",
+      "CorpusId": 285470683
+    },
+    "title": "HII-DPO: Eliminate Hallucination via Accurate Hallucination-Inducing Counterfactual Images",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.10425, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46285635",
+        "name": "Yilin Yang"
+      },
+      {
+        "authorId": "2407188605",
+        "name": "Zhenghui Guo"
+      },
+      {
+        "authorId": "2340407623",
+        "name": "Yuke Wang"
+      },
+      {
+        "authorId": "1689033",
+        "name": "O. Gnawali"
+      },
+      {
+        "authorId": "2410034355",
+        "name": "Sheng Di"
+      },
+      {
+        "authorId": "2406254469",
+        "name": "Chengming Zhang"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (VLMs) have achieved remarkable success across diverse multimodal tasks but remain vulnerable to hallucinations rooted in inherent language bias. Despite recent progress, existing hallucination mitigation methods often overlook the underlying hallucination patterns driven by language bias. In this work, we design a novel pipeline to accurately synthesize Hallucination-Inducing Images (HIIs). Using synthesized HIIs, we reveal a consistent scene-conditioned hallucination pattern: models tend to mention objects that are highly typical of the scene even when visual evidence is removed. To quantify the susceptibility of VLMs to this hallucination pattern, we establish the Masked-Object-Hallucination (MOH) benchmark to rigorously evaluate existing state-of-the-art alignment frameworks. Finally, we leverage HIIs to construct high-quality preference datasets for fine-grained alignment. Experimental results demonstrate that our approach effectively mitigates hallucinations while preserving general model capabilities. Specifically, our method achieves up to a 38% improvement over the current state-of-the-art on standard hallucination benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "86f934aeb0e32cde020a5e4a3f884659b3708e7b",
+    "externalIds": {
+      "ArXiv": "2602.05049",
+      "DBLP": "journals/corr/abs-2602-05049",
+      "DOI": "10.48550/arXiv.2602.05049",
+      "CorpusId": 285303805
+    },
+    "title": "VISTA: Enhancing Visual Conditioning via Track-Following Preference Optimization in Vision-Language-Action Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.05049, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334661552",
+        "name": "Yiye Chen"
+      },
+      {
+        "authorId": "2334568039",
+        "name": "Yanan Jian"
+      },
+      {
+        "authorId": "2265758275",
+        "name": "Xiaoyi Dong"
+      },
+      {
+        "authorId": "65856356",
+        "name": "Shuxin Cao"
+      },
+      {
+        "authorId": "2315019716",
+        "name": "Jingyu Wu"
+      },
+      {
+        "authorId": "2343851694",
+        "name": "Patricio Vela"
+      },
+      {
+        "authorId": "2334568843",
+        "name": "Benjamin E. Lundell"
+      },
+      {
+        "authorId": "2332889412",
+        "name": "Dongdong Chen"
+      }
+    ],
+    "abstract": "Vision-Language-Action (VLA) models have demonstrated strong performance across a wide range of robotic manipulation tasks. Despite the success, extending large pretrained Vision-Language Models (VLMs) to the action space can induce vision-action misalignment, where action predictions exhibit weak dependence on the current visual state, leading to unreliable action outputs. In this work, we study VLA models through the lens of visual conditioning and empirically show that successful rollouts consistently exhibit stronger visual dependence than failed ones. Motivated by this observation, we propose a training framework that explicitly strengthens visual conditioning in VLA models. Our approach first aligns action prediction with visual input via preference optimization on a track-following surrogate task, and then transfers the enhanced alignment to instruction-following task through latent-space distillation during supervised finetuning. Without introducing architectural modifications or additional data collection, our method improves both visual conditioning and task performance for discrete OpenVLA, and further yields consistent gains when extended to the continuous OpenVLA-OFT setting. Project website: https://vista-vla.github.io/ .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "782e1cbf0277127735ee452f62389d6f1a6b09f1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-03380",
+      "ArXiv": "2602.03380",
+      "DOI": "10.48550/arXiv.2602.03380",
+      "CorpusId": 285276150
+    },
+    "title": "Seeing Through the Chain: Mitigate Hallucination in Multimodal Reasoning Models via CoT Compression and Contrastive Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.03380, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283440238",
+        "name": "Hao Fang"
+      },
+      {
+        "authorId": "2365977664",
+        "name": "Jinyu Li"
+      },
+      {
+        "authorId": "2282967403",
+        "name": "Jiawei Kong"
+      },
+      {
+        "authorId": "2316762685",
+        "name": "Tianqu Zhuang"
+      },
+      {
+        "authorId": "2129551089",
+        "name": "Kuofeng Gao"
+      },
+      {
+        "authorId": "2304399293",
+        "name": "Bin Chen"
+      },
+      {
+        "authorId": "2240063099",
+        "name": "Shutao Xia"
+      },
+      {
+        "authorId": "2276616537",
+        "name": "Yaowei Wang"
+      }
+    ],
+    "abstract": "While multimodal reasoning models (MLRMs) have exhibited impressive capabilities, they remain prone to hallucinations, and effective solutions are still underexplored. In this paper, we experimentally analyze the hallucination cause and propose C3PO, a training-based mitigation framework comprising \\textbf{C}hain-of-Thought \\textbf{C}ompression and \\textbf{C}ontrastive \\textbf{P}reference \\textbf{O}ptimization. Firstly, we identify that introducing reasoning mechanisms exacerbates models'reliance on language priors while overlooking visual inputs, which can produce CoTs with reduced visual cues but redundant text tokens. To this end, we propose to selectively filter redundant thinking tokens for a more compact and signal-efficient CoT representation that preserves task-relevant information while suppressing noise. In addition, we observe that the quality of the reasoning trace largely determines whether hallucination emerges in subsequent responses. To leverage this insight, we introduce a reasoning-enhanced preference tuning scheme that constructs training pairs using high-quality AI feedback. We further design a multimodal hallucination-inducing mechanism that elicits models'inherent hallucination patterns via carefully crafted inducers, yielding informative negative signals for contrastive correction. We provide theoretical justification for the effectiveness and demonstrate consistent hallucination reduction across diverse MLRMs and benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "56b158ea1a880ae2e54ae2c00f03a47b1bc8bf57",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-02341",
+      "ArXiv": "2602.02341",
+      "DOI": "10.48550/arXiv.2602.02341",
+      "CorpusId": 285271201
+    },
+    "title": "LongVPO: From Anchored Cues to Self-Reasoning for Long-Form Video Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.02341, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2289834603",
+        "name": "Zhenpeng Huang"
+      },
+      {
+        "authorId": "2319077363",
+        "name": "Jiaqi Li"
+      },
+      {
+        "authorId": "2376105186",
+        "name": "Zihan Jia"
+      },
+      {
+        "authorId": "2253862823",
+        "name": "Xinhao Li"
+      },
+      {
+        "authorId": "2333894357",
+        "name": "Desen Meng"
+      },
+      {
+        "authorId": "2220692136",
+        "name": "Lin Song"
+      },
+      {
+        "authorId": "2338539791",
+        "name": "Xi Chen"
+      },
+      {
+        "authorId": "2338359833",
+        "name": "Liang Li"
+      },
+      {
+        "authorId": "2338321824",
+        "name": "Limin Wang"
+      }
+    ],
+    "abstract": "We present LongVPO, a novel two-stage Direct Preference Optimization framework that enables short-context vision-language models to robustly understand ultra-long videos without any long-video annotations. In Stage 1, we synthesize preference triples by anchoring questions to individual short clips, interleaving them with distractors, and applying visual-similarity and question-specificity filtering to mitigate positional bias and ensure unambiguous supervision. We also approximate the reference model's scoring over long contexts by evaluating only the anchor clip, reducing computational overhead. In Stage 2, we employ a recursive captioning pipeline on long videos to generate scene-level metadata, then use a large language model to craft multi-segment reasoning queries and dispreferred responses, aligning the model's preferences through multi-segment reasoning tasks. With only 16K synthetic examples and no costly human labels, LongVPO outperforms the state-of-the-art open-source models on multiple long-video benchmarks, while maintaining strong short-video performance (e.g., on MVBench), offering a scalable paradigm for efficient long-form video understanding.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8af905c46e248484350f17d1cac66bb3d244aa08",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-01769",
+      "ArXiv": "2602.01769",
+      "DOI": "10.48550/arXiv.2602.01769",
+      "CorpusId": 285271138
+    },
+    "title": "IRIS: Implicit Reward-Guided Internal Sifting for Mitigating Multimodal Hallucination",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.01769, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2367744131",
+        "name": "Yuanshuai Li"
+      },
+      {
+        "authorId": "2275634547",
+        "name": "Yuping Yan"
+      },
+      {
+        "authorId": "2408438666",
+        "name": "Jirui Han"
+      },
+      {
+        "authorId": "2408468261",
+        "name": "Fei Ming"
+      },
+      {
+        "authorId": "90882340",
+        "name": "LingJuan Lv"
+      },
+      {
+        "authorId": "2306876083",
+        "name": "Yaochu Jin"
+      }
+    ],
+    "abstract": "Hallucination remains a fundamental challenge for Multimodal Large Language Models (MLLMs). While Direct Preference Optimization (DPO) is a key alignment framework, existing approaches often rely heavily on costly external evaluators for scoring or rewriting, incurring off-policy learnability gaps and discretization loss. Due to the lack of access to internal states, such feedback overlooks the fine-grained conflicts between different modalities that lead to hallucinations during generation. To address this issue, we propose IRIS (Implicit Reward-Guided Internal Sifting), which leverages continuous implicit rewards in the native log-probability space to preserve full information density and capture internal modal competition. This on-policy paradigm eliminates learnability gaps by utilizing self-generated preference pairs. By sifting these pairs based on multimodal implicit rewards, IRIS ensures that optimization is driven by signals that directly resolve modal conflicts. Extensive experiments demonstrate that IRIS achieves highly competitive performance on key hallucination benchmarks using only 5.7k samples, without requiring any external feedback during preference alignment. These results confirm that IRIS provides an efficient and principled paradigm for mitigating MLLM hallucinations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d9b6e5a7d7855ae87fb8335899b75fe07a609eda",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-01047",
+      "ArXiv": "2602.01047",
+      "DOI": "10.48550/arXiv.2602.01047",
+      "CorpusId": 285270059
+    },
+    "title": "Residual Decoding: Mitigating Hallucinations in Large Vision-Language Models via History-Aware Residual Guidance",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.01047, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2364080048",
+        "name": "Xinrong Chen"
+      },
+      {
+        "authorId": "2347043997",
+        "name": "X. Chu"
+      },
+      {
+        "authorId": "2368736204",
+        "name": "Yingmin Qiu"
+      },
+      {
+        "authorId": "2368453856",
+        "name": "Hengyuan Zhang"
+      },
+      {
+        "authorId": "2324168511",
+        "name": "Jing Xiong"
+      },
+      {
+        "authorId": "2279286517",
+        "name": "Shiyu Tang"
+      },
+      {
+        "authorId": "2257375680",
+        "name": "Shuai Liu"
+      },
+      {
+        "authorId": "92716077",
+        "name": "Shaokang Yang"
+      },
+      {
+        "authorId": "2279899528",
+        "name": "Chen Yang"
+      },
+      {
+        "authorId": "1710259",
+        "name": "Hayden Kwok-Hay So"
+      },
+      {
+        "authorId": "2367275785",
+        "name": "Ngai Wong"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) can reason from image-text inputs and perform well in various multimodal tasks. Despite this success, they are affected by language priors and often produce hallucinations. Hallucinations denote generated content that is grammatically and syntactically coherent, yet bears no match or direct relevance to visual input. To address this problem, we propose Residual Decoding (ResDec). It is a novel training-free method that uses historical information to aid decoding. The method relies on the internal implicit reasoning mechanism and token logits evolution mechanism of LVLMs to correct biases. Extensive experiments demonstrate that ResDec effectively suppresses hallucinations induced by language priors, significantly improves visual grounding, and reduces object hallucinations. In addition to mitigating hallucinations, ResDec also performs exceptionally well on comprehensive LVLM benchmarks, highlighting its broad applicability.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "532bb469cf9b6e3b39871b9f282360eb51da15ab",
+    "externalIds": {
+      "DBLP": "conf/eacl/KimLYKCKK26",
+      "ArXiv": "2601.17918",
+      "DOI": "10.48550/arXiv.2601.17918",
+      "CorpusId": 285050775
+    },
+    "title": "Benchmarking Direct Preference Optimization for Medical Large Vision-Language Models",
+    "venue": "Conference of the European Chapter of the Association for Computational Linguistics",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.17918, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2294370736",
+        "name": "Dain Kim"
+      },
+      {
+        "authorId": "2294380582",
+        "name": "Jiwoo Lee"
+      },
+      {
+        "authorId": "2367102988",
+        "name": "Jaehoon Yun"
+      },
+      {
+        "authorId": "2341898602",
+        "name": "Yonghoe Koo"
+      },
+      {
+        "authorId": "2366268853",
+        "name": "Qingyu Chen"
+      },
+      {
+        "authorId": "3087706",
+        "name": "Hyunjae Kim"
+      },
+      {
+        "authorId": "2261449256",
+        "name": "Jaewoo Kang"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) hold significant promise for medical applications, yet their deployment is often constrained by insufficient alignment and reliability. While Direct Preference Optimization (DPO) has emerged as a potent framework for refining model responses, its efficacy in high-stakes medical contexts remains underexplored, lacking the rigorous empirical groundwork necessary to guide future methodological advances. To bridge this gap, we present the first comprehensive examination of diverse DPO variants within the medical domain, evaluating nine distinct formulations across two medical LVLMs: LLaVA-Med and HuatuoGPT-Vision. Our results reveal several critical limitations: current DPO approaches often yield inconsistent gains over supervised fine-tuning, with their efficacy varying significantly across different tasks and backbones. Furthermore, they frequently fail to resolve fundamental visual misinterpretation errors. Building on these insights, we present a targeted preference construction strategy as a proof-of-concept that explicitly addresses visual misinterpretation errors frequently observed in existing DPO models. This design yields a 3.6% improvement over the strongest existing DPO baseline on visual question-answering tasks. To support future research, we release our complete framework, including all training data, model checkpoints, and our codebase at https://github.com/dmis-lab/med-vlm-dpo.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f16807c915cbc65111667358ade7a6e5ad7c0366",
+    "externalIds": {
+      "ArXiv": "2601.00659",
+      "DBLP": "journals/tmlr/AnandJBR26",
+      "DOI": "10.48550/arXiv.2601.00659",
+      "CorpusId": 284475693
+    },
+    "title": "CRoPS: A Training-Free Hallucination Mitigation Framework for Vision-Language Models",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.00659, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2190750065",
+        "name": "Neeraj Anand"
+      },
+      {
+        "authorId": "2402609933",
+        "name": "Samyak Jha"
+      },
+      {
+        "authorId": "2384443997",
+        "name": "Udbhav Bamba"
+      },
+      {
+        "authorId": "1821935133",
+        "name": "R. Rahaman"
+      }
+    ],
+    "abstract": "Despite the rapid success of Large Vision-Language Models (LVLMs), a persistent challenge is their tendency to generate hallucinated content, undermining reliability in real-world use. Existing training-free methods address hallucinations but face two limitations: (i) they rely on narrow assumptions about hallucination sources, and (ii) their effectiveness declines toward the end of generation, where hallucinations are most likely to occur. A common strategy is to build hallucinated models by completely or partially removing visual tokens and contrasting them with the original model. Yet, this alone proves insufficient, since visual information still propagates into generated text. Building on this insight, we propose a novel hallucinated model that captures hallucination effects by selectively removing key text tokens. We further introduce Generalized Contrastive Decoding, which integrates multiple hallucinated models to represent diverse hallucination sources. Together, these ideas form CRoPS, a training-free hallucination mitigation framework that improves CHAIR scores by 20% and achieves consistent gains across six benchmarks and three LVLM families, outperforming state-of-the-art training-free methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "af44658db9b9fddc00d171f707cbbba19a8ddb14",
+    "externalIds": {
+      "ArXiv": "2601.00623",
+      "DBLP": "journals/corr/abs-2601-00623",
+      "DOI": "10.48550/arXiv.2601.00623",
+      "CorpusId": 284378179
+    },
+    "title": "DA-DPO: Cost-efficient Difficulty-aware Preference Optimization for Reducing MLLM Hallucinations",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2026,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.00623, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2150467916",
+        "name": "Longtian Qiu"
+      },
+      {
+        "authorId": "2277741381",
+        "name": "Shan Ning"
+      },
+      {
+        "authorId": "2041742176",
+        "name": "Chuyu Zhang"
+      },
+      {
+        "authorId": "2387816402",
+        "name": "Jiaxuan Sun"
+      },
+      {
+        "authorId": "2266420500",
+        "name": "Xuming He"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has shown strong potential for mitigating hallucinations in Multimodal Large Language Models (MLLMs). However, existing multimodal DPO approaches often suffer from overfitting due to the difficulty imbalance in preference data. Our analysis shows that MLLMs tend to overemphasize easily distinguishable preference pairs, which hinders fine-grained hallucination suppression and degrades overall performance. To address this issue, we propose Difficulty-Aware Direct Preference Optimization (DA-DPO), a cost-effective framework designed to balance the learning process. DA-DPO consists of two main components: (1) Difficulty Estimation leverages pre-trained vision--language models with complementary generative and contrastive objectives, whose outputs are integrated via a distribution-aware voting strategy to produce robust difficulty scores without additional training; and (2) Difficulty-Aware Training reweights preference pairs based on their estimated difficulty, down-weighting easy samples while emphasizing harder ones to alleviate overfitting. This framework enables more effective preference optimization by prioritizing challenging examples, without requiring new data or extra fine-tuning stages. Extensive experiments demonstrate that DA-DPO consistently improves multimodal preference optimization, yielding stronger robustness to hallucinations and better generalization across standard benchmarks, while remaining computationally efficient. The project page is available at https://artanic30.github.io/project_pages/DA-DPO/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0e856c0979bd2ffafba238b223f79f4830d06dce",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2512-13240",
+      "ArXiv": "2512.13240",
+      "DOI": "10.48550/arXiv.2512.13240",
+      "CorpusId": 283896999
+    },
+    "title": "Reflective Preference Optimization (RPO): Enhancing On-Policy Alignment via Hint-Guided Reflection",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.13240, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256777998",
+        "name": "Zihui Zhao"
+      },
+      {
+        "authorId": "1390750227",
+        "name": "Zechang Li"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has emerged as a lightweight and effective alternative to Reinforcement Learning from Human Feedback (RLHF) and Reinforcement Learning with AI Feedback (RLAIF) for aligning large language and vision-language models. However, the standard DPO formulation, in which both the chosen and rejected responses are generated by the same policy, suffers from a weak learning signal because the two responses often share similar errors and exhibit small Kullback-Leibler (KL) divergence. This leads to slow and unstable convergence. To address this limitation, we introduce Reflective Preference Optimization (RPO), a new framework that incorporates hint-guided reflection into the DPO paradigm. RPO uses external models to identify hallucination sources and generate concise reflective hints, enabling the construction of on-policy preference pairs with stronger contrastiveness and clearer preference signals. We theoretically show that conditioning on hints increases the expected preference margin through mutual information and improves sample efficiency while remaining within the policy distribution family. Empirically, RPO achieves superior alignment with fewer training samples and iterations, substantially reducing hallucination rates and delivering state-of-the-art performance across multimodal benchmarks.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "f7365dc90ca79b4694ef2b1a1ec7cf3620a371a2",
+    "externalIds": {
+      "DBLP": "conf/eacl/UppaalHBPQS26",
+      "ArXiv": "2512.12218",
+      "DOI": "10.48550/arXiv.2512.12218",
+      "CorpusId": 283897090
+    },
+    "title": "Journey Before Destination: On the importance of Visual Faithfulness in Slow Thinking",
+    "venue": "Conference of the European Chapter of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.12218, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2398804143",
+        "name": "Rheeya Uppaal"
+      },
+      {
+        "authorId": "41022736",
+        "name": "Phu Mon Htut"
+      },
+      {
+        "authorId": "2384136157",
+        "name": "Min Bai"
+      },
+      {
+        "authorId": "2325731146",
+        "name": "Nikolaos Pappas"
+      },
+      {
+        "authorId": "2394201450",
+        "name": "Zheng Qi"
+      }
+    ],
+    "abstract": "Reasoning-augmented vision language models (VLMs) generate explicit chains of thought that promise greater capability and transparency but also introduce new failure modes: models may reach correct answers via visually unfaithful intermediate steps, or reason faithfully yet fail on the final prediction. Standard evaluations that only measure final-answer accuracy cannot distinguish these behaviors. We introduce the visual faithfulness of reasoning chains as a distinct evaluation dimension, focusing on whether the perception steps of a reasoning chain are grounded in the image. We propose a training- and reference-free framework that decomposes chains into perception versus reasoning steps and uses off-the-shelf VLM judges for step-level faithfulness, additionally verifying this approach through a human meta-evaluation. Building on this metric, we present a lightweight self-reflection procedure that detects and locally regenerates unfaithful perception steps without any training. Across multiple reasoning-trained VLMs and perception-heavy benchmarks, our method reduces Unfaithful Perception Rate while preserving final-answer accuracy, improving the reliability of multimodal reasoning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a8a13fadd67f0684867089f540a9559783079a90",
+    "externalIds": {
+      "DBLP": "conf/bigdataconf/PeiZC25",
+      "DOI": "10.1109/BigData66926.2025.11401791",
+      "CorpusId": 286327682
+    },
+    "title": "TGRPO-SRM: Token-Aware GRPO with Semantic Reward Modeling for Referring Expression Grounding",
+    "venue": "BigData Congress [Services Society]",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/BigData66926.2025.11401791?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/BigData66926.2025.11401791, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293635350",
+        "name": "Songwen Pei"
+      },
+      {
+        "authorId": "2349990606",
+        "name": "Jian Zhang"
+      },
+      {
+        "authorId": "2296488876",
+        "name": "Kai Cong"
+      }
+    ],
+    "abstract": "Referring Expression Grounding (REG) is challenging due to its demand for fine-grained multimodal reasoning. While large vision-language models (LVLMs) are commonly adapted via supervised fine-tuning (SFT), this approach depends on costly annotations. Reinforcement Fine-Tuning (RFT), especially Group Relative Policy Optimization (GRPO), offers a more data-efficient alternative but suffers from sample-level loss aggregation and shallow reward signals that fail to capture semantic alignment. To address these issues, we propose Tokenaware GRPO with Semantic Reward Modeling (TGRPO-SRM), a novel approach that employs token-level loss aggregation and integrates an auxiliary semantic reward model to improve alignment between textual and visual modalities. We also augment standard REG datasets with triples generated by external models. These provide explicit step-wise reasoning signals without extra human annotations, enhancing data and annotation efficiency. Extensive experiments demonstrate that TGRPO-SRM surpasses SFT by up to 6.9% and standard GRPO by up to 1.8% on benchmarks such as RefCOCO, RefCOCO+, RefCOCOg, and LISA. Notably, TGRPO-SRM-3B and TGRPO-SRM-7B achieve Acc@0.5 scores of 65.1% and 65.9% on LISA, respectively, showcasing superior grounding precision, reasoning quality, and generalization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "48864d61c66e15b95486a9ab975841cbb8d77822",
+    "externalIds": {
+      "ArXiv": "2512.05546",
+      "DBLP": "journals/corr/abs-2512-05546",
+      "DOI": "10.48550/arXiv.2512.05546",
+      "CorpusId": 283672584
+    },
+    "title": "Conscious Gaze: Adaptive Attention Mechanisms for Hallucination Mitigation in Vision-Language Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.05546, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2350047690",
+        "name": "Wei Bu"
+      },
+      {
+        "authorId": "2198691745",
+        "name": "Guan Yuan"
+      },
+      {
+        "authorId": "2352199038",
+        "name": "Guixian Zhang"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (VLMs) often exhibit text inertia, where attention drifts from visual evidence toward linguistic priors, resulting in object hallucinations. Existing decoding strategies intervene only at the output logits and thus cannot correct internal reasoning drift, while recent internal-control methods based on heuristic head suppression or global steering vectors lack principled grounding. We introduce Conscious Gaze (CG-VLM), a training-free, inference-time framework that converts game-theoretic interpretability into actionable decoding control. A Cognitive Demand Sensor built on Harsanyi interactions estimates instantaneous vision-text synergy and identifies moments when visual grounding is necessary. Conditioned on this signal, a Focused Consensus Induction module selectively reorients mid-layer attention toward visual tokens before collapse into text priors. CG-VLM achieves state-of-the-art results on POPE and CHAIR across InstructBLIP, LLaVA, Qwen-VL, and mPLUG, while preserving general capabilities, demonstrating that token-level sensing enables precise, context-aware intervention without compromising foundational knowledge.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5135a695eb5bf747e18204b37e85dad37fd601ce",
+    "externalIds": {
+      "ArXiv": "2512.00706",
+      "DBLP": "journals/corr/abs-2512-00706",
+      "DOI": "10.48550/arXiv.2512.00706",
+      "CorpusId": 283450099
+    },
+    "title": "Optimizing LVLMs with On-Policy Data for Effective Hallucination Mitigation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.00706, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2378770845",
+        "name": "Chengzhi Yu"
+      },
+      {
+        "authorId": "2391646195",
+        "name": "Yifan Xu"
+      },
+      {
+        "authorId": "2395717499",
+        "name": "Yifan Chen"
+      },
+      {
+        "authorId": "2395684856",
+        "name": "Wenyi Zhang"
+      }
+    ],
+    "abstract": "Recently, large vision-language models (LVLMs) have risen to be a promising approach for multimodal tasks. However, principled hallucination mitigation remains a critical challenge.In this work, we first analyze the data generation process in LVLM hallucination mitigation and affirm that on-policy data significantly outperforms off-policy data, which thus calls for efficient and reliable preference annotation of on-policy data. We then point out that, existing annotation methods introduce additional hallucination in training samples, which may enhance the model's hallucination patterns, to address this problem, we propose training a hallucination classifier giving binary annotations, which guarantee clean chosen samples for the subsequent alignment. To further harness of the power of on-policy data, we design a robust iterative direct preference optimization (DPO) algorithm adopting a dynamic sample reweighting scheme. We conduct comprehensive experiments on three benchmarks with comparison to 8 state-of-the-art baselines. In particular, our approach reduces the hallucination rate of LLaVA-1.5-7B on MMHalBench by 50.8% and the average hallucination rate on Object HalBench by 79.5%; more significantly, our method fully taps into the potential of open-source models, enabling LLaVA-1.5-13B to even surpass the performance of GPT-4V.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cede76bdb0f220aefc4b17e09039ab6dcb52fc77",
+    "externalIds": {
+      "ArXiv": "2511.19023",
+      "DBLP": "journals/corr/abs-2511-19023",
+      "DOI": "10.48550/arXiv.2511.19023",
+      "CorpusId": 283244806
+    },
+    "title": "OrdMoE: Preference Alignment via Hierarchical Expert Group Ranking in Multimodal Mixture-of-Experts LLMs",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.19023, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2139833611",
+        "name": "Yuting Gao"
+      },
+      {
+        "authorId": "2394094518",
+        "name": "Weihao Chen"
+      },
+      {
+        "authorId": "2394346130",
+        "name": "Lan Wang"
+      },
+      {
+        "authorId": "2395851022",
+        "name": "Ruihan Xu"
+      },
+      {
+        "authorId": "2352760420",
+        "name": "Qingpei Guo"
+      }
+    ],
+    "abstract": "Preference learning has recently emerged as a pivotal strategy for post-training alignment of Multimodal Large Language Models (MLLMs). However, existing approaches predominantly rely on external human-annotated preference data, which is costly and labor-intensive to collect. In this work, we propose OrdMoE, a novel preference alignment framework that bypasses the reliance on external human preferences entirely by leveraging intrinsic signals within Mixture-of-Experts (MoE) architectures. Specifically, we observe that the router's expert selection scores implicitly encode a quality-aware ranking of responses (i.e. higher-scoring experts consistently generate higher-quality outputs). Building on this insight, OrdMoE constructs an internal preference hierarchy by grouping experts into ranked tiers based on their per-token routing scores and activating each tier separately to produce a sequence of responses with increasing quality. This yields a zero-cost, self-supervised preference ordering over generated responses, which can be directly optimized using standard preference learning objectives. Extensive experiments across multiple multimodal benchmarks demnstrate that OrdMoE significantly enhances both alignment and overall performance of multimodal Mixture-of-Experts LLMs, achieving competitive results without requiring any human-annotated preference data.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e122a90a51466532ad9a004d36bdeb68f983df3a",
+    "externalIds": {
+      "ArXiv": "2511.18740",
+      "DBLP": "journals/corr/abs-2511-18740",
+      "DOI": "10.48550/arXiv.2511.18740",
+      "CorpusId": 283244204
+    },
+    "title": "Multimodal Large Language Models with Adaptive Preference Optimization for Sequential Recommendation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.18740, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334353063",
+        "name": "Yu Wang"
+      },
+      {
+        "authorId": "2142991699",
+        "name": "Yonghui Yang"
+      },
+      {
+        "authorId": "2385387978",
+        "name": "Le Wu"
+      },
+      {
+        "authorId": "2275044076",
+        "name": "Yi Zhang"
+      },
+      {
+        "authorId": "2392871416",
+        "name": "Richang Hong"
+      }
+    ],
+    "abstract": "Recent advances in Large Language Models (LLMs) have opened new avenues for sequential recommendation by enabling natural language reasoning over user behavior sequences. A common approach formulates recommendation as a language modeling task, where interaction histories are transformed into prompts and user preferences are learned via supervised fine-tuning. However, these methods operate solely in the textual modality and often miss users'fine-grained interests, especially when shaped by rich visual signals such as product images or movie posters. Multimodal Large Language Models (MLLMs) offer a promising alternative by aligning text and vision in a shared semantic space. A prevalent training paradigm applies Supervised Fine-Tuning (SFT) followed by Direct Preference Optimization (DPO) to model user preferences. Yet, two core challenges remain: 1) Imbalanced sample hardness, where random negative sampling causes overfitting on easy examples and under-training on hard ones; 2) Cross-modal semantic bias, where the fixed reference model in DPO prevents the policy model from correcting modality misalignments--especially over long sequences. To address these issues, we propose a Multimodal LLM framework that integrates Hardness-aware and Noise-regularized preference optimization for Recommendation (HaNoRec). Specifically, HaNoRec dynamically adjusts optimization weights based on both the estimated hardness of each training sample and the policy model's real-time responsiveness, prioritizing harder examples. It further introduces Gaussian-perturbed distribution optimization on output logits to enhance cross-modal semantic consistency and reduce modality bias inherited from the reference model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "44ffb629096d407bc6cf72c4e6266b326e946f6d",
+    "externalIds": {
+      "ArXiv": "2510.18321",
+      "DBLP": "journals/corr/abs-2510-18321",
+      "DOI": "10.48550/arXiv.2510.18321",
+      "CorpusId": 282246008
+    },
+    "title": "Beyond Single Models: Mitigating Multimodal Hallucinations via Adaptive Token Ensemble Decoding",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.18321, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2336924486",
+        "name": "Jinlin Li"
+      },
+      {
+        "authorId": "2382957039",
+        "name": "Yuran Wang"
+      },
+      {
+        "authorId": "34564258",
+        "name": "Yifei Yuan"
+      },
+      {
+        "authorId": "2328016516",
+        "name": "Xiao Zhou"
+      },
+      {
+        "authorId": "2344958511",
+        "name": "Yingying Zhang"
+      },
+      {
+        "authorId": "2311366020",
+        "name": "Xixian Yong"
+      },
+      {
+        "authorId": "2237585282",
+        "name": "Yefeng Zheng"
+      },
+      {
+        "authorId": "2383301176",
+        "name": "Xian Wu"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) have recently achieved impressive results in multimodal tasks such as image captioning and visual question answering. However, they remain prone to object hallucination -- generating descriptions of nonexistent or misidentified objects. Prior work has partially mitigated this via auxiliary training objectives or external modules, but challenges remain in terms of scalability, adaptability, and model independence. To address these limitations, we propose Adaptive Token Ensemble Decoding (ATED), a training-free, token-level ensemble framework that mitigates hallucination by aggregating predictions from multiple LVLMs during inference. ATED dynamically computes uncertainty-based weights for each model, reflecting their reliability at each decoding step. It also integrates diverse decoding paths to improve contextual grounding and semantic consistency. Experiments on standard hallucination detection benchmarks demonstrate that ATED significantly outperforms state-of-the-art methods, reducing hallucination without compromising fluency or relevance. Our findings highlight the benefits of adaptive ensembling and point to a promising direction for improving LVLM robustness in high-stakes applications. The code is available at https://github.com/jinlin2021/ATED.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "41ad389d4d5c2f8db95fabce9fe83397c4dbfc7a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-21794",
+      "ArXiv": "2510.21794",
+      "DOI": "10.48550/arXiv.2510.21794",
+      "CorpusId": 282389264
+    },
+    "title": "Token-Level Inference-Time Alignment for Vision-Language Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.21794, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2284751989",
+        "name": "Kejia Chen"
+      },
+      {
+        "authorId": "2327680317",
+        "name": "Jiawen Zhang"
+      },
+      {
+        "authorId": "2443575",
+        "name": "Jiacong Hu"
+      },
+      {
+        "authorId": "2142584213",
+        "name": "Kewei Gao"
+      },
+      {
+        "authorId": "2327670734",
+        "name": "Jian Lou"
+      },
+      {
+        "authorId": "2358189123",
+        "name": "Zunlei Feng"
+      },
+      {
+        "authorId": "2075692",
+        "name": "Min-Gyoo Song"
+      }
+    ],
+    "abstract": "Vision-Language Models (VLMs) have become essential backbones of modern multimodal intelligence, yet their outputs remain prone to hallucination-plausible text misaligned with visual inputs. Existing alignment approaches often rely on expensive fine-tuning with annotated preference data or sequence-level inference strategies that provide only coarse, delayed feedback. To overcome these limitations, we present TITA (Token-level Inference-Time Alignment), a lightweight framework that freezes the base VLM and instead trains a reward model to approximate its distribution. During inference, implicit preference signals are extracted as log-probability ratios between the reward model and the target VLM, yielding dense autoregressive feedback. This formulation can be viewed as an inference-time variant of Direct Preference Optimization (DPO), providing token-level corrective signals without retraining the backbone. Extensive evaluations on LLaVA-1.5-7B and 13B show consistent gains across 12 benchmarks, with improvements of 8.6% on MMVet and 6.7% on POPE, indicating stronger general understanding and reduced hallucinations. Additional experiments on Qwen2.5-VL-7B and DeepSeek-VL2-27.5B show comparable gains, especially in hallucination reduction and VQA accuracy, while incurring negligible inference overhead.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0afa3a449442ab767fe4b70e4a3bfca7f671d7e8",
+    "externalIds": {
+      "ArXiv": "2510.14304",
+      "DBLP": "journals/corr/abs-2510-14304",
+      "DOI": "10.18653/v1/2025.findings-emnlp.444",
+      "CorpusId": 282139422
+    },
+    "title": "Watermarking for Factuality: Guiding Vision-Language Models Toward Truth via Tri-layer Contrastive Decoding",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.14304, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2306268732",
+        "name": "Kyungryul Back"
+      },
+      {
+        "authorId": "118766520",
+        "name": "Seong-Oak Park"
+      },
+      {
+        "authorId": "2109130002",
+        "name": "Milim Kim"
+      },
+      {
+        "authorId": "2345679667",
+        "name": "Mincheol Kwon"
+      },
+      {
+        "authorId": "2291986383",
+        "name": "Sanghyeok Lee"
+      },
+      {
+        "authorId": "2348882314",
+        "name": "Hyunyoung Lee"
+      },
+      {
+        "authorId": "2381458805",
+        "name": "Junhee Cho"
+      },
+      {
+        "authorId": "2290202388",
+        "name": "Seunghyun Park"
+      },
+      {
+        "authorId": "2257314354",
+        "name": "Jinkyu Kim"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) have recently shown promising results on various multimodal tasks, even achieving human-comparable performance in certain cases. Nevertheless, LVLMs remain prone to hallucinations -- they often rely heavily on a single modality or memorize training data without properly grounding their outputs. To address this, we propose a training-free, tri-layer contrastive decoding with watermarking, which proceeds in three steps: (1) select a mature layer and an amateur layer among the decoding layers, (2) identify a pivot layer using a watermark-related question to assess whether the layer is visually well-grounded, and (3) apply tri-layer contrastive decoding to generate the final output. Experiments on public benchmarks such as POPE, MME and AMBER demonstrate that our method achieves state-of-the-art performance in reducing hallucinations in LVLMs and generates more visually grounded responses.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "9da7b09cd2873da4f05b36ae6043dfe09509af1b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-12953",
+      "ArXiv": "2510.12953",
+      "DOI": "10.48550/arXiv.2510.12953",
+      "CorpusId": 282102256
+    },
+    "title": "Epistemic-aware Vision-Language Foundation Model for Fetal Ultrasound Interpretation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.12953, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2385839186",
+        "name": "Xiao He"
+      },
+      {
+        "authorId": "2346971259",
+        "name": "Huangxuan Zhao"
+      },
+      {
+        "authorId": "1380547970",
+        "name": "Guojia Wan"
+      },
+      {
+        "authorId": "2386359988",
+        "name": "Wei Zhou"
+      },
+      {
+        "authorId": "2316447420",
+        "name": "Yanxing Liu"
+      },
+      {
+        "authorId": "2154737678",
+        "name": "Juhua Liu"
+      },
+      {
+        "authorId": "2261715171",
+        "name": "Yongchao Xu"
+      },
+      {
+        "authorId": "2261151873",
+        "name": "Yong Luo"
+      },
+      {
+        "authorId": "2275194788",
+        "name": "Dacheng Tao"
+      },
+      {
+        "authorId": "2289611686",
+        "name": "Bo Du"
+      }
+    ],
+    "abstract": "Recent medical vision-language models have shown promise on tasks such as VQA, report generation, and anomaly detection. However, most are adapted to structured adult imaging and underperform in fetal ultrasound, which poses challenges of multi-view image reasoning, numerous diseases, and image diversity. To bridge this gap, we introduce FetalMind, a medical AI system tailored to fetal ultrasound for both report generation and diagnosis. Guided by clinical workflow, we propose Salient Epistemic Disentanglement (SED), which injects an expert-curated bipartite graph into the model to decouple view-disease associations and to steer preference selection along clinically faithful steps via reinforcement learning. This design mitigates variability across diseases and heterogeneity across views, reducing learning bottlenecks while aligning the model's inference with obstetric practice. To train FetalMind at scale, we curate FetalSigma-1M dataset, the first large-scale fetal ultrasound report corpus, comprising 20K reports from twelve medical centers, addressing the scarcity of domain data. Extensive experiments show that FetalMind outperforms open- and closed-source baselines across all gestational stages, achieving +14% average gains and +61.2% higher accuracy on critical conditions while remaining efficient, stable, and scalable. Project Page: https://hexiao0275.github.io/FetalMind.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6d3bc591a6d3ad2c40bcbfbaa912b7550f088f44",
+    "externalIds": {
+      "ArXiv": "2510.11190",
+      "DBLP": "journals/corr/abs-2510-11190",
+      "DOI": "10.48550/arXiv.2510.11190",
+      "CorpusId": 282057991
+    },
+    "title": "FlexAC: Towards Flexible Control of Associative Reasoning in Multimodal Large Language Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.11190, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2175456710",
+        "name": "Shengming Yuan"
+      },
+      {
+        "authorId": "2052922584",
+        "name": "Xinyu Lyu"
+      },
+      {
+        "authorId": "2366612645",
+        "name": "Shuai Wang"
+      },
+      {
+        "authorId": "2233229262",
+        "name": "Beitao Chen"
+      },
+      {
+        "authorId": "2268428960",
+        "name": "Jingkuan Song"
+      },
+      {
+        "authorId": "2671321",
+        "name": "Lianli Gao"
+      }
+    ],
+    "abstract": "Multimodal large language models (MLLMs) face an inherent trade-off between faithfulness and creativity, as different tasks require varying degrees of associative reasoning. However, existing methods lack the flexibility to modulate this reasoning strength, limiting MLLMs'adaptability across factual and creative scenarios. To bridge this gap, we propose equipping MLLMs with mechanisms that enable flexible control over associative reasoning. We begin by investigating the internal mechanisms underlying associative behavior in MLLMs and find that: (1) middle layers play a pivotal role in shaping model's associative tendencies, (2) modifying representations in these layers effectively regulates associative reasoning strength, and (3) hallucinations can be exploited to derive steering vectors that guide this modulation. Building on these findings, we introduce Flexible Association Control (FlexAC), a lightweight and training-free framework for modulating associative behavior in MLLMs. FlexAC first induces hallucination-guided intermediate representations to encode associative directions. Then, it selects high-association instances to construct effective associative steering vectors, whose strengths are adaptively calibrated to balance creative guidance with output stability. Finally, recognizing the multi-dimensional nature of associative reasoning, FlexAC incorporates task-specific associative vectors derived from a forward pass on a few target-domain samples, enabling models to follow diverse associative directions and better adapt to creative tasks. Notably, our method achieves up to a 5.8x improvement in creativity on Creation-MMBench and a 29% reduction in hallucination rate on CHAIR, surpassing existing baselines and demonstrating its effectiveness in enabling flexible control over associative reasoning in MLLMs. Our code is available at https://github.com/ylhz/FlexAC.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dd7c8a2a0df31c1dcd367b75c92184f306111e3b",
+    "externalIds": {
+      "DBLP": "conf/smc/YanLGLWWLJJL25",
+      "DOI": "10.1109/SMC58881.2025.11342688",
+      "CorpusId": 285107185
+    },
+    "title": "On the Taxonomy, Tasks, and Open-Challenges for Multimodal Large Language Models",
+    "venue": "IEEE International Conference on Systems, Man and Cybernetics",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/SMC58881.2025.11342688?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/SMC58881.2025.11342688, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325125234",
+        "name": "Lecheng Yan"
+      },
+      {
+        "authorId": "2372187444",
+        "name": "Ruizhe Li"
+      },
+      {
+        "authorId": "2344078767",
+        "name": "Jiahui Geng"
+      },
+      {
+        "authorId": "2405739970",
+        "name": "Qing Li"
+      },
+      {
+        "authorId": "2327995656",
+        "name": "Minghao Wu"
+      },
+      {
+        "authorId": "2268638120",
+        "name": "Zhanyu Wang"
+      },
+      {
+        "authorId": "2405504573",
+        "name": "Wenxi Li"
+      },
+      {
+        "authorId": "8022678",
+        "name": "Tianbo Ji"
+      },
+      {
+        "authorId": "2119329356",
+        "name": "Shaochen Jiang"
+      },
+      {
+        "authorId": "2350868141",
+        "name": "Chenyang Lyu"
+      }
+    ],
+    "abstract": "In recent years, the field of Artificial Intelligence has witnessed the emergence of Multimodal Large Language Models (MLLMs) that have significantly advanced the state-of-the-art in understanding and generating content across various data modalities. These models, capable of processing and integrating information from text, images, audio, and video, have opened new avenues for research and applications. Distinguished by their ability to understand and generation information with diverse modalities, such as text, image, audio and many others, MLLMs mark a significant step towards the final aim of Artificial General Intelligence (AGI). This comprehensive survey provides an in-depth examination of MLLMs, highlighting their evolutionary trajectory, current state-of-the-art developments, and prospective future directions. Specifically, we show taxonomy of MLLMs by their modalities to be processed and model architecture for aligning multiple modalities. Besides, we also present discussion regarding the different types of tasks related to MLLMs. The paper further delves into the pressing challenges confronted in this domain, such as data scarcity, computational complexity, ethical dilemmas, and privacy considerations. We analyze these issues in the context of both development and deployment of MLLMs. The survey comprehensively demonstrate and summarise the recent advances of the transformative influence of MLLMs while acknowledging their potential limitations, thereby outlining a prospective roadmap for future research endeavors in this rapidly developing field.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1739afd42f3af838906dee80af38bfda0ade9a86",
+    "externalIds": {
+      "DBLP": "conf/smc/SunWWCP25",
+      "DOI": "10.1109/SMC58881.2025.11342663",
+      "CorpusId": 285107128
+    },
+    "title": "Teacher-Guided Code Generation With API Update",
+    "venue": "IEEE International Conference on Systems, Man and Cybernetics",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/SMC58881.2025.11342663?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/SMC58881.2025.11342663, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2358592076",
+        "name": "Tianze Sun"
+      },
+      {
+        "authorId": "2368536918",
+        "name": "Zekun Wang"
+      },
+      {
+        "authorId": null,
+        "name": "Wei Wang"
+      },
+      {
+        "authorId": "2325916398",
+        "name": "Ran Chen"
+      },
+      {
+        "authorId": "2325878293",
+        "name": "Ji Pei"
+      }
+    ],
+    "abstract": "Large language models have shown considerable potential in areas such as program writing and API invocation, significantly enhancing automation and efficiency. However, frequent updates to APIs pose significant challenges to these models, particularly in terms of the high costs of retraining and the complexity of maintenance associated with updating the model’s knowledge. Current strategies for handling these issues generally fall into two categories: enhanced reasoning and parameter tuning. Among these, Retrieval Augmented Generation (RAG), as a primary method for enhancing reasoning, assists the code models in the reasoning process during code generation by modifying prompt information. However, since it does not alter the model’s parameters, external knowledge may conflict with the knowledge stored in the model after training; On the other hand, the method of parameter tuning incorporates API updates into the training data, modifying the code model’s parameters and enabling re-reasoning. However it struggles due to the scarcity of high-quality samples for effective model training. In response to these challenges, we propose an innovative learning method that utilizes the logical reasoning capabilities of generic large models and adopts a teacher-student framework. Within our framework, the teacher model analyzes the historical learning records of the code model to autonomously generate high-quality programming problems and their solutions, guiding the model through preference-based training. This approach not only leverages the strengths of large models in problem generation but also strictly controls the quality of learning materials, effectively avoiding the knowledge conflicts that can arise from RAG-based methods. Our Method offers a more effective and practical solution for code models in rapidly evolving API environments, significantly improving their stability and accuracy in practical applications. Experiments conducted across multiple common code repositories have demonstrated the significant advantages of our method, confirming its proactive and practical capabilities in addressing the challenges of API updates.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "02c0a6a46be3760f1a1bf2ac32c5d9567e58dca8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-02665",
+      "ArXiv": "2510.02665",
+      "DOI": "10.48550/arXiv.2510.02665",
+      "CorpusId": 281829664
+    },
+    "title": "Self-Improvement in Multimodal Large Language Models: A Survey",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.02665, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2195232122",
+        "name": "Shijian Deng"
+      },
+      {
+        "authorId": "2267684515",
+        "name": "Kai Wang"
+      },
+      {
+        "authorId": "2384447908",
+        "name": "Tianyu Yang"
+      },
+      {
+        "authorId": "2305298850",
+        "name": "Harsh Singh"
+      },
+      {
+        "authorId": "2304892568",
+        "name": "Yapeng Tian"
+      }
+    ],
+    "abstract": "Recent advancements in self-improvement for Large Language Models (LLMs) have efficiently enhanced model capabilities without significantly increasing costs, particularly in terms of human effort. While this area is still relatively young, its extension to the multimodal domain holds immense potential for leveraging diverse data sources and developing more general self-improving models. This survey is the first to provide a comprehensive overview of self-improvement in Multimodal LLMs (MLLMs). We provide a structured overview of the current literature and discuss methods from three perspectives: 1) data collection, 2) data organization, and 3) model optimization, to facilitate the further development of self-improvement in MLLMs. We also include commonly used evaluations and downstream applications. Finally, we conclude by outlining open challenges and future research directions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "324e1c8d73c25f1affa3e8992365a000caf74884",
+    "externalIds": {
+      "ArXiv": "2509.25177",
+      "DBLP": "journals/corr/abs-2509-25177",
+      "DOI": "10.48550/arXiv.2509.25177",
+      "CorpusId": 281674590
+    },
+    "title": "Mitigating Hallucination in Multimodal LLMs with Layer Contrastive Decoding",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.25177, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2372256146",
+        "name": "Bingkui Tong"
+      },
+      {
+        "authorId": "2182293108",
+        "name": "Jiaer Xia"
+      },
+      {
+        "authorId": "2364091729",
+        "name": "Kaiyang Zhou"
+      }
+    ],
+    "abstract": "Multimodal Large Language Models (MLLMs) have shown impressive perception and reasoning capabilities, yet they often suffer from hallucinations -- generating outputs that are linguistically coherent but inconsistent with the context of the input image, including inaccuracies in objects, attributes, and relations. To address this challenge, we propose a simple approach called Layer Contrastive Decoding (LayerCD). Our design is motivated by the observation that shallow visual features are much more likely than deep visual features to cause an MLLM to hallucinate as they only capture biased, low-level information that is insufficient for high-level reasoning. Therefore, LayerCD aims to filter out hallucinations by contrasting the output distributions generated from visual features of different levels, specifically those from the shallow and deep layers of the vision encoder, respectively. We conduct extensive experiments on two hallucination benchmarks and show that LayerCD significantly outperforms current state-of-the-art. The code for LayerCD is available at https://github.com/maifoundations/LayerCD .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dacb8fd9a524eca1ec31e71a7b67d40e50c556cf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-24491",
+      "ArXiv": "2509.24491",
+      "DOI": "10.48550/arXiv.2509.24491",
+      "CorpusId": 281676343
+    },
+    "title": "Mitigating Visual Hallucinations via Semantic Curriculum Preference Optimization in MLLMs",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.24491, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2367744131",
+        "name": "Yuanshuai Li"
+      },
+      {
+        "authorId": "2275634547",
+        "name": "Yuping Yan"
+      },
+      {
+        "authorId": "2342572882",
+        "name": "Junfeng Tang"
+      },
+      {
+        "authorId": "2307191762",
+        "name": "Yunxuan Li"
+      },
+      {
+        "authorId": "2264209226",
+        "name": "Zeqi Zheng"
+      },
+      {
+        "authorId": "2304867640",
+        "name": "Yaochu Jin"
+      }
+    ],
+    "abstract": "Multimodal Large Language Models (MLLMs) have significantly improved the performance of various tasks, but continue to suffer from visual hallucinations, a critical issue where generated responses contradict visual evidence. While Direct Preference Optimization(DPO) is widely used for alignment, its application to MLLMs often fails to capture fine-grained semantic differences and encourages shortcut learning. To address these challenges, we propose Semantic Curriculum Preference Optimization (SCPO), a novel framework for MLLM alignment. SCPO employs a progressive, easy-to-hard curriculum built upon our Semantic Curriculum Preference Pairs dataset, which provides fine-grained semantic contrasts sorted by difficulty. This curriculum is trained with a dynamic reference model and a novel symmetric, bidirectional objective to facilitate simultaneous learning from both textual and visual preferences. To our knowledge, SCPO is the first framework to unify semantics, symmetry, and curriculum for MLLMs alignment, effectively mitigating visual hallucinations. Extensive experiments on LLaVA models across various scales and versions validate that SCPO demonstrates superior performance compared to baseline models on multiple hallucination benchmarks, reducing the hallucination rate by up to 62.9%. Moreover, evaluations on generalized benchmarks show that SCPO improves factuality while preserving general capabilities, with its performance remaining stable across general vision-language benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ee448ae2404d087a5cb69cf022a1393b04fc50ff",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-23236",
+      "ArXiv": "2509.23236",
+      "DOI": "10.48550/arXiv.2509.23236",
+      "CorpusId": 281676449
+    },
+    "title": "Self-Consistency as a Free Lunch: Reducing Hallucinations in Vision-Language Models via Self-Reflection",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.23236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111856153",
+        "name": "Mingfei Han"
+      },
+      {
+        "authorId": "2362727001",
+        "name": "Haihong Hao"
+      },
+      {
+        "authorId": "2383558633",
+        "name": "Jinxing Zhou"
+      },
+      {
+        "authorId": "2320771431",
+        "name": "Zhihui Li"
+      },
+      {
+        "authorId": "2383071481",
+        "name": "Yuhui Zheng"
+      },
+      {
+        "authorId": "2376520487",
+        "name": "Xueqing Deng"
+      },
+      {
+        "authorId": "2343810532",
+        "name": "Linjie Yang"
+      },
+      {
+        "authorId": "2358622438",
+        "name": "Xiaojun Chang"
+      }
+    ],
+    "abstract": "Vision-language models often hallucinate details, generating non-existent objects or inaccurate attributes that compromise output reliability. Existing methods typically address these issues via extensive human annotations or external supervision from more powerful models. In this work, we present a novel framework that leverages the model's self-consistency between long responses and short answers to generate preference pairs for training. We observe that short binary questions tend to yield highly reliable responses, which can be used to query the target model to evaluate and rank its generated responses. Specifically, we design a self-reflection pipeline where detailed model responses are compared against concise binary answers, and inconsistency signals are utilized to automatically curate high-quality training data without human annotations or external model-based supervision. By relying solely on self-consistency rather than external supervision, our method offers a scalable and efficient solution that effectively reduces hallucinations using unlabeled data. Extensive experiments on multiple benchmarks, i.e., AMBER, MultiObject-Hal (ROPE), Object HalBench, and MMHal-Bench, demonstrate significant improvements in factual grounding and reliability. Moreover, our approach maintains robust instruction-following ability, as evidenced by enhanced performance on LLaVA-Bench and MMBench.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "7d99c6fb68ef2de8dc2a1c67937d86b4a9e8f817",
+    "externalIds": {
+      "ArXiv": "2509.18970",
+      "DBLP": "journals/corr/abs-2509-18970",
+      "DOI": "10.48550/arXiv.2509.18970",
+      "CorpusId": 281495897
+    },
+    "title": "LLM-based Agents Suffer from Hallucinations: A Survey of Taxonomy, Methods, and Directions",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.18970, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46519974",
+        "name": "Xixun Lin"
+      },
+      {
+        "authorId": "2381729543",
+        "name": "Yucheng Ning"
+      },
+      {
+        "authorId": "2363525955",
+        "name": "Jingwen Zhang"
+      },
+      {
+        "authorId": "2382023752",
+        "name": "Yan Dong"
+      },
+      {
+        "authorId": "2321652758",
+        "name": "Yilong Liu"
+      },
+      {
+        "authorId": "2333404867",
+        "name": "Yongxuan Wu"
+      },
+      {
+        "authorId": "2376378058",
+        "name": "Xiaohua Qi"
+      },
+      {
+        "authorId": "2356852697",
+        "name": "Nan Sun"
+      },
+      {
+        "authorId": "2382863045",
+        "name": "Yanmin Shang"
+      },
+      {
+        "authorId": "49776272",
+        "name": "Pengfei Cao"
+      },
+      {
+        "authorId": "2352622768",
+        "name": "Lixin Zou"
+      },
+      {
+        "authorId": "2363371728",
+        "name": "Xu Chen"
+      },
+      {
+        "authorId": "2300672508",
+        "name": "Chuan Zhou"
+      },
+      {
+        "authorId": "2335511277",
+        "name": "Jia Wu"
+      },
+      {
+        "authorId": "2296438593",
+        "name": "Shirui Pan"
+      },
+      {
+        "authorId": "2256857762",
+        "name": "Bin Wang"
+      },
+      {
+        "authorId": "2315666531",
+        "name": "Yanan Cao"
+      },
+      {
+        "authorId": "2261817656",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "2364078619",
+        "name": "Songlin Hu"
+      },
+      {
+        "authorId": "2381788740",
+        "name": "Li Guo"
+      }
+    ],
+    "abstract": "Driven by the rapid advancements of Large Language Models (LLMs), LLM-based agents have emerged as powerful intelligent systems capable of human-like cognition, reasoning, and interaction. These agents are increasingly being deployed across diverse real-world applications, including student education, scientific research, and financial analysis. However, despite their remarkable potential, LLM-based agents remain vulnerable to hallucination issues, which can result in erroneous task execution and undermine the reliability of the overall system design. Addressing this critical challenge requires a deep understanding and a systematic consolidation of recent advances on LLM-based agents. To this end, we present the first comprehensive survey of hallucinations in LLM-based agents. By carefully analyzing the complete workflow of agents, we propose a new taxonomy that identifies different types of agent hallucinations occurring at different stages. Furthermore, we conduct an in-depth examination of eighteen triggering causes underlying the emergence of agent hallucinations. Through a detailed review of a large number of existing studies, we summarize approaches for hallucination mitigation and detection, and highlight promising directions for future research. We hope this survey will inspire further efforts toward addressing hallucinations in LLM-based agents, ultimately contributing to the development of more robust and reliable agent systems.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "803a311a6c689924df79745ede11447e07e15f48",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-13919",
+      "ArXiv": "2509.13919",
+      "DOI": "10.48550/arXiv.2509.13919",
+      "CorpusId": 281332742
+    },
+    "title": "Towards Rationale-Answer Alignment of LVLMs via Self-Rationale Calibration",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.13919, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115768648",
+        "name": "Yuanchen Wu"
+      },
+      {
+        "authorId": "2266750866",
+        "name": "Ke Yan"
+      },
+      {
+        "authorId": "2266754413",
+        "name": "Shouhong Ding"
+      },
+      {
+        "authorId": "2293654341",
+        "name": "Ziyin Zhou"
+      },
+      {
+        "authorId": "2303232085",
+        "name": "Xiaoqiang Li"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) have manifested strong visual question answering capability. However, they still struggle with aligning the rationale and the generated answer, leading to inconsistent reasoning and incorrect responses. To this end, this paper introduces the Self-Rationale Calibration (SRC) framework to iteratively calibrate the alignment between rationales and answers. SRC begins by employing a lightweight\"rationale fine-tuning\"approach, which modifies the model's response format to require a rationale before deriving an answer without explicit prompts. Next, SRC searches for a diverse set of candidate responses from the fine-tuned LVLMs for each sample, followed by a proposed pairwise scoring strategy using a tailored scoring model, R-Scorer, to evaluate both rationale quality and factual consistency of candidates. Based on a confidence-weighted preference curation process, SRC decouples the alignment calibration into a preference fine-tuning manner, leading to significant improvements of LVLMs in perception, reasoning, and generalization across multiple benchmarks. Our results emphasize the rationale-oriented alignment in exploring the potential of LVLMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7f1775c7bd78ad9c02ceebf9d28c62e9cd375a24",
+    "externalIds": {
+      "ArXiv": "2509.11287",
+      "DBLP": "conf/emnlp/LuZYGZQLH25",
+      "DOI": "10.48550/arXiv.2509.11287",
+      "CorpusId": 281315353
+    },
+    "title": "Mitigating Hallucinations in Large Vision-Language Models by Self-Injecting Hallucinations",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.11287, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276496394",
+        "name": "Yifan Lu"
+      },
+      {
+        "authorId": "2268295940",
+        "name": "Ziqi Zhang"
+      },
+      {
+        "authorId": "50199457",
+        "name": "Chunfen Yuan"
+      },
+      {
+        "authorId": "2363506071",
+        "name": "Jun Gao"
+      },
+      {
+        "authorId": "2280100890",
+        "name": "Congxuan Zhang"
+      },
+      {
+        "authorId": "2311079102",
+        "name": "Xiaojuan Qi"
+      },
+      {
+        "authorId": "2261779508",
+        "name": "Bing Li"
+      },
+      {
+        "authorId": "2146242065",
+        "name": "Weiming Hu"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) suffer from serious hallucination problems, where the model-generated responses are inconsistent with the visual inputs. Existing hallucination mitigation methods are mainly based on preference alignment and require external human annotations or auxiliary models for preference data collection, which increase costs and limit sustainable improvement. To tackle these challenges, we propose Autonomous Preference Alignment via Self-Injection (APASI), a novel and generalizable method that mitigates hallucinations without external dependencies. APASI leverages the target LVLM to self-inject hallucinations into a generated response, creating a pair of responses with varying preference levels. During the self-injection process, the dis-preferred response is generated based on three key observations of hallucinations, ensuring it simulates real hallucination patterns. This fidelity offers an accurate learning signal for hallucination mitigation. Moreover, APASI incorporates an iterative alignment training strategy combined with curriculum learning to periodically update the preference data with increasing challenge, enabling stable and continuous enhancement of the LVLM. Extensive experiments across six benchmarks show that APASI not only effectively mitigates hallucinations for three baseline models but also achieves comparable or even superior performance to alignment-based methods with external dependency, thereby demonstrating its effectiveness and generalization capability. The code is available at https://github.com/davidluciolu/APASI.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "fb9bbc501031049e9263412130c91cffc4e6ae34",
+    "externalIds": {
+      "DOI": "10.1016/j.ajodo.2025.08.010",
+      "CorpusId": 281703725,
+      "PubMed": "41026070"
+    },
+    "title": "Chat Generative Pretrained Transformer-4.0's accuracy in assessing cervical vertebrae and hand-wrist maturation stages: A retrospective study.",
+    "venue": "American Journal of Orthodontics and Dentofacial Orthopedics",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.ajodo.2025.08.010?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.ajodo.2025.08.010, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2354525326",
+        "name": "Meryem Akpınar"
+      },
+      {
+        "authorId": "1965933735",
+        "name": "Farhad Salmanpour"
+      }
+    ],
+    "abstract": "INTRODUCTION\nThis study aimed to evaluate the diagnostic accuracy of Chat Generative Pretrained Transformer version 4.0 (ChatGPT-4.0) in determining cervical vertebrae and hand-wrist maturation stages using cephalometric and hand-wrist radiographic films.\n\n\nMETHODS\nA retrospective analysis was conducted on 238 subjects who had cephalometric and hand-wrist radiographs taken on the same day. Each hand-wrist maturation stage was independently evaluated by 3 orthodontists using the method described by Björk and Helm, whereas cervical vertebrae maturation stages were assessed following the methodology proposed by Bacetti and coworkers. These evaluations served as the reference standard for measuring the performance of ChatGPT-4.0. The hand-wrist and cephalometric radiographs were analyzed by ChatGPT-4.0, and the results were recorded by the primary researcher.\n\n\nRESULTS\nThe model achieved its highest performance in the hand-wrist maturation stages during the RU stage, with an area under the curve (AUC) value of 0.89. However, despite high precision values in the PP3U and MP3U stages, the model exhibited low recall values, indicating that certain positive instances were missed. In other stages, particularly DP3U and MP3CAP, low precision and recall values limited classification accuracy. Regarding cervical vertebral maturation stages (CVS), the model performed best in CVS1 (AUC, 0.82; precision, 0.806), with relatively favorable AUC values observed in CVS2 (AUC, 0.77). However, its predictive performance in CVS3 and CVS6 stages was suboptimal (AUC <0.67).\n\n\nCONCLUSIONS\nChatGPT-4.0 demonstrated accurate predictions in the RU and CVS1 stages. However, its overall performance was found to be inferior to that of other artificial intelligence models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "edb55c2b0cfff454524ee0b201ecf116c027c170",
+    "externalIds": {
+      "ArXiv": "2509.00723",
+      "DBLP": "journals/corr/abs-2509-00723",
+      "DOI": "10.48550/arXiv.2509.00723",
+      "CorpusId": 281079807
+    },
+    "title": "OmniDPO: A Preference Optimization Framework to Address Omni-Modal Hallucination",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.00723, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2375084543",
+        "name": "Junzhe Chen"
+      },
+      {
+        "authorId": "2332279884",
+        "name": "Tianshu Zhang"
+      },
+      {
+        "authorId": "2333311140",
+        "name": "Shiyu Huang"
+      },
+      {
+        "authorId": "2332770371",
+        "name": "Yuwei Niu"
+      },
+      {
+        "authorId": "2325125651",
+        "name": "Chao Sun"
+      },
+      {
+        "authorId": "2262424114",
+        "name": "Rong-Qing Zhang"
+      },
+      {
+        "authorId": "2325943818",
+        "name": "Guanyu Zhou"
+      },
+      {
+        "authorId": "2114092431",
+        "name": "Lijie Wen"
+      },
+      {
+        "authorId": "2362614093",
+        "name": "Xuming Hu"
+      }
+    ],
+    "abstract": "Recently, Omni-modal large language models (OLLMs) have sparked a new wave of research, achieving impressive results in tasks such as audio-video understanding and real-time environment perception. However, hallucination issues still persist. Similar to the bimodal setting, the priors from the text modality tend to dominate, leading OLLMs to rely more heavily on textual cues while neglecting visual and audio information. In addition, fully multimodal scenarios introduce new challenges. Most existing models align visual or auditory modalities with text independently during training, while ignoring the intrinsic correlations between video and its corresponding audio. This oversight results in hallucinations when reasoning requires interpreting hidden audio cues embedded in video content. To address these challenges, we propose OmniDPO, a preference-alignment framework designed to mitigate hallucinations in OLLMs. Specifically, OmniDPO incorporates two strategies: (1) constructing text-preference sample pairs to enhance the model's understanding of audio-video interactions; and (2) constructing multimodal-preference sample pairs to strengthen the model's attention to visual and auditory information. By tackling both challenges, OmniDPO effectively improves multimodal grounding and reduces hallucination. Experiments conducted on two OLLMs demonstrate that OmniDPO not only effectively mitigates multimodal hallucinations but also significantly enhances the models'reasoning capabilities across modalities. All code and datasets will be released upon paper acceptance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "17b4d09c27ad1191325ec50486d358f7cd20e68c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2508-20181",
+      "ArXiv": "2508.20181",
+      "DOI": "10.48550/arXiv.2508.20181",
+      "CorpusId": 280949557
+    },
+    "title": "Mitigating Hallucinations in Multimodal LLMs via Object-aware Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.20181, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2377789532",
+        "name": "Alberto Compagnoni"
+      },
+      {
+        "authorId": "2238815102",
+        "name": "Davide Caffagni"
+      },
+      {
+        "authorId": "2202986093",
+        "name": "Nicholas Moratelli"
+      },
+      {
+        "authorId": "1843795",
+        "name": "L. Baraldi"
+      },
+      {
+        "authorId": "3468983",
+        "name": "Marcella Cornia"
+      },
+      {
+        "authorId": "2303850502",
+        "name": "Rita Cucchiara"
+      }
+    ],
+    "abstract": "Multimodal Large Language Models (MLLMs) emerge as a unified interface to address a multitude of tasks, ranging from NLP to computer vision. Despite showcasing state-of-the-art results in many benchmarks, a long-standing issue is the tendency of MLLMs to hallucinate, that is to generate answers to the user's query that are not reflected in the visual input. In this paper, we address the problem of hallucinations as an alignment problem, seeking to steer the MLLM so that it prefers generating content without hallucinations. In contrast to recent approaches that require complicated pipelines to build synthetic preference data for alignment training, often relying on proprietary models, we capitalize on the well-known CHAIR metric, originally proposed to gauge the degree of hallucinations in image captioning. Given a pair of generated answers, we leverage CHAIR to distinguish winner and loser options (i.e., non-hallucinated and hallucinated samples) and fine-tune off-the-shelf MLLMs via Direct Preference Optimization (DPO). The resulting method, which we refer to as CHAIR-DPO, effectively diminishes the amount of hallucinated answers on several hallucination benchmarks, demonstrating the effectiveness of fine-tuning the MLLM with a CHAIR-based reward. Source code and trained models are publicly available at https://github.com/aimagelab/CHAIR-DPO.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "75302575c14076b29fa73a43c7cb13860ebd0b58",
+    "externalIds": {
+      "ArXiv": "2508.14264",
+      "DBLP": "journals/corr/abs-2508-14264",
+      "DOI": "10.48550/arXiv.2508.14264",
+      "CorpusId": 280692188
+    },
+    "title": "Directed-Tokens: A Robust Multi-Modality Alignment Approach to Large Language-Vision Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.14264, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35659935",
+        "name": "Thanh-Dat Truong"
+      },
+      {
+        "authorId": "2346356638",
+        "name": "Huu-Thien Tran"
+      },
+      {
+        "authorId": "2267339335",
+        "name": "Tran Thai Son"
+      },
+      {
+        "authorId": "2286445530",
+        "name": "B. Raj"
+      },
+      {
+        "authorId": "2346114595",
+        "name": "Khoa Luu"
+      }
+    ],
+    "abstract": "Large multimodal models (LMMs) have gained impressive performance due to their outstanding capability in various understanding tasks. However, these models still suffer from some fundamental limitations related to robustness and generalization due to the alignment and correlation between visual and textual features. In this paper, we introduce a simple but efficient learning mechanism for improving the robust alignment between visual and textual modalities by solving shuffling problems. In particular, the proposed approach can improve reasoning capability, visual understanding, and cross-modality alignment by introducing two new tasks: reconstructing the image order and the text order into the LMM's pre-training and fine-tuning phases. In addition, we propose a new directed-token approach to capture visual and textual knowledge, enabling the capability to reconstruct the correct order of visual inputs. Then, we introduce a new Image-to-Response Guided loss to further improve the visual understanding of the LMM in its responses. The proposed approach consistently achieves state-of-the-art (SoTA) performance compared with prior LMMs on academic task-oriented and instruction-following LMM benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cea641b63d050162096b9706ee3fbc6bfd197fef",
+    "externalIds": {
+      "ArXiv": "2508.11616",
+      "DBLP": "journals/corr/abs-2508-11616",
+      "DOI": "10.48550/arXiv.2508.11616",
+      "CorpusId": 280671231
+    },
+    "title": "Controlling Multimodal LLMs via Reward-guided Decoding",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.11616, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1796269096",
+        "name": "Oscar Mañas"
+      },
+      {
+        "authorId": "1410392725",
+        "name": "P. D'Oro"
+      },
+      {
+        "authorId": "2266467601",
+        "name": "Koustuv Sinha"
+      },
+      {
+        "authorId": "1456285042",
+        "name": "Adriana Romero-Soriano"
+      },
+      {
+        "authorId": "3325894",
+        "name": "M. Drozdzal"
+      },
+      {
+        "authorId": "2801949",
+        "name": "Aishwarya Agrawal"
+      }
+    ],
+    "abstract": "As Multimodal Large Language Models (MLLMs) gain widespread applicability, it is becoming increasingly desirable to adapt them for diverse user needs. In this paper, we study the adaptation of MLLMs through controlled decoding. To achieve this, we introduce the first method for reward-guided decoding of MLLMs and demonstrate its application in improving their visual grounding. Our method involves building reward models for visual grounding and using them to guide the MLLM's decoding process. Concretely, we build two separate reward models to independently control the degree of object precision and recall in the model's output. Our approach enables on-the-fly controllability of an MLLM's inference process in two ways: first, by giving control over the relative importance of each reward function during decoding, allowing a user to dynamically trade off object precision for recall in image captioning tasks; second, by giving control over the breadth of the search during decoding, allowing the user to control the trade-off between the amount of test-time compute and the degree of visual grounding. We evaluate our method on standard object hallucination benchmarks, showing that it provides significant controllability over MLLM inference, while consistently outperforming existing hallucination mitigation methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f809e863789c31d39f836aa4da3876fc83d8f9f7",
+    "externalIds": {
+      "ArXiv": "2508.10955",
+      "DBLP": "journals/corr/abs-2508-10955",
+      "DOI": "10.48550/arXiv.2508.10955",
+      "CorpusId": 280671511
+    },
+    "title": "Empowering Multimodal LLMs with External Tools: A Comprehensive Survey",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.10955, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2066297988",
+        "name": "Wenbin An"
+      },
+      {
+        "authorId": "2265588340",
+        "name": "Jiahao Nie"
+      },
+      {
+        "authorId": "29908089",
+        "name": "Y. Wu"
+      },
+      {
+        "authorId": "2258718282",
+        "name": "Feng Tian"
+      },
+      {
+        "authorId": "2372492043",
+        "name": "Shijian Lu"
+      },
+      {
+        "authorId": "2266142102",
+        "name": "Qinghua Zheng"
+      }
+    ],
+    "abstract": "By integrating the perception capabilities of multimodal encoders with the generative power of Large Language Models (LLMs), Multimodal Large Language Models (MLLMs), exemplified by GPT-4V, have achieved great success in various multimodal tasks, pointing toward a promising pathway to artificial general intelligence. Despite this progress, the limited quality of multimodal data, poor performance on many complex downstream tasks, and inadequate evaluation protocols continue to hinder the reliability and broader applicability of MLLMs across diverse domains. Inspired by the human ability to leverage external tools for enhanced reasoning and problem-solving, augmenting MLLMs with external tools (e.g., APIs, expert models, and knowledge bases) offers a promising strategy to overcome these challenges. In this paper, we present a comprehensive survey on leveraging external tools to enhance MLLM performance. Our discussion is structured along four key dimensions about external tools: (1) how they can facilitate the acquisition and annotation of high-quality multimodal data; (2) how they can assist in improving MLLM performance on challenging downstream tasks; (3) how they enable comprehensive and accurate evaluation of MLLMs; (4) the current limitations and future directions of tool-augmented MLLMs. Through this survey, we aim to underscore the transformative potential of external tools in advancing MLLM capabilities, offering a forward-looking perspective on their development and applications. The project page of this paper is publicly available athttps://github.com/Lackel/Awesome-Tools-for-MLLMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "08c0d050bec70e3aee4f7832d5c2066c012cfda5",
+    "externalIds": {
+      "DBLP": "journals/csur/XuMLSJ26",
+      "DOI": "10.1145/3760526",
+      "CorpusId": 280828780
+    },
+    "title": "Advancements in AI-Generated Content Forensics: A Systematic Literature Review",
+    "venue": "ACM Computing Surveys",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3760526?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3760526, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262718280",
+        "name": "Qiang Xu"
+      },
+      {
+        "authorId": "2212977686",
+        "name": "Wenpeng Mu"
+      },
+      {
+        "authorId": "2315944027",
+        "name": "Jianing Li"
+      },
+      {
+        "authorId": "3307728",
+        "name": "Tanfeng Sun"
+      },
+      {
+        "authorId": "2297426051",
+        "name": "Xinghao Jiang"
+      }
+    ],
+    "abstract": "The rapid proliferation of AI-Generated Content (AIGC), spanning text, images, video, and audio, has created a dual-edged sword of unprecedented creativity and significant societal risks, including misinformation and disinformation. This survey provides a comprehensive and structured overview of the current landscape of AIGC detection technologies. We begin by chronicling the evolution of generative models, from foundational GANs to state-of-the-art diffusion and transformer-based architectures. We then systematically review detection methodologies across all modalities, organizing them into a novel taxonomy of External Detection and Internal Detection. For each modality, we trace the technical progression from early feature-based methods to advanced deep learning, while also covering critical tasks like model attribution and tampered region localization. Furthermore, we survey the ecosystem of publicly available detection tools and practical applications. Finally, we distill the primary challenges facing the field–including generalization, robustness, interpretability, and the lack of universal benchmarks–and conclude by outlining key future directions, such as the development of holistic AI Safety Agents, dynamic evaluation standards, and AI-driven governance frameworks. This survey aims to provide researchers and practitioners with a clear, in-depth understanding of the state-of-the-art and critical frontiers in the ongoing endeavor to ensure a safe and trustworthy AIGC ecosystem.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2f94bd4c3d3ae0e44211f193ceae49d3ef93539c",
+    "externalIds": {
+      "ArXiv": "2508.03164",
+      "DBLP": "journals/corr/abs-2508-03164",
+      "DOI": "10.48550/arXiv.2508.03164",
+      "CorpusId": 280527042
+    },
+    "title": "ChartCap: Mitigating Hallucination of Dense Chart Captioning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.03164, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303525876",
+        "name": "Junyoung Lim"
+      },
+      {
+        "authorId": "2111076389",
+        "name": "Jaewoo Ahn"
+      },
+      {
+        "authorId": "2201777220",
+        "name": "Gunhee Kim"
+      }
+    ],
+    "abstract": "Generating accurate, informative, and hallucination-free captions for charts remains challenging for vision language models, primarily due to the lack of large-scale, high-quality datasets of real-world charts. However, existing real-world chart datasets suffer from the inclusion of extraneous information that cannot be inferred from the chart and failure to sufficiently capture structural elements and key insights. Therefore, we introduce ChartCap, a large-scale dataset of 565K real-world chart images paired with type-specific, dense captions that exclude extraneous information and highlight both structural elements and key insights in detail. To build ChartCap, we design a four-stage pipeline that generates captions using only the discernible data from the chart and employ a cycle consistency-based human verification, which accelerates quality control without sacrificing accuracy. Additionally, we propose a novel metric, the Visual Consistency Score, which evaluates caption quality by measuring the similarity between the chart regenerated from a caption and the original chart, independent of reference captions. Extensive experiments confirms that models fine-tuned on ChartCap consistently generate more accurate and informative captions with reduced hallucinations, surpassing both open-source and proprietary models and even human-annotated captions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "31e5c667c016637717f7ce189989806d2c5b106f",
+    "externalIds": {
+      "ArXiv": "2508.03296",
+      "DBLP": "journals/corr/abs-2508-03296",
+      "DOI": "10.1145/3770854.3783934",
+      "CorpusId": 280526829
+    },
+    "title": "Towards Trustworthy Multimodal Moderation via Policy-Aligned Reasoning and Hierarchical Labeling",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.03296, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2363681639",
+        "name": "Anqi Li"
+      },
+      {
+        "authorId": "2364339843",
+        "name": "Wenwei Jin"
+      },
+      {
+        "authorId": "2323042287",
+        "name": "Jintao Tong"
+      },
+      {
+        "authorId": "2374961571",
+        "name": "Pengda Qin"
+      },
+      {
+        "authorId": "2377315853",
+        "name": "Jiawei Li"
+      },
+      {
+        "authorId": "2283403456",
+        "name": "Guodong Lu"
+      }
+    ],
+    "abstract": "Social platforms have revolutionized information sharing, but also accelerated the dissemination of harmful and policy-violating content. To ensure safety and compliance at scale, moderation systems must go beyond efficiency and offer accuracy and interpretability. However, current approaches largely rely on noisy, label-driven learning, lacking alignment with moderation rules and producing opaque decisions that hinder human review. Therefore, we propose Hierarchical Guard (Hi-Guard), a multimodal moderation framework that introduces a new policy-aligned decision paradigm. The term ''Hierarchical'' reflects two key aspects of our system design: (1) a hierarchical moderation pipeline, where a lightweight binary model first filters safe content and a stronger model handles fine-grained risk classification; and (2) a hierarchical taxonomy in the second stage, where the model performs path-based classification over a hierarchical taxonomy ranging from coarse to fine-grained levels. To ensure alignment with evolving moderation policies, Hi-Guard directly incorporates rule definitions into the model prompt. To further enhance structured prediction and reasoning, we introduce a multi-level soft-margin reward and optimize with Group Relative Policy Optimization (GRPO), penalizing semantically adjacent misclassifications and improving explanation quality. Extensive experiments and real-world deployment demonstrate that Hi-Guard achieves superior classification accuracy, generalization, and interpretability, paving the way toward scalable, transparent, and trustworthy content safety systems. Code is available at: https://github.com/lianqi1008/Hi-Guard.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "253767d86d42f7e4b6422a3cf21aad0a18f4d794",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2508-01653",
+      "ArXiv": "2508.01653",
+      "DOI": "10.48550/arXiv.2508.01653",
+      "CorpusId": 280421201
+    },
+    "title": "MAP: Mitigating Hallucinations in Large Vision-Language Models with Map-Level Attention Processing",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.01653, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2376204519",
+        "name": "Chenxi Li"
+      },
+      {
+        "authorId": "2362753252",
+        "name": "Yichen Guo"
+      },
+      {
+        "authorId": "2374476925",
+        "name": "Benfang Qian"
+      },
+      {
+        "authorId": "2330962619",
+        "name": "Jinhao You"
+      },
+      {
+        "authorId": "2330424043",
+        "name": "Kai Tang"
+      },
+      {
+        "authorId": "2375135588",
+        "name": "Yaosong Du"
+      },
+      {
+        "authorId": "2362301829",
+        "name": "Zonghao Zhang"
+      },
+      {
+        "authorId": "2349398944",
+        "name": "Xiande Huang"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) have achieved impressive performance in multimodal tasks, but they still suffer from hallucinations, i.e., generating content that is grammatically accurate but inconsistent with visual inputs. In this work, we introduce a novel map-level perspective to mitigate hallucinations in LVLMs, interpreting the hidden states of the model as a 2D semantic map. We observe that factual information is widely distributed across this map, extending beyond the localized inter- or intra-layer regions targeted by most existing methods (e.g., contrastive decoding and layer-wise consistency). Building on this insight, we propose Map-Level Attention Processing (MAP), a training-free decoding method that effectively leverages factual information through attention-based map-level operations to improve factual consistency. Specifically, we employ Layer-Wise Criss-Cross Attention to progressively refine token representations at each decoding layer by aggregating tokens from both inter- and intra-layer dimensions. Additionally, a Global-Local Logit Fusion mechanism combines logits obtained before and after global attention to further refine predictions and improve accuracy. Our method consistently improves the truthfulness and performance of LVLMs across benchmarks, such as POPE, MME, and MMHal-Bench, demonstrating the potential of the map-level decoding strategy.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "433e6fb9384415458108ce1e190e7a7073695a65",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-22003",
+      "ArXiv": "2507.22003",
+      "DOI": "10.1145/3746027.3755044",
+      "CorpusId": 280337493
+    },
+    "title": "See Different, Think Better: Visual Variations Mitigating Hallucinations in LVLMs",
+    "venue": "ACM Multimedia",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.22003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2340469984",
+        "name": "Ziyun Dai"
+      },
+      {
+        "authorId": "2323106475",
+        "name": "Xiaoqiang Li"
+      },
+      {
+        "authorId": "2323363942",
+        "name": "Shaohua Zhang"
+      },
+      {
+        "authorId": "2115768648",
+        "name": "Yuanchen Wu"
+      },
+      {
+        "authorId": "1492114781",
+        "name": "Jide Li"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) have demonstrated remarkable capabilities in visual understanding and multimodal reasoning. However, LVLMs frequently exhibit hallucination phenomena, manifesting as the generated textual responses that demonstrate inconsistencies with the provided visual content. Existing hallucination mitigation methods are predominantly text-centric, the challenges of visual-semantic alignment significantly limit their effectiveness, especially when confronted with fine-grained visual understanding scenarios. To this end, this paper presents ViHallu, a Vision-Centric Hallucination mitigation framework that enhances visual-semantic alignment through Visual Variation Image Generation and Visual Instruction Construction. ViHallu introduces visual variation images with controllable visual alterations while maintaining the overall image structure. These images, combined with carefully constructed visual instructions, enable LVLMs to better understand fine-grained visual content through fine-tuning, allowing models to more precisely capture the correspondence between visual content and text, thereby enhancing visual-semantic alignment. Extensive experiments on multiple benchmarks show that ViHallu effectively enhances models' fine-grained visual understanding while significantly reducing hallucination tendencies. Furthermore, we release ViHallu-Instruction, a visual instruction dataset specifically designed for hallucination mitigation and visual-semantic alignment. Code is available at https://github.com/oliviadzy/ViHallu.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a1aaa56c12313aac3059ba8cbc4fa876c03c2039",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-20133",
+      "ArXiv": "2507.20133",
+      "DOI": "10.48550/arXiv.2507.20133",
+      "CorpusId": 280323760
+    },
+    "title": "Sem-DPO: Mitigating Semantic Inconsistency in Preference Optimization for Prompt Engineering",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.20133, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2349089525",
+        "name": "Anas Mohamed"
+      },
+      {
+        "authorId": "2163674593",
+        "name": "A. Khan"
+      },
+      {
+        "authorId": "2154500473",
+        "name": "Xinran Wang"
+      },
+      {
+        "authorId": "2261068699",
+        "name": "Ahmad Faraz Khan"
+      },
+      {
+        "authorId": "2168182282",
+        "name": "Shuwen Ge"
+      },
+      {
+        "authorId": "2374143842",
+        "name": "Saman Bahzad Khan"
+      },
+      {
+        "authorId": "2374428015",
+        "name": "Ayaan Ahmad"
+      },
+      {
+        "authorId": "2297772064",
+        "name": "Ali Anwar"
+      }
+    ],
+    "abstract": "Generative AI can now synthesize strikingly realistic images from text, yet output quality remains highly sensitive to how prompts are phrased. Direct Preference Optimization (DPO) offers a lightweight, off-policy alternative to RL for automatic prompt engineering, but its token-level regularization leaves semantic inconsistency unchecked as prompts that win higher preference scores can still drift away from the user's intended meaning. We introduce Sem-DPO, a variant of DPO that preserves semantic consistency yet retains its simplicity and efficiency. Sem-DPO adjusts the DPO loss using a weight based on how different the winning prompt is from the original, reducing the impact of training examples that are semantically misaligned. We provide the first analytical bound on semantic drift for preference-tuned prompt generators, showing that Sem-DPO keeps learned prompts within a provably bounded neighborhood of the original text. On three standard text-to-image prompt-optimization benchmarks and two language models, Sem-DPO achieves 8-12% higher CLIP similarity and 5-9% higher human-preference scores (HPSv2.1, PickScore) than DPO, while also outperforming state-of-the-art baselines. These findings suggest that strong flat baselines augmented with semantic weighting should become the new standard for prompt-optimization studies and lay the groundwork for broader, semantics-aware preference optimization in language models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fdc092d0bddb1a99a80a37be878f183096ad236b",
+    "externalIds": {
+      "DBLP": "journals/ijcv/ChenMZYWWS26",
+      "ArXiv": "2507.19024",
+      "DOI": "10.1007/s11263-026-02756-9",
+      "CorpusId": 280045856
+    },
+    "title": "A Survey of Multimodal Hallucination Evaluation and Detection",
+    "venue": "International Journal of Computer Vision",
+    "year": 2025,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.19024, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2263738179",
+        "name": "Zhiyuan Chen"
+      },
+      {
+        "authorId": "2372232225",
+        "name": "Yuecong Min"
+      },
+      {
+        "authorId": "2372238650",
+        "name": "Jie Zhang"
+      },
+      {
+        "authorId": "2289612480",
+        "name": "Bei Yan"
+      },
+      {
+        "authorId": "2372248409",
+        "name": "Jiahao Wang"
+      },
+      {
+        "authorId": "2372331644",
+        "name": "Xiaozhen Wang"
+      },
+      {
+        "authorId": "2261020367",
+        "name": "Shiguang Shan"
+      }
+    ],
+    "abstract": "Multi-modal Large Language Models (MLLMs) have emerged as a powerful paradigm for integrating visual and textual information, supporting a wide range of multi-modal tasks. However, these models often suffer from hallucination, producing content that appears plausible but contradicts the input content or established world knowledge. This survey offers an in-depth review of hallucination evaluation benchmarks and detection methods across Image-to-Text (I2T) and Text-to-image (T2I) generation tasks. Specifically, we first propose a taxonomy of hallucination based on faithfulness and factuality, incorporating the common types of hallucinations observed in practice. Then we provide an overview of existing hallucination evaluation benchmarks for both T2I and I2T tasks, highlighting their construction process, evaluation objectives, and employed metrics. Furthermore, we summarize recent advances in hallucination detection methods, which aims to identify hallucinated content at the instance level and serve as a practical complement of benchmark-based evaluation. Finally, we highlight key limitations in current benchmarks and detection methods, and outline potential directions for future research.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a23ab34f29932295b1b231dc8fe0f4bdb1ef4b06",
+    "externalIds": {
+      "DBLP": "conf/ecai/LiuLXWCL25",
+      "ArXiv": "2507.15903",
+      "DOI": "10.48550/arXiv.2507.15903",
+      "CorpusId": 280153690
+    },
+    "title": "Towards Mitigation of Hallucination for LLM-empowered Agents: Progressive Generalization Bound Exploration and Watchdog Monitor",
+    "venue": "European Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.15903, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2304514660",
+        "name": "Siyuan Liu"
+      },
+      {
+        "authorId": "2212141134",
+        "name": "Wenjing Liu"
+      },
+      {
+        "authorId": "2331362314",
+        "name": "Zhiwei Xu"
+      },
+      {
+        "authorId": "2262805047",
+        "name": "Xin Wang"
+      },
+      {
+        "authorId": "2373737036",
+        "name": "Bo Chen"
+      },
+      {
+        "authorId": "2356395971",
+        "name": "Tao Li"
+      }
+    ],
+    "abstract": "Empowered by large language models (LLMs), intelligent agents have become a popular paradigm for interacting with open environments to facilitate AI deployment. However, hallucinations generated by LLMs-where outputs are inconsistent with facts-pose a significant challenge, undermining the credibility of intelligent agents. Only if hallucinations can be mitigated, the intelligent agents can be used in real-world without any catastrophic risk. Therefore, effective detection and mitigation of hallucinations are crucial to ensure the dependability of agents. Unfortunately, the related approaches either depend on white-box access to LLMs or fail to accurately identify hallucinations. To address the challenge posed by hallucinations of intelligent agents, we present HalMit, a novel black-box watchdog framework that models the generalization bound of LLM-empowered agents and thus detect hallucinations without requiring internal knowledge of the LLM's architecture. Specifically, a probabilistic fractal sampling technique is proposed to generate a sufficient number of queries to trigger the incredible responses in parallel, efficiently identifying the generalization bound of the target agent. Experimental evaluations demonstrate that HalMit significantly outperforms existing approaches in hallucination monitoring. Its black-box nature and superior performance make HalMit a promising solution for enhancing the dependability of LLM-powered systems.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "abec2024945d9e954ed718e40df7065429cdaed0",
+    "externalIds": {
+      "ArXiv": "2507.12455",
+      "DBLP": "journals/corr/abs-2507-12455",
+      "DOI": "10.48550/arXiv.2507.12455",
+      "CorpusId": 280290661
+    },
+    "title": "Mitigating Object Hallucinations via Sentence-Level Early Intervention",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.12455, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2366577146",
+        "name": "Shangpin Peng"
+      },
+      {
+        "authorId": "2276746547",
+        "name": "Senqiao Yang"
+      },
+      {
+        "authorId": "2295906155",
+        "name": "Li Jiang"
+      },
+      {
+        "authorId": "2367490401",
+        "name": "Zhuotao Tian"
+      }
+    ],
+    "abstract": "Multimodal large language models (MLLMs) have revolutionized cross-modal understanding but continue to struggle with hallucinations - fabricated content contradicting visual inputs. Existing hallucination mitigation methods either incur prohibitive computational costs or introduce distribution mismatches between training data and model outputs. We identify a critical insight: hallucinations predominantly emerge at the early stages of text generation and propagate through subsequent outputs. To address this, we propose SENTINEL (Sentence-level Early iNtervention Through IN-domain prEference Learning), a framework that eliminates dependency on human annotations. Specifically, we first bootstrap high-quality in-domain preference pairs by iteratively sampling model outputs, validating object existence through cross-checking with two open-vocabulary detectors, and classifying sentences into hallucinated/non-hallucinated categories. Subsequently, we use context-coherent positive samples and hallucinated negative samples to build context-aware preference data iteratively. Finally, we train models using a context-aware preference loss (C-DPO) that emphasizes discriminative learning at the sentence level where hallucinations initially manifest. Experimental results show that SENTINEL can reduce hallucinations by over 90% compared to the original model and outperforms the previous state-of-the-art method on both hallucination benchmarks and general capabilities benchmarks, demonstrating its superiority and generalization ability. The models, datasets, and code are available at https://github.com/pspdada/SENTINEL.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "bb0b86bad44dac2b7c049855771c0eb61578983a",
+    "externalIds": {
+      "DBLP": "conf/icml/Zhang0ZL25",
+      "ArXiv": "2507.07151",
+      "DOI": "10.48550/arXiv.2507.07151",
+      "CorpusId": 280150090
+    },
+    "title": "Robust Multimodal Large Language Models Against Modality Conflict",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.07151, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47294266",
+        "name": "Zongmeng Zhang"
+      },
+      {
+        "authorId": "2153938030",
+        "name": "Weng Zhou"
+      },
+      {
+        "authorId": "2372149898",
+        "name": "Jie Zhao"
+      },
+      {
+        "authorId": "2210048071",
+        "name": "Houqiang Li"
+      }
+    ],
+    "abstract": "Despite the impressive capabilities of multimodal large language models (MLLMs) in vision-language tasks, they are prone to hallucinations in real-world scenarios. This paper investigates the hallucination phenomenon in MLLMs from the perspective of modality conflict. Unlike existing works focusing on the conflicts between model responses and inputs, we study the inherent conflicts in inputs from different modalities that place MLLMs in a dilemma and directly lead to hallucinations. We formally define the modality conflict and construct a dataset named Multimodal Modality Conflict (MMMC) to simulate this phenomenon in vision-language tasks. Three methods based on prompt engineering, supervised fine-tuning, and reinforcement learning are proposed to alleviate the hallucination caused by modality conflict. Extensive experiments are conducted on the MMMC dataset to analyze the merits and demerits of these methods. Our results show that the reinforcement learning method achieves the best performance in mitigating the hallucination under modality conflict, while the supervised fine-tuning method shows promising and stable performance. Our work sheds light on the unnoticed modality conflict that leads to hallucinations and provides more insights into the robustness of MLLMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "476ceccc25e02a3bf8aa7e00cda48fc833b0ca58",
+    "externalIds": {
+      "DBLP": "conf/iclr/YoonYHY25",
+      "ArXiv": "2507.04976",
+      "DOI": "10.48550/arXiv.2507.04976",
+      "CorpusId": 278499022
+    },
+    "title": "Can Video LLMs Refuse to Answer? Alignment for Answerability in Video Large Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.04976, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2187930164",
+        "name": "Eunseop Yoon"
+      },
+      {
+        "authorId": "2187923088",
+        "name": "Hee Suk Yoon"
+      },
+      {
+        "authorId": "1399115926",
+        "name": "M. Hasegawa-Johnson"
+      },
+      {
+        "authorId": "2273677525",
+        "name": "C. Yoo"
+      }
+    ],
+    "abstract": "In the broader context of deep learning, Multimodal Large Language Models have achieved significant breakthroughs by leveraging powerful Large Language Models as a backbone to align different modalities into the language space. A prime exemplification is the development of Video Large Language Models (Video-LLMs). While numerous advancements have been proposed to enhance the video understanding capabilities of these models, they are predominantly trained on questions generated directly from video content. However, in real-world scenarios, users often pose questions that extend beyond the informational scope of the video, highlighting the need for Video-LLMs to assess the relevance of the question. We demonstrate that even the best-performing Video-LLMs fail to reject unfit questions-not necessarily due to a lack of video understanding, but because they have not been trained to identify and refuse such questions. To address this limitation, we propose alignment for answerability, a framework that equips Video-LLMs with the ability to evaluate the relevance of a question based on the input video and appropriately decline to answer when the question exceeds the scope of the video, as well as an evaluation framework with a comprehensive set of metrics designed to measure model behavior before and after alignment. Furthermore, we present a pipeline for creating a dataset specifically tailored for alignment for answerability, leveraging existing video-description paired datasets.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "f15f82d653dc02eedad25bdb1660dc4818c0456c",
+    "externalIds": {
+      "DBLP": "conf/emnlp/YangLH25",
+      "ArXiv": "2507.04943",
+      "DOI": "10.48550/arXiv.2507.04943",
+      "CorpusId": 280128409
+    },
+    "title": "ReLoop: \"Seeing Twice and Thinking Backwards\" via Closed-loop Training to Mitigate Hallucinations in Multimodal understanding",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.04943, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2363370784",
+        "name": "JianJiang Yang"
+      },
+      {
+        "authorId": "4828286",
+        "name": "Ziyan Huang"
+      },
+      {
+        "authorId": "2349304855",
+        "name": "Yanshu Li"
+      }
+    ],
+    "abstract": "While Multimodal Large Language Models (MLLMs) have achieved remarkable progress in open-ended visual question answering, they remain vulnerable to hallucinations. These are outputs that contradict or misrepresent input semantics, posing a critical challenge to the reliability and factual consistency. Existing methods often rely on external verification or post-hoc correction, lacking an internal mechanism to validate outputs directly during training. To bridge this gap, we propose ReLoop, a unified closed-loop training framework that encourages multimodal consistency for cross-modal understanding in MLLMs. ReLoop adopts a ring-shaped structure that integrates three complementary consistency feedback mechanisms, obliging MLLMs to\"seeing twice and thinking backwards\". Specifically, ReLoop employs the frozen Consistency Feedback Plugin (CFP), comprising semantic reconstruction, visual description, and an attention supervision module for attention alignment. These components collectively enforce semantic reversibility, visual consistency, and interpretable attention, enabling the model to correct its outputs during training. Extensive evaluations and analyses demonstrate the effectiveness of ReLoop in reducing hallucination rates across multiple benchmarks, establishing a robust method for hallucination mitigation in MLLMs. We will release our source code and data in the camera-ready version.",
+    "_is_influential": true,
+    "_intents": []
+  }
+]

@@ -1,0 +1,2758 @@
+[
+  {
+    "paperId": "e3a6370ffeb2eabc5490e97e9d333a3f757d9764",
+    "externalIds": {
+      "ArXiv": "2602.13823",
+      "DBLP": "journals/corr/abs-2602-13823",
+      "DOI": "10.48550/arXiv.2602.13823",
+      "CorpusId": 285616843
+    },
+    "title": "Embed-RL: Reinforcement Learning for Reasoning-Driven Multimodal Embeddings",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.13823, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2266552062",
+        "name": "Hao Jiang"
+      },
+      {
+        "authorId": "2348310271",
+        "name": "Yuji Wang"
+      },
+      {
+        "authorId": "2373496864",
+        "name": "Yongjie Zhu"
+      },
+      {
+        "authorId": "2379840998",
+        "name": "Xin Lu"
+      },
+      {
+        "authorId": "2341720942",
+        "name": "Wenyu Qin"
+      },
+      {
+        "authorId": "2398723293",
+        "name": "Meng Wang"
+      },
+      {
+        "authorId": "2337886213",
+        "name": "Pengfei Wan"
+      },
+      {
+        "authorId": "2269706294",
+        "name": "Yansong Tang"
+      }
+    ],
+    "abstract": "Leveraging Multimodal Large Language Models (MLLMs) has become pivotal for advancing Universal Multimodal Embeddings (UME) in addressing diverse cross-modal tasks. Recent studies demonstrate that incorporating generative Chain-of-Thought (CoT) reasoning can substantially enhance task-specific representations compared to discriminative methods. However, the generated reasoning CoTs of existing generative embedding methods are limited to the textual analysis of queries and are irrelevant to the retrieval of the targets. To address these limitations, we propose a reasoning-driven UME framework that integrates Embedder-Guided Reinforcement Learning (EG-RL) to optimize the Reasoner to produce evidential Traceability CoT (T-CoT). Our key contributions are threefold: (1) We design an EG-RL framework where the Embedder provides explicit supervision to the Reasoner, ensuring the generated CoT traces are aligned with embedding tasks. (2) We introduce T-CoT, which extracts critical multimodal cues to focus on retrieval-relevant elements and provides multimodal inputs for the Embedder. (3) With limited computational resources, our framework outperforms the pioneering embedding model on both MMEB-V2 and UVRB benchmarks. The integration of multimodal evidence in structured reasoning, paired with retrieval-oriented alignment, effectively strengthens cross-modal semantic consistency and boosts the fine-grained matching capability of the model as well as the generalization across complex scenarios. Our work demonstrates that targeted reasoning optimization can significantly improve multimodal embedding quality, providing a practical and efficient solution for reasoning-driven UME development.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d7ff3693d6d8f5e695334e7a19ac0591242e3a0c",
+    "externalIds": {
+      "ArXiv": "2601.04720",
+      "DBLP": "journals/corr/abs-2601-04720",
+      "DOI": "10.48550/arXiv.2601.04720",
+      "CorpusId": 284544634
+    },
+    "title": "Qwen3-VL-Embedding and Qwen3-VL-Reranker: A Unified Framework for State-of-the-Art Multimodal Retrieval and Ranking",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 63,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.04720, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2239393068",
+        "name": "Mingxin Li"
+      },
+      {
+        "authorId": "2107949588",
+        "name": "Yanzhao Zhang"
+      },
+      {
+        "authorId": "8427191",
+        "name": "Dingkun Long"
+      },
+      {
+        "authorId": "2344244387",
+        "name": "Keqin Chen"
+      },
+      {
+        "authorId": "2293768267",
+        "name": "Sibo Song"
+      },
+      {
+        "authorId": "2247821453",
+        "name": "Shuai Bai"
+      },
+      {
+        "authorId": "2291867663",
+        "name": "Zhibo Yang"
+      },
+      {
+        "authorId": "2257348206",
+        "name": "Pengjun Xie"
+      },
+      {
+        "authorId": "2311633047",
+        "name": "An Yang"
+      },
+      {
+        "authorId": "2403252635",
+        "name": "Day-iheng Liu"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "2333476820",
+        "name": "Junyang Lin"
+      }
+    ],
+    "abstract": "In this report, we introduce the Qwen3-VL-Embedding and Qwen3-VL-Reranker model series, the latest extensions of the Qwen family built on the Qwen3-VL foundation model. Together, they provide an end-to-end pipeline for high-precision multimodal search by mapping diverse modalities, including text, images, document images, and video, into a unified representation space. The Qwen3-VL-Embedding model employs a multi-stage training paradigm, progressing from large-scale contrastive pre-training to reranking model distillation, to generate semantically rich high-dimensional vectors. It supports Matryoshka Representation Learning, enabling flexible embedding dimensions, and handles inputs up to 32k tokens. Complementing this, Qwen3-VL-Reranker performs fine-grained relevance estimation for query-document pairs using a cross-encoder architecture with cross-attention mechanisms. Both model series inherit the multilingual capabilities of Qwen3-VL, supporting more than 30 languages, and are released in $\\textbf{2B}$ and $\\textbf{8B}$ parameter sizes to accommodate diverse deployment requirements. Empirical evaluations demonstrate that the Qwen3-VL-Embedding series achieves state-of-the-art results across diverse multimodal embedding evaluation benchmarks. Specifically, Qwen3-VL-Embedding-8B attains an overall score of $\\textbf{77.8}$ on MMEB-V2, ranking first among all models (as of January 8, 2025). This report presents the architecture, training methodology, and practical capabilities of the series, demonstrating their effectiveness on various multimodal retrieval tasks, including image-text retrieval, visual question answering, and video-text matching.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d38ee04510a2c7a7b4699180f05d8bc172ec5c28",
+    "externalIds": {
+      "DBLP": "conf/aaai/XuZLAZWXLDJ26",
+      "ArXiv": "2512.21871",
+      "DOI": "10.48550/arXiv.2512.21871",
+      "CorpusId": 284275455
+    },
+    "title": "Bridging the Copyright Gap: Do Large Vision-Language Models Recognize and Respect Copyrighted Content?",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.21871, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2331506585",
+        "name": "Naen Xu"
+      },
+      {
+        "authorId": "2325911077",
+        "name": "Jinghuai Zhang"
+      },
+      {
+        "authorId": "2145413923",
+        "name": "Changjiang Li"
+      },
+      {
+        "authorId": "2376425624",
+        "name": "Hengyu An"
+      },
+      {
+        "authorId": "2302469922",
+        "name": "Chunyi Zhou"
+      },
+      {
+        "authorId": "2406257714",
+        "name": "Jun Wang"
+      },
+      {
+        "authorId": "2373583352",
+        "name": "Boyu Xu"
+      },
+      {
+        "authorId": "2331578229",
+        "name": "Yuyuan Li"
+      },
+      {
+        "authorId": "2056897605",
+        "name": "Tianyu Du"
+      },
+      {
+        "authorId": "2238037124",
+        "name": "Shouling Ji"
+      }
+    ],
+    "abstract": "Large vision-language models (LVLMs) have achieved remarkable advancements in multimodal reasoning tasks. However, their widespread accessibility raises critical concerns about potential copyright infringement. Will LVLMs accurately recognize and comply with copyright regulations when encountering copyrighted content (i.e., user input, retrieved documents) in the context? Failure to comply with copyright regulations may lead to serious legal and ethical consequences, particularly when LVLMs generate responses based on copyrighted materials (e.g., retrieved book experts, news reports). In this paper, we present a comprehensive evaluation of various LVLMs, examining how they handle copyrighted content – such as book excerpts, news articles, music lyrics, and code documentation when they are presented as visual inputs. To systematically measure copyright compliance, we introduce a large-scale benchmark dataset comprising 50,000 multimodal query-content pairs designed to evaluate how effectively LVLMs handle queries that could lead to copyright infringement. Given that real-world copyrighted content may or may not include a copyright notice, the dataset includes query-content pairs in two distinct scenarios: with and without a copyright notice. For the former, we extensively cover four types of copyright notices to account for different cases. Our evaluation reveals that even state-of-the-art closed-source LVLMs exhibit significant deficiencies in recognizing and respecting the copyrighted content, even when presented with the copyright notice. To solve this limitation, we introduce a novel tool-augmented defense framework for copyright compliance, which reduces infringement risks in all scenarios. Our findings underscore the importance of developing copyright-aware LVLMs to ensure the responsible and lawful use of copyrighted content.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4802bc2b5b5fc48410cbe65150612e6bfd3217d5",
+    "externalIds": {
+      "ArXiv": "2512.00902",
+      "DBLP": "journals/corr/abs-2512-00902",
+      "DOI": "10.48550/arXiv.2512.00902",
+      "CorpusId": 283450391
+    },
+    "title": "Elastic Mixture of Rank-Wise Experts for Knowledge Reuse in Federated Fine-Tuning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.00902, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2297831289",
+        "name": "Yebo Wu"
+      },
+      {
+        "authorId": "2350520035",
+        "name": "Jingguang Li"
+      },
+      {
+        "authorId": "2681038",
+        "name": "Zhijiang Guo"
+      },
+      {
+        "authorId": "2374428675",
+        "name": "Li Li"
+      }
+    ],
+    "abstract": "Federated fine-tuning offers a promising solution for adapting Large Language Models (LLMs) to downstream tasks while safeguarding data privacy. However, its high computational and communication demands hinder its deployment on resource-constrained devices. In this paper, we propose SmartFed, a resource-efficient federated fine-tuning framework. SmartFed intelligently reuses knowledge embedded in existing LoRA modules, eliminating the need for expensive training from scratch when adapting LLMs to new tasks. To effectively exploit this knowledge and ensure scalability, we introduce the Mixture of Rank-Wise Experts (MoRE). MoRE decomposes LoRA modules into fine-grained rank-level experts. These experts are selectively activated and combined based on input semantics and resource budgets. Moreover, to optimize resource utilization, we present the Elastic Expert Quota Allocation (EEQA). EEQA adaptively allocates expert capacity across parameter matrices based on their contribution to model performance, focusing computing resources on the critical experts. Extensive evaluations across multiple benchmarks demonstrate that SmartFed significantly outperforms existing methods in model performance and training efficiency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "19547b20e800026fb73b3c52abecec5cc980b590",
+    "externalIds": {
+      "ArXiv": "2510.27350",
+      "DBLP": "journals/corr/abs-2510-27350",
+      "DOI": "10.48550/arXiv.2510.27350",
+      "CorpusId": 282719704
+    },
+    "title": "RzenEmbed: Towards Comprehensive Multimodal Retrieval",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.27350, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2390203123",
+        "name": "Weijian Jian"
+      },
+      {
+        "authorId": "2335683510",
+        "name": "Yajun Zhang"
+      },
+      {
+        "authorId": "2359971087",
+        "name": "Dawei Liang"
+      },
+      {
+        "authorId": "2237426204",
+        "name": "Chunyu Xie"
+      },
+      {
+        "authorId": "2345744985",
+        "name": "Yixiao He"
+      },
+      {
+        "authorId": "8700232",
+        "name": "Dawei Leng"
+      },
+      {
+        "authorId": "2237933227",
+        "name": "Yuhui Yin"
+      }
+    ],
+    "abstract": "The rapid advancement of Multimodal Large Language Models (MLLMs) has extended CLIP-based frameworks to produce powerful, universal embeddings for retrieval tasks. However, existing methods primarily focus on natural images, offering limited support for other crucial visual modalities such as videos and visual documents. To bridge this gap, we introduce RzenEmbed, a unified framework to learn embeddings across a diverse set of modalities, including text, images, videos, and visual documents. We employ a novel two-stage training strategy to learn discriminative representations. The first stage focuses on foundational text and multimodal retrieval. In the second stage, we introduce an improved InfoNCE loss, incorporating two key enhancements. Firstly, a hardness-weighted mechanism guides the model to prioritize challenging samples by assigning them higher weights within each batch. Secondly, we implement an approach to mitigate the impact of false negatives and alleviate data noise. This strategy not only enhances the model's discriminative power but also improves its instruction-following capabilities. We further boost performance with learnable temperature parameter and model souping. RzenEmbed sets a new state-of-the-art on the MMEB benchmark. It not only achieves the best overall score but also outperforms all prior work on the challenging video and visual document retrieval tasks. Our models are available in https://huggingface.co/qihoo360/RzenEmbed.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "23ab3ad922220f0e48a8c5ba7bb92f893a834a8d",
+    "externalIds": {
+      "DBLP": "conf/aaai/GuYZAFZCDB26",
+      "ArXiv": "2510.13515",
+      "DOI": "10.48550/arXiv.2510.13515",
+      "CorpusId": 282102831
+    },
+    "title": "UniME-V2: MLLM-as-a-Judge for Universal Multimodal Embedding Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.13515, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2265491638",
+        "name": "Tiancheng Gu"
+      },
+      {
+        "authorId": "2297821508",
+        "name": "Kaicheng Yang"
+      },
+      {
+        "authorId": "2386208144",
+        "name": "Kaichen Zhang"
+      },
+      {
+        "authorId": "2054941340",
+        "name": "Xiang An"
+      },
+      {
+        "authorId": "2292273156",
+        "name": "Ziyong Feng"
+      },
+      {
+        "authorId": "2374438983",
+        "name": "Yueyi Zhang"
+      },
+      {
+        "authorId": "2357713816",
+        "name": "Weidong Cai"
+      },
+      {
+        "authorId": "2292951245",
+        "name": "Jiankang Deng"
+      },
+      {
+        "authorId": "2363348163",
+        "name": "L. Bing"
+      }
+    ],
+    "abstract": "Universal multimodal embedding models are essential in various tasks. Existing approaches typically use in-batch mining to identify hard negatives by measuring the similarity of query-candidate pairs. However, these methods often struggle to capture subtle semantic differences among candidates and lack diversity in negative samples. Moreover, the embeddings exhibit limited discriminative ability in distinguishing false and hard negatives. In this paper, we leverage the advanced understanding capabilities of MLLMs to enhance representation learning, and present a novel Universal Multimodal Embedding(UniME-V2) model. Our approach first constructs a potential hard negative set through global retrieval. We then introduce the MLLM-as-a-Judge mechanism, which utilizes MLLMs to assess the semantic alignment of query-candidate pairs and generate soft semantic matching scores. These scores serve as a foundation for hard negative mining, mitigating the impact of false negatives and enabling the identification of diverse, high-quality hard negatives. Furthermore, the semantic matching scores are used as soft labels to mitigate the rigid one-to-one mapping constraint. By aligning the similarity matrix with the soft semantic matching score matrix, the model learns semantic distinctions among candidates, significantly enhancing its discriminative capacity. To further improve performance, we propose UniME-V2, a reranking model trained on our mined hard negatives through a joint pairwise and listwise optimization approach. We conduct comprehensive experiments on the MMEB benchmark and multiple retrieval tasks, demonstrating that our method achieves state-of-the-art performance across all tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "631a5f197ede1b229cdb6883719ae2016cc56873",
+    "externalIds": {
+      "ArXiv": "2510.05014",
+      "DBLP": "journals/corr/abs-2510-05014",
+      "DOI": "10.48550/arXiv.2510.05014",
+      "CorpusId": 281843725
+    },
+    "title": "Think Then Embed: Generative Context Improves Multimodal Embedding",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.05014, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2311314557",
+        "name": "Xuanming Cui"
+      },
+      {
+        "authorId": "2384117676",
+        "name": "Jianpeng Cheng"
+      },
+      {
+        "authorId": "2384158274",
+        "name": "Hong-you Chen"
+      },
+      {
+        "authorId": "35194054",
+        "name": "Satya Narayan Shukla"
+      },
+      {
+        "authorId": "2339985552",
+        "name": "Abhijeet Awasthi"
+      },
+      {
+        "authorId": "2158877024",
+        "name": "Xichen Pan"
+      },
+      {
+        "authorId": "2348254895",
+        "name": "Chaitanya Ahuja"
+      },
+      {
+        "authorId": "2850880",
+        "name": "Shlok Kumar Mishra"
+      },
+      {
+        "authorId": "2275028356",
+        "name": "Qi Guo"
+      },
+      {
+        "authorId": "2290879333",
+        "name": "S. Lim"
+      },
+      {
+        "authorId": "2334435503",
+        "name": "Aashu Singh"
+      },
+      {
+        "authorId": "2384864888",
+        "name": "Xiangjun Fan"
+      }
+    ],
+    "abstract": "There is a growing interest in Universal Multimodal Embeddings (UME), where models are required to generate task-specific representations. While recent studies show that Multimodal Large Language Models (MLLMs) perform well on such tasks, they treat MLLMs solely as encoders, overlooking their generative capacity. However, such an encoding paradigm becomes less effective as instructions become more complex and require compositional reasoning. Inspired by the proven effectiveness of chain-of-thought reasoning, we propose a general Think-Then-Embed (TTE) framework for UME, composed of a reasoner and an embedder. The reasoner MLLM first generates reasoning traces that explain complex queries, followed by an embedder that produces representations conditioned on both the original query and the intermediate reasoning. This explicit reasoning step enables more nuanced understanding of complex multimodal instructions. Our contributions are threefold. First, by leveraging a powerful MLLM reasoner, we achieve state-of-the-art performance on the MMEB-V2 benchmark, surpassing proprietary models trained on massive in-house datasets. Second, to reduce the dependency on large MLLM reasoners, we finetune a smaller MLLM reasoner using high-quality embedding-centric reasoning traces, achieving the best performance among open-source models with a 7% absolute gain over recently proposed models. Third, we investigate strategies for integrating the reasoner and embedder into a unified model for improved efficiency without sacrificing performance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2f73cf828cab8e9e4c2b67018bf8c0085fb3c681",
+    "externalIds": {
+      "ArXiv": "2508.17209",
+      "DBLP": "journals/corr/abs-2508-17209",
+      "DOI": "10.48550/arXiv.2508.17209",
+      "CorpusId": 280711108
+    },
+    "title": "Memory-Efficient Federated Fine-Tuning of Large Language Models via Layer Pruning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.17209, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2297831289",
+        "name": "Yebo Wu"
+      },
+      {
+        "authorId": "2350520035",
+        "name": "Jingguang Li"
+      },
+      {
+        "authorId": "2297767120",
+        "name": "Chunlin Tian"
+      },
+      {
+        "authorId": "2681038",
+        "name": "Zhijiang Guo"
+      },
+      {
+        "authorId": "2374428675",
+        "name": "Li Li"
+      }
+    ],
+    "abstract": "Federated fine-tuning enables privacy-preserving Large Language Model (LLM) adaptation, but its high memory cost limits participation from resource-constrained devices. We propose FedPruner, an innovative federated fine-tuning paradigm that tackles this via intelligent layer pruning. FedPruner flexibly prunes the global model, creating personalized submodels based on device memory constraints. It employs a macro-micro synergistic pruning framework: a macro-level functionality-driven layer orchestration mechanism groups layers, while a micro-level importance-aware layer selection strategy prunes within groups to build device-specific submodels. We further introduce a fine-grained variant that independently prunes Multi-Head Attention and Feed-Forward Network components to precisely preserve critical architectural elements. Extensive experimental results demonstrate that FedPruner significantly outperforms state-of-the-art approaches, achieving up to a 1.98\\% improvement in average model accuracy while reducing peak memory usage by 75\\%.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d179554daf89ea8c524194e450238d7e8892bc34",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2508-00041",
+      "ArXiv": "2508.00041",
+      "DOI": "10.48550/arXiv.2508.00041",
+      "CorpusId": 280417107
+    },
+    "title": "Learning Like Humans: Resource-Efficient Federated Fine-Tuning through Cognitive Developmental Stages",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.00041, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2297831289",
+        "name": "Yebo Wu"
+      },
+      {
+        "authorId": "2350520035",
+        "name": "Jingguang Li"
+      },
+      {
+        "authorId": "2681038",
+        "name": "Zhijiang Guo"
+      },
+      {
+        "authorId": "2374428675",
+        "name": "Li Li"
+      }
+    ],
+    "abstract": "Federated fine-tuning enables Large Language Models (LLMs) to adapt to downstream tasks while preserving data privacy, but its resource-intensive nature limits deployment on edge devices. In this paper, we introduce Developmental Federated Tuning (DevFT), a resource-efficient approach inspired by cognitive development that progressively builds a powerful LLM from a compact foundation. DevFT decomposes the fine-tuning process into developmental stages, each optimizing submodels with increasing parameter capacity. Knowledge from earlier stages transfers to subsequent submodels, providing optimized initialization parameters that prevent convergence to local minima and accelerate training. This paradigm mirrors human learning, gradually constructing comprehensive knowledge structure while refining existing skills. To efficiently build stage-specific submodels, DevFT introduces deconfliction-guided layer grouping and differential-based layer fusion to distill essential information and construct representative layers. Evaluations across multiple benchmarks demonstrate that DevFT significantly outperforms state-of-the-art methods, achieving up to 4.59$\\times$ faster convergence, 10.67$\\times$ reduction in communication overhead, and 9.07% average performance improvement, while maintaining compatibility with existing approaches.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2cd7ae727a4a76bed6b531d764bd609aa778fae1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-04590",
+      "ArXiv": "2507.04590",
+      "DOI": "10.48550/arXiv.2507.04590",
+      "CorpusId": 280115277
+    },
+    "title": "VLM2Vec-V2: Advancing Multimodal Embedding for Videos, Images, and Visual Documents",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2025,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.04590, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238207587",
+        "name": "Rui Meng"
+      },
+      {
+        "authorId": "2112347577",
+        "name": "Ziyan Jiang"
+      },
+      {
+        "authorId": "2238385821",
+        "name": "Ye Liu"
+      },
+      {
+        "authorId": "2362199487",
+        "name": "Mingyi Su"
+      },
+      {
+        "authorId": "2324942237",
+        "name": "Xinyi Yang"
+      },
+      {
+        "authorId": "2326924808",
+        "name": "Yuepeng Fu"
+      },
+      {
+        "authorId": "2354127471",
+        "name": "Can Qin"
+      },
+      {
+        "authorId": "2292059557",
+        "name": "Zeyuan Chen"
+      },
+      {
+        "authorId": "2357860376",
+        "name": "Ran Xu"
+      },
+      {
+        "authorId": "2256976968",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "2118860628",
+        "name": "Yingbo Zhou"
+      },
+      {
+        "authorId": "2301504205",
+        "name": "Wenhu Chen"
+      },
+      {
+        "authorId": "3014143",
+        "name": "Semih Yavuz"
+      }
+    ],
+    "abstract": "Multimodal embedding models have been crucial in enabling various downstream tasks such as semantic similarity, information retrieval, and clustering over different modalities. However, existing multimodal embeddings like VLM2Vec, E5-V, GME are predominantly focused on natural images, with limited support for other visual forms such as videos and visual documents. This restricts their applicability in real-world scenarios, including AI agents, multi-modal search and recommendation, and retrieval-augmented generation (RAG). To close this gap, we propose VLM2Vec-V2, a unified framework for learning embeddings across diverse visual forms. First, we introduce MMEB-V2, a comprehensive benchmark that extends MMEB with five new task types: visual document retrieval, video retrieval, temporal grounding, video classification and video question answering - spanning text, image, video, and visual document inputs. Next, we train VLM2Vec-V2, a general-purpose embedding model that supports text, image, video, and visual document inputs. Extensive experiments show that VLM2Vec-V2 achieves strong performance not only on the newly introduced video and document retrieval tasks, but also improves over prior baselines on the original image benchmarks. Through extensive evaluation, our study offers insights into the generalizability of various multimodal embedding models and highlights effective strategies for unified embedding learning, laying the groundwork for more scalable and adaptable representation learning in both research and real-world settings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e1d5b59adc7dcf7c9b358f0d92a4b5c23f355e62",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ZhangZXLDLXZLZ25",
+      "DOI": "10.1109/CVPR52734.2025.00866",
+      "CorpusId": 280016188
+    },
+    "title": "Bridging Modalities: Improving Universal Multimodal Retrieval by Multimodal Large Language Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2025,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR52734.2025.00866?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR52734.2025.00866, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262020955",
+        "name": "Xin Zhang"
+      },
+      {
+        "authorId": "2107949588",
+        "name": "Yanzhao Zhang"
+      },
+      {
+        "authorId": "2313707736",
+        "name": "Wen Xie"
+      },
+      {
+        "authorId": "2239393068",
+        "name": "Mingxin Li"
+      },
+      {
+        "authorId": "2261750616",
+        "name": "Ziqi Dai"
+      },
+      {
+        "authorId": "8427191",
+        "name": "Dingkun Long"
+      },
+      {
+        "authorId": "2257348206",
+        "name": "Pengjun Xie"
+      },
+      {
+        "authorId": "2257796182",
+        "name": "Meishan Zhang"
+      },
+      {
+        "authorId": "2262199692",
+        "name": "Wenjie Li"
+      },
+      {
+        "authorId": "2371141410",
+        "name": "Min Zhang"
+      }
+    ],
+    "abstract": "Universal Multimodal Retrieval (UMR) aims to enable search across various modalities using a unified model, where queries and candidates can consist of pure text, images, or a combination of both. Previous work has attempted to adopt multimodal large language models (MLLMs) to realize UMR using only text data. However, our preliminary experiments demonstrate that more diverse multimodal training data can further unlock the potential of MLLMs. Despite its effectiveness, the existing multimodal training data is highly imbalanced in terms of modality, which motivates us to develop a training data synthesis pipeline and construct a large-scale, high-quality fused-modal training dataset. Based on the synthetic training data, we develop the General Multimodal Embedder (GME), an MLLM-based dense retriever designed for UMR. Furthermore, we construct a comprehensive UMR Benchmark (UMRB) to evaluate the effectiveness of our approach. Experimental results show that our method achieves state-of-the-art performance among existing UMR methods. Last, we provide in-depth analyses of model scaling and training strategies, and perform ablation studies on both the model and synthetic data.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "499780c72c8fcd93298648b772a40aa07755a9fb",
+    "externalIds": {
+      "ArXiv": "2506.02020",
+      "DBLP": "journals/corr/abs-2506-02020",
+      "DOI": "10.48550/arXiv.2506.02020",
+      "CorpusId": 279118814
+    },
+    "title": "Improve Multi-Modal Embedding Learning via Explicit Hard Negative Gradient Amplifying",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.02020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2365444271",
+        "name": "Youze Xue"
+      },
+      {
+        "authorId": "2360679947",
+        "name": "Dian Li"
+      },
+      {
+        "authorId": "2361018235",
+        "name": "Gang Liu"
+      }
+    ],
+    "abstract": "With the rapid advancement of multi-modal large language models (MLLMs) in recent years, the foundational Contrastive Language-Image Pretraining (CLIP) framework has been successfully extended to MLLMs, enabling more powerful and universal multi-modal embeddings for a wide range of retrieval tasks. Despite these developments, the core contrastive learning paradigm remains largely unchanged from CLIP-style models to MLLMs. Within this framework, the effective mining of hard negative samples continues to be a critical factor for enhancing performance. Prior works have introduced both offline and online strategies for hard negative mining to improve the efficiency of contrastive learning. While these approaches have led to improved multi-modal embeddings, the specific contribution of each hard negative sample to the learning process has not been thoroughly investigated. In this work, we conduct a detailed analysis of the gradients of the info-NCE loss with respect to the query, positive, and negative samples, elucidating the role of hard negatives in updating model parameters. Building upon this analysis, we propose to explicitly amplify the gradients associated with hard negative samples, thereby encouraging the model to learn more discriminative embeddings. Our multi-modal embedding model, trained with the proposed Explicit Gradient Amplifier and based on the LLaVA-OneVision-7B architecture, achieves state-of-the-art performance on the MMEB benchmark compared to previous methods utilizing the same MLLM backbone. Furthermore, when integrated with our self-developed MLLM, QQMM, our approach attains the top rank on the MMEB leaderboard. Code and models are released on https://github.com/QQ-MM/QQMM-embed.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "78811a537eba9414e8aa84a701fae4a027a258d1",
+    "externalIds": {
+      "ArXiv": "2505.19650",
+      "DBLP": "journals/corr/abs-2505-19650",
+      "DOI": "10.48550/arXiv.2505.19650",
+      "CorpusId": 278905726
+    },
+    "title": "Modality Curation: Building Universal Embeddings for Advanced Multimodal Information Retrieval",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.19650, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2282539739",
+        "name": "Fanheng Kong"
+      },
+      {
+        "authorId": "2354283849",
+        "name": "Jingyuan Zhang"
+      },
+      {
+        "authorId": "2354283873",
+        "name": "Yahui Liu"
+      },
+      {
+        "authorId": "2354602991",
+        "name": "Hongzhi Zhang"
+      },
+      {
+        "authorId": "2365375022",
+        "name": "Shi Feng"
+      },
+      {
+        "authorId": "2135971356",
+        "name": "Xiaocui Yang"
+      },
+      {
+        "authorId": "2111226672",
+        "name": "Daling Wang"
+      },
+      {
+        "authorId": "2363722635",
+        "name": "Yu Tian"
+      },
+      {
+        "authorId": "2355281632",
+        "name": "Qi Wang"
+      },
+      {
+        "authorId": "2340108648",
+        "name": "Fuzheng Zhang"
+      },
+      {
+        "authorId": "2364167438",
+        "name": "Guorui Zhou"
+      }
+    ],
+    "abstract": "Multimodal information retrieval (MIR) faces inherent challenges due to the heterogeneity of data sources and the complexity of cross-modal alignment. While previous studies have identified modal gaps in feature spaces, a systematic approach to address these challenges remains unexplored. In this work, we introduce UNITE, a universal framework that tackles these challenges through two critical yet underexplored aspects: data curation and modality-aware training configurations. Our work provides the first comprehensive analysis of how modality-specific data properties influence downstream task performance across diverse scenarios. Moreover, we propose Modal-Aware Masked Contrastive Learning (MAMCL) to mitigate the competitive relationships among the instances of different modalities. Our framework achieves state-of-the-art results on multiple multimodal retrieval benchmarks, outperforming existing methods by notable margins. Through extensive experiments, we demonstrate that strategic modality curation and tailored training protocols are pivotal for robust cross-modal representation learning. This work not only advances MIR performance but also provides a foundational blueprint for future research in multimodal systems. Our project is available at https://friedrichor.github.io/projects/UNITE.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bab594238922e26b139895a3a5996ba14b69443d",
+    "externalIds": {
+      "ArXiv": "2505.11293",
+      "DBLP": "journals/corr/abs-2505-11293",
+      "DOI": "10.48550/arXiv.2505.11293",
+      "CorpusId": 278715597
+    },
+    "title": "Breaking the Batch Barrier (B3) of Contrastive Learning via Smart Batch Mining",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.11293, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283771339",
+        "name": "Raghuveer Thirukovalluru"
+      },
+      {
+        "authorId": "2238207587",
+        "name": "Rui Meng"
+      },
+      {
+        "authorId": "2238385821",
+        "name": "Ye Liu"
+      },
+      {
+        "authorId": "2362094776",
+        "name": "K. Karthikeyan"
+      },
+      {
+        "authorId": "2362199487",
+        "name": "Mingyi Su"
+      },
+      {
+        "authorId": "2343748885",
+        "name": "Ping Nie"
+      },
+      {
+        "authorId": "3014143",
+        "name": "Semih Yavuz"
+      },
+      {
+        "authorId": "2118860628",
+        "name": "Yingbo Zhou"
+      },
+      {
+        "authorId": "2343777493",
+        "name": "Wenhu Chen"
+      },
+      {
+        "authorId": "2060730422",
+        "name": "Bhuwan Dhingra"
+      }
+    ],
+    "abstract": "Contrastive learning (CL) is a prevalent technique for training embedding models, which pulls semantically similar examples (positives) closer in the representation space while pushing dissimilar ones (negatives) further apart. A key source of negatives are'in-batch'examples, i.e., positives from other examples in the batch. Effectiveness of such models is hence strongly influenced by the size and quality of training batches. In this work, we propose'Breaking the Batch Barrier'(B3), a novel batch construction strategy designed to curate high-quality batches for CL. Our approach begins by using a pretrained teacher embedding model to rank all examples in the dataset, from which a sparse similarity graph is constructed. A community detection algorithm is then applied to this graph to identify clusters of examples that serve as strong negatives for one another. The clusters are then used to construct batches that are rich in in-batch negatives. Empirical results on the MMEB multimodal embedding benchmark (36 tasks) demonstrate that our method sets a new state of the art, outperforming previous best methods by +1.3 and +2.9 points at the 7B and 2B model scales, respectively. Notably, models trained with B3 surpass existing state-of-the-art results even with a batch size as small as 64, which is 4-16x smaller than that required by other methods. Moreover, experiments show that B3 generalizes well across domains and tasks, maintaining strong performance even when trained with considerably weaker teachers.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "71f354e7b7871d8d2f3cdf5284432c0d44dc143a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-19900",
+      "ArXiv": "2503.19900",
+      "DOI": "10.1109/ICCVW69036.2025.00659",
+      "CorpusId": 277313749
+    },
+    "title": "CAFE: Unifying Representation and Generation with Contrastive-Autoregressive Finetuning",
+    "venue": "2025 IEEE/CVF International Conference on Computer Vision Workshops (ICCVW)",
+    "year": 2025,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.19900, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2301195826",
+        "name": "Hao Yu"
+      },
+      {
+        "authorId": "2352021017",
+        "name": "Zhuokai Zhao"
+      },
+      {
+        "authorId": "2334461697",
+        "name": "Shen Yan"
+      },
+      {
+        "authorId": "2352020894",
+        "name": "Lukasz Korycki"
+      },
+      {
+        "authorId": "2352039047",
+        "name": "Jianyu Wang"
+      },
+      {
+        "authorId": "2334709723",
+        "name": "Baosheng He"
+      },
+      {
+        "authorId": "2340394857",
+        "name": "Jiayi Liu"
+      },
+      {
+        "authorId": "2340399373",
+        "name": "Lizhu Zhang"
+      },
+      {
+        "authorId": "2323788930",
+        "name": "Xiangjun Fan"
+      },
+      {
+        "authorId": "2352014487",
+        "name": "Hanchao Yu"
+      }
+    ],
+    "abstract": "The rapid advancement of large vision-language models (LVLMs) has driven significant progress in multimodal tasks, enabling models to interpret, reason, and generate outputs across both visual and textual domains. While excelling in generative tasks, existing LVLMs often face limitations in tasks requiring high-fidelity representation learning, such as generating image or text embeddings for retrieval. Recent work has proposed finetuning LVLMs for representational learning, but the finetuned model often loses its generative capabilities due to the representational learning training paradigm. To address this trade-off, we introduce CAFE, a contrastive-autoregressive fine-tuning framework that enhances LVLMs for both representation and generative tasks. By integrating a contrastive objective with autoregressive language modeling, our approach unifies these traditionally separate tasks, achieving state-of-the-art results in both multimodal retrieval and multimodal generative benchmarks, including object hallucination (OH) mitigation. CAFE establishes a novel frame work that synergizes embedding and generative functionalities in a single model, setting a foundation for future multimodal models that excel in both retrieval precision and coherent output generation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c2f8a727b86b550aa562becaddc4617bf12c039b",
+    "externalIds": {
+      "ArXiv": "2503.04812",
+      "DBLP": "conf/emnlp/LanNMZS25",
+      "DOI": "10.48550/arXiv.2503.04812",
+      "CorpusId": 276884759
+    },
+    "title": "LLaVE: Large Language and Vision Embedding Models with Hardness-Weighted Contrastive Learning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.04812, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2215823443",
+        "name": "Zhibin Lan"
+      },
+      {
+        "authorId": "2301581674",
+        "name": "Liqiang Niu"
+      },
+      {
+        "authorId": "33427918",
+        "name": "Fandong Meng"
+      },
+      {
+        "authorId": "2265517237",
+        "name": "Jie Zhou"
+      },
+      {
+        "authorId": "2302522258",
+        "name": "Jinsong Su"
+      }
+    ],
+    "abstract": "Universal multimodal embedding models play a critical role in tasks such as interleaved image-text retrieval, multimodal RAG, and multimodal clustering. However, our empirical results indicate that existing LMM-based embedding models trained with the standard InfoNCE loss exhibit a high degree of overlap in similarity distribution between positive and negative pairs, making it challenging to distinguish hard negative pairs effectively. To deal with this issue, we propose a simple yet effective framework that dynamically improves the embedding model's representation learning for negative pairs based on their discriminative difficulty. Within this framework, we train a series of models, named LLaVE, and evaluate them on the MMEB benchmark, which covers 4 meta-tasks and 36 datasets. Experimental results show that LLaVE establishes stronger baselines that achieve state-of-the-art (SOTA) performance while demonstrating strong scalability and efficiency. Specifically, LLaVE-2B surpasses the previous SOTA 7B models, while LLaVE-7B achieves a further performance improvement of 6.2 points. Although LLaVE is trained on image-text data, it can generalize to text-video retrieval tasks in a zero-shot manner and achieve strong performance, demonstrating its remarkable potential for transfer to other embedding tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5bbb904e85ced452f44d9ed9559297334298c407",
+    "externalIds": {
+      "ArXiv": "2502.14786",
+      "DBLP": "journals/corr/abs-2502-14786",
+      "DOI": "10.48550/arXiv.2502.14786",
+      "CorpusId": 276482166
+    },
+    "title": "SigLIP 2: Multilingual Vision-Language Encoders with Improved Semantic Understanding, Localization, and Dense Features",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 739,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.14786, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143902495",
+        "name": "Michael Tschannen"
+      },
+      {
+        "authorId": "2333599024",
+        "name": "Alexey Gritsenko"
+      },
+      {
+        "authorId": "2290284032",
+        "name": "Xiao Wang"
+      },
+      {
+        "authorId": "2346323983",
+        "name": "M. Naeem"
+      },
+      {
+        "authorId": "2922782",
+        "name": "Ibrahim M. Alabdulmohsin"
+      },
+      {
+        "authorId": "2333232774",
+        "name": "Nikhil Parthasarathy"
+      },
+      {
+        "authorId": "2273325006",
+        "name": "Talfan Evans"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "2327118351",
+        "name": "Ye Xia"
+      },
+      {
+        "authorId": "40608942",
+        "name": "Basil Mustafa"
+      },
+      {
+        "authorId": "2346326258",
+        "name": "Olivier H'enaff"
+      },
+      {
+        "authorId": "2066076307",
+        "name": "Jeremiah Harmsen"
+      },
+      {
+        "authorId": "2079614268",
+        "name": "A. Steiner"
+      },
+      {
+        "authorId": "2045380893",
+        "name": "Xiao-Qi Zhai"
+      }
+    ],
+    "abstract": "We introduce SigLIP 2, a family of new multilingual vision-language encoders that build on the success of the original SigLIP. In this second iteration, we extend the original image-text training objective with several prior, independently developed techniques into a unified recipe -- this includes captioning-based pretraining, self-supervised losses (self-distillation, masked prediction) and online data curation. With these changes, SigLIP 2 models outperform their SigLIP counterparts at all model scales in core capabilities, including zero-shot classification, image-text retrieval, and transfer performance when extracting visual representations for Vision-Language Models (VLMs). Furthermore, the new training recipe leads to significant improvements on localization and dense prediction tasks. We also train variants which support multiple resolutions and preserve the input's native aspect ratio. Finally, we train on a more diverse data-mixture that includes de-biasing techniques, leading to much better multilingual understanding and improved fairness. To allow users to trade off inference cost with performance, we release model checkpoints at four sizes: ViT-B (86M), L (303M), So400m (400M), and g (1B).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "caece9fda8f360af1b2c1ea5019e46f3db2b81c5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2502-18495",
+      "ArXiv": "2502.18495",
+      "DOI": "10.1145/3767328",
+      "CorpusId": 276617905
+    },
+    "title": "A Comprehensive Survey on Composed Image Retrieval",
+    "venue": "ACM Trans. Inf. Syst.",
+    "year": 2025,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.18495, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2272099238",
+        "name": "Xuemeng Song"
+      },
+      {
+        "authorId": "2272390603",
+        "name": "Haoqiang Lin"
+      },
+      {
+        "authorId": "1830448435",
+        "name": "Haokun Wen"
+      },
+      {
+        "authorId": "2310338711",
+        "name": "Bohan Hou"
+      },
+      {
+        "authorId": "2153557026",
+        "name": "Mingzhu Xu"
+      },
+      {
+        "authorId": "2237804020",
+        "name": "Liqiang Nie"
+      }
+    ],
+    "abstract": "Composed Image Retrieval (CIR) is an emerging yet challenging task that allows users to search for target images using a multimodal query, comprising a reference image and a modification text specifying the user’s desired changes to the reference image. Given its significant academic and practical value, CIR has become a rapidly growing area of interest in the computer vision and machine learning communities, particularly with the advances in deep learning. To the best of our knowledge, there is currently no comprehensive review of CIR to provide a timely overview of this field. Therefore, we synthesize insights from over 150 publications in top conferences and journals, including ACM TOIS, SIGIR, and CVPR. In particular, we systematically categorize existing supervised CIR and zero-shot CIR models using a fine-grained taxonomy. For a comprehensive review, we also briefly discuss approaches for tasks closely related to CIR, such as attribute-based CIR and dialog-based CIR. Additionally, we summarize benchmark datasets for evaluation and analyze existing supervised and zero-shot CIR methods by comparing experimental results across multiple datasets. Furthermore, we present promising future directions in this field, offering practical insights for researchers interested in further exploration.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b032771ea21c36dc006331449f8f42a2b2fa585d",
+    "externalIds": {
+      "ArXiv": "2412.01720",
+      "DBLP": "journals/corr/abs-2412-01720",
+      "DOI": "10.1109/CVPR52734.2025.00380",
+      "CorpusId": 274436406
+    },
+    "title": "LamRA: Large Multimodal Model as Your Advanced Retrieval Assistant",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2024,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.01720, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2292088338",
+        "name": "Yikun Liu"
+      },
+      {
+        "authorId": "2333410234",
+        "name": "Pingan Chen"
+      },
+      {
+        "authorId": "2309120403",
+        "name": "Jiayin Cai"
+      },
+      {
+        "authorId": "2290971123",
+        "name": "Xiaolong Jiang"
+      },
+      {
+        "authorId": "2309080041",
+        "name": "Yao Hu"
+      },
+      {
+        "authorId": "3213796",
+        "name": "Jiangchao Yao"
+      },
+      {
+        "authorId": "2308357228",
+        "name": "Yanfeng Wang"
+      },
+      {
+        "authorId": "2239247182",
+        "name": "Weidi Xie"
+      }
+    ],
+    "abstract": "With the rapid advancement of multimodal information retrieval, increasingly complex retrieval tasks have emerged. Existing methods predominately rely on task-specific fine-tuning of vision-language models, often those trained with image-text contrastive learning. In this paper, we explore the possibility of re-purposing generative Large Multimodal Models (LMMs) for retrieval. This approach enables unifying all retrieval tasks under the same formulation and, more importantly, allows for extrapolation towards unseen retrieval tasks without additional training. Our contributions can be summarised in the following aspects: (i) We introduce LamRA, a versatile framework designed to empower LMMs with sophisticated retrieval and reranking capabilities. (ii) For retrieval, we adopt a two-stage training strategy comprising language-only pre-training and multimodal instruction tuning to progressively enhance LMM’s retrieval performance. (iii) For reranking, we employ joint training of both pointwise and listwise reranking, offering two distinct ways to further boost the retrieval performance. (iv) Extensive experiments underscore the efficacy of our method in handling more than ten retrieval tasks, demonstrating robust performance in both supervised and zero-shot settings, including scenarios involving previously unseen retrieval tasks. Project page: https://code-kunkun.github.io/LamRA/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1edf1d11d0c40ddfdf17378481b8e47690e4cc41",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2411-13144",
+      "ArXiv": "2411.13144",
+      "DOI": "10.48550/arXiv.2411.13144",
+      "CorpusId": 274149854
+    },
+    "title": "CopyrightMeter: Revisiting Copyright Protection in Text-to-image Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.13144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2331506585",
+        "name": "Naen Xu"
+      },
+      {
+        "authorId": "2145413923",
+        "name": "Changjiang Li"
+      },
+      {
+        "authorId": "2290912812",
+        "name": "Tianyu Du"
+      },
+      {
+        "authorId": "2112114127",
+        "name": "Minxi Li"
+      },
+      {
+        "authorId": "2315439391",
+        "name": "Wenjie Luo"
+      },
+      {
+        "authorId": "2273583474",
+        "name": "Jiacheng Liang"
+      },
+      {
+        "authorId": "2331578229",
+        "name": "Yuyuan Li"
+      },
+      {
+        "authorId": "2290975291",
+        "name": "Xuhong Zhang"
+      },
+      {
+        "authorId": "2331767944",
+        "name": "Meng Han"
+      },
+      {
+        "authorId": "2291142301",
+        "name": "Jianwei Yin"
+      },
+      {
+        "authorId": "2268737549",
+        "name": "Ting Wang"
+      }
+    ],
+    "abstract": "Text-to-image diffusion models have emerged as powerful tools for generating high-quality images from textual descriptions. However, their increasing popularity has raised significant copyright concerns, as these models can be misused to reproduce copyrighted content without authorization. In response, recent studies have proposed various copyright protection methods, including adversarial perturbation, concept erasure, and watermarking techniques. However, their effectiveness and robustness against advanced attacks remain largely unexplored. Moreover, the lack of unified evaluation frameworks has hindered systematic comparison and fair assessment of different approaches. To bridge this gap, we systematize existing copyright protection methods and attacks, providing a unified taxonomy of their design spaces. We then develop CopyrightMeter, a unified evaluation framework that incorporates 17 state-of-the-art protections and 16 representative attacks. Leveraging CopyrightMeter, we comprehensively evaluate protection methods across multiple dimensions, thereby uncovering how different design choices impact fidelity, efficacy, and resilience under attacks. Our analysis reveals several key findings: (i) most protections (16/17) are not resilient against attacks; (ii) the\"best\"protection varies depending on the target priority; (iii) more advanced attacks significantly promote the upgrading of protections. These insights provide concrete guidance for developing more robust protection methods, while its unified evaluation protocol establishes a standard benchmark for future copyright protection research in text-to-image generation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0812f6b841a99b6ffb4fb114c04a090de956de6e",
+    "externalIds": {
+      "ArXiv": "2410.05160",
+      "DBLP": "conf/iclr/JiangMYYZC25",
+      "DOI": "10.48550/arXiv.2410.05160",
+      "CorpusId": 273186435
+    },
+    "title": "VLM2Vec: Training Vision-Language Models for Massive Multimodal Embedding Tasks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 161,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.05160, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112347577",
+        "name": "Ziyan Jiang"
+      },
+      {
+        "authorId": "2238207587",
+        "name": "Rui Meng"
+      },
+      {
+        "authorId": "2324942237",
+        "name": "Xinyi Yang"
+      },
+      {
+        "authorId": "3014143",
+        "name": "Semih Yavuz"
+      },
+      {
+        "authorId": "2118860628",
+        "name": "Yingbo Zhou"
+      },
+      {
+        "authorId": "2253811180",
+        "name": "Wenhu Chen"
+      }
+    ],
+    "abstract": "Embedding models have been crucial in enabling various downstream tasks such as semantic similarity, information retrieval, and clustering. Recently, there has been a surge of interest in developing universal text embedding models that can generalize across tasks (e.g., MTEB). However, progress in learning universal multimodal embedding models has been relatively slow despite its importance and practicality. In this work, we aim to explore the potential for building universal embeddings capable of handling a wide range of downstream tasks. Our contributions are twofold: (1) MMEB (Massive Multimodal Embedding Benchmark), which covers 4 meta-tasks (i.e. classification, visual question answering, multimodal retrieval, and visual grounding) and 36 datasets, including 20 training and 16 evaluation datasets covering both in-distribution and out-of-distribution tasks, and (2) VLM2Vec (Vision-Language Model ->Vector), a contrastive training framework that converts any state-of-the-art vision-language model into an embedding model via training on MMEB. Unlike previous models such as CLIP and BLIP, which encodes text or images independently without any task instruction, VLM2Vec can process any combination of images and text to generate a fixed-dimensional vector based on task instructions. We build a series of VLM2Vec models on SoTA VLMs like Phi-3.5-V, LLaVA-1.6 and evaluate them on MMEB's evaluation split. Our results show that VLM2Vec achieves an absolute average improvement of 10% to 20% over existing multimodal embedding models on both in-distribution and out-of-distribution datasets in MMEB. We show that VLMs are secretly strong embedding models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a22b23b65cdbc0335b872ed7c7a7206c710f8997",
+    "externalIds": {
+      "ArXiv": "2409.12191",
+      "DBLP": "journals/corr/abs-2409-12191",
+      "DOI": "10.48550/arXiv.2409.12191",
+      "CorpusId": 272704132
+    },
+    "title": "Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 3888,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.12191, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2316259834",
+        "name": "Peng Wang"
+      },
+      {
+        "authorId": "2247821453",
+        "name": "Shuai Bai"
+      },
+      {
+        "authorId": "2110171536",
+        "name": "Sinan Tan"
+      },
+      {
+        "authorId": "2311456728",
+        "name": "Shijie Wang"
+      },
+      {
+        "authorId": "2315953809",
+        "name": "Zhihao Fan"
+      },
+      {
+        "authorId": "41211611",
+        "name": "Jinze Bai"
+      },
+      {
+        "authorId": "2293321194",
+        "name": "Ke-Yang Chen"
+      },
+      {
+        "authorId": "2321923438",
+        "name": "Xuejing Liu"
+      },
+      {
+        "authorId": "2182966132",
+        "name": "Jialin Wang"
+      },
+      {
+        "authorId": "2311391178",
+        "name": "Wenbin Ge"
+      },
+      {
+        "authorId": "2303618719",
+        "name": "Yang Fan"
+      },
+      {
+        "authorId": "2247877609",
+        "name": "K. Dang"
+      },
+      {
+        "authorId": "2256589540",
+        "name": "Mengfei Du"
+      },
+      {
+        "authorId": "2312110505",
+        "name": "Xuancheng Ren"
+      },
+      {
+        "authorId": "47447639",
+        "name": "Rui Men"
+      },
+      {
+        "authorId": "2248487202",
+        "name": "Dayiheng Liu"
+      },
+      {
+        "authorId": "2192678144",
+        "name": "Chang Zhou"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "2312866505",
+        "name": "Junyang Lin"
+      }
+    ],
+    "abstract": "We present the Qwen2-VL Series, an advanced upgrade of the previous Qwen-VL models that redefines the conventional predetermined-resolution approach in visual processing. Qwen2-VL introduces the Naive Dynamic Resolution mechanism, which enables the model to dynamically process images of varying resolutions into different numbers of visual tokens. This approach allows the model to generate more efficient and accurate visual representations, closely aligning with human perceptual processes. The model also integrates Multimodal Rotary Position Embedding (M-RoPE), facilitating the effective fusion of positional information across text, images, and videos. We employ a unified paradigm for processing both images and videos, enhancing the model's visual perception capabilities. To explore the potential of large multimodal models, Qwen2-VL investigates the scaling laws for large vision-language models (LVLMs). By scaling both the model size-with versions at 2B, 8B, and 72B parameters-and the amount of training data, the Qwen2-VL Series achieves highly competitive performance. Notably, the Qwen2-VL-72B model achieves results comparable to leading models such as GPT-4o and Claude3.5-Sonnet across various multimodal benchmarks, outperforming other generalist models. Code is available at https://github.com/QwenLM/Qwen2-VL .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2192d9a8fb209a51c4d143070d1eafe0d60ad522",
+    "externalIds": {
+      "DBLP": "conf/aaai/00020SWZZY0025",
+      "ArXiv": "2408.09698",
+      "DOI": "10.48550/arXiv.2408.09698",
+      "CorpusId": 271903363
+    },
+    "title": "Harnessing Multimodal Large Language Models for Multimodal Sequential Recommendation",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 66,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.09698, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2302289080",
+        "name": "Yuyang Ye"
+      },
+      {
+        "authorId": "2282146801",
+        "name": "Zhi Zheng"
+      },
+      {
+        "authorId": "2316480510",
+        "name": "Yishan Shen"
+      },
+      {
+        "authorId": "2319983229",
+        "name": "Tianshuo Wang"
+      },
+      {
+        "authorId": "2325201644",
+        "name": "He Zhang"
+      },
+      {
+        "authorId": "2293726195",
+        "name": "Peijun Zhu"
+      },
+      {
+        "authorId": "51508019",
+        "name": "Runlong Yu"
+      },
+      {
+        "authorId": "2316435455",
+        "name": "Kai Zhang"
+      },
+      {
+        "authorId": "2282527818",
+        "name": "Hui Xiong"
+      }
+    ],
+    "abstract": "Recent advances in Large Language Models (LLMs) have demonstrated significant potential in the field of Recommendation Systems (RSs). Most existing studies have focused on converting user behavior logs into textual prompts and leveraging techniques such as prompt tuning to enable LLMs for recommendation tasks. Meanwhile, research interest has recently grown in multimodal recommendation systems that integrate data from images, text, and other sources using modality fusion techniques. This introduces new challenges to the existing LLM-based recommendation paradigm which relies solely on text modality information. Moreover, although Multimodal Large Language Models (MLLMs) capable of processing multi-modal inputs have emerged, how to equip MLLMs with multi-modal recommendation capabilities remains largely unexplored. To this end, in this paper, we propose the Multimodal Large Language Model-enhanced Sequential Multimodal Recommendation (MLLM-MSR) model. To capture the dynamic user preference, we design a two-stage user preference summarization method. Specifically, we first utilize an MLLM-based item-summarizer to extract image feature given an item and convert the image into text. Then, we employ a recurrent user preference summarization generation paradigm to capture the dynamic changes in user preferences based on an LLM-based user-summarizer. Finally, to enable the MLLM for multi-modal recommendation task, we propose to fine-tune a MLLM-based recommender using Supervised Fine-Tuning (SFT) techniques. Extensive evaluations across various datasets validate the effectiveness of MLLM-MSR, showcasing its superior ability to capture and adapt to the evolving dynamics of user preferences.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cd5d736218589e0d9a8db4808f31eddcc038a3cb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-12580",
+      "ArXiv": "2407.12580",
+      "DOI": "10.48550/arXiv.2407.12580",
+      "CorpusId": 271245054
+    },
+    "title": "E5-V: Universal Embeddings with Multimodal Large Language Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 103,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.12580, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2259012212",
+        "name": "Ting Jiang"
+      },
+      {
+        "authorId": "2260342581",
+        "name": "Minghui Song"
+      },
+      {
+        "authorId": "2260851231",
+        "name": "Zihan Zhang"
+      },
+      {
+        "authorId": "2146285313",
+        "name": "Haizhen Huang"
+      },
+      {
+        "authorId": "2066621592",
+        "name": "Weiwei Deng"
+      },
+      {
+        "authorId": "2247156451",
+        "name": "Feng Sun"
+      },
+      {
+        "authorId": "2256972722",
+        "name": "Qi Zhang"
+      },
+      {
+        "authorId": "2145351849",
+        "name": "Deqing Wang"
+      },
+      {
+        "authorId": "2162961864",
+        "name": "Fuzhen Zhuang"
+      }
+    ],
+    "abstract": "Multimodal large language models (MLLMs) have shown promising advancements in general visual and language understanding. However, the representation of multimodal information using MLLMs remains largely unexplored. In this work, we introduce a new framework, E5-V, designed to adapt MLLMs for achieving universal multimodal embeddings. Our findings highlight the significant potential of MLLMs in representing multimodal inputs compared to previous approaches. By leveraging MLLMs with prompts, E5-V effectively bridges the modality gap between different types of inputs, demonstrating strong performance in multimodal embeddings even without fine-tuning. We propose a single modality training approach for E5-V, where the model is trained exclusively on text pairs. This method demonstrates significant improvements over traditional multimodal training on image-text pairs, while reducing training costs by approximately 95%. Additionally, this approach eliminates the need for costly multimodal training data collection. Extensive experiments across four types of tasks demonstrate the effectiveness of E5-V. As a universal multimodal model, E5-V not only achieves but often surpasses state-of-the-art performance in each task, despite being trained on a single modality.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c948e2d00ac2628ed4098a009c67c81ea4cc00a2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-01449",
+      "ArXiv": "2407.01449",
+      "DOI": "10.48550/arXiv.2407.01449",
+      "CorpusId": 270870444
+    },
+    "title": "ColPali: Efficient Document Retrieval with Vision Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.01449, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261282326",
+        "name": "Manuel Faysse"
+      },
+      {
+        "authorId": "2309177034",
+        "name": "Hugues Sibille"
+      },
+      {
+        "authorId": "2365047866",
+        "name": "Tony Wu"
+      },
+      {
+        "authorId": "1486608754",
+        "name": "Bilel Omrani"
+      },
+      {
+        "authorId": "46760349",
+        "name": "Gautier Viaud"
+      },
+      {
+        "authorId": "2261280735",
+        "name": "C. Hudelot"
+      },
+      {
+        "authorId": "2258716059",
+        "name": "Pierre Colombo"
+      }
+    ],
+    "abstract": "Documents are visually rich structures that convey information through text, but also figures, page layouts, tables, or even fonts. Since modern retrieval systems mainly rely on the textual information they extract from document pages to index documents -often through lengthy and brittle processes-, they struggle to exploit key visual cues efficiently. This limits their capabilities in many practical document retrieval applications such as Retrieval Augmented Generation (RAG). To benchmark current systems on visually rich document retrieval, we introduce the Visual Document Retrieval Benchmark ViDoRe, composed of various page-level retrieval tasks spanning multiple domains, languages, and practical settings. The inherent complexity and performance shortcomings of modern systems motivate a new concept; doing document retrieval by directly embedding the images of the document pages. We release ColPali, a Vision Language Model trained to produce high-quality multi-vector embeddings from images of document pages. Combined with a late interaction matching mechanism, ColPali largely outperforms modern document retrieval pipelines while being drastically simpler, faster and end-to-end trainable. We release models, data, code and benchmarks under open licenses at https://hf.co/vidore.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "aac09b738b2f35c03394d01730b3d764783ec41f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-16789",
+      "ArXiv": "2405.16789",
+      "DOI": "10.1145/3690624.3709440",
+      "CorpusId": 270063288
+    },
+    "title": "NoteLLM-2: Multimodal Large Representation Models for Recommendation",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2024,
+    "citationCount": 57,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2405.16789",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.16789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2260850374",
+        "name": "Chao Zhang"
+      },
+      {
+        "authorId": "2290148641",
+        "name": "Haoxin Zhang"
+      },
+      {
+        "authorId": "2142349315",
+        "name": "Shiwei Wu"
+      },
+      {
+        "authorId": "2341575511",
+        "name": "Di Wu"
+      },
+      {
+        "authorId": "2294347395",
+        "name": "Tong Xu"
+      },
+      {
+        "authorId": "2116711669",
+        "name": "Xiangyu Zhao"
+      },
+      {
+        "authorId": "2290120475",
+        "name": "Yan Gao"
+      },
+      {
+        "authorId": "2290061977",
+        "name": "Yao Hu"
+      },
+      {
+        "authorId": "2265580543",
+        "name": "Enhong Chen"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) have demonstrated exceptional proficiency in text understanding and embedding tasks. However, their potential in multimodal representation, particularly for item-to-item (I2I) recommendations, remains underexplored. While leveraging existing Multimodal Large Language Models (MLLMs) for such tasks is promising, challenges arise due to their delayed release compared to corresponding LLMs and the inefficiency in representation tasks. To address these issues, we propose an end-to-end fine-tuning method that customizes the integration of any existing LLMs and vision encoders for efficient multimodal representation. Preliminary experiments revealed that fine-tuned LLMs often neglect image content. To counteract this, we propose NoteLLM-2, a novel framework that enhances visual information. Specifically, we propose two approaches: first, a prompt-based method that segregates visual and textual content, employing a multimodal In-Context Learning strategy to balance focus across modalities; second, a late fusion technique that directly integrates visual information into the final representations. Extensive experiments, both online and offline, demonstrate the effectiveness of our approach. Code is available at https://github.com/Applied-Machine-Learning-Lab/NoteLLM.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3c6a6c8de005ef5722a54847747f65922e79d622",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-07437",
+      "ArXiv": "2405.07437",
+      "DOI": "10.1007/978-981-96-1024-2_8",
+      "CorpusId": 269758033
+    },
+    "title": "Evaluation of Retrieval-Augmented Generation: A Survey",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.07437, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2301195826",
+        "name": "Hao Yu"
+      },
+      {
+        "authorId": "2301156375",
+        "name": "Aoran Gan"
+      },
+      {
+        "authorId": "2263584690",
+        "name": "Kai Zhang"
+      },
+      {
+        "authorId": "66187823",
+        "name": "Shiwei Tong"
+      },
+      {
+        "authorId": "2301169021",
+        "name": "Qi Liu"
+      },
+      {
+        "authorId": "2301158163",
+        "name": "Zhaofeng Liu"
+      }
+    ],
+    "abstract": "Retrieval-Augmented Generation (RAG) has recently gained traction in natural language processing. Numerous studies and real-world applications are leveraging its ability to enhance generative models through external information retrieval. Evaluating these RAG systems, however, poses unique challenges due to their hybrid structure and reliance on dynamic knowledge sources. To better understand these challenges, we conduct A Unified Evaluation Process of RAG (Auepora) and aim to provide a comprehensive overview of the evaluation and benchmarks of RAG systems. Specifically, we examine and compare several quantifiable metrics of the Retrieval and Generation components, such as relevance, accuracy, and faithfulness, within the current RAG benchmarks, encompassing the possible output and ground truth pairs. We then analyze the various datasets and metrics, discuss the limitations of current benchmarks, and suggest potential directions to advance the field of RAG benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3f46e66675a89f35d3991a85ff0556c1533de4d2",
+    "externalIds": {
+      "DBLP": "conf/kdd/LiuZYDD0ZZD24",
+      "ArXiv": "2404.00621",
+      "DOI": "10.1145/3637528.3671473",
+      "CorpusId": 268819294
+    },
+    "title": "Multimodal Pretraining, Adaptation, and Generation for Recommendation: A Survey",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2024,
+    "citationCount": 70,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.00621",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.00621, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150270469",
+        "name": "Qijiong Liu"
+      },
+      {
+        "authorId": "2240695630",
+        "name": "Jieming Zhu"
+      },
+      {
+        "authorId": "2223871084",
+        "name": "Yanting Yang"
+      },
+      {
+        "authorId": "29969336",
+        "name": "Quanyu Dai"
+      },
+      {
+        "authorId": "2294672261",
+        "name": "Zhaocheng Du"
+      },
+      {
+        "authorId": "2187512110",
+        "name": "Xiao-Ming Wu"
+      },
+      {
+        "authorId": "2265936086",
+        "name": "Zhou Zhao"
+      },
+      {
+        "authorId": "2163112250",
+        "name": "Rui Zhang"
+      },
+      {
+        "authorId": "2274021958",
+        "name": "Zhenhua Dong"
+      }
+    ],
+    "abstract": "Personalized recommendation serves as a ubiquitous channel for users to discover information tailored to their interests. However, traditional recommendation models primarily rely on unique IDs and categorical features for user-item matching, potentially overlooking the nuanced essence of raw item contents across multiple modalities such as text, image, audio, and video. This underutilization of multimodal data poses a limitation to recommender systems, especially in multimedia services like news, music, and short-video platforms. The recent advancements in large multimodal models offer new opportunities and challenges in developing content-aware recommender systems. This survey seeks to provide a comprehensive exploration of the latest advancements and future trajectories in multimodal pretraining, adaptation, and generation techniques, as well as their applications in enhancing recommender systems. Furthermore, we discuss current open challenges and opportunities for future research in this dynamic domain. We believe that this survey, alongside the curated resources, will provide valuable insights to inspire further advancements in this evolving landscape.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3c19452f6d55778a05cc529a9f5fbc77be59df3a",
+    "externalIds": {
+      "ArXiv": "2403.19651",
+      "DBLP": "journals/corr/abs-2403-19651",
+      "DOI": "10.48550/arXiv.2403.19651",
+      "CorpusId": 268733340
+    },
+    "title": "MagicLens: Self-Supervised Image Retrieval with Open-Ended Instructions",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 111,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.19651, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145086492",
+        "name": "Kai Zhang"
+      },
+      {
+        "authorId": "2287130440",
+        "name": "Yi Luan"
+      },
+      {
+        "authorId": "2268715848",
+        "name": "Hexiang Hu"
+      },
+      {
+        "authorId": "2262196473",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "2275178766",
+        "name": "Siyuan Qiao"
+      },
+      {
+        "authorId": "2253811183",
+        "name": "Wenhu Chen"
+      },
+      {
+        "authorId": "1758652",
+        "name": "Yu Su"
+      },
+      {
+        "authorId": "2277809314",
+        "name": "Ming-Wei Chang"
+      }
+    ],
+    "abstract": "Image retrieval, i.e., finding desired images given a reference image, inherently encompasses rich, multi-faceted search intents that are difficult to capture solely using image-based measures. Recent works leverage text instructions to allow users to more freely express their search intents. However, they primarily focus on image pairs that are visually similar and/or can be characterized by a small set of pre-defined relations. The core thesis of this paper is that text instructions can enable retrieving images with richer relations beyond visual similarity. To show this, we introduce MagicLens, a series of self-supervised image retrieval models that support open-ended instructions. MagicLens is built on a key novel insight: image pairs that naturally occur on the same web pages contain a wide range of implicit relations (e.g., inside view of), and we can bring those implicit relations explicit by synthesizing instructions via foundation models. Trained on 36.7M (query image, instruction, target image) triplets with rich semantic relations mined from the web, MagicLens achieves results comparable with or better than prior best on eight benchmarks of various image retrieval tasks, while maintaining high parameter efficiency with a significantly smaller model size. Additional human analyses on a 1.4M-image unseen corpus further demonstrate the diversity of search intents supported by MagicLens. Code and models are publicly available at https://open-vision-language.github.io/MagicLens/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ab15463babf98fffc6f683fe2026de0725b5e1a9",
+    "externalIds": {
+      "DBLP": "journals/dase/ZhaoZYWGFYZJC26",
+      "ArXiv": "2402.19473",
+      "DOI": "10.48550/arXiv.2402.19473",
+      "CorpusId": 268091298
+    },
+    "title": "Retrieval-Augmented Generation for AI-Generated Content: A Survey",
+    "venue": "Data Science and Engineering",
+    "year": 2024,
+    "citationCount": 561,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.19473, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268718776",
+        "name": "Penghao Zhao"
+      },
+      {
+        "authorId": "2288557803",
+        "name": "Hailin Zhang"
+      },
+      {
+        "authorId": "2289597580",
+        "name": "Qinhan Yu"
+      },
+      {
+        "authorId": "2288675277",
+        "name": "Zhengren Wang"
+      },
+      {
+        "authorId": "2288532368",
+        "name": "Yunteng Geng"
+      },
+      {
+        "authorId": "46182701",
+        "name": "Fangcheng Fu"
+      },
+      {
+        "authorId": "2249513224",
+        "name": "Ling Yang"
+      },
+      {
+        "authorId": "2277807793",
+        "name": "Wentao Zhang"
+      },
+      {
+        "authorId": "2277742543",
+        "name": "Bin Cui"
+      }
+    ],
+    "abstract": "Advancements in model algorithms, the growth of foundational models, and access to high-quality datasets have propelled the evolution of Artificial Intelligence Generated Content (AIGC). Despite its notable successes, AIGC still faces hurdles such as updating knowledge, handling long-tail data, mitigating data leakage, and managing high training and inference costs. Retrieval-Augmented Generation (RAG) has recently emerged as a paradigm to address such challenges. In particular, RAG introduces the information retrieval process, which enhances the generation process by retrieving relevant objects from available data stores, leading to higher accuracy and better robustness. In this paper, we comprehensively review existing efforts that integrate RAG technique into AIGC scenarios. We first classify RAG foundations according to how the retriever augments the generator, distilling the fundamental abstractions of the augmentation methodologies for various retrievers and generators. This unified perspective encompasses all RAG scenarios, illuminating advancements and pivotal technologies that help with potential future progress. We also summarize additional enhancements methods for RAG, facilitating effective engineering and implementation of RAG systems. Then from another view, we survey on practical applications of RAG across different modalities and tasks, offering valuable references for researchers and practitioners. Furthermore, we introduce the benchmarks for RAG, discuss the limitations of current RAG systems, and suggest potential directions for future research. Github: https://github.com/PKU-DAIR/RAG-Survey.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9037c23cd2b25eea8f146e73ba6ad7985549d1a6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2311-17136",
+      "ArXiv": "2311.17136",
+      "DOI": "10.48550/arXiv.2311.17136",
+      "CorpusId": 265498852
+    },
+    "title": "UniIR: Training and Benchmarking Universal Multimodal Information Retrievers",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 168,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.17136, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268683835",
+        "name": "Cong Wei"
+      },
+      {
+        "authorId": "2269138661",
+        "name": "Yang Chen"
+      },
+      {
+        "authorId": "2268767321",
+        "name": "Haonan Chen"
+      },
+      {
+        "authorId": "2268715848",
+        "name": "Hexiang Hu"
+      },
+      {
+        "authorId": "2143853895",
+        "name": "Ge Zhang"
+      },
+      {
+        "authorId": "2253966125",
+        "name": "Jie Fu"
+      },
+      {
+        "authorId": "2253466149",
+        "name": "Alan Ritter"
+      },
+      {
+        "authorId": "2249847177",
+        "name": "Wenhu Chen"
+      }
+    ],
+    "abstract": "Existing information retrieval (IR) models often assume a homogeneous format, limiting their applicability to diverse user needs, such as searching for images with text descriptions, searching for a news article with a headline image, or finding a similar photo with a query image. To approach such different information-seeking demands, we introduce UniIR, a unified instruction-guided multimodal retriever capable of handling eight distinct retrieval tasks across modalities. UniIR, a single retrieval system jointly trained on ten diverse multimodal-IR datasets, interprets user instructions to execute various retrieval tasks, demonstrating robust performance across existing datasets and zero-shot generalization to new tasks. Our experiments highlight that multi-task training and instruction tuning are keys to UniIR's generalization ability. Additionally, we construct the M-BEIR, a multimodal retrieval benchmark with comprehensive results, to standardize the evaluation of universal multimodal information retrieval.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "54814744b42b06c855c97b23de1366e0bcbe775a",
+    "externalIds": {
+      "ArXiv": "2309.17421",
+      "DBLP": "journals/corr/abs-2309-17421",
+      "DOI": "10.48550/arXiv.2309.17421",
+      "CorpusId": 263310951
+    },
+    "title": "The Dawn of LMMs: Preliminary Explorations with GPT-4V(ision)",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 913,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.17421",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.17421, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149231840",
+        "name": "Zhengyuan Yang"
+      },
+      {
+        "authorId": "50703697",
+        "name": "Linjie Li"
+      },
+      {
+        "authorId": "143786724",
+        "name": "Kevin Lin"
+      },
+      {
+        "authorId": "2124948371",
+        "name": "Jianfeng Wang"
+      },
+      {
+        "authorId": "2249709105",
+        "name": "Chung-Ching Lin"
+      },
+      {
+        "authorId": "2251726216",
+        "name": "Zicheng Liu"
+      },
+      {
+        "authorId": "29957038",
+        "name": "Lijuan Wang"
+      }
+    ],
+    "abstract": "Large multimodal models (LMMs) extend large language models (LLMs) with multi-sensory skills, such as visual understanding, to achieve stronger generic intelligence. In this paper, we analyze the latest model, GPT-4V(ision), to deepen the understanding of LMMs. The analysis focuses on the intriguing tasks that GPT-4V can perform, containing test samples to probe the quality and genericity of GPT-4V's capabilities, its supported inputs and working modes, and the effective ways to prompt the model. In our approach to exploring GPT-4V, we curate and organize a collection of carefully designed qualitative samples spanning a variety of domains and tasks. Observations from these samples demonstrate that GPT-4V's unprecedented ability in processing arbitrarily interleaved multimodal inputs and the genericity of its capabilities together make GPT-4V a powerful multimodal generalist system. Furthermore, GPT-4V's unique capability of understanding visual markers drawn on input images can give rise to new human-computer interaction methods such as visual referring prompting. We conclude the report with in-depth discussions on the emerging application scenarios and the future research directions for GPT-4V-based systems. We hope that this preliminary exploration will inspire future research on the next-generation multimodal task formulation, new ways to exploit and enhance LMMs to solve real-world problems, and gaining better understanding of multimodal foundation models. Finally, we acknowledge that the model under our study is solely the product of OpenAI's innovative work, and they should be fully credited for its development. Please see the GPT-4V contributions paper for the authorship and credit attribution: https://cdn.openai.com/contributions/gpt-4v.pdf",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3f5b31c4f7350dc88002c121aecbdc82f86eb5bb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2301-12597",
+      "ArXiv": "2301.12597",
+      "DOI": "10.48550/arXiv.2301.12597",
+      "CorpusId": 256390509
+    },
+    "title": "BLIP-2: Bootstrapping Language-Image Pre-training with Frozen Image Encoders and Large Language Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 7786,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.12597",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.12597, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49299019",
+        "name": "Junnan Li"
+      },
+      {
+        "authorId": "2981509",
+        "name": "Dongxu Li"
+      },
+      {
+        "authorId": "1702137",
+        "name": "S. Savarese"
+      },
+      {
+        "authorId": "2184854289",
+        "name": "Steven C. H. Hoi"
+      }
+    ],
+    "abstract": "The cost of vision-and-language pre-training has become increasingly prohibitive due to end-to-end training of large-scale models. This paper proposes BLIP-2, a generic and efficient pre-training strategy that bootstraps vision-language pre-training from off-the-shelf frozen pre-trained image encoders and frozen large language models. BLIP-2 bridges the modality gap with a lightweight Querying Transformer, which is pre-trained in two stages. The first stage bootstraps vision-language representation learning from a frozen image encoder. The second stage bootstraps vision-to-language generative learning from a frozen language model. BLIP-2 achieves state-of-the-art performance on various vision-language tasks, despite having significantly fewer trainable parameters than existing methods. For example, our model outperforms Flamingo80B by 8.7% on zero-shot VQAv2 with 54x fewer trainable parameters. We also demonstrate the model's emerging capabilities of zero-shot image-to-text generation that can follow natural language instructions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16de2006e2960ba410772c6b6d460b83c0a5cc4b",
+    "externalIds": {
+      "ArXiv": "2212.07143",
+      "DBLP": "journals/corr/abs-2212-07143",
+      "DOI": "10.1109/CVPR52729.2023.00276",
+      "CorpusId": 254636568
+    },
+    "title": "Reproducible Scaling Laws for Contrastive Language-Image Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 1341,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2212.07143",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.07143, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40063601",
+        "name": "Mehdi Cherti"
+      },
+      {
+        "authorId": "2125377840",
+        "name": "R. Beaumont"
+      },
+      {
+        "authorId": "2113839396",
+        "name": "Ross Wightman"
+      },
+      {
+        "authorId": "52193502",
+        "name": "Mitchell Wortsman"
+      },
+      {
+        "authorId": "1387994137",
+        "name": "Gabriel Ilharco"
+      },
+      {
+        "authorId": "2007745319",
+        "name": "Cade Gordon"
+      },
+      {
+        "authorId": "2137341362",
+        "name": "Christoph Schuhmann"
+      },
+      {
+        "authorId": "152772922",
+        "name": "Ludwig Schmidt"
+      },
+      {
+        "authorId": "2191688",
+        "name": "J. Jitsev"
+      }
+    ],
+    "abstract": "Scaling up neural networks has led to remarkable performance across a wide range of tasks. Moreover, performance often follows reliable scaling laws as a function of training set size, model size, and compute, which offers valuable guidance as large-scale experiments are becoming increasingly expensive. However, previous work on scaling laws has primarily used private data & models or focused on uni-modal language or vision learning. To address these limitations, we investigate scaling laws for contrastive language-image pre-training (CLIP) with the public LAION dataset and the open-source OpenCLIP repository. Our large-scale experiments involve models trained on up to two billion image-text pairs and identify power law scaling for multiple downstream tasks including zero-shot classification, retrieval, linear probing, and end-to-end fine-tuning. We find that the training distribution plays a key role in scaling laws as the OpenAI and OpenCLIP models exhibit different scaling behavior despite identical model architectures and similar training recipes. We open-source our evaluation workflow and all models, including the largest public CLIP models, to ensure reproducibility and make scaling laws research more accessible. Source code and instructions to reproduce this study is available at https://github.eom/LAION-AI/sealing-laws-openelip.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ce90dd9e33d8e246f9632aa1c582ab80ed50ce51",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-17248",
+      "ArXiv": "2203.17248",
+      "DOI": "10.1109/CVPR52688.2022.01404",
+      "CorpusId": 247839431
+    },
+    "title": "Dual Temperature Helps Contrastive Learning Without Many Negative Samples: Towards Understanding and Simplifying MoCo",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 69,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2203.17248",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.17248, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31044159",
+        "name": "Chaoning Zhang"
+      },
+      {
+        "authorId": "2156564038",
+        "name": "Kang Zhang"
+      },
+      {
+        "authorId": "144429629",
+        "name": "T. Pham"
+      },
+      {
+        "authorId": "2046989921",
+        "name": "Axi Niu"
+      },
+      {
+        "authorId": "1808399758",
+        "name": "Zhinan Qiao"
+      },
+      {
+        "authorId": "2154412756",
+        "name": "C. D. Yoo"
+      },
+      {
+        "authorId": "145017151",
+        "name": "In-So Kweon"
+      }
+    ],
+    "abstract": "Contrastive learning (CL) is widely known to require many negative samples, 65536 in MoCo for instance, for which the performance of a dictionary-free framework is often inferior because the negative sample size (NSS) is limited by its mini-batch size (MBS). To decouple the NSS from the MBS, a dynamic dictionary has been adopted in a large volume of CL frameworks, among which arguably the most popular one is MoCo family. In essence, MoCo adopts a momentum-based queue dictionary, for which we perform a fine-grained analysis of its size and consistency. We point out that InfoNCE loss used in MoCo implicitly attract anchors to their corresponding positive sample with various strength of penalties and identify such inter-anchor hardness-awareness property as a major reason for the necessity of a large dictionary. Our findings motivate us to simplify MoCo v2 via the removal of its dictionary as well as momentum. Based on an InfoNCE with the proposed dual temperature, our simplified frameworks, Sim-MoCo and SimCo, outperform MoCo v2 by a visible margin. Moreover, our work bridges the gap between CL and non-CL frameworks, contributing to a more unified under-standing of these two mainstream frameworks in SSL. Code is available at: https://bit.ly/3LkQbaT.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5c72636582b0a429c8440e31defda76137ef2072",
+    "externalIds": {
+      "ArXiv": "2203.14713",
+      "DBLP": "conf/ijcai/CaoLLNZ22",
+      "DOI": "10.48550/arXiv.2203.14713",
+      "CorpusId": 247763152
+    },
+    "title": "Image-text Retrieval: A Survey on Recent Research and Development",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2022,
+    "citationCount": 116,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2203.14713",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.14713, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2057073120",
+        "name": "Min Cao"
+      },
+      {
+        "authorId": "2380572250",
+        "name": "Shiping Li"
+      },
+      {
+        "authorId": "2257093356",
+        "name": "Juntao Li"
+      },
+      {
+        "authorId": "143982887",
+        "name": "Liqiang Nie"
+      },
+      {
+        "authorId": "48985192",
+        "name": "Min Zhang"
+      }
+    ],
+    "abstract": "In the past few years, cross-modal image-text retrieval (ITR) has experienced increased interest in the research community due to its excellent research value and broad real-world application. It is designed for the scenarios where the queries are from one modality and the retrieval galleries from another modality. This paper presents a comprehensive and up-to-date survey on the ITR approaches from four perspectives. By dissecting an ITR system into two processes: feature extraction and feature alignment, we summarize the recent advance of the ITR approaches from these two perspectives. On top of this, the efficiency-focused study on the ITR system is introduced as the third perspective. To keep pace with the times, we also provide a pioneering overview of the cross-modal pre-training ITR approaches as the fourth perspective. Finally, we outline the common benchmark datasets and evaluation metric for ITR, and conduct the accuracy comparison among the representative ITR approaches. Some critical yet less studied issues are discussed at the end of the paper.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f229557011920c440b89f199d6fc334853092643",
+    "externalIds": {
+      "DBLP": "conf/icml/NavonSAMKCF22",
+      "ArXiv": "2202.01017",
+      "CorpusId": 246473259
+    },
+    "title": "Multi-Task Learning as a Bargaining Game",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 238,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.01017, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "90227282",
+        "name": "Aviv Navon"
+      },
+      {
+        "authorId": "1587627172",
+        "name": "Aviv Shamsian"
+      },
+      {
+        "authorId": "1452343136",
+        "name": "Idan Achituve"
+      },
+      {
+        "authorId": "2341437409",
+        "name": "Haggai Maron"
+      },
+      {
+        "authorId": "1392876047",
+        "name": "Kenji Kawaguchi"
+      },
+      {
+        "authorId": "1732280",
+        "name": "Gal Chechik"
+      },
+      {
+        "authorId": "2645055",
+        "name": "Ethan Fetaya"
+      }
+    ],
+    "abstract": "In Multi-task learning (MTL), a joint model is trained to simultaneously make predictions for several tasks. Joint training reduces computation costs and improves data efficiency; however, since the gradients of these different tasks may conflict, training a joint model for MTL often yields lower performance than its corresponding single-task counterparts. A common method for alleviating this issue is to combine per-task gradients into a joint update direction using a particular heuristic. In this paper, we propose viewing the gradients combination step as a bargaining game, where tasks negotiate to reach an agreement on a joint direction of parameter update. Under certain assumptions, the bargaining problem has a unique solution, known as the Nash Bargaining Solution, which we propose to use as a principled approach to multi-task learning. We describe a new MTL optimization procedure, Nash-MTL, and derive theoretical guarantees for its convergence. Empirically, we show that Nash-MTL achieves state-of-the-art results on multiple MTL benchmarks in various domains.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "760f807406272b5ede591f19241824f2d17c319a",
+    "externalIds": {
+      "ArXiv": "2109.09138",
+      "DBLP": "journals/corr/abs-2109-09138",
+      "DOI": "10.1145/3663363",
+      "CorpusId": 237571793
+    },
+    "title": "Multi-Task Learning in Natural Language Processing: An Overview",
+    "venue": "ACM Computing Surveys",
+    "year": 2021,
+    "citationCount": 199,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3663363",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.09138, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115939351",
+        "name": "Shijie Chen"
+      },
+      {
+        "authorId": "46867608",
+        "name": "Yu Zhang"
+      },
+      {
+        "authorId": "153096457",
+        "name": "Qiang Yang"
+      }
+    ],
+    "abstract": "Deep learning approaches have achieved great success in the field of Natural Language Processing (NLP). However, directly training deep neural models often suffer from overfitting and data scarcity problems that are pervasive in NLP tasks. In recent years, Multi-Task Learning (MTL), which can leverage useful information of related tasks to achieve simultaneous performance improvement on these tasks, has been used to handle these problems. In this article, we give an overview of the use of MTL in NLP tasks. We first review MTL architectures used in NLP tasks and categorize them into four classes, including parallel architecture, hierarchical architecture, modular architecture, and generative adversarial architecture. Then we present optimization techniques on loss construction, gradient regularization, data sampling, and task scheduling to properly train a multi-task model. After presenting applications of MTL in a variety of NLP tasks, we introduce some benchmark datasets. Finally, we make a conclusion and discuss several possible research directions in this field.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a8ca46b171467ceb2d7652fbfb67fe701ad86092",
+    "externalIds": {
+      "DBLP": "conf/iclr/HuSWALWWC22",
+      "ArXiv": "2106.09685",
+      "CorpusId": 235458009
+    },
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 18493,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.09685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2157840220",
+        "name": "J. Hu"
+      },
+      {
+        "authorId": "1752875",
+        "name": "Yelong Shen"
+      },
+      {
+        "authorId": "104100507",
+        "name": "Phillip Wallis"
+      },
+      {
+        "authorId": "1388725932",
+        "name": "Zeyuan Allen-Zhu"
+      },
+      {
+        "authorId": "2110486765",
+        "name": "Yuanzhi Li"
+      },
+      {
+        "authorId": "2135571585",
+        "name": "Shean Wang"
+      },
+      {
+        "authorId": "2109136147",
+        "name": "Weizhu Chen"
+      }
+    ],
+    "abstract": "An important paradigm of natural language processing consists of large-scale pre-training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full fine-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example -- deploying independent instances of fine-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre-trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable parameters for downstream tasks. Compared to GPT-3 175B fine-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than fine-tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite having fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deficiency in language model adaptation, which sheds light on the efficacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at https://github.com/microsoft/LoRA.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4",
+    "externalIds": {
+      "DBLP": "conf/icml/RadfordKHRGASAM21",
+      "ArXiv": "2103.00020",
+      "CorpusId": 231591445
+    },
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 47414,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.00020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2110935237",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "40087786",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "8d1369a218a39214d82ea77ff964570eca057c15",
+    "externalIds": {
+      "ArXiv": "2101.06983",
+      "DBLP": "conf/rep4nlp/GaoZHC21",
+      "ACL": "2021.repl4nlp-1.31",
+      "DOI": "10.18653/v1/2021.repl4nlp-1.31",
+      "CorpusId": 235422120
+    },
+    "title": "Scaling Deep Contrastive Learning Batch Size under Memory Limited Setup",
+    "venue": "Workshop on Representation Learning for NLP",
+    "year": 2021,
+    "citationCount": 157,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.repl4nlp-1.31.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.06983, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49715441",
+        "name": "Luyu Gao"
+      },
+      {
+        "authorId": "48379289",
+        "name": "Yunyi Zhang"
+      },
+      {
+        "authorId": "153034701",
+        "name": "Jiawei Han"
+      },
+      {
+        "authorId": "144987107",
+        "name": "Jamie Callan"
+      }
+    ],
+    "abstract": "Contrastive learning has been applied successfully to learn vector representations of text. Previous research demonstrated that learning high-quality representations benefits from batch-wise contrastive loss with a large number of negatives. In practice, the technique of in-batch negative is used, where for each example in a batch, other batch examples’ positives will be taken as its negatives, avoiding encoding extra negatives. This, however, still conditions each example’s loss on all batch examples and requires fitting the entire large batch into GPU memory. This paper introduces a gradient caching technique that decouples backpropagation between contrastive loss and the encoder, removing encoder backward pass data dependency along the batch dimension. As a result, gradients can be computed for one subset of the batch at a time, leading to almost constant memory usage.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7097137596f6755675f6aafcdd80969a747322ae",
+    "externalIds": {
+      "MAG": "3091940082",
+      "DBLP": "conf/iclr/RobinsonCSJ21",
+      "ArXiv": "2010.04592",
+      "CorpusId": 222272463
+    },
+    "title": "Contrastive Learning with Hard Negative Samples",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 994,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.04592, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4594310",
+        "name": "Joshua Robinson"
+      },
+      {
+        "authorId": "8551209",
+        "name": "Ching-Yao Chuang"
+      },
+      {
+        "authorId": "3072326",
+        "name": "S. Sra"
+      },
+      {
+        "authorId": "2594093",
+        "name": "S. Jegelka"
+      }
+    ],
+    "abstract": "How can you sample good negative examples for contrastive learning? We argue that, as with metric learning, contrastive learning of representations benefits from hard negative samples (i.e., points that are difficult to distinguish from an anchor point). The key challenge toward using hard negatives is that contrastive methods must remain unsupervised, making it infeasible to adopt existing negative sampling strategies that use true similarity information. In response, we develop a new family of unsupervised sampling methods for selecting hard negative samples where the user can control the hardness. A limiting case of this sampling results in a representation that tightly clusters each class, and pushes different classes as far apart as possible. The proposed method improves downstream performance across multiple modalities, requires only few additional lines of code to implement, and introduces no computational overhead.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "87b008a6289fa22c72e1726a8929e815dfbbc65f",
+    "externalIds": {
+      "DBLP": "conf/nips/KalantidisSPWL20",
+      "ArXiv": "2010.01028",
+      "MAG": "3090114880",
+      "CorpusId": 222124996
+    },
+    "title": "Hard Negative Mixing for Contrastive Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 748,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.01028, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1944225",
+        "name": "Yannis Kalantidis"
+      },
+      {
+        "authorId": "1413822807",
+        "name": "Mert Bulent Sariyildiz"
+      },
+      {
+        "authorId": "147699085",
+        "name": "No'e Pion"
+      },
+      {
+        "authorId": "2492127",
+        "name": "Philippe Weinzaepfel"
+      },
+      {
+        "authorId": "2295553",
+        "name": "Diane Larlus"
+      }
+    ],
+    "abstract": "Contrastive learning has become a key component of self-supervised learning approaches for computer vision. By learning to embed two augmented versions of the same image close to each other and to push the embeddings of different images apart, one can train highly transferable visual representations. As revealed by recent studies, heavy data augmentation and large sets of negatives are both crucial in learning such representations. At the same time, data mixing strategies either at the image or the feature level improve both supervised and semi-supervised learning by synthesizing novel examples, forcing networks to learn more robust features. In this paper, we argue that an important aspect of contrastive learning, i.e., the effect of hard negatives, has so far been neglected. To get more meaningful negative samples, current top contrastive self-supervised learning approaches either substantially increase the batch sizes, or keep very large memory banks; increasing the memory size, however, leads to diminishing returns in terms of performance. We therefore start by delving deeper into a top-performing framework and show evidence that harder negatives are needed to facilitate better and faster learning. Based on these observations, and motivated by the success of data mixing, we propose hard negative mixing strategies at the feature level, that can be computed on-the-fly with a minimal computational overhead. We exhaustively ablate our approach on linear classification, object detection and instance segmentation and show that employing our hard negative mixing procedure improves the quality of visual representations learned by a state-of-the-art self-supervised learning method.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7af72a461ed7cda180e7eab878efd5f35d79bbf4",
+    "externalIds": {
+      "DBLP": "conf/icml/ChenK0H20",
+      "MAG": "3034978746",
+      "ArXiv": "2002.05709",
+      "CorpusId": 211096730
+    },
+    "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 23919,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.05709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145358498",
+        "name": "Ting Chen"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed contrastive self-supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by SimCLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of-the-art, matching the performance of a supervised ResNet-50. When fine-tuned on only 1% of the labels, we achieve 85.8% top-5 accuracy, outperforming AlexNet with 100X fewer labels.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "449c5660d637741f7aa7ff42549c32b43c9968bf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2001-06782",
+      "MAG": "2997359900",
+      "ArXiv": "2001.06782",
+      "CorpusId": 210839011
+    },
+    "title": "Gradient Surgery for Multi-Task Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 1743,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.06782, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10909315",
+        "name": "Tianhe Yu"
+      },
+      {
+        "authorId": "2121434953",
+        "name": "Saurabh Kumar"
+      },
+      {
+        "authorId": "2129458064",
+        "name": "Abhishek Gupta"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1944801",
+        "name": "Karol Hausman"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While deep learning and deep reinforcement learning (RL) systems have demonstrated impressive results in domains such as image classification, game playing, and robotic control, data efficiency remains a major challenge. Multi-task learning has emerged as a promising approach for sharing structure across multiple tasks to enable more efficient learning. However, the multi-task setting presents a number of optimization challenges, making it difficult to realize large efficiency gains compared to learning tasks independently. The reasons why multi-task learning is so challenging compared to single-task learning are not fully understood. In this work, we identify a set of three conditions of the multi-task optimization landscape that cause detrimental gradient interference, and develop a simple yet general approach for avoiding such interference between task gradients. We propose a form of gradient surgery that projects a task's gradient onto the normal plane of the gradient of any other task that has a conflicting gradient. On a series of challenging multi-task supervised and multi-task RL problems, this approach leads to substantial gains in efficiency and performance. Further, it is model-agnostic and can be combined with previously-proposed multi-task architectures for enhanced performance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "43a3caf942684aa7a354a12c0dc4bfbba50c563d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1911-12423",
+      "ArXiv": "1911.12423",
+      "MAG": "2991309414",
+      "CorpusId": 208513386
+    },
+    "title": "AdaShare: Learning What To Share For Efficient Deep Multi-Task Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 313,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.12423, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46793780",
+        "name": "Ximeng Sun"
+      },
+      {
+        "authorId": "1819152",
+        "name": "Rameswar Panda"
+      },
+      {
+        "authorId": "1723233",
+        "name": "R. Feris"
+      }
+    ],
+    "abstract": "Multi-task learning is an open and challenging problem in computer vision. The typical way of conducting multi-task learning with deep neural networks is either through handcrafting schemes that share all initial layers and branch out at an adhoc point or through using separate task-specific networks with an additional feature sharing/fusion mechanism. Unlike existing methods, we propose an adaptive sharing approach, called AdaShare, that decides what to share across which tasks for achieving the best recognition accuracy, while taking resource efficiency into account. Specifically, our main idea is to learn the sharing pattern through a task-specific policy that selectively chooses which layers to execute for a given task in the multi-task network. We efficiently optimize the task-specific policy jointly with the network weights using standard back-propagation. Experiments on three challenging and diverse benchmark datasets with a variable number of tasks well demonstrate the efficacy of our approach over state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "add2f205338d70e10ce5e686df4a690e2851bdfc",
+    "externalIds": {
+      "DBLP": "conf/cvpr/He0WXG20",
+      "MAG": "2987283559",
+      "ArXiv": "1911.05722",
+      "DOI": "10.1109/cvpr42600.2020.00975",
+      "CorpusId": 207930212
+    },
+    "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 14728,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1911.05722",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.05722, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "146884473",
+        "name": "Haoqi Fan"
+      },
+      {
+        "authorId": "98264506",
+        "name": "Yuxin Wu"
+      },
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We present Momentum Contrast (MoCo) for unsupervised visual representation learning. From a perspective on contrastive learning as dictionary look-up, we build a dynamic dictionary with a queue and a moving-averaged encoder. This enables building a large and consistent dictionary on-the-fly that facilitates contrastive unsupervised learning. MoCo provides competitive results under the common linear protocol on ImageNet classification. More importantly, the representations learned by MoCo transfer well to downstream tasks. MoCo can outperform its supervised pre-training counterpart in 7 detection/segmentation tasks on PASCAL VOC, COCO, and other datasets, sometimes surpassing it by large margins. This suggests that the gap between unsupervised and supervised representation learning has been largely closed in many vision tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b227f3e4c0dc96e5ac5426b85485a70f2175a205",
+    "externalIds": {
+      "ArXiv": "1807.03748",
+      "MAG": "2842511635",
+      "DBLP": "journals/corr/abs-1807-03748",
+      "CorpusId": 49670925
+    },
+    "title": "Representation Learning with Contrastive Predictive Coding",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 13061,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.03748, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422336",
+        "name": "Aäron van den Oord"
+      },
+      {
+        "authorId": "2144417088",
+        "name": "Yazhe Li"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      }
+    ],
+    "abstract": "While supervised learning has enabled great progress in many applications, unsupervised learning has not seen such widespread adoption, and remains an important and challenging endeavor for artificial intelligence. In this work, we propose a universal unsupervised learning approach to extract useful representations from high-dimensional data, which we call Contrastive Predictive Coding. The key insight of our model is to learn such representations by predicting the future in latent space by using powerful autoregressive models. We use a probabilistic contrastive loss which induces the latent space to capture information that is maximally useful to predict future samples. It also makes the model tractable by using negative sampling. While most prior work has focused on evaluating representations for a particular modality, we demonstrate that our approach is able to learn useful representations achieving strong performance on four distinct domains: speech, images, text and reinforcement learning in 3D environments.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "582157494d72dd28dc28172f04dfd5f25fb17bff",
+    "externalIds": {
+      "ArXiv": "1711.02257",
+      "MAG": "2949139602",
+      "DBLP": "conf/icml/ChenBLR18",
+      "CorpusId": 4703661
+    },
+    "title": "GradNorm: Gradient Normalization for Adaptive Loss Balancing in Deep Multitask Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 1760,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.02257, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111606331",
+        "name": "Zhao Chen"
+      },
+      {
+        "authorId": "2442177",
+        "name": "Vijay Badrinarayanan"
+      },
+      {
+        "authorId": "50521003",
+        "name": "Chen-Yu Lee"
+      },
+      {
+        "authorId": "39863668",
+        "name": "A. Rabinovich"
+      }
+    ],
+    "abstract": "Deep multitask networks, in which one neural network produces multiple predictive outputs, can offer better speed and performance than their single-task counterparts but are challenging to train properly. We present a gradient normalization (GradNorm) algorithm that automatically balances training in deep multitask models by dynamically tuning gradient magnitudes. We show that for various network architectures, for both regression and classification tasks, and on both synthetic and real datasets, GradNorm improves accuracy and reduces overfitting across multiple tasks when compared to single-task networks, static baselines, and other adaptive multitask loss balancing techniques. GradNorm also matches or surpasses the performance of exhaustive grid search methods, despite only involving a single asymmetry hyperparameter $\\alpha$. Thus, what was once a tedious search process that incurred exponentially more compute for each task added can now be accomplished within a few training runs, irrespective of the number of tasks. Ultimately, we will demonstrate that gradient manipulation affords us great control over the training dynamics of multitask networks and may be one of the keys to unlocking the potential of multitask learning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7ad66cba3b7e3abae7ef33122588512a146f7f77",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhangY17aa",
+      "ArXiv": "1707.08114",
+      "MAG": "3141797743",
+      "DOI": "10.1109/TKDE.2021.3070203",
+      "CorpusId": 11311635
+    },
+    "title": "A Survey on Multi-Task Learning",
+    "venue": "IEEE Transactions on Knowledge and Data Engineering",
+    "year": 2017,
+    "citationCount": 2848,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1707.08114",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.08114, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46867608",
+        "name": "Yu Zhang"
+      },
+      {
+        "authorId": "152290618",
+        "name": "Qiang Yang"
+      }
+    ],
+    "abstract": "Multi-Task Learning (MTL) is a learning paradigm in machine learning and its aim is to leverage useful information contained in multiple related tasks to help improve the generalization performance of all the tasks. In this paper, we give a survey for MTL from the perspective of algorithmic modeling, applications and theoretical analyses. For algorithmic modeling, we give a definition of MTL and then classify different MTL algorithms into five categories, including feature learning approach, low-rank approach, task clustering approach, task relation learning approach and decomposition approach as well as discussing the characteristics of each approach. In order to improve the performance of learning tasks further, MTL can be combined with other learning paradigms including semi-supervised learning, active learning, unsupervised learning, reinforcement learning, multi-view learning and graphical models. When the number of tasks is large or the data dimensionality is high, we review online, parallel and distributed MTL models as well as dimensionality reduction and feature hashing to reveal their computational and storage advantages. Many real-world applications use MTL to boost their performance and we review representative works in this paper. Finally, we present theoretical analyses and discuss several future directions for MTL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2976605dc3b73377696537291d45f09f1ab1fbf5",
+    "externalIds": {
+      "DBLP": "conf/cvpr/MisraSGH16",
+      "MAG": "2963877604",
+      "ArXiv": "1604.03539",
+      "DOI": "10.1109/CVPR.2016.433",
+      "CorpusId": 1923223
+    },
+    "title": "Cross-Stitch Networks for Multi-task Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 1523,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1604.03539",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1604.03539, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1806773",
+        "name": "Ishan Misra"
+      },
+      {
+        "authorId": "1781242",
+        "name": "Abhinav Shrivastava"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      },
+      {
+        "authorId": "145670946",
+        "name": "M. Hebert"
+      }
+    ],
+    "abstract": "Multi-task learning in Convolutional Networks has displayed remarkable success in the field of recognition. This success can be largely attributed to learning shared representations from multiple supervisory tasks. However, existing multi-task approaches rely on enumerating multiple network architectures specific to the tasks at hand, that do not generalize. In this paper, we propose a principled approach to learn shared representations in ConvNets using multitask learning. Specifically, we propose a new sharing unit: \"cross-stitch\" unit. These units combine the activations from multiple networks and can be trained end-to-end. A network with cross-stitch units can learn an optimal combination of shared and task-specific representations. Our proposed method generalizes across multiple tasks and shows dramatically improved performance over baseline methods for categories with few training examples.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e11b2403a0b8ad3b4a747ce6fc915a8aee04eb6b",
+    "externalIds": {
+      "MAG": "2478431269",
+      "DBLP": "reference/stat/Jolliffe11",
+      "DOI": "10.1007/978-0-387-30164-8_665",
+      "CorpusId": 2534141
+    },
+    "title": "Principal Component Analysis",
+    "venue": "Encyclopedia of Machine Learning",
+    "year": 2003,
+    "citationCount": 28855,
+    "openAccessPdf": {
+      "url": "https://pure.uva.nl/ws/files/2456924/153644_Principal_component_analysis.pdf",
+      "status": "CLOSED",
+      "license": "CCBYNC",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-0-387-30164-8_665?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-0-387-30164-8_665, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1723515",
+        "name": "I. Jolliffe"
+      }
+    ],
+    "abstract": "Principal component analysis is one of the most important and powerful methods in chemometrics as well as in a wealth of other areas. This paper provides a description of how to understand, use, and interpret principal component analysis. The paper focuses on the use of principal component analysis in typical chemometric areas but the results are generally applicable.",
+    "_is_influential": true,
+    "_intents": []
+  }
+]

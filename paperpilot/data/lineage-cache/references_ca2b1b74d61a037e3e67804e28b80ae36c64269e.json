@@ -1,0 +1,2296 @@
+[
+  {
+    "paperId": "51ac59fa39e934347216b35da5e6aa292b4b5d59",
+    "externalIds": {
+      "MAG": "2982049331",
+      "DBLP": "conf/iccv/RavichandranBS19",
+      "ArXiv": "1905.04398",
+      "DOI": "10.1109/ICCV.2019.00042",
+      "CorpusId": 152282585
+    },
+    "title": "Few-Shot Learning With Embedded Class Models and Shot-Free Meta Training",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 190,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1905.04398",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.04398, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2529423",
+        "name": "Avinash Ravichandran"
+      },
+      {
+        "authorId": "3243878",
+        "name": "Rahul Bhotika"
+      },
+      {
+        "authorId": "1715959",
+        "name": "Stefano Soatto"
+      }
+    ],
+    "abstract": "We propose a method for learning embeddings for few-shot learning that is suitable for use with any number of shots (shot-free). Rather than fixing the class prototypes to be the Euclidean average of sample embeddings, we allow them to live in a higher-dimensional space (embedded class models) and learn the prototypes along with the model parameters. The class representation function is defined implicitly, which allows us to deal with a variable number of shots per class with a simple constant-size architecture. The class embedding encompasses metric learning, that facilitates adding new classes without crowding the class representation space. Despite being general and not tuned to the benchmark, our approach achieves state-of-the-art performance on the standard few-shot benchmark datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9d5ec23154fb278a765f47ba5ee5150bd441d0de",
+    "externalIds": {
+      "MAG": "2911906319",
+      "DBLP": "conf/iclr/ChenLKWH19",
+      "ArXiv": "1904.04232",
+      "CorpusId": 102351185
+    },
+    "title": "A Closer Look at Few-shot Classification",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 1967,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.04232, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109964068",
+        "name": "Wei-Yu Chen"
+      },
+      {
+        "authorId": "2108334170",
+        "name": "Yen-Cheng Liu"
+      },
+      {
+        "authorId": "145276578",
+        "name": "Z. Kira"
+      },
+      {
+        "authorId": "2108898473",
+        "name": "Y. Wang"
+      },
+      {
+        "authorId": "3068086",
+        "name": "Jia-Bin Huang"
+      }
+    ],
+    "abstract": "Few-shot classification aims to learn a classifier to recognize unseen classes during training with limited labeled examples. While significant progress has been made, the growing complexity of network designs, meta-learning algorithms, and differences in implementation details make a fair comparison difficult. In this paper, we present 1) a consistent comparative analysis of several representative few-shot classification algorithms, with results showing that deeper backbones significantly reduce the performance differences among methods on datasets with limited domain differences, 2) a modified baseline method that surprisingly achieves competitive performance when compared with the state-of-the-art on both the \\miniI and the CUB datasets, and 3) a new experimental setting for evaluating the cross-domain generalization ability for few-shot classification algorithms. Our results reveal that reducing intra-class variation is an important factor when the feature backbone is shallow, but not as critical when using deeper backbones. In a realistic cross-domain evaluation setting, we show that a baseline method with a standard fine-tuning practice compares favorably against other state-of-the-art few-shot learning algorithms.",
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "fc437af6204008647ea49f81058d5fdaddf75ead",
+    "externalIds": {
+      "MAG": "2963070905",
+      "DBLP": "journals/corr/abs-1904-03758",
+      "ArXiv": "1904.03758",
+      "DOI": "10.1109/CVPR.2019.01091",
+      "CorpusId": 102351194
+    },
+    "title": "Meta-Learning With Differentiable Convex Optimization",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 1423,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.03758",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.03758, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2668978",
+        "name": "Kwonjoon Lee"
+      },
+      {
+        "authorId": "35208858",
+        "name": "Subhransu Maji"
+      },
+      {
+        "authorId": "2529423",
+        "name": "Avinash Ravichandran"
+      },
+      {
+        "authorId": "1715959",
+        "name": "Stefano Soatto"
+      }
+    ],
+    "abstract": "Many meta-learning approaches for few-shot learning rely on simple base learners such as nearest-neighbor classifiers. However, even in the few-shot regime, discriminatively trained linear predictors can offer better generalization. We propose to use these predictors as base learners to learn representations for few-shot learning and show they offer better tradeoffs between feature size and performance across a range of few-shot recognition benchmarks. Our objective is to learn feature embeddings that generalize well under a linear classification rule for novel categories. To efficiently solve the objective, we exploit two properties of linear classifiers: implicit differentiation of the optimality conditions of the convex problem and the dual formulation of the optimization problem. This allows us to use high-dimensional embeddings with improved generalization at a modest increase in computational overhead. Our approach, named MetaOptNet, achieves state-of-the-art performance on miniImageNet, tieredImageNet, CIFAR-FS, and FC100 few-shot learning benchmarks.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "c5875654fecca84e61a7287b8fbf30d4caccada6",
+    "externalIds": {
+      "MAG": "2995253937",
+      "DBLP": "conf/iclr/TriantafillouZD20",
+      "ArXiv": "1903.03096",
+      "CorpusId": 71145737
+    },
+    "title": "Meta-Dataset: A Dataset of Datasets for Learning to Learn from Few Examples",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 690,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1903.03096, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064782825",
+        "name": "Eleni Triantafillou"
+      },
+      {
+        "authorId": "8791781",
+        "name": "Tyler Lixuan Zhu"
+      },
+      {
+        "authorId": "3074927",
+        "name": "Vincent Dumoulin"
+      },
+      {
+        "authorId": "3087941",
+        "name": "Pascal Lamblin"
+      },
+      {
+        "authorId": "36303818",
+        "name": "Kelvin Xu"
+      },
+      {
+        "authorId": "2558463",
+        "name": "Ross Goroshin"
+      },
+      {
+        "authorId": "52382152",
+        "name": "Carles Gelada"
+      },
+      {
+        "authorId": "1754860",
+        "name": "Kevin Swersky"
+      },
+      {
+        "authorId": "1798462",
+        "name": "Pierre-Antoine Manzagol"
+      },
+      {
+        "authorId": "1777528",
+        "name": "H. Larochelle"
+      }
+    ],
+    "abstract": "Few-shot classification refers to learning a classifier for new classes given only a few examples. While a plethora of models have emerged to tackle it, we find the procedure and datasets that are used to assess their progress lacking. To address this limitation, we propose Meta-Dataset: a new benchmark for training and evaluating models that is large-scale, consists of diverse datasets, and presents more realistic tasks. We experiment with popular baselines and meta-learners on Meta-Dataset, along with a competitive method that we propose. We analyze performance as a function of various characteristics of test tasks and examine the models' ability to leverage diverse training sources for improving their generalization. We also propose a new set of baselines for quantifying the benefit of meta-learning in Meta-Dataset. Our extensive experimentation has uncovered important research challenges and we hope to inspire work in these directions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1bf49ef0b33bf8fcc3ebdd16326db419f3af65d8",
+    "externalIds": {
+      "ArXiv": "1902.01889",
+      "DBLP": "conf/icml/FrosstPH19",
+      "MAG": "2914217871",
+      "CorpusId": 59606338
+    },
+    "title": "Analyzing and Improving Representations with the Soft Nearest Neighbor Loss",
+    "venue": "International Conference on Machine Learning",
+    "year": 2019,
+    "citationCount": 184,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1902.01889, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "27737461",
+        "name": "Nicholas Frosst"
+      },
+      {
+        "authorId": "2354181142",
+        "name": "Nicolas Papernot"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "We explore and expand the $\\textit{Soft Nearest Neighbor Loss}$ to measure the $\\textit{entanglement}$ of class manifolds in representation space: i.e., how close pairs of points from the same class are relative to pairs of points from different classes. We demonstrate several use cases of the loss. As an analytical tool, it provides insights into the evolution of class similarity structures during learning. Surprisingly, we find that $\\textit{maximizing}$ the entanglement of representations of different classes in the hidden layers is beneficial for discrimination in the final layer, possibly because it encourages representations to identify class-independent similarity structures. Maximizing the soft nearest neighbor loss in the hidden layers leads not only to improved generalization but also to better-calibrated estimates of uncertainty on outlier data. Data that is not from the training distribution can be recognized by observing that in the hidden layers, it has fewer than the normal number of neighbors from the predicted class.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "29309743870c825f9645a4803af727402462e513",
+    "externalIds": {
+      "ArXiv": "1812.01187",
+      "MAG": "2963855133",
+      "DBLP": "conf/cvpr/HeZ0ZXL19",
+      "DOI": "10.1109/CVPR.2019.00065",
+      "CorpusId": 54445469
+    },
+    "title": "Bag of Tricks for Image Classification with Convolutional Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1578,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1812.01187",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.01187, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118328320",
+        "name": "Tong He"
+      },
+      {
+        "authorId": "2117991985",
+        "name": "Zhi Zhang"
+      },
+      {
+        "authorId": "2119077209",
+        "name": "Hang Zhang"
+      },
+      {
+        "authorId": "48806269",
+        "name": "Zhongyue Zhang"
+      },
+      {
+        "authorId": "2369548",
+        "name": "Junyuan Xie"
+      },
+      {
+        "authorId": "2112143972",
+        "name": "Mu Li"
+      }
+    ],
+    "abstract": "Much of the recent progress made in image classification research can be credited to training procedure refinements, such as changes in data augmentations and optimization methods. In the literature, however, most refinements are either briefly mentioned as implementation details or only visible in source code. In this paper, we will examine a collection of such refinements and empirically evaluate their impact on the final model accuracy through ablation study. We will show that, by combining these refinements together, we are able to improve various CNN models significantly. For example, we raise ResNet-50's top-1 validation accuracy from 75.3% to 79.29% on ImageNet. We will also demonstrate that improvement on image classification accuracy leads to better transfer learning performance in other application domains such as object detection and semantic segmentation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8dcfee00fc41e5b99976b82238fb1952b9462527",
+    "externalIds": {
+      "MAG": "2906656621",
+      "CorpusId": 126558186
+    },
+    "title": "Variadic Learning by Bayesian Nonparametric Deep Embedding",
+    "venue": "",
+    "year": 2018,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "145254624",
+        "name": "Kelsey R. Allen"
+      },
+      {
+        "authorId": "13574658",
+        "name": "Hanul Shin"
+      },
+      {
+        "authorId": "1782282",
+        "name": "Evan Shelhamer"
+      },
+      {
+        "authorId": "1763295",
+        "name": "J. Tenenbaum"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a82fc0115c1802d48d352b35595204738fad84f0",
+    "externalIds": {
+      "MAG": "2884711234",
+      "DBLP": "journals/corr/abs-1807-11205",
+      "ArXiv": "1807.11205",
+      "CorpusId": 51876267
+    },
+    "title": "Highly Scalable Deep Learning Training System with Mixed-Precision: Training ImageNet in Four Minutes",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 420,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.11205, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3440541",
+        "name": "Xianyan Jia"
+      },
+      {
+        "authorId": "2110601039",
+        "name": "Shutao Song"
+      },
+      {
+        "authorId": "48692318",
+        "name": "W. He"
+      },
+      {
+        "authorId": "1772360",
+        "name": "Yangzihao Wang"
+      },
+      {
+        "authorId": "51151596",
+        "name": "Haidong Rong"
+      },
+      {
+        "authorId": "2087081163",
+        "name": "Feihu Zhou"
+      },
+      {
+        "authorId": "2088380215",
+        "name": "Liqiang Xie"
+      },
+      {
+        "authorId": "145181674",
+        "name": "Zhenyu Guo"
+      },
+      {
+        "authorId": "2108828331",
+        "name": "Yuan Yang"
+      },
+      {
+        "authorId": "2382319645",
+        "name": "Liwei Yu"
+      },
+      {
+        "authorId": "2411285491",
+        "name": "Tiegang Chen"
+      },
+      {
+        "authorId": "51149410",
+        "name": "Guangxiao Hu"
+      },
+      {
+        "authorId": "2268704",
+        "name": "S. Shi"
+      },
+      {
+        "authorId": "1680596",
+        "name": "Xiaowen Chu"
+      }
+    ],
+    "abstract": "Synchronized stochastic gradient descent (SGD) optimizers with data parallelism are widely used in training large-scale deep neural networks. Although using larger mini-batch sizes can improve the system scalability by reducing the communication-to-computation ratio, it may hurt the generalization ability of the models. To this end, we build a highly scalable deep learning training system for dense GPU clusters with three main contributions: (1) We propose a mixed-precision training method that significantly improves the training throughput of a single GPU without losing accuracy. (2) We propose an optimization approach for extremely large mini-batch size (up to 64k) that can train CNN models on the ImageNet dataset without losing accuracy. (3) We propose highly optimized all-reduce algorithms that achieve up to 3x and 11x speedup on AlexNet and ResNet-50 respectively than NCCL-based training on a cluster with 1024 Tesla P40 GPUs. On training ResNet-50 with 90 epochs, the state-of-the-art GPU-based system with 1024 Tesla P100 GPUs spent 15 minutes and achieved 74.9\\% top-1 test accuracy, and another KNL-based system with 2048 Intel KNLs spent 20 minutes and achieved 75.4\\% accuracy. Our training system can achieve 75.8\\% top-1 test accuracy in only 6.6 minutes using 2048 Tesla P40 GPUs. When training AlexNet with 95 epochs, our system can achieve 58.7\\% top-1 test accuracy within 4 minutes, which also outperforms all other existing systems.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "04f739a0c29b75877243731aeead512bf0ed1dff",
+    "externalIds": {
+      "MAG": "2884901161",
+      "DBLP": "journals/corr/abs-1807-05960",
+      "ArXiv": "1807.05960",
+      "CorpusId": 49868626
+    },
+    "title": "Meta-Learning with Latent Embedding Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 1502,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.05960, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2228824",
+        "name": "Andrei A. Rusu"
+      },
+      {
+        "authorId": "143668237",
+        "name": "Dushyant Rao"
+      },
+      {
+        "authorId": "3407592",
+        "name": "Jakub Sygnowski"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "1996134",
+        "name": "Razvan Pascanu"
+      },
+      {
+        "authorId": "2217144",
+        "name": "Simon Osindero"
+      },
+      {
+        "authorId": "2315504",
+        "name": "R. Hadsell"
+      }
+    ],
+    "abstract": "Gradient-based meta-learning techniques are both widely applicable and proficient at solving challenging few-shot learning and fast adaptation problems. However, they have practical difficulties when operating on high-dimensional parameter spaces in extreme low-data regimes. We show that it is possible to bypass these limitations by learning a data-dependent latent generative representation of model parameters, and performing gradient-based meta-learning in this low-dimensional latent space. The resulting approach, latent embedding optimization (LEO), decouples the gradient-based adaptation procedure from the underlying high-dimensional space of model parameters. Our evaluation shows that LEO can achieve state-of-the-art performance on the competitive miniImageNet and tieredImageNet few-shot classification tasks. Further analysis indicates LEO is able to capture uncertainty in the data, and can perform adaptation more effectively by optimizing in latent space.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "a3d7257cf0ba5c501d2f6b8ddab931bcd588dfbf",
+    "externalIds": {
+      "MAG": "2895671740",
+      "ArXiv": "1805.10002",
+      "DBLP": "conf/iclr/LiuLPKYHY19",
+      "CorpusId": 52912260
+    },
+    "title": "Learning to Propagate Labels: Transductive Propagation Network for Few-Shot Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 746,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.10002, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "11322933",
+        "name": "Yanbin Liu"
+      },
+      {
+        "authorId": "2108550899",
+        "name": "Juho Lee"
+      },
+      {
+        "authorId": "144568677",
+        "name": "Minseop Park"
+      },
+      {
+        "authorId": "1898376",
+        "name": "Saehoon Kim"
+      },
+      {
+        "authorId": "1720494",
+        "name": "Eunho Yang"
+      },
+      {
+        "authorId": "2110796623",
+        "name": "S. Hwang"
+      },
+      {
+        "authorId": "2048438762",
+        "name": "Yi Yang"
+      }
+    ],
+    "abstract": "The goal of few-shot learning is to learn a classifier that generalizes well even when trained with a limited number of training instances per class. The recently introduced meta-learning approaches tackle this problem by learning a generic classifier across a large number of multiclass classification tasks and generalizing the model to a new task. Yet, even with such meta-learning, the low-data problem in the novel classification task still remains. In this paper, we propose Transductive Propagation Network (TPN), a novel meta-learning framework for transductive inference that classifies the entire test set at once to alleviate the low-data problem. Specifically, we propose to learn to propagate labels from labeled instances to unlabeled test instances, by learning a graph construction module that exploits the manifold structure in the data. TPN jointly learns both the parameters of feature embedding and the graph construction in an end-to-end manner. We validate TPN on multiple benchmark datasets, on which it largely outperforms existing few-shot learning approaches and achieves the state-of-the-art results.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9df950fd79304000dfd23c7c497e8912a613027c",
+    "externalIds": {
+      "MAG": "2803570443",
+      "DBLP": "journals/corr/abs-1805-10002",
+      "CorpusId": 125964525
+    },
+    "title": "Transductive Propagation Network for Few-shot Learning",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 81,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2108078469",
+        "name": "Yanbin Liu"
+      },
+      {
+        "authorId": "2108550899",
+        "name": "Juho Lee"
+      },
+      {
+        "authorId": "144568677",
+        "name": "Minseop Park"
+      },
+      {
+        "authorId": "1898376",
+        "name": "Saehoon Kim"
+      },
+      {
+        "authorId": "2048438762",
+        "name": "Yi Yang"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e6a83abec5cffb0bf1669f2f2c1efdf2b15cb171",
+    "externalIds": {
+      "MAG": "2962723986",
+      "ArXiv": "1805.10123",
+      "DBLP": "journals/corr/abs-1805-10123",
+      "CorpusId": 44061218
+    },
+    "title": "TADAM: Task dependent adaptive metric for improved few-shot learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 1469,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.10123, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3313242",
+        "name": "Boris N. Oreshkin"
+      },
+      {
+        "authorId": "117849477",
+        "name": "Pau Rodríguez López"
+      },
+      {
+        "authorId": "8651990",
+        "name": "Alexandre Lacoste"
+      }
+    ],
+    "abstract": "Few-shot learning has become essential for producing models that generalize from few examples. In this work, we identify that metric scaling and metric task conditioning are important to improve the performance of few-shot algorithms. Our analysis reveals that simple metric scaling completely changes the nature of few-shot algorithm parameter updates. Metric scaling provides improvements up to 14% in accuracy for certain metrics on the mini-Imagenet 5-way 5-shot classification task. We further propose a simple and effective way of conditioning a learner on the task sample set, resulting in learning a task-dependent metric space. Moreover, we propose and empirically test a practical end-to-end optimization procedure based on auxiliary task co-training to learn a task-dependent metric space. The resulting few-shot learning model based on the task-dependent scaled metric achieves state of the art on mini-Imagenet. We confirm these results on another few-shot dataset that we introduce in this paper based on CIFAR100. Our code is publicly available at this https URL.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "208cd4b25768f0096fb2e80e7690473da0e2a563",
+    "externalIds": {
+      "MAG": "2952292344",
+      "ArXiv": "1805.08136",
+      "DBLP": "journals/corr/abs-1805-08136",
+      "CorpusId": 29153681
+    },
+    "title": "Meta-learning with differentiable closed-form solvers",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 1051,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.08136, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2271057",
+        "name": "Luca Bertinetto"
+      },
+      {
+        "authorId": "143848064",
+        "name": "João F. Henriques"
+      },
+      {
+        "authorId": "143635540",
+        "name": "Philip H. S. Torr"
+      },
+      {
+        "authorId": "1687524",
+        "name": "A. Vedaldi"
+      }
+    ],
+    "abstract": "Adapting deep networks to new concepts from a few examples is challenging, due to the high computational requirements of standard fine-tuning procedures. Most work on few-shot learning has thus focused on simple learning techniques for adaptation, such as nearest neighbours or gradient descent. Nonetheless, the machine learning literature contains a wealth of methods that learn non-deep models very efficiently. In this paper, we propose to use these fast convergent methods as the main adaptation mechanism for few-shot learning. The main idea is to teach a deep network to use standard machine learning tools, such as ridge regression, as part of its own internal model, enabling it to quickly adapt to novel data. This requires back-propagating errors through the solver steps. While normally the cost of the matrix operations involved in such a process would be significant, by using the Woodbury identity we can make the small number of examples work to our advantage. We propose both closed-form and iterative solvers, based on ridge regression and logistic regression components. Our methods constitute a simple and novel approach to the problem of few-shot learning and achieve performance competitive with or superior to the state of the art on three benchmarks.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a40f97770296c7fca2e5361cbceba3f4aae399e0",
+    "externalIds": {
+      "MAG": "2798836702",
+      "DBLP": "journals/corr/abs-1804-09458",
+      "ArXiv": "1804.09458",
+      "DOI": "10.1109/CVPR.2018.00459",
+      "CorpusId": 13746427
+    },
+    "title": "Dynamic Few-Shot Visual Learning Without Forgetting",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1202,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1804.09458",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.09458, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2475428",
+        "name": "Spyros Gidaris"
+      },
+      {
+        "authorId": "2505902",
+        "name": "N. Komodakis"
+      }
+    ],
+    "abstract": "The human visual system has the remarkably ability to be able to effortlessly learn novel concepts from only a few examples. Mimicking the same behavior on machine learning vision systems is an interesting and very challenging research problem with many practical advantages on real world vision applications. In this context, the goal of our work is to devise a few-shot visual learning system that during test time it will be able to efficiently learn novel categories from only a few training data while at the same time it will not forget the initial categories on which it was trained (here called base categories). To achieve that goal we propose (a) to extend an object recognition system with an attention based few-shot classification weight generator, and (b) to redesign the classifier of a ConvNet model as the cosine similarity function between feature representations and classification weight vectors. The latter, apart from unifying the recognition of both novel and base categories, it also leads to feature representations that generalize better on \"unseen\" categories. We extensively evaluate our approach on Mini-ImageNet where we manage to improve the prior state-of-the-art on few-shot recognition (i.e., we achieve 56.20% and 73.00% on the 1-shot and 5-shot settings respectively) while at the same time we do not sacrifice any accuracy on the base categories, which is a characteristic that most prior approaches lack. Finally, we apply our approach on the recently introduced few-shot benchmark of Bharath and Girshick [4] where we also achieve state-of-the-art results.",
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "90dc22818bd2d97d8deaff168b0137b75a962767",
+    "externalIds": {
+      "MAG": "2795900505",
+      "ArXiv": "1803.02999",
+      "DBLP": "journals/corr/abs-1803-02999",
+      "CorpusId": 4587331
+    },
+    "title": "On First-Order Meta-Learning Algorithms",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 2549,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.02999, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "3381809",
+        "name": "Joshua Achiam"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      }
+    ],
+    "abstract": "This paper considers meta-learning problems, where there is a distribution of tasks, and we would like to obtain an agent that performs well (i.e., learns quickly) when presented with a previously unseen task sampled from this distribution. We analyze a family of algorithms for learning a parameter initialization that can be fine-tuned quickly on a new task, using only first-order derivatives for the meta-learning updates. This family includes and generalizes first-order MAML, an approximation to MAML obtained by ignoring second-order derivatives. It also includes Reptile, a new algorithm that we introduce here, which works by repeatedly sampling a task, training on it, and moving the initialization towards the trained weights on that task. We expand on the results from Finn et al. showing that first-order meta-learning algorithms perform well on some well-established benchmarks for few-shot classification, and we provide theoretical analysis aimed at understanding why these algorithms work.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "df093d69cd98cf4b26542f53614a79754754eb78",
+    "externalIds": {
+      "ArXiv": "1803.00676",
+      "MAG": "2952417504",
+      "DBLP": "conf/iclr/RenTRSSTLZ18",
+      "CorpusId": 3507990
+    },
+    "title": "Meta-Learning for Semi-Supervised Few-Shot Classification",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 1425,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.00676, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2540599",
+        "name": "Mengye Ren"
+      },
+      {
+        "authorId": "2064782825",
+        "name": "Eleni Triantafillou"
+      },
+      {
+        "authorId": "49517463",
+        "name": "S. Ravi"
+      },
+      {
+        "authorId": "39770136",
+        "name": "Jake Snell"
+      },
+      {
+        "authorId": "1754860",
+        "name": "Kevin Swersky"
+      },
+      {
+        "authorId": "1763295",
+        "name": "J. Tenenbaum"
+      },
+      {
+        "authorId": "1777528",
+        "name": "H. Larochelle"
+      },
+      {
+        "authorId": "1804104",
+        "name": "R. Zemel"
+      }
+    ],
+    "abstract": "In few-shot classification, we are interested in learning algorithms that train a classifier from only a handful of labeled examples. Recent progress in few-shot classification has featured meta-learning, in which a parameterized model for a learning algorithm is defined and trained on episodes representing different classification problems, each with a small labeled training set and its corresponding test set. In this work, we advance this few-shot classification paradigm towards a scenario where unlabeled examples are also available within each episode. We consider two situations: one where all unlabeled examples are assumed to belong to the same set of classes as the labeled examples of the episode, as well as the more challenging situation where examples from other distractor classes are also provided. To address this paradigm, we propose novel extensions of Prototypical Networks (Snell et al., 2017) that are augmented with the ability to use unlabeled examples when producing prototypes. These models are trained in an end-to-end way on episodes, to learn to leverage the unlabeled examples successfully. We evaluate these methods on versions of the Omniglot and miniImageNet benchmarks, adapted to this new framework augmented with unlabeled examples. We also propose a new split of ImageNet, consisting of a large set of classes, with a hierarchical structure. Our experiments confirm that our Prototypical Networks can learn to improve their predictions due to unlabeled examples, much like a semi-supervised algorithm would.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f1951f3c86493542be597182d194abcd7b936b9b",
+    "externalIds": {
+      "MAG": "2952523436",
+      "DBLP": "conf/cvpr/QiBL18",
+      "DOI": "10.1109/CVPR.2018.00610",
+      "CorpusId": 4682492
+    },
+    "title": "Low-Shot Learning with Imprinted Weights",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 542,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1712.07136",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2018.00610?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2018.00610, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47935745",
+        "name": "Qi"
+      },
+      {
+        "authorId": "144735785",
+        "name": "Matthew A. Brown"
+      },
+      {
+        "authorId": "35238678",
+        "name": "D. Lowe"
+      }
+    ],
+    "abstract": "Human vision is able to immediately recognize novel visual categories after seeing just one or a few training examples. We describe how to add a similar capability to ConvNet classifiers by directly setting the final layer weights from novel training examples during low-shot learning. We call this process weight imprinting as it directly sets weights for a new category based on an appropriately scaled copy of the embedding layer activations for that training example. The imprinting process provides a valuable complement to training with stochastic gradient descent, as it provides immediate good classification performance and an initialization for any further fine-tuning in the future. We show how this imprinting process is related to proxy-based embeddings. However, it differs in that only a single imprinted weight vector is learned for each novel category, rather than relying on a nearest-neighbor distance to training instances as typically used with embedding methods. Our experiments show that using averaging of imprinted weights provides better generalization than using nearest-neighbor instance embeddings.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "572a1f77306e160c3893299c18f3ed862fb5f6d9",
+    "externalIds": {
+      "MAG": "2770468159",
+      "DBLP": "journals/corr/abs-1711-04043",
+      "ArXiv": "1711.04043",
+      "CorpusId": 3431470
+    },
+    "title": "Few-Shot Learning with Graph Neural Networks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 1349,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.04043, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "73240341",
+        "name": "Victor Garcia Satorras"
+      },
+      {
+        "authorId": "143627859",
+        "name": "Joan Bruna"
+      }
+    ],
+    "abstract": "We propose to study the problem of few-shot learning with the prism of inference on a partially observed graphical model, constructed from a collection of input images whose label can be either observed or not. By assimilating generic message-passing inference algorithms with their neural-network counterparts, we define a graph neural network architecture that generalizes several of the recently proposed few-shot learning models. Besides providing improved numerical performance, our framework is easily extended to variants of few-shot learning, such as semi-supervised or active learning, demonstrating the ability of graph-based models to operate well on 'relational' tasks.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4feef0fd284feb1233399b400eb897f59ec92755",
+    "externalIds": {
+      "MAG": "2765407302",
+      "DBLP": "journals/corr/abs-1710-09412",
+      "ArXiv": "1710.09412",
+      "CorpusId": 3162051
+    },
+    "title": "mixup: Beyond Empirical Risk Minimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 11601,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.09412, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108880169",
+        "name": "Hongyi Zhang"
+      },
+      {
+        "authorId": "5723508",
+        "name": "Moustapha Cissé"
+      },
+      {
+        "authorId": "2921469",
+        "name": "Yann Dauphin"
+      },
+      {
+        "authorId": "1401804750",
+        "name": "David Lopez-Paz"
+      }
+    ],
+    "abstract": "Large deep neural networks are powerful, but exhibit undesirable behaviors such as memorization and sensitivity to adversarial examples. In this work, we propose mixup, a simple learning principle to alleviate these issues. In essence, mixup trains a neural network on convex combinations of pairs of examples and their labels. By doing so, mixup regularizes the neural network to favor simple linear behavior in-between training examples. Our experiments on the ImageNet-2012, CIFAR-10, CIFAR-100, Google commands and UCI datasets show that mixup improves the generalization of state-of-the-art neural network architectures. We also find that mixup reduces the memorization of corrupt labels, increases the robustness to adversarial examples, and stabilizes the training of generative adversarial networks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e7fd6848cb29ca221a7e17d823e06fb566f1f135",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1710-03740",
+      "ArXiv": "1710.03740",
+      "MAG": "2963112338",
+      "CorpusId": 3297437
+    },
+    "title": "Mixed Precision Training",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 2314,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.03740, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1802359",
+        "name": "P. Micikevicius"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "67038137",
+        "name": "Jonah Alben"
+      },
+      {
+        "authorId": "2040049",
+        "name": "G. Diamos"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "2082313059",
+        "name": "David García"
+      },
+      {
+        "authorId": "31963005",
+        "name": "Boris Ginsburg"
+      },
+      {
+        "authorId": "122523478",
+        "name": "Michael Houston"
+      },
+      {
+        "authorId": "2787022",
+        "name": "Oleksii Kuchaiev"
+      },
+      {
+        "authorId": "145595812",
+        "name": "Ganesh Venkatesh"
+      },
+      {
+        "authorId": "1491232360",
+        "name": "Hao Wu"
+      }
+    ],
+    "abstract": "Deep neural networks have enabled progress in a wide variety of applications. Growing the size of the neural network typically results in improved accuracy. As model sizes grow, the memory and compute requirements for training these models also increases. We introduce a technique to train deep neural networks using half precision floating point numbers. In our technique, weights, activations and gradients are stored in IEEE half-precision format. Half-precision floating numbers have limited numerical range compared to single-precision numbers. We propose two techniques to handle this loss of information. Firstly, we recommend maintaining a single-precision copy of the weights that accumulates the gradients after each optimizer step. This single-precision copy is rounded to half-precision format during training. Secondly, we propose scaling the loss appropriately to handle the loss of information with half-precision gradients. We demonstrate that this approach works for a wide variety of models including convolution neural networks, recurrent neural networks and generative adversarial networks. This technique works for large scale models with more than 100 million parameters trained on large datasets. Using this approach, we can reduce the memory consumption of deep learning models by nearly 2x. In future processors, we can also expect a significant computation speedup using half-precision hardware units.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3e08a3912ebe494242f6bcd772929cc65307129c",
+    "externalIds": {
+      "MAG": "2625674597",
+      "DBLP": "conf/cvpr/QiaoLSY18",
+      "ArXiv": "1706.03466",
+      "DOI": "10.1109/CVPR.2018.00755",
+      "CorpusId": 33252535
+    },
+    "title": "Few-Shot Image Recognition by Predicting Parameters from Activations",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 586,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1706.03466",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03466, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2383133",
+        "name": "Siyuan Qiao"
+      },
+      {
+        "authorId": "50557601",
+        "name": "Chenxi Liu"
+      },
+      {
+        "authorId": "41187410",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this paper, we are interested in the few-shot learning problem. In particular, we focus on a challenging scenario where the number of categories is large and the number of examples per novel category is very limited, e.g. 1, 2, or 3. Motivated by the close relationship between the parameters and the activations in a neural network associated with the same category, we propose a novel method that can adapt a pre-trained neural network to novel categories by directly predicting the parameters from the activations. Zero training is required in adaptation to novel categories, and fast inference is realized by a single forward pass. We evaluate our method by doing few-shot image recognition on the ImageNet dataset, which achieves the state-of-the-art classification accuracy on novel categories by a significant margin while keeping comparable performance on the large-scale categories. We also test our method on the MiniImageNet dataset and it strongly outperforms the previous state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3c57a1aa483d8bffe1339914b80d2913f2dc8376",
+    "externalIds": {
+      "MAG": "2963170156",
+      "ArXiv": "1705.09783",
+      "DBLP": "conf/nips/DaiYYCS17",
+      "CorpusId": 4504215
+    },
+    "title": "Good Semi-supervised Learning That Requires a Bad GAN",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 504,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.09783, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "47829900",
+        "name": "Fan Yang"
+      },
+      {
+        "authorId": "50056360",
+        "name": "William W. Cohen"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      }
+    ],
+    "abstract": "Semi-supervised learning methods based on generative adversarial networks (GANs) obtained strong empirical results, but it is not clear 1) how the discriminator benefits from joint training with a generator, and 2) why good semi-supervised classification performance and a good generator cannot be obtained at the same time. Theoretically, we show that given the discriminator objective, good semisupervised learning indeed requires a bad generator, and propose the definition of a preferred generator. Empirically, we derive a novel formulation based on our analysis that substantially improves over feature matching GANs, obtaining state-of-the-art results on multiple benchmark datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "0b1157e308289bd09e798c207b38dfdeb8335c46",
+    "externalIds": {
+      "ArXiv": "1703.07464",
+      "DBLP": "journals/corr/Movshovitz-Attias17",
+      "MAG": "2950855501",
+      "DOI": "10.1109/ICCV.2017.47",
+      "CorpusId": 17861456
+    },
+    "title": "No Fuss Distance Metric Learning Using Proxies",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 695,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1703.07464",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.07464, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1405595195",
+        "name": "Yair Movshovitz-Attias"
+      },
+      {
+        "authorId": "1726415",
+        "name": "Alexander Toshev"
+      },
+      {
+        "authorId": "152456068",
+        "name": "Thomas Leung"
+      },
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2144556482",
+        "name": "Saurabh Singh"
+      }
+    ],
+    "abstract": "We address the problem of distance metric learning (DML), defined as learning a distance consistent with a notion of semantic similarity. Traditionally, for this problem supervision is expressed in the form of sets of points that follow an ordinal relationship – an anchor point x is similar to a set of positive points Y , and dissimilar to a set of negative points Z, and a loss defined over these distances is minimized. While the specifics of the optimization differ, in this work we collectively call this type of supervision Triplets and all methods that follow this pattern Triplet-Based methods. These methods are challenging to optimize. A main issue is the need for finding informative triplets, which is usually achieved by a variety of tricks such as increasing the batch size, hard or semi-hard triplet mining, etc. Even with these tricks, the convergence rate of such methods is slow. In this paper we propose to optimize the triplet loss on a different space of triplets, consisting of an anchor data point and similar and dissimilar proxy points which are learned as well. These proxies approximate the original data points, so that a triplet loss over the proxies is a tight upper bound of the original loss. This proxy-based loss is empirically better behaved. As a result, the proxy-loss improves on state-of-art results for three standard zero-shot learning datasets, by up to 15% points, while converging three times as fast as other triplet-based losses.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c269858a7bb34e8350f2442ccf37797856ae9bca",
+    "externalIds": {
+      "DBLP": "conf/nips/SnellSZ17",
+      "ArXiv": "1703.05175",
+      "MAG": "2950537964",
+      "CorpusId": 309759
+    },
+    "title": "Prototypical Networks for Few-shot Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 9769,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.05175, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39770136",
+        "name": "Jake Snell"
+      },
+      {
+        "authorId": "1754860",
+        "name": "Kevin Swersky"
+      },
+      {
+        "authorId": "1804104",
+        "name": "R. Zemel"
+      }
+    ],
+    "abstract": "We propose Prototypical Networks for the problem of few-shot classification, where a classifier must generalize to new classes not seen in the training set, given only a small number of examples of each new class. Prototypical Networks learn a metric space in which classification can be performed by computing distances to prototype representations of each class. Compared to recent approaches for few-shot learning, they reflect a simpler inductive bias that is beneficial in this limited-data regime, and achieve excellent results. We provide an analysis showing that some simple design decisions can yield substantial improvements over recent approaches involving complicated architectural choices and meta-learning. We further extend Prototypical Networks to zero-shot learning and achieve state-of-the-art results on the CU-Birds dataset.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "c889d6f98e6d79b89c3a6adf8a921f88fa6ba518",
+    "externalIds": {
+      "MAG": "2604763608",
+      "DBLP": "journals/corr/FinnAL17",
+      "ArXiv": "1703.03400",
+      "CorpusId": 6719686
+    },
+    "title": "Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 14200,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.03400, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "We propose an algorithm for meta-learning that is model-agnostic, in the sense that it is compatible with any model trained with gradient descent and applicable to a variety of different learning problems, including classification, regression, and reinforcement learning. The goal of meta-learning is to train a model on a variety of learning tasks, such that it can solve new learning tasks using only a small number of training samples. In our approach, the parameters of the model are explicitly trained such that a small number of gradient steps with a small amount of training data from a new task will produce good generalization performance on that task. In effect, our method trains the model to be easy to fine-tune. We demonstrate that this approach leads to state-of-the-art performance on two few-shot image classification benchmarks, produces good results on few-shot regression, and accelerates fine-tuning for policy gradient reinforcement learning with neural network policies.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "29c887794eed2ca9462638ff853e6fe1ab91d5d8",
+    "externalIds": {
+      "MAG": "2753160622",
+      "DBLP": "conf/iclr/RaviL17",
+      "CorpusId": 67413369
+    },
+    "title": "Optimization as a Model for Few-Shot Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 3665,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "49517463",
+        "name": "S. Ravi"
+      },
+      {
+        "authorId": "1777528",
+        "name": "H. Larochelle"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "36eff562f65125511b5dfab68ce7f7a943c27478",
+    "externalIds": {
+      "ArXiv": "1609.02907",
+      "MAG": "2519887557",
+      "DBLP": "journals/corr/KipfW16",
+      "CorpusId": 3144218
+    },
+    "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 34615,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.02907, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "41016725",
+        "name": "Thomas Kipf"
+      },
+      {
+        "authorId": "1678311",
+        "name": "M. Welling"
+      }
+    ],
+    "abstract": "We present a scalable approach for semi-supervised learning on graph-structured data that is based on an efficient variant of convolutional neural networks which operate directly on graphs. We motivate the choice of our convolutional architecture via a localized first-order approximation of spectral graph convolutions. Our model scales linearly in the number of graph edges and learns hidden layer representations that encode both local graph structure and features of nodes. In a number of experiments on citation networks and on a knowledge graph dataset we demonstrate that our approach outperforms related methods by a significant margin.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b022f2a277a4bf5f42382e86e4380b96340b9e86",
+    "externalIds": {
+      "MAG": "2963263347",
+      "ArXiv": "1608.03983",
+      "DBLP": "conf/iclr/LoshchilovH17",
+      "CorpusId": 14337532
+    },
+    "title": "SGDR: Stochastic Gradient Descent with Warm Restarts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 10278,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1608.03983, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": "Restart techniques are common in gradient-free optimization to deal with multimodal functions. Partial warm restarts are also gaining popularity in gradient-based optimization to improve the rate of convergence in accelerated gradient schemes to deal with ill-conditioned functions. In this paper, we propose a simple warm restart technique for stochastic gradient descent to improve its anytime performance when training deep neural networks. We empirically study its performance on the CIFAR-10 and CIFAR-100 datasets, where we demonstrate new state-of-the-art results at 3.14% and 16.21%, respectively. We also demonstrate its advantages on a dataset of EEG recordings and on a downsampled version of the ImageNet dataset. Our source code is available at this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4c20e7f95448ca3c1042a6d7fa5fa15ec27e9aeb",
+    "externalIds": {
+      "MAG": "2950195417",
+      "DBLP": "conf/nips/SajjadiJT16",
+      "ArXiv": "1606.04586",
+      "CorpusId": 8102341
+    },
+    "title": "Regularization With Stochastic Transformations and Perturbations for Deep Semi-Supervised Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 1237,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.04586, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283034",
+        "name": "Mehdi S. M. Sajjadi"
+      },
+      {
+        "authorId": "3407490",
+        "name": "Mehran Javanmardi"
+      },
+      {
+        "authorId": "3198175",
+        "name": "T. Tasdizen"
+      }
+    ],
+    "abstract": "Effective convolutional neural networks are trained on large sets of labeled data. However, creating large labeled datasets is a very costly and time-consuming task. Semi-supervised learning uses unlabeled data to train a model with higher accuracy when there is a limited set of labeled data available. In this paper, we consider the problem of semi-supervised learning with convolutional neural networks. Techniques such as randomized data augmentation, dropout and random max-pooling provide better generalization and stability for classifiers that are trained using gradient descent. Multiple passes of an individual sample through the network might lead to different predictions due to the non-deterministic behavior of these techniques. We propose an unsupervised loss function that takes advantage of the stochastic nature of these methods and minimizes the difference between the predictions of multiple passes of a training sample through the network. We evaluate the proposed method on several benchmark datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "be1bb4e4aa1fcf70281b4bd24d8cd31c04864bb6",
+    "externalIds": {
+      "MAG": "2963341924",
+      "DBLP": "conf/nips/VinyalsBLKW16",
+      "ArXiv": "1606.04080",
+      "CorpusId": 8909022
+    },
+    "title": "Matching Networks for One Shot Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 8281,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.04080, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "1723876",
+        "name": "C. Blundell"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      }
+    ],
+    "abstract": "Learning from a few examples remains a key challenge in machine learning. Despite recent advances in important domains such as vision and language, the standard supervised deep learning paradigm does not offer a satisfactory solution for learning new concepts rapidly from little data. In this work, we employ ideas from metric learning based on deep neural features and from recent advances that augment neural networks with external memories. Our framework learns a network that maps a small labelled support set and an unlabelled example to its label, obviating the need for fine-tuning to adapt to new class types. We then define one-shot learning problems on vision (using Omniglot, ImageNet) and language tasks. Our algorithm improves one-shot accuracy on ImageNet from 87.6% to 93.2% and from 88.0% to 93.8% on Omniglot compared to competing approaches. We also demonstrate the usefulness of the same model on language modeling by introducing a one-shot task on the Penn Treebank.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "1c4e9156ca07705531e45960b7a919dc473abb51",
+    "externalIds": {
+      "MAG": "2964137095",
+      "DBLP": "conf/bmvc/ZagoruykoK16",
+      "ArXiv": "1605.07146",
+      "DOI": "10.5244/C.30.87",
+      "CorpusId": 15276198
+    },
+    "title": "Wide Residual Networks",
+    "venue": "British Machine Vision Conference",
+    "year": 2016,
+    "citationCount": 8802,
+    "openAccessPdf": {
+      "url": "http://www.bmva.org/bmvc/2016/papers/paper087/abstract087.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.07146, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2134433",
+        "name": "Sergey Zagoruyko"
+      },
+      {
+        "authorId": "2505902",
+        "name": "N. Komodakis"
+      }
+    ],
+    "abstract": "Deep residual networks were shown to be able to scale up to thousands of layers and still have improving performance. However, each fraction of a percent of improved accuracy costs nearly doubling the number of layers, and so training very deep residual networks has a problem of diminishing feature reuse, which makes these networks very slow to train. To tackle these problems, in this paper we conduct a detailed experimental study on the architecture of ResNet blocks, based on which we propose a novel architecture where we decrease depth and increase width of residual networks. We call the resulting network structures wide residual networks (WRNs) and show that these are far superior over their commonly used thin and very deep counterparts. For example, we demonstrate that even a simple 16-layer-deep wide residual network outperforms in accuracy and efficiency all previous deep residual networks, including thousand-layer-deep networks, achieving new state-of-the-art results on CIFAR, SVHN, COCO, and significant improvements on ImageNet. Our code and models are available at this https URL",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "77f0a39b8e02686fd85b01971f8feb7f60971f80",
+    "externalIds": {
+      "ArXiv": "1603.05027",
+      "MAG": "2949427019",
+      "DBLP": "journals/corr/HeZR016",
+      "DOI": "10.1007/978-3-319-46493-0_38",
+      "CorpusId": 6447277
+    },
+    "title": "Identity Mappings in Deep Residual Networks",
+    "venue": "European Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 11100,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1603.05027, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deep residual networks have emerged as a family of extremely deep architectures showing compelling accuracy and nice convergence behaviors. In this paper, we analyze the propagation formulations behind the residual building blocks, which suggest that the forward and backward signals can be directly propagated from one block to any other block, when using identity mappings as the skip connections and after-addition activation. A series of ablation experiments support the importance of these identity mappings. This motivates us to propose a new residual unit, which makes training easier and improves generalization. We report improved results using a 1001-layer ResNet on CIFAR-10 (4.62 % error) and CIFAR-100, and a 200-layer ResNet on ImageNet. Code is available at: https://github.com/KaimingHe/resnet-1k-layers.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226125,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "23ffaa0fe06eae05817f527a47ac3291077f9e58",
+    "externalIds": {
+      "MAG": "2183341477",
+      "DBLP": "conf/cvpr/SzegedyVISW16",
+      "ArXiv": "1512.00567",
+      "DOI": "10.1109/CVPR.2016.308",
+      "CorpusId": 206593880
+    },
+    "title": "Rethinking the Inception Architecture for Computer Vision",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 30685,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1512.00567",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.00567, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "3282833",
+        "name": "Z. Wojna"
+      }
+    ],
+    "abstract": "Convolutional networks are at the core of most state of-the-art computer vision solutions for a wide variety of tasks. Since 2014 very deep convolutional networks started to become mainstream, yielding substantial gains in various benchmarks. Although increased model size and computational cost tend to translate to immediate quality gains for most tasks (as long as enough labeled data is provided for training), computational efficiency and low parameter count are still enabling factors for various use cases such as mobile vision and big-data scenarios. Here we are exploring ways to scale up networks in ways that aim at utilizing the added computation as efficiently as possible by suitably factorized convolutions and aggressive regularization. We benchmark our methods on the ILSVRC 2012 classification challenge validation set demonstrate substantial gains over the state of the art: 21:2% top-1 and 5:6% top-5 error for single frame evaluation using a network with a computational cost of 5 billion multiply-adds per inference and with using less than 25 million parameters. With an ensemble of 4 models and multi-crop evaluation, we report 3:5% top-5 error and 17:3% top-1 error on the validation set and 3:6% top-5 error on the official test set.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d450b0f12ae0437048e4047a630c31d902002d0c",
+    "externalIds": {
+      "ArXiv": "1507.00677",
+      "MAG": "2964040467",
+      "CorpusId": 9398766
+    },
+    "title": "Distributional Smoothing with Virtual Adversarial Training",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 464,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1507.00677, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3213400",
+        "name": "Takeru Miyato"
+      },
+      {
+        "authorId": "35647224",
+        "name": "S. Maeda"
+      },
+      {
+        "authorId": "2877296",
+        "name": "Masanori Koyama"
+      },
+      {
+        "authorId": "1966945",
+        "name": "Ken Nakae"
+      },
+      {
+        "authorId": "145516720",
+        "name": "S. Ishii"
+      }
+    ],
+    "abstract": "We propose local distributional smoothness (LDS), a new notion of smoothness for statistical model that can be used as a regularization term to promote the smoothness of the model distribution. We named the LDS based regularization as virtual adversarial training (VAT). The LDS of a model at an input datapoint is defined as the KL-divergence based robustness of the model distribution against local perturbation around the datapoint. VAT resembles adversarial training, but distinguishes itself in that it determines the adversarial direction from the model distribution alone without using the label information, making it applicable to semi-supervised learning. The computational cost for VAT is relatively low. For neural network, the approximated gradient of the LDS can be computed with no more than three pairs of forward and back propagations. When we applied our technique to supervised and semi-supervised learning for the MNIST dataset, it outperformed all the training methods other than the current state of the art method, which is based on a highly advanced generative model. We also applied our method to SVHN and NORB, and confirmed our method's superior performance over the current state of the art semi-supervised method applied to these datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "09b43b59879d59493df2a93c216746f2cf50f4ac",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HuLT15",
+      "MAG": "1916279783",
+      "DOI": "10.1109/CVPR.2015.7298629",
+      "CorpusId": 1010081
+    },
+    "title": "Deep transfer metric learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 279,
+    "openAccessPdf": {
+      "url": "https://dr.ntu.edu.sg/bitstream/10356/80552/1/Deep%20transfer%20metric%20learning.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2015.7298629?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2015.7298629, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34651153",
+        "name": "Junlin Hu"
+      },
+      {
+        "authorId": "1697700",
+        "name": "Jiwen Lu"
+      },
+      {
+        "authorId": "1689805",
+        "name": "Yap-Peng Tan"
+      },
+      {
+        "authorId": "49640256",
+        "name": "Jie Zhou"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "37b5dfe87d82ba8f310155165d5bf841dc92dea2",
+    "externalIds": {
+      "MAG": "2544860310",
+      "DBLP": "conf/wacv/Smith17",
+      "ArXiv": "1506.01186",
+      "DOI": "10.1109/WACV.2017.58",
+      "CorpusId": 15247298
+    },
+    "title": "Cyclical Learning Rates for Training Neural Networks",
+    "venue": "IEEE Workshop/Winter Conference on Applications of Computer Vision",
+    "year": 2015,
+    "citationCount": 2895,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1506.01186",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.01186, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2596816",
+        "name": "L. Smith"
+      }
+    ],
+    "abstract": "It is known that the learning rate is the most important hyper-parameter to tune for training deep neural networks. This paper describes a new method for setting the learning rate, named cyclical learning rates, which practically eliminates the need to experimentally find the best values and schedule for the global learning rates. Instead of monotonically decreasing the learning rate, this method lets the learning rate cyclically vary between reasonable boundary values. Training with cyclical learning rates instead of fixed values achieves improved classification accuracy without a need to tune and often in fewer iterations. This paper also describes a simple way to estimate \"reasonable bounds\" – linearly increasing the learning rate of the network for a few epochs. In addition, cyclical learning rates are demonstrated on the CIFAR-10 and CIFAR-100 datasets with ResNets, Stochastic Depth networks, and DenseNets, and the ImageNet dataset with the AlexNet and GoogLeNet architectures. These are practical tools for everyone who trains neural networks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e2820bffe5b42cb7d88b7f65c12171c62ab4aae2",
+    "externalIds": {
+      "MAG": "1868018859",
+      "DBLP": "journals/corr/MaclaurinDA15",
+      "ArXiv": "1502.03492",
+      "CorpusId": 8540522
+    },
+    "title": "Gradient-based Hyperparameter Optimization through Reversible Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 1025,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03492, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1683298",
+        "name": "D. Maclaurin"
+      },
+      {
+        "authorId": "1704657",
+        "name": "D. Duvenaud"
+      },
+      {
+        "authorId": "1722180",
+        "name": "Ryan P. Adams"
+      }
+    ],
+    "abstract": "Tuning hyperparameters of learning algorithms is hard because gradients are usually unavailable. We compute exact gradients of cross-validation performance with respect to all hyperparameters by chaining derivatives backwards through the entire training procedure. These gradients allow us to optimize thousands of hyperparameters, including step-size and momentum schedules, weight initialization distributions, richly parameterized regularization schemes, and neural network architectures. We compute hyperparameter gradients by exactly reversing the dynamics of stochastic gradient descent with momentum.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "995c5f5e62614fcb4d2796ad2faab969da51713e",
+    "externalIds": {
+      "MAG": "1836465849",
+      "ArXiv": "1502.03167",
+      "DBLP": "conf/icml/IoffeS15",
+      "CorpusId": 5808102
+    },
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 46486,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03167, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      }
+    ],
+    "abstract": "Training Deep Neural Networks is complicated by the fact that the distribution of each layer's inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities. We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs. Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization, and in some cases eliminates the need for Dropout. Applied to a state-of-the-art image classification model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a significant margin. Using an ensemble of batch-normalized networks, we improve upon the best published result on ImageNet classification: reaching 4.82% top-5 test error, exceeding the accuracy of human raters.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "externalIds": {
+      "MAG": "2964121744",
+      "DBLP": "journals/corr/KingmaB14",
+      "ArXiv": "1412.6980",
+      "CorpusId": 6628106
+    },
+    "title": "Adam: A Method for Stochastic Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 165311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DengDSLL009",
+      "MAG": "2108598243",
+      "DOI": "10.1109/CVPR.2009.5206848",
+      "CorpusId": 57246310
+    },
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2009,
+    "citationCount": 72470,
+    "openAccessPdf": {
+      "url": "http://www.image-net.org/papers/imagenet_cvpr09.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2009.5206848?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2009.5206848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144847596",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "94451829",
+        "name": "K. Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "cfaae9b6857b834043606df3342d8dc97524aa9d",
+    "externalIds": {
+      "MAG": "2157364932",
+      "DBLP": "conf/cvpr/ChopraHL05",
+      "DOI": "10.1109/CVPR.2005.202",
+      "CorpusId": 5555257
+    },
+    "title": "Learning a similarity metric discriminatively, with application to face verification",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2005,
+    "citationCount": 4525,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2005.202?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2005.202, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3295092",
+        "name": "S. Chopra"
+      },
+      {
+        "authorId": "2315504",
+        "name": "R. Hadsell"
+      },
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ad67ccee45b801b0138016e2f44a566344e77320",
+    "externalIds": {
+      "MAG": "2293363371",
+      "DBLP": "conf/nips/GrandvaletB04",
+      "CorpusId": 7890982
+    },
+    "title": "Semi-supervised Learning by Entropy Minimization",
+    "venue": "Conférence francophone sur l'apprentissage automatique",
+    "year": 2004,
+    "citationCount": 2481,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1802711",
+        "name": "Yves Grandvalet"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "46770a8e7e2af28f5253e5961f709be74e34c1f6",
+    "externalIds": {
+      "DBLP": "conf/nips/ZhouBLWS03",
+      "MAG": "2154455818",
+      "CorpusId": 508435
+    },
+    "title": "Learning with Local and Global Consistency",
+    "venue": "Neural Information Processing Systems",
+    "year": 2003,
+    "citationCount": 4631,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "24982365",
+        "name": "Dengyong Zhou"
+      },
+      {
+        "authorId": "1698617",
+        "name": "O. Bousquet"
+      },
+      {
+        "authorId": "2312432",
+        "name": "T. N. Lal"
+      },
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      },
+      {
+        "authorId": "1707625",
+        "name": "B. Scholkopf"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ca8912936505031ed821cbb388fa7929400f0d15",
+    "externalIds": {
+      "DBLP": "journals/pr/JainGC02",
+      "MAG": "1997460147",
+      "DOI": "10.1016/S0031-3203(01)00240-0",
+      "CorpusId": 41523243
+    },
+    "title": "On-line signature verification,",
+    "venue": "Pattern Recognition",
+    "year": 2002,
+    "citationCount": 604,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/S0031-3203(01)00240-0?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/S0031-3203(01)00240-0, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145295484",
+        "name": "Anil K. Jain"
+      },
+      {
+        "authorId": "2600487",
+        "name": "F. Griess"
+      },
+      {
+        "authorId": "40640960",
+        "name": "S. D. Connell"
+      }
+    ],
+    "abstract": "Abstract We describe a method for on-line handwritten signature verification. The signatures are acquired using a digitizing tablet which captures both dynamic and spatial information of the writing. After preprocessing the signature, several features are extracted. The authenticity of a writer is determined by comparing an input signature to a stored reference set (template) consisting of three signatures. The similarity between an input signature and the reference set is computed using string matching and the similarity value is compared to a threshold. Several approaches for obtaining the optimal threshold value from the reference set are investigated. The best result yields a false reject rate of 2.8% and a false accept rate of 1.6%. Experiments on a database containing a total of 1232 signatures of 102 individuals show that writer-dependent thresholds yield better results than using a common threshold.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "044b2c29e0a54dc689786bd4d029b9ba6e355d58",
+    "externalIds": {
+      "MAG": "2137825550",
+      "DBLP": "conf/icann/HochreiterYC01",
+      "DOI": "10.1007/3-540-44668-0_13",
+      "CorpusId": 267810281
+    },
+    "title": "Learning to Learn Using Gradient Descent",
+    "venue": "International Conference on Artificial Neural Networks",
+    "year": 2001,
+    "citationCount": 330,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/3-540-44668-0_13?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/3-540-44668-0_13, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "145547836",
+        "name": "A. S. Younger"
+      },
+      {
+        "authorId": "2927101",
+        "name": "P. R. Conwell"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "74b1a9e50f18af8a7b9f8dd38f40e0466ad7a8e8",
+    "externalIds": {
+      "MAG": "2107008379",
+      "DBLP": "conf/icml/Joachims99",
+      "CorpusId": 14591650
+    },
+    "title": "Transductive Inference for Text Classification using Support Vector Machines",
+    "venue": "International Conference on Machine Learning",
+    "year": 1999,
+    "citationCount": 3265,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1680188",
+        "name": "T. Joachims"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "dde691805cfa7d6f1bb88c7411c1c3377b6cdc67",
+    "externalIds": {
+      "MAG": "2126204609",
+      "DBLP": "books/sp/98/Thrun98",
+      "DOI": "10.1007/978-1-4615-5529-2_8",
+      "CorpusId": 61636432
+    },
+    "title": "Lifelong Learning Algorithms",
+    "venue": "Learning to Learn",
+    "year": 1998,
+    "citationCount": 571,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-1-4615-5529-2_8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-1-4615-5529-2_8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144867807",
+        "name": "S. Thrun"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a24508e65e599b5b20c33af96dbe7017d5caca37",
+    "externalIds": {
+      "DBLP": "conf/colt/Baxter95",
+      "MAG": "2995075451",
+      "ArXiv": "1911.05781",
+      "DOI": "10.1145/225298.225336",
+      "CorpusId": 6211302
+    },
+    "title": "Learning internal representations",
+    "venue": "Annual Conference Computational Learning Theory",
+    "year": 1995,
+    "citationCount": 405,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/225298.225336",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.05781, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47392513",
+        "name": "Jonathan Baxter"
+      }
+    ],
+    "abstract": "Probably the most important problem in machine learning is the preliminary biasing of a learner's hypothesis space so that it is small enough to ensure good generalisation from reasonable training sets, yet large enough that it contains a good solution to the problem being learnt. In this paper a mechanism for {\\em automatically} learning or biasing the learner's hypothesis space is introduced. It works by first learning an appropriate {\\em internal representation} for a learning environment and then using that representation to bias the learner's hypothesis space for the learning of future tasks drawn from the same environment. \nAn internal representation must be learnt by sampling from {\\em many similar tasks}, not just a single task as occurs in ordinary machine learning. It is proved that the number of examples $m$ {\\em per task} required to ensure good generalisation from a representation learner obeys $m = O(a+b/n)$ where $n$ is the number of tasks being learnt and $a$ and $b$ are constants. If the tasks are learnt independently ({\\em i.e.} without a common representation) then $m=O(a+b)$. It is argued that for learning environments such as speech and character recognition $b\\gg a$ and hence representation learning in these environments can potentially yield a drastic reduction in the number of examples required per task. It is also proved that if $n = O(b)$ (with $m=O(a+b/n)$) then the representation learnt will be good for learning novel tasks from the same environment, and that the number of examples required to generalise well on a novel task will be reduced to $O(a)$ (as opposed to $O(a+b)$ if no representation is used). \nIt is shown that gradient descent can be used to train neural network representations and experiment results are reported providing strong qualitative support for the theoretical results.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "997dc5d9a058753f034422afe7bd0cc0b8ad808b",
+    "externalIds": {
+      "MAG": "2171590421",
+      "DBLP": "journals/ijprai/BromleyBBGLMSS93",
+      "DOI": "10.1142/S0218001493000339",
+      "CorpusId": 16394033
+    },
+    "title": "Signature Verification Using A \"Siamese\" Time Delay Neural Network",
+    "venue": "International journal of pattern recognition and artificial intelligence",
+    "year": 1993,
+    "citationCount": 4122,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1142/S0218001493000339?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1142/S0218001493000339, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "120242409",
+        "name": "J. Bromley"
+      },
+      {
+        "authorId": "2058232056",
+        "name": "James W. Bentz"
+      },
+      {
+        "authorId": "52184096",
+        "name": "L. Bottou"
+      },
+      {
+        "authorId": "1743797",
+        "name": "Isabelle M Guyon"
+      },
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      },
+      {
+        "authorId": "49015421",
+        "name": "Cliff Moore"
+      },
+      {
+        "authorId": "1776424",
+        "name": "Eduard Säckinger"
+      },
+      {
+        "authorId": "2105573840",
+        "name": "Roopak Shah"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5d90f06bb70a0a3dced62413346235c02b1aa086",
+    "externalIds": {
+      "MAG": "2945315962",
+      "CorpusId": 18268744
+    },
+    "title": "Learning Multiple Layers of Features from Tiny Images",
+    "venue": "",
+    "year": 2009,
+    "citationCount": 41724,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1c46943103bd7b7a2c7be86859995a4144d1938b",
+    "externalIds": {
+      "MAG": "2187089797",
+      "CorpusId": 5855042
+    },
+    "title": "Visualizing Data using t-SNE",
+    "venue": "",
+    "year": 2008,
+    "citationCount": 48626,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1803520",
+        "name": "L. Maaten"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8784f905f4f9fb6fa4a3cc9b0faa5b5479c687ec",
+    "externalIds": {
+      "MAG": "1598377843",
+      "CorpusId": 28783413
+    },
+    "title": "On the Optimization of a Synaptic Learning Rule",
+    "venue": "",
+    "year": 2007,
+    "citationCount": 290,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1751569",
+        "name": "Samy Bengio"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      },
+      {
+        "authorId": "2909364",
+        "name": "J. Cloutier"
+      },
+      {
+        "authorId": "3349607",
+        "name": "J. Gecsei"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "8213dbed4db44e113af3ed17d6dad57471a0c048",
+    "externalIds": {
+      "MAG": "2156909104",
+      "DBLP": "books/sp/Vapnik00",
+      "DOI": "10.1007/978-1-4757-3264-1",
+      "CorpusId": 7138354
+    },
+    "title": "The Nature of Statistical Learning Theory",
+    "venue": "Statistics for Engineering and Information Science",
+    "year": 2000,
+    "citationCount": 45485,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1007/978-1-4757-2440-0",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-1-4757-3264-1?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-1-4757-3264-1, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285268467",
+        "name": "Vladimir Naumovich Vapni"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "bdaec1b3eb9a8f7a2b296be009a148c35236f3ce",
+    "externalIds": {
+      "DBLP": "phd/de/Schmidhuber09",
+      "CorpusId": 264351059
+    },
+    "title": "Evolutionary principles in self-referential learning, or on learning how to learn: The meta-meta-. hook",
+    "venue": "",
+    "year": 1987,
+    "citationCount": 845,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2260653300",
+        "name": "Jürgen Schmidhuber"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f5157391985e1b8b451461f3350e9f91e697b76f",
+    "externalIds": {
+      "MAG": "1600175013",
+      "CorpusId": 61047266
+    },
+    "title": "Shift of bias for inductive concept learning",
+    "venue": "",
+    "year": 1984,
+    "citationCount": 379,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2195972",
+        "name": "P. Utgoff"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

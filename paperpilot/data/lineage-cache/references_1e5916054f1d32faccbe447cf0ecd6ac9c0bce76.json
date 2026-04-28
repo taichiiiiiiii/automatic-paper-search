@@ -1,0 +1,1960 @@
+[
+  {
+    "paperId": "aeb3bfed03fccc84103ade3f7dcdda8353819ebb",
+    "externalIds": {
+      "ArXiv": "2603.05451",
+      "CorpusId": 286255964
+    },
+    "title": "FlashAttention-4: Algorithm and Kernel Pipelining Co-Design for Asymmetric Hardware Scaling",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.05451, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2212363034",
+        "name": "Ted Zadouri"
+      },
+      {
+        "authorId": "2421965309",
+        "name": "Markus Hoehnerbach"
+      },
+      {
+        "authorId": "2275225725",
+        "name": "Jay Shah"
+      },
+      {
+        "authorId": "2121670386",
+        "name": "Timothy Liu"
+      },
+      {
+        "authorId": "49150146",
+        "name": "Vijay Thakkar"
+      },
+      {
+        "authorId": "2280290462",
+        "name": "Tri Dao"
+      }
+    ],
+    "abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. While FlashAttention-3 optimized attention for Hopper GPUs through asynchronous execution and warp specialization, it primarily targets the H100 architecture. The AI industry has rapidly transitioned to deploying Blackwell-based systems such as the B200 and GB200, which exhibit fundamentally different performance characteristics due to asymmetric hardware scaling: tensor core throughput doubles while other functional units (shared memory bandwidth, exponential units) scale more slowly or remain unchanged. We develop several techniques to address these shifting bottlenecks on Blackwell GPUs: (1) redesigned pipelines that exploit fully asynchronous MMA operations and larger tile sizes, (2) software-emulated exponential and conditional softmax rescaling that reduces non-matmul operations, and (3) leveraging tensor memory and the 2-CTA MMA mode to reduce shared memory traffic and atomic adds in the backward pass. We demonstrate that our method, FlashAttention-4, achieves up to 1.3$\\times$ speedup over cuDNN 9.13 and 2.7$\\times$ over Triton on B200 GPUs with BF16, reaching up to 1613 TFLOPs/s (71% utilization). Beyond algorithmic innovations, we implement FlashAttention-4 entirely in CuTe-DSL embedded in Python, achieving 20-30$\\times$ faster compile times compared to traditional C++ template-based approaches while maintaining full expressivity.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4002bad09cbdb93a951b7dc601d263920771c13e",
+    "externalIds": {
+      "ArXiv": "2510.14719",
+      "DBLP": "journals/corr/abs-2510-14719",
+      "DOI": "10.1109/CGO68049.2026.11394849",
+      "CorpusId": 282139619
+    },
+    "title": "Tawa: Automatic Warp Specialization for Modern GPUs with Asynchronous References",
+    "venue": "IEEE/ACM International Symposium on Code Generation and Optimization",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.14719, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2294927908",
+        "name": "Hongzheng Chen"
+      },
+      {
+        "authorId": "2211926533",
+        "name": "Bin Fan"
+      },
+      {
+        "authorId": "2335868072",
+        "name": "Alex Collins"
+      },
+      {
+        "authorId": "11422154",
+        "name": "Bastian Hagedorn"
+      },
+      {
+        "authorId": "1950199",
+        "name": "E. Gaburov"
+      },
+      {
+        "authorId": "2066710124",
+        "name": "Masahiro Masuda"
+      },
+      {
+        "authorId": "2227888421",
+        "name": "Matthew Brookhart"
+      },
+      {
+        "authorId": "145600429",
+        "name": "C. Sullivan"
+      },
+      {
+        "authorId": "2343356734",
+        "name": "Jason Knight"
+      },
+      {
+        "authorId": "2242087633",
+        "name": "Zhiru Zhang"
+      },
+      {
+        "authorId": "2335868902",
+        "name": "Vinod Grover"
+      }
+    ],
+    "abstract": "Modern GPUs feature specialized hardware units that enable high-performance, asynchronous dataflow execution. However, the conventional SIMT programming model is fundamentally misaligned with this task-parallel hardware, creating a significant programmability gap. While hardware-level warp specialization is the key to unlocking peak performance, it forces developers to manually orchestrate complex, low-level communication and software pipelines—a process that is labor-intensive, error-prone, and unsustainable. To address this challenge, we present Tawa, an automated compiler that systematically generates high-performance, warp-specialized code from a high-level, tile-based program. Central to our approach is a novel IR abstraction, asynchronous references (aref), which expresses warp-level communication without exposing low-level hardware details. Using this abstraction, Tawa automatically partitions programs into producer-consumer roles and manages the intricate dataflow pipeline, relieving developers of invasive kernel rewriting. Evaluation on NVIDIA H100 GPUs across representative LLM kernels shows that Tawa delivers high hardware utilization, achieving up to 1.1 × speedup over highly optimized cuBLAS GEMM kernels. For attention workloads, Tawa attains 1.2× speedup over Triton and matches the performance of the hand-optimized CUTLASS C++ FlashAttention-3 kernel with far less programming effort.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "7e33430926579d63cf31c42b3ca116d10eb8181a",
+    "externalIds": {
+      "ArXiv": "2510.08726",
+      "DBLP": "journals/corr/abs-2510-08726",
+      "DOI": "10.48550/arXiv.2510.08726",
+      "CorpusId": 282055988
+    },
+    "title": "Neptune: Advanced ML Operator Fusion for Locality and Parallelism on GPUs",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.08726, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2294152170",
+        "name": "Yifan Zhao"
+      },
+      {
+        "authorId": "2385511551",
+        "name": "Egan Johnson"
+      },
+      {
+        "authorId": "3390646",
+        "name": "Prasanth Chatarasi"
+      },
+      {
+        "authorId": "1720525",
+        "name": "V. Adve"
+      },
+      {
+        "authorId": "1704478",
+        "name": "Sasa Misailovic"
+      }
+    ],
+    "abstract": "Operator fusion has become a key optimization for deep learning, which combines multiple deep learning operators to improve data reuse and reduce global memory transfers. However, existing tensor compilers struggle to fuse complex reduction computations involving loop-carried dependencies, such as attention mechanisms. This paper introduces Neptune, a tensor compiler for advanced operator fusion for sequences of reduction operators. Neptune presents a new approach for advanced operator fusion, which intentionally breaks some existing dependencies and compensates by constructing algebraic correction expressions that allow the kernel to produce the correct result. Applying Neptune's advanced operator fusion to a plain attention operator generates operators equivalent to FlashAttention and FlashDecoding. On ten attention-based benchmarks, Neptune, starting from a plain attention code and a high-level scheduling template, outperforms existing compilers like Triton, TVM, and FlexAttention, including Triton-based implementations of FlashAttention. Across four different GPU architectures from NVIDIA and AMD, Neptune-generated kernels have an average speedup of $1.35\\times$ over the next best alternative, with up to $2.65\\times$ speedup on Nvidia GPUs and up to $3.32\\times$ on AMD GPUs, demonstrating its effectiveness for deep learning workloads.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "e712675e7d7c85ad9d95f2b7d16de4e2b57399d0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-01005",
+      "ArXiv": "2501.01005",
+      "DOI": "10.48550/arXiv.2501.01005",
+      "CorpusId": 275212819
+    },
+    "title": "FlashInfer: Efficient and Customizable Attention Engine for LLM Inference Serving",
+    "venue": "Conference on Machine Learning and Systems",
+    "year": 2025,
+    "citationCount": 192,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.01005, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3060913",
+        "name": "Zihao Ye"
+      },
+      {
+        "authorId": "2146071876",
+        "name": "Lequn Chen"
+      },
+      {
+        "authorId": "2166785389",
+        "name": "Ruihang Lai"
+      },
+      {
+        "authorId": "35992009",
+        "name": "Wuwei Lin"
+      },
+      {
+        "authorId": "2342359502",
+        "name": "Yineng Zhang"
+      },
+      {
+        "authorId": "2316890428",
+        "name": "Stephanie Wang"
+      },
+      {
+        "authorId": "2257252152",
+        "name": "Tianqi Chen"
+      },
+      {
+        "authorId": "3178312",
+        "name": "Baris Kasikci"
+      },
+      {
+        "authorId": "2338268730",
+        "name": "Vinod Grover"
+      },
+      {
+        "authorId": "2257173539",
+        "name": "Arvind Krishnamurthy"
+      },
+      {
+        "authorId": "2262445189",
+        "name": "Luis Ceze"
+      }
+    ],
+    "abstract": "Transformers, driven by attention mechanisms, form the foundation of large language models (LLMs). As these models scale up, efficient GPU attention kernels become essential for high-throughput and low-latency inference. Diverse LLM applications demand flexible and high-performance attention solutions. We present FlashInfer: a customizable and efficient attention engine for LLM serving. FlashInfer tackles KV-cache storage heterogeneity using block-sparse format and composable formats to optimize memory access and reduce redundancy. It also offers a customizable attention template, enabling adaptation to various settings through Just-In-Time (JIT) compilation. Additionally, FlashInfer's load-balanced scheduling algorithm adjusts to dynamism of user requests while maintaining compatibility with CUDAGraph which requires static configuration. FlashInfer have been integrated into leading LLM serving frameworks like SGLang, vLLM and MLC-Engine. Comprehensive kernel-level and end-to-end evaluations demonstrate FlashInfer's ability to significantly boost kernel performance across diverse inference scenarios: compared to state-of-the-art LLM serving solutions, FlashInfer achieve 29-69% inter-token-latency reduction compared to compiler backends for LLM serving benchmark, 28-30% latency reduction for long-context inference, and 13-17% speedup for LLM serving with parallel generation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "99a9609622151d6474052249470174e0f740bde1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-20399",
+      "ArXiv": "2410.20399",
+      "DOI": "10.48550/arXiv.2410.20399",
+      "CorpusId": 273654069
+    },
+    "title": "ThunderKittens: Simple, Fast, and Adorable AI Kernels",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.20399, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2259914006",
+        "name": "B. Spector"
+      },
+      {
+        "authorId": "2259924225",
+        "name": "Simran Arora"
+      },
+      {
+        "authorId": "2266238076",
+        "name": "Aaryan Singhal"
+      },
+      {
+        "authorId": "2259931128",
+        "name": "Daniel Y. Fu"
+      },
+      {
+        "authorId": "2313917068",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "The challenge of mapping AI architectures to GPU hardware is creating a critical bottleneck in AI progress. Despite substantial efforts, hand-written custom kernels fail to meet their theoretical performance thresholds, even on well-established operations like linear attention. The diverse hardware capabilities of GPUs might suggest that we need a wide variety of techniques to achieve high performance. However, our work explores whether a small number of key abstractions can drastically simplify the process. We present ThunderKittens (TK), a framework for writing performant AI kernels while remaining easy to use and maintain. Our abstractions map to the three levels of the GPU hierarchy: (1) at the warp-level, we provide 16x16 matrix tiles as basic data structures and PyTorch-like parallel compute operations over tiles, (2) at the thread-block level, we provide a template for overlapping asynchronous operations across parallel warps, and (3) at the grid-level, we provide support to help hide the block launch and tear-down, and memory costs. We show the value of TK by providing kernels that match or outperform prior kernels for a range of AI operations. We match CuBLAS and FlashAttention-3 on GEMM and attention inference performance and outperform the strongest baselines by $10-40\\%$ on attention backwards, $8\\times$ on state space models, and $14\\times$ on linear attention.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "5d1ca53a0b41f4f5c960cd9997556d7180d6b88d",
+    "externalIds": {
+      "ArXiv": "2407.08608",
+      "DBLP": "journals/corr/abs-2407-08608",
+      "DOI": "10.48550/arXiv.2407.08608",
+      "CorpusId": 271098045
+    },
+    "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 472,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.08608, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275225725",
+        "name": "Jay Shah"
+      },
+      {
+        "authorId": "3206527",
+        "name": "Ganesh Bikshandi"
+      },
+      {
+        "authorId": "2364038157",
+        "name": "Ying Zhang"
+      },
+      {
+        "authorId": "49150146",
+        "name": "Vijay Thakkar"
+      },
+      {
+        "authorId": "2381994933",
+        "name": "P. Ramani"
+      },
+      {
+        "authorId": "2363574323",
+        "name": "Tri Dao"
+      }
+    ],
+    "abstract": "Attention, as a core layer of the ubiquitous Transformer architecture, is the bottleneck for large language models and long-context applications. FlashAttention elaborated an approach to speed up attention on GPUs through minimizing memory reads/writes. However, it has yet to take advantage of new capabilities present in recent hardware, with FlashAttention-2 achieving only 35% utilization on the H100 GPU. We develop three main techniques to speed up attention on Hopper GPUs: exploiting asynchrony of the Tensor Cores and TMA to (1) overlap overall computation and data movement via warp-specialization and (2) interleave block-wise matmul and softmax operations, and (3) block quantization and incoherent processing that leverages hardware support for FP8 low-precision. We demonstrate that our method, FlashAttention-3, achieves speedup on H100 GPUs by 1.5-2.0$\\times$ with FP16 reaching up to 740 TFLOPs/s (75% utilization), and with FP8 reaching close to 1.2 PFLOPs/s. We validate that FP8 FlashAttention-3 achieves 2.6$\\times$ lower numerical error than a baseline FP8 attention.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7be8750e3b3d1d004b9dd91a11e0c508495969a2",
+    "externalIds": {
+      "ArXiv": "2405.05751",
+      "DBLP": "conf/osdi/WuCLSJAVMPJ25",
+      "CorpusId": 274981984
+    },
+    "title": "Mirage: A Multi-Level Superoptimizer for Tensor Programs",
+    "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+    "year": 2024,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.05751, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2288171201",
+        "name": "Mengdi Wu"
+      },
+      {
+        "authorId": "2217941981",
+        "name": "Xinhao Cheng"
+      },
+      {
+        "authorId": "2337664168",
+        "name": "Shengyu Liu"
+      },
+      {
+        "authorId": "2192580828",
+        "name": "Chunan Shi"
+      },
+      {
+        "authorId": "2337343837",
+        "name": "Jianan Ji"
+      },
+      {
+        "authorId": "2074823945",
+        "name": "M. Ao"
+      },
+      {
+        "authorId": "2336868560",
+        "name": "Praveen Velliengiri"
+      },
+      {
+        "authorId": "2270842291",
+        "name": "Xupeng Miao"
+      },
+      {
+        "authorId": "2381030",
+        "name": "Oded Padon"
+      },
+      {
+        "authorId": "2286667120",
+        "name": "Zhihao Jia"
+      }
+    ],
+    "abstract": "We introduce Mirage, the first multi-level superoptimizer for tensor programs. A key idea in Mirage is $\\mu$Graphs, a uniform representation of tensor programs at the kernel, thread block, and thread levels of the GPU compute hierarchy. $\\mu$Graphs enable Mirage to discover novel optimizations that combine algebraic transformations, schedule transformations, and generation of new custom kernels. To navigate the large search space, Mirage introduces a pruning technique based on abstraction that significantly reduces the search space and provides a certain optimality guarantee. To ensure that the optimized $\\mu$Graph is equivalent to the input program, Mirage introduces a probabilistic equivalence verification procedure with strong theoretical guarantees. Our evaluation shows that Mirage outperforms existing approaches by up to 3.3$\\times$ even for DNNs that are widely used and heavily optimized. Mirage is publicly available at https://github.com/mirage-project/mirage.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3adca9d49eab1a4db6538a995af3636d10e120c3",
+    "externalIds": {
+      "DBLP": "journals/pacmmod/ZhengPWZZGQSBZDZL23",
+      "DOI": "10.1145/3617327",
+      "CorpusId": 265167092
+    },
+    "title": "BladeDISC: Optimizing Dynamic Shape Machine Learning Workloads via Compiler Approach",
+    "venue": "Proc. ACM Manag. Data",
+    "year": 2023,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3617327?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3617327, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2266718273",
+        "name": "Zhen Zheng"
+      },
+      {
+        "authorId": "2111673955",
+        "name": "Zaifeng Pan"
+      },
+      {
+        "authorId": "2266704783",
+        "name": "Dalin Wang"
+      },
+      {
+        "authorId": "2113842197",
+        "name": "Kai Zhu"
+      },
+      {
+        "authorId": "2367091388",
+        "name": "Wenyi Zhao"
+      },
+      {
+        "authorId": "2057579908",
+        "name": "Tianyou Guo"
+      },
+      {
+        "authorId": "118377955",
+        "name": "Xiafei Qiu"
+      },
+      {
+        "authorId": "2267222610",
+        "name": "Minmin Sun"
+      },
+      {
+        "authorId": "2113829116",
+        "name": "Junjie Bai"
+      },
+      {
+        "authorId": "2187787351",
+        "name": "Feng Zhang"
+      },
+      {
+        "authorId": "2243945891",
+        "name": "Xiaoyong Du"
+      },
+      {
+        "authorId": "2467444",
+        "name": "Jidong Zhai"
+      },
+      {
+        "authorId": "2262822986",
+        "name": "Wei Lin"
+      }
+    ],
+    "abstract": "Compiler optimization plays an increasingly important role to boost the performance of machine learning models for data processing and management. With increasingly complex data, the dynamic tensor shape phenomenon emerges for ML models. However, existing ML compilers either can only handle static shape models or expose a series of performance problems for both operator fusion optimization and code generation in dynamic shape scenes. This paper tackles the main challenges of dynamic shape optimization: the fusion optimization without shape value, and code generation supporting arbitrary shapes. To tackle the fundamental challenge of the absence of shape values, it systematically abstracts and excavates the shape information and designs a cross-level symbolic shape representation. With the insight that what fusion optimization relies upon is tensor shape relationships between adjacent operators rather than exact shape values, it proposes the dynamic shape fusion approach based on shape information propagation. To generate code that adapts to arbitrary shapes efficiently, it proposes a compile-time and runtime combined code generation approach. Finally, it presents a complete optimization pipeline for dynamic shape models and implements an industrial-grade ML compiler, named BladeDISC. The extensive evaluation demonstrates that BladeDISC outperforms PyTorch, TorchScript, TVM, ONNX Runtime, XLA, Torch Inductor (dynamic shape), and TensorRT by up to 6.95×, 6.25×, 4.08×, 2.04×, 2.06×, 7.92×, and 4.16× (3.54×, 3.12×, 1.95×, 1.47×, 1.24×, 2.93×, and 1.46× on average) in terms of end-to-end inference speedup on the A10 and T4 GPU, respectively. BladeDISC's source code is publicly available at https://github.com/alibaba/BladeDISC.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "83b90f4a0ae4cc214eb3cc140ccfef9cd99fac05",
+    "externalIds": {
+      "DBLP": "conf/sosp/KwonLZ0ZY0ZS23",
+      "ArXiv": "2309.06180",
+      "DOI": "10.1145/3600006.3613165",
+      "CorpusId": 261697361
+    },
+    "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+    "venue": "Symposium on Operating Systems Principles",
+    "year": 2023,
+    "citationCount": 5527,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3600006.3613165",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.06180, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2239096468",
+        "name": "Woosuk Kwon"
+      },
+      {
+        "authorId": "2141335450",
+        "name": "Zhuohan Li"
+      },
+      {
+        "authorId": "92721493",
+        "name": "Siyuan Zhuang"
+      },
+      {
+        "authorId": "2209360681",
+        "name": "Ying Sheng"
+      },
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "2239168517",
+        "name": "Cody Hao Yu"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "145140331",
+        "name": "Haotong Zhang"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": "High throughput serving of large language models (LLMs) requires batching sufficiently many requests at a time. However, existing systems struggle because the key-value cache (KV cache) memory for each request is huge and grows and shrinks dynamically. When managed inefficiently, this memory can be significantly wasted by fragmentation and redundant duplication, limiting the batch size. To address this problem, we propose PagedAttention, an attention algorithm inspired by the classical virtual memory and paging techniques in operating systems. On top of it, we build vLLM, an LLM serving system that achieves (1) near-zero waste in KV cache memory and (2) flexible sharing of KV cache within and across requests to further reduce memory usage. Our evaluations show that vLLM improves the throughput of popular LLMs by 2--4× with the same level of latency compared to the state-of-the-art systems, such as FasterTransformer and Orca. The improvement is more pronounced with longer sequences, larger models, and more complex decoding algorithms. vLLM's source code is publicly available at https://github.com/vllm-project/vllm.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "823ca4778e1027f2f0b356df051d762dcecaaba0",
+    "externalIds": {
+      "ArXiv": "2307.08691",
+      "DBLP": "journals/corr/abs-2307-08691",
+      "DOI": "10.48550/arXiv.2307.08691",
+      "CorpusId": 259936734
+    },
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 2544,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.08691",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.08691, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      }
+    ],
+    "abstract": "Scaling Transformers to longer sequence lengths has been a major problem in the last several years, promising to improve performance in language modeling and high-resolution image understanding, as well as to unlock new applications in code, audio, and video generation. The attention layer is the main bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in the sequence length. FlashAttention exploits the asymmetric GPU memory hierarchy to bring significant memory saving (linear instead of quadratic) and runtime speedup (2-4$\\times$ compared to optimized baselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized matrix-multiply (GEMM) operations, reaching only 25-40\\% of the theoretical maximum FLOPs/s. We observe that the inefficiency is due to suboptimal work partitioning between different thread blocks and warps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. We propose FlashAttention-2, with better work partitioning to address these issues. In particular, we (1) tweak the algorithm to reduce the number of non-matmul FLOPs (2) parallelize the attention computation, even for a single head, across different thread blocks to increase occupancy, and (3) within each thread block, distribute the work between warps to reduce communication through shared memory. These yield around 2$\\times$ speedup compared to FlashAttention, reaching 50-73\\% of the theoretical maximum FLOPs/s on A100 and getting close to the efficiency of GEMM operations. We empirically validate that when used end-to-end to train GPT-style models, FlashAttention-2 reaches training speed of up to 225 TFLOPs/s per A100 GPU (72\\% model FLOPs utilization).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8c870bef01a4fbb20f60722ffc2f6bee3870b18b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2209-03143",
+      "ArXiv": "2209.03143",
+      "DOI": "10.1109/TASLP.2023.3288409",
+      "CorpusId": 252111134
+    },
+    "title": "AudioLM: A Language Modeling Approach to Audio Generation",
+    "venue": "IEEE/ACM Transactions on Audio Speech and Language Processing",
+    "year": 2022,
+    "citationCount": 902,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2209.03143",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.03143, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144494941",
+        "name": "Zalán Borsos"
+      },
+      {
+        "authorId": "52153018",
+        "name": "Raphaël Marinier"
+      },
+      {
+        "authorId": "40412424",
+        "name": "Damien Vincent"
+      },
+      {
+        "authorId": "144875326",
+        "name": "E. Kharitonov"
+      },
+      {
+        "authorId": "1721354",
+        "name": "O. Pietquin"
+      },
+      {
+        "authorId": "2112139582",
+        "name": "Matthew Sharifi"
+      },
+      {
+        "authorId": "3181733",
+        "name": "Dominik Roblek"
+      },
+      {
+        "authorId": "2386687",
+        "name": "Olivier Teboul"
+      },
+      {
+        "authorId": "2529182",
+        "name": "David Grangier"
+      },
+      {
+        "authorId": "1749128",
+        "name": "M. Tagliasacchi"
+      },
+      {
+        "authorId": "3404556",
+        "name": "Neil Zeghidour"
+      }
+    ],
+    "abstract": "We introduce AudioLM, a framework for high-quality audio generation with long-term consistency. AudioLM maps the input audio to a sequence of discrete tokens and casts audio generation as a language modeling task in this representation space. We show how existing audio tokenizers provide different trade-offs between reconstruction quality and long-term structure, and we propose a hybrid tokenization scheme to achieve both objectives. Namely, we leverage the discretized activations of a masked language model pre-trained on audio to capture long-term structure and the discrete codes produced by a neural audio codec to achieve high-quality synthesis. By training on large corpora of raw audio waveforms, AudioLM learns to generate natural and coherent continuations given short prompts. When trained on speech, and without any transcript or annotation, AudioLM generates syntactically and semantically plausible speech continuations while also maintaining speaker identity and prosody for unseen speakers. Furthermore, we demonstrate how our approach extends beyond speech by generating coherent piano music continuations, despite being trained without any symbolic representation of music.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c022f75b00d795c6297d6a9ea948856ea4d365a1",
+    "externalIds": {
+      "DBLP": "conf/sc/AminabadiRALLZRSZRH22",
+      "ArXiv": "2207.00032",
+      "DOI": "10.1109/SC41404.2022.00051",
+      "CorpusId": 250243681
+    },
+    "title": "DeepSpeed- Inference: Enabling Efficient Inference of Transformer Models at Unprecedented Scale",
+    "venue": "International Conference for High Performance Computing, Networking, Storage and Analysis",
+    "year": 2022,
+    "citationCount": 571,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2207.00032",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.00032, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3394222",
+        "name": "Reza Yazdani Aminabadi"
+      },
+      {
+        "authorId": "32817044",
+        "name": "Samyam Rajbhandari"
+      },
+      {
+        "authorId": "67016465",
+        "name": "Minjia Zhang"
+      },
+      {
+        "authorId": "2942686",
+        "name": "A. A. Awan"
+      },
+      {
+        "authorId": "2133092186",
+        "name": "Cheng Li"
+      },
+      {
+        "authorId": "2363525996",
+        "name": "Duo Li"
+      },
+      {
+        "authorId": "123820298",
+        "name": "Elton Zheng"
+      },
+      {
+        "authorId": "3299496",
+        "name": "Jeff Rasley"
+      },
+      {
+        "authorId": "2110486618",
+        "name": "Shaden Smith"
+      },
+      {
+        "authorId": "2537545",
+        "name": "Olatunji Ruwase"
+      },
+      {
+        "authorId": "2300208615",
+        "name": "Yuxiong He"
+      }
+    ],
+    "abstract": "The landscape of transformer model inference is increasingly diverse in model size, model characteristics, latency and throughput requirements, hardware requirements, etc. With such diversity, designing a versatile inference system is challenging. DeepSpeed-Inference addresses these challenges by (1) a multi-GPU inference solution to minimize latency while maximizing throughput for both dense and sparse transformers when the model fits in aggregate GPU memory, and (2) a heterogeneous inference solution that leverages CPU/NVMe/GPU memory to enable high-throughput inference for models larger than aggregate GPU memory. DeepSpeed-Inference reduces latency by 6.4× and increases throughput by 1.5 ×over the state-of-the-art. It enables trillion parameter scale inference under real-time latency constraints by leveraging hundreds of GPUs, an unprecedented scale for inference. It can inference 25 ×larger models than with GPU-only solutions, while delivering a high throughput of 84 TFLOPS (over 50% of A6000 peak).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "87c5b281fa43e6f27191b20a8dd694eda1126336",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2205-14135",
+      "ArXiv": "2205.14135",
+      "DOI": "10.52202/068431-1189",
+      "CorpusId": 249151871
+    },
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 4098,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.14135, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      },
+      {
+        "authorId": "49577833",
+        "name": "Daniel Y. Fu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "1755572",
+        "name": "A. Rudra"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "Transformers are slow and memory-hungry on long sequences, since the time and memory complexity of self-attention are quadratic in sequence length. Approximate attention methods have attempted to address this problem by trading off model quality to reduce the compute complexity, but often do not achieve wall-clock speedup. We argue that a missing principle is making attention algorithms IO-aware -- accounting for reads and writes between levels of GPU memory. We propose FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce the number of memory reads/writes between GPU high bandwidth memory (HBM) and GPU on-chip SRAM. We analyze the IO complexity of FlashAttention, showing that it requires fewer HBM accesses than standard attention, and is optimal for a range of SRAM sizes. We also extend FlashAttention to block-sparse attention, yielding an approximate attention algorithm that is faster than any existing approximate attention method. FlashAttention trains Transformers faster than existing baselines: 15% end-to-end wall-clock speedup on BERT-large (seq. length 512) compared to the MLPerf 1.1 training speed record, 3$\\times$ speedup on GPT-2 (seq. length 1K), and 2.4$\\times$ speedup on long-range arena (seq. length 1K-4K). FlashAttention and block-sparse FlashAttention enable longer context in Transformers, yielding higher quality models (0.7 better perplexity on GPT-2 and 6.4 points of lift on long-document classification) and entirely new capabilities: the first Transformers to achieve better-than-chance performance on the Path-X challenge (seq. length 16K, 61.4% accuracy) and Path-256 (seq. length 64K, 63.1% accuracy).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9695824d7a01fad57ba9c01d7d76a519d78d65e7",
+    "externalIds": {
+      "ArXiv": "2205.11487",
+      "DBLP": "journals/corr/abs-2205-11487",
+      "DOI": "10.48550/arXiv.2205.11487",
+      "CorpusId": 248986576
+    },
+    "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 8123,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.11487",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.11487, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51497543",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2054003577",
+        "name": "Saurabh Saxena"
+      },
+      {
+        "authorId": "2111917831",
+        "name": "Lala Li"
+      },
+      {
+        "authorId": "21040156",
+        "name": "Jay Whang"
+      },
+      {
+        "authorId": "40081727",
+        "name": "Emily L. Denton"
+      },
+      {
+        "authorId": "81419386",
+        "name": "Seyed Kamyar Seyed Ghasemipour"
+      },
+      {
+        "authorId": "143990191",
+        "name": "Burcu Karagol Ayan"
+      },
+      {
+        "authorId": "1982213",
+        "name": "S. S. Mahdavi"
+      },
+      {
+        "authorId": "143826364",
+        "name": "Raphael Gontijo Lopes"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "We present Imagen, a text-to-image diffusion model with an unprecedented degree of photorealism and a deep level of language understanding. Imagen builds on the power of large transformer language models in understanding text and hinges on the strength of diffusion models in high-fidelity image generation. Our key discovery is that generic large language models (e.g. T5), pretrained on text-only corpora, are surprisingly effective at encoding text for image synthesis: increasing the size of the language model in Imagen boosts both sample fidelity and image-text alignment much more than increasing the size of the image diffusion model. Imagen achieves a new state-of-the-art FID score of 7.27 on the COCO dataset, without ever training on COCO, and human raters find Imagen samples to be on par with the COCO data itself in image-text alignment. To assess text-to-image models in greater depth, we introduce DrawBench, a comprehensive and challenging benchmark for text-to-image models. With DrawBench, we compare Imagen with recent methods including VQ-GAN+CLIP, Latent Diffusion Models, and DALL-E 2, and find that human raters prefer Imagen over other models in side-by-side comparisons, both in terms of sample quality and image-text alignment. See https://imagen.research.google/ for an overview of the results.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "774591fdd988eaaff3917e7c5171d044b0843e63",
+    "externalIds": {
+      "ArXiv": "2104.04473",
+      "DBLP": "conf/sc/NarayananSCLPKV21",
+      "DOI": "10.1145/3458817.3476209",
+      "CorpusId": 236635565
+    },
+    "title": "Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM",
+    "venue": "International Conference for High Performance Computing, Networking, Storage and Analysis",
+    "year": 2021,
+    "citationCount": 1133,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2104.04473",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.04473, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22252150",
+        "name": "D. Narayanan"
+      },
+      {
+        "authorId": "1911755",
+        "name": "M. Shoeybi"
+      },
+      {
+        "authorId": "48991386",
+        "name": "J. Casper"
+      },
+      {
+        "authorId": "3081566",
+        "name": "P. LeGresley"
+      },
+      {
+        "authorId": "66870756",
+        "name": "M. Patwary"
+      },
+      {
+        "authorId": "3111334",
+        "name": "V. Korthikanti"
+      },
+      {
+        "authorId": "2868987",
+        "name": "Dmitri Vainbrand"
+      },
+      {
+        "authorId": "1491502408",
+        "name": "Prethvi Kashinkunti"
+      },
+      {
+        "authorId": "2745589",
+        "name": "J. Bernauer"
+      },
+      {
+        "authorId": "2301680",
+        "name": "Bryan Catanzaro"
+      },
+      {
+        "authorId": "3078275",
+        "name": "Amar Phanishayee"
+      },
+      {
+        "authorId": "143834867",
+        "name": "M. Zaharia"
+      }
+    ],
+    "abstract": "Large language models have led to state-of-the-art accuracies across several tasks. However, training these models efficiently is challenging because: a) GPU memory capacity is limited, making it impossible to fit large models on even a multi-GPU server, and b) the number of compute operations required can result in unrealistically long training times. Consequently, new methods of model parallelism such as tensor and pipeline parallelism have been proposed. Unfortunately, naive usage of these methods leads to scaling issues at thousands of GPUs. In this paper, we show how tensor, pipeline, and data parallelism can be composed to scale to thousands of GPUs. We propose a novel interleaved pipelining schedule that can improve throughput by 10+% with memory footprint comparable to existing approaches. Our approach allows us to perform training iterations on a model with 1 trillion parameters at 502 petaFLOP/s on 3072 GPUs (per-GPU throughput of 52% of theoretical peak).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "50796b0f3edf9cb5ff1e447c298b33755378aa4f",
+    "externalIds": {
+      "DBLP": "conf/acl/DuQLDQY022",
+      "ACL": "2022.acl-long.26",
+      "ArXiv": "2103.10360",
+      "DOI": "10.18653/v1/2022.acl-long.26",
+      "CorpusId": 247519241
+    },
+    "title": "GLM: General Language Model Pretraining with Autoregressive Blank Infilling",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 1901,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.acl-long.26.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.10360, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "66395694",
+        "name": "Zhengxiao Du"
+      },
+      {
+        "authorId": "5606742",
+        "name": "Yujie Qian"
+      },
+      {
+        "authorId": "2111312892",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "145573466",
+        "name": "Ming Ding"
+      },
+      {
+        "authorId": "40125294",
+        "name": "J. Qiu"
+      },
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "2109541439",
+        "name": "Jie Tang"
+      }
+    ],
+    "abstract": "There have been various types of pretraining architectures including autoencoding models (e.g., BERT), autoregressive models (e.g., GPT), and encoder-decoder models (e.g., T5). However, none of the pretraining frameworks performs the best for all tasks of three main categories including natural language understanding (NLU), unconditional generation, and conditional generation. We propose a General Language Model (GLM) based on autoregressive blank infilling to address this challenge. GLM improves blank filling pretraining by adding 2D positional encodings and allowing an arbitrary order to predict spans, which results in performance gains over BERT and T5 on NLU tasks. Meanwhile, GLM can be pretrained for different types of tasks by varying the number and lengths of blanks. On a wide range of tasks across NLU, conditional and unconditional generation, GLM outperforms BERT, T5, and GPT given the same model sizes and data, and achieves the best performance from a single pretrained model with 1.25× parameters of BERT Large , demonstrating its generalizability to different downstream tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "75dad1b0d547534809b029e4af69c2e30d002c33",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2101-01332",
+      "ArXiv": "2101.01332",
+      "CorpusId": 230523881
+    },
+    "title": "Equality Saturation for Tensor Graph Superoptimization",
+    "venue": "Conference on Machine Learning and Systems",
+    "year": 2021,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.01332, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2381920641",
+        "name": "Yicheng Yang"
+      },
+      {
+        "authorId": "2001142509",
+        "name": "Mangpo Phitchaya Phothilimtha"
+      },
+      {
+        "authorId": "2115869792",
+        "name": "Y. Wang"
+      },
+      {
+        "authorId": "8810543",
+        "name": "Max Willsey"
+      },
+      {
+        "authorId": "1473253195",
+        "name": "Sudip Roy"
+      },
+      {
+        "authorId": "2027586309",
+        "name": "Jacques Pienaar"
+      }
+    ],
+    "abstract": "One of the major optimizations employed in deep learning frameworks is graph rewriting. Production frameworks rely on heuristics to decide if rewrite rules should be applied and in which order. Prior research has shown that one can discover more optimal tensor computation graphs if we search for a better sequence of substitutions instead of relying on heuristics. However, we observe that existing approaches for tensor graph superoptimization both in production and research frameworks apply substitutions in a sequential manner. Such sequential search methods are sensitive to the order in which the substitutions are applied and often only explore a small fragment of the exponential space of equivalent graphs. This paper presents a novel technique for tensor graph superoptimization that employs equality saturation to apply all possible substitutions at once. We show that our approach can find optimized graphs with up to 16% speedup over state-of-the-art, while spending on average 48x less time optimizing.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+    "externalIds": {
+      "ArXiv": "2010.11929",
+      "MAG": "3119786062",
+      "DBLP": "conf/iclr/DosovitskiyB0WZ21",
+      "CorpusId": 225039882
+    },
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 61150,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "3319373",
+        "name": "Dirk Weissenborn"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "2274215058",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "46352821",
+        "name": "M. Minderer"
+      },
+      {
+        "authorId": "2280399",
+        "name": "G. Heigold"
+      },
+      {
+        "authorId": "1802148",
+        "name": "S. Gelly"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "09bda461aa4911d0513e8e46dd39a4113947e450",
+    "externalIds": {
+      "DBLP": "conf/osdi/ZhengJSWYHWYZSG20",
+      "MAG": "3035582633",
+      "ArXiv": "2006.06762",
+      "CorpusId": 219636278
+    },
+    "title": "Ansor : Generating High-Performance Tensor Programs for Deep Learning",
+    "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+    "year": 2020,
+    "citationCount": 541,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.06762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "51195858",
+        "name": "Chengfan Jia"
+      },
+      {
+        "authorId": "2118254471",
+        "name": "Minmin Sun"
+      },
+      {
+        "authorId": "2146045513",
+        "name": "Zhao Wu"
+      },
+      {
+        "authorId": "17813719",
+        "name": "Cody Hao Yu"
+      },
+      {
+        "authorId": "1411406011",
+        "name": "Ameer Haj-Ali"
+      },
+      {
+        "authorId": null,
+        "name": "Yida Wang"
+      },
+      {
+        "authorId": "2146156715",
+        "name": "Jun Yang"
+      },
+      {
+        "authorId": "2720913",
+        "name": "Danyang Zhuo"
+      },
+      {
+        "authorId": "145741786",
+        "name": "Koushik Sen"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "2316152839",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": "High-performance tensor programs are crucial to guarantee efficient execution of deep learning models. However, obtaining performant tensor programs for different operators on various hardware platforms is notoriously difficult. Currently, deep learning systems rely on vendor-provided kernel libraries or various search strategies to get performant tensor programs. These approaches either require significant engineering efforts in developing platform-specific optimization code or fall short in finding high-performance programs due to restricted search space and ineffective exploration strategy. \nWe present Ansor, a tensor program generation framework for deep learning applications. Compared with existing search strategies, Ansor explores much more optimization combinations by sampling programs from a hierarchical representation of the search space. Ansor then fine-tunes the sampled programs with evolutionary search and a learned cost model to identify the best programs. Ansor can find high-performance programs that are outside the search space of existing state-of-the-art approaches. Besides, Ansor utilizes a scheduler to simultaneously optimize multiple subgraphs in a set of deep neural networks. Our evaluation shows that Ansor improves the execution performance of deep neural networks on the Intel CPU, ARM CPU, and NVIDIA GPU by up to $3.8\\times$, $2.6\\times$, and $1.7 \\times$, respectively.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f48d20efbd7841df1f900e123374024589da2582",
+    "externalIds": {
+      "DBLP": "journals/pacmpl/WillseyNWFTP21",
+      "MAG": "3099525000",
+      "DOI": "10.1145/3434304",
+      "CorpusId": 226282597
+    },
+    "title": "egg: Fast and extensible equality saturation",
+    "venue": "Proc. ACM Program. Lang.",
+    "year": 2020,
+    "citationCount": 264,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3434304",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3434304?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3434304, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8810543",
+        "name": "Max Willsey"
+      },
+      {
+        "authorId": "34910935",
+        "name": "Chandrakana Nandi"
+      },
+      {
+        "authorId": "2115869792",
+        "name": "Y. Wang"
+      },
+      {
+        "authorId": "1617904554",
+        "name": "Oliver Flatt"
+      },
+      {
+        "authorId": "2272813",
+        "name": "Zachary Tatlock"
+      },
+      {
+        "authorId": "2333441",
+        "name": "P. Panchekha"
+      }
+    ],
+    "abstract": "An e-graph efficiently represents a congruence relation over many expressions. Although they were originally developed in the late 1970s for use in automated theorem provers, a more recent technique known as equality saturation repurposes e-graphs to implement state-of-the-art, rewrite-driven compiler optimizations and program synthesizers. However, e-graphs remain unspecialized for this newer use case. Equality saturation workloads exhibit distinct characteristics and often require ad-hoc e-graph extensions to incorporate transformations beyond purely syntactic rewrites. This work contributes two techniques that make e-graphs fast and extensible, specializing them to equality saturation. A new amortized invariant restoration technique called rebuilding takes advantage of equality saturation's distinct workload, providing asymptotic speedups over current techniques in practice. A general mechanism called e-class analyses integrates domain-specific analyses into the e-graph, reducing the need for ad hoc manipulation. We implemented these techniques in a new open-source library called egg. Our case studies on three previously published applications of equality saturation highlight how egg's performance and flexibility enable state-of-the-art results across diverse domains.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d84e056bc71e98424912a43f04471600f12804aa",
+    "externalIds": {
+      "DBLP": "conf/asplos/Zheng0WCS20",
+      "MAG": "3012249773",
+      "DOI": "10.1145/3373376.3378508",
+      "CorpusId": 212687780
+    },
+    "title": "FlexTensor: An Automatic Schedule Exploration and Optimization Framework for Tensor Computation on Heterogeneous System",
+    "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+    "year": 2020,
+    "citationCount": 235,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3373376.3378508?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3373376.3378508, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1561195919",
+        "name": "Size Zheng"
+      },
+      {
+        "authorId": "144884036",
+        "name": "Yun Liang"
+      },
+      {
+        "authorId": "2146294770",
+        "name": "Shuo Wang"
+      },
+      {
+        "authorId": "1562383765",
+        "name": "Renze Chen"
+      },
+      {
+        "authorId": "1561622231",
+        "name": "Kaiwen Sheng"
+      }
+    ],
+    "abstract": "Tensor computation plays a paramount role in a broad range of domains, including machine learning, data analytics, and scientific computing. The wide adoption of tensor computation and its huge computation cost has led to high demand for flexible, portable, and high-performance library implementation on heterogeneous hardware accelerators such as GPUs and FPGAs. However, the current tensor library implementation mainly requires programmers to manually design low-level implementation and optimize from the algorithm, architecture, and compilation perspectives. Such a manual development process often takes months or even years, which falls far behind the rapid evolution of the application algorithms. In this paper, we introduce FlexTensor, which is a schedule exploration and optimization framework for tensor computation on heterogeneous systems. FlexTensor can optimize tensor computation programs without human interference, allowing programmers to only work on high-level programming abstraction without considering the hardware platform details. FlexTensor systematically explores the optimization design spaces that are composed of many different schedules for different hardware. Then, FlexTensor combines different exploration techniques, including heuristic method and machine learning method to find the optimized schedule configuration. Finally, based on the results of exploration, customized schedules are automatically generated for different hardware. In the experiments, we test 12 different kinds of tensor computations with totally hundreds of test cases and FlexTensor achieves average 1.83x performance speedup on NVIDIA V100 GPU compared to cuDNN; 1.72x performance speedup on Intel Xeon CPU compared to MKL-DNN for 2D convolution; 1.5x performance speedup on Xilinx VU9P FPGA compared to OpenCL baselines; 2.21x speedup on NVIDIA V100 GPU compared to the state-of-the-art.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a38e4c9772172beb56c184a9b5c8fbb77cf18457",
+    "externalIds": {
+      "MAG": "3007772124",
+      "DBLP": "journals/corr/abs-2002-11054",
+      "ArXiv": "2002.11054",
+      "CorpusId": 211296505
+    },
+    "title": "MLIR: A Compiler Infrastructure for the End of Moore's Law",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.11054, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1765246",
+        "name": "Chris Lattner"
+      },
+      {
+        "authorId": "47305537",
+        "name": "J. Pienaar"
+      },
+      {
+        "authorId": "9426225",
+        "name": "M. Amini"
+      },
+      {
+        "authorId": "1751936",
+        "name": "Uday Bondhugula"
+      },
+      {
+        "authorId": "1505470866",
+        "name": "River Riddle"
+      },
+      {
+        "authorId": "145509576",
+        "name": "Albert Cohen"
+      },
+      {
+        "authorId": "1774432",
+        "name": "T. Shpeisman"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "1800919",
+        "name": "Nicolas Vasilache"
+      },
+      {
+        "authorId": "2054833547",
+        "name": "O. Zinenko"
+      }
+    ],
+    "abstract": "This work presents MLIR, a novel approach to building reusable and extensible compiler infrastructure. MLIR aims to address software fragmentation, improve compilation for heterogeneous hardware, significantly reduce the cost of building domain specific compilers, and aid in connecting existing compilers together. MLIR facilitates the design and implementation of code generators, translators and optimizers at different levels of abstraction and also across application domains, hardware targets and execution environments. The contribution of this work includes (1) discussion of MLIR as a research artifact, built for extension and evolution, and identifying the challenges and opportunities posed by this novel design point in design, semantics, optimization specification, system, and engineering. (2) evaluation of MLIR as a generalized infrastructure that reduces the cost of building compilers-describing diverse use-cases to show research and educational opportunities for future programming languages, compilers, execution environments, and computer architecture. The paper also presents the rationale for MLIR, its original design principles, structures and semantics.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3c8a456509e6c0805354bd40a35e3f2dbf8069b1",
+    "externalIds": {
+      "MAG": "2970971581",
+      "DBLP": "journals/corr/abs-1912-01703",
+      "ArXiv": "1912.01703",
+      "CorpusId": 202786778
+    },
+    "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 51324,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.01703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3407277",
+        "name": "Adam Paszke"
+      },
+      {
+        "authorId": "39793298",
+        "name": "Sam Gross"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "1977806",
+        "name": "Adam Lerer"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "114250963",
+        "name": "Gregory Chanan"
+      },
+      {
+        "authorId": "2059271276",
+        "name": "Trevor Killeen"
+      },
+      {
+        "authorId": "3370429",
+        "name": "Zeming Lin"
+      },
+      {
+        "authorId": "3365851",
+        "name": "N. Gimelshein"
+      },
+      {
+        "authorId": "3029482",
+        "name": "L. Antiga"
+      },
+      {
+        "authorId": "3050846",
+        "name": "Alban Desmaison"
+      },
+      {
+        "authorId": "1473151134",
+        "name": "Andreas Köpf"
+      },
+      {
+        "authorId": "2052812305",
+        "name": "E. Yang"
+      },
+      {
+        "authorId": "2253681376",
+        "name": "Zachary DeVito"
+      },
+      {
+        "authorId": "10707709",
+        "name": "Martin Raison"
+      },
+      {
+        "authorId": "41203992",
+        "name": "Alykhan Tejani"
+      },
+      {
+        "authorId": "22236100",
+        "name": "Sasank Chilamkurthy"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "152599430",
+        "name": "Lu Fang"
+      },
+      {
+        "authorId": "2113829116",
+        "name": "Junjie Bai"
+      },
+      {
+        "authorId": "2127604",
+        "name": "Soumith Chintala"
+      }
+    ],
+    "abstract": "Deep learning frameworks have often focused on either usability or speed, but not both. PyTorch is a machine learning library that shows that these two goals are in fact compatible: it was designed from first principles to support an imperative and Pythonic programming style that supports code as a model, makes debugging easy and is consistent with other popular scientific computing libraries, while remaining efficient and supporting hardware accelerators such as GPUs. In this paper, we detail the principles that drove the implementation of PyTorch and how they are reflected in its architecture. We emphasize that every aspect of PyTorch is a regular Python program under the full control of its user. We also explain how the careful and pragmatic implementation of the key components of its runtime enables them to work together to achieve compelling performance. We demonstrate the efficiency of individual subsystems, as well as the overall speed of PyTorch on several commonly used benchmarks.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "80b362efee95c1759c6dab9219eb77ca3ee44475",
+    "externalIds": {
+      "DBLP": "conf/sosp/JiaPTWZA19",
+      "MAG": "2981758446",
+      "DOI": "10.1145/3341301.3359630",
+      "CorpusId": 202726856
+    },
+    "title": "TASO: optimizing deep learning computation with automatic generation of graph substitutions",
+    "venue": "Symposium on Operating Systems Principles",
+    "year": 2019,
+    "citationCount": 350,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3341301.3359630",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3341301.3359630?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3341301.3359630, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Zhihao Jia"
+      },
+      {
+        "authorId": "2381030",
+        "name": "Oded Padon"
+      },
+      {
+        "authorId": "2110226192",
+        "name": "James J. Thomas"
+      },
+      {
+        "authorId": "2155642",
+        "name": "Todd Warszawski"
+      },
+      {
+        "authorId": "143834867",
+        "name": "M. Zaharia"
+      },
+      {
+        "authorId": "144653825",
+        "name": "A. Aiken"
+      }
+    ],
+    "abstract": "Existing deep neural network (DNN) frameworks optimize the computation graph of a DNN by applying graph transformations manually designed by human experts. This approach misses possible graph optimizations and is difficult to scale, as new DNN operators are introduced on a regular basis. We propose TASO, the first DNN computation graph optimizer that automatically generates graph substitutions. TASO takes as input a list of operator specifications and generates candidate substitutions using the given operators as basic building blocks. All generated substitutions are formally verified against the operator specifications using an automated theorem prover. To optimize a given DNN computation graph, TASO performs a cost-based backtracking search, applying the substitutions to find an optimized graph, which can be directly used by existing DNN frameworks. Our evaluation on five real-world DNN architectures shows that TASO outperforms existing DNN frameworks by up to 2.8X, while requiring significantly less human effort. For example, TensorFlow currently contains approximately 53,000 lines of manual optimization rules, while the operator specifications needed by TASO are only 1,400 lines of code.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f90a7bc396e205b204d5d6066a10162f84b128f9",
+    "externalIds": {
+      "MAG": "2961619211",
+      "DBLP": "journals/tog/AdamsMABLGSJFDR19",
+      "DOI": "10.1145/3306346.3322967",
+      "CorpusId": 196834556
+    },
+    "title": "Learning to optimize halide with tree search and random programs",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2019,
+    "citationCount": 268,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3306346.3322967?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3306346.3322967, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144187067",
+        "name": "Andrew Adams"
+      },
+      {
+        "authorId": "151076950",
+        "name": "Karima Ma"
+      },
+      {
+        "authorId": "144413718",
+        "name": "Luke Anderson"
+      },
+      {
+        "authorId": "2244380582",
+        "name": "Riyadh Baghdadi"
+      },
+      {
+        "authorId": "1775024",
+        "name": "Tzu-Mao Li"
+      },
+      {
+        "authorId": "3282136",
+        "name": "Michaël Gharbi"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "2111936975",
+        "name": "Steven Johnson"
+      },
+      {
+        "authorId": "2789576",
+        "name": "Kayvon Fatahalian"
+      },
+      {
+        "authorId": "145403226",
+        "name": "F. Durand"
+      },
+      {
+        "authorId": "1401885963",
+        "name": "Jonathan Ragan-Kelley"
+      }
+    ],
+    "abstract": "We present a new algorithm to automatically schedule Halide programs for high-performance image processing and deep learning. We significantly improve upon the performance of previous methods, which considered a limited subset of schedules. We define a parameterization of possible schedules much larger than prior methods and use a variant of beam search to search over it. The search optimizes runtime predicted by a cost model based on a combination of new derived features and machine learning. We train the cost model by generating and featurizing hundreds of thousands of random programs and schedules. We show that this approach operates effectively with or without autotuning. It produces schedules which are on average almost twice as fast as the existing Halide autoscheduler without autotuning, or more than twice as fast with, and is the first automatic scheduling algorithm to significantly outperform human experts on average.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "661d142c23cb2a3207d5f1ba2ac7ff61f2d4fb2f",
+    "externalIds": {
+      "MAG": "2954698171",
+      "DBLP": "conf/pldi/TilletKC19",
+      "DOI": "10.1145/3315508.3329973",
+      "CorpusId": 184488182
+    },
+    "title": "Triton: an intermediate language and compiler for tiled neural network computations",
+    "venue": "MAPL@PLDI",
+    "year": 2019,
+    "citationCount": 665,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3315508.3329973?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3315508.3329973, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2365256215",
+        "name": "Philippe Tillet"
+      },
+      {
+        "authorId": "2105859614",
+        "name": "Hsiang-Tsung Kung"
+      },
+      {
+        "authorId": "2042941",
+        "name": "David D. Cox"
+      }
+    ],
+    "abstract": "The validation and deployment of novel research ideas in the field of Deep Learning is often limited by the availability of efficient compute kernels for certain basic primitives. In particular, operations that cannot leverage existing vendor libraries (e.g., cuBLAS, cuDNN) are at risk of facing poor device utilization unless custom implementations are written by experts – usually at the expense of portability. For this reason, the development of new programming abstractions for specifying custom Deep Learning workloads at a minimal performance cost has become crucial. We present Triton, a language and compiler centered around the concept of tile, i.e., statically shaped multi-dimensional sub-arrays. Our approach revolves around (1) a C-based language and an LLVM-based intermediate representation (IR) for expressing tensor programs in terms of operations on parametric tile variables and (2) a set of novel tile-level optimization passes for compiling these programs into efficient GPU code. We demonstrate how Triton can be used to build portable implementations of matrix multiplication and convolution kernels on par with hand-tuned vendor libraries (cuBLAS / cuDNN), or for efficiently implementing recent research ideas such as shift convolutions.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "0261195ae7e1545caefb0ea7afb92bd66bfbb790",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1805-00907",
+      "MAG": "2798341898",
+      "ArXiv": "1805.00907",
+      "CorpusId": 23823854
+    },
+    "title": "Glow: Graph Lowering Compiler Techniques for Neural Networks",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 328,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.00907, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3121592",
+        "name": "Nadav Rotem"
+      },
+      {
+        "authorId": "8855702",
+        "name": "J. Fix"
+      },
+      {
+        "authorId": "46247320",
+        "name": "Saleem Abdulrasool"
+      },
+      {
+        "authorId": "46193056",
+        "name": "Summer Deng"
+      },
+      {
+        "authorId": "46257780",
+        "name": "Roman Dzhabarov"
+      },
+      {
+        "authorId": "153509089",
+        "name": "James Hegeman"
+      },
+      {
+        "authorId": "46211183",
+        "name": "Roman Levenstein"
+      },
+      {
+        "authorId": "2130533",
+        "name": "Bertrand A. Maher"
+      },
+      {
+        "authorId": "143758120",
+        "name": "N. Satish"
+      },
+      {
+        "authorId": "2925676",
+        "name": "J. Olesen"
+      },
+      {
+        "authorId": "1686843",
+        "name": "Jongsoo Park"
+      },
+      {
+        "authorId": "46250117",
+        "name": "Artem Rakhov"
+      },
+      {
+        "authorId": "1711231",
+        "name": "M. Smelyanskiy"
+      }
+    ],
+    "abstract": "This paper presents the design of Glow, a machine learning compiler for heterogeneous hardware. It is a pragmatic approach to compilation that enables the generation of highly optimized code for multiple targets. Glow lowers the traditional neural network dataflow graph into a two-phase strongly-typed intermediate representation. The high-level intermediate representation allows the optimizer to perform domain-specific optimizations. The lower-level instruction-based address-only intermediate representation allows the compiler to perform memory-related optimizations, such as instruction scheduling, static memory allocation and copy elimination. At the lowest level, the optimizer performs machine-specific code generation to take advantage of specialized hardware features. Glow features a lowering phase which enables the compiler to support a high number of input operators as well as a large number of hardware targets by eliminating the need to implement all operators on all targets. The lowering phase is designed to reduce the input space and allow new hardware backends to focus on a small number of linear algebra primitives.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8c7310477fd027193cd040288f0aa9824c80b91f",
+    "externalIds": {
+      "MAG": "2949967139",
+      "ArXiv": "1804.10694",
+      "DBLP": "conf/cgo/BaghdadiRRSAZSK19",
+      "DOI": "10.1109/CGO.2019.8661197",
+      "CorpusId": 56173920
+    },
+    "title": "Tiramisu: A Polyhedral Compiler for Expressing Fast and Portable Code",
+    "venue": "IEEE/ACM International Symposium on Code Generation and Optimization",
+    "year": 2018,
+    "citationCount": 306,
+    "openAccessPdf": {
+      "url": "https://dspace.mit.edu/bitstream/1721.1/128700/2/tiramisu_paper.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCSA",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.10694, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1758245",
+        "name": "Riyadh Baghdadi"
+      },
+      {
+        "authorId": "4875117",
+        "name": "Jessica Ray"
+      },
+      {
+        "authorId": "40899986",
+        "name": "Malek Ben Romdhane"
+      },
+      {
+        "authorId": "3436746",
+        "name": "Emanuele Del Sozzo"
+      },
+      {
+        "authorId": "2060643",
+        "name": "Abdurrahman Akkas"
+      },
+      {
+        "authorId": "11860259",
+        "name": "Yunming Zhang"
+      },
+      {
+        "authorId": "8844033",
+        "name": "Patricia Suriana"
+      },
+      {
+        "authorId": "145683292",
+        "name": "Shoaib Kamil"
+      },
+      {
+        "authorId": "1709150",
+        "name": "Saman P. Amarasinghe"
+      }
+    ],
+    "abstract": "This paper introduces Tiramisu, a polyhedral framework designed to generate high performance code for multiple platforms including multicores, GPUs, and distributed machines. Tiramisu introduces a scheduling language with novel commands to explicitly manage the complexities that arise when targeting these systems. The framework is designed for the areas of image processing, stencils, linear algebra and deep learning. Tiramisu has two main features: it relies on a flexible representation based on the polyhedral model and it has a rich scheduling language allowing fine-grained control of optimizations. Tiramisu uses a four-level intermediate representation that allows full separation between the algorithms, loop transformations, data layouts, and communication. This separation simplifies targeting multiple hardware architectures with the same algorithm. We evaluate Tiramisu by writing a set of image processing, deep learning, and linear algebra benchmarks and compare them with state-of-the-art compilers and hand-tuned libraries. We show that Tiramisu matches or outperforms existing compilers and libraries on different hardware architectures, including multicore CPUs, GPUs, and distributed machines.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ac31658b2eceeff6ae4d8e2f73101ce019b1e62f",
+    "externalIds": {
+      "MAG": "2787513823",
+      "DBLP": "journals/corr/abs-1802-04799",
+      "CorpusId": 263897497
+    },
+    "title": "TVM: End-to-End Optimization Stack for Deep Learning",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 190,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2257252152",
+        "name": "Tianqi Chen"
+      },
+      {
+        "authorId": "47108160",
+        "name": "T. Moreau"
+      },
+      {
+        "authorId": "1732910",
+        "name": "Ziheng Jiang"
+      },
+      {
+        "authorId": "3050154",
+        "name": "Haichen Shen"
+      },
+      {
+        "authorId": "2621619",
+        "name": "Eddie Q. Yan"
+      },
+      {
+        "authorId": "2395222534",
+        "name": "Leyuan Wang"
+      },
+      {
+        "authorId": "2366484846",
+        "name": "Yuwei Hu"
+      },
+      {
+        "authorId": "2262445189",
+        "name": "Luis Ceze"
+      },
+      {
+        "authorId": "1412355294",
+        "name": "Carlos Guestrin"
+      },
+      {
+        "authorId": "2257173539",
+        "name": "Arvind Krishnamurthy"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "aa3553beb4bfa0793a4bed05704e35412342800e",
+    "externalIds": {
+      "DBLP": "conf/cgo/SteuwerRD17",
+      "MAG": "2594730095",
+      "DOI": "10.1109/CGO.2017.7863730",
+      "CorpusId": 7490888
+    },
+    "title": "LIFT: A functional data-parallel IR for high-performance GPU code generation",
+    "venue": "IEEE/ACM International Symposium on Code Generation and Optimization",
+    "year": 2017,
+    "citationCount": 172,
+    "openAccessPdf": {
+      "url": "https://eprints.gla.ac.uk/146596/1/146596.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CGO.2017.7863730?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CGO.2017.7863730, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1795890",
+        "name": "Michel Steuwer"
+      },
+      {
+        "authorId": "2539451",
+        "name": "Toomas Remmelg"
+      },
+      {
+        "authorId": "3224333",
+        "name": "Christophe Dubach"
+      }
+    ],
+    "abstract": "Parallel patterns (e.g., map, reduce) have gained traction as an abstraction for targeting parallel accelerators and are a promising answer to the performance portability problem. However, compiling high-level programs into efficient low-level parallel code is challenging. Current approaches start from a high-level parallel IR and proceed to emit GPU code directly in one big step. Fixed strategies are used to optimize and map parallelism exploiting properties of a particular GPU generation leading to performance portability issues. We introduce the LIFT IR, a new data-parallel IR which encodes OpenCL-specific constructs as functional patterns. Our prior work has shown that this functional nature simplifies the exploration of optimizations and mapping of parallelism from portable high-level programs using rewrite-rules. This paper describes how LIFT IR programs are compiled into efficient OpenCL code. This is non-trivial as many performance sensitive details such as memory allocation, array accesses or synchronization are not explicitly represented in the LIFT IR. We present techniques which overcome this challenge by exploiting the pattern's high-level semantics. Our evaluation shows that the LIFT IR is flexible enough to express GPU programs with complex optimizations achieving performance on par with manually optimized code.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4954fa180728932959997a4768411ff9136aac81",
+    "externalIds": {
+      "ArXiv": "1605.08695",
+      "MAG": "2953384591",
+      "DBLP": "journals/corr/AbadiBCCDDDGIIK16",
+      "CorpusId": 6287870
+    },
+    "title": "TensorFlow: A system for large-scale machine learning",
+    "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+    "year": 2016,
+    "citationCount": 19515,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.08695, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2057642721",
+        "name": "Martín Abadi"
+      },
+      {
+        "authorId": "144758007",
+        "name": "P. Barham"
+      },
+      {
+        "authorId": "2108406634",
+        "name": "Jianmin Chen"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "145139947",
+        "name": "M. Devin"
+      },
+      {
+        "authorId": "1780892",
+        "name": "S. Ghemawat"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      },
+      {
+        "authorId": "2090818",
+        "name": "M. Isard"
+      },
+      {
+        "authorId": "1942300",
+        "name": "M. Kudlur"
+      },
+      {
+        "authorId": "3369421",
+        "name": "J. Levenberg"
+      },
+      {
+        "authorId": "3089272",
+        "name": "R. Monga"
+      },
+      {
+        "authorId": "144375552",
+        "name": "Sherry Moore"
+      },
+      {
+        "authorId": "20154699",
+        "name": "D. Murray"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "2080690",
+        "name": "P. Tucker"
+      },
+      {
+        "authorId": "2053781980",
+        "name": "Vijay Vasudevan"
+      },
+      {
+        "authorId": "47941411",
+        "name": "Pete Warden"
+      },
+      {
+        "authorId": "35078078",
+        "name": "M. Wicke"
+      },
+      {
+        "authorId": "2117163698",
+        "name": "Yuan Yu"
+      },
+      {
+        "authorId": "2108113547",
+        "name": "Xiaoqiang Zhang"
+      }
+    ],
+    "abstract": "TensorFlow is a machine learning system that operates at large scale and in heterogeneous environments. Tensor-Flow uses dataflow graphs to represent computation, shared state, and the operations that mutate that state. It maps the nodes of a dataflow graph across many machines in a cluster, and within a machine across multiple computational devices, including multicore CPUs, general-purpose GPUs, and custom-designed ASICs known as Tensor Processing Units (TPUs). This architecture gives flexibility to the application developer: whereas in previous \"parameter server\" designs the management of shared state is built into the system, TensorFlow enables developers to experiment with novel optimizations and training algorithms. TensorFlow supports a variety of applications, with a focus on training and inference on deep neural networks. Several Google services use TensorFlow in production, we have released it as an open-source project, and it has become widely used for machine learning research. In this paper, we describe the TensorFlow dataflow model and demonstrate the compelling performance that TensorFlow achieves for several real-world applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4d23db55e6671a82c95dacec33b2967a4b8b677d",
+    "externalIds": {
+      "MAG": "2055312318",
+      "DBLP": "conf/pldi/Ragan-KelleyBAPDA13",
+      "DOI": "10.1145/2491956.2462176",
+      "CorpusId": 5885207
+    },
+    "title": "Halide: a language and compiler for optimizing parallelism, locality, and recomputation in image processing pipelines",
+    "venue": "ACM-SIGPLAN Symposium on Programming Language Design and Implementation",
+    "year": 2013,
+    "citationCount": 1385,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/2491956.2462176?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/2491956.2462176, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1401885963",
+        "name": "Jonathan Ragan-Kelley"
+      },
+      {
+        "authorId": "2496412",
+        "name": "Connelly Barnes"
+      },
+      {
+        "authorId": "144187067",
+        "name": "Andrew Adams"
+      },
+      {
+        "authorId": "145799132",
+        "name": "Sylvain Paris"
+      },
+      {
+        "authorId": "145403226",
+        "name": "F. Durand"
+      },
+      {
+        "authorId": "1709150",
+        "name": "Saman P. Amarasinghe"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6a630ac89d7c0a57eb7bf4cb30dd5946bcf3ccce",
+    "externalIds": {
+      "MAG": "2525491769",
+      "DOI": "10.1201/b18055-8",
+      "CorpusId": 208945385
+    },
+    "title": "google,我,萨娜",
+    "venue": "",
+    "year": 2006,
+    "citationCount": 8621,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1201/b18055-8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1201/b18055-8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "52280303",
+        "name": "方华"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

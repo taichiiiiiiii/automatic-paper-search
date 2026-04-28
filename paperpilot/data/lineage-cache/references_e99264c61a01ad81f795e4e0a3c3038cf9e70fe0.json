@@ -1,0 +1,1787 @@
+[
+  {
+    "paperId": "f4b098741f81c3ef653cac5c8ad657809fb65bb6",
+    "externalIds": {
+      "ArXiv": "2408.13092",
+      "DBLP": "journals/corr/abs-2408-13092",
+      "DOI": "10.48550/arXiv.2408.13092",
+      "CorpusId": 271947248
+    },
+    "title": "Diffusion-based Episodes Augmentation for Offline Multi-Agent Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.13092, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2148456473",
+        "name": "Ji-Yun Oh"
+      },
+      {
+        "authorId": "2109662037",
+        "name": "Sungnyun Kim"
+      },
+      {
+        "authorId": "2217411252",
+        "name": "Ga-Rin Kim"
+      },
+      {
+        "authorId": "2410444493",
+        "name": "Sunghwan Kim"
+      },
+      {
+        "authorId": "2257041511",
+        "name": "Se-Young Yun"
+      }
+    ],
+    "abstract": "Offline multi-agent reinforcement learning (MARL) is increasingly recognized as crucial for effectively deploying RL algorithms in environments where real-time interaction is impractical, risky, or costly. In the offline setting, learning from a static dataset of past interactions allows for the development of robust and safe policies without the need for live data collection, which can be fraught with challenges. Building on this foundational importance, we present EAQ, Episodes Augmentation guided by Q-total loss, a novel approach for offline MARL framework utilizing diffusion models. EAQ integrates the Q-total function directly into the diffusion model as a guidance to maximize the global returns in an episode, eliminating the need for separate training. Our focus primarily lies on cooperative scenarios, where agents are required to act collectively towards achieving a shared goal-essentially, maximizing global returns. Consequently, we demonstrate that our episodes augmentation in a collaborative manner significantly boosts offline MARL algorithm compared to the original dataset, improving the normalized return by +17.3% and +12.9% for medium and poor behavioral policies in SMAC simulator, respectively.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "389cb5051472ec6be73eb9faaf7ea5539f43dd54",
+    "externalIds": {
+      "ArXiv": "2407.01343",
+      "DBLP": "journals/corr/abs-2407-01343",
+      "DOI": "10.48550/arXiv.2407.01343",
+      "CorpusId": 270870154
+    },
+    "title": "Coordination Failure in Cooperative Offline MARL",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.01343, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2170356722",
+        "name": "C. Tilbury"
+      },
+      {
+        "authorId": "2117590815",
+        "name": "Claude Formanek"
+      },
+      {
+        "authorId": "2306248966",
+        "name": "Louise Beyers"
+      },
+      {
+        "authorId": "2309174377",
+        "name": "Jonathan P. Shock"
+      },
+      {
+        "authorId": "38166712",
+        "name": "Arnu Pretorius"
+      }
+    ],
+    "abstract": "Offline multi-agent reinforcement learning (MARL) leverages static datasets of experience to learn optimal multi-agent control. However, learning from static data presents several unique challenges to overcome. In this paper, we focus on coordination failure and investigate the role of joint actions in multi-agent policy gradients with offline data, focusing on a common setting we refer to as the 'Best Response Under Data' (BRUD) approach. By using two-player polynomial games as an analytical tool, we demonstrate a simple yet overlooked failure mode of BRUD-based algorithms, which can lead to catastrophic coordination failure in the offline setting. Building on these insights, we propose an approach to mitigate such failure, by prioritising samples from the dataset based on joint-action similarity during policy learning and demonstrate its effectiveness in detailed experiments. More generally, however, we argue that prioritised dataset sampling is a promising area for innovation in offline MARL that can be combined with other effective approaches such as critic and policy regularisation. Importantly, our work shows how insights drawn from simplified, tractable games can lead to useful, theoretically grounded insights that transfer to more complex contexts. A core dimension of offering is an interactive notebook, from which almost all of our results can be reproduced, in a browser.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "9e8ebb53a0596fd58feabebba4f1ed80912ff7cc",
+    "externalIds": {
+      "DBLP": "conf/nips/ChenWZ24",
+      "ArXiv": "2405.19690",
+      "DOI": "10.48550/arXiv.2405.19690",
+      "CorpusId": 270123579
+    },
+    "title": "Diffusion Policies creating a Trust Region for Offline Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 30,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.19690, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303847301",
+        "name": "Tianyu Chen"
+      },
+      {
+        "authorId": "2284725540",
+        "name": "Zhendong Wang"
+      },
+      {
+        "authorId": "2257010071",
+        "name": "Mingyuan Zhou"
+      }
+    ],
+    "abstract": "Offline reinforcement learning (RL) leverages pre-collected datasets to train optimal policies. Diffusion Q-Learning (DQL), introducing diffusion models as a powerful and expressive policy class, significantly boosts the performance of offline RL. However, its reliance on iterative denoising sampling to generate actions slows down both training and inference. While several recent attempts have tried to accelerate diffusion-QL, the improvement in training and/or inference speed often results in degraded performance. In this paper, we introduce a dual policy approach, Diffusion Trusted Q-Learning (DTQL), which comprises a diffusion policy for pure behavior cloning and a practical one-step policy. We bridge the two polices by a newly introduced diffusion trust region loss. The diffusion policy maintains expressiveness, while the trust region loss directs the one-step policy to explore freely and seek modes within the region defined by the diffusion policy. DTQL eliminates the need for iterative denoising sampling during both training and inference, making it remarkably computationally efficient. We evaluate its effectiveness and algorithmic characteristics against popular Kullback--Leibler divergence-based distillation methods in 2D bandit scenarios and gym tasks. We then show that DTQL could not only outperform other methods on the majority of the D4RL benchmark tasks but also demonstrate efficiency in training and inference speeds. The PyTorch implementation is available at https://github.com/TianyuCodings/Diffusion_Trusted_Q_Learning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "02f4516502bc0d05fb8971687f37c5f319ca2704",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-12399",
+      "ArXiv": "2405.12399",
+      "DOI": "10.48550/arXiv.2405.12399",
+      "CorpusId": 269930021
+    },
+    "title": "Diffusion for World Modeling: Visual Details Matter in Atari",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.12399, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144370326",
+        "name": "Eloi Alonso"
+      },
+      {
+        "authorId": "2297770590",
+        "name": "Adam Jelley"
+      },
+      {
+        "authorId": "1491750155",
+        "name": "Vincent Micheli"
+      },
+      {
+        "authorId": "3469155",
+        "name": "A. Kanervisto"
+      },
+      {
+        "authorId": "1728216",
+        "name": "A. Storkey"
+      },
+      {
+        "authorId": "2329555537",
+        "name": "Tim Pearce"
+      },
+      {
+        "authorId": "116272138",
+        "name": "Franccois Fleuret"
+      }
+    ],
+    "abstract": "World models constitute a promising approach for training reinforcement learning agents in a safe and sample-efficient manner. Recent world models predominantly operate on sequences of discrete latent variables to model environment dynamics. However, this compression into a compact discrete representation may ignore visual details that are important for reinforcement learning. Concurrently, diffusion models have become a dominant approach for image generation, challenging well-established methods modeling discrete latents. Motivated by this paradigm shift, we introduce DIAMOND (DIffusion As a Model Of eNvironment Dreams), a reinforcement learning agent trained in a diffusion world model. We analyze the key design choices that are required to make diffusion suitable for world modeling, and demonstrate how improved visual details can lead to improved agent performance. DIAMOND achieves a mean human normalized score of 1.46 on the competitive Atari 100k benchmark; a new best for agents trained entirely within a world model. We further demonstrate that DIAMOND's diffusion world model can stand alone as an interactive neural game engine by training on static Counter-Strike: Global Offensive gameplay. To foster future research on diffusion for world modeling, we release our code, agents, videos and playable world models at https://diamond-wm.github.io.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "91fb21898301e80633d47d39b425d1feaa98f6ed",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-06356",
+      "ArXiv": "2404.06356",
+      "DOI": "10.48550/arXiv.2404.06356",
+      "CorpusId": 269009692
+    },
+    "title": "Policy-Guided Diffusion",
+    "venue": "RLJ",
+    "year": 2024,
+    "citationCount": 36,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.06356, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2287808304",
+        "name": "Matthew Jackson"
+      },
+      {
+        "authorId": "2284688283",
+        "name": "Michael Matthews"
+      },
+      {
+        "authorId": "2110752472",
+        "name": "Cong Lu"
+      },
+      {
+        "authorId": "2053568024",
+        "name": "Benjamin Ellis"
+      },
+      {
+        "authorId": "2067203314",
+        "name": "Shimon Whiteson"
+      },
+      {
+        "authorId": "2275156099",
+        "name": "Jakob Foerster"
+      }
+    ],
+    "abstract": "In many real-world settings, agents must learn from an offline dataset gathered by some prior behavior policy. Such a setting naturally leads to distribution shift between the behavior policy and the target policy being trained - requiring policy conservatism to avoid instability and overestimation bias. Autoregressive world models offer a different solution to this by generating synthetic, on-policy experience. However, in practice, model rollouts must be severely truncated to avoid compounding error. As an alternative, we propose policy-guided diffusion. Our method uses diffusion models to generate entire trajectories under the behavior distribution, applying guidance from the target policy to move synthetic experience further on-policy. We show that policy-guided diffusion models a regularized form of the target distribution that balances action likelihood under both the target and behavior policies, leading to plausible trajectories with high target policy probability, while retaining a lower dynamics error than an offline world model baseline. Using synthetic experience from policy-guided diffusion as a drop-in substitute for real data, we demonstrate significant improvements in performance across a range of standard offline reinforcement learning algorithms and environments. Our approach provides an effective alternative to autoregressive offline world models, opening the door to the controllable generation of synthetic training data.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "bebcb0832cdafb102c75c96ca18207d05034ab0c",
+    "externalIds": {
+      "ArXiv": "2312.08533",
+      "DBLP": "journals/corr/abs-2312-08533",
+      "DOI": "10.48550/arXiv.2312.08533",
+      "CorpusId": 266209789
+    },
+    "title": "World Models via Policy-Guided Trajectory Diffusion",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 40,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.08533, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326293874",
+        "name": "Marc Rigter"
+      },
+      {
+        "authorId": "2238283335",
+        "name": "Jun Yamada"
+      },
+      {
+        "authorId": "2238952730",
+        "name": "Ingmar Posner"
+      }
+    ],
+    "abstract": "World models are a powerful tool for developing intelligent agents. By predicting the outcome of a sequence of actions, world models enable policies to be optimised via on-policy reinforcement learning (RL) using synthetic data, i.e. in\"in imagination\". Existing world models are autoregressive in that they interleave predicting the next state with sampling the next action from the policy. Prediction error inevitably compounds as the trajectory length grows. In this work, we propose a novel world modelling approach that is not autoregressive and generates entire on-policy trajectories in a single pass through a diffusion model. Our approach, Policy-Guided Trajectory Diffusion (PolyGRAD), leverages a denoising model in addition to the gradient of the action distribution of the policy to diffuse a trajectory of initially random states and actions into an on-policy synthetic trajectory. We analyse the connections between PolyGRAD, score-based generative models, and classifier-guided diffusion models. Our results demonstrate that PolyGRAD outperforms state-of-the-art baselines in terms of trajectory prediction error for short trajectories, with the exception of autoregressive diffusion. For short trajectories, PolyGRAD obtains similar errors to autoregressive diffusion, but with lower computational requirements. For long trajectories, PolyGRAD obtains comparable performance to baselines. Our experiments demonstrate that PolyGRAD enables performant policies to be trained via on-policy RL in imagination for MuJoCo continuous control domains. Thus, PolyGRAD introduces a new paradigm for accurate on-policy world modelling without autoregressive sampling.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "aeb466d5198024d5770863434f103814d80d7fcb",
+    "externalIds": {
+      "ArXiv": "2307.01472",
+      "DBLP": "journals/corr/abs-2307-01472",
+      "DOI": "10.48550/arXiv.2307.01472",
+      "CorpusId": 259342283
+    },
+    "title": "Beyond Conservatism: Diffusion Policies in Offline Multi-agent Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.01472",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.01472, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2163963843",
+        "name": "Zhuoran Li"
+      },
+      {
+        "authorId": "47357719",
+        "name": "Ling Pan"
+      },
+      {
+        "authorId": "2181791414",
+        "name": "Longbo Huang"
+      }
+    ],
+    "abstract": "We present a novel Diffusion Offline Multi-agent Model (DOM2) for offline Multi-Agent Reinforcement Learning (MARL). Different from existing algorithms that rely mainly on conservatism in policy design, DOM2 enhances policy expressiveness and diversity based on diffusion. Specifically, we incorporate a diffusion model into the policy network and propose a trajectory-based data-augmentation scheme in training. These key ingredients make our algorithm more robust to environment changes and achieve significant improvements in performance, generalization and data-efficiency. Our extensive experimental results demonstrate that DOM2 outperforms existing state-of-the-art methods in multi-agent particle and multi-agent MuJoCo environments, and generalizes significantly better in shifted environments thanks to its high expressiveness and diversity. Furthermore, DOM2 shows superior data efficiency and can achieve state-of-the-art performance with $20+$ times less data compared to existing algorithms.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ddff31316f1f796d8761c94f70ff22dcf5b44f6d",
+    "externalIds": {
+      "DBLP": "conf/atal/FormanekJSP23",
+      "DOI": "10.5555/3545946.3598961",
+      "CorpusId": 258845718
+    },
+    "title": "Off-the-Grid MARL: Datasets and Baselines for Offline Multi-Agent Reinforcement Learning",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2023,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5555/3545946.3598961?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5555/3545946.3598961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117590815",
+        "name": "Claude Formanek"
+      },
+      {
+        "authorId": "1491789722",
+        "name": "Asad Jeewa"
+      },
+      {
+        "authorId": "47164193",
+        "name": "J. Shock"
+      },
+      {
+        "authorId": "38166712",
+        "name": "Arnu Pretorius"
+      }
+    ],
+    "abstract": "Being able to harness the power of large, static datasets for developing autonomous multi-agent systems could unlock enormous value for real-world applications. Many important industrial systems are multi-agent in nature and are difficult to model using bespoke simulators. However, in industry, distributed system processes can often be recorded during operation, and large quantities of demonstrative data can be stored. Offline multi-agent reinforcement learning (MARL) provides a promising paradigm for building effective online controllers from static datasets. However, offline MARL is still in its infancy, and, therefore, lacks standardised benchmarks, baselines and evaluation protocols typically found in more mature subfields of RL. This deficiency makes it difficult for the community to sensibly measure progress. In this work, we aim to fill this gap by releasing off-the-grid MARL (OG-MARL): a framework for generating offline MARL datasets and algorithms.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "828e27fd4fcd5e8982032b903950947b12afb6bb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18459",
+      "ArXiv": "2305.18459",
+      "DOI": "10.48550/arXiv.2305.18459",
+      "CorpusId": 258968054
+    },
+    "title": "Diffusion Model is an Effective Planner and Data Synthesizer for Multi-Task Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 148,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.18459",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18459, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2151219829",
+        "name": "Haoran He"
+      },
+      {
+        "authorId": "150944133",
+        "name": "Chenjia Bai"
+      },
+      {
+        "authorId": "2153294049",
+        "name": "Kang Xu"
+      },
+      {
+        "authorId": "150358650",
+        "name": "Zhuoran Yang"
+      },
+      {
+        "authorId": "2155042473",
+        "name": "Weinan Zhang"
+      },
+      {
+        "authorId": "49370704",
+        "name": "Dong Wang"
+      },
+      {
+        "authorId": "2112632513",
+        "name": "Bingyan Zhao"
+      },
+      {
+        "authorId": "2192821449",
+        "name": "Xuelong Li"
+      }
+    ],
+    "abstract": "Diffusion models have demonstrated highly-expressive generative capabilities in vision and NLP. Recent studies in reinforcement learning (RL) have shown that diffusion models are also powerful in modeling complex policies or trajectories in offline datasets. However, these works have been limited to single-task settings where a generalist agent capable of addressing multi-task predicaments is absent. In this paper, we aim to investigate the effectiveness of a single diffusion model in modeling large-scale multi-task offline data, which can be challenging due to diverse and multimodal data distribution. Specifically, we propose Multi-Task Diffusion Model (\\textsc{MTDiff}), a diffusion-based method that incorporates Transformer backbones and prompt learning for generative planning and data synthesis in multi-task offline settings. \\textsc{MTDiff} leverages vast amounts of knowledge available in multi-task data and performs implicit knowledge sharing among tasks. For generative planning, we find \\textsc{MTDiff} outperforms state-of-the-art algorithms across 50 tasks on Meta-World and 8 maps on Maze2D. For data synthesis, \\textsc{MTDiff} generates high-quality data for testing tasks given a single demonstration as a prompt, which enhances the low-quality datasets for even unseen tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "22d31891ba36a02fcef6ba79f29e4f3ca9b783a0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-17330",
+      "ArXiv": "2305.17330",
+      "DOI": "10.48550/arXiv.2305.17330",
+      "CorpusId": 258959266
+    },
+    "title": "MADiff: Offline Multi-agent Learning with Diffusion Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 80,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.17330",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.17330, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1999326708",
+        "name": "Zhengbang Zhu"
+      },
+      {
+        "authorId": "2112276540",
+        "name": "Minghuan Liu"
+      },
+      {
+        "authorId": "2066668776",
+        "name": "Liyuan Mao"
+      },
+      {
+        "authorId": "2064621368",
+        "name": "Bingyi Kang"
+      },
+      {
+        "authorId": "1490886784",
+        "name": "Minkai Xu"
+      },
+      {
+        "authorId": "2156098229",
+        "name": "Yong Yu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2155042473",
+        "name": "Weinan Zhang"
+      }
+    ],
+    "abstract": "Offline reinforcement learning (RL) aims to learn policies from pre-existing datasets without further interactions, making it a challenging task. Q-learning algorithms struggle with extrapolation errors in offline settings, while supervised learning methods are constrained by model expressiveness. Recently, diffusion models (DMs) have shown promise in overcoming these limitations in single-agent learning, but their application in multi-agent scenarios remains unclear. Generating trajectories for each agent with independent DMs may impede coordination, while concatenating all agents' information can lead to low sample efficiency. Accordingly, we propose MADiff, which is realized with an attention-based diffusion model to model the complex coordination among behaviors of multiple agents. To our knowledge, MADiff is the first diffusion-based multi-agent learning framework, functioning as both a decentralized policy and a centralized controller. During decentralized executions, MADiff simultaneously performs teammate modeling, and the centralized controller can also be applied in multi-agent trajectory predictions. Our experiments demonstrate that MADiff outperforms baseline algorithms across various multi-agent learning tasks, highlighting its effectiveness in modeling complex multi-agent interactions. Our code is available at https://github.com/zbzhu99/madiff.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "44ba91854390e6795681e022adbeabfc51359bbc",
+    "externalIds": {
+      "ArXiv": "2305.17198",
+      "DBLP": "conf/atal/BardeFNZ24",
+      "DOI": "10.48550/arXiv.2305.17198",
+      "CorpusId": 258959276
+    },
+    "title": "A Model-Based Solution to the Offline Multi-Agent Reinforcement Learning Coordination Problem",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2023,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.17198",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.17198, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151490043",
+        "name": "Paul Barde"
+      },
+      {
+        "authorId": "1412004702",
+        "name": "J. Foerster"
+      },
+      {
+        "authorId": "1795014",
+        "name": "D. Nowrouzezahrai"
+      },
+      {
+        "authorId": "2111672235",
+        "name": "Amy Zhang"
+      }
+    ],
+    "abstract": "Training multiple agents to coordinate is an essential problem with applications in robotics, game theory, economics, and social sciences. However, most existing Multi-Agent Reinforcement Learning (MARL) methods are online and thus impractical for real-world applications in which collecting new interactions is costly or dangerous. While these algorithms should leverage offline data when available, doing so gives rise to what we call the offline coordination problem. Specifically, we identify and formalize the strategy agreement (SA) and the strategy fine-tuning (SFT) coordination challenges, two issues at which current offline MARL algorithms fail. Concretely, we reveal that the prevalent model-free methods are severely deficient and cannot handle coordination-intensive offline multi-agent tasks in either toy or MuJoCo domains. To address this setback, we emphasize the importance of inter-agent interactions and propose the very first model-based offline MARL method. Our resulting algorithm, Model-based Offline Multi-Agent Proximal Policy Optimization (MOMA-PPO) generates synthetic interaction data and enables agents to converge on a strategy while fine-tuning their policies accordingly. This simple model-based solution solves the coordination-intensive offline tasks, significantly outperforming the prevalent model-free methods even under severe partial observability and with learned world models.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "90889ff0ce930528e65b1b761bf9bcf9195e5051",
+    "externalIds": {
+      "ArXiv": "2303.06614",
+      "DBLP": "conf/nips/LuBTP23",
+      "DOI": "10.48550/arXiv.2303.06614",
+      "CorpusId": 257495808
+    },
+    "title": "Synthetic Experience Replay",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 121,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.06614",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.06614, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110752472",
+        "name": "Cong Lu"
+      },
+      {
+        "authorId": "2053179501",
+        "name": "Philip J. Ball"
+      },
+      {
+        "authorId": "1410302742",
+        "name": "Jack Parker-Holder"
+      }
+    ],
+    "abstract": "A key theme in the past decade has been that when large neural networks and large datasets combine they can produce remarkable results. In deep reinforcement learning (RL), this paradigm is commonly made possible through experience replay, whereby a dataset of past experiences is used to train a policy or value function. However, unlike in supervised or self-supervised learning, an RL agent has to collect its own data, which is often limited. Thus, it is challenging to reap the benefits of deep learning, and even small neural networks can overfit at the start of training. In this work, we leverage the tremendous recent progress in generative modeling and propose Synthetic Experience Replay (SynthER), a diffusion-based approach to flexibly upsample an agent's collected experience. We show that SynthER is an effective method for training RL agents across offline and online settings, in both proprioceptive and pixel-based environments. In offline settings, we observe drastic improvements when upsampling small offline datasets and see that additional synthetic data also allows us to effectively train larger networks. Furthermore, SynthER enables online agents to train with a much higher update-to-data ratio than before, leading to a significant increase in sample efficiency, without any algorithmic changes. We believe that synthetic training data could open the door to realizing the full potential of deep learning for replay-based RL algorithms from limited data. Finally, we open-source our code at https://github.com/conglu1997/SynthER.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "d24b4f34197df0257390b57f02537e6ce3284f2e",
+    "externalIds": {
+      "ArXiv": "2302.07121",
+      "DBLP": "conf/iclr/BansalCSSGGG24",
+      "DOI": "10.1109/CVPRW59228.2023.00091",
+      "CorpusId": 256846836
+    },
+    "title": "Universal Guidance for Diffusion Models",
+    "venue": "2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2023,
+    "citationCount": 433,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.07121",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.07121, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7364835",
+        "name": "Arpit Bansal"
+      },
+      {
+        "authorId": "37286392",
+        "name": "Hong-Min Chu"
+      },
+      {
+        "authorId": "102604362",
+        "name": "Avi Schwarzschild"
+      },
+      {
+        "authorId": "2500202",
+        "name": "Soumyadip Sengupta"
+      },
+      {
+        "authorId": "121592562",
+        "name": "Micah Goldblum"
+      },
+      {
+        "authorId": "8284185",
+        "name": "Jonas Geiping"
+      },
+      {
+        "authorId": "1962083",
+        "name": "T. Goldstein"
+      }
+    ],
+    "abstract": "Typical diffusion models are trained to accept a particular form of conditioning, most commonly text, and cannot be conditioned on other modalities without retraining. In this work, we propose a universal guidance algorithm that enables diffusion models to be controlled by arbitrary guidance modalities without the need to retrain any use-specific components. We show that our algorithm successfully generates quality images with guidance functions including segmentation, face recognition, object detection, and classifier signals. Code is available at github.com/arpitbansal297/Universal-Guided-Diffusion.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0816ee42aa1c84ad929bbfd46dd6d41d8e9b9a19",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-01877",
+      "ArXiv": "2302.01877",
+      "DOI": "10.48550/arXiv.2302.01877",
+      "CorpusId": 256598386
+    },
+    "title": "AdaptDiffuser: Diffusion Models as Adaptive Self-evolving Planners",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 163,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.01877",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.01877, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47415635",
+        "name": "Zhixuan Liang"
+      },
+      {
+        "authorId": "1675357512",
+        "name": "Yao Mu"
+      },
+      {
+        "authorId": "48876151",
+        "name": "Mingyu Ding"
+      },
+      {
+        "authorId": "2060411245",
+        "name": "Fei Ni"
+      },
+      {
+        "authorId": "1680165",
+        "name": "M. Tomizuka"
+      },
+      {
+        "authorId": "2143481782",
+        "name": "Ping Luo"
+      }
+    ],
+    "abstract": "Diffusion models have demonstrated their powerful generative capability in many tasks, with great potential to serve as a paradigm for offline reinforcement learning. However, the quality of the diffusion model is limited by the insufficient diversity of training data, which hinders the performance of planning and the generalizability to new tasks. This paper introduces AdaptDiffuser, an evolutionary planning method with diffusion that can self-evolve to improve the diffusion model hence a better planner, not only for seen tasks but can also adapt to unseen tasks. AdaptDiffuser enables the generation of rich synthetic expert data for goal-conditioned tasks using guidance from reward gradients. It then selects high-quality data via a discriminator to finetune the diffusion model, which improves the generalization ability to unseen tasks. Empirical experiments on two benchmark environments and two carefully designed unseen tasks in KUKA industrial robot arm and Maze2D environments demonstrate the effectiveness of AdaptDiffuser. For example, AdaptDiffuser not only outperforms the previous art Diffuser by 20.8% on Maze2D and 7.5% on MuJoCo locomotion, but also adapts better to new tasks, e.g., KUKA pick-and-place, by 27.9% without requiring additional expert data. More visualization results and demo videos could be found on our project page.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b43330013a5abcccd366d71f2f66c493c790abc6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2301-10677",
+      "ArXiv": "2301.10677",
+      "DOI": "10.48550/arXiv.2301.10677",
+      "CorpusId": 256231177
+    },
+    "title": "Imitating Human Behaviour with Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 293,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.10677",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.10677, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1720750695",
+        "name": "Tim Pearce"
+      },
+      {
+        "authorId": "36054740",
+        "name": "Tabish Rashid"
+      },
+      {
+        "authorId": "3469155",
+        "name": "A. Kanervisto"
+      },
+      {
+        "authorId": "2064459380",
+        "name": "David Bignell"
+      },
+      {
+        "authorId": "9492808",
+        "name": "Mingfei Sun"
+      },
+      {
+        "authorId": "2099584262",
+        "name": "Raluca Georgescu"
+      },
+      {
+        "authorId": "9164659",
+        "name": "Sergio Valcarcel Macua"
+      },
+      {
+        "authorId": "2202716298",
+        "name": "Shan Zheng Tan"
+      },
+      {
+        "authorId": "2383125276",
+        "name": "Ida Momennejad"
+      },
+      {
+        "authorId": "1380228856",
+        "name": "Katja Hofmann"
+      },
+      {
+        "authorId": "1693696",
+        "name": "Sam Devlin"
+      }
+    ],
+    "abstract": "Diffusion models have emerged as powerful generative models in the text-to-image domain. This paper studies their application as observation-to-action models for imitating human behaviour in sequential environments. Human behaviour is stochastic and multimodal, with structured correlations between action dimensions. Meanwhile, standard modelling choices in behaviour cloning are limited in their expressiveness and may introduce bias into the cloned policy. We begin by pointing out the limitations of these choices. We then propose that diffusion models are an excellent fit for imitating human behaviour, since they learn an expressive distribution over the joint action space. We introduce several innovations to make diffusion models suitable for sequential environments; designing suitable architectures, investigating the role of guidance, and developing reliable sampling strategies. Experimentally, diffusion models closely match human demonstrations in a simulated robotic control task and a modern 3D gaming environment.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f19dfc360088922cf1d423c538662aae8d542c28",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2211-15657",
+      "ArXiv": "2211.15657",
+      "DOI": "10.48550/arXiv.2211.15657",
+      "CorpusId": 254044710
+    },
+    "title": "Is Conditional Generative Modeling all you need for Decision-Making?",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 588,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2211.15657",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.15657, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150004828",
+        "name": "A. Ajay"
+      },
+      {
+        "authorId": "15394275",
+        "name": "Yilun Du"
+      },
+      {
+        "authorId": null,
+        "name": "Abhi Gupta"
+      },
+      {
+        "authorId": "1763295",
+        "name": "J. Tenenbaum"
+      },
+      {
+        "authorId": "35132120",
+        "name": "T. Jaakkola"
+      },
+      {
+        "authorId": "33932184",
+        "name": "Pulkit Agrawal"
+      }
+    ],
+    "abstract": "Recent improvements in conditional generative modeling have made it possible to generate high-quality images from language descriptions alone. We investigate whether these methods can directly address the problem of sequential decision-making. We view decision-making not through the lens of reinforcement learning (RL), but rather through conditional generative modeling. To our surprise, we find that our formulation leads to policies that can outperform existing offline RL approaches across standard benchmarks. By modeling a policy as a return-conditional diffusion model, we illustrate how we may circumvent the need for dynamic programming and subsequently eliminate many of the complexities that come with traditional offline RL. We further demonstrate the advantages of modeling policies as conditional diffusion models by considering two other conditioning variables: constraints and skills. Conditioning on a single constraint or skill during training leads to behaviors at test-time that can satisfy several constraints together or demonstrate a composition of skills. Our results illustrate that conditional generative modeling is a powerful tool for decision-making.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2cbea7615ebecea2c414d8fbad47d5d258a5c3b4",
+    "externalIds": {
+      "DBLP": "conf/iclr/WangHZ23",
+      "ArXiv": "2208.06193",
+      "DOI": "10.48550/arXiv.2208.06193",
+      "CorpusId": 251554821
+    },
+    "title": "Diffusion Policies as an Expressive Policy Class for Offline Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 586,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2208.06193",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2208.06193, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108160372",
+        "name": "Zhendong Wang"
+      },
+      {
+        "authorId": "2323922",
+        "name": "Jonathan J. Hunt"
+      },
+      {
+        "authorId": "38026572",
+        "name": "Mingyuan Zhou"
+      }
+    ],
+    "abstract": "Offline reinforcement learning (RL), which aims to learn an optimal policy using a previously collected static dataset, is an important paradigm of RL. Standard RL methods often perform poorly in this regime due to the function approximation errors on out-of-distribution actions. While a variety of regularization methods have been proposed to mitigate this issue, they are often constrained by policy classes with limited expressiveness that can lead to highly suboptimal solutions. In this paper, we propose representing the policy as a diffusion model, a recent class of highly-expressive deep generative models. We introduce Diffusion Q-learning (Diffusion-QL) that utilizes a conditional diffusion model to represent the policy. In our approach, we learn an action-value function and we add a term maximizing action-values into the training loss of the conditional diffusion model, which results in a loss that seeks optimal actions that are near the behavior policy. We show the expressiveness of the diffusion model-based policy, and the coupling of the behavior cloning and policy improvement under the diffusion model both contribute to the outstanding performance of Diffusion-QL. We illustrate the superiority of our method compared to prior works in a simple 2D bandit example with a multimodal behavior policy. We then show that our method can achieve state-of-the-art performance on the majority of the D4RL benchmark tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2f4c451922e227cbbd4f090b74298445bbd900d0",
+    "externalIds": {
+      "DBLP": "conf/nips/KarrasAAL22",
+      "ArXiv": "2206.00364",
+      "DOI": "10.48550/arXiv.2206.00364",
+      "CorpusId": 249240415
+    },
+    "title": "Elucidating the Design Space of Diffusion-Based Generative Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 3208,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.00364",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.00364, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2976930",
+        "name": "Tero Karras"
+      },
+      {
+        "authorId": "1907688",
+        "name": "M. Aittala"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      }
+    ],
+    "abstract": "We argue that the theory and practice of diffusion-based generative models are currently unnecessarily convoluted and seek to remedy the situation by presenting a design space that clearly separates the concrete design choices. This lets us identify several changes to both the sampling and training processes, as well as preconditioning of the score networks. Together, our improvements yield new state-of-the-art FID of 1.79 for CIFAR-10 in a class-conditional setting and 1.97 in an unconditional setting, with much faster sampling (35 network evaluations per image) than prior designs. To further demonstrate their modular nature, we show that our design changes dramatically improve both the efficiency and quality obtainable with pre-trained score networks from previous work, including improving the FID of a previously trained ImageNet-64 model from 2.07 to near-SOTA 1.55, and after re-training with our proposed improvements to a new SOTA of 1.36.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3ebdd3db0dd91069fa0cd31cbf8308b60b1b565e",
+    "externalIds": {
+      "ArXiv": "2205.09991",
+      "DBLP": "journals/corr/abs-2205-09991",
+      "DOI": "10.48550/arXiv.2205.09991",
+      "CorpusId": 248965046
+    },
+    "title": "Planning with Diffusion for Flexible Behavior Synthesis",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 1106,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2205.09991",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.09991, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35163402",
+        "name": "Michael Janner"
+      },
+      {
+        "authorId": "15394275",
+        "name": "Yilun Du"
+      },
+      {
+        "authorId": "1763295",
+        "name": "J. Tenenbaum"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Model-based reinforcement learning methods often use learning only for the purpose of estimating an approximate dynamics model, offloading the rest of the decision-making work to classical trajectory optimizers. While conceptually simple, this combination has a number of empirical shortcomings, suggesting that learned models may not be well-suited to standard trajectory optimization. In this paper, we consider what it would look like to fold as much of the trajectory optimization pipeline as possible into the modeling problem, such that sampling from the model and planning with it become nearly identical. The core of our technical approach lies in a diffusion probabilistic model that plans by iteratively denoising trajectories. We show how classifier-guided sampling and image inpainting can be reinterpreted as coherent planning strategies, explore the unusual and useful properties of diffusion-based planning methods, and demonstrate the effectiveness of our framework in control settings that emphasize long-horizon decision-making and test-time flexibility.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ca5c8d732e7f6046af1b23b549e08460a1893ade",
+    "externalIds": {
+      "ArXiv": "2111.11188",
+      "DBLP": "journals/corr/abs-2111-11188",
+      "CorpusId": 244478581
+    },
+    "title": "Plan Better Amid Conservatism: Offline Multi-Agent Reinforcement Learning with Actor Rectification",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 79,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.11188, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144738857",
+        "name": "L. Pan"
+      },
+      {
+        "authorId": null,
+        "name": "Longbo Huang"
+      },
+      {
+        "authorId": "2114186424",
+        "name": "Tengyu Ma"
+      },
+      {
+        "authorId": "3286703",
+        "name": "Huazhe Xu"
+      }
+    ],
+    "abstract": "Conservatism has led to significant progress in offline reinforcement learning (RL) where an agent learns from pre-collected datasets. However, as many real-world scenarios involve interaction among multiple agents, it is important to resolve offline RL in the multi-agent setting. Given the recent success of transferring online RL algorithms to the multi-agent setting, one may expect that offline RL algorithms will also transfer to multi-agent settings directly. Surprisingly, we empirically observe that conservative offline RL algorithms do not work well in the multi-agent setting -- the performance degrades significantly with an increasing number of agents. Towards mitigating the degradation, we identify a key issue that non-concavity of the value function makes the policy gradient improvements prone to local optima. Multiple agents exacerbate the problem severely, since the suboptimal policy by any agent can lead to uncoordinated global failure. Following this intuition, we propose a simple yet effective method, Offline Multi-Agent RL with Actor Rectification (OMAR), which combines the first-order policy gradients and zeroth-order optimization methods to better optimize the conservative value functions over the actor parameters. Despite the simplicity, OMAR achieves state-of-the-art results in a variety of multi-agent control tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "01961d9cedaef8f08ed822012e5083eaeed70128",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-01832",
+      "ArXiv": "2108.01832",
+      "DOI": "10.3233/FAIA230390",
+      "CorpusId": 236912690
+    },
+    "title": "Offline Decentralized Multi-Agent Reinforcement Learning",
+    "venue": "European Conference on Artificial Intelligence",
+    "year": 2021,
+    "citationCount": 46,
+    "openAccessPdf": {
+      "url": "https://ebooks.iospress.nl/pdf/doi/10.3233/FAIA230390",
+      "status": "HYBRID",
+      "license": "CCBYNC",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.01832, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46179766",
+        "name": "Jiechuan Jiang"
+      },
+      {
+        "authorId": "2265693",
+        "name": "Zongqing Lu"
+      }
+    ],
+    "abstract": "In many real-world multi-agent cooperative tasks, due to high cost and risk, agents cannot continuously interact with the environment and collect experiences during learning, but have to learn from offline datasets. However, the transition dynamics in the dataset of each agent can be much different from the ones induced by the learned policies of other agents in execution, creating large errors in value estimates. Consequently, agents learn uncoordinated low-performing policies. In this paper, we propose a framework for offline decentralized multi-agent reinforcement learning, which exploits value deviation and transition normalization to deliberately modify the transition probabilities. Value deviation optimistically increases the transition probabilities of high-value next states, and transition normalization normalizes the transition probabilities of next states. They together enable agents to learn high-performing and coordinated policies. Theoretically, we prove the convergence of Q-learning under the altered non-stationary transition dynamics. Empirically, we show that the framework can be easily built on many existing offline reinforcement learning algorithms and achieve substantial improvement in a variety of multi-agent tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9213bed2e948eee3dacc2a26b4ef813658dda07b",
+    "externalIds": {
+      "ArXiv": "2107.06434",
+      "DBLP": "journals/corr/abs-2107-06434",
+      "DOI": "10.5555/3535850.3536017",
+      "CorpusId": 235828966
+    },
+    "title": "Centralized Model and Exploration Policy for Multi-Agent RL",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2021,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.06434, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2283437085",
+        "name": "Qizhen Zhang"
+      },
+      {
+        "authorId": "4420863",
+        "name": "Chris Lu"
+      },
+      {
+        "authorId": "1873736",
+        "name": "Animesh Garg"
+      },
+      {
+        "authorId": "1412004702",
+        "name": "J. Foerster"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) in partially observable, fully cooperative multi-agent settings (Dec-POMDPs) can in principle be used to address many real-world challenges such as controlling a swarm of rescue robots or a team of quadcopters. However, Dec-POMDPs are significantly harder to solve than single-agent problems, with the former being NEXP-complete and the latter, MDPs, being just P-complete. Hence, current RL algorithms for Dec-POMDPs suffer from poor sample complexity, which greatly reduces their applicability to practical problems where environment interaction is costly. Our key insight is that using just a polynomial number of samples, one can learn a centralized model that generalizes across different policies. We can then optimize the policy within the learned model instead of the true system, without requiring additional environment interactions. We also learn a centralized exploration policy within our model that learns to collect additional data in state-action regions with high model uncertainty. We empirically evaluate the proposed model-based algorithm, MARCO, in three cooperative communication tasks, where it improves sample efficiency by up to 20x. Finally, to investigate the theoretical sample complexity, we adapt an existing model-based method for tabular MDPs to Dec-POMDPs, and prove that it achieves polynomial sample complexity.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c879b25308026d6538e52b27bcf4fd3cb60855f3",
+    "externalIds": {
+      "DBLP": "conf/nips/FujimotoG21",
+      "ArXiv": "2106.06860",
+      "CorpusId": 235422620
+    },
+    "title": "A Minimalist Approach to Offline Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1096,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.06860, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "14637819",
+        "name": "Scott Fujimoto"
+      },
+      {
+        "authorId": "2046135",
+        "name": "S. Gu"
+      }
+    ],
+    "abstract": "Offline reinforcement learning (RL) defines the task of learning from a fixed batch of data. Due to errors in value estimation from out-of-distribution actions, most offline RL algorithms take the approach of constraining or regularizing the policy with the actions contained in the dataset. Built on pre-existing RL algorithms, modifications to make an RL algorithm work offline comes at the cost of additional complexity. Offline RL algorithms introduce new hyperparameters and often leverage secondary components such as generative models, while adjusting the underlying RL algorithm. In this paper we aim to make a deep RL algorithm work while making minimal changes. We find that we can match the performance of state-of-the-art offline RL algorithms by simply adding a behavior cloning term to the policy update of an online RL algorithm and normalizing the data. The resulting algorithm is a simple to implement and tune baseline, while more than halving the overall run time by removing the additional computational overhead of previous methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9b4cd7b9865a34c8dffb8bfb516a8a66717d0c58",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-03400",
+      "ArXiv": "2106.03400",
+      "CorpusId": 235358250
+    },
+    "title": "Believe What You See: Implicit Constraint Approach for Offline Multi-Agent Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 112,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.03400, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2145436135",
+        "name": "Yiqin Yang"
+      },
+      {
+        "authorId": "32704046",
+        "name": "Xiaoteng Ma"
+      },
+      {
+        "authorId": "2128662588",
+        "name": "Chenghao Li"
+      },
+      {
+        "authorId": "2391831962",
+        "name": "Zewu Zheng"
+      },
+      {
+        "authorId": null,
+        "name": "Qiyuan Zhang"
+      },
+      {
+        "authorId": "2115218570",
+        "name": "Gao Huang"
+      },
+      {
+        "authorId": "2146157882",
+        "name": "Jun Yang"
+      },
+      {
+        "authorId": "36281262",
+        "name": "Qianchuan Zhao"
+      }
+    ],
+    "abstract": "Learning from datasets without interaction with environments (Offline Learning) is an essential step to apply Reinforcement Learning (RL) algorithms in real-world scenarios. However, compared with the single-agent counterpart, offline multi-agent RL introduces more agents with the larger state and action space, which is more challenging but attracts little attention. We demonstrate current offline RL algorithms are ineffective in multi-agent systems due to the accumulated extrapolation error. In this paper, we propose a novel offline RL algorithm, named Implicit Constraint Q-learning (ICQ), which effectively alleviates the extrapolation error by only trusting the state-action pairs given in the dataset for value estimation. Moreover, we extend ICQ to multi-agent tasks by decomposing the joint-policy under the implicit constraint. Experimental results demonstrate that the extrapolation error is successfully controlled within a reasonable range and insensitive to the number of agents. We further show that ICQ achieves the state-of-the-art performance in the challenging multi-agent offline tasks (StarCraft II). Our code is public online at https://github.com/YiqinYang/ICQ.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "64ea8f180d0682e6c18d1eb688afdb2027c02794",
+    "externalIds": {
+      "ArXiv": "2105.05233",
+      "DBLP": "journals/corr/abs-2105-05233",
+      "CorpusId": 234357997
+    },
+    "title": "Diffusion Models Beat GANs on Image Synthesis",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 11480,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.05233, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      }
+    ],
+    "abstract": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this on unconditional image synthesis by finding a better architecture through a series of ablations. For conditional image synthesis, we further improve sample quality with classifier guidance: a simple, compute-efficient method for trading off diversity for fidelity using gradients from a classifier. We achieve an FID of 2.97 on ImageNet 128$\\times$128, 4.59 on ImageNet 256$\\times$256, and 7.72 on ImageNet 512$\\times$512, and we match BigGAN-deep even with as few as 25 forward passes per sample, all while maintaining better coverage of the distribution. Finally, we find that classifier guidance combines well with upsampling diffusion models, further improving FID to 3.94 on ImageNet 256$\\times$256 and 3.85 on ImageNet 512$\\times$512. We release our code at https://github.com/openai/guided-diffusion",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "309741e91c671bf57b8fee60a892af7d6f264eeb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-03363",
+      "ArXiv": "2105.03363",
+      "DOI": "10.24963/ijcai.2021/466",
+      "CorpusId": 234093673
+    },
+    "title": "Model-based Multi-agent Policy Optimization with Adaptive Opponent-wise Rollouts",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2021,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "https://www.ijcai.org/proceedings/2021/0466.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.03363, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108309275",
+        "name": "Weinan Zhang"
+      },
+      {
+        "authorId": "2178008",
+        "name": "Xihuai Wang"
+      },
+      {
+        "authorId": "2115732606",
+        "name": "Jian Shen"
+      },
+      {
+        "authorId": "2152174952",
+        "name": "Ming Zhou"
+      }
+    ],
+    "abstract": "This paper investigates the model-based methods in multi-agent reinforcement learning (MARL). We specify the dynamics sample complexity and the opponent sample complexity in MARL, and conduct a theoretic analysis of return discrepancy upper bound. To reduce the upper bound with the intention of low sample complexity during the whole learning process, we propose a novel decentralized model-based MARL method, named Adaptive Opponent-wise Rollout Policy Optimization (AORPO). In AORPO, each agent builds its multi-agent environment model, consisting of a dynamics model and multiple opponent models, and trains its policy with the adaptive opponent-wise rollout. We further prove the theoretic convergence of AORPO under reasonable assumptions. Empirical experiments on competitive and cooperative tasks demonstrate that AORPO can achieve improved sample efficiency with comparable asymptotic performance over the compared MARL methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3a315c81a98851f0614c09fef6a14c30d6a1e63c",
+    "externalIds": {
+      "ArXiv": "2103.01955",
+      "DBLP": "conf/nips/YuVVGWBW22",
+      "DOI": "10.52202/068431-1787",
+      "CorpusId": 232092445
+    },
+    "title": "The Surprising Effectiveness of PPO in Cooperative Multi-Agent Games",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 2128,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.01955, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110962386",
+        "name": "Chao Yu"
+      },
+      {
+        "authorId": "1999664196",
+        "name": "Akash Velu"
+      },
+      {
+        "authorId": "13430868",
+        "name": "Eugene Vinitsky"
+      },
+      {
+        "authorId": "2153607473",
+        "name": "Yu Wang"
+      },
+      {
+        "authorId": "1705102",
+        "name": "A. Bayen"
+      },
+      {
+        "authorId": "2108052525",
+        "name": "Yi Wu"
+      }
+    ],
+    "abstract": "Proximal Policy Optimization (PPO) is a ubiquitous on-policy reinforcement learning algorithm but is significantly less utilized than off-policy learning algorithms in multi-agent settings. This is often due to the belief that PPO is significantly less sample efficient than off-policy methods in multi-agent systems. In this work, we carefully study the performance of PPO in cooperative multi-agent settings. We show that PPO-based multi-agent algorithms achieve surprisingly strong performance in four popular multi-agent testbeds: the particle-world environments, the StarCraft multi-agent challenge, Google Research Football, and the Hanabi challenge, with minimal hyperparameter tuning and without any domain-specific algorithmic modifications or architectures. Importantly, compared to competitive off-policy methods, PPO often achieves competitive or superior results in both final returns and sample efficiency. Finally, through ablation studies, we analyze implementation and hyperparameter factors that are critical to PPO's empirical performance, and give concrete practical suggestions regarding these factors. Our results show that when using these practices, simple PPO-based methods can be a strong baseline in cooperative multi-agent reinforcement learning. Source code is released at \\url{https://github.com/marlbenchmark/on-policy}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "28db20a81eec74a50204686c3cf796c42a020d2e",
+    "externalIds": {
+      "ArXiv": "2006.04779",
+      "DBLP": "journals/corr/abs-2006-04779",
+      "MAG": "3102848167",
+      "CorpusId": 219530894
+    },
+    "title": "Conservative Q-Learning for Offline Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 2438,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.04779, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1488785534",
+        "name": "Aviral Kumar"
+      },
+      {
+        "authorId": "35499972",
+        "name": "Aurick Zhou"
+      },
+      {
+        "authorId": "145499435",
+        "name": "G. Tucker"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Effectively leveraging large, previously collected datasets in reinforcement learning (RL) is a key challenge for large-scale real-world applications. Offline RL algorithms promise to learn effective policies from previously-collected, static datasets without further interaction. However, in practice, offline RL presents a major challenge, and standard off-policy RL methods can fail due to overestimation of values induced by the distributional shift between the dataset and the learned policy, especially when training on complex and multi-modal data distributions. In this paper, we propose conservative Q-learning (CQL), which aims to address these limitations by learning a conservative Q-function such that the expected value of a policy under this Q-function lower-bounds its true value. We theoretically show that CQL produces a lower bound on the value of the current policy and that it can be incorporated into a policy learning procedure with theoretical improvement guarantees. In practice, CQL augments the standard Bellman error objective with a simple Q-value regularizer which is straightforward to implement on top of existing deep Q-learning and actor-critic implementations. On both discrete and continuous control domains, we show that CQL substantially outperforms existing offline RL methods, often learning policies that attain 2-5 times higher final return, especially when learning from complex and multi-modal data distributions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5e7bc93622416f14e6948a500278bfbe58cd3890",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2005-01643",
+      "MAG": "3022566517",
+      "ArXiv": "2005.01643",
+      "CorpusId": 218486979
+    },
+    "title": "Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 2531,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.01643, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1488785534",
+        "name": "Aviral Kumar"
+      },
+      {
+        "authorId": "145499435",
+        "name": "G. Tucker"
+      },
+      {
+        "authorId": "2550764",
+        "name": "Justin Fu"
+      }
+    ],
+    "abstract": "In this tutorial article, we aim to provide the reader with the conceptual tools needed to get started on research on offline reinforcement learning algorithms: reinforcement learning algorithms that utilize previously collected data, without additional online data collection. Offline reinforcement learning algorithms hold tremendous promise for making it possible to turn large datasets into powerful decision making engines. Effective offline reinforcement learning methods would be able to extract policies with the maximum possible utility out of the available data, thereby allowing automation of a wide range of decision-making domains, from healthcare and education to robotics. However, the limitations of current algorithms make this difficult. We will aim to provide the reader with an understanding of these challenges, particularly in the context of modern deep reinforcement learning methods, and describe some potential solutions that have been explored in recent work to mitigate these challenges, along with recent applications, and a discussion of perspectives on open problems in the field.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a326d9f2d2d351001fece788165dbcbb524da2e4",
+    "externalIds": {
+      "MAG": "3016525976",
+      "ArXiv": "2004.07219",
+      "DBLP": "journals/corr/abs-2004-07219",
+      "CorpusId": 215827910
+    },
+    "title": "D4RL: Datasets for Deep Data-Driven Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 1724,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.07219, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2550764",
+        "name": "Justin Fu"
+      },
+      {
+        "authorId": "1488785534",
+        "name": "Aviral Kumar"
+      },
+      {
+        "authorId": "7624658",
+        "name": "Ofir Nachum"
+      },
+      {
+        "authorId": "145499435",
+        "name": "G. Tucker"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "The offline reinforcement learning (RL) problem, also known as batch RL, refers to the setting where a policy must be learned from a static dataset, without additional online data collection. This setting is compelling as potentially it allows RL methods to take advantage of large, pre-collected datasets, much like how the rise of large datasets has fueled results in supervised learning in recent years. However, existing online RL benchmarks are not tailored towards the offline setting, making progress in offline RL difficult to measure. In this work, we introduce benchmarks specifically designed for the offline setting, guided by key properties of datasets relevant to real-world applications of offline RL. Examples of such properties include: datasets generated via hand-designed controllers and human demonstrators, multi-objective datasets where an agent can perform different tasks in the same environment, and datasets consisting of a mixtures of policies. To facilitate research, we release our benchmark tasks and datasets with a comprehensive evaluation of existing algorithms and an evaluation protocol together with an open-source codebase. We hope that our benchmark will focus research effort on methods that drive improvements not just on simulated tasks, but ultimately on the kinds of real-world problems where offline RL will have the largest impact.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7e61f1787cbf97bb59eb7f5f383e654d66947f0d",
+    "externalIds": {
+      "DBLP": "conf/nips/PengRWKTBW21",
+      "ArXiv": "2003.06709",
+      "CorpusId": 234353700
+    },
+    "title": "FACMAC: Factored Multi-Agent Centralised Policy Gradients",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 355,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.06709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2323268",
+        "name": "Bei Peng"
+      },
+      {
+        "authorId": "36054740",
+        "name": "Tabish Rashid"
+      },
+      {
+        "authorId": "47542438",
+        "name": "C. S. D. Witt"
+      },
+      {
+        "authorId": "1565543388",
+        "name": "Pierre-Alexandre Kamienny"
+      },
+      {
+        "authorId": "143635540",
+        "name": "Philip H. S. Torr"
+      },
+      {
+        "authorId": "84187676",
+        "name": "Wendelin Bohmer"
+      },
+      {
+        "authorId": "1766767",
+        "name": "Shimon Whiteson"
+      }
+    ],
+    "abstract": "We propose FACtored Multi-Agent Centralised policy gradients (FACMAC), a new method for cooperative multi-agent reinforcement learning in both discrete and continuous action spaces. Like MADDPG, a popular multi-agent actor-critic method, our approach uses deep deterministic policy gradients to learn policies. However, FACMAC learns a centralised but factored critic, which combines per-agent utilities into the joint action-value function via a non-linear monotonic function, as in QMIX, a popular multi-agent Q-learning algorithm. However, unlike QMIX, there are no inherent constraints on factoring the critic. We thus also employ a nonmonotonic factorisation and empirically demonstrate that its increased representational capacity allows it to solve some tasks that cannot be solved with monolithic, or monotonically factored critics. In addition, FACMAC uses a centralised policy gradient estimator that optimises over the entire joint action space, rather than optimising over each agent's action space separately as in MADDPG. This allows for more coordinated policy changes and fully reaps the benefits of a centralised critic. We evaluate FACMAC on variants of the multi-agent particle environments, a novel multi-agent MuJoCo benchmark, and a challenging set of StarCraft II micromanagement tasks. Empirical results demonstrate FACMAC's superior performance over MADDPG and other baselines on all three domains.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1b6ed62002979ae366854deb475b3413667e3f2b",
+    "externalIds": {
+      "MAG": "3034218175",
+      "DBLP": "conf/icml/HuLPF20",
+      "ArXiv": "2003.02979",
+      "CorpusId": 212628508
+    },
+    "title": "\"Other-Play\" for Zero-Shot Coordination",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 271,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.02979, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3437504",
+        "name": "Hengyuan Hu"
+      },
+      {
+        "authorId": "1977806",
+        "name": "Adam Lerer"
+      },
+      {
+        "authorId": "1970752",
+        "name": "A. Peysakhovich"
+      },
+      {
+        "authorId": "1412004702",
+        "name": "J. Foerster"
+      }
+    ],
+    "abstract": "We consider the problem of zero-shot coordination - constructing AI agents that can coordinate with novel partners they have not seen before (e.g. humans). Standard Multi-Agent Reinforcement Learning (MARL) methods typically focus on the self-play (SP) setting where agents construct strategies by playing the game with themselves repeatedly. Unfortunately, applying SP naively to the zero-shot coordination problem can produce agents that establish highly specialized conventions that do not carry over to novel partners they have not been trained with. We introduce a novel learning algorithm called other-play (OP), that enhances self-play by looking for more robust strategies, exploiting the presence of known symmetries in the underlying problem. We characterize OP theoretically as well as experimentally. We study the cooperative card game Hanabi and show that OP agents achieve higher scores when paired with independently trained agents. In preliminary results we also show that our OP agents obtains higher average scores when paired with human players, compared to state-of-the-art SP agents.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4c54efd3b9ce84f4268b165f5896c0692a50bcd1",
+    "externalIds": {
+      "ArXiv": "1902.00183",
+      "DBLP": "journals/corr/abs-1902-00183",
+      "MAG": "2964158321",
+      "CorpusId": 59553460
+    },
+    "title": "Learning Action Representations for Reinforcement Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2019,
+    "citationCount": 188,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1902.00183, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2232505",
+        "name": "Yash Chandak"
+      },
+      {
+        "authorId": "1709005",
+        "name": "Georgios Theocharous"
+      },
+      {
+        "authorId": "2073944141",
+        "name": "James E. Kostas"
+      },
+      {
+        "authorId": "143900003",
+        "name": "Emma Jordan"
+      },
+      {
+        "authorId": "143640165",
+        "name": "P. Thomas"
+      }
+    ],
+    "abstract": "Most model-free reinforcement learning methods leverage state representations (embeddings) for generalization, but either ignore structure in the space of actions or assume the structure is provided a priori. We show how a policy can be decomposed into a component that acts in a low-dimensional space of action representations and a component that transforms these representations into actual actions. These representations improve generalization over large, finite action sets by allowing the agent to infer the outcomes of actions similar to actions already taken. We provide an algorithm to both learn and use action representations and provide conditions for its convergence. The efficacy of the proposed method is demonstrated on large-scale real-world problems.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5285cb8faada5de8a92a47622950f6cfd476ac1d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1812-02900",
+      "ArXiv": "1812.02900",
+      "MAG": "2904453761",
+      "CorpusId": 54457299
+    },
+    "title": "Off-Policy Deep Reinforcement Learning without Exploration",
+    "venue": "International Conference on Machine Learning",
+    "year": 2018,
+    "citationCount": 1963,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.02900, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "14637819",
+        "name": "Scott Fujimoto"
+      },
+      {
+        "authorId": "2462512",
+        "name": "D. Meger"
+      },
+      {
+        "authorId": "144368601",
+        "name": "Doina Precup"
+      }
+    ],
+    "abstract": "Many practical applications of reinforcement learning constrain agents to learn from a fixed batch of data which has already been gathered, without offering further possibility for data collection. In this paper, we demonstrate that due to errors introduced by extrapolation, standard off-policy deep reinforcement learning algorithms, such as DQN and DDPG, are incapable of learning with data uncorrelated to the distribution under the current policy, making them ineffective for this fixed batch setting. We introduce a novel class of off-policy algorithms, batch-constrained reinforcement learning, which restricts the action space in order to force the agent towards behaving close to on-policy with respect to a subset of the given data. We present the first continuous control deep reinforcement learning algorithm which can learn effectively from arbitrary, fixed batch data, and empirically demonstrate the quality of its behavior in several tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "12f5850c6d00cfebf5b6be268a55f6f5396d4ef3",
+    "externalIds": {
+      "DBLP": "conf/aies/LererP19",
+      "MAG": "2959402823",
+      "DOI": "10.1145/3306618.3314268",
+      "CorpusId": 76663741
+    },
+    "title": "Learning Existing Social Conventions via Observationally Augmented Self-Play",
+    "venue": "AAAI/ACM Conference on AI, Ethics, and Society",
+    "year": 2018,
+    "citationCount": 64,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1806.10071",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3306618.3314268?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3306618.3314268, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1977806",
+        "name": "Adam Lerer"
+      },
+      {
+        "authorId": "1970752",
+        "name": "A. Peysakhovich"
+      }
+    ],
+    "abstract": "In order for artificial agents to coordinate effectively with people, they must act consistently with existing conventions (e.g. how to navigate in traffic, which language to speak, or how to coordinate with teammates). A group's conventions can be viewed as a choice of equilibrium in a coordination game. We consider the problem of an agent learning a policy for a coordination game in a simulated environment and then using this policy when it enters an existing group. When there are multiple possible conventions we show that learning a policy via multi-agent reinforcement learning (MARL) is likely to find policies which achieve high payoffs at training time but fail to coordinate with the real group into which the agent enters. We assume access to a small number of samples of behavior from the true convention and show that we can augment the MARL objective to help it find policies consistent with the real group's convention. In three environments from the literature - traffic, communication, and team coordination - we observe that augmenting MARL with a small amount of imitation learning greatly increases the probability that the strategy found by MARL fits well with the existing social convention. We show that this works even in an environment where standard training methods very rarely find the true convention of the agent's partners.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6ecc4b1ab05f3ec12484a0ea36abfd6271c5c5ba",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1805-00909",
+      "MAG": "2799151646",
+      "ArXiv": "1805.00909",
+      "CorpusId": 19077536
+    },
+    "title": "Reinforcement Learning and Control as Probabilistic Inference: Tutorial and Review",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 816,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.00909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "The framework of reinforcement learning or optimal control provides a mathematical formalization of intelligent decision making that is powerful and broadly applicable. While the general form of the reinforcement learning problem enables effective reasoning about uncertainty, the connection between reinforcement learning and inference in probabilistic models is not immediately obvious. However, such a connection has considerable value when it comes to algorithm design: formalizing a problem as probabilistic inference in principle allows us to bring to bear a wide array of approximate inference tools, extend the model in flexible and powerful ways, and reason about compositionality and partial observability. In this article, we will discuss how a generalization of the reinforcement learning or optimal control problem, which is sometimes termed maximum entropy reinforcement learning, is equivalent to exact probabilistic inference in the case of deterministic dynamics, and variational inference in the case of stochastic dynamics. We will present a detailed derivation of this framework, overview prior work that has drawn on this and related ideas to propose new reinforcement learning and control algorithms, and describe perspectives on future research.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "811df72e210e20de99719539505da54762a11c6d",
+    "externalIds": {
+      "MAG": "2962902376",
+      "ArXiv": "1801.01290",
+      "DBLP": "journals/corr/abs-1801-01290",
+      "CorpusId": 28202810
+    },
+    "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor",
+    "venue": "International Conference on Machine Learning",
+    "year": 2018,
+    "citationCount": 10949,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.01290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2587648",
+        "name": "Tuomas Haarnoja"
+      },
+      {
+        "authorId": "35499972",
+        "name": "Aurick Zhou"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Model-free deep reinforcement learning (RL) algorithms have been demonstrated on a range of challenging decision making and control tasks. However, these methods typically suffer from two major challenges: very high sample complexity and brittle convergence properties, which necessitate meticulous hyperparameter tuning. Both of these challenges severely limit the applicability of such methods to complex, real-world domains. In this paper, we propose soft actor-critic, an off-policy actor-critic deep RL algorithm based on the maximum entropy reinforcement learning framework. In this framework, the actor aims to maximize expected reward while also maximizing entropy. That is, to succeed at the task while acting as randomly as possible. Prior deep RL methods based on this framework have been formulated as Q-learning methods. By combining off-policy updates with a stable stochastic actor-critic formulation, our method achieves state-of-the-art performance on a range of continuous control benchmark tasks, outperforming prior on-policy and off-policy methods. Furthermore, we demonstrate that, in contrast to other off-policy algorithms, our approach is very stable, achieving very similar performance across different random seeds.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "7c3ece1ba41c415d7e81cfa5ca33a8de66efd434",
+    "externalIds": {
+      "DBLP": "conf/nips/LoweWTHAM17",
+      "MAG": "2623431351",
+      "ArXiv": "1706.02275",
+      "CorpusId": 26419660
+    },
+    "title": "Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 5693,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.02275, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054294",
+        "name": "Ryan Lowe"
+      },
+      {
+        "authorId": "31613801",
+        "name": "Yi Wu"
+      },
+      {
+        "authorId": "3025260",
+        "name": "Aviv Tamar"
+      },
+      {
+        "authorId": "40638357",
+        "name": "J. Harb"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "2080746",
+        "name": "Igor Mordatch"
+      }
+    ],
+    "abstract": "We explore deep reinforcement learning methods for multi-agent domains. We begin by analyzing the difficulty of traditional algorithms in the multi-agent case: Q-learning is challenged by an inherent non-stationarity of the environment, while policy gradient suffers from a variance that increases as the number of agents grows. We then present an adaptation of actor-critic methods that considers action policies of other agents and is able to successfully learn policies that require complex multi-agent coordination. Additionally, we introduce a training regimen utilizing an ensemble of policies for each agent that leads to more robust multi-agent policies. We show the strength of our approach compared to existing methods in cooperative as well as competitive scenarios, where agent populations are able to discover various physical and informational coordination strategies.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "836ad0c693bc5ef171ee2b07b3f4d1bd2a0ae24c",
+    "externalIds": {
+      "MAG": "2747213132",
+      "DBLP": "series/sbis/OliehoekA16",
+      "DOI": "10.1007/978-3-319-28929-8",
+      "CorpusId": 3263887
+    },
+    "title": "A Concise Introduction to Decentralized POMDPs",
+    "venue": "SpringerBriefs in Intelligent Systems",
+    "year": 2016,
+    "citationCount": 1289,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-319-28929-8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-319-28929-8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1799949",
+        "name": "F. Oliehoek"
+      },
+      {
+        "authorId": "34903901",
+        "name": "Chris Amato"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dbb9845f405152fd6748b17d54fc6984626618fe",
+    "externalIds": {
+      "DBLP": "conf/atal/ZhangL13",
+      "MAG": "6043852",
+      "DOI": "10.65109/zash3647",
+      "CorpusId": 7085652
+    },
+    "title": "Coordinating multi-agent reinforcement learning with limited communication",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2013,
+    "citationCount": 155,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.65109/zash3647?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.65109/zash3647, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111387140",
+        "name": "Chongjie Zhang"
+      },
+      {
+        "authorId": "1725492",
+        "name": "V. Lesser"
+      }
+    ],
+    "abstract": "Coordinated multi-agent reinforcement learning (MARL) provides a promising approach to scaling learning in large cooperative multi-agent systems. Distributed constraint optimization (DCOP) techniques have been used to coordinate action selection among agents during both the learning phase and the policy execution phase (if learning is off-line) to ensure good overall system performance. However, running DCOP algorithms for each action selection through the whole system results in significant communication among agents, which is not practical for most applications with limited communication bandwidth. In this paper, we develop a learning approach that generalizes previous coordinated MARL approaches that use DCOP algorithms and enables MARL to be conducted over a spectrum from independent learning (without communication) to fully coordinated learning depending on agents' communication bandwidth. Our approach defines an interaction measure that allows agents to dynamically identify their beneficial coordination set (i.e., whom to coordinate with) in different situations and to trade off its performance and communication cost. By limiting their coordination set, agents dynamically decompose the coordination network in a distributed way, resulting in dramatically reduced communication for DCOP algorithms without significantly affecting overall learning performance. Essentially, our learning approach conducts co-adaptation of agents' policy learning and coordination set identification, which outperforms approaches that sequence them.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "55e9ea45c4e232bec63c59f82dd73e74713b4573",
+    "externalIds": {
+      "MAG": "2396783599",
+      "DBLP": "conf/aaai/MatignonJM12",
+      "DOI": "10.1609/aaai.v26i1.8380",
+      "CorpusId": 6540077
+    },
+    "title": "Coordinated Multi-Robot Exploration Under Communication Constraints Using Decentralized Markov Decision Processes",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2012,
+    "citationCount": 150,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/8380/8239",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1609/aaai.v26i1.8380?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1609/aaai.v26i1.8380, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2335305",
+        "name": "L. Matignon"
+      },
+      {
+        "authorId": "2129966456",
+        "name": "L. Jeanpierre"
+      },
+      {
+        "authorId": "1726306",
+        "name": "A. Mouaddib"
+      }
+    ],
+    "abstract": "\n \n Recent works on multi-agent sequential decision making using decentralized partially observable Markov decision processes have been concerned with interaction-oriented resolution techniques and provide promising results. These techniques take advantage of local interactions and coordination. In this paper, we propose an approach based on an interaction-oriented resolution of decentralized decision makers. To this end, distributed value functions (DVF) have been used by decoupling the multi-agent problem into a set of individual agent problems. However existing DVF techniques assume permanent and free communication between the agents. In this paper, we extend the DVF methodology to address full local observability, limited share of information and communication breaks. We apply our new DVF in a real-world application consisting of multi-robot exploration where each robot computes locally a strategy that minimizes the interactions between the robots and maximizes the space coverage of the team even under communication constraints. Our technique has been implemented and evaluated in simulation and in real-world scenarios during a robotic challenge for the exploration and mapping of an unknown environment. Experimental results from real-world scenarios and from the challenge are given where our system was vice-champion.\n \n",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f48318bcb1c2c5540194a846295aa52e7ef3dff9",
+    "externalIds": {
+      "DBLP": "conf/tark/Boutilier96",
+      "MAG": "1521003796",
+      "CorpusId": 7010011
+    },
+    "title": "Planning, Learning and Coordination in Multiagent Decision Processes",
+    "venue": "Theoretical Aspects of Rationality and Knowledge",
+    "year": 1996,
+    "citationCount": 604,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "145646162",
+        "name": "Craig Boutilier"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5772e99161f0b420ca3628b7b890f07ec20e1e95",
+    "externalIds": {
+      "DBLP": "conf/iclr/0001BLZG025",
+      "CorpusId": 277677794
+    },
+    "title": "Efficient Multi-agent Offline Coordination via Diffusion-based Trajectory Stitching",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "49785134",
+        "name": "Lei Yuan"
+      },
+      {
+        "authorId": "2354677557",
+        "name": "Yuqi Bian"
+      },
+      {
+        "authorId": "2216719801",
+        "name": "Lihe Li"
+      },
+      {
+        "authorId": "2188107173",
+        "name": "Ziqian Zhang"
+      },
+      {
+        "authorId": "2174870366",
+        "name": "Cong Guan"
+      },
+      {
+        "authorId": "2264002365",
+        "name": "Yang Yu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

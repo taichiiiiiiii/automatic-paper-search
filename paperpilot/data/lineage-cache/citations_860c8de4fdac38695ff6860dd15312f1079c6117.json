@@ -1,0 +1,2906 @@
+[
+  {
+    "paperId": "36d6bbce93117f5a2bd9b0aed46fde7c790502d7",
+    "externalIds": {
+      "ArXiv": "2604.20933",
+      "CorpusId": 287701901
+    },
+    "title": "IRIS: Interpolative R\\'enyi Iterative Self-play for Large Language Model Fine-Tuning",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.20933, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2305799300",
+        "name": "Wenjie Liao"
+      },
+      {
+        "authorId": "2306142263",
+        "name": "Like Wu"
+      },
+      {
+        "authorId": "2263759170",
+        "name": "Liang Zhao"
+      },
+      {
+        "authorId": "2306152272",
+        "name": "Shihui Xu"
+      },
+      {
+        "authorId": "2305764540",
+        "name": "Shigeru Fujimura"
+      }
+    ],
+    "abstract": "Self-play fine-tuning enables large language models to improve beyond supervised fine-tuning without additional human annotations by contrasting annotated responses with self-generated ones. Many existing methods rely on a fixed divergence regime. SPIN is closely related to a KL-based regime, SPACE to a Jensen-Shannon-style objective via noise contrastive estimation, and SPIF to $\\chi^2$-regularized self-play. Since these divergences exhibit different strengths depending on the distributional gap between model and target, no single choice appears to provide favorable learning dynamics across training stages. We propose IRIS (Interpolative R\\'enyi Iterative Self-play), a R\\'enyi-based self-play fine-tuning framework with a continuously adjustable objective. IRIS decomposes into two independent tilted risk terms over annotated and synthetic data, with exponential importance weights controlled by the order parameter $\\alpha$. We show that several self-play objectives can be interpreted as limiting or representative regimes at particular values of $\\alpha$, providing a unified theoretical perspective on these methods. An adaptive order schedule further adjusts $\\alpha$ to the distributional gap, shifting from sharper importance weighting early in training to smoother refinement near convergence. Theoretically, we establish the fixed-point property of IRIS and analyze how $\\alpha$ controls gradient concentration. Experiments on Zephyr-7B and Qwen2.5-3B across ten benchmarks show that IRIS improves upon baselines, reaching 44.57\\% average score with gains across iterations. In our setting, IRIS with only 26$k$ annotated samples surpasses standard supervised fine-tuning trained on the full 200$k$ dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "68fb08e88621cede36a1a29b0f2d21701dfb5c00",
+    "externalIds": {
+      "ArXiv": "2604.18239",
+      "CorpusId": 287634643
+    },
+    "title": "Towards Disentangled Preference Optimization Dynamics Beyond Likelihood Displacement",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.18239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256715978",
+        "name": "Wei Chen"
+      },
+      {
+        "authorId": "2358282140",
+        "name": "Yubing Wu"
+      },
+      {
+        "authorId": "2243330371",
+        "name": "Junmei Yang"
+      },
+      {
+        "authorId": "2244622763",
+        "name": "Delu Zeng"
+      },
+      {
+        "authorId": "2375398547",
+        "name": "Qibin Zhao"
+      },
+      {
+        "authorId": "2310341385",
+        "name": "John W. Paisley"
+      },
+      {
+        "authorId": "2315316251",
+        "name": "Min Chen"
+      },
+      {
+        "authorId": "2275509582",
+        "name": "Zhou Wang"
+      }
+    ],
+    "abstract": "Preference optimization is widely used to align large language models (LLMs) with human preferences. However, many margin-based objectives suppress the chosen response along with the rejected one, a phenomenon known as likelihood displacement, and no general mechanism currently prevents this across objectives. We bridge this gap by presenting a unified \\emph{incentive-score decomposition} of preference optimization, revealing that diverse objectives share identical local update directions and differ only in their scalar weighting coefficients. Building on this decomposition, by analyzing the dynamics of the chosen/rejected likelihoods, we identify the \\emph{disentanglement band} (DB), a simple, testable condition that characterizes when training can avoid likelihood displacement by realizing the preferred pathway: suppressing the loser while maintaining the winner, possibly after an initial transient. Leveraging the DB, we propose a plug-and-play \\emph{reward calibration} (RC) that adaptively rebalances chosen versus rejected updates to satisfy the DB and mitigate likelihood displacement, without redesigning the base objective. Empirical results show that RC steers training toward more disentangled dynamics and often improves downstream performance across a range of objectives. Our code is available at https://github.com/IceyWuu/DisentangledPreferenceOptimization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b3d91524faf2040e97c271d86d3631ff7635f32c",
+    "externalIds": {
+      "ArXiv": "2604.15705",
+      "CorpusId": 287607219
+    },
+    "title": "Towards Robust Endogenous Reasoning: Unifying Drift Adaptation in Non-Stationary Tuning",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.15705, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2302814248",
+        "name": "Xiaoyu Yang"
+      },
+      {
+        "authorId": "145945507",
+        "name": "Enshui Yu"
+      },
+      {
+        "authorId": "2112422042",
+        "name": "Wei Duan"
+      },
+      {
+        "authorId": "2302819426",
+        "name": "Jie Lu"
+      }
+    ],
+    "abstract": "Reinforcement Fine-Tuning (RFT) has established itself as a critical paradigm for the alignment of Multi-modal Large Language Models (MLLMs) with complex human values and domain-specific requirements. Nevertheless, current research primarily focuses on mitigating exogenous distribution shifts arising from data-centric factors, the non-stationarity inherent in the endogenous reasoning remains largely unexplored. In this work, a critical vulnerability is revealed within MLLMs: they are highly susceptible to endogenous reasoning drift, across both thinking and perception perspectives. It manifests as unpredictable distribution changes that emerge spontaneously during the autoregressive generation process, independent of external environmental perturbations. To adapt it, we first theoretically define endogenous reasoning drift within the RFT of MLLMs as the multi-modal concept drift. In this context, this paper proposes Counterfactual Preference Optimization ++ (CPO++), a comprehensive and autonomous framework adapted to the multi-modal concept drift. It integrates counterfactual reasoning with domain knowledge to execute controlled perturbations across thinking and perception, employing preference optimization to disentangle spurious correlations. Extensive empirical evaluations across two highly dynamic and safety-critical domains: medical diagnosis and autonomous driving. They demonstrate that the proposed framework achieves superior performance in reasoning coherence, decision-making precision, and inherent robustness against extreme interference. The methodology also exhibits exceptional zero-shot cross-domain generalization, providing a principled foundation for reliable multi-modal reasoning in safety-critical applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f6df9842dad828b610a568e01a4e464ce79f1865",
+    "externalIds": {
+      "ArXiv": "2604.16027",
+      "CorpusId": 287607829
+    },
+    "title": "Where does output diversity collapse in post-training?",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.16027, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2077430006",
+        "name": "Constantinos F. Karouzos"
+      },
+      {
+        "authorId": "2364358630",
+        "name": "Xingwei Tan"
+      },
+      {
+        "authorId": "3238627",
+        "name": "Nikolaos Aletras"
+      }
+    ],
+    "abstract": "Post-trained language models produce less varied outputs than their base counterparts. This output diversity collapse undermines inference-time scaling methods that rely on varied samples, and risks homogenizing model outputs on creative and value-laden tasks. Prior work attributes collapse to specific post-training methods, without separating the role of training data composition from the method, or the generation format from the model weights. We trace output diversity through three parallel post-training lineages of Olmo 3, Think (chain-of-thought distillation), Instruct (broad multi-source data), and RL-Zero, across 15 tasks and four text diversity metrics. We find that the location of collapse co-varies with data composition: the Think lineage loses most semantic diversity at supervised fine-tuning, and the effect of DPO is larger in Instruct than in Think. Suppressing chain-of-thought reasoning at inference in Think models drops accuracy on hard tasks, yet leaves answer-level diversity unchanged, showing that the collapse is embedded in the model weights by training data, not imposed by the generation format. Decomposing diversity loss on six verifiable tasks into a quality-control component (removal of incorrect outputs) and a residual component (genuine narrowing among correct outputs) reveals that the split is task-dependent, and Think models retain more correct-answer diversity than Instruct despite collapsing more in aggregate. Our results indicate that diversity collapse is determined during training by data composition and cannot be addressed at inference time alone.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9c6d740fd47855b2f69d3ea91c83c42c79190e73",
+    "externalIds": {
+      "ArXiv": "2603.18258",
+      "CorpusId": 286669919
+    },
+    "title": "Sharpness-Aware Minimization in Logit Space Efficiently Enhances Direct Preference Optimization",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.18258, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2291976865",
+        "name": "Haochen Luo"
+      },
+      {
+        "authorId": "2305094728",
+        "name": "Zehang Deng"
+      },
+      {
+        "authorId": "2277602586",
+        "name": "Thanh-Toan Do"
+      },
+      {
+        "authorId": "23911916",
+        "name": "Mehrtash Harandi"
+      },
+      {
+        "authorId": "1400659302",
+        "name": "Dinh Q. Phung"
+      },
+      {
+        "authorId": "2277844544",
+        "name": "Trung Le"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has emerged as a popular algorithm for aligning pretrained large language models with human preferences, owing to its simplicity and training stability. However, DPO suffers from the recently identified squeezing effect (also known as likelihood displacement), where the probability of preferred responses decreases unintentionally during training. To understand and mitigate this phenomenon, we develop a theoretical framework that models the coordinate-wise dynamics in logit space. Our analysis reveals that negative-gradient updates cause residuals to expand rapidly along high-curvature directions, which underlies the squeezing effect, whereas Sharpness-Aware Minimization (SAM) can suppress this behavior through its curvature-regularization effect. Building on this insight, we investigate logits-SAM, a computationally efficient variant that perturbs only the output layer with negligible overhead. Extensive experiments on Pythia-2.8B, Mistral-7B, and Gemma-2B-IT across multiple datasets and benchmarks demonstrate that logits-SAM consistently improves the effectiveness of DPO and integrates seamlessly with other DPO variants. Code is available at https://github.com/RitianLuo/logits-sam-dpo.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7cb0d74edd8db3670468e0e0aa3bc32cea8c16f5",
+    "externalIds": {
+      "ArXiv": "2603.16157",
+      "CorpusId": 286579659
+    },
+    "title": "DyJR: Preserving Diversity in Reinforcement Learning with Verifiable Rewards via Dynamic Jensen-Shannon Replay",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.16157, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2380040635",
+        "name": "Long Li"
+      },
+      {
+        "authorId": "2346717252",
+        "name": "Zhijian Zhou"
+      },
+      {
+        "authorId": "2313388101",
+        "name": "Tianyi Wang"
+      },
+      {
+        "authorId": "2248606044",
+        "name": "Weidi Xu"
+      },
+      {
+        "authorId": "2355343979",
+        "name": "Zuming Huang"
+      },
+      {
+        "authorId": "2215626889",
+        "name": "Wei Chu"
+      },
+      {
+        "authorId": "2333381584",
+        "name": "Zhe Wang"
+      },
+      {
+        "authorId": "2316790725",
+        "name": "Shirui Pan"
+      },
+      {
+        "authorId": "2313621280",
+        "name": "Chao Qu"
+      },
+      {
+        "authorId": "2192603365",
+        "name": "Yuan Qi"
+      }
+    ],
+    "abstract": "While Reinforcement Learning (RL) enhances Large Language Model reasoning, on-policy algorithms like GRPO are sample-inefficient as they discard past rollouts. Existing experience replay methods address this by reusing accurate samples for direct policy updates, but this often incurs high computational costs and causes mode collapse via overfitting. We argue that historical data should prioritize sustaining diversity rather than simply reinforcing accuracy. To this end, we propose Dynamic Jensen-Shannon Replay (DyJR), a simple yet effective regularization framework using a dynamic reference distribution from recent trajectories. DyJR introduces two innovations: (1) A Time-Sensitive Dynamic Buffer that uses FIFO and adaptive sizing to retain only temporally proximal samples, synchronizing with model evolution; and (2) Jensen-Shannon Divergence Regularization, which replaces direct gradient updates with a distributional constraint to prevent diversity collapse. Experiments on mathematical reasoning and Text-to-SQL benchmarks demonstrate that DyJR significantly outperforms GRPO as well as baselines such as RLEP and Ex-GRPO, while maintaining training efficiency comparable to the original GRPO. Furthermore, from the perspective of Rank-$k$ token probability evolution, we show that DyJR enhances diversity and mitigates over-reliance on Rank-1 tokens, elucidating how specific sub-modules of DyJR influence the training dynamics.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7dc241108c03865d60e0498e5dbacd0338af4a54",
+    "externalIds": {
+      "ArXiv": "2603.16929",
+      "CorpusId": 286638542
+    },
+    "title": "MHPO: Modulated Hazard-aware Policy Optimization for Stable Reinforcement Learning",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.16929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2292339349",
+        "name": "Hongjun Wang"
+      },
+      {
+        "authorId": "2279511838",
+        "name": "Wei Liu"
+      },
+      {
+        "authorId": "2176643791",
+        "name": "Weibo Gu"
+      },
+      {
+        "authorId": "2314886050",
+        "name": "Xing Sun"
+      },
+      {
+        "authorId": "2405844077",
+        "name": "Kai Han"
+      }
+    ],
+    "abstract": "Regulating the importance ratio is critical for the training stability of Group Relative Policy Optimization (GRPO) based frameworks. However, prevailing ratio control methods, such as hard clipping, suffer from non-differentiable boundaries and vanishing gradient regions, failing to maintain gradient fidelity. Furthermore, these methods lack a hazard-aware mechanism to adaptively suppress extreme deviations, leaving the optimization process vulnerable to abrupt policy shifts. To address these challenges, we propose Modulated Hazard-aware Policy Optimization (MHPO), a novel framework designed for robust and stable reinforcement learning. The proposed MHPO introduces a Log-Fidelity Modulator (LFM) to map unbounded importance ratios into a bounded, differentiable domain. This mechanism effectively prevents high-variance outlier tokens from destabilizing the loss landscape while ensuring global gradient stability. Complementarily, a Decoupled Hazard Penalty (DHP) integrates cumulative hazard functions from survival analysis to independently regulate positive and negative policy shifts. By shaping the optimization landscape with hazard-aware penalties, the proposed MHPO achieves fine-grained regulation of asymmetric policy shifts simultaneously mitigating mode collapse from over-expansion and preventing policy erosion from catastrophic contraction within a stabilized trust region. Extensive evaluations on diverse reasoning benchmarks across both text-based and vision-language tasks demonstrate that MHPO consistently outperforms existing methods, achieving superior performance while significantly enhancing training stability.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3813463565a7b0b0c25e2e0a03fc3343637be138",
+    "externalIds": {
+      "ArXiv": "2602.23116",
+      "DBLP": "journals/corr/abs-2602-23116",
+      "DOI": "10.48550/arXiv.2602.23116",
+      "CorpusId": 286083616
+    },
+    "title": "Regularized Online RLHF with Generalized Bilinear Preferences",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.23116, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2327037089",
+        "name": "Jung-Hyun Lee"
+      },
+      {
+        "authorId": "2151698230",
+        "name": "Minju Hong"
+      },
+      {
+        "authorId": "2372509621",
+        "name": "Kwang-Sung Jun"
+      },
+      {
+        "authorId": "2338270101",
+        "name": "Chulhee Yun"
+      },
+      {
+        "authorId": "2286404890",
+        "name": "Se-Young Yun"
+      }
+    ],
+    "abstract": "We consider the problem of contextual online RLHF with general preferences, where the goal is to identify the Nash Equilibrium. We adopt the Generalized Bilinear Preference Model (GBPM) to capture potentially intransitive preferences via low-rank, skew-symmetric matrices. We investigate general preference learning with any strongly convex regularizer and regularization strength $\\eta^{-1}$, generalizing beyond prior work limited to reverse KL-regularization. Central to our analysis is proving that the dual gap of the greedy policy is bounded by the square of the estimation error, a result derived solely from strong convexity and the skew-symmetry of GBPM. Building on this insight and a feature diversity assumption, we establish two regret bounds via two simple algorithms: (1) Greedy Sampling achieves polylogarithmic, $e^{\\mathcal{O}(\\eta)}$-free regret $\\tilde{\\mathcal{O}}(\\eta d^4 (\\log T)^2)$. (2) Explore-Then-Commit achieves $\\mathrm{poly}(d)$-free regret $\\tilde{\\mathcal{O}}(\\sqrt{\\eta r T})$ by exploiting the low-rank structure; this is the first statistically efficient guarantee for online RLHF in high-dimensions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "167c0c281967935d2bf8134cdddf7405055550a9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-11902",
+      "ArXiv": "2602.11902",
+      "DOI": "10.48550/arXiv.2602.11902",
+      "CorpusId": 285541130
+    },
+    "title": "Mitigating Mismatch within Reference-based Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.11902, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2235518675",
+        "name": "Suqin Yuan"
+      },
+      {
+        "authorId": "2325237634",
+        "name": "Xin Yu"
+      },
+      {
+        "authorId": "2315247848",
+        "name": "Jiyang Zheng"
+      },
+      {
+        "authorId": "2315256099",
+        "name": "Lei Feng"
+      },
+      {
+        "authorId": "2288234227",
+        "name": "Dadong Wang"
+      },
+      {
+        "authorId": "2382761611",
+        "name": "Ivor W. Tsang"
+      },
+      {
+        "authorId": "2346256782",
+        "name": "Tongliang Liu"
+      }
+    ],
+    "abstract": "Direct Preference Optimization (DPO) has become the de facto standard for offline preference alignment of large language models, but its reliance on a reference policy introduces a critical tension. DPO weighs each update relative to a reference, which stabilizes the training by regularizing the updates within a trusted region. This reliance becomes problematic for pessimistic pairs, where the reference model prefers the rejected response. For these pairs, DPO prematurely attenuates the gradient as soon as the policy margin ($\\Delta_\\theta$) merely beats the reference margin ($\\Delta_{\\mathrm{ref}}$) even if the policy is still wrong ($\\Delta_{\\theta}<0$). We name this failure premature satisfaction, which is a concrete form of the training-inference mismatch. Reference-free objectives remove this mismatch by optimizing the absolute margin, but at the cost of discarding the stabilizing signal of the reference. We mitigate this tension with Hybrid-DPO (HyPO), a drop-in modification to DPO that applies reference conditionally: HyPO behaves exactly like DPO when the reference is optimistic or neutral, and it treats the reference as neutral when it is pessimistic by replacing $\\Delta_\\theta-\\Delta_{\\mathrm{ref}}$ with $\\Delta_\\theta-\\max\\{0,\\Delta_{\\mathrm{ref}}\\}$. This one-line change strictly strengthens per-example learning signals on pessimistic pairs while preserving DPO's objective form and computational cost. By conditionally debiasing the pessimistic reference signal, HyPO mitigates premature satisfaction; empirically, across preference alignment, HyPO improves inference-aligned metrics and achieves higher pairwise win rates. Our results provide evidence that direct preference alignment could be enhanced by conditionally debiasing the reference signal, rather than discarding it.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a6e4ee915fc55dd98db14a3df9012f8b55136093",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-08660",
+      "ArXiv": "2602.08660",
+      "DOI": "10.48550/arXiv.2602.08660",
+      "CorpusId": 285452122
+    },
+    "title": "Equalized Generative Treatment: Matching f-divergences for Fairness in Generative Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.08660, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119540989",
+        "name": "Alexandre Verine"
+      },
+      {
+        "authorId": "2409822428",
+        "name": "Rafael Pinot"
+      },
+      {
+        "authorId": "2281945172",
+        "name": "Florian Le Bronnec"
+      }
+    ],
+    "abstract": "Fairness is a crucial concern for generative models, which not only reflect but can also amplify societal and cultural biases. Existing fairness notions for generative models are largely adapted from classification and focus on balancing the probability of generating samples from each sensitive group. We show that such criteria are brittle, as they can be met even when different sensitive groups are modeled with widely varying quality. To address this limitation, we introduce a new fairness definition for generative models, termed as equalized generative treatment (EGT), which requires comparable generation quality across all sensitive groups, with quality measured via a reference f-divergence. We further analyze the trade-offs induced by EGT, demonstrating that enforcing fairness constraints necessarily couples the overall model quality to that of the most challenging group to approximate. This indicates that a simple yet efficient min-max fine-tuning method should be able to balance f-divergences across sensitive groups to satisfy EGT. We validate this theoretical insight through a set of experiments on both image and text generation tasks. We demonstrate that min-max methods consistently achieve fairer outcomes compared to other approaches from the literature, while maintaining competitive overall performance for both tasks.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "ce166a45f553afe721c879d64ed8a18647b49080",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-08689",
+      "ArXiv": "2602.08689",
+      "DOI": "10.48550/arXiv.2602.08689",
+      "CorpusId": 285451940
+    },
+    "title": "Learning To Sample From Diffusion Models Via Inverse Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.08689, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2409821582",
+        "name": "Constant Bourdrez"
+      },
+      {
+        "authorId": "2409822185",
+        "name": "Alexandre V'erine"
+      },
+      {
+        "authorId": "2329104890",
+        "name": "Olivier Capp'e"
+      }
+    ],
+    "abstract": "Diffusion models generate samples through an iterative denoising process, guided by a neural network. While training the denoiser on real-world data is computationally demanding, the sampling procedure itself is more flexible. This adaptability serves as a key lever in practice, enabling improvements in both the quality of generated samples and the efficiency of the sampling process. In this work, we introduce an inverse reinforcement learning framework for learning sampling strategies without retraining the denoiser. We formulate the diffusion sampling procedure as a discrete-time finite-horizon Markov Decision Process, where actions correspond to optional modifications of the sampling dynamics. To optimize action scheduling, we avoid defining an explicit reward function. Instead, we directly match the target behavior expected from the sampler using policy gradient techniques. We provide experimental evidence that this approach can improve the quality of samples generated by pretrained diffusion models and automatically tune sampling hyperparameters.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6a160bf5c386e1f5e6e62c4861628732a5a436ef",
+    "externalIds": {
+      "ArXiv": "2602.06788",
+      "DBLP": "journals/corr/abs-2602-06788",
+      "DOI": "10.48550/arXiv.2602.06788",
+      "CorpusId": 285401908
+    },
+    "title": "Displacement-Resistant Extensions of DPO with Nonconvex f-Divergences",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.06788, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2302334749",
+        "name": "Idan Pipano"
+      },
+      {
+        "authorId": "3218963",
+        "name": "Shoham Sabach"
+      },
+      {
+        "authorId": "7981071",
+        "name": "Kavosh Asadi"
+      },
+      {
+        "authorId": "2344617871",
+        "name": "Mohammad Ghavamzadeh"
+      }
+    ],
+    "abstract": "DPO and related algorithms align language models by directly optimizing the RLHF objective: find a policy that maximizes the Bradley-Terry reward while staying close to a reference policy through a KL divergence penalty. Previous work showed that this approach could be further generalized: the original problem remains tractable even if the KL divergence is replaced by a family of $f$-divergence with a convex generating function $f$. Our first contribution is to show that convexity of $f$ is not essential. Instead, we identify a more general condition, referred to as DPO-inducing, that precisely characterizes when the RLHF problem remains tractable. Our next contribution is to establish a second condition on $f$ that is necessary to prevent probability displacement, a known empirical phenomenon in which the probabilities of the winner and the loser responses approach zero. We refer to any $f$ that satisfies this condition as displacement-resistant. We finally focus on a specific DPO-inducing and displacement-resistant $f$, leading to our novel SquaredPO loss. Compared to DPO, this new loss offers stronger theoretical guarantees while performing competitively in practice.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1e148b32fc32efa608ae27040e78baa4a4100ad4",
+    "externalIds": {
+      "ArXiv": "2602.05933",
+      "DBLP": "journals/corr/abs-2602-05933",
+      "DOI": "10.48550/arXiv.2602.05933",
+      "CorpusId": 285304013
+    },
+    "title": "Approximation of Log-Partition Function in Policy Mirror Descent Induces Implicit Regularization for LLM Post-Training",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.05933, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261851299",
+        "name": "Zhenghao Xu"
+      },
+      {
+        "authorId": "2365376107",
+        "name": "Qin Lu"
+      },
+      {
+        "authorId": "2302894470",
+        "name": "Changlong Yu"
+      },
+      {
+        "authorId": "2261918338",
+        "name": "Tuo Zhao"
+      }
+    ],
+    "abstract": "Policy mirror descent (PMD) provides a principled framework for reinforcement learning (RL) by iteratively solving KL-regularized policy improvement subproblems. While this approach has been adopted in training advanced LLMs such as Kimi K1.5/K2, the ideal closed-form PMD updates require reliable partition function estimation, a significant challenge when working with limited rollouts in the vast action spaces of LLMs. We investigate a practical algorithm, termed PMD-mean, that approximates the log-partition term with the mean reward under the sampling policy and performs regression in log-policy space. Specifically, we characterize the population solution of PMD-mean and demonstrate that it implicitly optimizes mirror descent subproblems with an adaptive mixed KL--$\\chi^2$ regularizer. This additional $\\chi^2$ regularization constrains large probability changes, producing more conservative updates when expected rewards are low and enhancing robustness against finite-sample estimation errors. Experiments on math reasoning tasks show that PMD-mean achieves superior performance with improved stability and time efficiency. These findings deepen our understanding of PMD-mean and illuminate pathways toward principled improvements in RL algorithms for LLMs. Code is available at https://github.com/horizon-rl/OpenKimi.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "57d6c184f356b8ff91aa78ff19c5b622d14af4a4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-04417",
+      "ArXiv": "2602.04417",
+      "DOI": "10.48550/arXiv.2602.04417",
+      "CorpusId": 285286041
+    },
+    "title": "EMA Policy Gradient: Taming Reinforcement Learning for LLMs with EMA Anchor and Top-k KL",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.04417, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48571502",
+        "name": "Lunjun Zhang"
+      },
+      {
+        "authorId": "2256990689",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "Reinforcement Learning (RL) has enabled Large Language Models (LLMs) to acquire increasingly complex reasoning and agentic behaviors. In this work, we propose two simple techniques to improve policy gradient algorithms for LLMs. First, we replace the fixed anchor policy during RL with an Exponential Moving Average (EMA), similar to a target network in deep Q-learning. Second, we introduce Top-k KL estimator, which allows for flexible interpolation between exact KL and sampled KL. We derive the stability conditions for using EMA anchor; moreover, we show that our Top-k KL estimator yields both unbiased KL values and unbiased gradients at any k, while bringing the benefits of exact KL. When combined with GRPO, the two techniques (EMA-PG) lead to a significant performance boost. On math reasoning, it allows R1-distilled Qwen-1.5B to reach 53.9% on OlympiadBench compared to 50.8% by GRPO. On agentic RL domains, with Qwen-3B base, EMA-PG improves GRPO by an average of 33.3% across 7 datasets of Q&A with search engines, including 29.7% $\\rightarrow$ 44.1% on HotpotQA, 27.4% $\\rightarrow$ 40.1% on 2WikiMultiHopQA. Overall, we show that EMA-PG is a simple, principled, and powerful approach to scaling RL for LLMs. Code: https://github.com/LunjunZhang/ema-pg",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dca456fbfcac4b1765ce207c6fed5cc65f72dd74",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-01685",
+      "ArXiv": "2602.01685",
+      "DOI": "10.48550/arXiv.2602.01685",
+      "CorpusId": 285270564
+    },
+    "title": "Semantic-aware Wasserstein Policy Regularization for Large Language Model Alignment",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.01685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1999215536",
+        "name": "Byeonghu Na"
+      },
+      {
+        "authorId": "2281991597",
+        "name": "Hyungho Na"
+      },
+      {
+        "authorId": "2119255215",
+        "name": "Yeongmin Kim"
+      },
+      {
+        "authorId": "2260652208",
+        "name": "Suhyeon Jo"
+      },
+      {
+        "authorId": "2164036377",
+        "name": "Heesun Bae"
+      },
+      {
+        "authorId": "2383896888",
+        "name": "Mina Kang"
+      },
+      {
+        "authorId": "2288547472",
+        "name": "Il-chul Moon"
+      }
+    ],
+    "abstract": "Large language models (LLMs) are commonly aligned with human preferences using reinforcement learning from human feedback (RLHF). In this method, LLM policies are generally optimized through reward maximization with Kullback-Leibler (KL) divergence regularization of the reference policy. However, KL and its $f$-divergence variants only compare token probabilities at identical indices, failing to capture semantic similarity. We propose Wasserstein Policy Regularization (WPR), a semantic-aware regularization for the RLHF framework based on the entropy-regularized Wasserstein distance, which incorporates the geometry of the token space. The dual formulation of the distance expresses the regularization as penalty terms applied to the reward via optimal dual variables, which yield a tractable objective compatible with standard RL algorithms. Empirically, our method outperforms KL- and $f$-divergence-based baselines, demonstrating the benefits of semantic-aware policy distances for alignment. Our code is available at https://github.com/aailab-kaist/WPR.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "cedaefe5b579a03f0176d1523bd5312150b325a5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-00603",
+      "ArXiv": "2602.00603",
+      "DOI": "10.48550/arXiv.2602.00603",
+      "CorpusId": 285269578
+    },
+    "title": "Direct Preference Optimization with Rating Information: Practical Algorithms and Provable Gains",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.00603, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1785336654",
+        "name": "Luca Viano"
+      },
+      {
+        "authorId": "2392812653",
+        "name": "Ruida Zhou"
+      },
+      {
+        "authorId": "2116871300",
+        "name": "Yifang Sun"
+      },
+      {
+        "authorId": "2408458207",
+        "name": "Mahdi Namazifar"
+      },
+      {
+        "authorId": "1678641",
+        "name": "V. Cevher"
+      },
+      {
+        "authorId": "3218963",
+        "name": "Shoham Sabach"
+      },
+      {
+        "authorId": "2344617871",
+        "name": "Mohammad Ghavamzadeh"
+      }
+    ],
+    "abstract": "The class of direct preference optimization (DPO) algorithms has emerged as a promising approach for solving the alignment problem in foundation models. These algorithms work with very limited feedback in the form of pairwise preferences and fine-tune models to align with these preferences without explicitly learning a reward model. While the form of feedback used by these algorithms makes the data collection process easy and relatively more accurate, its ambiguity in terms of the quality of responses could have negative implications. For example, it is not clear if a decrease (increase) in the likelihood of preferred (dispreferred) responses during the execution of these algorithms could be interpreted as a positive or negative phenomenon. In this paper, we study how to design algorithms that can leverage additional information in the form of rating gap, which informs the learner how much the chosen response is better than the rejected one. We present new algorithms that can achieve faster statistical rates than DPO in presence of accurate rating gap information. Moreover, we theoretically prove and empirically show that the performance of our algorithms is robust to inaccuracy in rating gaps. Finally, we demonstrate the solid performance of our methods in comparison to a number of DPO-style algorithms across a wide range of LLMs and evaluation benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "eccc6f8bf462fba81d7b829bbe8bd650783df455",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2601-22083",
+      "ArXiv": "2601.22083",
+      "DOI": "10.48550/arXiv.2601.22083",
+      "CorpusId": 285139941
+    },
+    "title": "Latent Adversarial Regularization for Offline Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.22083, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1488691379",
+        "name": "Enyi Jiang"
+      },
+      {
+        "authorId": "2246017449",
+        "name": "Yibo Zhang"
+      },
+      {
+        "authorId": "2256016502",
+        "name": "Ying Xu"
+      },
+      {
+        "authorId": "2371136794",
+        "name": "Andreas Haupt"
+      },
+      {
+        "authorId": "2270627668",
+        "name": "N. Amato"
+      },
+      {
+        "authorId": "123593472",
+        "name": "Sanmi Koyejo"
+      }
+    ],
+    "abstract": "Learning from human feedback typically relies on preference optimization that constrains policy updates through token-level regularization. However, preference optimization for language models is particularly challenging because token-space similarity does not imply semantic or behavioral similarity. To address this challenge, we leverage latent-space regularization for language model preference optimization. We introduce GANPO, which achieves latent-space regularization by penalizing divergence between the internal representations of a policy model and a reference model. Given that latent representations are not associated with explicit probability densities, we adopt an adversarial approach inspired by GANs to minimize latent-space divergence. We integrate GANPO as a regularizer into existing offline preference optimization objectives. Experiments across multiple model architectures and tasks show consistent improvements from latent-space regularization. Further, by comparing GANPO-induced inferential biases with those from token-level regularization, we find that GANPO provides more robust structural feedback under distributional shift and noise while maintaining comparable downstream performance with minor computational overhead.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5438b23e13001ec8cbcfe7d5b5fd106a1305f5fa",
+    "externalIds": {
+      "ArXiv": "2601.21669",
+      "DBLP": "journals/corr/abs-2601-21669",
+      "DOI": "10.48550/arXiv.2601.21669",
+      "CorpusId": 285140620
+    },
+    "title": "Expected Return Causes Outcome-Level Mode Collapse in Reinforcement Learning and How to Fix It with Inverse Probability Scaling",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.21669, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2392699558",
+        "name": "Abhijeet Sinha"
+      },
+      {
+        "authorId": "48183075",
+        "name": "Sundari Elango"
+      },
+      {
+        "authorId": "2395680780",
+        "name": "Dianbo Liu"
+      }
+    ],
+    "abstract": "Many reinforcement learning (RL) problems admit multiple terminal solutions of comparable quality, where the goal is not to identify a single optimum but to represent a diverse set of high-quality outcomes. Nevertheless, policies trained by standard expected return maximization routinely collapse onto a small subset of outcomes, a phenomenon commonly attributed to insufficient exploration or weak regularization. We show that this explanation is incomplete: outcome level mode collapse is a structural consequence of the expected-return objective itself. Under idealized learning dynamics, the log-probability ratio between any two outcomes evolves linearly in their reward difference, implying exponential ratio divergence and inevitable collapse independent of the exploration strategy, entropy regularization, or optimization algorithm. We identify the source of this pathology as the probability multiplier inside the expectation and propose a minimal correction: inverse probability scaling, which removes outcome-frequency amplification from the learning signal, fundamentally changes the learning dynamics, and provably yields reward-proportional terminal distributions, preventing collapse in multimodal settings. We instantiate this principle in Group Relative Policy Optimization (GRPO) as a drop-in modification, IPS-GRPO, requiring no auxiliary models or architectural changes. Across different reasoning and molecular generation tasks, IPS-GRPO consistently reduces outcome-level mode collapse while matching or exceeding baseline performance, suggesting that correcting the objective rather than adding exploration heuristics is key to reliable multimodal policy optimization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "338abb244c3ad4972ebf3b1d66f9b0db712732e4",
+    "externalIds": {
+      "ArXiv": "2601.06108",
+      "DBLP": "journals/corr/abs-2601-06108",
+      "DOI": "10.48550/arXiv.2601.06108",
+      "CorpusId": 284647784
+    },
+    "title": "From RLHF to Direct Alignment: A Theoretical Unification of Preference Learning for Large Language Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.06108, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325907555",
+        "name": "Tarun Raheja"
+      },
+      {
+        "authorId": "96267731",
+        "name": "Nilay Pochhi"
+      }
+    ],
+    "abstract": "Aligning large language models (LLMs) with human preferences has become essential for safe and beneficial AI deployment. While Reinforcement Learning from Human Feedback (RLHF) established the dominant paradigm, a proliferation of alternatives -- Direct Preference Optimization (DPO), Identity Preference Optimization (IPO), Kahneman-Tversky Optimization (KTO), Simple Preference Optimization (SimPO), and many others -- has left practitioners without clear guidance on method selection. This survey provides a \\textit{theoretical unification} of preference learning methods, revealing that the apparent diversity reduces to principled choices along three orthogonal axes: \\textbf{(I) Preference Model} (what likelihood model underlies the objective), \\textbf{(II) Regularization Mechanism} (how deviation from reference policies is controlled), and \\textbf{(III) Data Distribution} (online vs.\\ offline learning and coverage requirements). We formalize each axis with precise definitions and theorems, establishing key results including the coverage separation between online and offline methods, scaling laws for reward overoptimization, and conditions under which direct alignment methods fail. Our analysis reveals that failure modes -- length hacking, mode collapse, likelihood displacement -- arise from specific, predictable combinations of design choices. We synthesize empirical findings across 50+ papers and provide a practitioner's decision guide for method selection. The framework transforms preference learning from an empirical art into a theoretically grounded discipline.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "f423513596e79f6342af726c723cdbe5ed64c4b9",
+    "externalIds": {
+      "DBLP": "journals/apin/DuWHH26",
+      "DOI": "10.1007/s10489-025-07079-9",
+      "CorpusId": 285109630
+    },
+    "title": "SIPA: a self-iterative preference alignment method for generative language models",
+    "venue": "Applied intelligence (Boston)",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10489-025-07079-9?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10489-025-07079-9, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111868112",
+        "name": "Yongping Du"
+      },
+      {
+        "authorId": "2279936460",
+        "name": "Binrui Wang"
+      },
+      {
+        "authorId": "2118737311",
+        "name": "Ying Hou"
+      },
+      {
+        "authorId": "2210608212",
+        "name": "Honggui Han"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c9d36e89df1aaef73775a673a74cacc73991bda7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2512-16565",
+      "ArXiv": "2512.16565",
+      "DOI": "10.48550/arXiv.2512.16565",
+      "CorpusId": 283933688
+    },
+    "title": "Non-Asymptotic Global Convergence of PPO-Clip",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.16565, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2344964829",
+        "name": "Yin Liu"
+      },
+      {
+        "authorId": "2399599001",
+        "name": "Qi Dai"
+      },
+      {
+        "authorId": "2300245238",
+        "name": "Junyu Zhang"
+      },
+      {
+        "authorId": "2249538110",
+        "name": "Zaiwen Wen"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) has gained attention for aligning large language models (LLMs) via reinforcement learning from human feedback (RLHF). The actor-only variants of Proximal Policy Optimization (PPO) are widely applied for their efficiency. These algorithms incorporate a clipping mechanism to improve stability. Besides, a regularization term, such as the reverse KL-divergence or a more general \\(f\\)-divergence, is introduced to prevent policy drift. Despite their empirical success, a rigorous theoretical understanding of the problem and the algorithm's properties is limited. This paper advances the theoretical foundations of the PPO-Clip algorithm by analyzing a deterministic actor-only PPO algorithm within the general RL setting with \\(f\\)-divergence regularization under the softmax policy parameterization. We derive a non-uniform Lipschitz smoothness condition and a {\\L}ojasiewicz inequality for the considered problem. Based on these, a non-asymptotic linear convergence rate to the globally optimal policy is established for the forward KL-regularizer. Furthermore, stationary convergence and local linear convergence are derived for the reverse KL-regularizer.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c73c449d8116684d89282c153f2ddd60334097d8",
+    "externalIds": {
+      "ArXiv": "2512.15605",
+      "DBLP": "journals/corr/abs-2512-15605",
+      "DOI": "10.48550/arXiv.2512.15605",
+      "CorpusId": 283920326
+    },
+    "title": "Autoregressive Language Models are Secretly Energy-Based Models: Insights into the Lookahead Capabilities of Next-Token Prediction",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.15605, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281742464",
+        "name": "Mathieu Blondel"
+      },
+      {
+        "authorId": "2372860785",
+        "name": "Michael E. Sander"
+      },
+      {
+        "authorId": "2303465809",
+        "name": "Germain Vivier-Ardisson"
+      },
+      {
+        "authorId": "2281864351",
+        "name": "Tianlin Liu"
+      },
+      {
+        "authorId": "2292406464",
+        "name": "Vincent Roulet"
+      }
+    ],
+    "abstract": "Autoregressive models (ARMs) currently constitute the dominant paradigm for large language models (LLMs). Energy-based models (EBMs) represent another class of models, which have historically been less prevalent in LLM development, yet naturally characterize the optimal policy in post-training alignment. In this paper, we provide a unified view of these two model classes. Taking the chain rule of probability as a starting point, we establish an explicit bijection between ARMs and EBMs in function space, which we show to correspond to a special case of the soft Bellman equation in maximum entropy reinforcement learning. Building upon this bijection, we derive the equivalence between supervised learning of ARMs and EBMs. Furthermore, we analyze the distillation of EBMs into ARMs by providing theoretical error bounds. Our results provide insights into the ability of ARMs to plan ahead, despite being based on the next-token prediction paradigm.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8d890c127c851073aa17e698ec86db75c359498c",
+    "externalIds": {
+      "DBLP": "journals/jksucis/BowenZZSI26",
+      "DOI": "10.1007/s44443-025-00334-6",
+      "CorpusId": 283679522
+    },
+    "title": "Improving negative rejection ability in language models: A review of fine-tuned LLMs, RAG, and RAFT",
+    "venue": "Journal of King Saud University: Computer and Information Sciences",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s44443-025-00334-6?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s44443-025-00334-6, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2344780901",
+        "name": "Li Bowen"
+      },
+      {
+        "authorId": "2398140268",
+        "name": "Zhuoqing Zhong"
+      },
+      {
+        "authorId": "2397466820",
+        "name": "Hengyu Zhang"
+      },
+      {
+        "authorId": "2397243540",
+        "name": "Sun Xubin"
+      },
+      {
+        "authorId": "2045418951",
+        "name": "Baha Ihnaini"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4059050c1188c45d54bf8b92d308f825eef56d82",
+    "externalIds": {
+      "ArXiv": "2511.13621",
+      "DBLP": "journals/corr/abs-2511-13621",
+      "DOI": "10.48550/arXiv.2511.13621",
+      "CorpusId": 283072436
+    },
+    "title": "Alpha Divergence Losses for Biometric Verification",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.13621, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2365040784",
+        "name": "Dimitrios Koutsianos"
+      },
+      {
+        "authorId": "51263282",
+        "name": "Ladislav Mošner"
+      },
+      {
+        "authorId": "1780393",
+        "name": "Yannis Panagakis"
+      },
+      {
+        "authorId": "1799540",
+        "name": "Themos Stafylakis"
+      }
+    ],
+    "abstract": "Performance in face and speaker verification is largely driven by margin-based softmax losses such as CosFace and ArcFace. Recently introduced $\\alpha$-divergence loss functions offer a compelling alternative, particularly due to their ability to induce sparse solutions (when $\\alpha>1$). However, integrating an angular margin-crucial for verification tasks-is not straightforward. We find that this integration can be achieved in at least two distinct ways: via the reference measure (prior probabilities) or via the logits (unnormalized log-likelihoods). In this paper, we explore both pathways, deriving two novel margin-based $\\alpha$-divergence losses: Q-Margin (margin in the reference measure) and A3M (margin in the logits). We identify and address a training instability in A3M-caused by sparsity-with a simple yet effective prototype re-initialization strategy. Our methods achieve significant performance gains on the challenging IJB-B and IJB-C face verification benchmarks. We demonstrate similarly strong performance in speaker verification on VoxCeleb. Crucially, our models significantly outperform strong baselines at low false acceptance rates (FAR). This capability is critical for practical high-security applications, such as banking authentication, when minimizing false authentications is paramount. Finally, the sparsity of $\\alpha$-divergence-based posteriors enables memory-efficient training, which is crucial for datasets with millions of identities.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e3a5da866598c0414dd186085ccd429ac8ea664e",
+    "externalIds": {
+      "DBLP": "journals/csur/JiangCBHLYZNZ26",
+      "DOI": "10.1145/3773279",
+      "CorpusId": 282735646
+    },
+    "title": "A Survey on Human Preference Learning for Aligning Large Language Models",
+    "venue": "ACM Computing Surveys",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3773279?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3773279, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2307740913",
+        "name": "Ruili Jiang"
+      },
+      {
+        "authorId": "2266796043",
+        "name": "Kehai Chen"
+      },
+      {
+        "authorId": "6713131",
+        "name": "Xuefeng Bai"
+      },
+      {
+        "authorId": "2307044191",
+        "name": "Zhixuan He"
+      },
+      {
+        "authorId": "2257093356",
+        "name": "Juntao Li"
+      },
+      {
+        "authorId": "2320745836",
+        "name": "Muyun Yang"
+      },
+      {
+        "authorId": "2237773157",
+        "name": "Tiejun Zhao"
+      },
+      {
+        "authorId": "2237197209",
+        "name": "Liqiang Nie"
+      },
+      {
+        "authorId": "2156053235",
+        "name": "Min Zhang"
+      }
+    ],
+    "abstract": "The recent surge in versatile large language models (LLMs) demonstrates remarkable success across a wide range of contexts. A key factor contributing to this success is LLM alignment, in which human preference learning plays a decisive role in steering the models’ capabilities toward fulfilling human objectives. In this survey, we review the progress in human preference learning within a unified framework, aiming to provide a comprehensive perspective on established methodologies while exploring avenues to further advance LLM alignment. Specifically, we categorize human preference feedback based on data sources and formats, summarize techniques for human preference modeling and usage, and present an overview of prevailing evaluation protocols for LLM alignment. Finally, we discuss the existing challenges and identify potential directions for future research, with a particular emphasis on generalizability, transferability, and controllability.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "48264bea3d3a741901f8f721b9433d4ea3d18550",
+    "externalIds": {
+      "DBLP": "journals/tjs/ShaoLCX25",
+      "DOI": "10.1007/s11227-025-08087-9",
+      "CorpusId": 283281778
+    },
+    "title": "Enhancing visible-infrared person re-identification via adaptive channel enhancement and class-wise global information",
+    "venue": "Journal of Supercomputing",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11227-025-08087-9?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11227-025-08087-9, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2394478987",
+        "name": "Guangsheng Shao"
+      },
+      {
+        "authorId": "2347659883",
+        "name": "Fengshan Lai"
+      },
+      {
+        "authorId": "2381975103",
+        "name": "De Cheng"
+      },
+      {
+        "authorId": "2298050834",
+        "name": "Daoxun Xia"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d7b40b7fefabf66ee6eb9197f107feb784dd3a31",
+    "externalIds": {
+      "DBLP": "conf/eacl/NajafiF26",
+      "ArXiv": "2510.22881",
+      "DOI": "10.48550/arXiv.2510.22881",
+      "CorpusId": 282389315
+    },
+    "title": "Offline Preference Optimization via Maximum Marginal Likelihood Estimation",
+    "venue": "Conference of the European Chapter of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.22881, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2290016170",
+        "name": "Saeed Najafi"
+      },
+      {
+        "authorId": "2655967",
+        "name": "Alona Fyshe"
+      }
+    ],
+    "abstract": "Aligning Large Language Models (LLMs) with human preferences is crucial, but standard methods like Reinforcement Learning from Human Feedback (RLHF) are often complex and unstable. In this work, we propose a new, simpler approach that recasts alignment through the lens of Maximum Marginal Likelihood (MML) estimation. Our new MML based Preference Optimization (MMPO) maximizes the marginal log-likelihood of a preferred text output, using the preference pair as samples for approximation, and forgoes the need for both an explicit reward model and entropy maximization. We theoretically demonstrate that MMPO implicitly performs preference optimization, producing a weighted gradient that naturally up-weights chosen responses over rejected ones. Across models ranging from 135M to 8B parameters, we empirically show that MMPO: 1) is more stable with respect to the hyperparameter $\\beta$ compared to alternative baselines, and 2) achieves competitive or superior preference alignment while better preserving the base model's general language capabilities. Through a series of ablation experiments, we show that this improved performance is indeed attributable to MMPO's implicit preference optimization within the gradient updates.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2ab77aa6aa4462a4069a2bd4dc43ed5db2871f9a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-23631",
+      "ArXiv": "2510.23631",
+      "DOI": "10.48550/arXiv.2510.23631",
+      "CorpusId": 282401379
+    },
+    "title": "Beyond Pairwise: Empowering LLM Alignment With Ranked Choice Modeling",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.23631, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2272040895",
+        "name": "Yuxuan Tang"
+      },
+      {
+        "authorId": "2272638133",
+        "name": "Yifan Feng"
+      }
+    ],
+    "abstract": "Alignment of large language models (LLMs) has predominantly relied on pairwise preference optimization, where annotators select the better of two responses to a prompt. While simple, this approach overlooks the opportunity to learn from richer forms of human feedback, such as multiway comparisons and top-$k$ rankings. We introduce Ranked Choice Preference Optimization (RCPO), a unified framework that bridges preference optimization with (ranked) choice modeling via maximum likelihood estimation. RCPO supports both utility-based and rank-based models, subsumes several pairwise methods (such as DPO and SimPO) as special cases, and provides principled training objectives for richer feedback formats. We instantiate this framework with two representative models (Multinomial Logit and Mallows-RMJ). Experiments on Llama-3-8B-Instruct, Gemma-2-9B-it, and Mistral-7B-Instruct across in-distribution and out-of-distribution settings show that RCPO consistently outperforms competitive baselines. RCPO shows that directly leveraging ranked preference data, combined with the right choice models, yields more effective alignment. It offers an extensible foundation for incorporating (ranked) choice modeling into LLM training.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "de869bafbcb4a844b998cc8cfd574013e28de7d6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-20817",
+      "ArXiv": "2510.20817",
+      "DOI": "10.48550/arXiv.2510.20817",
+      "CorpusId": 282304367
+    },
+    "title": "KL-Regularized Reinforcement Learning is Designed to Mode Collapse",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.20817, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2148899281",
+        "name": "Anthony GX-Chen"
+      },
+      {
+        "authorId": "2383855237",
+        "name": "Jatin Prakash"
+      },
+      {
+        "authorId": "2132587996",
+        "name": "Jeff Guo"
+      },
+      {
+        "authorId": "2316562177",
+        "name": "Rob Fergus"
+      },
+      {
+        "authorId": "2304971319",
+        "name": "R. Ranganath"
+      }
+    ],
+    "abstract": "It is commonly believed that optimizing the reverse KL divergence results in\"mode seeking\", while optimizing forward KL results in\"mass covering\", with the latter being preferred if the goal is to sample from multiple diverse modes. We show -- mathematically and empirically -- that this intuition does not necessarily transfer well to doing reinforcement learning with reverse/forward KL regularization (e.g. as commonly used with language models). Instead, the choice of reverse/forward KL determines the family of optimal target distributions, parameterized by the regularization coefficient. Mode coverage depends primarily on other factors, such as regularization strength, and relative scales between rewards and reference probabilities. Further, we show commonly used settings such as low regularization strength and equal verifiable rewards tend to specify unimodal target distributions, meaning the optimization objective is, by construction, non-diverse. We leverage these insights to construct a simple, scalable, and theoretically justified algorithm. It makes minimal changes to reward magnitudes, yet optimizes for a target distribution which puts high probability over all high-quality sampling modes. In experiments, this simple modification works to post-train both Large Language Models and Chemical Language Models to have higher solution quality and diversity, without any external signals of diversity, and works with both forward and reverse KL when using either naively fails.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9af966c7d67801d4553dc7614d47eb8a1c383f7a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-20498",
+      "ArXiv": "2510.20498",
+      "DOI": "10.48550/arXiv.2510.20498",
+      "CorpusId": 282304503
+    },
+    "title": "Robust Preference Alignment via Directional Neighborhood Consensus",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.20498, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2280593418",
+        "name": "Ruochen Mao"
+      },
+      {
+        "authorId": "2279412470",
+        "name": "Yuling Shi"
+      },
+      {
+        "authorId": "2374416817",
+        "name": "Xiaodong Gu"
+      },
+      {
+        "authorId": "2367688234",
+        "name": "Jiaheng Wei"
+      }
+    ],
+    "abstract": "Aligning large language models with human preferences is critical for creating reliable and controllable AI systems. A human preference can be visualized as a high-dimensional vector where different directions represent trade-offs between desired attributes (e.g., helpfulness vs. verbosity). Yet, because the training data often reflects dominant, average preferences, LLMs tend to perform well on common requests but fall short in specific, individual needs. This mismatch creates a preference coverage gap. Existing methods often address this through costly retraining, which may not be generalized to the full spectrum of diverse preferences. This brittleness means that when a user's request reflects a nuanced preference deviating from the training data's central tendency, model performance can degrade unpredictably. To address this challenge, we introduce Robust Preference Selection (RPS), a post-hoc, training-free method by leveraging directional neighborhood consensus. Instead of forcing a model to generate a response from a single, highly specific preference, RPS samples multiple responses from a local neighborhood of related preferences to create a superior candidate pool. It then selects the response that best aligns with the user's original intent. We provide a theoretical framework showing our neighborhood generation strategy is provably superior to a strong baseline that also samples multiple candidates. Comprehensive experiments across three distinct alignment paradigms (DPA, DPO, and SFT) demonstrate that RPS consistently improves robustness against this baseline, achieving win rates of up to 69% on challenging preferences from under-represented regions of the space without any model retraining. Our work presents a practical, theoretically-grounded solution for enhancing the reliability of preference-aligned models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "55c75bdf1555bcbb272facff08f1ab7020104c66",
+    "externalIds": {
+      "ArXiv": "2510.11407",
+      "DBLP": "journals/corr/abs-2510-11407",
+      "DOI": "10.48550/arXiv.2510.11407",
+      "CorpusId": 282056992
+    },
+    "title": "KnowRL: Teaching Language Models to Know What They Know",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.11407, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2360296853",
+        "name": "Sahil Kale"
+      },
+      {
+        "authorId": "39552485",
+        "name": "D. Dhami"
+      }
+    ],
+    "abstract": "Truly reliable AI requires more than simply scaling up knowledge; it demands the ability to know what it knows and when it does not. Yet recent research shows that even the best LLMs misjudge their own competence in more than one in five cases, making any response born of such internal uncertainty impossible to fully trust. Inspired by self-improvement reinforcement learning techniques that require minimal data, we present a simple but powerful framework KnowRL that strengthens a model's internal understanding of its own feasibility boundaries, enabling safer and more responsible behaviour. Our framework combines two components: (i) introspection, where the model generates and classifies tasks it judges feasible or infeasible, and (ii) consensus-based rewarding, where stability of self-knowledge assessment is reinforced through internal agreement. By using internally generated data, this design strengthens consistency in self-knowledge and entirely avoids costly external supervision. In experiments on LLaMA-3.1-8B and Qwen-2.5-7B, KnowRL steadily improved self-knowledge, validated by both intrinsic self-consistency and extrinsic benchmarking. With nothing more than a small seed set and no external supervision, our method drove gains as high as 28% in accuracy and 12% in F1, outperforming baselines in just a few iterations. Our framework essentially unlocks the untapped capacity of LLMs to self-improve their knowledge awareness, opening the door to reliable, more accountable AI and safer deployment in critical applications. Owing to its simplicity and independence from external effort, we encourage applying this reliability-enhancing process to all future models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ae7006306943b353768e037523a8e76301eb64ed",
+    "externalIds": {
+      "ArXiv": "2510.04773",
+      "DBLP": "journals/corr/abs-2510-04773",
+      "DOI": "10.48550/arXiv.2510.04773",
+      "CorpusId": 281844090
+    },
+    "title": "Distribution Preference Optimization: A Fine-grained Perspective for LLM Unlearning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.04773, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2363498601",
+        "name": "Kai Qin"
+      },
+      {
+        "authorId": "2363503594",
+        "name": "Jiaqi Wu"
+      },
+      {
+        "authorId": "2335669438",
+        "name": "Jianxiang He"
+      },
+      {
+        "authorId": "2302558196",
+        "name": "Haoyuan Sun"
+      },
+      {
+        "authorId": "2349834649",
+        "name": "Yifei Zhao"
+      },
+      {
+        "authorId": "2299884120",
+        "name": "Bin Liang"
+      },
+      {
+        "authorId": "2281905521",
+        "name": "Yongzhe Chang"
+      },
+      {
+        "authorId": "2146333944",
+        "name": "Tiantian Zhang"
+      },
+      {
+        "authorId": "2371091939",
+        "name": "Houde Liu"
+      }
+    ],
+    "abstract": "As Large Language Models (LLMs) demonstrate remarkable capabilities learned from vast corpora, concerns regarding data privacy and safety are receiving increasing attention. LLM unlearning, which aims to remove the influence of specific data while preserving overall model utility, is becoming an important research area. One of the mainstream unlearning classes is optimization-based methods, which achieve forgetting directly through fine-tuning, exemplified by Negative Preference Optimization (NPO). However, NPO's effectiveness is limited by its inherent lack of explicit positive preference signals. Attempts to introduce such signals by constructing preferred responses often necessitate domain-specific knowledge or well-designed prompts, fundamentally restricting their generalizability. In this paper, we shift the focus to the distribution-level, directly targeting the next-token probability distribution instead of entire responses, and derive a novel unlearning algorithm termed \\textbf{Di}stribution \\textbf{P}reference \\textbf{O}ptimization (DiPO). We show that the requisite preference distribution pairs for DiPO, which are distributions over the model's output tokens, can be constructed by selectively amplifying or suppressing the model's high-confidence output logits, thereby effectively overcoming NPO's limitations. We theoretically prove the consistency of DiPO's loss function with the desired unlearning direction. Extensive experiments demonstrate that DiPO achieves a strong trade-off between model utility and forget quality. Notably, DiPO attains the highest forget quality on the TOFU benchmark, and maintains leading scalability and sustainability in utility preservation on the MUSE benchmark.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "62b0e59f5058c48220298e26f6c25d9c6f8d582c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-03865",
+      "ArXiv": "2510.03865",
+      "DOI": "10.48550/arXiv.2510.03865",
+      "CorpusId": 281843132
+    },
+    "title": "Unlocking Reasoning Capabilities in LLMs via Reinforcement Learning Exploration",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.03865, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2345445133",
+        "name": "Wenhao Deng"
+      },
+      {
+        "authorId": "2384319287",
+        "name": "Long Wei"
+      },
+      {
+        "authorId": "2343839138",
+        "name": "Chenglei Yu"
+      },
+      {
+        "authorId": "2280907566",
+        "name": "Tailin Wu"
+      }
+    ],
+    "abstract": "Reinforcement learning with verifiable rewards (RLVR) has recently enhanced the reasoning capabilities of large language models (LLMs), particularly for mathematical problem solving. However, a fundamental limitation remains: as the sampling budget increases, the advantage of RLVR-trained models over their pretrained bases often diminishes or even vanishes, revealing a strong dependence on the base model's restricted search space. We attribute this phenomenon to the widespread use of the reverse Kullback-Leibler (KL) divergence regularizer, whose mode-seeking behavior keeps the policy trapped inside the base model's support region and hampers wider exploration. To address this issue, we propose RAPO (Rewards-Aware Policy Optimization), an algorithm to promote broader yet focused exploration. Our method (i) utilizes the forward KL penalty to replace the reverse KL penalty for out-of-distribution exploration, and (ii) reweights the reference policy to facilitate adaptive in-distribution exploration. We train Qwen2.5-3B and 7B models with RAPO on the 8K SimpleRL-Zero dataset, without supervised fine-tuning, and evaluate them on AIME2024 and AIME2025. Results show that RAPO consistently improves problem-solving performance. Notably, RAPO enables models to surpass the base model's performance ceiling and solves previously intractable problems, advancing the frontier of RLVR for challenging reasoning tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3f55c8c6ce7deae5eab0ca3fedfa7530a551c01b",
+    "externalIds": {
+      "ArXiv": "2510.02892",
+      "DBLP": "journals/corr/abs-2510-02892",
+      "DOI": "10.48550/arXiv.2510.02892",
+      "CorpusId": 281829468
+    },
+    "title": "RoiRL: Efficient, Self-Supervised Reasoning with Offline Iterative Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.02892, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2383973413",
+        "name": "Aleksei Arzhantsev"
+      },
+      {
+        "authorId": "1387974519",
+        "name": "Otmane Sakhi"
+      },
+      {
+        "authorId": "3358912",
+        "name": "Flavian Vasile"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) is central to improving reasoning in large language models (LLMs) but typically requires ground-truth rewards. Test-Time Reinforcement Learning (TTRL) removes this need by using majority-vote rewards, but relies on heavy online RL and incurs substantial computational cost. We propose RoiRL: Reasoning with offline iterative Reinforcement Learning, a family of lightweight offline learning alternatives that can target the same regularized optimal policies. Unlike TTRL, RoiRL eliminates the need to maintain a reference model and instead optimizes weighted log-likelihood objectives, enabling stable training with significantly lower memory and compute requirements. Experimental results show that RoiRL trains to 2.5x faster and consistently outperforms TTRL on reasoning benchmarks, establishing a scalable path to self-improving LLMs without labels.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9a66c51e1e8e04cde659ecb6c749580ec8d23f9e",
+    "externalIds": {
+      "ArXiv": "2509.25837",
+      "DBLP": "journals/corr/abs-2509-25837",
+      "DOI": "10.48550/arXiv.2509.25837",
+      "CorpusId": 281681552
+    },
+    "title": "Distillation of Large Language Models via Concrete Score Matching",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.25837, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119255215",
+        "name": "Yeongmin Kim"
+      },
+      {
+        "authorId": "2170358930",
+        "name": "DongHyeok Shin"
+      },
+      {
+        "authorId": "2383896888",
+        "name": "Mina Kang"
+      },
+      {
+        "authorId": "1999215536",
+        "name": "Byeonghu Na"
+      },
+      {
+        "authorId": "2288547472",
+        "name": "Il-chul Moon"
+      }
+    ],
+    "abstract": "Large language models (LLMs) deliver remarkable performance but are costly to deploy, motivating knowledge distillation (KD) for efficient inference. Existing KD objectives typically match student and teacher probabilities via softmax, which blurs valuable logit information. While direct logit distillation (DLD) mitigates softmax smoothing, it fails to account for logit shift invariance, thereby restricting the solution space. We propose Concrete Score Distillation (CSD), a discrete score-matching objective that overcomes both softmax-induced smoothing and restrictions on the optimal solution set. We resolve the training instability and quadratic complexity of discrete score-matching in autoregressive LLMs, and the resulting CSD objective aligns relative logit differences across all vocabulary pairs between student and teacher with flexible weighting. We provide both mode-seeking and mode-covering instances within our framework and evaluate CSD on task-agnostic instruction-following and task-specific distillation using GPT-2-1.5B, OpenLLaMA-7B, and GEMMA-7B-IT. Experiments show that CSD consistently surpasses recent KD objectives, achieves favorable fidelity-diversity trade-offs, and yields complementary gains when combined with on-policy techniques, demonstrating its scalability and effectiveness for LLM distillation. Code: https://github.com/aailab-kaist/CSD.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2ec727753b0eede7d663ef6a1dee17814e882084",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-25509",
+      "ArXiv": "2509.25509",
+      "DOI": "10.48550/arXiv.2509.25509",
+      "CorpusId": 281682589
+    },
+    "title": "Can Molecular Foundation Models Know What They Don't Know? A Simple Remedy with Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.25509, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2358319452",
+        "name": "Langzhou He"
+      },
+      {
+        "authorId": "2383942009",
+        "name": "Junyou Zhu"
+      },
+      {
+        "authorId": "2265577914",
+        "name": "Fangxin Wang"
+      },
+      {
+        "authorId": "2163056009",
+        "name": "Junhua Liu"
+      },
+      {
+        "authorId": "2327314706",
+        "name": "Haoyan Xu"
+      },
+      {
+        "authorId": "2347176644",
+        "name": "Yue Zhao"
+      },
+      {
+        "authorId": "2387639295",
+        "name": "Philip S. Yu"
+      },
+      {
+        "authorId": "2328250885",
+        "name": "Qitian Wu"
+      }
+    ],
+    "abstract": "Molecular foundation models are rapidly advancing scientific discovery, but their unreliability on out-of-distribution (OOD) samples severely limits their application in high-stakes domains such as drug discovery and protein design. A critical failure mode is chemical hallucination, where models make high-confidence yet entirely incorrect predictions for unknown molecules. To address this challenge, we introduce Molecular Preference-Aligned Instance Ranking (Mole-PAIR), a simple, plug-and-play module that can be flexibly integrated with existing foundation models to improve their reliability on OOD data through cost-effective post-training. Specifically, our method formulates the OOD detection problem as a preference optimization over the estimated OOD affinity between in-distribution (ID) and OOD samples, achieving this goal through a pairwise learning objective. We show that this objective essentially optimizes AUROC, which measures how consistently ID and OOD samples are ranked by the model. Extensive experiments across five real-world molecular datasets demonstrate that our approach significantly improves the OOD detection capabilities of existing molecular foundation models, achieving up to 45.8%, 43.9%, and 24.3% improvements in AUROC under distribution shifts of size, scaffold, and assay, respectively.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0e75f78487a17684c1c7109f91dc71cae0e20a34",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-03269",
+      "ArXiv": "2510.03269",
+      "DOI": "10.48550/arXiv.2510.03269",
+      "CorpusId": 281843783
+    },
+    "title": "General Exploratory Bonus for Optimistic Exploration in RLHF",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.03269, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326015753",
+        "name": "Wendi Li"
+      },
+      {
+        "authorId": "2382920209",
+        "name": "Changdae Oh"
+      },
+      {
+        "authorId": "2385968241",
+        "name": "Sharon Li"
+      }
+    ],
+    "abstract": "Optimistic exploration is central to improving sample efficiency in reinforcement learning with human feedback, yet existing exploratory bonus methods to incentivize exploration often fail to realize optimism. We provide a theoretical analysis showing that current formulations, under KL or $\\alpha$-divergence regularization, unintentionally bias exploration toward high-probability regions of the reference model, thereby reinforcing conservative behavior instead of promoting discovery of uncertain regions. To address this pitfall, we introduce the General Exploratory Bonus (GEB), a novel theoretical framework that provably satisfies the optimism principle. GEB counteracts divergence-induced bias via reference-dependent reward regulation and unifies prior heuristic bonuses as special cases, while extending naturally across the full $\\alpha$-divergence family. Empirically, GEB consistently outperforms baselines on alignment tasks across multiple divergence settings and large language model backbones. These results demonstrate that GEB offers both a principled and practical solution for optimistic exploration in RLHF.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "f55bf9a4262ca00b72345ee95b0b1ad65b907e95",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-23102",
+      "ArXiv": "2509.23102",
+      "DOI": "10.48550/arXiv.2509.23102",
+      "CorpusId": 281675830
+    },
+    "title": "Multiplayer Nash Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.23102, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2373694298",
+        "name": "Fang Wu"
+      },
+      {
+        "authorId": "2383971610",
+        "name": "Xu Huang"
+      },
+      {
+        "authorId": "1387974253",
+        "name": "Weihao Xuan"
+      },
+      {
+        "authorId": "2297805890",
+        "name": "Zhiwei Zhang"
+      },
+      {
+        "authorId": "2383042369",
+        "name": "Yijia Xiao"
+      },
+      {
+        "authorId": "2363570811",
+        "name": "Guancheng Wan"
+      },
+      {
+        "authorId": "2327164542",
+        "name": "Xiaomin Li"
+      },
+      {
+        "authorId": "2385446371",
+        "name": "Bing Hu"
+      },
+      {
+        "authorId": "2261083308",
+        "name": "Peng Xia"
+      },
+      {
+        "authorId": "2251205420",
+        "name": "J. Leskovec"
+      },
+      {
+        "authorId": "2359209498",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has emerged as the standard paradigm for aligning large language models with human preferences. However, reward-based methods grounded in the Bradley-Terry assumption struggle to capture the nontransitivity and heterogeneity of real-world preferences. To address this, recent studies have reframed alignment as a two-player Nash game, giving rise to Nash learning from human feedback (NLHF). While this perspective has inspired algorithms such as INPO, ONPO, and EGPO that offer strong theoretical and empirical guarantees, they remain fundamentally restricted to two-player interactions, introducing a single-opponent bias that fails to capture the full complexity of realistic preference structures. This work introduces Multiplayer Nash Preference Optimization (MNPO), a novel framework that generalizes NLHF to the multiplayer regime. It formulates alignment as an n-player game, where each policy competes against a population of opponents while being regularized toward a reference model. We demonstrate that MNPO inherits the equilibrium guarantees of two-player methods while enabling richer competitive dynamics and improved coverage of diverse preference structures. Comprehensive empirical evaluation shows that MNPO consistently outperforms existing NLHF baselines on instruction-following benchmarks, achieving superior alignment quality under heterogeneous annotator conditions and mixed-policy evaluation scenarios. Together, these results establish MNPO as a principled and scalable framework for aligning LLMs with complex, non-transitive human preferences. Code is available at: https://github.com/smiles724/MNPO",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a16aba7e5fd046df3485d7146c1372117b992111",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-12434",
+      "ArXiv": "2509.12434",
+      "DOI": "10.48550/arXiv.2509.12434",
+      "CorpusId": 281325091
+    },
+    "title": "Building Coding Agents via Entropy-Enhanced Multi-Turn Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.12434, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "11305882",
+        "name": "Jiahao Yu"
+      },
+      {
+        "authorId": "51114573",
+        "name": "Zelei Cheng"
+      },
+      {
+        "authorId": "2280038372",
+        "name": "Xian Wu"
+      },
+      {
+        "authorId": "2242944254",
+        "name": "Xinyu Xing"
+      }
+    ],
+    "abstract": "Software engineering presents complex, multi-step challenges for Large Language Models (LLMs), requiring reasoning over large codebases and coordinated tool use. The difficulty of these tasks is exemplified by benchmarks like SWE-bench, where current LLMs still struggle to resolve real-world issues. A promising approach to enhance performance is test-time scaling (TTS), but its gains are heavily dependent on the diversity of model outputs. While standard alignment methods such as Direct Preference Optimization (DPO) and Kahneman-Tversky Optimization (KTO) are effective at aligning model outputs with human preferences, this process can come at the cost of reduced diversity, limiting the effectiveness of TTS. Additionally, existing preference optimization algorithms are typically designed for single-turn tasks and do not fully address the complexities of multi-turn reasoning and tool integration required for interactive coding agents. To bridge this gap, we introduce EntroPO, an entropy-enhanced framework that adapts existing preference optimization algorithms to the multi-turn, tool-assisted setting. EntroPO augments the preference objective to explicitly preserve policy entropy and generalizes learning to optimize over multi-turn interactions rather than single-turn responses. We validate EntroPO by fine-tuning a diverse suite of models from different families and sizes (up to 106B parameters).To maximize performance gains from TTS, we further propose a hybrid best-trajectory selection scheme combining a learned verifier model with model free approaches. On the SWEBENCH leaderboard, our approach establishes new state-of-the-art results among open-weight models. A 30B parameter model trained with EntroPO ranks 1st on SWEBENCH-LITE and 4th on SWEBENCH-VERIFIED on the open-weight leaderboard, surpassed only by models with over 10x more parameters(e.g.,>$350B).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "030dbcea8a5a5e2296afe8d19b9e6fa5e7e7084b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-07430",
+      "ArXiv": "2509.07430",
+      "DOI": "10.48550/arXiv.2509.07430",
+      "CorpusId": 281218089
+    },
+    "title": "The Choice of Divergence: A Neglected Key to Mitigating Diversity Collapse in Reinforcement Learning with Verifiable Reward",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.07430, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2380040635",
+        "name": "Long Li"
+      },
+      {
+        "authorId": "2226440100",
+        "name": "Jiaran Hao"
+      },
+      {
+        "authorId": "2329629676",
+        "name": "Jason Klein Liu"
+      },
+      {
+        "authorId": "2346717252",
+        "name": "Zhijian Zhou"
+      },
+      {
+        "authorId": "2310866202",
+        "name": "Xiaoyu Tan"
+      },
+      {
+        "authorId": "2266389707",
+        "name": "Wei Chu"
+      },
+      {
+        "authorId": "2333381584",
+        "name": "Zhe Wang"
+      },
+      {
+        "authorId": "2316790725",
+        "name": "Shirui Pan"
+      },
+      {
+        "authorId": "2268107128",
+        "name": "Chao Qu"
+      },
+      {
+        "authorId": "2365453298",
+        "name": "Yuan Qi"
+      }
+    ],
+    "abstract": "A central paradox in fine-tuning Large Language Models (LLMs) with Reinforcement Learning with Verifiable Reward (RLVR) is the frequent degradation of multi-attempt performance (Pass@k) despite improvements in single-attempt accuracy (Pass@1). This is often accompanied by catastrophic forgetting, where models lose previously acquired skills. While various methods have been proposed, the choice and function of the divergence term have been surprisingly unexamined as a proactive solution. We argue that standard RLVR objectives -- both those using the mode-seeking reverse KL-divergence and those forgoing a divergence term entirely -- lack a crucial mechanism for knowledge retention. The reverse-KL actively accelerates this decay by narrowing the policy, while its absence provides no safeguard against the model drifting from its diverse knowledge base. We propose a fundamental shift in perspective: using the divergence term itself as the solution. Our framework, Diversity-Preserving Hybrid RL (DPH-RL), leverages mass-covering f-divergences (like forward-KL and JS-divergence) to function as a rehearsal mechanism. By continuously referencing the initial policy, this approach forces the model to maintain broad solution coverage. Extensive experiments on math and SQL generation demonstrate that DPH-RL not only resolves the Pass@k degradation but improves both Pass@1 and Pass@k in- and out-of-domain. Additionally, DPH-RL is more training-efficient because it computes f-divergence using generator functions, requiring only sampling from the initial policy and no online reference model. Our work highlights a crucial, overlooked axis for improving RLVR, demonstrating that the proper selection of a divergence measure is a powerful tool for building more general and diverse reasoning models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "819a2f0e0426f2c52fce994b7298d41ca40cbeca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2508-17637",
+      "ArXiv": "2508.17637",
+      "DOI": "10.48550/arXiv.2508.17637",
+      "CorpusId": 280711845
+    },
+    "title": "Weights-Rotated Preference Optimization for Large Language Models",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.17637, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2187589518",
+        "name": "Chenxu Yang"
+      },
+      {
+        "authorId": "2322447174",
+        "name": "Ruipeng Jia"
+      },
+      {
+        "authorId": "2108667264",
+        "name": "Mingyu Zheng"
+      },
+      {
+        "authorId": "2221287168",
+        "name": "Naibin Gu"
+      },
+      {
+        "authorId": "2322454306",
+        "name": "Zheng Lin"
+      },
+      {
+        "authorId": "2322627020",
+        "name": "Siyuan Chen"
+      },
+      {
+        "authorId": "2318321",
+        "name": "Weichong Yin"
+      },
+      {
+        "authorId": "2279860914",
+        "name": "Hua Wu"
+      },
+      {
+        "authorId": "2322457322",
+        "name": "Weiping Wang"
+      }
+    ],
+    "abstract": "Despite the efficacy of Direct Preference Optimization (DPO) in aligning Large Language Models (LLMs), reward hacking remains a pivotal challenge. This issue emerges when LLMs excessively reduce the probability of rejected completions to achieve high rewards, without genuinely meeting their intended goals. As a result, this leads to overly lengthy generation lacking diversity, as well as catastrophic forgetting of knowledge. We investigate the underlying reason behind this issue, which is representation redundancy caused by neuron collapse in the parameter space. Hence, we propose a novel Weights-Rotated Preference Optimization (RoPO) algorithm, which implicitly constrains the output layer logits with the KL divergence inherited from DPO and explicitly constrains the intermediate hidden states by fine-tuning on a multi-granularity orthogonal matrix. This design prevents the policy model from deviating too far from the reference model, thereby retaining the knowledge and expressive capabilities acquired during pre-training and SFT stages. Our RoPO achieves up to a 3.27-point improvement on AlpacaEval 2, and surpasses the best baseline by 6.2 to 7.5 points on MT-Bench with merely 0.015% of the trainable parameters, demonstrating its effectiveness in alleviating the reward hacking problem of DPO.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "226aae3f8c246dc3df69eb856834889aad33cde8",
+    "externalIds": {
+      "ArXiv": "2508.17298",
+      "DBLP": "journals/corr/abs-2508-17298",
+      "DOI": "10.48550/arXiv.2508.17298",
+      "CorpusId": 280711346
+    },
+    "title": "Explain Before You Answer: A Survey on Compositional Visual Reasoning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.17298, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2198159538",
+        "name": "Fucai Ke"
+      },
+      {
+        "authorId": "2266428515",
+        "name": "Joy Hsu"
+      },
+      {
+        "authorId": "2322001163",
+        "name": "Zhixi Cai"
+      },
+      {
+        "authorId": "2149504559",
+        "name": "Zixian Ma"
+      },
+      {
+        "authorId": "2314072154",
+        "name": "Xin Zheng"
+      },
+      {
+        "authorId": "2257715444",
+        "name": "Xindi Wu"
+      },
+      {
+        "authorId": "2218431396",
+        "name": "Sukai Huang"
+      },
+      {
+        "authorId": "2292211612",
+        "name": "Weiqing Wang"
+      },
+      {
+        "authorId": "35205068",
+        "name": "P. D. Haghighi"
+      },
+      {
+        "authorId": "2561045",
+        "name": "Gholamreza Haffari"
+      },
+      {
+        "authorId": "2257273968",
+        "name": "Ranjay Krishna"
+      },
+      {
+        "authorId": "2266457554",
+        "name": "Jiajun Wu"
+      },
+      {
+        "authorId": "2307081678",
+        "name": "Hamid Rezatofighi"
+      }
+    ],
+    "abstract": "Compositional visual reasoning has emerged as a key research frontier in multimodal AI, aiming to endow machines with the human-like ability to decompose visual scenes, ground intermediate concepts, and perform multi-step logical inference. While early surveys focus on monolithic vision-language models or general multimodal reasoning, a dedicated synthesis of the rapidly expanding compositional visual reasoning literature is still missing. We fill this gap with a comprehensive survey spanning 2023 to 2025 that systematically reviews 260+ papers from top venues (CVPR, ICCV, NeurIPS, ICML, ACL, etc.). We first formalize core definitions and describe why compositional approaches offer advantages in cognitive alignment, semantic fidelity, robustness, interpretability, and data efficiency. Next, we trace a five-stage paradigm shift: from prompt-enhanced language-centric pipelines, through tool-enhanced LLMs and tool-enhanced VLMs, to recently minted chain-of-thought reasoning and unified agentic VLMs, highlighting their architectural designs, strengths, and limitations. We then catalog 60+ benchmarks and corresponding metrics that probe compositional visual reasoning along dimensions such as grounding accuracy, chain-of-thought faithfulness, and high-resolution perception. Drawing on these analyses, we distill key insights, identify open challenges (e.g., limitations of LLM-based reasoning, hallucination, a bias toward deductive reasoning, scalable supervision, tool integration, and benchmark limitations), and outline future directions, including world-model integration, human-AI collaborative reasoning, and richer evaluation protocols. By offering a unified taxonomy, historical roadmap, and critical outlook, this survey aims to serve as a foundational reference and inspire the next generation of compositional visual reasoning research.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bb88bf646f41aac26a799c8e2cfc2aaa91d8bb2a",
+    "externalIds": {
+      "DBLP": "conf/icml/VerineBZACN25",
+      "ArXiv": "2508.09654",
+      "DOI": "10.48550/arXiv.2508.09654",
+      "CorpusId": 280642161
+    },
+    "title": "Improving Diversity in Language Models: When Temperature Fails, Change the Loss",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.09654, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119540989",
+        "name": "Alexandre Verine"
+      },
+      {
+        "authorId": "2281945172",
+        "name": "Florian Le Bronnec"
+      },
+      {
+        "authorId": "2324058509",
+        "name": "Kunhao Zheng"
+      },
+      {
+        "authorId": "2282138855",
+        "name": "Alexandre Allauzen"
+      },
+      {
+        "authorId": "1705871",
+        "name": "Y. Chevaleyre"
+      },
+      {
+        "authorId": "2511985",
+        "name": "Benjamin Négrevergne"
+      }
+    ],
+    "abstract": "Increasing diversity in language models is a challenging yet essential objective. A common approach is to raise the decoding temperature. In this work, we investigate this approach through a simplistic yet common case to provide insights into why decreasing temperature can improve quality (Precision), while increasing it often fails to boost coverage (Recall). Our analysis reveals that for a model to be effectively tunable through temperature adjustments, it must be trained toward coverage. To address this, we propose rethinking loss functions in language models by leveraging the Precision-Recall framework. Our results demonstrate that this approach achieves a substantially better trade-off between Precision and Recall than merely combining negative log-likelihood training with temperature scaling. These findings offer a pathway toward more versatile and robust language modeling techniques.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b0314bf027b0f35fbcb8af895e7e3561015ee7cb",
+    "externalIds": {
+      "ArXiv": "2508.10164",
+      "DBLP": "journals/corr/abs-2508-10164",
+      "DOI": "10.48550/arXiv.2508.10164",
+      "CorpusId": 280649889
+    },
+    "title": "Pruning Long Chain-of-Thought of Large Reasoning Models via Small-Scale Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.10164, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2322445451",
+        "name": "Bin Hong"
+      },
+      {
+        "authorId": "2282242852",
+        "name": "Jiayu Liu"
+      },
+      {
+        "authorId": "2366103870",
+        "name": "Zhenya Huang"
+      },
+      {
+        "authorId": "2322484386",
+        "name": "Kai Zhang"
+      },
+      {
+        "authorId": "2375388598",
+        "name": "Mengdi Zhang"
+      }
+    ],
+    "abstract": "Recent advances in Large Reasoning Models (LRMs) have demonstrated strong performance on complex tasks through long Chain-of-Thought (CoT) reasoning. However, their lengthy outputs increase computational costs and may lead to overthinking, raising challenges in balancing reasoning effectiveness and efficiency. Current solutions often compromise reasoning quality or require extensive resources. In this paper, we investigate how to reduce the generation length of LRMs with limited tuning. We analyze generation path distributions and filter generated trajectories through difficulty estimation. Subsequently, we analyze the convergence characteristics of various preference optimization objectives under a unified Bradley-Terry loss based framework. Based on the analysis, we propose Length Controlled Preference Optimization (LCPO) that directly balances the implicit reward related to NLL loss. LCPO can effectively learn length preference with limited data and training. Extensive experiments demonstrate that our method significantly reduces the average output length of LRMs by over 50\\% across multiple benchmarks while maintaining the reasoning performance. Our work highlights the potential for computationally efficient approaches in guiding LRMs toward efficient reasoning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fde91b58c7be085eccc03a67715f68e3637c6398",
+    "externalIds": {
+      "ArXiv": "2508.04225",
+      "CorpusId": 280536344
+    },
+    "title": "Symmetric Behavior Regularized Policy Optimization",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.04225, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2259691564",
+        "name": "Lingwei Zhu"
+      },
+      {
+        "authorId": "144726530",
+        "name": "Haseeb Shah"
+      },
+      {
+        "authorId": "2266393189",
+        "name": "Zheng Chen"
+      },
+      {
+        "authorId": "2342278207",
+        "name": "Yukie Nagai"
+      },
+      {
+        "authorId": "2292188165",
+        "name": "Martha White"
+      }
+    ],
+    "abstract": "Behavior Regularized Policy Optimization (BRPO) leverages asymmetric (divergence) regularization to mitigate the distribution shift in offline Reinforcement Learning. This paper is the first to study the open question of symmetric regularization. We show that symmetric regularization does not permit an analytic optimal policy $\\pi^*$, posing a challenge to practical utility of symmetric BRPO. We approximate $\\pi^*$ by the Taylor series of Pearson-Vajda $\\chi^n$ divergences and show that an analytic policy expression exists only when the series is capped at $n=5$. To compute the solution in a numerically stable manner, we propose to Taylor expand the conditional symmetry term of the symmetric divergence loss, leading to a novel algorithm: Symmetric $f$-Actor Critic (S$f$-AC). S$f$-AC achieves consistently strong results across various D4RL MuJoCo tasks. Additionally, S$f$-AC avoids per-environment failures observed in IQL, SQL, XQL and AWAC, opening up possibilities for more diverse and effective regularization choices for offline RL.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a1aaa56c12313aac3059ba8cbc4fa876c03c2039",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-20133",
+      "ArXiv": "2507.20133",
+      "DOI": "10.48550/arXiv.2507.20133",
+      "CorpusId": 280323760
+    },
+    "title": "Sem-DPO: Mitigating Semantic Inconsistency in Preference Optimization for Prompt Engineering",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.20133, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2349089525",
+        "name": "Anas Mohamed"
+      },
+      {
+        "authorId": "2163674593",
+        "name": "A. Khan"
+      },
+      {
+        "authorId": "2154500473",
+        "name": "Xinran Wang"
+      },
+      {
+        "authorId": "2261068699",
+        "name": "Ahmad Faraz Khan"
+      },
+      {
+        "authorId": "2168182282",
+        "name": "Shuwen Ge"
+      },
+      {
+        "authorId": "2374143842",
+        "name": "Saman Bahzad Khan"
+      },
+      {
+        "authorId": "2374428015",
+        "name": "Ayaan Ahmad"
+      },
+      {
+        "authorId": "2297772064",
+        "name": "Ali Anwar"
+      }
+    ],
+    "abstract": "Generative AI can now synthesize strikingly realistic images from text, yet output quality remains highly sensitive to how prompts are phrased. Direct Preference Optimization (DPO) offers a lightweight, off-policy alternative to RL for automatic prompt engineering, but its token-level regularization leaves semantic inconsistency unchecked as prompts that win higher preference scores can still drift away from the user's intended meaning. We introduce Sem-DPO, a variant of DPO that preserves semantic consistency yet retains its simplicity and efficiency. Sem-DPO adjusts the DPO loss using a weight based on how different the winning prompt is from the original, reducing the impact of training examples that are semantically misaligned. We provide the first analytical bound on semantic drift for preference-tuned prompt generators, showing that Sem-DPO keeps learned prompts within a provably bounded neighborhood of the original text. On three standard text-to-image prompt-optimization benchmarks and two language models, Sem-DPO achieves 8-12% higher CLIP similarity and 5-9% higher human-preference scores (HPSv2.1, PickScore) than DPO, while also outperforming state-of-the-art baselines. These findings suggest that strong flat baselines augmented with semantic weighting should become the new standard for prompt-optimization studies and lay the groundwork for broader, semantics-aware preference optimization in language models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "df493562a219c36b4876d28c4e51bbb449885f29",
+    "externalIds": {
+      "ArXiv": "2507.07855",
+      "CorpusId": 280297263
+    },
+    "title": "DPO Unchained: Your Training Algorithm is Secretly Disentangled in Human Choice Theory",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.07855, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325092526",
+        "name": "Wenxuan Zhou"
+      },
+      {
+        "authorId": "2324804589",
+        "name": "Shujian Zhang"
+      },
+      {
+        "authorId": "2941398",
+        "name": "B. Magdalou"
+      },
+      {
+        "authorId": "2372347332",
+        "name": "John Lambert"
+      },
+      {
+        "authorId": "2142862",
+        "name": "Ehsan Amid"
+      },
+      {
+        "authorId": "1718786",
+        "name": "R. Nock"
+      },
+      {
+        "authorId": "2063986787",
+        "name": "Andrew Straiton Hard"
+      }
+    ],
+    "abstract": "Normative theories allow one to elicit key parts of a ML algorithm from first principles, which is crucial at a time of championed scrutiny for ML work. Direct Preference Optimization (DPO) cleverly bypasses reward modeling by making an explicit link with a specific normative model of human choice. Our paper elevates this connection to the full generality of DPO's normative framework. Getting there requires reworking human choice theory's textbook path for a better RLHF/ML fit. It elevates the connection to a remarkably broad viewpoint on preference optimization, considering the current panorama of DPO follow-ups. It also unveils unexpected riches for ML, chief among which the support for non-convex losses, the fact that any compliant ML analytical choice can be embedded with any human choice model, and a normative framework's umbrella wide enough to safeguard DPO's extensions (margins, length correction, ...). A toy experiment ``far away''from the DPO crowd is given.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7f01d7adc28899552eb0d3d9ca488b3c2300b0f2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-08838",
+      "ArXiv": "2507.08838",
+      "DOI": "10.48550/arXiv.2507.08838",
+      "CorpusId": 280280745
+    },
+    "title": "wd1: Weighted Policy Optimization for Reasoning in Diffusion Language Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.08838, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2313692271",
+        "name": "Xiaohang Tang"
+      },
+      {
+        "authorId": "2114855562",
+        "name": "Rares Dolga"
+      },
+      {
+        "authorId": "2348312164",
+        "name": "Sangwoong Yoon"
+      },
+      {
+        "authorId": "1764328",
+        "name": "Ilija Bogunovic"
+      }
+    ],
+    "abstract": "Improving the reasoning capabilities of diffusion-based large language models (dLLMs) through reinforcement learning (RL) remains an open problem. The intractability of dLLMs likelihood function necessitates approximating the current, old, and reference policy likelihoods at each policy optimization step. This reliance introduces additional computational overhead, and can lead to large variance and estimation error in RL objective -- particularly in computing the policy ratio for importance sampling. To mitigate these issues, we introduce wd1, a novel ratio-free policy optimization approach that reformulates the RL objective as a weighted log-likelihood, requiring only a single approximation for the current parametrized policy likelihood. We formally show that our proposed method can be interpreted as energy-guided discrete diffusion training combined with negative sample unlearning, thereby confirming its theoretical soundness. In experiments on LLaDA-8B model, wd1 outperforms diffusion-based GRPO (d1) while requiring lower computational cost, achieving up to a $+59\\%$ improvement in accuracy. Furthermore, we extend wd1 to denoising-stepwise weighted policy optimization (wd1++), achieving state-of-the-art math performance of $44.2\\%$ on MATH500 and $84.5\\%$ on GSM8K with only 20 RL training steps.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4cacf7ad52858e1c269ec4e83da71cf478fa1e6a",
+    "externalIds": {
+      "ArXiv": "2507.00445",
+      "DBLP": "journals/corr/abs-2507-00445",
+      "DOI": "10.48550/arXiv.2507.00445",
+      "CorpusId": 280148349
+    },
+    "title": "Iterative Distillation for Reward-Guided Fine-Tuning of Diffusion Models in Biomolecular Design",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.00445, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2346801734",
+        "name": "Xingyu Su"
+      },
+      {
+        "authorId": "2316174045",
+        "name": "Xiner Li"
+      },
+      {
+        "authorId": "2279021651",
+        "name": "Masatoshi Uehara"
+      },
+      {
+        "authorId": "2339714051",
+        "name": "Sunwoo Kim"
+      },
+      {
+        "authorId": "2109850978",
+        "name": "Yulai Zhao"
+      },
+      {
+        "authorId": "19205151",
+        "name": "Gabriele Scalia"
+      },
+      {
+        "authorId": "2300473822",
+        "name": "Ehsan Hajiramezanali"
+      },
+      {
+        "authorId": "6785594",
+        "name": "Tommaso Biancalani"
+      },
+      {
+        "authorId": "2346322879",
+        "name": "Degui Zhi"
+      },
+      {
+        "authorId": "2266147768",
+        "name": "Shuiwang Ji"
+      }
+    ],
+    "abstract": "We address the problem of fine-tuning diffusion models for reward-guided generation in biomolecular design. While diffusion models have proven highly effective in modeling complex, high-dimensional data distributions, real-world applications often demand more than high-fidelity generation, requiring optimization with respect to potentially non-differentiable reward functions such as physics-based simulation or rewards based on scientific knowledge. Although RL methods have been explored to fine-tune diffusion models for such objectives, they often suffer from instability, low sample efficiency, and mode collapse due to their on-policy nature. In this work, we propose an iterative distillation-based fine-tuning framework that enables diffusion models to optimize for arbitrary reward functions. Our method casts the problem as policy distillation: it collects off-policy data during the roll-in phase, simulates reward-based soft-optimal policies during roll-out, and updates the model by minimizing the KL divergence between the simulated soft-optimal policy and the current model policy. Our off-policy formulation, combined with KL divergence minimization, enhances training stability and sample efficiency compared to existing RL-based methods. Empirical results demonstrate the effectiveness and superior reward optimization of our approach across diverse tasks in protein, small molecule, and regulatory DNA design. The source code is released at (https://divelab.github.io/VIDD/).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "210d7e98faab8e652c0d07ca92039ccd363da1c9",
+    "externalIds": {
+      "ArXiv": "2506.17871",
+      "CorpusId": 280000617
+    },
+    "title": "LLM Probability Concentration: How Alignment Shrinks the Generative Horizon",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.17871, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46962597",
+        "name": "Chenghao Yang"
+      },
+      {
+        "authorId": "2371074621",
+        "name": "Ari Holtzman"
+      }
+    ],
+    "abstract": "Despite their impressive capabilities, aligned large language models (LLMs) often generate outputs that lack diversity. What drives this consistency in the generation? We investigate this phenomenon through the lens of probability concentration in the model's output distribution. To quantify this concentration, we introduce the *Branching Factor* (BF) -- a token-invariant measure of the effective number of plausible next steps during generation. Our empirical analysis reveals two key findings: (1) BF often decreases as generation progresses, suggesting that LLMs become more predictable as they generate. (2) alignment tuning substantially sharpens the model's output distribution from the outset, reducing BF by a factor of 2-5 overall, and up to an order of magnitude (e.g., from 12 to 1.2) at the beginning positions. This stark reduction helps explain why aligned models often appear less sensitive to decoding strategies. Building on this insight, we find this consistency has surprising implications for complex reasoning. Aligned Chain-of-Thought (CoT) models (e.g., DeepSeek-distilled models), for instance, leverage this effect; by generating longer reasoning chains, they push generation into later, more deterministic (lower BF) stages, resulting in more stable outputs. We hypothesize that alignment tuning does not fundamentally change a model's behavior, but instead steers it toward stylistic tokens (e.g.,\"Sure\") that unlock low-entropy trajectories already present in the base model. This view is supported by nudging experiments, which show prompting base models with such tokens can similarly reduce BF. Together, our findings establish BF as a powerful diagnostic for understanding and controlling LLM outputs - clarifying how alignment reduces variability, how CoT promotes stable generations, and how base models can be steered away from diversity.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "372c106a2c806eb28a58dd18ccfcb403835d9331",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2506-07492",
+      "ArXiv": "2506.07492",
+      "DOI": "10.48550/arXiv.2506.07492",
+      "CorpusId": 279250777
+    },
+    "title": "Explicit Preference Optimization: No Need for an Implicit Reward Model",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.07492, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2311193493",
+        "name": "Xiangkun Hu"
+      },
+      {
+        "authorId": "2367798596",
+        "name": "Lemin Kong"
+      },
+      {
+        "authorId": "2290183294",
+        "name": "Tong He"
+      },
+      {
+        "authorId": "2256992062",
+        "name": "David Wipf"
+      }
+    ],
+    "abstract": "The generated responses of large language models (LLMs) are often fine-tuned to human preferences through a process called reinforcement learning from human feedback (RLHF). As RLHF relies on a challenging training sequence, whereby a separate reward model is independently learned and then later applied to LLM policy updates, ongoing research effort has targeted more straightforward alternatives. In this regard, direct preference optimization (DPO) and its many offshoots circumvent the need for a separate reward training step. Instead, through the judicious use of a reparameterization trick that induces an \\textit{implicit} reward, DPO and related methods consolidate learning to the minimization of a single loss function. And yet despite demonstrable success in some real-world settings, we prove that DPO-based objectives are nonetheless subject to sub-optimal regularization and counter-intuitive interpolation behaviors, underappreciated artifacts of the reparameterizations upon which they are based. To this end, we introduce an \\textit{explicit} preference optimization framework termed EXPO that requires no analogous reparameterization to achieve an implicit reward. Quite differently, we merely posit intuitively-appealing regularization factors from scratch that transparently avoid the potential pitfalls of key DPO variants, provably satisfying regularization desiderata that prior methods do not. Empirical results serve to corroborate our analyses and showcase the efficacy of EXPO.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "16821f1c8ecf7f08de07ad3e5629841f9b985bac",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2506-07459",
+      "ArXiv": "2506.07459",
+      "DOI": "10.48550/arXiv.2506.07459",
+      "CorpusId": 279251676
+    },
+    "title": "ProteinZero: Self-Improving Protein Generation via Online Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.07459, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2366159856",
+        "name": "Ziwen Wang"
+      },
+      {
+        "authorId": "2344928100",
+        "name": "Jiajun Fan"
+      },
+      {
+        "authorId": "2366689169",
+        "name": "Ruihan Guo"
+      },
+      {
+        "authorId": "2302813601",
+        "name": "Thao Nguyen"
+      },
+      {
+        "authorId": "2367121614",
+        "name": "Heng Ji"
+      },
+      {
+        "authorId": "2324070404",
+        "name": "Ge Liu"
+      }
+    ],
+    "abstract": "Protein generative models have shown remarkable promise in protein design, yet their success rates remain constrained by reliance on curated sequence-structure datasets and by misalignment between supervised objectives and real design goals. We present ProteinZero, an online reinforcement learning framework for inverse folding models that enables scalable, automated, and continuous self-improvement with computationally efficient feedback. ProteinZero employs a reward pipeline that combines structural guidance from ESMFold with a novel self-derived ddG predictor, providing stable multi-objective signals while avoiding the prohibitive cost of physics-based methods. To ensure robustness in online RL, we further introduce a novel embedding-level diversity regularizer that mitigates mode collapse and promotes functionally meaningful sequence variation. Within a general RL formulation balancing multi-reward optimization, KL-divergence from a reference model, and diversity regularization, ProteinZero achieves robust improvements across designability, stability, recovery, and diversity. On the CATH-4.3 benchmark, it consistently outperforms state-of-the-art baselines including ProteinMPNN, ESM-IF, and InstructPLM, reducing design failure rates by 36-48% and achieving success rates above 90% across diverse folds. Importantly, a complete RL run can be executed on a single 8 X GPU node within three days, including reward computation and data generation. These results indicate that efficient online RL fine-tuning can complement supervised pretraining by allowing protein generative models to evolve continuously from their own outputs and optimize multiple design objectives without labeled data, opening new possibilities for exploring the vast protein design space. Full source code and model checkpoints will be released upon publication.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "00a8081f3c03b38146dd742e344f08c371c15044",
+    "externalIds": {
+      "ArXiv": "2506.04721",
+      "DBLP": "journals/corr/abs-2506-04721",
+      "DOI": "10.48550/arXiv.2506.04721",
+      "CorpusId": 279243702
+    },
+    "title": "SPARTA ALIGNMENT: Collectively Aligning Multiple Language Models through Combat",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.04721, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2366007269",
+        "name": "Yuru Jiang"
+      },
+      {
+        "authorId": "2282214127",
+        "name": "Wenxuan Ding"
+      },
+      {
+        "authorId": "2284701198",
+        "name": "Shangbin Feng"
+      },
+      {
+        "authorId": "2271320260",
+        "name": "Greg Durrett"
+      },
+      {
+        "authorId": "2249583325",
+        "name": "Yulia Tsvetkov"
+      }
+    ],
+    "abstract": "We propose SPARTA ALIGNMENT, an algorithm to collectively align multiple LLMs through competition and combat. To complement a single model's lack of diversity in generation and biases in evaluation, multiple LLMs form a\"sparta tribe\"to compete against each other in fulfilling instructions while serving as judges for the competition of others. For each iteration, one instruction and two models are selected for a duel, the other models evaluate the two responses, and their evaluation scores are aggregated through a adapted elo-ranking based reputation system, where winners/losers of combat gain/lose weight in evaluating others. The peer-evaluated combat results then become preference pairs where the winning response is preferred over the losing one, and all models learn from these preferences at the end of each iteration. SPARTA ALIGNMENT enables the self-evolution of multiple LLMs in an iterative and collective competition process. Extensive experiments demonstrate that SPARTA ALIGNMENT outperforms initial models and 4 self-alignment baselines across 10 out of 12 tasks and datasets with 7.0% average improvement. Further analysis reveals that SPARTA ALIGNMENT generalizes more effectively to unseen tasks and leverages the expertise diversity of participating models to produce more logical, direct and informative outputs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "30592caa250d19ca763f62d8bc233ad855c6eb4e",
+    "externalIds": {
+      "ArXiv": "2506.15717",
+      "DBLP": "conf/acl/Zhang0SGL0NT25",
+      "DOI": "10.48550/arXiv.2506.15717",
+      "CorpusId": 279465031
+    },
+    "title": "daDPO: Distribution-Aware DPO for Distilling Conversational Abilities",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.15717, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2316523677",
+        "name": "Zhengze Zhang"
+      },
+      {
+        "authorId": "2277600662",
+        "name": "Shiqi Wang"
+      },
+      {
+        "authorId": "2368348997",
+        "name": "Yiqun Shen"
+      },
+      {
+        "authorId": "2368057899",
+        "name": "Simin Guo"
+      },
+      {
+        "authorId": "2365327952",
+        "name": "Dahua Lin"
+      },
+      {
+        "authorId": "2327929686",
+        "name": "Xiaoliang Wang"
+      },
+      {
+        "authorId": "2316536360",
+        "name": "C. Nguyen"
+      },
+      {
+        "authorId": "2316427111",
+        "name": "Fei Tan"
+      }
+    ],
+    "abstract": "Large language models (LLMs) have demonstrated exceptional performance across various applications, but their conversational abilities decline sharply as model size decreases, presenting a barrier to their deployment in resource-constrained environments. Knowledge distillation with Direct Preference Optimization (dDPO) has emerged as a promising approach to enhancing the conversational abilities of smaller models using a larger teacher model. However, current methods primarily focus on'black-box'KD, which only uses the teacher's responses, overlooking the output distribution offered by the teacher. This paper addresses this gap by introducing daDPO (Distribution-Aware DPO), a unified method for preference optimization and distribution-based distillation. We provide rigorous theoretical analysis and empirical validation, showing that daDPO outperforms existing methods in restoring performance for pruned models and enhancing smaller LLM models. Notably, in in-domain evaluation, our method enables a 20% pruned Vicuna1.5-7B to achieve near-teacher performance (-7.3% preference rate compared to that of dDPO's -31%), and allows Qwen2.5-1.5B to occasionally outperform its 7B teacher model (14.0% win rate).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c696d905e70197ce4d1d7bbaee25db680a0d62e3",
+    "externalIds": {
+      "DBLP": "conf/acl/ZhangWOYV25",
+      "ArXiv": "2506.01312",
+      "DOI": "10.48550/arXiv.2506.01312",
+      "CorpusId": 279074931
+    },
+    "title": "Growing Through Experience: Scaling Episodic Grounding in Language Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.01312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2330091603",
+        "name": "Chunhui Zhang"
+      },
+      {
+        "authorId": "2295934207",
+        "name": "Sirui Wang"
+      },
+      {
+        "authorId": "51253105",
+        "name": "Z. Ouyang"
+      },
+      {
+        "authorId": "2314896914",
+        "name": "Xiangchi Yuan"
+      },
+      {
+        "authorId": "1918441",
+        "name": "S. Vosoughi"
+      }
+    ],
+    "abstract": "Language models (LMs) require robust episodic grounding-the capacity to learn from and apply past experiences-to excel at physical planning tasks. Current episodic grounding approaches struggle with scalability and integration, limiting their effectiveness, especially for medium-sized LMs (7B parameters). While larger LMs (70-405B parameters) possess superior hierarchical representations and extensive pre-trained knowledge, they encounter a fundamental scale paradox: despite their advanced abstraction capabilities, they lack efficient mechanisms to leverage experience streams. We propose a scalable weak-to-strong episodic learning framework that effectively transfers episodic behaviors from smaller to larger LMs. This framework integrates Monte Carlo tree search for structured experience collection with a novel distillation method, preserving the inherent LM capabilities while embedding episodic memory. Experiments demonstrate our method surpasses state-of-the-art proprietary LMs by 3.45% across diverse planning and question-answering tasks. Layer-wise probing further indicates significant improvements in task alignment, especially within deeper LM layers, highlighting stable generalization even for previously unseen scenarios with increased planning complexity-conditions where baseline methods degrade markedly.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5e548e174431e3c989ad0f3f41e0f7651ff76d83",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2506-01183",
+      "ArXiv": "2506.01183",
+      "DOI": "10.48550/arXiv.2506.01183",
+      "CorpusId": 279074853
+    },
+    "title": "Doubly Robust Alignment for Large Language Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.01183, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2364745672",
+        "name": "Erhan Xu"
+      },
+      {
+        "authorId": "2354165813",
+        "name": "Kai Ye"
+      },
+      {
+        "authorId": "2354224430",
+        "name": "Hongyi Zhou"
+      },
+      {
+        "authorId": "2364829561",
+        "name": "Luhan Zhu"
+      },
+      {
+        "authorId": "2354179582",
+        "name": "Francesco Quinzan"
+      },
+      {
+        "authorId": "2325201916",
+        "name": "Chengchun Shi"
+      }
+    ],
+    "abstract": "This paper studies reinforcement learning from human feedback (RLHF) for aligning large language models with human preferences. While RLHF has demonstrated promising results, many algorithms are highly sensitive to misspecifications in the underlying preference model (e.g., the Bradley-Terry model), the reference policy, or the reward function, resulting in undesirable fine-tuning. To address model misspecification, we propose a doubly robust preference optimization algorithm that remains consistent when either the preference model or the reference policy is correctly specified (without requiring both). Our proposal demonstrates superior and more robust performance than state-of-the-art algorithms, both in theory and in practice. The code is available at https://github.com/DRPO4LLM/DRPO4LLM",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "26e9ce47fc8da27174e73a19d3f42beb948574d4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-23316",
+      "ArXiv": "2505.23316",
+      "DOI": "10.48550/arXiv.2505.23316",
+      "CorpusId": 278996526
+    },
+    "title": "Proximalized Preference Optimization for Diverse Feedback Types: A Decomposed Perspective on DPO",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.23316, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2347011277",
+        "name": "Kaiyang Guo"
+      },
+      {
+        "authorId": "2330657784",
+        "name": "Yinchuan Li"
+      },
+      {
+        "authorId": "2330755425",
+        "name": "Zhitang Chen"
+      }
+    ],
+    "abstract": "Direct alignment methods typically train large language models (LLMs) by contrasting the likelihoods of preferred and dispreferred responses. While effective at capturing relative preferences, these methods are widely observed to suppress the absolute likelihoods of example responses. As a result, aligned models can deviate from expected patterns, exhibiting rewar-hacking effect even without an explicit reward model. This fundamental limitation of contrastive alignment, which we term likelihood underdetermination, motivates us to revisit direct preference optimization (DPO) -- the seminal direct alignment method. Interestingly, we show that the DPO loss admits a principled decomposition. The reformulated loss not only extends naturally to a broader range of feedback types, but also unveils the root cause of likelihood underdetermination. Specifically, we identify that standard DPO implicitly oversimplifies a regularizer in the reformulated loss; restoring this full term effectively resolves the underdetermination. Building on these insights, we introduce PRoximalized PReference Optimization (PRO), a unified alignment method that accommodates diverse feedback types while eliminating likelihood underdetermination through an efficient approximation of the full regularizer. Empirical evaluations demonstrate the consistent superiority of PRO over existing methods across pairwise, binary and scalar feedback.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fc450c5aa4c85224e9944e65daaccc971470113d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-23927",
+      "ArXiv": "2505.23927",
+      "DOI": "10.48550/arXiv.2505.23927",
+      "CorpusId": 279070638
+    },
+    "title": "Thompson Sampling in Online RLHF with General Function Approximation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.23927, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2356390723",
+        "name": "Songtao Feng"
+      },
+      {
+        "authorId": "2357488366",
+        "name": "Jie Fu"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has achieved great empirical success in aligning large language models (LLMs) with human preference, and it is of great importance to study the statistical efficiency of RLHF algorithms from a theoretical perspective. In this work, we consider the online RLHF setting where the preference data is revealed during the learning process and study action value function approximation. We design a model-free posterior sampling algorithm for online RLHF inspired by Thompson sampling and provide its theoretical guarantee. Specifically, we adopt Bellman eluder (BE) dimension as the complexity measure of the function class and establish $O(\\sqrt{T})$ regret bound for the proposed algorithm with other multiplicative factor depending on the horizon, BE dimension and the $log$-bracketing number of the function class. Further, in the analysis, we first establish the concentration-type inequality of the squared Bellman error bound based on the maximum likelihood estimator (MLE) generalization bound, which plays the crucial rules in obtaining the eluder-type regret bound and may be of independent interest.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "46b4146be2a91020659fe9dd8c7a8e005e78536e",
+    "externalIds": {
+      "ArXiv": "2505.21395",
+      "DBLP": "journals/corr/abs-2505-21395",
+      "DOI": "10.48550/arXiv.2505.21395",
+      "CorpusId": 278911500
+    },
+    "title": "SquareχPO: Differentially Private and Robust χ2-Preference Optimization in Offline Direct Alignment",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.21395, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2319314964",
+        "name": "Xingyu Zhou"
+      },
+      {
+        "authorId": "2284130113",
+        "name": "Yulian Wu"
+      },
+      {
+        "authorId": "2372737103",
+        "name": "Wenqian Weng"
+      },
+      {
+        "authorId": "2284066727",
+        "name": "Francesco Orabona"
+      }
+    ],
+    "abstract": "In this paper, we theoretically study the offline alignment of language models with human preference feedback, under both preference label corruption and privacy protections. To this end, we propose Square$\\chi$PO, a simple one-line change to $\\chi$PO where the standard log-loss is replaced by a new square loss over probability. Thanks to the inherent properties of this new loss, we have advanced the state-of-the-art of differentially private and robust offline direct alignment. Specifically, for the local model of label privacy, Square$\\chi$PO is the first algorithm that attains an optimal rate based on single-policy concentrability even with general function approximations. It also gives the first result under the central model of privacy protection over both prompts (responses) and labels. On the robustness side against Huber label corruption, Square$\\chi$PO is the first alignment method that has a meaningful theoretical guarantee under general function approximations. More importantly, Square$\\chi$PO can address privacy protection and corruption simultaneously, where an interesting separation is observed, implying that the order of privacy and corruption matters. Furthermore, we show that Square$\\chi$PO can also be easily extended to handle the scenario of the general preference model with state-of-the-art guarantees under corruption and privacy. Last but not least, all of our theoretical guarantees enjoy a unified analysis, building upon a new result on the generalization error bounds of least-square regression under corruption and privacy constraints, which we believe is of independent interest to the community.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "243dce356173444cbdd6d3fbebb05f04429edbe6",
+    "externalIds": {
+      "ArXiv": "2505.19601",
+      "DBLP": "journals/corr/abs-2505-19601",
+      "DOI": "10.48550/arXiv.2505.19601",
+      "CorpusId": 278904633
+    },
+    "title": "Preference Optimization by Estimating the Ratio of the Data Distribution",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.19601, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119255215",
+        "name": "Yeongmin Kim"
+      },
+      {
+        "authorId": "2164036377",
+        "name": "Heesun Bae"
+      },
+      {
+        "authorId": "1999215536",
+        "name": "Byeonghu Na"
+      },
+      {
+        "authorId": "2288547472",
+        "name": "Il-chul Moon"
+      }
+    ],
+    "abstract": "Direct preference optimization (DPO) is widely used as a simple and stable method for aligning large language models (LLMs) with human preferences. This paper investigates a generalized DPO loss that enables a policy model to match the target policy from a likelihood ratio estimation perspective. The ratio of the target policy provides a unique identification of the policy distribution without relying on reward models or partition functions. This allows the generalized loss to retain both simplicity and theoretical guarantees, which prior work such as $f$-PO fails to achieve simultaneously. We propose Bregman preference optimization (BPO), a generalized framework for ratio matching that provides a family of objective functions achieving target policy optimality. BPO subsumes DPO as a special case and offers tractable forms for all instances, allowing implementation with a few lines of code. We further develop scaled Basu's power divergence (SBA), a gradient scaling method that can be used for BPO instances. The BPO framework complements other DPO variants and is applicable to target policies defined by these variants. In experiments, unlike other probabilistic loss extensions such as $f$-DPO or $f$-PO, which exhibit a trade-off between generation fidelity and diversity, instances of BPO improve both win rate and entropy compared with DPO. When applied to Llama-3-8B-Instruct, BPO achieves state-of-the-art performance among Llama-3-8B backbones, with a 55.9\\% length-controlled win rate on AlpacaEval2. Project page: https://github.com/aailab-kaist/BPO.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "3f72b27af217e53849e5a20105f280920351f62b",
+    "externalIds": {
+      "ArXiv": "2505.19743",
+      "DBLP": "conf/ijcai/ZhangYTZSWHXLX025",
+      "DOI": "10.48550/arXiv.2505.19743",
+      "CorpusId": 278904631
+    },
+    "title": "Token-level Accept or Reject: A Micro Alignment Approach for Large Language Models",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.19743, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2375061686",
+        "name": "Yang Zhang"
+      },
+      {
+        "authorId": "2308360157",
+        "name": "Yu Yu"
+      },
+      {
+        "authorId": "2268400606",
+        "name": "Bo Tang"
+      },
+      {
+        "authorId": "2290270908",
+        "name": "Yu Zhu"
+      },
+      {
+        "authorId": "2290247126",
+        "name": "Chuxiong Sun"
+      },
+      {
+        "authorId": "2290242475",
+        "name": "Wenqiang Wei"
+      },
+      {
+        "authorId": "2290202026",
+        "name": "Jie Hu"
+      },
+      {
+        "authorId": "2387131776",
+        "name": "Zipeng Xie"
+      },
+      {
+        "authorId": "2268429641",
+        "name": "Zhiyu Li"
+      },
+      {
+        "authorId": "2268399953",
+        "name": "Feiyu Xiong"
+      },
+      {
+        "authorId": "2239280852",
+        "name": "Edward Chung"
+      }
+    ],
+    "abstract": "With the rapid development of Large Language Models (LLMs), aligning these models with human preferences and values is critical to ensuring ethical and safe applications. However, existing alignment techniques such as RLHF or DPO often require direct fine-tuning on LLMs with billions of parameters, resulting in substantial computational costs and inefficiencies. To address this, we propose Micro token-level Accept-Reject Aligning (MARA) approach designed to operate independently of the language models. MARA simplifies the alignment process by decomposing sentence-level preference learning into token-level binary classification, where a compact three-layer fully-connected network determines whether candidate tokens are “Accepted” or “Rejected” as part of the response. Extensive experiments across seven different LLMs and three open-source datasets show that MARA achieves significant improvements in alignment performance while reducing computational costs. The source code and implementation details are publicly available at https://github.com/IAAR-Shanghai/MARA, and the trained models are released at https://huggingface.co/IAAR-Shanghai/MARA_AGENTS.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "2edd56fd82749d0f0d987ee341d8caf95037b164",
+    "externalIds": {
+      "ArXiv": "2505.20065",
+      "DBLP": "journals/corr/abs-2505-20065",
+      "DOI": "10.48550/arXiv.2505.20065",
+      "CorpusId": 278911238
+    },
+    "title": "SafeDPO: A Simple Approach to Direct Preference Optimization with Enhanced Safety",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.20065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40379031",
+        "name": "Geon-hyeong Kim"
+      },
+      {
+        "authorId": "2288604723",
+        "name": "Youngsoo Jang"
+      },
+      {
+        "authorId": "2129538296",
+        "name": "Yu Jin Kim"
+      },
+      {
+        "authorId": "2272348107",
+        "name": "Byoungjip Kim"
+      },
+      {
+        "authorId": "2261393055",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "40290697",
+        "name": "Kyunghoon Bae"
+      },
+      {
+        "authorId": "2327002089",
+        "name": "Moontae Lee"
+      }
+    ],
+    "abstract": "As Large Language Models (LLMs) are increasingly deployed in real-world applications, balancing helpfulness and safety has become a central challenge. A natural approach is to incorporate safety constraints into Reinforcement Learning from Human Feedback (RLHF), where recent studies have shown promising progress. However, these methods often rely on auxiliary networks or multi-stage pipelines, thereby increasing complexity. In this work, we revisit the original safety alignment objective and show that, under mild assumptions, it admits a closed-form optimal policy. We further derive a provably equivalent and tractable objective, enabling direct optimization. Building on this insight, we propose SafeDPO, a lightweight method that preserves the optimal solution of the underlying safety-constrained objective while requiring only one additional hyperparameter and minimal modifications to existing preference-based training methods. SafeDPO eliminates the need for reward models, cost models, and online sampling, relying only on preference data and safety indicators. Despite its simplicity, SafeDPO achieves competitive safety-helpfulness trade-offs compared to existing safety alignment methods. Experiments on the PKU-SafeRLHF-30K benchmark demonstrate that SafeDPO substantially improves safety while maintaining competitive helpfulness. Ablation studies further show that the additional hyperparameter provides a flexible mechanism to enhance safety while preserving the theoretical optimum, and confirm that SafeDPO scales reliably to LLMs with up to 13B parameters. Overall, our results highlight that a simple, theory-driven objective can provide a lightweight yet effective solution for safety alignment in practice.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "02bc41796acfbba89c01785ee8635ea960f67f3e",
+    "externalIds": {
+      "ArXiv": "2505.19653",
+      "DBLP": "journals/corr/abs-2505-19653",
+      "DOI": "10.48550/arXiv.2505.19653",
+      "CorpusId": 278905154
+    },
+    "title": "Token-Importance Guided Direct Preference Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.19653, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2380461462",
+        "name": "Ning Yang"
+      },
+      {
+        "authorId": "2360041244",
+        "name": "Hai Lin"
+      },
+      {
+        "authorId": "2348575878",
+        "name": "Yibo Liu"
+      },
+      {
+        "authorId": "2375142577",
+        "name": "Baoliang Tian"
+      },
+      {
+        "authorId": "2297437972",
+        "name": "Guoqing Liu"
+      },
+      {
+        "authorId": "2297816089",
+        "name": "Haijun Zhang"
+      }
+    ],
+    "abstract": "Aligning Large Language Models (LLMs) with human preferences is crucial for safe and effective AI interactions. While popular methods like Direct Preference Optimization (DPO) have simplified alignment, they remain sensitive to data noise and overlook the differential importance of individual tokens. Existing token-level approaches often rely on probability prediction or simplistic weighting schemes to obtain token importance, which still cannot fully address these issues. To solve this problem, we propose the Token-Importance Guided Direct Preference Optimization (TI-DPO), a framework that achieves fine-grained semantic control through two synergistic innovations. First, we propose a novel hybrid weighting mechanism that combines gradient attribution with a Gaussian prior, ensuring both the accuracy and robustness of token importance scores. Second, we employ a triplet loss to provide structured guidance for the optimization, explicitly guiding model outputs to approach preferred responses and diverge from non-preferred ones. Experimental results show that TI-DPO achieves higher accuracy and stronger generative diversity, providing more stable and computationally efficient solutions compared with DPO and other RLHF methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6894f5f5b212e4c7c7110e9aec637f4a9970e9ee",
+    "externalIds": {
+      "ArXiv": "2505.20359",
+      "DBLP": "journals/corr/abs-2505-20359",
+      "DOI": "10.48550/arXiv.2505.20359",
+      "CorpusId": 278912192
+    },
+    "title": "Risk-aware Direct Preference Optimization under Nested Risk Measure",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.20359, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2291319000",
+        "name": "Lijun Zhang"
+      },
+      {
+        "authorId": "2364730218",
+        "name": "Lin Li"
+      },
+      {
+        "authorId": "2364368975",
+        "name": "Yajie Qi"
+      },
+      {
+        "authorId": "2345331196",
+        "name": "Huizhong Song"
+      },
+      {
+        "authorId": "2296747838",
+        "name": "Yaodong Yang"
+      },
+      {
+        "authorId": "2363997658",
+        "name": "Jun Wang"
+      },
+      {
+        "authorId": "2247657064",
+        "name": "Weipeng Wei"
+      }
+    ],
+    "abstract": "When fine-tuning pre-trained Large Language Models (LLMs) to align with human values and intentions, maximizing the estimated reward can lead to superior performance, but it also introduces potential risks due to deviations from the reference model's intended behavior. Most existing methods typically introduce KL divergence to constrain deviations between the trained model and the reference model; however, this may not be sufficient in certain applications that require tight risk control. In this paper, we introduce Risk-aware Direct Preference Optimization (Ra-DPO), a novel approach that incorporates risk-awareness by employing a class of nested risk measures. This approach formulates a constrained risk-aware advantage function maximization problem and then converts the Bradley-Terry model into a token-level representation. The objective function maximizes the likelihood of the policy while suppressing the deviation between a trained model and the reference model using a sequential risk ratio, thereby enhancing the model's risk-awareness. Experimental results across three open-source datasets: IMDb Dataset, Anthropic HH Dataset, and AlpacaEval, demonstrate the proposed method's superior performance in balancing alignment performance and model drift. Our code is opensourced at https://github.com/zlj123-max/Ra-DPO.",
+    "_is_influential": false,
+    "_intents": []
+  }
+]

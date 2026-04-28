@@ -1,0 +1,1826 @@
+[
+  {
+    "paperId": "016368185723d0ec99aafa4b5927300590d0647f",
+    "externalIds": {
+      "MAG": "3016309009",
+      "DBLP": "journals/corr/abs-2004-07202",
+      "ACL": "2020.emnlp-main.400",
+      "ArXiv": "2004.07202",
+      "DOI": "10.18653/v1/2020.emnlp-main.400",
+      "CorpusId": 215768768
+    },
+    "title": "Entities as Experts: Sparse Memory Access with Entity Supervision",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2020,
+    "citationCount": 176,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2004.07202",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.07202, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "79215748",
+        "name": "Thibault Févry"
+      },
+      {
+        "authorId": "7353832",
+        "name": "Livio Baldini Soares"
+      },
+      {
+        "authorId": "143883142",
+        "name": "Nicholas FitzGerald"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      },
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      }
+    ],
+    "abstract": "We focus on the problem of capturing declarative knowledge in the learned parameters of a language model. We introduce a new model, Entities as Experts (EaE), that can access distinct memories of the entities mentioned in a piece of text. Unlike previous efforts to integrate entity knowledge into sequence models, EaE's entity representations are learned directly from text. These representations capture sufficient knowledge to answer TriviaQA questions such as \"Which Dr. Who villain has been played by Roger Delgado, Anthony Ainley, Eric Roberts?\". EaE outperforms a Transformer model with $30\\times$ the parameters on this task. According to the Lama knowledge probes, EaE also contains more factual knowledge than a similar sized Bert. We show that associating parameters with specific entities means that EaE only needs to access a fraction of its parameters at inference time, and we show that the correct identification, and representation, of entities is essential to EaE's performance. We also argue that the discrete and independent entity representations in EaE make it more modular and interpretable than the Transformer architecture on which it is based.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b26f2037f769d5ffc5f7bdcec2de8da28ec14bee",
+    "externalIds": {
+      "MAG": "3015883388",
+      "ArXiv": "2004.04906",
+      "DBLP": "conf/emnlp/KarpukhinOMLWEC20",
+      "ACL": "2020.emnlp-main.550",
+      "DOI": "10.18653/v1/2020.emnlp-main.550",
+      "CorpusId": 215737187
+    },
+    "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2020,
+    "citationCount": 5554,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.emnlp-main.550.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.04906, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067091563",
+        "name": "Vladimir Karpukhin"
+      },
+      {
+        "authorId": "9185192",
+        "name": "Barlas Oğuz"
+      },
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "51183248",
+        "name": "Ledell Yu Wu"
+      },
+      {
+        "authorId": "2068070",
+        "name": "Sergey Edunov"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "144105277",
+        "name": "Wen-tau Yih"
+      }
+    ],
+    "abstract": "Open-domain question answering relies on efficient passage retrieval to select candidate contexts, where traditional sparse vector space models, such as TF-IDF or BM25, are the de facto method. In this work, we show that retrieval can be practically implemented using dense representations alone, where embeddings are learned from a small number of questions and passages by a simple dual-encoder framework. When evaluated on a wide range of open-domain QA datasets, our dense retriever outperforms a strong Lucene-BM25 system largely by 9%-19% absolute in terms of top-20 passage retrieval accuracy, and helps our end-to-end QA system establish new state-of-the-art on multiple open-domain QA benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bdbf780dfd6b3eb0c9e980887feae5f23af15bc4",
+    "externalIds": {
+      "MAG": "3006439205",
+      "DBLP": "journals/corr/abs-2002-05202",
+      "ArXiv": "2002.05202",
+      "CorpusId": 211096588
+    },
+    "title": "GLU Variants Improve Transformer",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 1752,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.05202, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "Gated Linear Units (arXiv:1612.08083) consist of the component-wise product of two linear projections, one of which is first passed through a sigmoid function. Variations on GLU are possible, using different nonlinear (or even linear) functions in place of sigmoid. We test these variants in the feed-forward sublayers of the Transformer (arXiv:1706.03762) sequence-to-sequence model, and find that some of them yield quality improvements over the typically-used ReLU or GELU activations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "832fff14d2ed50eb7969c4c4b976c35776548f56",
+    "externalIds": {
+      "ArXiv": "2002.08909",
+      "MAG": "3034671305",
+      "DBLP": "conf/icml/GuuLTPC20",
+      "CorpusId": 211204736
+    },
+    "title": "REALM: Retrieval-Augmented Language Model Pre-Training",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2916,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.08909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "9941702",
+        "name": "Zora Tung"
+      },
+      {
+        "authorId": "2616463",
+        "name": "Panupong Pasupat"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      }
+    ],
+    "abstract": "Language model pre-training has been shown to capture a surprising amount of world knowledge, crucial for NLP tasks such as question answering. However, this knowledge is stored implicitly in the parameters of a neural network, requiring ever-larger networks to cover more facts. \nTo capture knowledge in a more modular and interpretable way, we augment language model pre-training with a latent knowledge retriever, which allows the model to retrieve and attend over documents from a large corpus such as Wikipedia, used during pre-training, fine-tuning and inference. For the first time, we show how to pre-train such a knowledge retriever in an unsupervised manner, using masked language modeling as the learning signal and backpropagating through a retrieval step that considers millions of documents. \nWe demonstrate the effectiveness of Retrieval-Augmented Language Model pre-training (REALM) by fine-tuning on the challenging task of Open-domain Question Answering (Open-QA). We compare against state-of-the-art models for both explicit and implicit knowledge storage on three popular Open-QA benchmarks, and find that we outperform all previous methods by a significant margin (4-16% absolute accuracy), while also providing qualitative benefits such as interpretability and modularity.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d10ee93bd4eefb55bed6662566e2a7ddf33aa352",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2001-03765",
+      "MAG": "2998901379",
+      "ArXiv": "2001.03765",
+      "CorpusId": 210164703
+    },
+    "title": "Learning Cross-Context Entity Representations from Text",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.03765, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2065574525",
+        "name": "Jeffrey Ling"
+      },
+      {
+        "authorId": "143883142",
+        "name": "Nicholas FitzGerald"
+      },
+      {
+        "authorId": "7303917",
+        "name": "Zifei Shan"
+      },
+      {
+        "authorId": "7353832",
+        "name": "Livio Baldini Soares"
+      },
+      {
+        "authorId": "79215748",
+        "name": "Thibault Févry"
+      },
+      {
+        "authorId": "145045509",
+        "name": "David Weiss"
+      },
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      }
+    ],
+    "abstract": "Language modeling tasks, in which words, or word-pieces, are predicted on the basis of a local context, have been very effective for learning word embeddings and context dependent representations of phrases. Motivated by the observation that efforts to code world knowledge into machine readable knowledge bases or human readable encyclopedias tend to be entity-centric, we investigate the use of a fill-in-the-blank task to learn context independent representations of entities from the text contexts in which those entities were mentioned. We show that large scale training of neural models allows us to learn high quality entity representations, and we demonstrate successful results on four domains: (1) existing entity-level typing benchmarks, including a 64% error reduction over previous work on TypeNet (Murty et al., 2018); (2) a novel few-shot category reconstruction task; (3) existing entity linking benchmarks, where we match the state-of-the-art on CoNLL-Aida without linking-specific features and obtain a score of 89.8% on TAC-KBP 2010 without using any alias table, external knowledge base or in domain training data and (4) answering trivia questions, which uniquely identify entities. Our global entity representations encode fine-grained type categories, such as Scottish footballers, and can answer trivia questions such as: Who was the last inmate of Spandau jail in Berlin?",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5e0cffc51e8b64a8f11326f955fa4b4f1803e3be",
+    "externalIds": {
+      "DBLP": "journals/tacl/TalmorEGB20",
+      "MAG": "2998696444",
+      "ArXiv": "1912.13283",
+      "DOI": "10.1162/tacl_a_00342",
+      "CorpusId": 209515274
+    },
+    "title": "oLMpics-On What Language Model Pre-training Captures",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 308,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00342/1923716/tacl_a_00342.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.13283, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "12371246",
+        "name": "Alon Talmor"
+      },
+      {
+        "authorId": "51131518",
+        "name": "Yanai Elazar"
+      },
+      {
+        "authorId": "79775260",
+        "name": "Yoav Goldberg"
+      },
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      }
+    ],
+    "abstract": "Abstract Recent success of pre-trained language models (LMs) has spurred widespread interest in the language capabilities that they possess. However, efforts to understand whether LM representations are useful for symbolic reasoning tasks have been limited and scattered. In this work, we propose eight reasoning tasks, which conceptually require operations such as comparison, conjunction, and composition. A fundamental challenge is to understand whether the performance of a LM on a task should be attributed to the pre-trained representations or to the process of fine-tuning on the task data. To address this, we propose an evaluation protocol that includes both zero-shot evaluation (no fine-tuning), as well as comparing the learning curve of a fine-tuned LM to the learning curve of multiple controls, which paints a rich picture of the LM capabilities. Our main findings are that: (a) different LMs exhibit qualitatively different reasoning abilities, e.g., RoBERTa succeeds in reasoning tasks where BERT fails completely; (b) LMs do not reason in an abstract manner and are context-dependent, e.g., while RoBERTa can compare ages, it can do so only when the ages are in the typical range of human ages; (c) On half of our reasoning tasks all models fail completely. Our findings and infrastructure can help future work on designing new datasets, models, and objective functions for pre-training.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a75649771901a4881b44c0ceafa469fcc6e6f968",
+    "externalIds": {
+      "MAG": "3044438666",
+      "ArXiv": "1911.12543",
+      "DBLP": "journals/tacl/JiangXAN20",
+      "DOI": "10.1162/tacl_a_00324",
+      "CorpusId": 208513249
+    },
+    "title": "How Can We Know What Language Models Know?",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 1618,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00324/1923867/tacl_a_00324.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.12543, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2669515",
+        "name": "Zhengbao Jiang"
+      },
+      {
+        "authorId": "40027632",
+        "name": "Frank F. Xu"
+      },
+      {
+        "authorId": "50007145",
+        "name": "J. Araki"
+      },
+      {
+        "authorId": "1700325",
+        "name": "Graham Neubig"
+      }
+    ],
+    "abstract": "Abstract Recent work has presented intriguing results examining the knowledge contained in language models (LMs) by having the LM fill in the blanks of prompts such as “Obama is a __ by profession”. These prompts are usually manually created, and quite possibly sub-optimal; another prompt such as “Obama worked as a __ ” may result in more accurately predicting the correct profession. Because of this, given an inappropriate prompt, we might fail to retrieve facts that the LM does know, and thus any given prompt only provides a lower bound estimate of the knowledge contained in an LM. In this paper, we attempt to more accurately estimate the knowledge contained in LMs by automatically discovering better prompts to use in this querying process. Specifically, we propose mining-based and paraphrasing-based methods to automatically generate high-quality and diverse prompts, as well as ensemble methods to combine answers from different prompts. Extensive experiments on the LAMA benchmark for extracting relational knowledge from LMs demonstrate that our methods can improve accuracy from 31.1% to 39.6%, providing a tighter lower bound on what LMs know. We have released the code and the resulting LM Prompt And Query Archive (LPAQA) at https://github.com/jzbjyb/LPAQA.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "521b4e26df0f1cf5763dece14cbb218df152dc59",
+    "externalIds": {
+      "MAG": "2990928880",
+      "DBLP": "conf/iclr/AsaiHHSX20",
+      "ArXiv": "1911.10470",
+      "CorpusId": 208267807
+    },
+    "title": "Learning to Retrieve Reasoning Paths over Wikipedia Graph for Question Answering",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 321,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.10470, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35584853",
+        "name": "Akari Asai"
+      },
+      {
+        "authorId": "20851195",
+        "name": "Kazuma Hashimoto"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2228109",
+        "name": "Caiming Xiong"
+      }
+    ],
+    "abstract": "Answering questions that require multi-hop reasoning at web-scale necessitates retrieving multiple evidence documents, one of which often has little lexical or semantic relationship to the question. This paper introduces a new graph-based recurrent retrieval approach that learns to retrieve reasoning paths over the Wikipedia graph to answer multi-hop open-domain questions. Our retriever model trains a recurrent neural network that learns to sequentially retrieve evidence paragraphs in the reasoning path by conditioning on the previously retrieved documents. Our reader model ranks the reasoning paths and extracts the answer span included in the best reasoning path. Experimental results show state-of-the-art results in three open-domain QA datasets, showcasing the effectiveness and robustness of our method. Notably, our method achieves significant improvement in HotpotQA, outperforming the previous best model by more than 14 points.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1715aa36ccc851310308630d4db61dcecf49a50d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1911-03868",
+      "ArXiv": "1911.03868",
+      "MAG": "2989312920",
+      "CorpusId": 207852944
+    },
+    "title": "Knowledge Guided Text Retrieval and Reading for Open Domain Question Answering",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 111,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.03868, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "We introduce an approach for open-domain question answering (QA) that retrieves and reads a passage graph, where vertices are passages of text and edges represent relationships that are derived from an external knowledge base or co-occurrence in the same article. Our goals are to boost coverage by using knowledge-guided retrieval to find more relevant passages than text-matching methods, and to improve accuracy by allowing for better knowledge-guided fusion of information across related passages. Our graph retrieval method expands a set of seed keyword-retrieved passages by traversing the graph structure of the knowledge base. Our reader extends a BERT-based architecture and updates passage representations by propagating information from related passages and their relations, instead of reading each passage in isolation. Experiments on three open-domain QA datasets, WebQuestions, Natural Questions and TriviaQA, show improved performance over non-graph baselines by 2-11% absolute. Our approach also matches or exceeds the state-of-the-art in every case, without using an expensive end-to-end training regime.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c20c68c45127439139a08adb0b1f2b8354a94d6c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1911-00359",
+      "MAG": "2989539713",
+      "ACL": "2020.lrec-1.494",
+      "ArXiv": "1911.00359",
+      "CorpusId": 207870323
+    },
+    "title": "CCNet: Extracting High Quality Monolingual Datasets from Web Crawl Data",
+    "venue": "International Conference on Language Resources and Evaluation",
+    "year": 2019,
+    "citationCount": 791,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.00359, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293203",
+        "name": "Guillaume Wenzek"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "2480903",
+        "name": "Alexis Conneau"
+      },
+      {
+        "authorId": "113810201",
+        "name": "Vishrav Chaudhary"
+      },
+      {
+        "authorId": "144204682",
+        "name": "Francisco (Paco) Guzmán"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      }
+    ],
+    "abstract": "Pre-training text representations have led to significant improvements in many areas of natural language processing. The quality of these models benefits greatly from the size of the pretraining corpora as long as its quality is preserved. In this paper, we describe an automatic pipeline to extract massive high-quality monolingual datasets from Common Crawl for a variety of languages. Our pipeline follows the data processing introduced in fastText (Mikolov et al., 2017; Grave et al., 2018), that deduplicates documents and identifies their language. We augment this pipeline with a filtering step to select documents that are close to high quality corpora like Wikipedia.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
+    "externalIds": {
+      "MAG": "2981852735",
+      "DBLP": "journals/corr/abs-1910-10683",
+      "ArXiv": "1910.10683",
+      "CorpusId": 204838007
+    },
+    "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+    "venue": "Journal of machine learning research",
+    "year": 2019,
+    "citationCount": 25339,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.10683, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2402716",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "145625142",
+        "name": "Adam Roberts"
+      },
+      {
+        "authorId": "3844009",
+        "name": "Katherine Lee"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "1380243217",
+        "name": "Michael Matena"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "2157338362",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      }
+    ],
+    "abstract": "Transfer learning, where a model is first pre-trained on a data-rich task before being fine-tuned on a downstream task, has emerged as a powerful technique in natural language processing (NLP). The effectiveness of transfer learning has given rise to a diversity of approaches, methodology, and practice. In this paper, we explore the landscape of transfer learning techniques for NLP by introducing a unified framework that converts every language problem into a text-to-text format. Our systematic study compares pre-training objectives, architectures, unlabeled datasets, transfer approaches, and other factors on dozens of language understanding tasks. By combining the insights from our exploration with scale and our new \"Colossal Clean Crawled Corpus\", we achieve state-of-the-art results on many benchmarks covering summarization, question answering, text classification, and more. To facilitate future work on transfer learning for NLP, we release our dataset, pre-trained models, and code.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7a064df1aeada7e69e5173f7d4c8606f4470365b",
+    "externalIds": {
+      "MAG": "2996428491",
+      "DBLP": "journals/corr/abs-1909-11942",
+      "ArXiv": "1909.11942",
+      "CorpusId": 202888986
+    },
+    "title": "ALBERT: A Lite BERT for Self-supervised Learning of Language Representations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 7394,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.11942, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2362534",
+        "name": "Zhenzhong Lan"
+      },
+      {
+        "authorId": "46221498",
+        "name": "Mingda Chen"
+      },
+      {
+        "authorId": "7685850",
+        "name": "Sebastian Goodman"
+      },
+      {
+        "authorId": "1700980",
+        "name": "Kevin Gimpel"
+      },
+      {
+        "authorId": "48267618",
+        "name": "Piyush Sharma"
+      },
+      {
+        "authorId": "1737285",
+        "name": "Radu Soricut"
+      }
+    ],
+    "abstract": "Increasing model size when pretraining natural language representations often results in improved performance on downstream tasks. However, at some point further model increases become harder due to GPU/TPU memory limitations and longer training times. To address these problems, we present two parameter-reduction techniques to lower memory consumption and increase the training speed of BERT. Comprehensive empirical evidence shows that our proposed methods lead to models that scale much better compared to the original BERT. We also use a self-supervised loss that focuses on modeling inter-sentence coherence, and show it consistently helps downstream tasks with multi-sentence inputs. As a result, our best model establishes new state-of-the-art results on the GLUE, RACE, and \\squad benchmarks while having fewer parameters compared to BERT-large. The code and the pretrained models are available at this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c7e04335452e988e2be5f1d132e7f6eadad13fd3",
+    "externalIds": {
+      "MAG": "2973113793",
+      "ArXiv": "1909.05286",
+      "DBLP": "journals/corr/abs-1909-05286",
+      "CorpusId": 202565610
+    },
+    "title": "Frustratingly Easy Natural Question Answering",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.05286, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2101328894",
+        "name": "Lin Pan"
+      },
+      {
+        "authorId": "38725355",
+        "name": "Rishav Chakravarti"
+      },
+      {
+        "authorId": "1388016369",
+        "name": "Anthony Ferritto"
+      },
+      {
+        "authorId": "143742133",
+        "name": "Michael R. Glass"
+      },
+      {
+        "authorId": "1711133",
+        "name": "A. Gliozzo"
+      },
+      {
+        "authorId": "1781292",
+        "name": "S. Roukos"
+      },
+      {
+        "authorId": "1707117",
+        "name": "Radu Florian"
+      },
+      {
+        "authorId": "2707234",
+        "name": "Avirup Sil"
+      }
+    ],
+    "abstract": "Existing literature on Question Answering (QA) mostly focuses on algorithmic novelty, data augmentation, or increasingly large pre-trained language models like XLNet and RoBERTa. Additionally, a lot of systems on the QA leaderboards do not have associated research documentation in order to successfully replicate their experiments. In this paper, we outline these algorithmic components such as Attention-over-Attention, coupled with data augmentation and ensembling strategies that have shown to yield state-of-the-art results on benchmark datasets like SQuAD, even achieving super-human performance. Contrary to these prior results, when we evaluate on the recently proposed Natural Questions benchmark dataset, we find that an incredibly simple approach of transfer learning from BERT outperforms the previous state-of-the-art system trained on 4 million more examples than ours by 1.9 F1 points. Adding ensembling strategies further improves that number by 2.3 F1 points.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "30eff53e981695c7296d258b8dc44b4c7b482a0c",
+    "externalIds": {
+      "MAG": "2973123473",
+      "ACL": "D19-1284",
+      "ArXiv": "1909.04849",
+      "DBLP": "conf/emnlp/MinCHZ19",
+      "DOI": "10.18653/v1/D19-1284",
+      "CorpusId": 202558815
+    },
+    "title": "A Discrete Hard EM Approach for Weakly Supervised Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2019,
+    "citationCount": 170,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D19-1284.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.04849, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "Many question answering (QA) tasks only provide weak supervision for how the answer should be computed. For example, TriviaQA answers are entities that can be mentioned multiple times in supporting documents, while DROP answers can be computed by deriving many different equations from numbers in the reference text. In this paper, we show it is possible to convert such tasks into discrete latent variable learning problems with a precomputed, task-specific set of possible solutions (e.g. different mentions or equations) that contains one correct option. We then develop a hard EM learning scheme that computes gradients relative to the most likely solution at each update. Despite its simplicity, we show that this approach significantly outperforms previous methods on six QA tasks, including absolute gains of 2–10%, and achieves the state-of-the-art on five of them. Using hard updates instead of maximizing marginal likelihood is key to these results as it encourages the model to find the one correct answer, which we show through detailed qualitative analysis.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d0086b86103a620a86bc918746df0aa642e2a8a3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1909-01066",
+      "MAG": "2996758945",
+      "ArXiv": "1909.01066",
+      "ACL": "D19-1250",
+      "DOI": "10.18653/v1/D19-1250",
+      "CorpusId": 202539551
+    },
+    "title": "Language Models as Knowledge Bases?",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2019,
+    "citationCount": 3109,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D19-1250.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.01066, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "2620211",
+        "name": "Tim Rocktäschel"
+      },
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "152918929",
+        "name": "A. Bakhtin"
+      },
+      {
+        "authorId": "39417610",
+        "name": "Yuxiang Wu"
+      },
+      {
+        "authorId": "143622869",
+        "name": "Alexander H. Miller"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      }
+    ],
+    "abstract": "Recent progress in pretraining language models on large textual corpora led to a surge of improvements for downstream NLP tasks. Whilst learning linguistic knowledge, these models may also be storing relational knowledge present in the training data, and may be able to answer queries structured as “fill-in-the-blank” cloze statements. Language models have many advantages over structured knowledge bases: they require no schema engineering, allow practitioners to query about an open class of relations, are easy to extend to more data, and require no human supervision to train. We present an in-depth analysis of the relational knowledge already present (without fine-tuning) in a wide range of state-of-the-art pretrained language models. We find that (i) without fine-tuning, BERT contains relational knowledge competitive with traditional NLP methods that have some access to oracle knowledge, (ii) BERT also does remarkably well on open-domain question answering against a supervised baseline, and (iii) certain types of factual knowledge are learned much more readily than others by standard language model pretraining approaches. The surprisingly strong ability of these models to recall factual knowledge without any fine-tuning demonstrates their potential as unsupervised open-domain QA systems. The code to reproduce our analysis is available at https://github.com/facebookresearch/LAMA.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "17dbd7b72029181327732e4d11b52a08ed4630d0",
+    "externalIds": {
+      "ACL": "Q19-1026",
+      "MAG": "2912924812",
+      "DBLP": "journals/tacl/KwiatkowskiPRCP19",
+      "DOI": "10.1162/tacl_a_00276",
+      "CorpusId": 86611921
+    },
+    "title": "Natural Questions: A Benchmark for Question Answering Research",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 4552,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00276/1923288/tacl_a_00276.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/Q19-1026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      },
+      {
+        "authorId": "52578817",
+        "name": "J. Palomaki"
+      },
+      {
+        "authorId": "90784578",
+        "name": "Olivia Redfield"
+      },
+      {
+        "authorId": "123052390",
+        "name": "Michael Collins"
+      },
+      {
+        "authorId": "144729897",
+        "name": "Ankur P. Parikh"
+      },
+      {
+        "authorId": "114577307",
+        "name": "Chris Alberti"
+      },
+      {
+        "authorId": "153215783",
+        "name": "D. Epstein"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      },
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "2554321",
+        "name": "Matthew Kelcey"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1754497",
+        "name": "Slav Petrov"
+      }
+    ],
+    "abstract": "We present the Natural Questions corpus, a question answering data set. Questions consist of real anonymized, aggregated queries issued to the Google search engine. An annotator is presented with a question along with a Wikipedia page from the top 5 search results, and annotates a long answer (typically a paragraph) and a short answer (one or more entities) if present on the page, or marks null if no long/short answer is present. The public release consists of 307,373 training examples with single annotations; 7,830 examples with 5-way annotations for development data; and a further 7,842 examples with 5-way annotated sequestered as test data. We present experiments validating quality of the data. We also describe analysis of 25-way annotations on 302 examples, giving insights into human variability on the annotation task. We introduce robust metrics for the purposes of evaluating question answering systems; demonstrate high human upper bounds on these metrics; and establish baseline results using competitive methods drawn from related literature.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "077f8329a7b6fa3b7c877a57b81eb6c18b5f87de",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1907-11692",
+      "ArXiv": "1907.11692",
+      "MAG": "2965373594",
+      "CorpusId": 198953378
+    },
+    "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 29343,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.11692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "11323179",
+        "name": "Yinhan Liu"
+      },
+      {
+        "authorId": "40511414",
+        "name": "Myle Ott"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "3048577",
+        "name": "Jingfei Du"
+      },
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "39455775",
+        "name": "Omer Levy"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      },
+      {
+        "authorId": "1759422",
+        "name": "Veselin Stoyanov"
+      }
+    ],
+    "abstract": "Language model pretraining has led to significant performance gains but careful comparison between different approaches is challenging. Training is computationally expensive, often done on private datasets of different sizes, and, as we will show, hyperparameter choices have significant impact on the final results. We present a replication study of BERT pretraining (Devlin et al., 2019) that carefully measures the impact of many key hyperparameters and training data size. We find that BERT was significantly undertrained, and can match or exceed the performance of every model published after it. Our best model achieves state-of-the-art results on GLUE, RACE and SQuAD. These results highlight the importance of previously overlooked design choices, and raise questions about the source of recently reported improvements. We release our models and code.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e0c6abdbdecf04ffac65c440da77fb9d66bb474c",
+    "externalIds": {
+      "MAG": "2950813464",
+      "DBLP": "journals/corr/abs-1906-08237",
+      "ArXiv": "1906.08237",
+      "CorpusId": 195069387
+    },
+    "title": "XLNet: Generalized Autoregressive Pretraining for Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 9310,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.08237, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "35729970",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "143712374",
+        "name": "J. Carbonell"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "With the capability of modeling bidirectional contexts, denoising autoencoding based pretraining like BERT achieves better performance than pretraining approaches based on autoregressive language modeling. However, relying on corrupting the input with masks, BERT neglects dependency between the masked positions and suffers from a pretrain-finetune discrepancy. In light of these pros and cons, we propose XLNet, a generalized autoregressive pretraining method that (1) enables learning bidirectional contexts by maximizing the expected likelihood over all permutations of the factorization order and (2) overcomes the limitations of BERT thanks to its autoregressive formulation. Furthermore, XLNet integrates ideas from Transformer-XL, the state-of-the-art autoregressive model, into pretraining. Empirically, under comparable experiment settings, XLNet outperforms BERT on 20 tasks, often by a large margin, including question answering, natural language inference, sentiment analysis, and document ranking.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a81874b4a651a740fffbfc47ef96515e8c7f782f",
+    "externalIds": {
+      "DBLP": "conf/acl/LeeCT19",
+      "ACL": "P19-1612",
+      "ArXiv": "1906.00300",
+      "MAG": "2947497897",
+      "DOI": "10.18653/v1/P19-1612",
+      "CorpusId": 173990818
+    },
+    "title": "Latent Retrieval for Weakly Supervised Open Domain Question Answering",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 1148,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1612.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.00300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "Recent work on open domain question answering (QA) assumes strong supervision of the supporting evidence and/or assumes a blackbox information retrieval (IR) system to retrieve evidence candidates. We argue that both are suboptimal, since gold evidence is not always available, and QA is fundamentally different from IR. We show for the first time that it is possible to jointly learn the retriever and reader from question-answer string pairs and without any IR system. In this setting, evidence retrieval from all of Wikipedia is treated as a latent variable. Since this is impractical to learn from scratch, we pre-train the retriever with an Inverse Cloze Task. We evaluate on open versions of five QA datasets. On datasets where the questioner already knows the answer, a traditional IR system such as BM25 is sufficient. On datasets where a user is genuinely seeking an answer, we show that learned retrieval is crucial, outperforming BM25 by up to 19 points in exact match.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9770fff7379a7ab9006b48939462354dda9a2053",
+    "externalIds": {
+      "MAG": "2953271402",
+      "DBLP": "journals/corr/abs-1905-10044",
+      "ArXiv": "1905.10044",
+      "ACL": "N19-1300",
+      "DOI": "10.18653/v1/N19-1300",
+      "CorpusId": 165163607
+    },
+    "title": "BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 2305,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.10044, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143997772",
+        "name": "Christopher Clark"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      },
+      {
+        "authorId": "123052390",
+        "name": "Michael Collins"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "In this paper we study yes/no questions that are naturally occurring — meaning that they are generated in unprompted and unconstrained settings. We build a reading comprehension dataset, BoolQ, of such questions, and show that they are unexpectedly challenging. They often query for complex, non-factoid information, and require difficult entailment-like inference to solve. We also explore the effectiveness of a range of transfer learning baselines. We find that transferring from entailment data is more effective than transferring from paraphrase or extractive QA data, and that it, surprisingly, continues to be very beneficial even when starting from massive pre-trained language models such as BERT. Our best method trains BERT on MultiNLI and then re-trains it on our train set. It achieves 80.4% accuracy compared to 90% accuracy of human annotators (and 62% majority-baseline), leaving a significant gap for future work.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "dda6fb309f62e2557a071522354d8c2c897a2805",
+    "externalIds": {
+      "MAG": "2919420119",
+      "DBLP": "conf/naacl/DuaWDSS019",
+      "ACL": "N19-1246",
+      "ArXiv": "1903.00161",
+      "DOI": "10.18653/v1/N19-1246",
+      "CorpusId": 67855846
+    },
+    "title": "DROP: A Reading Comprehension Benchmark Requiring Discrete Reasoning Over Paragraphs",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 1242,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1903.00161, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33546336",
+        "name": "Dheeru Dua"
+      },
+      {
+        "authorId": "1705260",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "2697425",
+        "name": "Pradeep Dasigi"
+      },
+      {
+        "authorId": "2157025",
+        "name": "Gabriel Stanovsky"
+      },
+      {
+        "authorId": "34650964",
+        "name": "Sameer Singh"
+      },
+      {
+        "authorId": "40642935",
+        "name": "Matt Gardner"
+      }
+    ],
+    "abstract": "Reading comprehension has recently seen rapid progress, with systems matching humans on the most popular datasets for the task. However, a large body of work has highlighted the brittleness of these systems, showing that there is much work left to be done. We introduce a new reading comprehension benchmark, DROP, which requires Discrete Reasoning Over the content of Paragraphs. In this crowdsourced, adversarially-created, 55k-question benchmark, a system must resolve references in a question, perhaps to multiple input positions, and perform discrete operations over them (such as addition, counting, or sorting). These operations require a much more comprehensive understanding of the content of paragraphs, as they remove the paraphrase-and-entity-typing shortcuts available in prior datasets. We apply state-of-the-art methods from both the reading comprehension and semantic parsing literatures on this dataset and show that the best systems only achieve 38.4% F1 on our generalized accuracy metric, while expert human performance is 96%. We additionally present a new model that combines reading comprehension methods with simple numerical reasoning to achieve 51% F1.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a5b66ee341cb990f7f70a124b5fab3316d3b7e27",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1810-12885",
+      "MAG": "2898662126",
+      "ArXiv": "1810.12885",
+      "CorpusId": 53116244
+    },
+    "title": "ReCoRD: Bridging the Gap between Human and Machine Commonsense Reading Comprehension",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 347,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.12885, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "72655349",
+        "name": "Sheng Zhang"
+      },
+      {
+        "authorId": "2108860856",
+        "name": "Xiaodong Liu"
+      },
+      {
+        "authorId": "46700348",
+        "name": "Jingjing Liu"
+      },
+      {
+        "authorId": "1800422",
+        "name": "Jianfeng Gao"
+      },
+      {
+        "authorId": "1800354",
+        "name": "Kevin Duh"
+      },
+      {
+        "authorId": "7536576",
+        "name": "Benjamin Van Durme"
+      }
+    ],
+    "abstract": "We present a large-scale dataset, ReCoRD, for machine reading comprehension requiring commonsense reasoning. Experiments on this dataset demonstrate that the performance of state-of-the-art MRC systems fall far behind human performance. ReCoRD represents a challenge for future research to bridge the gap between human and machine commonsense reading comprehension. ReCoRD is available at this http URL",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1536e8958697c5364f68b2e2448905dbbeb3a0ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1809-02789",
+      "MAG": "2952396187",
+      "ACL": "D18-1260",
+      "ArXiv": "1809.02789",
+      "DOI": "10.18653/v1/D18-1260",
+      "CorpusId": 52183757
+    },
+    "title": "Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 2321,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1260.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.02789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      }
+    ],
+    "abstract": "We present a new kind of question answering dataset, OpenBookQA, modeled after open book exams for assessing human understanding of a subject. The open book that comes with our questions is a set of 1326 elementary level science facts. Roughly 6000 questions probe an understanding of these facts and their application to novel situations. This requires combining an open book fact (e.g., metals conduct electricity) with broad common knowledge (e.g., a suit of armor is made of metal) obtained from other sources. While existing QA datasets over documents or knowledge bases, being generally self-contained, focus on linguistic understanding, OpenBookQA probes a deeper understanding of both the topic—in the context of common knowledge—and the language it is expressed in. Human performance on OpenBookQA is close to 92%, but many state-of-the-art pre-trained QA methods perform surprisingly poorly, worse than several simple neural baselines we develop. Our oracle experiments designed to circumvent the knowledge retrieval bottleneck demonstrate the value of both the open book and additional facts. We leave it as a challenge to solve the retrieval problem in this multi-hop setting and to close the large gap to human performance.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "99ad0533f84c110da2d0713d5798e6e14080b159",
+    "externalIds": {
+      "DBLP": "conf/naacl/KhashabiCRUR18",
+      "ACL": "N18-1023",
+      "MAG": "2804897457",
+      "DOI": "10.18653/v1/N18-1023",
+      "CorpusId": 5112038
+    },
+    "title": "Looking Beyond the Surface: A Challenge Set for Reading Comprehension over Multiple Sentences",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2018,
+    "citationCount": 573,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/N18-1023.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/N18-1023, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1783281",
+        "name": "Daniel Khashabi"
+      },
+      {
+        "authorId": "37202877",
+        "name": "Snigdha Chaturvedi"
+      },
+      {
+        "authorId": "46617131",
+        "name": "Michael Roth"
+      },
+      {
+        "authorId": "33145619",
+        "name": "Shyam Upadhyay"
+      },
+      {
+        "authorId": "144590225",
+        "name": "Dan Roth"
+      }
+    ],
+    "abstract": "We present a reading comprehension challenge in which questions can only be answered by taking into account information from multiple sentences. We solicit and verify questions and answers for this challenge through a 4-step crowdsourcing experiment. Our challenge dataset contains 6,500+ questions for 1000+ paragraphs across 7 different domains (elementary school science, news, travel guides, fiction stories, etc) bringing in linguistic diversity to the texts and to the questions wordings. On a subset of our dataset, we found human solvers to achieve an F1-score of 88.1%. We analyze a range of baselines, including a recent state-of-art reading comprehension system, and demonstrate the difficulty of this challenge, despite a high human performance. The dataset is the first to study multi-sentence inference at scale, with an open-ended set of question types that requires reasoning skills.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "54a13bcc9613dcaa76fb25fbe96572f376cfcca9",
+    "externalIds": {
+      "MAG": "2949215200",
+      "ArXiv": "1804.04235",
+      "DBLP": "conf/icml/ShazeerS18",
+      "CorpusId": 4786918
+    },
+    "title": "Adafactor: Adaptive Learning Rates with Sublinear Memory Cost",
+    "venue": "International Conference on Machine Learning",
+    "year": 2018,
+    "citationCount": 1252,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.04235, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "144872294",
+        "name": "Mitchell Stern"
+      }
+    ],
+    "abstract": "In several recently proposed stochastic optimization methods (e.g. RMSProp, Adam, Adadelta), parameter updates are scaled by the inverse square roots of exponential moving averages of squared past gradients. Maintaining these per-parameter second-moment estimators requires memory equal to the number of parameters. For the case of neural network weight matrices, we propose maintaining only the per-row and per-column sums of these moving averages, and estimating the per-parameter second moments based on these sums. We demonstrate empirically that this method produces similar results to the baseline. Secondly, we show that adaptive methods can produce larger-than-desired updates when the decay rate of the second moment accumulator is too slow. We propose update clipping and a gradually increasing decay rate scheme as remedies. Combining these methods and dropping momentum, we achieve comparable results to the published Adam regime in training the Transformer model on the WMT 2014 English-German machine translation task, while using very little auxiliary storage in the optimizer. Finally, we propose scaling the parameter updates based on the scale of the parameters themselves.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3febb2bed8865945e7fddc99efd791887bb7e14f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1802-05365",
+      "MAG": "2949856395",
+      "ArXiv": "1802.05365",
+      "ACL": "N18-1202",
+      "DOI": "10.18653/v1/N18-1202",
+      "CorpusId": 3626819
+    },
+    "title": "Deep Contextualized Word Representations",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2018,
+    "citationCount": 12115,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/N18-1202.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.05365, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39139825",
+        "name": "Matthew E. Peters"
+      },
+      {
+        "authorId": "50043859",
+        "name": "Mark Neumann"
+      },
+      {
+        "authorId": "2136562",
+        "name": "Mohit Iyyer"
+      },
+      {
+        "authorId": "40642935",
+        "name": "Matt Gardner"
+      },
+      {
+        "authorId": "143997772",
+        "name": "Christopher Clark"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We introduce a new type of deep contextualized word representation that models both (1) complex characteristics of word use (e.g., syntax and semantics), and (2) how these uses vary across linguistic contexts (i.e., to model polysemy). Our word vectors are learned functions of the internal states of a deep bidirectional language model (biLM), which is pre-trained on a large text corpus. We show that these representations can be easily added to existing models and significantly improve the state of the art across six challenging NLP problems, including question answering, textual entailment and sentiment analysis. We also present an analysis showing that exposing the deep internals of the pre-trained network is crucial, allowing downstream models to mix different types of semi-supervision signals.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1e077413b25c4d34945cc2707e17e46ed4fe784a",
+    "externalIds": {
+      "ACL": "P18-1031",
+      "MAG": "2952772027",
+      "DBLP": "conf/acl/RuderH18",
+      "DOI": "10.18653/v1/P18-1031",
+      "CorpusId": 40100965
+    },
+    "title": "Universal Language Model Fine-tuning for Text Classification",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2018,
+    "citationCount": 4064,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P18-1031.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/P18-1031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2093348519",
+        "name": "Jeremy Howard"
+      },
+      {
+        "authorId": "2884561",
+        "name": "Sebastian Ruder"
+      }
+    ],
+    "abstract": "Inductive transfer learning has greatly impacted computer vision, but existing approaches in NLP still require task-specific modifications and training from scratch. We propose Universal Language Model Fine-tuning (ULMFiT), an effective transfer learning method that can be applied to any task in NLP, and introduce techniques that are key for fine-tuning a language model. Our method significantly outperforms the state-of-the-art on six text classification tasks, reducing the error by 18-24% on the majority of datasets. Furthermore, with only 100 labeled examples, it matches the performance of training from scratch on 100 times more data. We open-source our pretrained models and code.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174088,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f010affab57b5fcf1cd6be23df79d8ec98c7289c",
+    "externalIds": {
+      "MAG": "2612431505",
+      "ArXiv": "1705.03551",
+      "ACL": "P17-1147",
+      "DBLP": "journals/corr/JoshiCWZ17",
+      "DOI": "10.18653/v1/P17-1147",
+      "CorpusId": 26501419
+    },
+    "title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 3690,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P17-1147.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      },
+      {
+        "authorId": "1780531",
+        "name": "Daniel S. Weld"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We present TriviaQA, a challenging reading comprehension dataset containing over 650K question-answer-evidence triples. TriviaQA includes 95K question-answer pairs authored by trivia enthusiasts and independently gathered evidence documents, six per question on average, that provide high quality distant supervision for answering the questions. We show that, in comparison to other recently introduced large-scale datasets, TriviaQA (1) has relatively complex, compositional questions, (2) has considerable syntactic and lexical variability between questions and corresponding answer-evidence sentences, and (3) requires more cross sentence reasoning to find answers. We also present two baseline algorithms: a feature-based classifier and a state-of-the-art neural network, that performs well on SQuAD reading comprehension. Neither approach comes close to human performance (23% and 40% vs. 80%), suggesting that TriviaQA is a challenging testbed that is worth significant future study.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "104715e1097b7ebee436058bfd9f45540f269845",
+    "externalIds": {
+      "MAG": "2953170340",
+      "DBLP": "journals/corr/ChenFWB17",
+      "ACL": "P17-1171",
+      "ArXiv": "1704.00051",
+      "DOI": "10.18653/v1/P17-1171",
+      "CorpusId": 3618568
+    },
+    "title": "Reading Wikipedia to Answer Open-Domain Questions",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 2196,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P17-1171.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.00051, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "2064150446",
+        "name": "Adam Fisch"
+      },
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      },
+      {
+        "authorId": "1713934",
+        "name": "Antoine Bordes"
+      }
+    ],
+    "abstract": "This paper proposes to tackle open-domain question answering using Wikipedia as the unique knowledge source: the answer to any factoid question is a text span in a Wikipedia article. This task of machine reading at scale combines the challenges of document retrieval (finding the relevant articles) with that of machine comprehension of text (identifying the answer spans from those articles). Our approach combines a search component based on bigram hashing and TF-IDF matching with a multi-layer recurrent neural network model trained to detect answers in Wikipedia paragraphs. Our experiments on multiple existing QA datasets indicate that (1) both modules are highly competitive with respect to existing counterparts and (2) multitask learning using distant supervision on their combination is an effective complete system on this challenging task.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "05dd7254b632376973f3a1b4d39485da17814df5",
+    "externalIds": {
+      "DBLP": "journals/corr/RajpurkarZLL16",
+      "MAG": "2963748441",
+      "ACL": "D16-1264",
+      "ArXiv": "1606.05250",
+      "DOI": "10.18653/v1/D16-1264",
+      "CorpusId": 11816014
+    },
+    "title": "SQuAD: 100,000+ Questions for Machine Comprehension of Text",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2016,
+    "citationCount": 9268,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/D16-1264.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.05250, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2706258",
+        "name": "Pranav Rajpurkar"
+      },
+      {
+        "authorId": "2151810148",
+        "name": "Jian Zhang"
+      },
+      {
+        "authorId": "2787620",
+        "name": "Konstantin Lopyrev"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "We present the Stanford Question Answering Dataset (SQuAD), a new reading comprehension dataset consisting of 100,000+ questions posed by crowdworkers on a set of Wikipedia articles, where the answer to each question is a segment of text from the corresponding reading passage. We analyze the dataset to understand the types of reasoning required to answer the questions, leaning heavily on dependency and constituency trees. We build a strong logistic regression model, which achieves an F1 score of 51.0%, a significant improvement over a simple baseline (20%). However, human performance (86.8%) is much higher, indicating that the dataset presents a good challenge problem for future research. \nThe dataset is freely available at this https URL",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4aa9f5150b46320f534de4747a2dd0cd7f3fe292",
+    "externalIds": {
+      "ArXiv": "1511.01432",
+      "MAG": "2952729433",
+      "DBLP": "conf/nips/DaiL15",
+      "CorpusId": 7138078
+    },
+    "title": "Semi-supervised Sequence Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2015,
+    "citationCount": 1282,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.01432, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "We present two approaches to use unlabeled data to improve Sequence Learning with recurrent networks. The first approach is to predict what comes next in a sequence, which is a language model in NLP. The second approach is to use a sequence autoencoder, which reads the input sequence into a vector and predicts the input sequence again. These two algorithms can be used as a \"pretraining\" algorithm for a later supervised sequence learning algorithm. In other words, the parameters obtained from the pretraining step can then be used as a starting point for other supervised training models. In our experiments, we find that long short term memory recurrent networks after pretrained with the two approaches become more stable to train and generalize better. With pretraining, we were able to achieve strong performance in many classification tasks, such as text classification with IMDB, DBpedia or image recognition in CIFAR-10.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b29447ba499507a259ae9d8f685d60cc1597d7d3",
+    "externalIds": {
+      "ACL": "D13-1160",
+      "MAG": "2252136820",
+      "DBLP": "conf/emnlp/BerantCFL13",
+      "DOI": "10.18653/v1/d13-1160",
+      "CorpusId": 6401679
+    },
+    "title": "Semantic Parsing on Freebase from Question-Answer Pairs",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2013,
+    "citationCount": 2189,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/D13-1160, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      },
+      {
+        "authorId": "2059149862",
+        "name": "A. Chou"
+      },
+      {
+        "authorId": "34765463",
+        "name": "Roy Frostig"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "In this paper, we train a semantic parser that scales up to Freebase. Instead of relying on annotated logical forms, which is especially expensive to obtain at large scale, we learn from question-answer pairs. The main challenge in this setting is narrowing down the huge number of possible logical predicates for a given question. We tackle this problem in two ways: First, we build a coarse mapping from phrases to predicates using a knowledge base and a large text corpus. Second, we use a bridging operation to generate additional predicates based on neighboring predicates. On the dataset of Cai and Yates (2013), despite not having annotated logical forms, our system outperforms their state-of-the-art parser. Additionally, we collected a more realistic and challenging dataset of question-answer pairs and improves over a natural baseline.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1976c9eeccc7115d18a04f1e7fb5145db6b96002",
+    "externalIds": {
+      "DBLP": "conf/sigmod/BollackerEPST08",
+      "MAG": "2094728533",
+      "DOI": "10.1145/1376616.1376746",
+      "CorpusId": 207167677
+    },
+    "title": "Freebase: a collaboratively created graph database for structuring human knowledge",
+    "venue": "SIGMOD Conference",
+    "year": 2008,
+    "citationCount": 5818,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1376616.1376746?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1376616.1376746, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1742448",
+        "name": "K. Bollacker"
+      },
+      {
+        "authorId": "2065123479",
+        "name": "Colin Evans"
+      },
+      {
+        "authorId": "2990264",
+        "name": "Praveen K. Paritosh"
+      },
+      {
+        "authorId": "1399112633",
+        "name": "Tim Sturge"
+      },
+      {
+        "authorId": "2110748390",
+        "name": "Jamie Taylor"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b2c31dc5852a99a64f965049da8ea9a24f881713",
+    "externalIds": {
+      "MAG": "2204445205",
+      "DBLP": "journals/ftir/Prager06",
+      "DOI": "10.1561/1500000001",
+      "CorpusId": 61248440
+    },
+    "title": "Open-Domain Question-Answering",
+    "venue": "Foundations and Trends in Information Retrieval",
+    "year": 2007,
+    "citationCount": 234,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1561/1500000001?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1561/1500000001, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "30210546",
+        "name": "J. Prager"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+    "externalIds": {
+      "MAG": "2951055169",
+      "ACL": "N19-1423",
+      "DBLP": "journals/corr/abs-1810-04805",
+      "ArXiv": "1810.04805",
+      "DOI": "10.18653/v1/N19-1423",
+      "CorpusId": 52967399
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 113539,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.04805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9405cc0d6169988371b2755e573cc28650d14dfe",
+    "externalIds": {
+      "MAG": "2955855238",
+      "CorpusId": 160025533
+    },
+    "title": "Language Models are Unsupervised Multitask Learners",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 28234,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "150970919",
+        "name": "D. Luan"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "cd18800a0fe0b668a1cc19f2ec95b5003d0a5035",
+    "externalIds": {
+      "MAG": "2965425874",
+      "CorpusId": 49313245
+    },
+    "title": "Improving Language Understanding by Generative Pre-Training",
+    "venue": "",
+    "year": 2018,
+    "citationCount": 14618,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "144958935",
+        "name": "Karthik Narasimhan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  }
+]

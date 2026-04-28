@@ -1,0 +1,2769 @@
+[
+  {
+    "paperId": "1649aaf62533d9ee8725e726e28c1529dc4fe0a7",
+    "externalIds": {
+      "DBLP": "conf/iclr/YuZ25",
+      "ArXiv": "2604.01709",
+      "CorpusId": 278309203
+    },
+    "title": "Bias Mitigation in Graph Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2026,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.01709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2374337350",
+        "name": "Mengxin Yu"
+      },
+      {
+        "authorId": "2314129373",
+        "name": "Kun Zhang"
+      }
+    ],
+    "abstract": "Most existing graph diffusion models have significant bias problems. We observe that the forward diffusion's maximum perturbation distribution in most models deviates from the standard Gaussian distribution, while reverse sampling consistently starts from a standard Gaussian distribution, which results in a reverse-starting bias. Together with the inherent exposure bias of diffusion models, this results in degraded generation quality. This paper proposes a comprehensive approach to mitigate both biases. To mitigate reverse-starting bias, we employ a newly designed Langevin sampling algorithm to align with the forward maximum perturbation distribution, establishing a new reverse-starting point. To address the exposure bias, we introduce a score correction mechanism based on a newly defined score difference. Our approach, which requires no network modifications, is validated across multiple models, datasets, and tasks, achieving state-of-the-art results.Code is at https://github.com/kunzhan/spp",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4b34d6ed18275c194db566f46a88194b5a27a0da",
+    "externalIds": {
+      "ArXiv": "2603.05769",
+      "CorpusId": 286365972
+    },
+    "title": "Layer-wise Instance Binding for Regional and Occlusion Control in Text-to-Image Diffusion Transformers",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.05769, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2387972902",
+        "name": "Ruidong Chen"
+      },
+      {
+        "authorId": "2349393705",
+        "name": "Yancheng Bai"
+      },
+      {
+        "authorId": "2265934850",
+        "name": "Xuanpu Zhang"
+      },
+      {
+        "authorId": "2269752657",
+        "name": "Jianhao Zeng"
+      },
+      {
+        "authorId": "2346749618",
+        "name": "Lanjun Wang"
+      },
+      {
+        "authorId": "2242706260",
+        "name": "Dan Song"
+      },
+      {
+        "authorId": "2349398734",
+        "name": "Lei Sun"
+      },
+      {
+        "authorId": "2349447896",
+        "name": "Xiangxiang Chu"
+      },
+      {
+        "authorId": "2279870684",
+        "name": "Anan Liu"
+      }
+    ],
+    "abstract": "Region-instructed layout control in text-to-image generation is highly practical, yet existing methods suffer from limitations: (i) training-based approaches inherit data bias and often degrade image quality, and (ii) current techniques struggle with occlusion order, limiting real-world usability. To address these issues, we propose LayerBind. By modeling regional generation as distinct layers and binding them during the generation, our method enables precise regional and occlusion controllability. Our motivation stems from the observation that spatial layout and occlusion are established at a very early denoising stage, suggesting that rearranging the early latent structure is sufficient to modify the final output. Building on this, we structure the scheme into two phases: instance initialization and subsequent semantic nursing. (1) First, leveraging the contextual sharing mechanism in multimodal joint attention, Layer-wise Instance Initialization creates per-instance branches that attend to their own regions while anchoring to the shared background. At a designated early step, these branches are fused according to the layer order to form a unified latent with a pre-established layout. (2) Then, Layer-wise Semantic Nursing reinforces regional details and maintains the occlusion order via a layer-wise attention enhancement. Specifically, a sequential layered attention path operates alongside the standard global path, with updates composited under a layer-transparency scheduler. LayerBind is training-free and plug-and-play, serving as a regional and occlusion controller across Diffusion Transformers. Beyond generation, it natively supports editable workflows, allowing for flexible modifications like changing instances or rearranging visible orders. Both qualitative and quantitative results demonstrate LayerBind's effectiveness, highlighting its strong potential for creative applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3b4517f9791efb68e664a9e59d8dab32caa62442",
+    "externalIds": {
+      "ArXiv": "2603.00141",
+      "DBLP": "journals/corr/abs-2603-00141",
+      "DOI": "10.48550/arXiv.2603.00141",
+      "CorpusId": 286222500
+    },
+    "title": "From Scale to Speed: Adaptive Test-Time Scaling for Image Editing",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.00141, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2384829521",
+        "name": "Xiangyan Qu"
+      },
+      {
+        "authorId": "2349742197",
+        "name": "Zhenlong Yuan"
+      },
+      {
+        "authorId": "2355902327",
+        "name": "Jing Tang"
+      },
+      {
+        "authorId": "2355395424",
+        "name": "Rui Chen"
+      },
+      {
+        "authorId": "2292198559",
+        "name": "Datao Tang"
+      },
+      {
+        "authorId": "2232417449",
+        "name": "Mengshi Yu"
+      },
+      {
+        "authorId": "2349398734",
+        "name": "Lei Sun"
+      },
+      {
+        "authorId": "2349393705",
+        "name": "Yancheng Bai"
+      },
+      {
+        "authorId": "2349447896",
+        "name": "Xiangxiang Chu"
+      },
+      {
+        "authorId": "3266267",
+        "name": "Gaopeng Gou"
+      },
+      {
+        "authorId": "2360554523",
+        "name": "Gang Xiong"
+      },
+      {
+        "authorId": "2266015910",
+        "name": "Yujun Cai"
+      }
+    ],
+    "abstract": "Image Chain-of-Thought (Image-CoT) is a test-time scaling paradigm that improves image generation by extending inference time. Most Image-CoT methods focus on text-to-image (T2I) generation. Unlike T2I generation, image editing is goal-directed: the solution space is constrained by the source image and instruction. This mismatch causes three challenges when applying Image-CoT to editing: inefficient resource allocation with fixed sampling budgets, unreliable early-stage verification using general MLLM scores, and redundant edited results from large-scale sampling. To address this, we propose ADaptive Edit-CoT (ADE-CoT), an on-demand test-time scaling framework to enhance editing efficiency and performance. It incorporates three key strategies: (1) a difficulty-aware resource allocation that assigns dynamic budgets based on estimated edit difficulty; (2) edit-specific verification in early pruning that uses region localization and caption consistency to select promising candidates; and (3) depth-first opportunistic stopping, guided by an instance-specific verifier, that terminates when intent-aligned results are found. Extensive experiments on three SOTA editing models (Step1X-Edit, BAGEL, FLUX.1 Kontext) across three benchmarks show that ADE-CoT achieves superior performance-efficiency trade-offs. With comparable sampling budgets, ADE-CoT obtains better performance with more than 2x speedup over Best-of-N.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "80b8ad3482e1fc0a2e763c8d883d42878f366ad9",
+    "externalIds": {
+      "ArXiv": "2601.17340",
+      "DBLP": "journals/corr/abs-2601-17340",
+      "DOI": "10.48550/arXiv.2601.17340",
+      "CorpusId": 285050705
+    },
+    "title": "TEXTS-Diff: TEXTS-Aware Diffusion Model for Real-World Text Image Super-Resolution",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2026,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.17340, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2339847058",
+        "name": "Haodong He"
+      },
+      {
+        "authorId": "2233295129",
+        "name": "Xin Zhan"
+      },
+      {
+        "authorId": "2349393705",
+        "name": "Yancheng Bai"
+      },
+      {
+        "authorId": "2359272531",
+        "name": "Rui Lan"
+      },
+      {
+        "authorId": "2349398734",
+        "name": "Lei Sun"
+      },
+      {
+        "authorId": "2349447896",
+        "name": "Xiangxiang Chu"
+      }
+    ],
+    "abstract": "Real-world text image super-resolution aims to restore overall visual quality and text legibility in images suffering from diverse degradations and text distortions. However, the scarcity of text image data in existing datasets results in poor performance on text regions. In addition, datasets consisting of isolated text samples limit the quality of background reconstruction. To address these limitations, we construct Real-Texts, a large-scale, high-quality dataset collected from real-world images, which covers diverse scenarios and contains natural text instances in both Chinese and English. Additionally, we propose the TEXTS-Aware Diffusion Model (TEXTS-Diff) to achieve high-quality generation in both background and textual regions. This approach leverages abstract concepts to improve the understanding of textual elements within visual scenes and concrete text regions to enhance textual details. It mitigates distortions and hallucination artifacts commonly observed in text regions, while preserving high-quality visual scene fidelity. Extensive experiments demonstrate that our method achieves state-of-the-art performance across multiple evaluation metrics, exhibiting superior generalization ability and text restoration accuracy in complex scenarios. All the code, model, and dataset will be released.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c3e4ff6e7fb7e65cec814c454cc42412a356f101",
+    "externalIds": {
+      "ArXiv": "2510.12586",
+      "CorpusId": 282064455
+    },
+    "title": "There is No VAE: End-to-End Pixel-Space Generative Modeling via Self-Supervised Pre-training",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.12586, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2192603948",
+        "name": "Jiachen Lei"
+      },
+      {
+        "authorId": "2259945400",
+        "name": "Keli Liu"
+      },
+      {
+        "authorId": "2276243341",
+        "name": "Julius Berner"
+      },
+      {
+        "authorId": "2266039311",
+        "name": "Hai-Tao Yu"
+      },
+      {
+        "authorId": "2386067739",
+        "name": "Hong-Kai Zheng"
+      },
+      {
+        "authorId": "2349933617",
+        "name": "Jiahong Wu"
+      },
+      {
+        "authorId": "2375388515",
+        "name": "Xiangxiang Chu"
+      }
+    ],
+    "abstract": "Pixel-space generative models are often more difficult to train and generally underperform compared to their latent-space counterparts, leaving a persistent performance and efficiency gap. In this paper, we introduce a novel two-stage training framework that closes this gap for pixel-space diffusion and consistency models. In the first stage, we pre-train encoders to capture meaningful semantics from clean images while aligning them with points along the same deterministic sampling trajectory, which evolves points from the prior to the data distribution. In the second stage, we integrate the encoder with a randomly initialized decoder and fine-tune the complete model end-to-end for both diffusion and consistency models. Our framework achieves state-of-the-art (SOTA) performance on ImageNet. Specifically, our diffusion model reaches an FID of 1.58 on ImageNet-256 and 2.35 on ImageNet-512 with 75 number of function evaluations (NFE) surpassing prior pixel-space methods and VAE-based counterparts by a large margin in both generation quality and training efficiency. In a direct comparison, our model significantly outperforms DiT while using only around 30\\% of its training compute. Furthermore, our consistency model achieves an impressive FID of 8.82 on ImageNet-256, significantly outperforming its latent-space counterparts. This marks the first successful training of a consistency model directly on high-resolution images without relying on pre-trained VAEs or diffusion models. Our codes are available at: \\href{https://github.com/AMAP-ML/EPG}{https://github.com/AMAP-ML/EPG}",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "969ad003156ba60d63f8470636cfd43c7a421a4f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-04338",
+      "ArXiv": "2509.04338",
+      "DOI": "10.48550/arXiv.2509.04338",
+      "CorpusId": 281103232
+    },
+    "title": "From Editor to Dense Geometry Estimator",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.04338, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2257129326",
+        "name": "Jiyuan Wang"
+      },
+      {
+        "authorId": "49043799",
+        "name": "Chunyu Lin"
+      },
+      {
+        "authorId": "2349398734",
+        "name": "Lei Sun"
+      },
+      {
+        "authorId": "2407071876",
+        "name": "Rongying Liu"
+      },
+      {
+        "authorId": "2034846820",
+        "name": "Lang Nie"
+      },
+      {
+        "authorId": "2349379870",
+        "name": "Mingxing Li"
+      },
+      {
+        "authorId": "1491637046",
+        "name": "K. Liao"
+      },
+      {
+        "authorId": "2349447896",
+        "name": "Xiangxiang Chu"
+      },
+      {
+        "authorId": "2129511552",
+        "name": "Yao Zhao"
+      }
+    ],
+    "abstract": "Leveraging visual priors from pre-trained text-to-image (T2I) generative models has shown success in dense prediction. However, dense prediction is inherently an image-to-image task, suggesting that image editing models, rather than T2I generative models, may be a more suitable foundation for fine-tuning. Motivated by this, we conduct a systematic analysis of the fine-tuning behaviors of both editors and generators for dense geometry estimation. Our findings show that editing models possess inherent structural priors, which enable them to converge more stably by ``refining\"their innate features, and ultimately achieve higher performance than their generative counterparts. Based on these findings, we introduce \\textbf{FE2E}, a framework that pioneeringly adapts an advanced editing model based on Diffusion Transformer (DiT) architecture for dense geometry prediction. Specifically, to tailor the editor for this deterministic task, we reformulate the editor's original flow matching loss into the ``consistent velocity\"training objective. And we use logarithmic quantization to resolve the precision conflict between the editor's native BFloat16 format and the high precision demand of our tasks. Additionally, we leverage the DiT's global attention for a cost-free joint estimation of depth and normals in a single forward pass, enabling their supervisory signals to mutually enhance each other. Without scaling up the training data, FE2E achieves impressive performance improvements in zero-shot monocular depth and normal estimation across multiple datasets. Notably, it achieves over 35\\% performance gains on the ETH3D dataset and outperforms the DepthAnything series, which is trained on 100$\\times$ data. The project page can be accessed \\href{https://amap-ml.github.io/FE2E/}{here}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7278ecb3219533cd281643ef345d1afd434e508e",
+    "externalIds": {
+      "ArXiv": "2508.12880",
+      "CorpusId": 280677759
+    },
+    "title": "Stochastic Self-Guidance for Training-Free Enhancement of Diffusion Models",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.12880, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2333365946",
+        "name": "Chubin Chen"
+      },
+      {
+        "authorId": "2349810526",
+        "name": "Jiashu Zhu"
+      },
+      {
+        "authorId": "2157040139",
+        "name": "Xiaokun Feng"
+      },
+      {
+        "authorId": "2186281333",
+        "name": "Nisha Huang"
+      },
+      {
+        "authorId": "2350169808",
+        "name": "Chen Zhu"
+      },
+      {
+        "authorId": "2288171191",
+        "name": "Meiqi Wu"
+      },
+      {
+        "authorId": "2375388934",
+        "name": "Fangyuan Mao"
+      },
+      {
+        "authorId": "2349933617",
+        "name": "Jiahong Wu"
+      },
+      {
+        "authorId": "2375388515",
+        "name": "Xiangxiang Chu"
+      },
+      {
+        "authorId": "2376288441",
+        "name": "Xiu Li"
+      }
+    ],
+    "abstract": "Classifier-free Guidance (CFG) is a widely used technique in modern diffusion models for enhancing sample quality and prompt adherence. However, through an empirical analysis on Gaussian mixture modeling with a closed-form solution, we observe a discrepancy between the suboptimal results produced by CFG and the ground truth. The model's excessive reliance on these suboptimal predictions often leads to semantic incoherence and low-quality outputs. To address this issue, we first empirically demonstrate that the model's suboptimal predictions can be effectively refined using sub-networks of the model itself. Building on this insight, we propose S$^2$-Guidance, a novel method that leverages stochastic block-dropping during the forward process to construct stochastic sub-networks, effectively guiding the model away from potential low-quality predictions and toward high-quality outputs. Extensive qualitative and quantitative experiments on text-to-image and text-to-video generation tasks demonstrate that S$^2$-Guidance delivers superior performance, consistently surpassing CFG and other advanced guidance strategies. Our code will be released.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6231daac0b6f747a1cdf6c5737bc8f3a8e77095e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-10072",
+      "ArXiv": "2507.10072",
+      "DOI": "10.1145/3746027.3755608",
+      "CorpusId": 280296791
+    },
+    "title": "Frequency Regulation for Exposure Bias Mitigation in Diffusion Models",
+    "venue": "ACM Multimedia",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.10072, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2374337350",
+        "name": "Mengxin Yu"
+      },
+      {
+        "authorId": "1918754",
+        "name": "Kun Zhan"
+      }
+    ],
+    "abstract": "Diffusion models exhibit impressive generative capabilities but are significantly impacted by exposure bias. In this paper, we make a key observation: the energy of predicted noisy samples in the reverse process continuously declines compared to perturbed samples in the forward process. Building on this, we identify two important findings: 1) The reduction in energy follows distinct patterns in the low-frequency and high-frequency subbands; 2) The subband energy of reverse-process reconstructed samples is consistently lower than that of forward-process ones, and both are lower than the original data samples. Based on the first finding, we introduce a dynamic frequency regulation mechanism utilizing wavelet transforms, which separately adjusts the low- and high-frequency subbands. Leveraging the second insight, we derive the rigorous mathematical form of exposure bias. It is worth noting that, our method is training-free and plug-and-play, significantly improving the generative quality of various diffusion models and frameworks with negligible computational cost. The source code is available at https://github.com/kunzhan/wpp.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "fe0e894b70fe711b39792e9a3a2ae59b5271e1ea",
+    "externalIds": {
+      "ArXiv": "2505.03329",
+      "DBLP": "journals/corr/abs-2505-03329",
+      "DOI": "10.48550/arXiv.2505.03329",
+      "CorpusId": 278339199
+    },
+    "title": "FLUX-Text: A Simple and Advanced Diffusion Transformer Baseline for Scene Text Editing",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 31,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.03329, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2359272531",
+        "name": "Rui Lan"
+      },
+      {
+        "authorId": "2349393705",
+        "name": "Yancheng Bai"
+      },
+      {
+        "authorId": "2360271730",
+        "name": "Xu Duan"
+      },
+      {
+        "authorId": "2349379870",
+        "name": "Mingxing Li"
+      },
+      {
+        "authorId": "2349398734",
+        "name": "Lei Sun"
+      },
+      {
+        "authorId": "2349447896",
+        "name": "Xiangxiang Chu"
+      }
+    ],
+    "abstract": "Scene text editing aims to modify or add texts on images while ensuring text fidelity and overall visual quality consistent with the background. Recent methods are primarily built on UNet-based diffusion models, which have improved scene text editing results, but still struggle with complex glyph structures, especially for non-Latin ones (\\eg, Chinese, Korean, Japanese). To address these issues, we present \\textbf{FLUX-Text}, a simple and advanced multilingual scene text editing DiT method. Specifically, our FLUX-Text enhances glyph understanding and generation through lightweight Visual and Text Embedding Modules, while preserving the original generative capability of FLUX. We further propose a Regional Text Perceptual Loss tailored for text regions, along with a matching two-stage training strategy to better balance text editing and overall image quality. Benefiting from the DiT-based architecture and lightweight feature injection modules, FLUX-Text can be trained with only $0.1$M training examples, a \\textbf{97\\%} reduction compared to $2.9$M required by popular methods. Extensive experiments on multiple public datasets, including English and Chinese benchmarks, demonstrate that our method surpasses other methods in visual quality and text fidelity. All the code is available at https://github.com/AMAP-ML/FluxText.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4eaa5f5b845a5a9ac1a9d3515d0831881a53a308",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-16065",
+      "ArXiv": "2503.16065",
+      "DOI": "10.1109/CVPR52734.2025.00042",
+      "CorpusId": 277150915
+    },
+    "title": "Shining Yourself: High-Fidelity Ornaments Virtual Try-on with Diffusion Model",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2025,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.16065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2228780876",
+        "name": "Yingmao Miao"
+      },
+      {
+        "authorId": "2273469326",
+        "name": "Zhanpeng Huang"
+      },
+      {
+        "authorId": "2149935166",
+        "name": "Rui Han"
+      },
+      {
+        "authorId": "2272883666",
+        "name": "Zibin Wang"
+      },
+      {
+        "authorId": "2281063360",
+        "name": "Chenhao Lin"
+      },
+      {
+        "authorId": "2228690713",
+        "name": "Chao Shen"
+      }
+    ],
+    "abstract": "While virtual try-on for clothes and shoes with diffusion models has gained attraction, virtual try-on for ornaments, such as bracelets, rings, earrings, and necklaces, remains largely unexplored. Due to the intricate tiny patterns and repeated geometric sub-structures in most ornaments, it is much more difficult to guarantee identity and appearance consistency under large pose and scale variances between ornaments and models. This paper proposes the task of virtual try-on for ornaments and presents a method to improve the geometric and appearance preservation of ornament virtual try-ons. Specifically, we estimate an accurate wearing mask to improve the alignments between ornaments and models in an iterative scheme alongside the denoising process. To preserve structure details, we further regularize attention layers to map the reference ornament mask to the wearing mask in an implicit way. Experimental results demonstrate that our method successfully wears ornaments from reference images onto target models, handling substantial differences in scale and pose while preserving identity and achieving realistic visual effects.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "969826ba6128f142fcb2fa453c41540a4c028033",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-06132",
+      "ArXiv": "2503.06132",
+      "DOI": "10.48550/arXiv.2503.06132",
+      "CorpusId": 276902536
+    },
+    "title": "USP: Unified Self-Supervised Pretraining for Image Generation and Understanding",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.06132, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2315809917",
+        "name": "Xiangxiang Chu"
+      },
+      {
+        "authorId": "2349678221",
+        "name": "Renda Li"
+      },
+      {
+        "authorId": "2331897059",
+        "name": "Yong Wang"
+      }
+    ],
+    "abstract": "Recent studies have highlighted the interplay between diffusion models and representation learning. Intermediate representations from diffusion models can be leveraged for downstream visual tasks, while self-supervised vision models can enhance the convergence and generation quality of diffusion models. However, transferring pretrained weights from vision models to diffusion models is challenging due to input mismatches and the use of latent spaces. To address these challenges, we propose Unified Self-supervised Pretraining (USP), a framework that initializes diffusion models via masked latent modeling in a Variational Autoencoder (VAE) latent space. USP achieves comparable performance in understanding tasks while significantly improving the convergence speed and generation quality of diffusion models. Our code will be publicly available at https://github.com/AMAP-ML/USP.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1ea72d659bf48a0f50e4d6f7f7b34e9d4850d7be",
+    "externalIds": {
+      "ArXiv": "2502.17099",
+      "DBLP": "conf/iclr/WangYXL00M25",
+      "DOI": "10.48550/arXiv.2502.17099",
+      "CorpusId": 276575636
+    },
+    "title": "Improved Diffusion-based Generative Model with Better Adversarial Robustness",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.17099, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108727290",
+        "name": "Zekun Wang"
+      },
+      {
+        "authorId": "2303256184",
+        "name": "Mingyang Yi"
+      },
+      {
+        "authorId": "2238955619",
+        "name": "Shuchen Xue"
+      },
+      {
+        "authorId": "2287047042",
+        "name": "Zhenguo Li"
+      },
+      {
+        "authorId": "2112748107",
+        "name": "Ming Liu"
+      },
+      {
+        "authorId": "2247852651",
+        "name": "Bing Qin"
+      },
+      {
+        "authorId": "2238992725",
+        "name": "Zhi-Ming Ma"
+      }
+    ],
+    "abstract": "Diffusion Probabilistic Models (DPMs) have achieved significant success in generative tasks. However, their training and sampling processes suffer from the issue of distribution mismatch. During the denoising process, the input data distributions differ between the training and inference stages, potentially leading to inaccurate data generation. To obviate this, we analyze the training objective of DPMs and theoretically demonstrate that this mismatch can be alleviated through Distributionally Robust Optimization (DRO), which is equivalent to performing robustness-driven Adversarial Training (AT) on DPMs. Furthermore, for the recently proposed Consistency Model (CM), which distills the inference process of the DPM, we prove that its training objective also encounters the mismatch issue. Fortunately, this issue can be mitigated by AT as well. Based on these insights, we propose to conduct efficient AT on both DPM and CM. Finally, extensive empirical studies validate the effectiveness of AT in diffusion-based models. The code is available at https://github.com/kugwzk/AT_Diff.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "14969de024c6e2e396fae835d737602733d9418a",
+    "externalIds": {
+      "ArXiv": "2412.20404",
+      "DBLP": "journals/corr/abs-2412-20404",
+      "DOI": "10.48550/arXiv.2412.20404",
+      "CorpusId": 275133398
+    },
+    "title": "Open-Sora: Democratizing Efficient Video Production for All",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 609,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.20404, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109654065",
+        "name": "Zangwei Zheng"
+      },
+      {
+        "authorId": "2256656781",
+        "name": "Xiangyu Peng"
+      },
+      {
+        "authorId": "2387162460",
+        "name": "Tianji Yang"
+      },
+      {
+        "authorId": "2152867918",
+        "name": "Chenhui Shen"
+      },
+      {
+        "authorId": "2153703322",
+        "name": "Shenggui Li"
+      },
+      {
+        "authorId": "2337817537",
+        "name": "Hongxin Liu"
+      },
+      {
+        "authorId": "2300824614",
+        "name": "Yukun Zhou"
+      },
+      {
+        "authorId": "2376486877",
+        "name": "Tianyi Li"
+      },
+      {
+        "authorId": "2303393275",
+        "name": "Yang You"
+      }
+    ],
+    "abstract": "Vision and language are the two foundational senses for humans, and they build up our cognitive ability and intelligence. While significant breakthroughs have been made in AI language ability, artificial visual intelligence, especially the ability to generate and simulate the world we see, is far lagging behind. To facilitate the development and accessibility of artificial visual intelligence, we created Open-Sora, an open-source video generation model designed to produce high-fidelity video content. Open-Sora supports a wide spectrum of visual generation tasks, including text-to-image generation, text-to-video generation, and image-to-video generation. The model leverages advanced deep learning architectures and training/inference techniques to enable flexible video synthesis, which could generate video content of up to 15 seconds, up to 720p resolution, and arbitrary aspect ratios. Specifically, we introduce Spatial-Temporal Diffusion Transformer (STDiT), an efficient diffusion framework for videos that decouples spatial and temporal attention. We also introduce a highly compressive 3D autoencoder to make representations compact and further accelerate training with an ad hoc training strategy. Through this initiative, we aim to foster innovation, creativity, and inclusivity within the community of AI content creation. By embracing the open-source principle, Open-Sora democratizes full access to all the training/inference/data preparation codes as well as model weights. All resources are publicly available at: https://github.com/hpcaitech/Open-Sora.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "44e4a3a50df9ec80be096c8341ac5c81ecbea3e8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-11081",
+      "ArXiv": "2410.11081",
+      "DOI": "10.48550/arXiv.2410.11081",
+      "CorpusId": 273350750
+    },
+    "title": "Simplifying, Stabilizing and Scaling Continuous-Time Consistency Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 196,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.11081, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326216127",
+        "name": "Cheng Lu"
+      },
+      {
+        "authorId": "2326075777",
+        "name": "Yang Song"
+      }
+    ],
+    "abstract": "Consistency models (CMs) are a powerful class of diffusion-based generative models optimized for fast sampling. Most existing CMs are trained using discretized timesteps, which introduce additional hyperparameters and are prone to discretization errors. While continuous-time formulations can mitigate these issues, their success has been limited by training instability. To address this, we propose a simplified theoretical framework that unifies previous parameterizations of diffusion models and CMs, identifying the root causes of instability. Based on this analysis, we introduce key improvements in diffusion process parameterization, network architecture, and training objectives. These changes enable us to train continuous-time CMs at an unprecedented scale, reaching 1.5B parameters on ImageNet 512x512. Our proposed training algorithm, using only two sampling steps, achieves FID scores of 2.06 on CIFAR-10, 1.48 on ImageNet 64x64, and 1.88 on ImageNet 512x512, narrowing the gap in FID scores with the best existing diffusion models to within 10%.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2b01c6749e8ded6f71ee86013bd4e72ddaacd262",
+    "externalIds": {
+      "ArXiv": "2407.11555",
+      "DBLP": "journals/corr/abs-2407-11555",
+      "DOI": "10.48550/arXiv.2407.11555",
+      "CorpusId": 271218871
+    },
+    "title": "Self-Guided Generation of Minority Samples Using Diffusion Models",
+    "venue": "European Conference on Computer Vision",
+    "year": 2024,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.11555, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2222695045",
+        "name": "Soobin Um"
+      },
+      {
+        "authorId": "2312176043",
+        "name": "Jong Chul Ye"
+      }
+    ],
+    "abstract": "We present a novel approach for generating minority samples that live on low-density regions of a data manifold. Our framework is built upon diffusion models, leveraging the principle of guided sampling that incorporates an arbitrary energy-based guidance during inference time. The key defining feature of our sampler lies in its \\emph{self-contained} nature, \\ie, implementable solely with a pretrained model. This distinguishes our sampler from existing techniques that require expensive additional components (like external classifiers) for minority generation. Specifically, we first estimate the likelihood of features within an intermediate latent sample by evaluating a reconstruction loss w.r.t. its posterior mean. The generation then proceeds with the minimization of the estimated likelihood, thereby encouraging the emergence of minority features in the latent samples of subsequent timesteps. To further improve the performance of our sampler, we provide several time-scheduling techniques that properly manage the influence of guidance over inference steps. Experiments on benchmark real datasets demonstrate that our approach can greatly improve the capability of creating realistic low-likelihood minority instances over the existing techniques without the reliance on costly additional elements. Code is available at \\url{https://github.com/soobin-um/sg-minority}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dba7e15ff36621cefc7b4ace9aea57484ee8a7e9",
+    "externalIds": {
+      "ArXiv": "2405.15330",
+      "DBLP": "conf/nips/YiLXL24",
+      "DOI": "10.48550/arXiv.2405.15330",
+      "CorpusId": 270045205
+    },
+    "title": "Towards Understanding the Working Mechanism of Text-to-Image Diffusion Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.15330, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303256184",
+        "name": "Mingyang Yi"
+      },
+      {
+        "authorId": "2258555980",
+        "name": "Aoxue Li"
+      },
+      {
+        "authorId": "2303256796",
+        "name": "Yi Xin"
+      },
+      {
+        "authorId": "2257858424",
+        "name": "Zhenguo Li"
+      }
+    ],
+    "abstract": "Recently, the strong latent Diffusion Probabilistic Model (DPM) has been applied to high-quality Text-to-Image (T2I) generation (e.g., Stable Diffusion), by injecting the encoded target text prompt into the gradually denoised diffusion image generator. Despite the success of DPM in practice, the mechanism behind it remains to be explored. To fill this blank, we begin by examining the intermediate statuses during the gradual denoising generation process in DPM. The empirical observations indicate, the shape of image is reconstructed after the first few denoising steps, and then the image is filled with details (e.g., texture). The phenomenon is because the low-frequency signal (shape relevant) of the noisy image is not corrupted until the final stage in the forward process (initial stage of generation) of adding noise in DPM. Inspired by the observations, we proceed to explore the influence of each token in the text prompt during the two stages. After a series of experiments of T2I generations conditioned on a set of text prompts. We conclude that in the earlier generation stage, the image is mostly decided by the special token [\\texttt{EOS}] in the text prompt, and the information in the text prompt is already conveyed in this stage. After that, the diffusion model completes the details of generated images by information from themselves. Finally, we propose to apply this observation to accelerate the process of T2I generation by properly removing text guidance, which finally accelerates the sampling up to 25\\%+.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "71cad6ef8ce6faf76618de4c8ca47d3b9a62961d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/QianCPLYSM24",
+      "ArXiv": "2403.17870",
+      "DOI": "10.1109/CVPR52733.2024.00851",
+      "CorpusId": 268691496
+    },
+    "title": "Boosting Diffusion Models with Moving Average Sampling in Frequency Domain",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2024,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2403.17870",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.17870, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293667308",
+        "name": "Yurui Qian"
+      },
+      {
+        "authorId": "48141156",
+        "name": "Qi Cai"
+      },
+      {
+        "authorId": "3202968",
+        "name": "Yingwei Pan"
+      },
+      {
+        "authorId": "3431141",
+        "name": "Yehao Li"
+      },
+      {
+        "authorId": "2286333106",
+        "name": "Ting Yao"
+      },
+      {
+        "authorId": "2268732168",
+        "name": "Qibin Sun"
+      },
+      {
+        "authorId": "2070183551",
+        "name": "Tao Mei"
+      }
+    ],
+    "abstract": "Diffusion models have recently brought a powerful rev-olution in image generation. Despite showing impressive generative capabilities, most of these models rely on the current sample to denoise the next one, possibly resulting in denoising instability. In this paper, we reinterpret the iterative denoising process as model optimization and leverage a moving average mechanism to ensemble all the prior samples. Instead of simply applying moving average to the denoised samples at different timesteps, we first map the denoised samples to data space and then perform moving average to avoid distribution shift across timesteps. In view that diffusion models evolve the recovery from low-frequency components to high-frequency details, we fur-ther decompose the samples into different frequency components and execute moving average separately on each component. We name the complete approach “Moving Aver-age Sampling in Frequency domain (MASF)”. MASF could be seamlessly integrated into mainstream pre-trained dif-fusion models and sampling schedules. Extensive experi-ments on both unconditional and conditional diffusion mod-els demonstrate that our MASF leads to superior performances compared to the baselines, with almost negligible additional complexity cost.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7a97dc8a97053cf77a01fe947d2463bc868d2d1e",
+    "externalIds": {
+      "DBLP": "conf/aaai/RenZDWWFT24",
+      "DOI": "10.1609/aaai.v38i5.28267",
+      "CorpusId": 268692359
+    },
+    "title": "Multi-Step Denoising Scheduled Sampling: Towards Alleviating Exposure Bias for Diffusion Models",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/28267/28525",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1609/aaai.v38i5.28267?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1609/aaai.v38i5.28267, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285410910",
+        "name": "Zhiyao Ren"
+      },
+      {
+        "authorId": "2238207927",
+        "name": "Yibing Zhan"
+      },
+      {
+        "authorId": "46573238",
+        "name": "Liang Ding"
+      },
+      {
+        "authorId": "2298892475",
+        "name": "Gaoang Wang"
+      },
+      {
+        "authorId": "1409848027",
+        "name": "Chaoyue Wang"
+      },
+      {
+        "authorId": "2289334620",
+        "name": "Zhongyi Fan"
+      },
+      {
+        "authorId": "2268365428",
+        "name": "Dacheng Tao"
+      }
+    ],
+    "abstract": "Denoising Diffusion Probabilistic Models (DDPMs) have achieved significant success in generation tasks. Nevertheless, the exposure bias issue, i.e., the natural discrepancy between the training (the output of each step is calculated individually by a given input) and inference (the output of each step is calculated based on the input iteratively obtained based on the model), harms the performance of DDPMs. To our knowledge, few works have tried to tackle this issue by modifying the training process for DDPMs, but they still perform unsatisfactorily due to 1) partially modeling the discrepancy and 2) ignoring the prediction error accumulation. To address the above issues, in this paper, we propose a multi-step denoising scheduled sampling (MDSS) strategy to alleviate the exposure bias for DDPMs. Analyzing the formulations of the training and inference of DDPMs, MDSS 1) comprehensively considers the discrepancy influence of prediction errors on the output of the model (the Gaussian noise) and the output of the step (the calculated input signal of the next step), and 2) efficiently models the prediction error accumulation by using multiple iterations of a mathematical formulation initialized from one-step prediction error obtained from the model. The experimental results, compared with previous works, demonstrate that our approach is more effective in mitigating exposure bias in DDPM, DDIM, and DPM-solver. In particular, MDSS achieves an FID score of 3.86 in 100 sample steps of DDIM on the CIFAR-10 dataset, whereas the second best obtains 4.78. The code will be available on GitHub.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7acc1080caae1c12f9262a91def739271c491f47",
+    "externalIds": {
+      "DBLP": "conf/cvpr/Zhou00024",
+      "ArXiv": "2312.00094",
+      "DOI": "10.1109/CVPR52733.2024.00743",
+      "CorpusId": 265551613
+    },
+    "title": "Fast ODE-based Sampling for Diffusion Models in Around 5 Steps",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 94,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2312.00094",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.00094, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269698339",
+        "name": "Zhenyu Zhou"
+      },
+      {
+        "authorId": "1684692",
+        "name": "Defang Chen"
+      },
+      {
+        "authorId": "2144350104",
+        "name": "Can Wang"
+      },
+      {
+        "authorId": "2109525713",
+        "name": "Chun Chen"
+      }
+    ],
+    "abstract": "Sampling from diffusion models can be treated as solving the corresponding ordinary differential equations (ODEs), with the aim of obtaining an accurate solution with as few number of function evaluations (NFE) as possible. Recently, various fast samplers utilizing higher-order ODE solvers have emerged and achieved better performance than the initial first-order one. However, these numerical methods inherently result in certain approximation errors, which significantly degrades sample quality with extremely small NFE (e.g., around 5). In contrast, based on the geometric observation that each sampling trajectory almost lies in a two-dimensional subspace embedded in the ambient space, we propose Approximate MEan-Direction Solver (AMED-Solver) that eliminates truncation errors by directly learning the mean direction for fast diffusion sampling. Besides, our method can be easily used as a plugin to further improve existing ODE-based samplers. Extensive experiments on image synthesis with the resolution ranging from 32 to 512 demonstrate the effectiveness of our method. With only 5 NFE, we achieve 6.61 FID on CIFAR-10, 10.74 FID on ImageNet $64\\times 64$, and 13.20 FID on LSUN Bedroom. Our code is available at https:/github.com/zju-pi/diff-sampler.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b0d791cd8e9a87f37258832beaa321037048da26",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-14189",
+      "ArXiv": "2310.14189",
+      "DOI": "10.48550/arXiv.2310.14189",
+      "CorpusId": 264426451
+    },
+    "title": "Improved Techniques for Training Consistency Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 377,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.14189, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299946245",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      }
+    ],
+    "abstract": "Consistency models are a nascent family of generative models that can sample high quality data in one step without the need for adversarial training. Current consistency models achieve optimal sample quality by distilling from pre-trained diffusion models and employing learned metrics such as LPIPS. However, distillation limits the quality of consistency models to that of the pre-trained diffusion model, and LPIPS causes undesirable bias in evaluation. To tackle these challenges, we present improved techniques for consistency training, where consistency models learn directly from data without distillation. We delve into the theory behind consistency training and identify a previously overlooked flaw, which we address by eliminating Exponential Moving Average from the teacher consistency model. To replace learned metrics like LPIPS, we adopt Pseudo-Huber losses from robust statistics. Additionally, we introduce a lognormal noise schedule for the consistency training objective, and propose to double total discretization steps every set number of training iterations. Combined with better hyperparameter tuning, these modifications enable consistency models to achieve FID scores of 2.51 and 3.25 on CIFAR-10 and ImageNet $64\\times 64$ respectively in a single sampling step. These scores mark a 3.5$\\times$ and 4$\\times$ improvement compared to prior consistency training approaches. Through two-step sampling, we further reduce FID scores to 2.24 and 2.77 on these two datasets, surpassing those obtained via distillation in both one-step and two-step settings, while narrowing the gap between consistency models and other state-of-the-art generative models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "448e7e873a6e520072301b7d9c1d0d9289778418",
+    "externalIds": {
+      "DBLP": "conf/iclr/LiuZM0024",
+      "ArXiv": "2309.06380",
+      "DOI": "10.48550/arXiv.2309.06380",
+      "CorpusId": 261697392
+    },
+    "title": "InstaFlow: One Step is Enough for High-Quality Diffusion-Based Text-to-Image Generation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 352,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.06380",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.06380, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46521757",
+        "name": "Xingchao Liu"
+      },
+      {
+        "authorId": "2157302981",
+        "name": "Xiwen Zhang"
+      },
+      {
+        "authorId": "2239252325",
+        "name": "Jianzhu Ma"
+      },
+      {
+        "authorId": "2239711135",
+        "name": "Jian Peng"
+      },
+      {
+        "authorId": "48873756",
+        "name": "Q. Liu"
+      }
+    ],
+    "abstract": "Diffusion models have revolutionized text-to-image generation with its exceptional quality and creativity. However, its multi-step sampling process is known to be slow, often requiring tens of inference steps to obtain satisfactory results. Previous attempts to improve its sampling speed and reduce computational costs through distillation have been unsuccessful in achieving a functional one-step model. In this paper, we explore a recent method called Rectified Flow, which, thus far, has only been applied to small datasets. The core of Rectified Flow lies in its \\emph{reflow} procedure, which straightens the trajectories of probability flows, refines the coupling between noises and images, and facilitates the distillation process with student models. We propose a novel text-conditioned pipeline to turn Stable Diffusion (SD) into an ultra-fast one-step model, in which we find reflow plays a critical role in improving the assignment between noise and images. Leveraging our new pipeline, we create, to the best of our knowledge, the first one-step diffusion-based text-to-image generator with SD-level image quality, achieving an FID (Frechet Inception Distance) of $23.3$ on MS COCO 2017-5k, surpassing the previous state-of-the-art technique, progressive distillation, by a significant margin ($37.2$ $\\rightarrow$ $23.3$ in FID). By utilizing an expanded network with 1.7B parameters, we further improve the FID to $22.4$. We call our one-step models \\emph{InstaFlow}. On MS COCO 2014-30k, InstaFlow yields an FID of $13.1$ in just $0.09$ second, the best in $\\leq 0.1$ second regime, outperforming the recent StyleGAN-T ($13.9$ in $0.1$ second). Notably, the training of InstaFlow only costs 199 A100 GPU days. Codes and pre-trained models are available at \\url{github.com/gnobitab/InstaFlow}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c62831f819d0e93ffb13804158af1d0148d706ee",
+    "externalIds": {
+      "DBLP": "conf/iclr/NingLSSE24",
+      "ArXiv": "2308.15321",
+      "DOI": "10.48550/arXiv.2308.15321",
+      "CorpusId": 261276856
+    },
+    "title": "Elucidating the Exposure Bias in Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 93,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.15321",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.15321, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126191237",
+        "name": "Mang Ning"
+      },
+      {
+        "authorId": "2235230683",
+        "name": "Mingxiao Li"
+      },
+      {
+        "authorId": "51111230",
+        "name": "Jianlin Su"
+      },
+      {
+        "authorId": "1764521",
+        "name": "A. A. Salah"
+      },
+      {
+        "authorId": "35981826",
+        "name": "Itir Onal Ertugrul"
+      }
+    ],
+    "abstract": "Diffusion models have demonstrated impressive generative capabilities, but their \\textit{exposure bias} problem, described as the input mismatch between training and sampling, lacks in-depth exploration. In this paper, we systematically investigate the exposure bias problem in diffusion models by first analytically modelling the sampling distribution, based on which we then attribute the prediction error at each sampling step as the root cause of the exposure bias issue. Furthermore, we discuss potential solutions to this issue and propose an intuitive metric for it. Along with the elucidation of exposure bias, we propose a simple, yet effective, training-free method called Epsilon Scaling to alleviate the exposure bias. We show that Epsilon Scaling explicitly moves the sampling trajectory closer to the vector field learned in the training phase by scaling down the network output, mitigating the input mismatch between training and sampling. Experiments on various diffusion frameworks (ADM, DDIM, EDM, LDM, DiT, PFGM++) verify the effectiveness of our method. Remarkably, our ADM-ES, as a state-of-the-art stochastic sampler, obtains 2.17 FID on CIFAR-10 under 100-step unconditional generation. The code is available at \\url{https://github.com/forever208/ADM-ES} and \\url{https://github.com/forever208/EDM-ES}.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "b59c9904994204f76f9863cb86d19093df10edb8",
+    "externalIds": {
+      "DBLP": "conf/iclr/LiS24a",
+      "ArXiv": "2308.05021",
+      "CorpusId": 260735504
+    },
+    "title": "On Error Propagation of Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.05021, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2245918559",
+        "name": "Yangming Li"
+      },
+      {
+        "authorId": "1729969",
+        "name": "M. Schaar"
+      }
+    ],
+    "abstract": "Although diffusion models (DMs) have shown promising performances in a number of tasks (e.g., speech synthesis and image generation), they might suffer from error propagation because of their sequential structure. However, this is not certain because some sequential models, such as Conditional Random Field (CRF), are free from this problem. To address this issue, we develop a theoretical framework to mathematically formulate error propagation in the architecture of DMs, The framework contains three elements, including modular error, cumulative error, and propagation equation. The modular and cumulative errors are related by the equation, which interprets that DMs are indeed affected by error propagation. Our theoretical study also suggests that the cumulative error is closely related to the generation quality of DMs. Based on this finding, we apply the cumulative error as a regularization term to reduce error propagation. Because the term is computationally intractable, we derive its upper bound and design a bootstrap algorithm to efficiently estimate the bound for optimization. We have conducted extensive experiments on multiple image datasets, showing that our proposed regularization reduces error propagation, significantly improves vanilla DMs, and outperforms previous baselines.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a748f2370fdbcb5c86018307a67ac399dfa08c3c",
+    "externalIds": {
+      "ArXiv": "2305.15583",
+      "DBLP": "conf/iclr/LiQYSM24",
+      "DOI": "10.48550/arXiv.2305.15583",
+      "CorpusId": 258888092
+    },
+    "title": "Alleviating Exposure Bias in Diffusion Models through Sampling with Shifted Time Steps",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.15583",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.15583, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112132080",
+        "name": "Mingxiao Li"
+      },
+      {
+        "authorId": "2173939633",
+        "name": "Tingyu Qu"
+      },
+      {
+        "authorId": "2153198797",
+        "name": "Wei Sun"
+      },
+      {
+        "authorId": "100781843",
+        "name": "Marie-Francine Moens"
+      }
+    ],
+    "abstract": "Diffusion Probabilistic Models (DPM) have shown remarkable efficacy in the synthesis of high-quality images. However, their inference process characteristically requires numerous, potentially hundreds, of iterative steps, which could exaggerate the problem of exposure bias due to the training and inference discrepancy. Previous work has attempted to mitigate this issue by perturbing inputs during training, which consequently mandates the retraining of the DPM. In this work, we conduct a systematic study of exposure bias in DPM and, intriguingly, we find that the exposure bias could be alleviated with a novel sampling method that we propose, without retraining the model. We empirically and theoretically show that, during inference, for each backward time step $t$ and corresponding state $\\hat{x}_t$, there might exist another time step $t_s$ which exhibits superior coupling with $\\hat{x}_t$. Based on this finding, we introduce a sampling method named Time-Shift Sampler. Our framework can be seamlessly integrated to existing sampling algorithms, such as DDPM, DDIM and other high-order solvers, inducing merely minimal additional computations. Experimental results show our method brings significant and consistent improvements in FID scores on different datasets and sampling methods. For example, integrating Time-Shift Sampler to F-PNDM yields a FID=3.88, achieving 44.49\\% improvements as compared to F-PNDM, on CIFAR-10 with 10 sampling steps, which is more performant than the vanilla DDIM with 100 sampling steps. Our code is available at https://github.com/Mingxiao-Li/TS-DPM.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "514f46c8e6cb6db04cc08ef92954dcf46c633ed7",
+    "externalIds": {
+      "DBLP": "conf/cvpr/0003NK23",
+      "ArXiv": "2304.11312",
+      "DOI": "10.1109/CVPR52729.2023.00143",
+      "CorpusId": 258297841
+    },
+    "title": "Lookahead Diffusion Probabilistic Models for Refining Mean Estimation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.11312",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.11312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46172209",
+        "name": "Guoqiang Zhang"
+      },
+      {
+        "authorId": "52439874",
+        "name": "Niwa Kenta"
+      },
+      {
+        "authorId": "144015910",
+        "name": "W. Kleijn"
+      }
+    ],
+    "abstract": "We propose lookahead diffusion probabilistic models (LA-DPMs) to exploit the correlation in the outputs of the deep neural networks (DNNs) over subsequent timesteps in diffusion probabilistic models (DPMs) to refine the mean estimation of the conditional Gaussian distributions in the backward process. A typical DPM first obtains an estimate of the original data sample $x$ by feeding the most recent state $z_{i}$ and index $i$ into the DNN model and then computes the mean vector of the conditional Gaussian distribution for $z_{i-1}$. We propose to calculate a more accurate estimate for $x$ by performing extrapolation on the two estimates of $x$ that are obtained by feeding ($z_{i+1},i+1$) and ($z_{i},i$) into the DNN model. The extrapolation can be easily integrated into the backward process of existing DPMs by introducing an additional connection over two consecutive timesteps, and fine-tuning is not required. Extensive experiments showed that plugging in the additional connection into DDPM, DDIM, DEIS, S-PNDM, and high-order DPM-Solvers leads to a significant performance gain in terms of Fréchet inception distance (FID) score. Our implementation is available at https://github.com/guoqiang-zhang-x/LA-DPM.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f5a0c57f90c6abe31482e9f320ccac5ee789b135",
+    "externalIds": {
+      "ArXiv": "2304.08818",
+      "DBLP": "journals/corr/abs-2304-08818",
+      "DOI": "10.1109/CVPR52729.2023.02161",
+      "CorpusId": 258187553
+    },
+    "title": "Align Your Latents: High-Resolution Video Synthesis with Latent Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 1605,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.08818",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.08818, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      },
+      {
+        "authorId": "18900686",
+        "name": "Huan Ling"
+      },
+      {
+        "authorId": "102541178",
+        "name": "Tim Dockhorn"
+      },
+      {
+        "authorId": "2596437",
+        "name": "Seung Wook Kim"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      },
+      {
+        "authorId": "32113848",
+        "name": "Karsten Kreis"
+      }
+    ],
+    "abstract": "Latent Diffusion Models (LDMs) enable high-quality image synthesis while avoiding excessive compute demands by training a diffusion model in a compressed lower-dimensional latent space. Here, we apply the LDM paradigm to high-resolution video generation, a particularly resource-intensive task. We first pre-train an LDM on images only; then, we turn the image generator into a video generator by introducing a temporal dimension to the latent space diffusion model and finetuning on encoded image sequences, i.e., videos. Similarly, we temporally align diffusion model upsamplers, turning them into temporally consistent video super resolution models. We focus on two relevant real-world applications: Simulation of in-the-wild driving data and creative content creation with text-to-video modeling. In particular, we validate our Video LDM on real driving videos of resolution $512 \\times 1024$, achieving state-of-the-art performance. Furthermore, our approach can easily leverage off-the-shelf pretrained image LDMs, as we only need to train a temporal alignment model in that case. Doing so, we turn the publicly available, state-of-the-art text-to-image LDM Stable Diffusion into an efficient and expressive text-to-video model with resolution up to $1280 \\times 2048$. We show that the temporal layers trained in this way generalize to different finetuned text-to-image LDMs. Utilizing this property, we show the first results for personalized text-to-video generation, opening exciting directions for future content creation. Project page: https://nv-tlabs.github.io/VideoLDM/",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "923a03032014a12c4e8b26511c0394e1b915fe74",
+    "externalIds": {
+      "DBLP": "conf/iccv/KhachatryanMTHW23",
+      "ArXiv": "2303.13439",
+      "DOI": "10.1109/ICCV51070.2023.01462",
+      "CorpusId": 257687280
+    },
+    "title": "Text2Video-Zero: Text-to-Image Diffusion Models are Zero-Shot Video Generators",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 797,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.13439",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.13439, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2212523911",
+        "name": "Levon Khachatryan"
+      },
+      {
+        "authorId": "2153130960",
+        "name": "A. Movsisyan"
+      },
+      {
+        "authorId": "2190105341",
+        "name": "Vahram Tadevosyan"
+      },
+      {
+        "authorId": "32760647",
+        "name": "Roberto Henschel"
+      },
+      {
+        "authorId": "2108404505",
+        "name": "Zhangyang Wang"
+      },
+      {
+        "authorId": "2042485075",
+        "name": "Shant Navasardyan"
+      },
+      {
+        "authorId": "48667025",
+        "name": "Humphrey Shi"
+      }
+    ],
+    "abstract": "Recent text-to-video generation approaches rely on computationally heavy training and require large-scale video datasets. In this paper, we introduce a new task, zero-shot text-to-video generation, and propose a low-cost approach (without any training or optimization) by leveraging the power of existing text-to-image synthesis methods (e.g. Stable Diffusion), making them suitable for the video domain. Our key modifications include (i) enriching the latent codes of the generated frames with motion dynamics to keep the global scene and the background time consistent; and (ii) reprogramming frame-level self-attention using a new cross-frame attention of each frame on the first frame, to preserve the context, appearance, and identity of the foreground object. Experiments show that this leads to low overhead, yet high-quality and remarkably consistent video generation. Moreover, our approach is not limited to text-to-video synthesis but is also applicable to other tasks such as conditional and content-specialized video generation, and Video Instruct-Pix2Pix, i.e., instruction-guided video editing. As experiments show, our method performs comparably or sometimes better than recent approaches, despite not being trained on additional video data. Our code is publicly available at: https://github.com/Picsart-AI-Research/Text2Video-Zero.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ac974291d7e3a152067382675524f3e3c2ded11b",
+    "externalIds": {
+      "DBLP": "conf/icml/SongD0S23",
+      "ArXiv": "2303.01469",
+      "DOI": "10.1007/978-1-4842-1329-2_9",
+      "CorpusId": 257280191
+    },
+    "title": "Consistency Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 1702,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.01469, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2157995251",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "Diffusion models have significantly advanced the fields of image, audio, and video generation, but they depend on an iterative sampling process that causes slow generation. To overcome this limitation, we propose consistency models, a new family of models that generate high quality samples by directly mapping noise to data. They support fast one-step generation by design, while still allowing multistep sampling to trade compute for sample quality. They also support zero-shot data editing, such as image inpainting, colorization, and super-resolution, without requiring explicit training on these tasks. Consistency models can be trained either by distilling pre-trained diffusion models, or as standalone generative models altogether. Through extensive experiments, we demonstrate that they outperform existing distillation techniques for diffusion models in one- and few-step sampling, achieving the new state-of-the-art FID of 3.55 on CIFAR-10 and 6.20 on ImageNet 64x64 for one-step generation. When trained in isolation, consistency models become a new family of generative models that can outperform existing one-step, non-adversarial generative models on standard benchmarks such as CIFAR-10, ImageNet 64x64 and LSUN 256x256.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "62d6e95e60ba36abacc5de85078d053316bd1942",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-04867",
+      "ArXiv": "2302.04867",
+      "DOI": "10.48550/arXiv.2302.04867",
+      "CorpusId": 256697404
+    },
+    "title": "UniPC: A Unified Predictor-Corrector Framework for Fast Sampling of Diffusion Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 413,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2302.04867",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.04867, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118223312",
+        "name": "Wenliang Zhao"
+      },
+      {
+        "authorId": "2170357603",
+        "name": "Lujia Bai"
+      },
+      {
+        "authorId": "39358728",
+        "name": "Yongming Rao"
+      },
+      {
+        "authorId": "48128428",
+        "name": "Jie Zhou"
+      },
+      {
+        "authorId": "1697700",
+        "name": "Jiwen Lu"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) have demonstrated a very promising ability in high-resolution image synthesis. However, sampling from a pre-trained DPM is time-consuming due to the multiple evaluations of the denoising network, making it more and more important to accelerate the sampling of DPMs. Despite recent progress in designing fast samplers, existing methods still cannot generate satisfying images in many applications where fewer steps (e.g., $<$10) are favored. In this paper, we develop a unified corrector (UniC) that can be applied after any existing DPM sampler to increase the order of accuracy without extra model evaluations, and derive a unified predictor (UniP) that supports arbitrary order as a byproduct. Combining UniP and UniC, we propose a unified predictor-corrector framework called UniPC for the fast sampling of DPMs, which has a unified analytical form for any order and can significantly improve the sampling quality over previous methods, especially in extremely few steps. We evaluate our methods through extensive experiments including both unconditional and conditional sampling using pixel-space and latent-space DPMs. Our UniPC can achieve 3.87 FID on CIFAR10 (unconditional) and 7.51 FID on ImageNet 256$\\times$256 (conditional) with only 10 function evaluations. Code is available at https://github.com/wl-zhao/UniPC.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "83243ffcd705d15232c3cf0ba9b998e93968fdc5",
+    "externalIds": {
+      "DBLP": "conf/icml/XuLTTTJ23",
+      "ArXiv": "2302.04265",
+      "DOI": "10.48550/arXiv.2302.04265",
+      "CorpusId": 256662603
+    },
+    "title": "PFGM++: Unlocking the Potential of Physics-Inspired Generative Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 96,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.04265",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.04265, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152252625",
+        "name": "Yilun Xu"
+      },
+      {
+        "authorId": "2145253202",
+        "name": "Ziming Liu"
+      },
+      {
+        "authorId": "2476765",
+        "name": "Yonglong Tian"
+      },
+      {
+        "authorId": "2058178039",
+        "name": "Shangyuan Tong"
+      },
+      {
+        "authorId": "2011933",
+        "name": "Max Tegmark"
+      },
+      {
+        "authorId": "35132120",
+        "name": "T. Jaakkola"
+      }
+    ],
+    "abstract": "We introduce a new family of physics-inspired generative models termed PFGM++ that unifies diffusion models and Poisson Flow Generative Models (PFGM). These models realize generative trajectories for $N$ dimensional data by embedding paths in $N{+}D$ dimensional space while still controlling the progression with a simple scalar norm of the $D$ additional variables. The new models reduce to PFGM when $D{=}1$ and to diffusion models when $D{\\to}\\infty$. The flexibility of choosing $D$ allows us to trade off robustness against rigidity as increasing $D$ results in more concentrated coupling between the data and the additional variable norms. We dispense with the biased large batch field targets used in PFGM and instead provide an unbiased perturbation-based objective similar to diffusion models. To explore different choices of $D$, we provide a direct alignment method for transferring well-tuned hyperparameters from diffusion models ($D{\\to} \\infty$) to any finite $D$ values. Our experiments show that models with finite $D$ can be superior to previous state-of-the-art diffusion models on CIFAR-10/FFHQ $64{\\times}64$ datasets, with FID scores of $1.91/2.43$ when $D{=}2048/128$. In class-conditional setting, $D{=}2048$ yields current state-of-the-art FID of $1.74$ on CIFAR-10. In addition, we demonstrate that models with smaller $D$ exhibit improved robustness against modeling errors. Code is available at https://github.com/Newbeeer/pfgmpp",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "daf61010eee0fbf6f9bab7db71c395ffca6f3ff3",
+    "externalIds": {
+      "ArXiv": "2302.03027",
+      "DBLP": "conf/siggraph/ParmarS0LLZ23",
+      "DOI": "10.1145/3588432.3591513",
+      "CorpusId": 256616002
+    },
+    "title": "Zero-shot Image-to-Image Translation",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 2023,
+    "citationCount": 612,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3588432.3591513",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.03027, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2065083806",
+        "name": "Gaurav Parmar"
+      },
+      {
+        "authorId": "50339742",
+        "name": "Krishna Kumar Singh"
+      },
+      {
+        "authorId": "2109976035",
+        "name": "Richard Zhang"
+      },
+      {
+        "authorId": "152998391",
+        "name": "Yijun Li"
+      },
+      {
+        "authorId": "2054975",
+        "name": "Jingwan Lu"
+      },
+      {
+        "authorId": "1922024303",
+        "name": "Jun-Yan Zhu"
+      }
+    ],
+    "abstract": "Large-scale text-to-image generative models have shown their remarkable ability to synthesize diverse, high-quality images. However, directly applying these models for real image editing remains challenging for two reasons. First, it is hard for users to craft a perfect text prompt depicting every visual detail in the input image. Second, while existing models can introduce desirable changes in certain regions, they often dramatically alter the input content and introduce unexpected changes in unwanted regions. In this work, we introduce pix2pix-zero, an image-to-image translation method that can preserve the original image’s content without manual prompting. We first automatically discover editing directions that reflect desired edits in the text embedding space. To preserve the content structure, we propose cross-attention guidance, which aims to retain the cross-attention maps of the input image throughout the diffusion process. Finally, to enable interactive editing, we distill the diffusion model into a fast conditional GAN. We conduct extensive experiments and show that our method outperforms existing and concurrent works for both real and synthetic image editing. In addition, our method does not need additional training for these edits and can directly use the existing pre-trained text-to-image diffusion model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "84aab3dd7d6186b7756da1fcd8552a5442165b5a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2301-12334",
+      "ArXiv": "2301.12334",
+      "DOI": "10.48550/arXiv.2301.12334",
+      "CorpusId": 256390009
+    },
+    "title": "Don't Play Favorites: Minority Guidance for Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.12334",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.12334, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40995883",
+        "name": "Soo Bin Um"
+      },
+      {
+        "authorId": "30547794",
+        "name": "Jong-Chul Ye"
+      }
+    ],
+    "abstract": "We explore the problem of generating minority samples using diffusion models. The minority samples are instances that lie on low-density regions of a data manifold. Generating a sufficient number of such minority instances is important, since they often contain some unique attributes of the data. However, the conventional generation process of the diffusion models mostly yields majority samples (that lie on high-density regions of the manifold) due to their high likelihoods, making themselves ineffective and time-consuming for the minority generating task. In this work, we present a novel framework that can make the generation process of the diffusion models focus on the minority samples. We first highlight that Tweedie's denoising formula yields favorable results for majority samples. The observation motivates us to introduce a metric that describes the uniqueness of a given sample. To address the inherent preference of the diffusion models w.r.t. the majority samples, we further develop minority guidance, a sampling technique that can guide the generation process toward regions with desired likelihood levels. Experiments on benchmark real datasets demonstrate that our minority guidance can greatly improve the capability of generating high-quality minority samples over existing generative samplers. We showcase that the performance benefit of our framework persists even in demanding real-world scenarios such as medical imaging, further underscoring the practical significance of our work. Code is available at https://github.com/soobin-um/minority-guidance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e6a662cec0ad532371099a1397fbd4196ab8d8a1",
+    "externalIds": {
+      "ArXiv": "2301.11706",
+      "DBLP": "conf/icml/NingSPCC23",
+      "DOI": "10.48550/arXiv.2301.11706",
+      "CorpusId": 256358422
+    },
+    "title": "Input Perturbation Reduces Exposure Bias in Diffusion Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 100,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.11706",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.11706, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126191237",
+        "name": "Mang Ning"
+      },
+      {
+        "authorId": "1716310",
+        "name": "E. Sangineto"
+      },
+      {
+        "authorId": "51119730",
+        "name": "A. Porrello"
+      },
+      {
+        "authorId": "2175529",
+        "name": "S. Calderara"
+      },
+      {
+        "authorId": "1741922",
+        "name": "R. Cucchiara"
+      }
+    ],
+    "abstract": "Denoising Diffusion Probabilistic Models have shown an impressive generation quality, although their long sampling chain leads to high computational costs. In this paper, we observe that a long sampling chain also leads to an error accumulation phenomenon, which is similar to the exposure bias problem in autoregressive text generation. Specifically, we note that there is a discrepancy between training and testing, since the former is conditioned on the ground truth samples, while the latter is conditioned on the previously generated results. To alleviate this problem, we propose a very simple but effective training regularization, consisting in perturbing the ground truth samples to simulate the inference time prediction errors. We empirically show that, without affecting the recall and precision, the proposed input perturbation leads to a significant improvement in the sample quality while reducing both the training and the inference times. For instance, on CelebA 64$\\times$64, we achieve a new state-of-the-art FID score of 1.27, while saving 37.5% of the training time. The code is publicly available at https://github.com/forever208/DDPM-IP",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "736973165f98105fec3729b7db414ae4d80fcbeb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-09748",
+      "ArXiv": "2212.09748",
+      "DOI": "10.1109/ICCV51070.2023.00387",
+      "CorpusId": 254854389
+    },
+    "title": "Scalable Diffusion Models with Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 5459,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2212.09748",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.09748, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35235273",
+        "name": "William S. Peebles"
+      },
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      }
+    ],
+    "abstract": "We explore a new class of diffusion models based on the transformer architecture. We train latent diffusion models of images, replacing the commonly-used U-Net backbone with a transformer that operates on latent patches. We analyze the scalability of our Diffusion Transformers (DiTs) through the lens of forward pass complexity as measured by Gflops. We find that DiTs with higher Gflops—through increased transformer depth/width or increased number of input tokens—consistently have lower FID. In addition to possessing good scalability properties, our largest DiT-XL/2 models outperform all prior diffusion models on the class-conditional ImageNet 512×512 and 256×256 benchmarks, achieving a state-of-the-art FID of 2.27 on the latter.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4ff52e24e02116b675abf085642b0de38f30b1eb",
+    "externalIds": {
+      "DBLP": "conf/icml/KimKKKM23",
+      "ArXiv": "2211.17091",
+      "DOI": "10.48550/arXiv.2211.17091",
+      "CorpusId": 254096299
+    },
+    "title": "Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 109,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2211.17091",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.17091, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51999226",
+        "name": "Dongjun Kim"
+      },
+      {
+        "authorId": "2119255215",
+        "name": "Yeongmin Kim"
+      },
+      {
+        "authorId": "1742677",
+        "name": "Wanmo Kang"
+      },
+      {
+        "authorId": "1729306",
+        "name": "Il-Chul Moon"
+      }
+    ],
+    "abstract": "The proposed method, Discriminator Guidance, aims to improve sample generation of pre-trained diffusion models. The approach introduces a discriminator that gives explicit supervision to a denoising sample path whether it is realistic or not. Unlike GANs, our approach does not require joint training of score and discriminator networks. Instead, we train the discriminator after score training, making discriminator training stable and fast to converge. In sample generation, we add an auxiliary term to the pre-trained score to deceive the discriminator. This term corrects the model score to the data score at the optimal discriminator, which implies that the discriminator helps better score estimation in a complementary way. Using our algorithm, we achive state-of-the-art results on ImageNet 256x256 with FID 1.83 and recall 0.64, similar to the validation data's FID (1.68) and recall (0.66). We release the code at https://github.com/alsdudrla10/DG.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "064ccebc03d3afabaae30fe29a457c1cfcdff7e3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-11427",
+      "ArXiv": "2210.11427",
+      "DOI": "10.48550/arXiv.2210.11427",
+      "CorpusId": 253018768
+    },
+    "title": "DiffEdit: Diffusion-based semantic image editing with mask guidance",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 726,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.11427",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.11427, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1637414390",
+        "name": "Guillaume Couairon"
+      },
+      {
+        "authorId": "34602236",
+        "name": "Jakob Verbeek"
+      },
+      {
+        "authorId": "144518416",
+        "name": "Holger Schwenk"
+      },
+      {
+        "authorId": "51021910",
+        "name": "M. Cord"
+      }
+    ],
+    "abstract": "Image generation has recently seen tremendous advances, with diffusion models allowing to synthesize convincing images for a large variety of text prompts. In this article, we propose DiffEdit, a method to take advantage of text-conditioned diffusion models for the task of semantic image editing, where the goal is to edit an image based on a text query. Semantic image editing is an extension of image generation, with the additional constraint that the generated image should be as similar as possible to a given input image. Current editing methods based on diffusion models usually require to provide a mask, making the task much easier by treating it as a conditional inpainting task. In contrast, our main contribution is able to automatically generate a mask highlighting regions of the input image that need to be edited, by contrasting predictions of a diffusion model conditioned on different text prompts. Moreover, we rely on latent inference to preserve content in those regions of interest and show excellent synergies with mask-based diffusion. DiffEdit achieves state-of-the-art editing performance on ImageNet. In addition, we evaluate semantic image editing in more challenging settings, using images from the COCO dataset as well as text-based generated images.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c69361b20ad3d88ad4c5e9e1a3a66d0932f2bc43",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-05475",
+      "ArXiv": "2210.05475",
+      "DOI": "10.48550/arXiv.2210.05475",
+      "CorpusId": 252815582
+    },
+    "title": "GENIE: Higher-Order Denoising Diffusion Solvers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 152,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.05475",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.05475, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102541178",
+        "name": "Tim Dockhorn"
+      },
+      {
+        "authorId": "2122700133",
+        "name": "Arash Vahdat"
+      },
+      {
+        "authorId": "32113848",
+        "name": "Karsten Kreis"
+      }
+    ],
+    "abstract": "Denoising diffusion models (DDMs) have emerged as a powerful class of generative models. A forward diffusion process slowly perturbs the data, while a deep model learns to gradually denoise. Synthesis amounts to solving a differential equation (DE) defined by the learnt model. Solving the DE requires slow iterative solvers for high-quality generation. In this work, we propose Higher-Order Denoising Diffusion Solvers (GENIE): Based on truncated Taylor methods, we derive a novel higher-order solver that significantly accelerates synthesis. Our solver relies on higher-order gradients of the perturbed data distribution, that is, higher-order score functions. In practice, only Jacobian-vector products (JVPs) are required and we propose to extract them from the first-order score network via automatic differentiation. We then distill the JVPs into a separate neural network that allows us to efficiently compute the necessary higher-order terms for our novel sampler during synthesis. We only need to train a small additional head on top of the first-order score network. We validate GENIE on multiple image generation benchmarks and demonstrate that GENIE outperforms all previous solvers. Unlike recent methods that fundamentally alter the generation process in DDMs, our GENIE solves the true generative DE and still enables applications such as encoding and guided sampling. Project page and code: https://nv-tlabs.github.io/GENIE.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "625d57bd52c60cd79aa4add6c4420dc2ad3b808a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-03142",
+      "ArXiv": "2210.03142",
+      "DOI": "10.1109/CVPR52729.2023.01374",
+      "CorpusId": 252762155
+    },
+    "title": "On Distillation of Guided Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 771,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.03142",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.03142, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "83262128",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "9659905",
+        "name": "Ruiqi Gao"
+      },
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      }
+    ],
+    "abstract": "Classifier-free guided diffusion models have recently been shown to be highly effective at high-resolution image generation, and they have been widely used in large-scale diffusion frameworks including DALL.E 2, Stable Diffusion and Imagen. However, a downside of classifier-free guided diffusion models is that they are computationally expensive at inference time since they require evaluating two diffusion models, a class-conditional model and an unconditional model, tens to hundreds of times. To deal with this limitation, we propose an approach to distilling classifier-free guided diffusion models into models that are fast to sample from: Given a pre-trained classifier-free guided model, we first learn a single model to match the output of the combined conditional and unconditional models, and then we progressively distill that model to a diffusion model that requires much fewer sampling steps. For standard diffusion models trained on the pixel-space, our approach is able to generate images visually comparable to that of the original model using as few as 4 sampling steps on ImageNet $64\\times 64$ and CIFAR-10, achieving FID/IS scores comparable to that of the original model while being up to 256 times faster to sample from. For diffusion models trained on the latent-space (e.g., Stable Diffusion), our approach is able to generate high-fidelity images using as few as 1 to 4 denoising steps, accelerating inference by at least 10-fold compared to existing methods on ImageNet $256\\times 256$ and LAION datasets. We further demonstrate the effectiveness of our approach on text-guided image editing and inpainting, where our distilled model is able to generate high-quality results using as few as 2–4 denoising steps.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ff4765e7977f388ac55ab5ea4fefc44683251f93",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2206-07309",
+      "ArXiv": "2206.07309",
+      "DOI": "10.48550/arXiv.2206.07309",
+      "CorpusId": 249674668
+    },
+    "title": "Estimating the Optimal Covariance with Imperfect Mean in Diffusion Probabilistic Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 89,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2206.07309",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.07309, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2071898125",
+        "name": "Fan Bao"
+      },
+      {
+        "authorId": "2399563",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2305734851",
+        "name": "Jiacheng Sun"
+      },
+      {
+        "authorId": "2155220672",
+        "name": "Jun Zhu"
+      },
+      {
+        "authorId": null,
+        "name": "Bo Zhang"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) are a class of powerful deep generative models (DGMs). Despite their success, the iterative generation process over the full timesteps is much less efficient than other DGMs such as GANs. Thus, the generation performance on a subset of timesteps is crucial, which is greatly influenced by the covariance design in DPMs. In this work, we consider diagonal and full covariances to improve the expressive power of DPMs. We derive the optimal result for such covariances, and then correct it when the mean of DPMs is imperfect. Both the optimal and the corrected ones can be decomposed into terms of conditional expectations over functions of noise. Building upon it, we propose to estimate the optimal covariance and its correction given imperfect mean by learning these conditional expectations. Our method can be applied to DPMs with both discrete and continuous timesteps. We consider the diagonal covariance in our implementation for computational efficiency. For an efficient practical implementation, we adopt a parameter sharing scheme and a two-stage training process. Empirically, our method outperforms a wide variety of covariance design on likelihood results, and improves the sample quality especially on a small number of timesteps.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4530c25da949bb2185c50663158ef19d52e3c6b5",
+    "externalIds": {
+      "DBLP": "conf/nips/0011ZB0L022",
+      "ArXiv": "2206.00927",
+      "DOI": "10.48550/arXiv.2206.00927",
+      "CorpusId": 249282317
+    },
+    "title": "DPM-Solver: A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 2233,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.00927",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.00927, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102517285",
+        "name": "Cheng Lu"
+      },
+      {
+        "authorId": "2120327644",
+        "name": "Yuhao Zhou"
+      },
+      {
+        "authorId": "2071898125",
+        "name": "Fan Bao"
+      },
+      {
+        "authorId": "2276707",
+        "name": "Jianfei Chen"
+      },
+      {
+        "authorId": "2399563",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2155220672",
+        "name": "Jun Zhu"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) are emerging powerful generative models. Despite their high-quality generation performance, DPMs still suffer from their slow sampling as they generally need hundreds or thousands of sequential function evaluations (steps) of large neural networks to draw a sample. Sampling from DPMs can be viewed alternatively as solving the corresponding diffusion ordinary differential equations (ODEs). In this work, we propose an exact formulation of the solution of diffusion ODEs. The formulation analytically computes the linear part of the solution, rather than leaving all terms to black-box ODE solvers as adopted in previous works. By applying change-of-variable, the solution can be equivalently simplified to an exponentially weighted integral of the neural network. Based on our formulation, we propose DPM-Solver, a fast dedicated high-order solver for diffusion ODEs with the convergence order guarantee. DPM-Solver is suitable for both discrete-time and continuous-time DPMs without any further training. Experimental results show that DPM-Solver can generate high-quality samples in only 10 to 20 function evaluations on various datasets. We achieve 4.70 FID in 10 function evaluations and 2.87 FID in 20 function evaluations on the CIFAR10 dataset, and a $4\\sim 16\\times$ speedup compared with previous state-of-the-art training-free samplers on various datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2f4c451922e227cbbd4f090b74298445bbd900d0",
+    "externalIds": {
+      "DBLP": "conf/nips/KarrasAAL22",
+      "ArXiv": "2206.00364",
+      "DOI": "10.48550/arXiv.2206.00364",
+      "CorpusId": 249240415
+    },
+    "title": "Elucidating the Design Space of Diffusion-Based Generative Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 3208,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.00364",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.00364, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2976930",
+        "name": "Tero Karras"
+      },
+      {
+        "authorId": "1907688",
+        "name": "M. Aittala"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      }
+    ],
+    "abstract": "We argue that the theory and practice of diffusion-based generative models are currently unnecessarily convoluted and seek to remedy the situation by presenting a design space that clearly separates the concrete design choices. This lets us identify several changes to both the sampling and training processes, as well as preconditioning of the score networks. Together, our improvements yield new state-of-the-art FID of 1.79 for CIFAR-10 in a class-conditional setting and 1.97 in an unconditional setting, with much faster sampling (35 network evaluations per image) than prior designs. To further demonstrate their modular nature, we show that our design changes dramatically improve both the efficiency and quality obtainable with pre-trained score networks from previous work, including improving the FID of a previously trained ImageNet-64 model from 2.07 to near-SOTA 1.55, and after re-training with our proposed improvements to a new SOTA of 1.36.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "9b7b218b0f4e14f97260b6192add37da5e9ae2c5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2201-06503",
+      "ArXiv": "2201.06503",
+      "CorpusId": 246016304
+    },
+    "title": "Analytic-DPM: an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 400,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.06503, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2071898125",
+        "name": "Fan Bao"
+      },
+      {
+        "authorId": "2399563",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2155220672",
+        "name": "Jun Zhu"
+      },
+      {
+        "authorId": null,
+        "name": "Bo Zhang"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) represent a class of powerful generative models. Despite their success, the inference of DPMs is expensive since it generally needs to iterate over thousands of timesteps. A key problem in the inference is to estimate the variance in each timestep of the reverse process. In this work, we present a surprising result that both the optimal reverse variance and the corresponding optimal KL divergence of a DPM have analytic forms w.r.t. its score function. Building upon it, we propose Analytic-DPM, a training-free inference framework that estimates the analytic forms of the variance and KL divergence using the Monte Carlo method and a pretrained score-based model. Further, to correct the potential bias caused by the score-based model, we derive both lower and upper bounds of the optimal variance and clip the estimate for a better result. Empirically, our analytic-DPM improves the log-likelihood of various DPMs, produces high-quality samples, and meanwhile enjoys a 20x to 80x speed up.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c10075b3746a9f3dd5811970e93c8ca3ad39b39d",
+    "externalIds": {
+      "ArXiv": "2112.10752",
+      "DBLP": "journals/corr/abs-2112-10752",
+      "DOI": "10.1109/CVPR52688.2022.01042",
+      "CorpusId": 245335280
+    },
+    "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 23885,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2112.10752",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.10752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      },
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "2053482699",
+        "name": "Dominik Lorenz"
+      },
+      {
+        "authorId": "35175531",
+        "name": "Patrick Esser"
+      },
+      {
+        "authorId": "1796707",
+        "name": "B. Ommer"
+      }
+    ],
+    "abstract": "By decomposing the image formation process into a sequential application of denoising autoencoders, diffusion models (DMs) achieve state-of-the-art synthesis results on image data and beyond. Additionally, their formulation allows for a guiding mechanism to control the image generation process without retraining. However, since these models typically operate directly in pixel space, optimization of powerful DMs often consumes hundreds of GPU days and inference is expensive due to sequential evaluations. To enable DM training on limited computational resources while retaining their quality and flexibility, we apply them in the latent space of powerful pretrained autoencoders. In contrast to previous work, training diffusion models on such a representation allows for the first time to reach a near-optimal point between complexity reduction and detail preservation, greatly boosting visual fidelity. By introducing cross-attention layers into the model architecture, we turn diffusion models into powerful and flexible generators for general conditioning inputs such as text or bounding boxes and high-resolution synthesis becomes possible in a convolutional manner. Our latent diffusion models (LDMs) achieve new state of the art scores for image inpainting and class-conditional image synthesis and highly competitive performance on various tasks, including unconditional image generation, text-to-image synthesis, and super-resolution, while significantly reducing computational requirements compared to pixel-based DMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f671a09e3e5922e6d38cb77dda8d76d5ceac2a27",
+    "externalIds": {
+      "DBLP": "conf/iclr/MengHSSWZE22",
+      "ArXiv": "2108.01073",
+      "CorpusId": 245704504
+    },
+    "title": "SDEdit: Guided Image Synthesis and Editing with Stochastic Differential Equations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 2113,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.01073, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "83262128",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "1490933536",
+        "name": "Yutong He"
+      },
+      {
+        "authorId": "2157995251",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "51453887",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "3045089",
+        "name": "Jiajun Wu"
+      },
+      {
+        "authorId": "1922024303",
+        "name": "Jun-Yan Zhu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Guided image synthesis enables everyday users to create and edit photo-realistic images with minimum effort. The key challenge is balancing faithfulness to the user input (e.g., hand-drawn colored strokes) and realism of the synthesized image. Existing GAN-based methods attempt to achieve such balance using either conditional GANs or GAN inversions, which are challenging and often require additional training data or loss functions for individual applications. To address these issues, we introduce a new image synthesis and editing method, Stochastic Differential Editing (SDEdit), based on a diffusion model generative prior, which synthesizes realistic images by iteratively denoising through a stochastic differential equation (SDE). Given an input image with user guide of any type, SDEdit first adds noise to the input, then subsequently denoises the resulting image through the SDE prior to increase its realism. SDEdit does not require task-specific training or inversions and can naturally achieve the balance between realism and faithfulness. SDEdit significantly outperforms state-of-the-art GAN-based methods by up to 98.09% on realism and 91.72% on overall satisfaction scores, according to a human perception study, on multiple tasks, including stroke-based image synthesis and editing as well as image compositing.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ad14e11bc97cc2fed0fd344e7cb7d7ce4205bfc6",
+    "externalIds": {
+      "ArXiv": "2106.05931",
+      "DBLP": "conf/nips/VahdatKK21",
+      "CorpusId": 235390993
+    },
+    "title": "Score-based Generative Modeling in Latent Space",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 844,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.05931, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3214848",
+        "name": "Arash Vahdat"
+      },
+      {
+        "authorId": "32113848",
+        "name": "Karsten Kreis"
+      },
+      {
+        "authorId": "2376331464",
+        "name": "Jan Kautz"
+      }
+    ],
+    "abstract": "Score-based generative models (SGMs) have recently demonstrated impressive results in terms of both sample quality and distribution coverage. However, they are usually applied directly in data space and often require thousands of network evaluations for sampling. Here, we propose the Latent Score-based Generative Model (LSGM), a novel approach that trains SGMs in a latent space, relying on the variational autoencoder framework. Moving from data to latent space allows us to train more expressive generative models, apply SGMs to non-continuous data, and learn smoother SGMs in a smaller space, resulting in fewer network evaluations and faster sampling. To enable training LSGMs end-to-end in a scalable and stable manner, we (i) introduce a new score-matching objective suitable to the LSGM setting, (ii) propose a novel parameterization of the score function that allows SGM to focus on the mismatch of the target distribution with respect to a simple Normal one, and (iii) analytically derive multiple techniques for variance reduction of the training objective. LSGM obtains a state-of-the-art FID score of 2.10 on CIFAR-10, outperforming all existing generative results on this dataset. On CelebA-HQ-256, LSGM is on a par with previous SGMs in sample quality while outperforming them in sampling time by two orders of magnitude. In modeling binary images, LSGM achieves state-of-the-art likelihood on the binarized OMNIGLOT dataset. Our project page and code can be found at https://nvlabs.github.io/LSGM .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "64ea8f180d0682e6c18d1eb688afdb2027c02794",
+    "externalIds": {
+      "ArXiv": "2105.05233",
+      "DBLP": "journals/corr/abs-2105-05233",
+      "CorpusId": 234357997
+    },
+    "title": "Diffusion Models Beat GANs on Image Synthesis",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 11480,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.05233, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      }
+    ],
+    "abstract": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this on unconditional image synthesis by finding a better architecture through a series of ablations. For conditional image synthesis, we further improve sample quality with classifier guidance: a simple, compute-efficient method for trading off diversity for fidelity using gradients from a classifier. We achieve an FID of 2.97 on ImageNet 128$\\times$128, 4.59 on ImageNet 256$\\times$256, and 7.72 on ImageNet 512$\\times$512, and we match BigGAN-deep even with as few as 25 forward passes per sample, all while maintaining better coverage of the distribution. Finally, we find that classifier guidance combines well with upsampling diffusion models, further improving FID to 3.94 on ImageNet 256$\\times$256 and 3.85 on ImageNet 512$\\times$512. We release our code at https://github.com/openai/guided-diffusion",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "d0cefc4621a55540c77e8ade9b8ae1bfeb530f42",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2104-14951",
+      "ArXiv": "2104.14951",
+      "DOI": "10.1016/j.neucom.2022.01.029",
+      "CorpusId": 233476433
+    },
+    "title": "SRDiff: Single Image Super-Resolution with Diffusion Probabilistic Models",
+    "venue": "Neurocomputing",
+    "year": 2021,
+    "citationCount": 838,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2104.14951",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.14951, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "13032398",
+        "name": "Haoying Li"
+      },
+      {
+        "authorId": null,
+        "name": "Yifan Yang"
+      },
+      {
+        "authorId": "144405454",
+        "name": "Meng Chang"
+      },
+      {
+        "authorId": "46854729",
+        "name": "H. Feng"
+      },
+      {
+        "authorId": "48559708",
+        "name": "Zhi-hai Xu"
+      },
+      {
+        "authorId": "40422449",
+        "name": "Qi Li"
+      },
+      {
+        "authorId": "51511855",
+        "name": "Yue-ting Chen"
+      }
+    ],
+    "abstract": "Single image super-resolution (SISR) aims to reconstruct high-resolution (HR) images from the given low-resolution (LR) ones, which is an ill-posed problem because one LR image corresponds to multiple HR images. Recently, learning-based SISR methods have greatly outperformed traditional ones, while suffering from over-smoothing, mode collapse or large model footprint issues for PSNR-oriented, GAN-driven and flow-based methods respectively. To solve these problems, we propose a novel single image super-resolution diffusion probabilistic model (SRDiff), which is the first diffusion-based model for SISR. SRDiff is optimized with a variant of the variational bound on the data likelihood and can provide diverse and realistic SR predictions by gradually transforming the Gaussian noise into a super-resolution (SR) image conditioned on an LR input through a Markov chain. In addition, we introduce residual prediction to the whole framework to speed up convergence. Our extensive experiments on facial and general benchmarks (CelebA and DIV2K datasets) show that 1) SRDiff can generate diverse SR results in rich details with state-of-the-art performance, given only one LR input; 2) SRDiff is easy to train with a small footprint; and 3) SRDiff can perform flexible image manipulation including latent space interpolation and content fusion.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bc7e6165b00f0c39d40ca2c7a4eb33fcc0e3200d",
+    "externalIds": {
+      "DBLP": "journals/pami/SahariaHCSFN23",
+      "ArXiv": "2104.07636",
+      "DOI": "10.1109/TPAMI.2022.3204461",
+      "CorpusId": 233241040,
+      "PubMed": "36094974"
+    },
+    "title": "Image Super-Resolution via Iterative Refinement",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 2418,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/34/4359286/09887996.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.07636, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51497543",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "We present SR3, an approach to image Super-Resolution via Repeated Refinement. SR3 adapts denoising diffusion probabilistic models (Ho et al. 2020), (Sohl-Dickstein et al. 2015) to image-to-image translation, and performs super-resolution through a stochastic iterative denoising process. Output images are initialized with pure Gaussian noise and iteratively refined using a U-Net architecture that is trained on denoising at various noise levels, conditioned on a low-resolution input image. SR3 exhibits strong performance on super-resolution tasks at different magnification factors, on faces and natural images. We conduct human evaluation on a standard 8× face super-resolution task on CelebA-HQ for which SR3 achieves a fool rate close to 50%, suggesting photo-realistic outputs, while GAN baselines do not exceed a fool rate of 34%. We evaluate SR3 on a 4× super-resolution task on ImageNet, where SR3 outperforms baselines in human evaluation and classification accuracy of a ResNet-50 classifier trained on high-resolution images. We further show the effectiveness of SR3 in cascaded image generation, where a generative model is chained with super-resolution models to synthesize high-resolution images with competitive FID scores on the class-conditional 256×256 ImageNet generation challenge.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "de18baa4964804cf471d85a5a090498242d2e79f",
+    "externalIds": {
+      "ArXiv": "2102.09672",
+      "DBLP": "conf/icml/NicholD21",
+      "CorpusId": 231979499
+    },
+    "title": "Improved Denoising Diffusion Probabilistic Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 5198,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.09672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPM) are a class of generative models which have recently been shown to produce excellent samples. We show that with a few simple modifications, DDPMs can also achieve competitive log-likelihoods while maintaining high sample quality. Additionally, we find that learning variances of the reverse diffusion process allows sampling with an order of magnitude fewer forward passes with a negligible difference in sample quality, which is important for the practical deployment of these models. We additionally use precision and recall to compare how well DDPMs and GANs cover the target distribution. Finally, we show that the sample quality and likelihood of these models scale smoothly with model capacity and training compute, making them easily scalable. We release our code at https://github.com/openai/improved-diffusion",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ba2f73db4e38324f751fbf30f7dde0bf4e7fa520",
+    "externalIds": {
+      "ArXiv": "2101.02388",
+      "DBLP": "journals/corr/abs-2101-02388",
+      "CorpusId": 230799531
+    },
+    "title": "Knowledge Distillation in Iterative Generative Models for Improved Sampling Speed",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 377,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.02388, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2024733300",
+        "name": "Eric Luhman"
+      },
+      {
+        "authorId": "2024728798",
+        "name": "Troy Luhman"
+      }
+    ],
+    "abstract": "Iterative generative models, such as noise conditional score networks and denoising diffusion probabilistic models, produce high quality samples by gradually denoising an initial noise vector. However, their denoising process has many steps, making them 2-3 orders of magnitude slower than other generative models such as GANs and VAEs. In this paper, we establish a novel connection between knowledge distillation and image generation with a technique that distills a multi-step denoising process into a single step, resulting in a sampling speed similar to other single-step generative models. Our Denoising Student generates high quality samples comparable to GANs on the CIFAR-10 and CelebA datasets, without adversarial training. We demonstrate that our method scales to higher resolutions through experiments on 256 x 256 LSUN. Code and checkpoints are available at https://github.com/tcl9876/Denoising_Student",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "633e2fbfc0b21e959a244100937c5853afca4853",
+    "externalIds": {
+      "ArXiv": "2011.13456",
+      "DBLP": "journals/corr/abs-2011-13456",
+      "MAG": "3110257065",
+      "CorpusId": 227209335
+    },
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 10140,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.13456, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2109224633",
+        "name": "Abhishek Kumar"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "16443937",
+        "name": "Ben Poole"
+      }
+    ],
+    "abstract": "Creating noise from data is easy; creating data from noise is generative modeling. We present a stochastic differential equation (SDE) that smoothly transforms a complex data distribution to a known prior distribution by slowly injecting noise, and a corresponding reverse-time SDE that transforms the prior distribution back into the data distribution by slowly removing the noise. Crucially, the reverse-time SDE depends only on the time-dependent gradient field (\\aka, score) of the perturbed data distribution. By leveraging advances in score-based generative modeling, we can accurately estimate these scores with neural networks, and use numerical SDE solvers to generate samples. We show that this framework encapsulates previous approaches in score-based generative modeling and diffusion probabilistic modeling, allowing for new sampling procedures and new modeling capabilities. In particular, we introduce a predictor-corrector framework to correct errors in the evolution of the discretized reverse-time SDE. We also derive an equivalent neural ODE that samples from the same distribution as the SDE, but additionally enables exact likelihood computation, and improved sampling efficiency. In addition, we provide a new way to solve inverse problems with score-based models, as demonstrated with experiments on class-conditional generation, image inpainting, and colorization. Combined with multiple architectural improvements, we achieve record-breaking performance for unconditional image generation on CIFAR-10 with an Inception score of 9.89 and FID of 2.20, a competitive likelihood of 2.99 bits/dim, and demonstrate high fidelity generation of 1024 x 1024 images for the first time from a score-based generative model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "014576b866078524286802b1d0e18628520aa886",
+    "externalIds": {
+      "ArXiv": "2010.02502",
+      "DBLP": "journals/corr/abs-2010-02502",
+      "MAG": "3092442149",
+      "CorpusId": 222140788
+    },
+    "title": "Denoising Diffusion Implicit Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 11604,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.02502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51453887",
+        "name": "Jiaming Song"
+      },
+      {
+        "authorId": "2057110631",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "2066211828",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPMs) have achieved high quality image generation without adversarial training, yet they require simulating a Markov chain for many steps to produce a sample. To accelerate sampling, we present denoising diffusion implicit models (DDIMs), a more efficient class of iterative implicit probabilistic models with the same training procedure as DDPMs. In DDPMs, the generative process is defined as the reverse of a Markovian diffusion process. We construct a class of non-Markovian diffusion processes that lead to the same training objective, but whose reverse process can be much faster to sample from. We empirically demonstrate that DDIMs can produce high quality samples $10 \\times$ to $50 \\times$ faster in terms of wall-clock time compared to DDPMs, allow us to trade off computation for sample quality, and can perform semantically meaningful image interpolation directly in the latent space.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "34bf13e58c7226d615afead0c0f679432502940e",
+    "externalIds": {
+      "MAG": "3087665158",
+      "DBLP": "conf/iclr/KongPHZC21",
+      "ArXiv": "2009.09761",
+      "CorpusId": 221818900
+    },
+    "title": "DiffWave: A Versatile Diffusion Model for Audio Synthesis",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 1891,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.09761, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33470361",
+        "name": "Zhifeng Kong"
+      },
+      {
+        "authorId": "2056440915",
+        "name": "Wei Ping"
+      },
+      {
+        "authorId": "34060310",
+        "name": "Jiaji Huang"
+      },
+      {
+        "authorId": "2074107557",
+        "name": "Kexin Zhao"
+      },
+      {
+        "authorId": "2301680",
+        "name": "Bryan Catanzaro"
+      }
+    ],
+    "abstract": "In this work, we propose DiffWave, a versatile Diffusion probabilistic model for conditional and unconditional Waveform generation. The model is non-autoregressive, and converts the white noise signal into structured waveform through a Markov chain with a constant number of steps at synthesis. It is efficiently trained by optimizing a variant of variational bound on the data likelihood. DiffWave produces high-fidelity audios in Different Waveform generation tasks, including neural vocoding conditioned on mel spectrogram, class-conditional generation, and unconditional generation. We demonstrate that DiffWave matches a strong WaveNet vocoder in terms of speech quality~(MOS: 4.44 versus 4.43), while synthesizing orders of magnitude faster. In particular, it significantly outperforms autoregressive and GAN-based waveform models in the challenging unconditional generation task in terms of audio quality and sample diversity from various automatic and human evaluations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "685af6d2bcdff7170574643b2c5ab4fbcc36f597",
+    "externalIds": {
+      "DBLP": "conf/iclr/ChenZZWNC21",
+      "MAG": "3082563516",
+      "ArXiv": "2009.00713",
+      "CorpusId": 221447287
+    },
+    "title": "WaveGrad: Estimating Gradients for Waveform Generation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 925,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.00713, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34507928",
+        "name": "Nanxin Chen"
+      },
+      {
+        "authorId": "2153632494",
+        "name": "Yu Zhang"
+      },
+      {
+        "authorId": "1691713",
+        "name": "H. Zen"
+      },
+      {
+        "authorId": "39571582",
+        "name": "Ron J. Weiss"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      }
+    ],
+    "abstract": "This paper introduces WaveGrad, a conditional model for waveform generation which estimates gradients of the data density. The model is built on prior work on score matching and diffusion probabilistic models. It starts from a Gaussian white noise signal and iteratively refines the signal via a gradient-based sampler conditioned on the mel-spectrogram. WaveGrad offers a natural way to trade inference speed for sample quality by adjusting the number of refinement steps, and bridges the gap between non-autoregressive and autoregressive models in terms of audio quality. We find that it can generate high fidelity audio samples using as few as six iterations. Experiments reveal WaveGrad to generate high fidelity audio, outperforming adversarial non-autoregressive baselines and matching a strong likelihood-based autoregressive baseline using fewer sequential operations. Audio samples are available at this https URL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29736,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e644a409b4a4c6eaedffe27efbc5c76280b34c61",
+    "externalIds": {
+      "ArXiv": "1707.08819",
+      "DBLP": "journals/corr/ChrabaszczLH17",
+      "MAG": "2741430497",
+      "CorpusId": 7304542
+    },
+    "title": "A Downsampled Variant of ImageNet as an Alternative to the CIFAR datasets",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 744,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.08819, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22259392",
+        "name": "P. Chrabaszcz"
+      },
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": "The original ImageNet dataset is a popular large-scale benchmark for training Deep Neural Networks. Since the cost of performing experiments (e.g, algorithm design, architecture search, and hyperparameter tuning) on the original dataset might be prohibitive, we propose to consider a downsampled version of ImageNet. In contrast to the CIFAR datasets and earlier downsampled versions of ImageNet, our proposed ImageNet32$\\times$32 (and its variants ImageNet64$\\times$64 and ImageNet16$\\times$16) contains exactly the same number of classes and images as ImageNet, with the only difference that the images are downsampled to 32$\\times$32 pixels per image (64$\\times$64 and 16$\\times$16 pixels for the variants, respectively). Experiments on these downsampled variants are dramatically faster than on the original ImageNet and the characteristics of the downsampled datasets with respect to optimal hyperparameters appear to remain similar. The proposed datasets and scripts to reproduce our results are available at this http URL and this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "231af7dc01a166cac3b5b01ca05778238f796e41",
+    "externalIds": {
+      "MAG": "2963981733",
+      "DBLP": "conf/nips/HeuselRUNH17",
+      "CorpusId": 326772
+    },
+    "title": "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 17794,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2445103",
+        "name": "M. Heusel"
+      },
+      {
+        "authorId": "19219270",
+        "name": "Hubert Ramsauer"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "37082831",
+        "name": "Bernhard Nessler"
+      },
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4dcdae25a5e33682953f0853ee4cf7ca93be58a9",
+    "externalIds": {
+      "MAG": "967544008",
+      "DBLP": "journals/corr/YuZSSX15",
+      "ArXiv": "1506.03365",
+      "CorpusId": 8317437
+    },
+    "title": "LSUN: Construction of a Large-scale Image Dataset using Deep Learning with Humans in the Loop",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 2620,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.03365, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1807197",
+        "name": "F. Yu"
+      },
+      {
+        "authorId": "1591143181",
+        "name": "Yinda Zhang"
+      },
+      {
+        "authorId": "3340170",
+        "name": "Shuran Song"
+      },
+      {
+        "authorId": "2233674",
+        "name": "Ari Seff"
+      },
+      {
+        "authorId": "40599257",
+        "name": "Jianxiong Xiao"
+      }
+    ],
+    "abstract": "While there has been remarkable progress in the performance of visual recognition algorithms, the state-of-the-art models tend to be exceptionally data-hungry. Large labeled training datasets, expensive and tedious to produce, are required to optimize millions of parameters in deep network models. Lagging behind the growth in model capacity, the available datasets are quickly becoming outdated in terms of size and density. To circumvent this bottleneck, we propose to amplify human effort through a partially automated labeling scheme, leveraging deep learning with humans in the loop. Starting from a large set of candidate images for each category, we iteratively sample a subset, ask people to label them, classify the others with a trained model, split the set into positives, negatives, and unlabeled based on the classification confidence, and then iterate with the unlabeled set. To assess the effectiveness of this cascading procedure and enable further progress in visual recognition research, we construct a new image dataset, LSUN. It contains around one million labeled images for each of 10 scene categories and 20 object categories. We experiment with training popular convolutional networks and find that they achieve substantial performance gains when trained on this dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2dcef55a07f8607a819c21fe84131ea269cc2e3c",
+    "externalIds": {
+      "MAG": "2129069237",
+      "DBLP": "journals/corr/Sohl-DicksteinW15",
+      "ArXiv": "1503.03585",
+      "CorpusId": 14888175
+    },
+    "title": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 9689,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.03585, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "2144479710",
+        "name": "Eric A. Weiss"
+      },
+      {
+        "authorId": "2333223",
+        "name": "Niru Maheswaranathan"
+      },
+      {
+        "authorId": "25769960",
+        "name": "S. Ganguli"
+      }
+    ],
+    "abstract": "A central problem in machine learning involves modeling complex data-sets using highly flexible families of probability distributions in which learning, sampling, inference, and evaluation are still analytically or computationally tractable. Here, we develop an approach that simultaneously achieves both flexibility and tractability. The essential idea, inspired by non-equilibrium statistical physics, is to systematically and slowly destroy structure in a data distribution through an iterative forward diffusion process. We then learn a reverse diffusion process that restores structure in data, yielding a highly flexible and tractable generative model of the data. This approach allows us to rapidly learn, sample from, and evaluate probabilities in deep generative models with thousands of layers or time steps, as well as to compute conditional and posterior probabilities under the learned model. We additionally release an open source reference implementation of the algorithm.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6424b69f3ff4d35249c0bb7ef912fbc2c86f4ff4",
+    "externalIds": {
+      "MAG": "1834627138",
+      "ArXiv": "1411.7766",
+      "DBLP": "journals/corr/LiuLWT14",
+      "DOI": "10.1109/ICCV.2015.425",
+      "CorpusId": 459456
+    },
+    "title": "Deep Learning Face Attributes in the Wild",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 9491,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1411.7766",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.7766, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117940996",
+        "name": "Ziwei Liu"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      },
+      {
+        "authorId": "31843833",
+        "name": "Xiaogang Wang"
+      },
+      {
+        "authorId": "50295995",
+        "name": "Xiaoou Tang"
+      }
+    ],
+    "abstract": "Predicting face attributes in the wild is challenging due to complex face variations. We propose a novel deep learning framework for attribute prediction in the wild. It cascades two CNNs, LNet and ANet, which are fine-tuned jointly with attribute tags, but pre-trained differently. LNet is pre-trained by massive general object categories for face localization, while ANet is pre-trained by massive face identities for attribute prediction. This framework not only outperforms the state-of-the-art with a large margin, but also reveals valuable facts on learning face representation. (1) It shows how the performances of face localization (LNet) and attribute prediction (ANet) can be improved by different pre-training strategies. (2) It reveals that although the filters of LNet are fine-tuned only with image-level attribute tags, their response maps over entire images have strong indication of face locations. This fact enables training LNet for face localization with only image-level annotations, but without face bounding boxes or landmarks, which are required by all attribute recognition works. (3) It also demonstrates that the high-level hidden neurons of ANet automatically discover semantic concepts after pre-training with massive face identities, and such concepts are significantly enriched after fine-tuning with attribute tags. Each attribute can be well explained with a sparse linear combination of these concepts.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2d508e0d83bc363c45ba4dd559292e931b16e55c",
+    "externalIds": {
+      "MAG": "2997127702",
+      "DOI": "10.1109/99.388960",
+      "CorpusId": 5857695
+    },
+    "title": "An introduction to wavelets",
+    "venue": "",
+    "year": 1995,
+    "citationCount": 4536,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/99.388960?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/99.388960, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7360659",
+        "name": "A. Graps"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "50634bccecfdc1e2af5bfd44d9fe4bfad1e608ca",
+    "externalIds": {
+      "DBLP": "conf/iclr/Yao0HL0D025",
+      "CorpusId": 277677312
+    },
+    "title": "Manifold Constraint Reduces Exposure Bias in Accelerated Diffusion Sampling",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2293773627",
+        "name": "Yuzhe Yao"
+      },
+      {
+        "authorId": "2265325273",
+        "name": "Jun Chen"
+      },
+      {
+        "authorId": "2354710557",
+        "name": "Zeyi Huang"
+      },
+      {
+        "authorId": "2275559469",
+        "name": "Haonan Lin"
+      },
+      {
+        "authorId": "2232952603",
+        "name": "Mengmeng Wang"
+      },
+      {
+        "authorId": "2257001357",
+        "name": "Guang Dai"
+      },
+      {
+        "authorId": "2265463017",
+        "name": "Jingdong Wang"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d8cfa51f6d36b653973ee1ce9b4149f8240afb6d",
+    "externalIds": {
+      "DBLP": "conf/iclr/ZhangLP0X25",
+      "CorpusId": 278497826
+    },
+    "title": "Anti-Exposure Bias in Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2288845301",
+        "name": "Junyu Zhang"
+      },
+      {
+        "authorId": "51023221",
+        "name": "Daochang Liu"
+      },
+      {
+        "authorId": "2322015188",
+        "name": "Eunbyung Park"
+      },
+      {
+        "authorId": "2288683262",
+        "name": "Shichao Zhang"
+      },
+      {
+        "authorId": "2288626806",
+        "name": "Chang Xu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c68796f833a7151f0a63d1d1608dc902b4fdc9b6",
+    "externalIds": {
+      "CorpusId": 10319744
+    },
+    "title": "GENERATIVE ADVERSARIAL NETS",
+    "venue": "",
+    "year": 2018,
+    "citationCount": 41055,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2262142027",
+        "name": "Individualized Treat"
+      },
+      {
+        "authorId": "2334322732",
+        "name": "Jinsung Yoon"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5d90f06bb70a0a3dced62413346235c02b1aa086",
+    "externalIds": {
+      "MAG": "2945315962",
+      "CorpusId": 18268744
+    },
+    "title": "Learning Multiple Layers of Features from Tiny Images",
+    "venue": "",
+    "year": 2009,
+    "citationCount": 41724,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

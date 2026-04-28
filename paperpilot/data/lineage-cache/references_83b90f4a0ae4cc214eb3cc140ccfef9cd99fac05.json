@@ -1,0 +1,2929 @@
+[
+  {
+    "paperId": "4c14b1c41cb0aaa68f5d3f4a432f55e7199657ea",
+    "externalIds": {
+      "DBLP": "journals/micro/GholamiYKHMK24",
+      "ArXiv": "2403.14123",
+      "DOI": "10.1109/MM.2024.3373763",
+      "CorpusId": 268553809
+    },
+    "title": "AI and Memory Wall",
+    "venue": "IEEE Micro",
+    "year": 2024,
+    "citationCount": 311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.14123, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10419477",
+        "name": "A. Gholami"
+      },
+      {
+        "authorId": "9088433",
+        "name": "Z. Yao"
+      },
+      {
+        "authorId": "2262511276",
+        "name": "Sehoon Kim"
+      },
+      {
+        "authorId": "2029486869",
+        "name": "Coleman Hooper"
+      },
+      {
+        "authorId": "2271923589",
+        "name": "Michael W. Mahoney"
+      },
+      {
+        "authorId": "2242659602",
+        "name": "Kurt Keutzer"
+      }
+    ],
+    "abstract": "The availability of unprecedented unsupervised training data, along with neural scaling laws, has resulted in an unprecedented surge in model size and compute requirements for serving/training large language models. However, the main performance bottleneck is increasingly shifting to memory bandwidth. Over the past 20 years, peak server hardware floating-point operations per second have been scaling at 3.0${\\times}$× per two years, outpacing the growth of dynamic random-access memory and interconnect bandwidth, which have only scaled at 1.6 and 1.4 times every two years, respectively. This disparity has made memory, rather than compute, the primary bottleneck in AI applications, particularly in serving. Here, we analyze encoder and decoder transformer models and show how memory bandwidth can become the dominant bottleneck for decoder models. We argue for a redesign in model architecture, training, and deployment strategies to overcome this memory limitation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "42a14d824caa3348046eb34c37e2ab7985faa7a3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2303-06865",
+      "ArXiv": "2303.06865",
+      "DOI": "10.48550/arXiv.2303.06865",
+      "CorpusId": 257495837
+    },
+    "title": "High-throughput Generative Inference of Large Language Models with a Single GPU",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 668,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.06865",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.06865, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2209360681",
+        "name": "Ying Sheng"
+      },
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "2833699",
+        "name": "Binhang Yuan"
+      },
+      {
+        "authorId": "2141335450",
+        "name": "Zhuohan Li"
+      },
+      {
+        "authorId": "1491753352",
+        "name": "Max Ryabinin"
+      },
+      {
+        "authorId": "49577833",
+        "name": "Daniel Y. Fu"
+      },
+      {
+        "authorId": "2099588736",
+        "name": "Zhiqiang Xie"
+      },
+      {
+        "authorId": "4319427",
+        "name": "Beidi Chen"
+      },
+      {
+        "authorId": "2052981589",
+        "name": "Clark W. Barrett"
+      },
+      {
+        "authorId": "2119114305",
+        "name": "Joseph Gonzalez"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      },
+      {
+        "authorId": "1803218",
+        "name": "Christopher Ré"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      },
+      {
+        "authorId": "2146064162",
+        "name": "Ce Zhang"
+      }
+    ],
+    "abstract": "The high computational and memory requirements of large language model (LLM) inference make it feasible only with multiple high-end accelerators. Motivated by the emerging demand for latency-insensitive tasks with batched processing, this paper initiates the study of high-throughput LLM inference using limited resources, such as a single commodity GPU. We present FlexGen, a high-throughput generation engine for running LLMs with limited GPU memory. FlexGen can be flexibly configured under various hardware resource constraints by aggregating memory and computation from the GPU, CPU, and disk. By solving a linear programming problem, it searches for efficient patterns to store and access tensors. FlexGen further compresses the weights and the attention cache to 4 bits with negligible accuracy loss. These techniques enable FlexGen to have a larger space of batch size choices and thus significantly increase maximum throughput. As a result, when running OPT-175B on a single 16GB GPU, FlexGen achieves significantly higher throughput compared to state-of-the-art offloading systems, reaching a generation throughput of 1 token/s for the first time with an effective batch size of 144. On the HELM benchmark, FlexGen can benchmark a 30B model with a 16GB GPU on 7 representative sub-scenarios in 21 hours. The code is available at https://github.com/FMInference/FlexGen",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "57e849d0de13ed5f91d086936296721d4ff75a75",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-13971",
+      "ArXiv": "2302.13971",
+      "CorpusId": 257219404
+    },
+    "title": "LLaMA: Open and Efficient Foundation Language Models",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 19563,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.13971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "1490887583",
+        "name": "X. Martinet"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "47733973",
+        "name": "Timothée Lacroix"
+      },
+      {
+        "authorId": "3361236",
+        "name": "Baptiste Rozière"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "2072738644",
+        "name": "Eric Hambro"
+      },
+      {
+        "authorId": "2209986197",
+        "name": "Faisal Azhar"
+      },
+      {
+        "authorId": "2166043087",
+        "name": "Aur'elien Rodriguez"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      }
+    ],
+    "abstract": "We introduce LLaMA, a collection of foundation language models ranging from 7B to 65B parameters. We train our models on trillions of tokens, and show that it is possible to train state-of-the-art models using publicly available datasets exclusively, without resorting to proprietary and inaccessible datasets. In particular, LLaMA-13B outperforms GPT-3 (175B) on most benchmarks, and LLaMA-65B is competitive with the best models, Chinchilla-70B and PaLM-540B. We release all our models to the research community.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e65b346d442e9962a4276dc1c1af2956d9d5f1eb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-10560",
+      "ArXiv": "2212.10560",
+      "ACL": "2023.acl-long.754",
+      "DOI": "10.48550/arXiv.2212.10560",
+      "CorpusId": 254877310
+    },
+    "title": "Self-Instruct: Aligning Language Models with Self-Generated Instructions",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 3128,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2212.10560",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.10560, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1705260",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "2156538832",
+        "name": "Yeganeh Kordi"
+      },
+      {
+        "authorId": "1817207",
+        "name": "Swaroop Mishra"
+      },
+      {
+        "authorId": "94500147",
+        "name": "Alisa Liu"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "1783281",
+        "name": "Daniel Khashabi"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "Large “instruction-tuned” language models (i.e., finetuned to respond to instructions) have demonstrated a remarkable ability to generalize zero-shot to new tasks. Nevertheless, they depend heavily on human-written instruction data that is often limited in quantity, diversity, and creativity, therefore hindering the generality of the tuned model. We introduce Self-Instruct, a framework for improving the instruction-following capabilities of pretrained language models by bootstrapping off their own generations. Our pipeline generates instructions, input, and output samples from a language model, then filters invalid or similar ones before using them to finetune the original model. Applying our method to the vanilla GPT3, we demonstrate a 33% absolute improvement over the original model on Super-NaturalInstructions, on par with the performance of InstructGPT-001, which was trained with private user data and human annotations. For further evaluation, we curate a set of expert-written instructions for novel tasks, and show through human evaluation that tuning GPT3 with Self-Instruct outperforms using existing public instruction datasets by a large margin, leaving only a 5% absolute gap behind InstructGPT-001. Self-Instruct provides an almost annotation-free method for aligning pre-trained language models with instructions, and we release our large synthetic dataset to facilitate future studies on instruction tuning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "379e42895f6d40ab9e9559609f505aba89145a5d",
+    "externalIds": {
+      "DBLP": "conf/mlsys/PopeDCDBHXAD23",
+      "ArXiv": "2211.05102",
+      "DOI": "10.48550/arXiv.2211.05102",
+      "CorpusId": 253420623
+    },
+    "title": "Efficiently Scaling Transformer Inference",
+    "venue": "Conference on Machine Learning and Systems",
+    "year": 2022,
+    "citationCount": 580,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2211.05102",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.05102, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2161431901",
+        "name": "Reiner Pope"
+      },
+      {
+        "authorId": "2269733876",
+        "name": "Sholto Douglas"
+      },
+      {
+        "authorId": "2841893",
+        "name": "A. Chowdhery"
+      },
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "6639036",
+        "name": "Anselm Levskaya"
+      },
+      {
+        "authorId": "151488492",
+        "name": "J. Heek"
+      },
+      {
+        "authorId": "8867471",
+        "name": "Kefan Xiao"
+      },
+      {
+        "authorId": "3504647",
+        "name": "Shivani Agrawal"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "We study the problem of efficient generative inference for Transformer models, in one of its most challenging settings: large deep models, with tight latency targets and long sequence lengths. Better understanding of the engineering tradeoffs for inference for large Transformer-based models is important as use cases of these models are growing rapidly throughout application areas. We develop a simple analytical model for inference efficiency to select the best multi-dimensional partitioning techniques optimized for TPU v4 slices based on the application requirements. We combine these with a suite of low-level optimizations to achieve a new Pareto frontier on the latency and model FLOPS utilization (MFU) tradeoffs on 500B+ parameter models that outperforms the FasterTransformer suite of benchmarks. We further show that with appropriate partitioning, the lower memory requirements of multiquery attention (i.e. multiple query heads share single key/value head) enables scaling up to 32x larger context lengths. Finally, we achieve a low-batch-size latency of 29ms per token during generation (using int8 weight quantization) and a 76% MFU during large-batch-size processing of input tokens, while supporting a long 2048-token context length on the PaLM 540B parameter model.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "e054efa1add2a8b8d26cfb06737fbf12b56b89dc",
+    "externalIds": {
+      "ArXiv": "2210.12924",
+      "CorpusId": 253265411
+    },
+    "title": "OLLA: Optimizing the Lifetime and Location of Arrays to Reduce the Memory Usage of Neural Networks",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.12924, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "2125205728",
+        "name": "Mostafa Elhoushi"
+      },
+      {
+        "authorId": "39960571",
+        "name": "Jacob Kahn"
+      },
+      {
+        "authorId": "144604354",
+        "name": "James Hegarty"
+      }
+    ],
+    "abstract": "The size of deep neural networks has grown exponentially in recent years. Unfortunately, hardware devices have not kept pace with the rapidly increasing memory requirements. To cope with this, researchers have turned to techniques such as spilling and recomputation, which increase training time, or reduced precision and model pruning, which can affect model accuracy. We present OLLA, an algorithm that optimizes the lifetime and memory location of the tensors used to train neural networks. Our method reduces the memory usage of existing neural networks, without needing any modification to the models or their training procedures. We formulate the problem as a joint integer linear program (ILP). We present several techniques to simplify the encoding of the problem, and enable our approach to scale to the size of state-of-the-art neural networks using an off-the-shelf ILP solver. We experimentally demonstrate that OLLA only takes minutes if not seconds to allow the training of neural networks using one-third less memory on average.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1913ead27485fe83b405529e8d294d4b595f1e3a",
+    "externalIds": {
+      "DBLP": "conf/icml/Patil0DS022",
+      "ArXiv": "2207.07697",
+      "DOI": "10.48550/arXiv.2207.07697",
+      "CorpusId": 250340980
+    },
+    "title": "POET: Training Neural Networks on Tiny Devices with Integrated Rematerialization and Paging",
+    "venue": "International Conference on Machine Learning",
+    "year": 2022,
+    "citationCount": 52,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.07697",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.07697, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "80887461",
+        "name": "Shishir G. Patil"
+      },
+      {
+        "authorId": "2066974703",
+        "name": "Paras Jain"
+      },
+      {
+        "authorId": "144215780",
+        "name": "P. Dutta"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      }
+    ],
+    "abstract": "Fine-tuning models on edge devices like mobile phones would enable privacy-preserving personalization over sensitive data. However, edge training has historically been limited to relatively small models with simple architectures because training is both memory and energy intensive. We present POET, an algorithm to enable training large neural networks on memory-scarce battery-operated edge devices. POET jointly optimizes the integrated search search spaces of rematerialization and paging, two algorithms to reduce the memory consumption of backpropagation. Given a memory budget and a run-time constraint, we formulate a mixed-integer linear program (MILP) for energy-optimal training. Our approach enables training significantly larger models on embedded devices while reducing energy consumption while not modifying mathematical correctness of backpropagation. We demonstrate that it is possible to fine-tune both ResNet-18 and BERT within the memory constraints of a Cortex-M class embedded device while outperforming current edge training methods in energy efficiency. POET is an open-source project available at https://github.com/ShishirPatil/poet",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c022f75b00d795c6297d6a9ea948856ea4d365a1",
+    "externalIds": {
+      "DBLP": "conf/sc/AminabadiRALLZRSZRH22",
+      "ArXiv": "2207.00032",
+      "DOI": "10.1109/SC41404.2022.00051",
+      "CorpusId": 250243681
+    },
+    "title": "DeepSpeed- Inference: Enabling Efficient Inference of Transformer Models at Unprecedented Scale",
+    "venue": "International Conference for High Performance Computing, Networking, Storage and Analysis",
+    "year": 2022,
+    "citationCount": 571,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2207.00032",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.00032, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3394222",
+        "name": "Reza Yazdani Aminabadi"
+      },
+      {
+        "authorId": "32817044",
+        "name": "Samyam Rajbhandari"
+      },
+      {
+        "authorId": "67016465",
+        "name": "Minjia Zhang"
+      },
+      {
+        "authorId": "2942686",
+        "name": "A. A. Awan"
+      },
+      {
+        "authorId": "2133092186",
+        "name": "Cheng Li"
+      },
+      {
+        "authorId": "2363525996",
+        "name": "Duo Li"
+      },
+      {
+        "authorId": "123820298",
+        "name": "Elton Zheng"
+      },
+      {
+        "authorId": "3299496",
+        "name": "Jeff Rasley"
+      },
+      {
+        "authorId": "2110486618",
+        "name": "Shaden Smith"
+      },
+      {
+        "authorId": "2537545",
+        "name": "Olatunji Ruwase"
+      },
+      {
+        "authorId": "2300208615",
+        "name": "Yuxiong He"
+      }
+    ],
+    "abstract": "The landscape of transformer model inference is increasingly diverse in model size, model characteristics, latency and throughput requirements, hardware requirements, etc. With such diversity, designing a versatile inference system is challenging. DeepSpeed-Inference addresses these challenges by (1) a multi-GPU inference solution to minimize latency while maximizing throughput for both dense and sparse transformers when the model fits in aggregate GPU memory, and (2) a heterogeneous inference solution that leverages CPU/NVMe/GPU memory to enable high-throughput inference for models larger than aggregate GPU memory. DeepSpeed-Inference reduces latency by 6.4× and increases throughput by 1.5 ×over the state-of-the-art. It enables trillion parameter scale inference under real-time latency constraints by leveraging hundreds of GPUs, an unprecedented scale for inference. It can inference 25 ×larger models than with GPU-only solutions, while delivering a high throughput of 84 TFLOPS (over 50% of A6000 peak).",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "87c5b281fa43e6f27191b20a8dd694eda1126336",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2205-14135",
+      "ArXiv": "2205.14135",
+      "DOI": "10.52202/068431-1189",
+      "CorpusId": 249151871
+    },
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 4098,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.14135, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      },
+      {
+        "authorId": "49577833",
+        "name": "Daniel Y. Fu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "1755572",
+        "name": "A. Rudra"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "Transformers are slow and memory-hungry on long sequences, since the time and memory complexity of self-attention are quadratic in sequence length. Approximate attention methods have attempted to address this problem by trading off model quality to reduce the compute complexity, but often do not achieve wall-clock speedup. We argue that a missing principle is making attention algorithms IO-aware -- accounting for reads and writes between levels of GPU memory. We propose FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce the number of memory reads/writes between GPU high bandwidth memory (HBM) and GPU on-chip SRAM. We analyze the IO complexity of FlashAttention, showing that it requires fewer HBM accesses than standard attention, and is optimal for a range of SRAM sizes. We also extend FlashAttention to block-sparse attention, yielding an approximate attention algorithm that is faster than any existing approximate attention method. FlashAttention trains Transformers faster than existing baselines: 15% end-to-end wall-clock speedup on BERT-large (seq. length 512) compared to the MLPerf 1.1 training speed record, 3$\\times$ speedup on GPT-2 (seq. length 1K), and 2.4$\\times$ speedup on long-range arena (seq. length 1K-4K). FlashAttention and block-sparse FlashAttention enable longer context in Transformers, yielding higher quality models (0.7 better perplexity on GPT-2 and 6.4 points of lift on long-document classification) and entirely new capabilities: the first Transformers to achieve better-than-chance performance on the Path-X challenge (seq. length 16K, 61.4% accuracy) and Path-256 (seq. length 64K, 63.1% accuracy).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "13a0d8bb38f739990c8cd65a44061c6534f17221",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2205-01068",
+      "ArXiv": "2205.01068",
+      "CorpusId": 248496292
+    },
+    "title": "OPT: Open Pre-trained Transformer Language Models",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 4663,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.01068, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108244542",
+        "name": "Susan Zhang"
+      },
+      {
+        "authorId": "3849208",
+        "name": "Stephen Roller"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "2347956",
+        "name": "Mikel Artetxe"
+      },
+      {
+        "authorId": "2108267192",
+        "name": "Moya Chen"
+      },
+      {
+        "authorId": "1782969",
+        "name": "Shuohui Chen"
+      },
+      {
+        "authorId": "2065332326",
+        "name": "Christopher Dewan"
+      },
+      {
+        "authorId": "2138579860",
+        "name": "Mona T. Diab"
+      },
+      {
+        "authorId": "2116235416",
+        "name": "Xian Li"
+      },
+      {
+        "authorId": "143724481",
+        "name": "Xi Victoria Lin"
+      },
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "40511414",
+        "name": "Myle Ott"
+      },
+      {
+        "authorId": "88728159",
+        "name": "Sam Shleifer"
+      },
+      {
+        "authorId": "35752280",
+        "name": "Kurt Shuster"
+      },
+      {
+        "authorId": "2082239112",
+        "name": "Daniel Simig"
+      },
+      {
+        "authorId": "2146367061",
+        "name": "Punit Singh Koura"
+      },
+      {
+        "authorId": "5382923",
+        "name": "Anjali Sridhar"
+      },
+      {
+        "authorId": "1785372925",
+        "name": "Tianlu Wang"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "Large language models, which are often trained for hundreds of thousands of compute days, have shown remarkable capabilities for zero- and few-shot learning. Given their computational cost, these models are difficult to replicate without significant capital. For the few that are available through APIs, no access is granted to the full model weights, making them difficult to study. We present Open Pre-trained Transformers (OPT), a suite of decoder-only pre-trained transformers ranging from 125M to 175B parameters, which we aim to fully and responsibly share with interested researchers. We show that OPT-175B is comparable to GPT-3, while requiring only 1/7th the carbon footprint to develop. We are also releasing our logbook detailing the infrastructure challenges we faced, along with code for experimenting with all of the released models.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "acbdbf49f9bc3f151b93d9ca9a06009f4f6eb269",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-03374",
+      "ArXiv": "2107.03374",
+      "CorpusId": 235755472
+    },
+    "title": "Evaluating Large Language Models Trained on Code",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 9224,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.03374, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "153930486",
+        "name": "Qiming Yuan"
+      },
+      {
+        "authorId": "2117715024",
+        "name": "Henrique Pondé"
+      },
+      {
+        "authorId": "2053807409",
+        "name": "Jared Kaplan"
+      },
+      {
+        "authorId": "144632352",
+        "name": "Harrison Edwards"
+      },
+      {
+        "authorId": "51178856",
+        "name": "Yura Burda"
+      },
+      {
+        "authorId": "2117706920",
+        "name": "Nicholas Joseph"
+      },
+      {
+        "authorId": "2065151121",
+        "name": "Greg Brockman"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "41158993",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2136008481",
+        "name": "Michael Petrov"
+      },
+      {
+        "authorId": "2103414",
+        "name": "Heidy Khlaaf"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "1466431052",
+        "name": "Brooke Chan"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2068123790",
+        "name": "Mikhail Pavlov"
+      },
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "2275252092",
+        "name": "P. Tillet"
+      },
+      {
+        "authorId": "9927844",
+        "name": "F. Such"
+      },
+      {
+        "authorId": "80876468",
+        "name": "D. Cummings"
+      },
+      {
+        "authorId": "3407285",
+        "name": "Matthias Plappert"
+      },
+      {
+        "authorId": "2117714459",
+        "name": "Fotios Chantzis"
+      },
+      {
+        "authorId": "2057742918",
+        "name": "Elizabeth Barnes"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "39121861",
+        "name": "William H. Guss"
+      },
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "2256699302",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "150298413",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "153480842",
+        "name": "A. Carr"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "2318703608",
+        "name": "Josh Achiam"
+      },
+      {
+        "authorId": "40055795",
+        "name": "Vedant Misra"
+      },
+      {
+        "authorId": "1404556973",
+        "name": "Evan Morikawa"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "3555117",
+        "name": "M. Knight"
+      },
+      {
+        "authorId": "35167962",
+        "name": "Miles Brundage"
+      },
+      {
+        "authorId": "2117715631",
+        "name": "M. Murati"
+      },
+      {
+        "authorId": "2059169400",
+        "name": "Katie Mayer"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "39593364",
+        "name": "Bob McGrew"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      }
+    ],
+    "abstract": "We introduce Codex, a GPT language model fine-tuned on publicly available code from GitHub, and study its Python code-writing capabilities. A distinct production version of Codex powers GitHub Copilot. On HumanEval, a new evaluation set we release to measure functional correctness for synthesizing programs from docstrings, our model solves 28.8% of the problems, while GPT-3 solves 0% and GPT-J solves 11.4%. Furthermore, we find that repeated sampling from the model is a surprisingly effective strategy for producing working solutions to difficult prompts. Using this method, we solve 70.2% of our problems with 100 samples per problem. Careful investigation of our model reveals its limitations, including difficulty with docstrings describing long chains of operations and with binding operations to variables. Finally, we discuss the potential broader impacts of deploying powerful code generation technologies, covering safety, security, and economics.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ffdbd7f0b03b85747b001b4734d5ee31b5229aa4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2104-08691",
+      "ArXiv": "2104.08691",
+      "ACL": "2021.emnlp-main.243",
+      "DOI": "10.18653/v1/2021.emnlp-main.243",
+      "CorpusId": 233296808
+    },
+    "title": "The Power of Scale for Parameter-Efficient Prompt Tuning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2021,
+    "citationCount": 5407,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.emnlp-main.243.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.08691, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144104130",
+        "name": "Brian Lester"
+      },
+      {
+        "authorId": "1388360943",
+        "name": "Rami Al-Rfou"
+      },
+      {
+        "authorId": "40832517",
+        "name": "Noah Constant"
+      }
+    ],
+    "abstract": "In this work, we explore “prompt tuning,” a simple yet effective mechanism for learning “soft prompts” to condition frozen language models to perform specific downstream tasks. Unlike the discrete text prompts used by GPT-3, soft prompts are learned through backpropagation and can be tuned to incorporate signals from any number of labeled examples. Our end-to-end learned approach outperforms GPT-3’s few-shot learning by a large margin. More remarkably, through ablations on model size using T5, we show that prompt tuning becomes more competitive with scale: as models exceed billions of parameters, our method “closes the gap” and matches the strong performance of model tuning (where all model weights are tuned). This finding is especially relevant because large models are costly to share and serve and the ability to reuse one frozen model for multiple downstream tasks can ease this burden. Our method can be seen as a simplification of the recently proposed “prefix tuning” of Li and Liang (2021) and we provide a comparison to this and other similar approaches. Finally, we show that conditioning a frozen model with soft prompts confers benefits in robustness to domain transfer and enables efficient “prompt ensembling.” We release code and model checkpoints to reproduce our experiments.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "12b71736392209b4292471b7da0aed71ba2aa545",
+    "externalIds": {
+      "DBLP": "conf/usenix/0015RARYZ0H21",
+      "MAG": "3121562065",
+      "ArXiv": "2101.06840",
+      "CorpusId": 231632857
+    },
+    "title": "ZeRO-Offload: Democratizing Billion-Scale Model Training",
+    "venue": "USENIX Annual Technical Conference",
+    "year": 2021,
+    "citationCount": 560,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.06840, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153487250",
+        "name": "Jie Ren"
+      },
+      {
+        "authorId": "32817044",
+        "name": "Samyam Rajbhandari"
+      },
+      {
+        "authorId": "3394222",
+        "name": "Reza Yazdani Aminabadi"
+      },
+      {
+        "authorId": "2537545",
+        "name": "Olatunji Ruwase"
+      },
+      {
+        "authorId": "2380545",
+        "name": "Shuangyang Yang"
+      },
+      {
+        "authorId": "67016465",
+        "name": "Minjia Zhang"
+      },
+      {
+        "authorId": null,
+        "name": "Dong Li"
+      },
+      {
+        "authorId": "2300208615",
+        "name": "Yuxiong He"
+      }
+    ],
+    "abstract": "Large-scale model training has been a playing ground for a limited few requiring complex model refactoring and access to prohibitively expensive GPU clusters. ZeRO-Offload changes the large model training landscape by making large model training accessible to nearly everyone. It can train models with over 13 billion parameters on a single GPU, a 10x increase in size compared to popular framework such as PyTorch, and it does so without requiring any model change from the data scientists or sacrificing computational efficiency. ZeRO-Offload enables large model training by offloading data and compute to CPU. To preserve compute efficiency, it is designed to minimize the data movement to/from GPU, and reduce CPU compute time while maximizing memory savings on GPU. As a result, ZeRO-Offload can achieve 40 TFlops/GPU on a single NVIDIA V100 GPU for 10B parameter model compared to 30TF using PyTorch alone for a 1.4B parameter model, the largest that can be trained without running out of memory. ZeRO-Offload is also designed to scale on multiple-GPUs when available, offering near linear speedup on up to 128 GPUs. Additionally, it can work together with model parallelism to train models with over 70 billion parameters on a single DGX-2 box, a 4.5x increase in model size compared to using model parallelism alone. By combining compute and memory efficiency with ease-of-use, ZeRO-Offload democratizes large-scale model training making it accessible to even data scientists with access to just a single GPU.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "33d735c2f889b5b6a5851f01e741eae535a91127",
+    "externalIds": {
+      "MAG": "3097841484",
+      "DBLP": "conf/osdi/MaXYXMCHYZZ20",
+      "CorpusId": 228990152
+    },
+    "title": "Rammer: Enabling Holistic Deep Learning Compiler Optimizations with rTasks",
+    "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+    "year": 2020,
+    "citationCount": 191,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2492241",
+        "name": "Lingxiao Ma"
+      },
+      {
+        "authorId": "2099588736",
+        "name": "Zhiqiang Xie"
+      },
+      {
+        "authorId": "98256743",
+        "name": "Zhi Yang"
+      },
+      {
+        "authorId": "2870618",
+        "name": "Jilong Xue"
+      },
+      {
+        "authorId": "11009920",
+        "name": "Youshan Miao"
+      },
+      {
+        "authorId": "2053108211",
+        "name": "Wei Cui"
+      },
+      {
+        "authorId": "50105419",
+        "name": "Wenxiang Hu"
+      },
+      {
+        "authorId": "145338263",
+        "name": "Fan Yang"
+      },
+      {
+        "authorId": "1978393184",
+        "name": "Lintao Zhang"
+      },
+      {
+        "authorId": "93317102",
+        "name": "Lidong Zhou"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7bb359b734643ebd8b1180128a1ad30b7c80a7d7",
+    "externalIds": {
+      "MAG": "3095488153",
+      "DBLP": "conf/cloud/CrankshawSMZS0T20",
+      "DOI": "10.1145/3419111.3421285",
+      "CorpusId": 222296313
+    },
+    "title": "InferLine: latency-aware provisioning and scaling for prediction serving pipelines",
+    "venue": "ACM Symposium on Cloud Computing",
+    "year": 2020,
+    "citationCount": 163,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3419111.3421285",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3419111.3421285?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3419111.3421285, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50564124",
+        "name": "D. Crankshaw"
+      },
+      {
+        "authorId": "34741544",
+        "name": "Gur-Eyal Sela"
+      },
+      {
+        "authorId": "145272357",
+        "name": "Xiangxi Mo"
+      },
+      {
+        "authorId": "52145600",
+        "name": "Corey Zumar"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "144312193",
+        "name": "Alexey Tumanov"
+      }
+    ],
+    "abstract": "Serving ML prediction pipelines spanning multiple models and hardware accelerators is a key challenge in production machine learning. Optimally configuring these pipelines to meet tight end-to-end latency goals is complicated by the interaction between model batch size, the choice of hardware accelerator, and variation in the query arrival process. In this paper we introduce InferLine, a system which provisions and manages the individual stages of prediction pipelines to meet end-to-end tail latency constraints while minimizing cost. InferLine consists of a low-frequency combinatorial planner and a high-frequency auto-scaling tuner. The low-frequency planner leverages stage-wise profiling, discrete event simulation, and constrained combinatorial search to automatically select hardware type, replication, and batching parameters for each stage in the pipeline. The high-frequency tuner uses network calculus to auto-scale each stage to meet tail latency goals in response to changes in the query arrival process. We demonstrate that InferLine outperforms existing approaches by up to 7.6x in cost while achieving up to 34.5x lower latency SLO miss rate on realistic workloads and generalizes across state-of-the-art model serving frameworks.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "0c775d7ed34fb4690b4291490778649ae75c48d2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2010-05680",
+      "MAG": "3093091803",
+      "ArXiv": "2010.05680",
+      "DOI": "10.1145/3437801.3441578",
+      "CorpusId": 222291613
+    },
+    "title": "TurboTransformers: an efficient GPU serving system for transformer models",
+    "venue": "ACM SIGPLAN Symposium on Principles & Practice of Parallel Programming",
+    "year": 2020,
+    "citationCount": 171,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3437801.3441578",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.05680, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "30760010",
+        "name": "Jiarui Fang"
+      },
+      {
+        "authorId": "144705629",
+        "name": "Yang Yu"
+      },
+      {
+        "authorId": "2115459759",
+        "name": "Chen-liang Zhao"
+      },
+      {
+        "authorId": "2141009410",
+        "name": "Jie Zhou"
+      }
+    ],
+    "abstract": "The transformer is the most critical algorithm innovation of the Nature Language Processing (NLP) field in recent years. Unlike the Recurrent Neural Network (RNN) models, transformers are able to process on dimensions of sequence lengths in parallel, therefore leads to better accuracy on long sequences. However, efficient deployments of them for online services in data centers equipped with GPUs are not easy. First, more computation introduced by transformer structures makes it more challenging to meet the latency and throughput constraints of serving. Second, NLP tasks take in sentences of variable length. The variability of input dimensions brings a severe problem to efficient memory management and serving optimization. To solve the above challenges, this paper designed a transformer serving system called TurboTransformers, which consists of a computing runtime and a serving framework. Three innovative features make it stand out from other similar works. An efficient parallel algorithm is proposed for GPU-based batch reduction operations, like Softmax and LayerNorm, which are major hot spots besides BLAS routines. A memory allocation algorithm, which better balances the memory footprint and allocation/free efficiency, is designed for variable-length input situations. A serving framework equipped with a new batch scheduler using dynamic programming achieves the optimal throughput on variable-length requests. The system can achieve the state-of-the-art transformer model serving performance on GPU platforms and can be seamlessly integrated into your PyTorch code with a few lines of code.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c52ad09fac69f320e53f4e167bca9fc668434dce",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2006-02464",
+      "ArXiv": "2006.02464",
+      "MAG": "3097904259",
+      "CorpusId": 219303421
+    },
+    "title": "Serving DNNs like Clockwork: Performance Predictability from the Bottom Up",
+    "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+    "year": 2020,
+    "citationCount": 383,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.02464, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2673657",
+        "name": "A. Gujarati"
+      },
+      {
+        "authorId": "13836902",
+        "name": "Reza Karimi"
+      },
+      {
+        "authorId": "1736746173",
+        "name": "Safya Alzayat"
+      },
+      {
+        "authorId": "2163539541",
+        "name": "Wei Hao"
+      },
+      {
+        "authorId": "6164629",
+        "name": "Antoine Kaufmann"
+      },
+      {
+        "authorId": "3295331",
+        "name": "Ymir Vigfusson"
+      },
+      {
+        "authorId": "48532669",
+        "name": "Jonathan Mace"
+      }
+    ],
+    "abstract": "Machine learning inference is becoming a core building block for interactive web applications. As a result, the underlying model serving systems on which these applications depend must consistently meet low latency targets. Existing model serving architectures use well-known reactive techniques to alleviate common-case sources of latency, but cannot effectively curtail tail latency caused by unpredictable execution times. Yet the underlying execution times are not fundamentally unpredictable-on the contrary we observe that inference using Deep Neural Network (DNN) models has deterministic performance. Here, starting with the predictable execution times of individual DNN inferences, we adopt a principled design methodology to successively build a fully distributed model serving system that achieves predictable end-to-end performance. We evaluate our implementation, Clockwork, using production trace workloads, and show that Clockwork can support thousands of models while simultaneously meeting 100 ms latency targets for 99.997% of requests. We further demonstrate that Clockwork exploits predictable execution times to achieve tight request-level service-level objectives (SLOs) as well as a high degree of request-level performance isolation.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
+    "externalIds": {
+      "ArXiv": "2005.14165",
+      "DBLP": "conf/nips/BrownMRSKDNSSAA20",
+      "MAG": "3030163527",
+      "CorpusId": 218971783
+    },
+    "title": "Language Models are Few-Shot Learners",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 57154,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.14165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2065894334",
+        "name": "Melanie Subbiah"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from simple instructions - something which current NLP systems still largely struggle to do. Here we show that scaling up language models greatly improves task-agnostic, few-shot performance, sometimes even reaching competitiveness with prior state-of-the-art fine-tuning approaches. Specifically, we train GPT-3, an autoregressive language model with 175 billion parameters, 10x more than any previous non-sparse language model, and test its performance in the few-shot setting. For all tasks, GPT-3 is applied without any gradient updates or fine-tuning, with tasks and few-shot demonstrations specified purely via text interaction with the model. GPT-3 achieves strong performance on many NLP datasets, including translation, question-answering, and cloze tasks, as well as several tasks that require on-the-fly reasoning or domain adaptation, such as unscrambling words, using a novel word in a sentence, or performing 3-digit arithmetic. At the same time, we also identify some datasets where GPT-3's few-shot learning still struggles, as well as some datasets where GPT-3 faces methodological issues related to training on large web corpora. Finally, we find that GPT-3 can generate samples of news articles which human evaluators have difficulty distinguishing from articles written by humans. We discuss broader societal impacts of this finding and of GPT-3 in general.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "7cb7b80e50fd5418b7f47326e60ce32c9a0f6b38",
+    "externalIds": {
+      "MAG": "3012479151",
+      "DBLP": "conf/asplos/HuangJ020",
+      "DOI": "10.1145/3373376.3378530",
+      "CorpusId": 211019602
+    },
+    "title": "SwapAdvisor: Pushing Deep Learning Beyond the GPU Memory Limit via Smart Swapping",
+    "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+    "year": 2020,
+    "citationCount": 221,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3373376.3378530",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3373376.3378530?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3373376.3378530, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153622443",
+        "name": "Chien-chin Huang"
+      },
+      {
+        "authorId": "2071131212",
+        "name": "Gu Jin"
+      },
+      {
+        "authorId": "46276184",
+        "name": "Jinyang Li"
+      }
+    ],
+    "abstract": "It is known that deeper and wider neural networks can achieve better accuracy. But it is difficult to continue the trend to increase model size due to limited GPU memory. One promising solution is to support swapping between GPU and CPU memory. However, existing work on swapping only handle certain models and do not achieve satisfactory performance. Deep learning computation is commonly expressed as a dataflow graph which can be analyzed to improve swapping. We propose SwapAdvisor, which performs joint optimization along 3 dimensions based on a given dataflow graph: operator scheduling, memory allocation, and swap decisions. SwapAdvisor explores the vast search space using a custom-designed genetic algorithm. Evaluations using a variety of large models show that SwapAdvisor can train models up to 12 times the GPU memory limit while achieving 53-99% of the throughput of a hypothetical baseline with infinite GPU memory.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3c8a456509e6c0805354bd40a35e3f2dbf8069b1",
+    "externalIds": {
+      "MAG": "2970971581",
+      "DBLP": "journals/corr/abs-1912-01703",
+      "ArXiv": "1912.01703",
+      "CorpusId": 202786778
+    },
+    "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 51324,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.01703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3407277",
+        "name": "Adam Paszke"
+      },
+      {
+        "authorId": "39793298",
+        "name": "Sam Gross"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "1977806",
+        "name": "Adam Lerer"
+      },
+      {
+        "authorId": "2065251344",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "114250963",
+        "name": "Gregory Chanan"
+      },
+      {
+        "authorId": "2059271276",
+        "name": "Trevor Killeen"
+      },
+      {
+        "authorId": "3370429",
+        "name": "Zeming Lin"
+      },
+      {
+        "authorId": "3365851",
+        "name": "N. Gimelshein"
+      },
+      {
+        "authorId": "3029482",
+        "name": "L. Antiga"
+      },
+      {
+        "authorId": "3050846",
+        "name": "Alban Desmaison"
+      },
+      {
+        "authorId": "1473151134",
+        "name": "Andreas Köpf"
+      },
+      {
+        "authorId": "2052812305",
+        "name": "E. Yang"
+      },
+      {
+        "authorId": "2253681376",
+        "name": "Zachary DeVito"
+      },
+      {
+        "authorId": "10707709",
+        "name": "Martin Raison"
+      },
+      {
+        "authorId": "41203992",
+        "name": "Alykhan Tejani"
+      },
+      {
+        "authorId": "22236100",
+        "name": "Sasank Chilamkurthy"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "152599430",
+        "name": "Lu Fang"
+      },
+      {
+        "authorId": "2113829116",
+        "name": "Junjie Bai"
+      },
+      {
+        "authorId": "2127604",
+        "name": "Soumith Chintala"
+      }
+    ],
+    "abstract": "Deep learning frameworks have often focused on either usability or speed, but not both. PyTorch is a machine learning library that shows that these two goals are in fact compatible: it was designed from first principles to support an imperative and Pythonic programming style that supports code as a model, makes debugging easy and is consistent with other popular scientific computing libraries, while remaining efficient and supporting hardware accelerators such as GPUs. In this paper, we detail the principles that drove the implementation of PyTorch and how they are reflected in its architecture. We emphasize that every aspect of PyTorch is a regular Python program under the full control of its user. We also explain how the careful and pragmatic implementation of the key components of its runtime enables them to work together to achieve compelling performance. We demonstrate the efficiency of individual subsystems, as well as the overall speed of PyTorch on several commonly used benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8b9b2f1ec32040c30d2c296ac1688a6627a8fc12",
+    "externalIds": {
+      "DBLP": "conf/sosp/ShenCJZKPKS19",
+      "MAG": "2982157693",
+      "DOI": "10.1145/3341301.3359658",
+      "CorpusId": 204812163
+    },
+    "title": "Nexus: a GPU cluster engine for accelerating DNN-based video analysis",
+    "venue": "Symposium on Operating Systems Principles",
+    "year": 2019,
+    "citationCount": 320,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3341301.3359658",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3341301.3359658?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3341301.3359658, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3050154",
+        "name": "Haichen Shen"
+      },
+      {
+        "authorId": "2146071876",
+        "name": "Lequn Chen"
+      },
+      {
+        "authorId": "3283846",
+        "name": "Yuchen Jin"
+      },
+      {
+        "authorId": "2116736141",
+        "name": "Liangyu Zhao"
+      },
+      {
+        "authorId": "35677133",
+        "name": "Bingyu Kong"
+      },
+      {
+        "authorId": "3041721",
+        "name": "Matthai Philipose"
+      },
+      {
+        "authorId": "144695691",
+        "name": "A. Krishnamurthy"
+      },
+      {
+        "authorId": "151470725",
+        "name": "Ravi Sundaram"
+      }
+    ],
+    "abstract": "We address the problem of serving Deep Neural Networks (DNNs) efficiently from a cluster of GPUs. In order to realize the promise of very low-cost processing made by accelerators such as GPUs, it is essential to run them at sustained high utilization. Doing so requires cluster-scale resource management that performs detailed scheduling of GPUs, reasoning about groups of DNN invocations that need to be co-scheduled, and moving from the conventional whole-DNN execution model to executing fragments of DNNs. Nexus is a fully implemented system that includes these innovations. In large-scale case studies on 16 GPUs, when required to stay within latency constraints at least 99% of the time, Nexus can process requests at rates 1.8-12.7X higher than state of the art systems can. A long-running multi-application deployment stays within 84% of optimal utilization and, on a 100-GPU cluster, violates latency SLOs on 0.27% of requests.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fd431005d26100f5453590080683cbae9dc1189f",
+    "externalIds": {
+      "ArXiv": "1910.02653",
+      "MAG": "3037639655",
+      "DBLP": "journals/corr/abs-1910-02653",
+      "CorpusId": 203837073
+    },
+    "title": "Checkmate: Breaking the Memory Wall with Optimal Tensor Rematerialization",
+    "venue": "Conference on Machine Learning and Systems",
+    "year": 2019,
+    "citationCount": 237,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.02653, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2066974703",
+        "name": "Paras Jain"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1383116857",
+        "name": "Aniruddha Nrusimha"
+      },
+      {
+        "authorId": "10419477",
+        "name": "A. Gholami"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1732330",
+        "name": "K. Keutzer"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      }
+    ],
+    "abstract": "We formalize the problem of trading-off DNN training time and memory requirements as the tensor rematerialization optimization problem, a generalization of prior checkpointing strategies. We introduce Checkmate, a system that solves for optimal rematerialization schedules in reasonable times (under an hour) using off-the-shelf MILP solvers or near-optimal schedules with an approximation algorithm, then uses these schedules to accelerate millions of training iterations. Our method scales to complex, realistic architectures and is hardware-aware through the use of accelerator-specific, profile-based cost models. In addition to reducing training cost, Checkmate enables real-world networks to be trained with up to 5.1x larger input sizes. Checkmate is an open-source project, available at this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "8323c591e119eb09b28b29fd6c7bc76bd889df7a",
+    "externalIds": {
+      "MAG": "2973727699",
+      "ArXiv": "1909.08053",
+      "DBLP": "journals/corr/abs-1909-08053",
+      "CorpusId": 202660670
+    },
+    "title": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 2687,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.08053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1911755",
+        "name": "M. Shoeybi"
+      },
+      {
+        "authorId": "66870756",
+        "name": "M. Patwary"
+      },
+      {
+        "authorId": "41158993",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "3081566",
+        "name": "P. LeGresley"
+      },
+      {
+        "authorId": "48991386",
+        "name": "J. Casper"
+      },
+      {
+        "authorId": "2301680",
+        "name": "Bryan Catanzaro"
+      }
+    ],
+    "abstract": "Recent work in language modeling demonstrates that training large transformer models advances the state of the art in Natural Language Processing applications. However, very large models can be quite difficult to train due to memory constraints. In this work, we present our techniques for training very large transformer models and implement a simple, efficient intra-layer model parallel approach that enables training transformer models with billions of parameters. Our approach does not require a new compiler or library changes, is orthogonal and complimentary to pipeline model parallelism, and can be fully implemented with the insertion of a few communication operations in native PyTorch. We illustrate this approach by converging transformer based models up to 8.3 billion parameters using 512 GPUs. We sustain 15.1 PetaFLOPs across the entire application with 76% scaling efficiency when compared to a strong single GPU baseline that sustains 39 TeraFLOPs, which is 30% of peak FLOPs. To demonstrate that large language models can further advance the state of the art (SOTA), we train an 8.3 billion parameter transformer language model similar to GPT-2 and a 3.9 billion parameter model similar to BERT. We show that careful attention to the placement of layer normalization in BERT-like models is critical to achieving increased performance as the model size grows. Using the GPT-2 model we achieve SOTA results on the WikiText103 (10.8 compared to SOTA perplexity of 15.8) and LAMBADA (66.5% compared to SOTA accuracy of 63.2%) datasets. Our BERT model achieves SOTA results on the RACE dataset (90.9% compared to SOTA accuracy of 89.4%).",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3e386ee9b2c54b2e36151233b87e27e97acc53cd",
+    "externalIds": {
+      "MAG": "2798291715",
+      "DBLP": "conf/eurosys/GaoYWL18",
+      "DOI": "10.1145/3190508.3190541",
+      "CorpusId": 4430053
+    },
+    "title": "Low latency RNN inference with cellular batching",
+    "venue": "European Conference on Computer Systems",
+    "year": 2018,
+    "citationCount": 101,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3190508.3190541?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3190508.3190541, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2097575656",
+        "name": "Pin Gao"
+      },
+      {
+        "authorId": "2490788",
+        "name": "Lingfan Yu"
+      },
+      {
+        "authorId": "2115858706",
+        "name": "Yongwei Wu"
+      },
+      {
+        "authorId": "46276184",
+        "name": "Jinyang Li"
+      }
+    ],
+    "abstract": "Performing inference on pre-trained neural network models must meet the requirement of low-latency, which is often at odds with achieving high throughput. Existing deep learning systems use batching to improve throughput, which do not perform well when serving Recurrent Neural Networks with dynamic dataflow graphs. We propose the technique of cellular batching, which improves both the latency and throughput of RNN inference. Unlike existing systems that batch a fixed set of dataflow graphs, cellular batching makes batching decisions at the granularity of an RNN \"cell\" (a subgraph with shared weights) and dynamically assembles a batched cell for execution as requests join and leave the system. We implemented our approach in a system called BatchMaker. Experiments show that BatchMaker achieves much lower latency and also higher throughput than existing systems.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ca45e17cf41cf1fd0aa7c9536f0a27bc0f4d3b33",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1801-04380",
+      "MAG": "2783292547",
+      "ArXiv": "1801.04380",
+      "DOI": "10.1145/3178487.3178491",
+      "CorpusId": 3385866
+    },
+    "title": "Superneurons: dynamic GPU memory management for training deep neural networks",
+    "venue": "ACM SIGPLAN Symposium on Principles & Practice of Parallel Programming",
+    "year": 2018,
+    "citationCount": 291,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3200691.3178491?download=true",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.04380, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3221830",
+        "name": "Linnan Wang"
+      },
+      {
+        "authorId": "7173620",
+        "name": "Jinmian Ye"
+      },
+      {
+        "authorId": "2109893289",
+        "name": "Yiyang Zhao"
+      },
+      {
+        "authorId": "39533001",
+        "name": "Wei Wu"
+      },
+      {
+        "authorId": "2108667898",
+        "name": "Ang Li"
+      },
+      {
+        "authorId": "1798309",
+        "name": "S. Song"
+      },
+      {
+        "authorId": "1683510",
+        "name": "Zenglin Xu"
+      },
+      {
+        "authorId": "1746961",
+        "name": "Tim Kraska"
+      }
+    ],
+    "abstract": "Going deeper and wider in neural architectures improves their accuracy, while the limited GPU DRAM places an undesired restriction on the network design domain. Deep Learning (DL) practitioners either need to change to less desired network architectures, or nontrivially dissect a network across multiGPUs. These distract DL practitioners from concentrating on their original machine learning tasks. We present SuperNeurons: a dynamic GPU memory scheduling runtime to enable the network training far beyond the GPU DRAM capacity. SuperNeurons features 3 memory optimizations, Liveness Analysis, Unified Tensor Pool, and Cost-Aware Recomputation; together they effectively reduce the network-wide peak memory usage down to the maximal memory usage among layers. We also address the performance issues in these memory-saving techniques. Given the limited GPU DRAM, SuperNeurons not only provisions the necessary memory for the training, but also dynamically allocates the memory for convolution workspaces to achieve the high performance. Evaluations against Caffe, Torch, MXNet and TensorFlow have demonstrated that SuperNeurons trains at least 3.2432 deeper network than current ones with the leading performance. Particularly, SuperNeurons can train ResNet2500 that has 104 basic network layers on a 12GB K40c.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cff81b22995937e1bf9533c800b24209932e402a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1712-06139",
+      "ArXiv": "1712.06139",
+      "MAG": "2779888504",
+      "CorpusId": 22364235
+    },
+    "title": "TensorFlow-Serving: Flexible, High-Performance ML Serving",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 351,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1712.06139, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2072569",
+        "name": "Christopher Olston"
+      },
+      {
+        "authorId": "22640071",
+        "name": "Noah Fiedel"
+      },
+      {
+        "authorId": "2102954609",
+        "name": "Kiril Gorovoy"
+      },
+      {
+        "authorId": "2066076307",
+        "name": "Jeremiah Harmsen"
+      },
+      {
+        "authorId": "2105981",
+        "name": "Li Lao"
+      },
+      {
+        "authorId": "2373573881",
+        "name": "Fang Li"
+      },
+      {
+        "authorId": "2076676452",
+        "name": "Vinu Rajashekhar"
+      },
+      {
+        "authorId": "18654369",
+        "name": "Sukriti Ramesh"
+      },
+      {
+        "authorId": "49263723",
+        "name": "Jordan Soyke"
+      }
+    ],
+    "abstract": "We describe TensorFlow-Serving, a system to serve machine learning models inside Google which is also available in the cloud and via open-source. It is extremely flexible in terms of the types of ML platforms it supports, and ways to integrate with systems that convey new models and updated versions from training to serving. At the same time, the core code paths around model lookup and inference have been carefully optimized to avoid performance pitfalls observed in naive implementations. Google uses it in many production deployments, including a multi-tenant model hosting service called TFS^2.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174088,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "0a5ff7336879c99513dca6fce6ef44984ebf3f55",
+    "externalIds": {
+      "MAG": "2950636297",
+      "DBLP": "journals/corr/CrankshawWZFGS16",
+      "ArXiv": "1612.03079",
+      "CorpusId": 1701442
+    },
+    "title": "Clipper: A Low-Latency Online Prediction Serving System",
+    "venue": "Symposium on Networked Systems Design and Implementation",
+    "year": 2016,
+    "citationCount": 798,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03079, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50564124",
+        "name": "D. Crankshaw"
+      },
+      {
+        "authorId": "2153692009",
+        "name": "Xin Wang"
+      },
+      {
+        "authorId": "40916418",
+        "name": "Giulio Zhou"
+      },
+      {
+        "authorId": "143666627",
+        "name": "M. Franklin"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": "Machine learning is being deployed in a growing number of applications which demand real-time, accurate, and robust predictions under heavy query load. However, most machine learning frameworks and systems only address model training and not deployment. \nIn this paper, we introduce Clipper, a general-purpose low-latency prediction serving system. Interposing between end-user applications and a wide range of machine learning frameworks, Clipper introduces a modular architecture to simplify model deployment across frameworks and applications. Furthermore, by introducing caching, batching, and adaptive model selection techniques, Clipper reduces prediction latency and improves prediction throughput, accuracy, and robustness without modifying the underlying machine learning frameworks. We evaluate Clipper on four common machine learning benchmark datasets and demonstrate its ability to meet the latency, accuracy, and throughput demands of online serving applications. Finally, we compare Clipper to the TensorFlow Serving system and demonstrate that we are able to achieve comparable throughput and latency while enabling model composition and online learning to improve accuracy and render more robust predictions.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c6850869aa5e78a107c378d2e8bfa39633158c0c",
+    "externalIds": {
+      "ArXiv": "1609.08144",
+      "MAG": "2525778437",
+      "DBLP": "journals/corr/WuSCLNMKCGMKSJL16",
+      "CorpusId": 3603249
+    },
+    "title": "Google's Neural Machine Translation System: Bridging the Gap between Human and Machine Translation",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 7223,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.08144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48607963",
+        "name": "Yonghui Wu"
+      },
+      {
+        "authorId": "144927151",
+        "name": "M. Schuster"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "3153147",
+        "name": "Wolfgang Macherey"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "145144022",
+        "name": "Yuan Cao"
+      },
+      {
+        "authorId": "145312180",
+        "name": "Qin Gao"
+      },
+      {
+        "authorId": "113439369",
+        "name": "Klaus Macherey"
+      },
+      {
+        "authorId": "2367620",
+        "name": "J. Klingner"
+      },
+      {
+        "authorId": "145825976",
+        "name": "Apurva Shah"
+      },
+      {
+        "authorId": "145657834",
+        "name": "Melvin Johnson"
+      },
+      {
+        "authorId": "2109059862",
+        "name": "Xiaobing Liu"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2776283",
+        "name": "Stephan Gouws"
+      },
+      {
+        "authorId": "2739610",
+        "name": "Yoshikiyo Kato"
+      },
+      {
+        "authorId": "1765329",
+        "name": "Taku Kudo"
+      },
+      {
+        "authorId": "1754386",
+        "name": "H. Kazawa"
+      },
+      {
+        "authorId": "144077726",
+        "name": "K. Stevens"
+      },
+      {
+        "authorId": "1753079661",
+        "name": "George Kurian"
+      },
+      {
+        "authorId": "2056800684",
+        "name": "Nishant Patil"
+      },
+      {
+        "authorId": "49337181",
+        "name": "Wei Wang"
+      },
+      {
+        "authorId": "39660914",
+        "name": "C. Young"
+      },
+      {
+        "authorId": "2119125158",
+        "name": "Jason R. Smith"
+      },
+      {
+        "authorId": "2909504",
+        "name": "Jason Riesa"
+      },
+      {
+        "authorId": "29951847",
+        "name": "Alex Rudnick"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "48342565",
+        "name": "Macduff Hughes"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "Neural Machine Translation (NMT) is an end-to-end learning approach for automated translation, with the potential to overcome many of the weaknesses of conventional phrase-based translation systems. Unfortunately, NMT systems are known to be computationally expensive both in training and in translation inference. Also, most NMT systems have difficulty with rare words. These issues have hindered NMT's use in practical deployments and services, where both accuracy and speed are essential. In this work, we present GNMT, Google's Neural Machine Translation system, which attempts to address many of these issues. Our model consists of a deep LSTM network with 8 encoder and 8 decoder layers using attention and residual connections. To improve parallelism and therefore decrease training time, our attention mechanism connects the bottom layer of the decoder to the top layer of the encoder. To accelerate the final translation speed, we employ low-precision arithmetic during inference computations. To improve handling of rare words, we divide words into a limited set of common sub-word units (\"wordpieces\") for both input and output. This method provides a good balance between the flexibility of \"character\"-delimited models and the efficiency of \"word\"-delimited models, naturally handles translation of rare words, and ultimately improves the overall accuracy of the system. Our beam search technique employs a length-normalization procedure and uses a coverage penalty, which encourages generation of an output sentence that is most likely to cover all the words in the source sentence. On the WMT'14 English-to-French and English-to-German benchmarks, GNMT achieves competitive results to state-of-the-art. Using a human side-by-side evaluation on a set of isolated simple sentences, it reduces translation errors by an average of 60% compared to Google's phrase-based production system.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1a327709cc53ff9e52454e50a643abf4a0ac92af",
+    "externalIds": {
+      "DBLP": "conf/wmt/BojarCFGHHJKLMN16",
+      "MAG": "2512924740",
+      "ACL": "W16-2301",
+      "DOI": "10.18653/v1/W16-2301",
+      "CorpusId": 14421595
+    },
+    "title": "Findings of the 2016 Conference on Machine Translation",
+    "venue": "Conference on Machine Translation",
+    "year": 2016,
+    "citationCount": 826,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.18653/v1/w16-2301",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/W16-2301, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143832874",
+        "name": "Ondrej Bojar"
+      },
+      {
+        "authorId": "3292652",
+        "name": "Rajen Chatterjee"
+      },
+      {
+        "authorId": "3359291",
+        "name": "C. Federmann"
+      },
+      {
+        "authorId": "2000709",
+        "name": "Yvette Graham"
+      },
+      {
+        "authorId": "2259100",
+        "name": "B. Haddow"
+      },
+      {
+        "authorId": "1839533",
+        "name": "Matthias Huck"
+      },
+      {
+        "authorId": "1399097376",
+        "name": "Antonio Jimeno-Yepes"
+      },
+      {
+        "authorId": "1755162",
+        "name": "Philipp Koehn"
+      },
+      {
+        "authorId": "145089549",
+        "name": "V. Logacheva"
+      },
+      {
+        "authorId": "1696402",
+        "name": "Christof Monz"
+      },
+      {
+        "authorId": "2138026",
+        "name": "Matteo Negri"
+      },
+      {
+        "authorId": "1692256",
+        "name": "Aurélie Névéol"
+      },
+      {
+        "authorId": "1885693",
+        "name": "Mariana Neves"
+      },
+      {
+        "authorId": "3209310",
+        "name": "M. Popel"
+      },
+      {
+        "authorId": "38842528",
+        "name": "Matt Post"
+      },
+      {
+        "authorId": "1731383",
+        "name": "Raphaël Rubino"
+      },
+      {
+        "authorId": "2797847",
+        "name": "Carolina Scarton"
+      },
+      {
+        "authorId": "1702974",
+        "name": "Lucia Specia"
+      },
+      {
+        "authorId": "145862931",
+        "name": "Marco Turchi"
+      },
+      {
+        "authorId": "144765178",
+        "name": "Karin M. Verspoor"
+      },
+      {
+        "authorId": "145130358",
+        "name": "Marcos Zampieri"
+      }
+    ],
+    "abstract": "This paper presents the results of the WMT16 shared tasks, which included five machine translation (MT) tasks (standard news, IT-domain, biomedical, multimodal, pronoun), three evaluation tasks (metrics, tuning, run-time estimation of MT quality), and an automatic post-editing task and bilingual document alignment task. This year, 102 MT systems from 24 institutions (plus 36 anonymized online systems) were submitted to the 12 translation directions in the news translation task. The IT-domain task received 31 submissions from 12 institutions in 7 directions and the Biomedical task received 15 submissions systems from 5 institutions. Evaluation was both automatic and manual (relative ranking and 100-point scale assessments). The quality estimation task had three subtasks, with a total of 14 teams, submitting 39 entries. The automatic post-editing task had a total of 6 teams, submitting 11 entries.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "97fb4e3d45bb098e27e0071448b6152217bd35a5",
+    "externalIds": {
+      "MAG": "3037932933",
+      "ArXiv": "1607.06450",
+      "DBLP": "journals/corr/BaKH16",
+      "CorpusId": 8236317
+    },
+    "title": "Layer Normalization",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 12347,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1607.06450, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      },
+      {
+        "authorId": "51131802",
+        "name": "J. Kiros"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "Training state-of-the-art, deep neural networks is computationally expensive. One way to reduce the training time is to normalize the activities of the neurons. A recently introduced technique called batch normalization uses the distribution of the summed input to a neuron over a mini-batch of training cases to compute a mean and variance which are then used to normalize the summed input to that neuron on each training case. This significantly reduces the training time in feed-forward neural networks. However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks. In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case. Like batch normalization, we also give each neuron its own adaptive bias and gain which are applied after the normalization but before the non-linearity. Unlike batch normalization, layer normalization performs exactly the same computation at training and test times. It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step. Layer normalization is very effective at stabilizing the hidden state dynamics in recurrent networks. Empirically, we show that layer normalization can substantially reduce the training time compared with previously published techniques.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "942deb7d865b7782c03176d95e3a0d56cb71009e",
+    "externalIds": {
+      "DBLP": "journals/corr/ChenXZG16",
+      "ArXiv": "1604.06174",
+      "MAG": "2338908902",
+      "CorpusId": 15865278
+    },
+    "title": "Training Deep Nets with Sublinear Memory Cost",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 1421,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1604.06174, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1913774",
+        "name": "Tianqi Chen"
+      },
+      {
+        "authorId": "2113742783",
+        "name": "Bing Xu"
+      },
+      {
+        "authorId": "151505981",
+        "name": "Chiyuan Zhang"
+      },
+      {
+        "authorId": "1730156",
+        "name": "Carlos Guestrin"
+      }
+    ],
+    "abstract": "We propose a systematic approach to reduce the memory consumption of deep neural network training. Specifically, we design an algorithm that costs O( √ n) memory to train a n layer network, with only the computational cost of an extra forward pass per mini-batch. As many of the state-of-the-art models hit the upper bound of the GPU memory, our algorithm allows deeper and more complex models to be explored, and helps advance the innovations in deep learning research. We focus on reducing the memory cost to store the intermediate feature maps and gradients during training. Computation graph analysis is used for automatic in-place operation and memory sharing optimizations. We show that it is possible to trade computation for memory giving a more memory efficient training algorithm with a little extra computation cost. In the extreme case, our analysis also shows that the memory consumption can be reduced to O(logn) with as little as O(n logn) extra cost for forward computation. Our experiments show that we can reduce the memory cost of a 1,000-layer deep residual network from 48G to 7G on ImageNet problems. Similarly, significant memory cost reduction is observed in training complex recurrent neural networks on very long sequences.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226125,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "cea967b59209c6be22829699f05b8b1ac4dc092d",
+    "externalIds": {
+      "MAG": "2130942839",
+      "DBLP": "conf/nips/SutskeverVL14",
+      "ArXiv": "1409.3215",
+      "CorpusId": 7961699
+    },
+    "title": "Sequence to Sequence Learning with Neural Networks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2014,
+    "citationCount": 21943,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.3215, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Deep Neural Networks (DNNs) are powerful models that have achieved excellent performance on difficult learning tasks. Although DNNs work well whenever large labeled training sets are available, they cannot be used to map sequences to sequences. In this paper, we present a general end-to-end approach to sequence learning that makes minimal assumptions on the sequence structure. Our method uses a multilayered Long Short-Term Memory (LSTM) to map the input sequence to a vector of a fixed dimensionality, and then another deep LSTM to decode the target sequence from the vector. Our main result is that on an English to French translation task from the WMT-14 dataset, the translations produced by the LSTM achieve a BLEU score of 34.8 on the entire test set, where the LSTM's BLEU score was penalized on out-of-vocabulary words. Additionally, the LSTM did not have difficulty on long sentences. For comparison, a phrase-based SMT system achieves a BLEU score of 33.3 on the same dataset. When we used the LSTM to rerank the 1000 hypotheses produced by the aforementioned SMT system, its BLEU score increases to 36.5, which is close to the previous state of the art. The LSTM also learned sensible phrase and sentence representations that are sensitive to word order and are relatively invariant to the active and the passive voice. Finally, we found that reversing the order of the words in all source sentences (but not target sentences) improved the LSTM's performance markedly, because doing so introduced many short term dependencies between the source and the target sentence which made the optimization problem easier.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "6c2b28f9354f667cd5bd07afc0471d8334430da7",
+    "externalIds": {
+      "MAG": "2140679639",
+      "DBLP": "conf/nips/BengioDV00",
+      "CorpusId": 221275765
+    },
+    "title": "A Neural Probabilistic Language Model",
+    "venue": "Journal of machine learning research",
+    "year": 2003,
+    "citationCount": 7756,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      },
+      {
+        "authorId": "36037226",
+        "name": "Réjean Ducharme"
+      },
+      {
+        "authorId": "120247189",
+        "name": "Pascal Vincent"
+      },
+      {
+        "authorId": "1909943744",
+        "name": "Christian Janvin"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9d7bbf669ce96e022379bc99f8b9aa6083400829",
+    "externalIds": {
+      "MAG": "2523721830",
+      "DBLP": "journals/tc/KilburnELS62",
+      "DOI": "10.1109/TEC.1962.5219356",
+      "CorpusId": 23776013
+    },
+    "title": "One-Level Storage System",
+    "venue": "IRE Transactions on Electronic Computers",
+    "year": 1962,
+    "citationCount": 302,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TEC.1962.5219356?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TEC.1962.5219356, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34704748",
+        "name": "T. Kilburn"
+      },
+      {
+        "authorId": "29334852",
+        "name": "D. Edwards"
+      },
+      {
+        "authorId": "97926494",
+        "name": "M. Lanigan"
+      },
+      {
+        "authorId": "24348125",
+        "name": "F. Sumner"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "2eace6acf43e28cc19876b9983d1c64c54c14c1d",
+    "externalIds": {
+      "DBLP": "conf/nsdi/0025TKS23",
+      "CorpusId": 258559393
+    },
+    "title": "SHEPHERD: Serving DNNs in the Wild",
+    "venue": "Symposium on Networked Systems Design and Implementation",
+    "year": 2023,
+    "citationCount": 128,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2146243826",
+        "name": "Hong Zhang"
+      },
+      {
+        "authorId": "2119310208",
+        "name": "Yupeng Tang"
+      },
+      {
+        "authorId": "2712026",
+        "name": "Anurag Khandelwal"
+      },
+      {
+        "authorId": "2316152822",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4e6d82ffde7a9dcb4300c64340abbeaf50501793",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2312-02515",
+      "DOI": "10.48550/arXiv.2312.02515",
+      "CorpusId": 275516672
+    },
+    "title": "ASPEN: High-Throughput LoRA Fine-Tuning of Large Language Models with a Single GPU",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2312.02515?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2312.02515, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269759803",
+        "name": "Zhengmao Ye"
+      },
+      {
+        "authorId": "2269777270",
+        "name": "Dengchun Li"
+      },
+      {
+        "authorId": "2269769443",
+        "name": "Jingqi Tian"
+      },
+      {
+        "authorId": "2269737463",
+        "name": "Tingfeng Lan"
+      },
+      {
+        "authorId": "2279917725",
+        "name": "Jie Zuo"
+      },
+      {
+        "authorId": "2269737823",
+        "name": "Lei Duan"
+      },
+      {
+        "authorId": "2269777305",
+        "name": "Hui Lu"
+      },
+      {
+        "authorId": "2269784330",
+        "name": "Yexi Jiang"
+      },
+      {
+        "authorId": "2269737093",
+        "name": "Jian Sha"
+      },
+      {
+        "authorId": "2269752933",
+        "name": "Ke Zhang"
+      },
+      {
+        "authorId": "2269766976",
+        "name": "Mingjie Tang"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9d7a75601e0e50dd68d40cfb8ef0e891dad797a6",
+    "externalIds": {
+      "DBLP": "conf/osdi/YuJKKC22",
+      "CorpusId": 251734964
+    },
+    "title": "Orca: A Distributed Serving System for Transformer-Based Generative Models",
+    "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+    "year": 2022,
+    "citationCount": 639,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "40928126",
+        "name": "Gyeong-In Yu"
+      },
+      {
+        "authorId": "13705521",
+        "name": "Joo Seong Jeong"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "f4f9297b6f909b8d8be2ef48873a5d48ec781476",
+    "externalIds": {
+      "DBLP": "conf/usenix/WangLWXHS22",
+      "CorpusId": 267828589
+    },
+    "title": "Pacman: An Efficient Compaction Approach for Log-Structured Key-Value Store on Persistent Memory",
+    "venue": "USENIX Annual Technical Conference",
+    "year": 2022,
+    "citationCount": 38,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2267379912",
+        "name": "Jing Wang"
+      },
+      {
+        "authorId": "1709817",
+        "name": "Youyou Lu"
+      },
+      {
+        "authorId": "2145464116",
+        "name": "Qing Wang"
+      },
+      {
+        "authorId": "2051652715",
+        "name": "Minhui Xie"
+      },
+      {
+        "authorId": "2148420988",
+        "name": "Keji Huang"
+      },
+      {
+        "authorId": "2285529683",
+        "name": "Jiwu Shu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "21d51b8f6aea19ae10bc26fde3f6557455b9eb96",
+    "externalIds": {
+      "CorpusId": 269616961
+    },
+    "title": "Training Neural Networks on Tiny Devices with Integrated Rematerialization and Paging",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "80887461",
+        "name": "Shishir G. Patil"
+      },
+      {
+        "authorId": "2066974703",
+        "name": "Paras Jain"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      },
+      {
+        "authorId": "2286368533",
+        "name": "Prabal Dutta"
+      },
+      {
+        "authorId": "2258073138",
+        "name": "Joseph Gonzalez"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1554887c6bd76c443a477b27dbcab35877787b27",
+    "externalIds": {
+      "DBLP": "conf/naacl/WangXWWL21",
+      "ACL": "2021.naacl-industry.15",
+      "DOI": "10.18653/v1/2021.naacl-industry.15",
+      "CorpusId": 235097440
+    },
+    "title": "LightSeq: A High Performance Inference Library for Transformers",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 66,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.naacl-industry.15.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/2021.naacl-industry.15, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109074420",
+        "name": "Xiaohui Wang"
+      },
+      {
+        "authorId": "2101346834",
+        "name": "Ying Xiong"
+      },
+      {
+        "authorId": "2112600055",
+        "name": "Yang Wei"
+      },
+      {
+        "authorId": "50468534",
+        "name": "Mingxuan Wang"
+      },
+      {
+        "authorId": "143900005",
+        "name": "Lei Li"
+      }
+    ],
+    "abstract": "Transformer and its variants have achieved great success in natural language processing. Since Transformer models are huge in size, serving these models is a challenge for real industrial applications. In this paper, we propose , a highly efficient inference library for models in the Transformer family. includes a series of GPU optimization techniques to both streamline the computation of Transformer layers and reduce memory footprint. supports models trained using PyTorch and Tensorflow. Experimental results on standard machine translation benchmarks show that achieves up to 14x speedup compared with TensorFlow and 1.4x speedup compared with , a concurrent CUDA implementation. The code will be released publicly after the review.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "53d8b356551a2361020a948f64454a6d599af69f",
+    "externalIds": {
+      "DBLP": "conf/acl/LiL20",
+      "ACL": "2021.acl-long.353",
+      "ArXiv": "2101.00190",
+      "DOI": "10.18653/v1/2021.acl-long.353",
+      "CorpusId": 230433941
+    },
+    "title": "Prefix-Tuning: Optimizing Continuous Prompts for Generation",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 5694,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.acl-long.353.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.00190, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32551341",
+        "name": "Xiang Lisa Li"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "Fine-tuning is the de facto way of leveraging large pretrained language models for downstream tasks. However, fine-tuning modifies all the language model parameters and therefore necessitates storing a full copy for each task. In this paper, we propose prefix-tuning, a lightweight alternative to fine-tuning for natural language generation tasks, which keeps language model parameters frozen and instead optimizes a sequence of continuous task-specific vectors, which we call the prefix. Prefix-tuning draws inspiration from prompting for language models, allowing subsequent tokens to attend to this prefix as if it were “virtual tokens”. We apply prefix-tuning to GPT-2 for table-to-text generation and to BART for summarization. We show that by learning only 0.1% of the parameters, prefix-tuning obtains comparable performance in the full data setting, outperforms fine-tuning in low-data settings, and extrapolates better to examples with topics that are unseen during training.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f4f9ff1fb8fc987e0bbcbf1ae60546a09a74788d",
+    "externalIds": {
+      "CorpusId": 257102392
+    },
+    "title": "AlpaServe: Statistical Multiplexing with Model Parallelism for Deep Learning Serving",
+    "venue": "",
+    "year": null,
+    "citationCount": 179,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2141335450",
+        "name": "Zhuohan Li"
+      },
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "2203414303",
+        "name": "Yinmin Zhong"
+      },
+      {
+        "authorId": "2059936479",
+        "name": "Vincent Liu"
+      },
+      {
+        "authorId": "2209360681",
+        "name": "Ying Sheng"
+      },
+      {
+        "authorId": "2179412778",
+        "name": "Xin Jin"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      },
+      {
+        "authorId": "2144612208",
+        "name": "Hao Zhang"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "190970015912cf1c1472882696693954ca1f416d",
+    "externalIds": {
+      "CorpusId": 252819575
+    },
+    "title": "This paper is included in the Proceedings of the 2022 USENIX Annual Technical Conference.",
+    "venue": "",
+    "year": null,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2281714740",
+        "name": "Xuhao Luo"
+      },
+      {
+        "authorId": "2160562535",
+        "name": "Weihai Shen"
+      },
+      {
+        "authorId": "2324455519",
+        "name": "Shuai Mu"
+      },
+      {
+        "authorId": "2269952888",
+        "name": "Tianyin Xu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f126817e63fbe081ae6ba40486a707c32e18edca",
+    "externalIds": {
+      "CorpusId": 252819712
+    },
+    "title": "This paper is included in the Proceedings of the 16th USENIX Symposium on Operating Systems Design and Implementation. Microsecond-scale Preemption for Concurrent GPU-accelerated DNN Inferences",
+    "venue": "",
+    "year": null,
+    "citationCount": 147,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1d27a56a8133f947a5a0217b00241d26f585f834",
+    "externalIds": {
+      "CorpusId": 246411250
+    },
+    "title": "This paper is included in the Proceedings of the 16th USENIX Symposium on Operating Systems Design and Implementation.",
+    "venue": "",
+    "year": null,
+    "citationCount": 224,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "2141335450",
+        "name": "Zhuohan Li"
+      },
+      {
+        "authorId": "2428583353",
+        "name": "UC Hao Zhang"
+      },
+      {
+        "authorId": "2152482391",
+        "name": "Yonghao Zhuang"
+      },
+      {
+        "authorId": "2288865069",
+        "name": "Zhifeng Chen"
+      },
+      {
+        "authorId": "2428583348",
+        "name": "Google Yanping Huang"
+      },
+      {
+        "authorId": "2428583351",
+        "name": "Amazon Yida Wang"
+      },
+      {
+        "authorId": "2281090702",
+        "name": "Web Services"
+      },
+      {
+        "authorId": "2428583342",
+        "name": "Google Yuanzhong Xu"
+      },
+      {
+        "authorId": "2271430880",
+        "name": "Danyang Zhuo"
+      },
+      {
+        "authorId": "2267336926",
+        "name": "Eric P. Xing"
+      },
+      {
+        "authorId": "2284969362",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      },
+      {
+        "authorId": "2285099535",
+        "name": "UC Berkeley"
+      },
+      {
+        "authorId": "2288874340",
+        "name": "Amazon Web Services"
+      },
+      {
+        "authorId": "2271850438",
+        "name": "Google"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  }
+]

@@ -1,0 +1,3148 @@
+[
+  {
+    "paperId": "4dd90f57c9ae1e962afd0e5c1f554a1d67a7b849",
+    "externalIds": {
+      "DOI": "10.1109/icassp55912.2026.11463338",
+      "CorpusId": 287683387
+    },
+    "title": "Latent DPO for Concept Erasure in Text-To-Video Diffusion Models",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/icassp55912.2026.11463338?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/icassp55912.2026.11463338, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2191629155",
+        "name": "Baisen Wang"
+      },
+      {
+        "authorId": "2186621957",
+        "name": "Xiaomeng Fu"
+      },
+      {
+        "authorId": "2269468811",
+        "name": "Runze He"
+      },
+      {
+        "authorId": "2291082890",
+        "name": "Qiao Li"
+      },
+      {
+        "authorId": "2325825544",
+        "name": "Yue Liao"
+      },
+      {
+        "authorId": "2227913333",
+        "name": "Si Liu"
+      },
+      {
+        "authorId": "2350591473",
+        "name": "Jiao Dai"
+      },
+      {
+        "authorId": "2126086577",
+        "name": "Jizhong Han"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "70f4dba6bfc060b51b0117841a15bd7e998aff3c",
+    "externalIds": {
+      "ArXiv": "2604.23380",
+      "CorpusId": 287777031
+    },
+    "title": "V-GRPO: Online Reinforcement Learning for Denoising Generative Models Is Easier than You Think",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.23380, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2363137855",
+        "name": "Bingda Tang"
+      },
+      {
+        "authorId": null,
+        "name": "Yuhui Zhang"
+      },
+      {
+        "authorId": "2269778420",
+        "name": "Xiaohan Wang"
+      },
+      {
+        "authorId": "2356026185",
+        "name": "Jiayuan Mao"
+      },
+      {
+        "authorId": "2338925206",
+        "name": "Ludwig Schmidt"
+      },
+      {
+        "authorId": "2275638250",
+        "name": "S. Yeung-Levy"
+      }
+    ],
+    "abstract": "Aligning denoising generative models with human preferences or verifiable rewards remains a key challenge. While policy-gradient online reinforcement learning (RL) offers a principled post-training framework, its direct application is hindered by the intractable likelihoods of these models. Prior work therefore either optimizes an induced Markov decision process (MDP) over sampling trajectories, which is stable but inefficient, or uses likelihood surrogates based on the diffusion evidence lower bound (ELBO), which have so far underperformed on visual generation. Our key insight is that the ELBO-based approach can, in fact, be made both stable and efficient. By reducing surrogate variance and controlling gradient steps, we show that this approach can beat MDP-based methods. To this end, we introduce Variational GRPO (V-GRPO), a method that integrates ELBO-based surrogates with the Group Relative Policy Optimization (GRPO) algorithm, alongside a set of simple yet essential techniques. Our method is easy to implement, aligns with pretraining objectives, and avoids the limitations of MDP-based methods. V-GRPO achieves state-of-the-art performance in text-to-image synthesis, while delivering a $2\\times$ speedup over MixGRPO and a $3\\times$ speedup over DiffusionNFT.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "961ca150e907304e4e3e0275a13c03c2d5925074",
+    "externalIds": {
+      "ArXiv": "2604.20816",
+      "CorpusId": 287669187
+    },
+    "title": "ParetoSlider: Diffusion Models Post-Training for Continuous Reward Control",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.20816, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303396444",
+        "name": "Shelly Golan"
+      },
+      {
+        "authorId": "2354334461",
+        "name": "M. Finkelson"
+      },
+      {
+        "authorId": "2430989093",
+        "name": "Ariel Bereslavsky"
+      },
+      {
+        "authorId": "1702992975",
+        "name": "Yotam Nitzan"
+      },
+      {
+        "authorId": "2819477",
+        "name": "Or Patashnik"
+      }
+    ],
+    "abstract": "Reinforcement Learning (RL) post-training has become the standard for aligning generative models with human preferences, yet most methods rely on a single scalar reward. When multiple criteria matter, the prevailing practice of ``early scalarization''collapses rewards into a fixed weighted sum. This commits the model to a single trade-off point at training time, providing no inference-time control over inherently conflicting goals -- such as prompt adherence versus source fidelity in image editing. We introduce ParetoSlider, a multi-objective RL (MORL) framework that trains a single diffusion model to approximate the entire Pareto front. By training the model with continuously varying preference weights as a conditioning signal, we enable users to navigate optimal trade-offs at inference time without retraining or maintaining multiple checkpoints. We evaluate ParetoSlider across three state-of-the-art flow-matching backbones: SD3.5, FluxKontext, and LTX-2. Our single preference-conditioned model matches or exceeds the performance of baselines trained separately for fixed reward trade-offs, while uniquely providing fine-grained control over competing generative goals.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5426adedf544f1d0cd2826102309ff66ca852e91",
+    "externalIds": {
+      "ArXiv": "2604.19009",
+      "CorpusId": 287636113
+    },
+    "title": "Guiding Distribution Matching Distillation with Gradient-Based Reinforcement Learning",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.19009, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2332695338",
+        "name": "Linwei Dong"
+      },
+      {
+        "authorId": "2397717480",
+        "name": "Ruo‑Mi Guo"
+      },
+      {
+        "authorId": "2323739588",
+        "name": "Ge Bai"
+      },
+      {
+        "authorId": "2244754235",
+        "name": "Zehuan Yuan"
+      },
+      {
+        "authorId": "2332754588",
+        "name": "Yawei Luo"
+      },
+      {
+        "authorId": "2332536307",
+        "name": "Changqing Zou"
+      }
+    ],
+    "abstract": "Diffusion distillation, exemplified by Distribution Matching Distillation (DMD), has shown great promise in few-step generation but often sacrifices quality for sampling speed. While integrating Reinforcement Learning (RL) into distillation offers potential, a naive fusion of these two objectives relies on suboptimal raw sample evaluation. This sample-based scoring creates inherent conflicts with the distillation trajectory and produces unreliable rewards due to the noisy nature of early-stage generation. To overcome these limitations, we propose GDMD, a novel framework that redefines the reward mechanism by prioritizing distillation gradients over raw pixel outputs as the primary signal for optimization. By reinterpreting the DMD gradients as implicit target tensors, our framework enables existing reward models to directly evaluate the quality of distillation updates. This gradient-level guidance functions as an adaptive weighting that synchronizes the RL policy with the distillation objective, effectively neutralizing optimization divergence. Empirical results show that GDMD sets a new SOTA for few-step generation. Specifically, our 4-step models outperform the quality of their multi-step teacher and substantially exceed previous DMDR results in GenEval and human-preference metrics, exhibiting strong scalability potential.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bc36723368a4e9799142a79b5d03058935ed4eb5",
+    "externalIds": {
+      "ArXiv": "2604.19406",
+      "CorpusId": 287636724
+    },
+    "title": "HP-Edit: A Human-Preference Post-Training Framework for Image Editing",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.19406, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2382931787",
+        "name": "Fan Li"
+      },
+      {
+        "authorId": "2315457163",
+        "name": "Chong Wang"
+      },
+      {
+        "authorId": "2382982979",
+        "name": "Lina Lei"
+      },
+      {
+        "authorId": "2368736232",
+        "name": "Yuping Qiu"
+      },
+      {
+        "authorId": "2356576850",
+        "name": "Jiaqi Xu"
+      },
+      {
+        "authorId": "2295679157",
+        "name": "Jiaxiu Jiang"
+      },
+      {
+        "authorId": "2276889618",
+        "name": "Xinran Qin"
+      },
+      {
+        "authorId": "2278392905",
+        "name": "Zhikai Chen"
+      },
+      {
+        "authorId": "2309245574",
+        "name": "Fenglong Song"
+      },
+      {
+        "authorId": "2357855640",
+        "name": "Zhixin Wang"
+      },
+      {
+        "authorId": "2233152667",
+        "name": "Renjing Pei"
+      },
+      {
+        "authorId": "2363810664",
+        "name": "Wangmeng Zuo"
+      }
+    ],
+    "abstract": "Common image editing tasks typically adopt powerful generative diffusion models as the leading paradigm for real-world content editing. Meanwhile, although reinforcement learning (RL) methods such as Diffusion-DPO and Flow-GRPO have further improved generation quality, efficiently applying Reinforcement Learning from Human Feedback (RLHF) to diffusion-based editing remains largely unexplored, due to a lack of scalable human-preference datasets and frameworks tailored to diverse editing needs. To fill this gap, we propose HP-Edit, a post-training framework for Human Preference-aligned Editing, and introduce RealPref-50K, a real-world dataset across eight common tasks and balancing common object editing. Specifically, HP-Edit leverages a small amount of human-preference scoring data and a pretrained visual large language model (VLM) to develop HP-Scorer--an automatic, human preference-aligned evaluator. We then use HP-Scorer both to efficiently build a scalable preference dataset and to serve as the reward function for post-training the editing model. We also introduce RealPref-Bench, a benchmark for evaluating real-world editing performance. Extensive experiments demonstrate that our approach significantly enhances models such as Qwen-Image-Edit-2509, aligning their outputs more closely with human preference.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7b39f0a1b5880eb1bf53de64c0072795aaf71bcc",
+    "externalIds": {
+      "ArXiv": "2604.18518",
+      "CorpusId": 287635169
+    },
+    "title": "UDM-GRPO: Stable and Efficient Group Relative Policy Optimization for Uniform Discrete Diffusion Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.18518, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2350699973",
+        "name": "Jiaqi Wang"
+      },
+      {
+        "authorId": "2269127146",
+        "name": "Haoge Deng"
+      },
+      {
+        "authorId": "2274107332",
+        "name": "Ting Pan"
+      },
+      {
+        "authorId": "2354287011",
+        "name": "Yang Liu"
+      },
+      {
+        "authorId": "2260944080",
+        "name": "Chengyu Wang"
+      },
+      {
+        "authorId": "2264274388",
+        "name": "Fan Zhang"
+      },
+      {
+        "authorId": "2347889066",
+        "name": "Yonggang Qi"
+      },
+      {
+        "authorId": "2430639668",
+        "name": "Xinlong Wang Beijing University of Posts"
+      },
+      {
+        "authorId": "22540565",
+        "name": "Telecommunications"
+      },
+      {
+        "authorId": "2423448575",
+        "name": "Beijing Academy of Artificial Intelligence"
+      }
+    ],
+    "abstract": "Uniform Discrete Diffusion Model (UDM) has recently emerged as a promising paradigm for discrete generative modeling; however, its integration with reinforcement learning remains largely unexplored. We observe that naively applying GRPO to UDM leads to training instability and marginal performance gains. To address this, we propose UDM-GRPO, the first framework to integrate UDM with RL. Our method is guided by two key insights: (i) treating the final clean sample as the action provides more accurate and stable optimization signals; and (ii) reconstructing trajectories via the diffusion forward process better aligns probability paths with the pretraining distribution. Additionally, we introduce two strategies, Reduced-Step and CFG-Free, to further improve training efficiency. UDM-GRPO significantly improves base model performance across multiple T2I tasks. Notably, GenEval accuracy improves from $69\\%$ to $96\\%$ and PickScore increases from $20.46$ to $23.81$, achieving state-of-the-art performance in both continuous and discrete settings. On the OCR benchmark, accuracy rises from $8\\%$ to $57\\%$, further validating the generalization ability of our method. Code is available at https://github.com/Yovecent/UDM-GRPO.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "17e530f1bbc727afc79d1de617cbd1927c188220",
+    "externalIds": {
+      "ArXiv": "2604.17415",
+      "CorpusId": 287634846
+    },
+    "title": "Reward Score Matching: Unifying Reward-based Fine-tuning for Flow and Diffusion Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.17415, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108427894",
+        "name": "J. Lee"
+      },
+      {
+        "authorId": "2259644910",
+        "name": "Jinho Chang"
+      },
+      {
+        "authorId": "2109216792",
+        "name": "Jeongsol Kim"
+      },
+      {
+        "authorId": "2312176043",
+        "name": "Jong Chul Ye"
+      }
+    ],
+    "abstract": "Reward-based fine-tuning aims to steer a pretrained diffusion or flow-based generative model toward higher-reward samples while remaining close to the pretrained model. Although existing methods are motivated by different perspectives such as Soft RL, GFlowNets, etc., we show that many can be written under a common framework, which we call reward score matching (RSM). Under this view, alignment becomes score matching toward a reward-guided target, and the main differences across methods reduce to the construction of the value-guidance estimator and the effective optimization strength across timesteps. This unification clarifies the bias--variance--compute tradeoffs of existing designs and distinguishes core optimization components from auxiliary mechanisms that add complexity without clear benefit. Guided by this perspective, we develop simpler redesigns that improve alignment effectiveness and compute efficiency across representative settings with differentiable and black-box rewards. Overall, RSM turns a seemingly fragmented collection of reward-based fine-tuning methods into a smaller, more interpretable, and more actionable design space.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f8f115fb8f63faf2d6411058190585f1ad75549b",
+    "externalIds": {
+      "ArXiv": "2604.14951",
+      "CorpusId": 287510083
+    },
+    "title": "RaTA-Tool: Retrieval-based Tool Selection with Multimodal Large Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.14951, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2429855131",
+        "name": "Gabriele Mattioli"
+      },
+      {
+        "authorId": "2224592656",
+        "name": "Evelyn Turri"
+      },
+      {
+        "authorId": "2179325162",
+        "name": "Sara Sarto"
+      },
+      {
+        "authorId": "1843795",
+        "name": "L. Baraldi"
+      },
+      {
+        "authorId": "3468983",
+        "name": "Marcella Cornia"
+      },
+      {
+        "authorId": "2303850502",
+        "name": "Rita Cucchiara"
+      }
+    ],
+    "abstract": "Tool learning with foundation models aims to endow AI systems with the ability to invoke external resources -- such as APIs, computational utilities, and specialized models -- to solve complex tasks beyond the reach of standalone language generation. While recent advances in Large Language Models (LLMs) and Multimodal Large Language Models (MLLMs) have expanded their reasoning and perception capabilities, existing tool-use methods are predominantly limited to text-only inputs and closed-world settings. Consequently, they struggle to interpret multimodal user instructions and cannot generalize to tools unseen during training. In this work, we introduce RaTA-Tool, a novel framework for open-world multimodal tool selection. Rather than learning direct mappings from user queries to fixed tool identifiers, our approach enables an MLLM to convert a multimodal query into a structured task description and subsequently retrieve the most appropriate tool by matching this representation against semantically rich, machine-readable tool descriptions. This retrieval-based formulation naturally supports extensibility to new tools without retraining. To further improve alignment between task descriptions and tool selection, we incorporate a preference-based optimization stage using Direct Preference Optimization (DPO). To support research in this setting, we also introduce the first dataset for open-world multimodal tool use, featuring standardized tool descriptions derived from Hugging Face model cards. Extensive experiments demonstrate that our approach significantly improves tool-selection performance, particularly in open-world, multimodal scenarios.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "69f27d96dc10f7466d17c4e909916193e53a4560",
+    "externalIds": {
+      "ArXiv": "2604.15311",
+      "CorpusId": 287509933
+    },
+    "title": "LeapAlign: Post-Training Flow Matching Models at Any Generation Step by Building Two-Step Trajectories",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.15311, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277713299",
+        "name": "Zhanhao Liang"
+      },
+      {
+        "authorId": "2268801568",
+        "name": "Tao Yang"
+      },
+      {
+        "authorId": "2295685180",
+        "name": "Jie Wu"
+      },
+      {
+        "authorId": "2223247351",
+        "name": "Cheng Feng"
+      },
+      {
+        "authorId": "2282207149",
+        "name": "Liang Zheng"
+      }
+    ],
+    "abstract": "This paper focuses on the alignment of flow matching models with human preferences. A promising way is fine-tuning by directly backpropagating reward gradients through the differentiable generation process of flow matching. However, backpropagating through long trajectories results in prohibitive memory costs and gradient explosion. Therefore, direct-gradient methods struggle to update early generation steps, which are crucial for determining the global structure of the final image. To address this issue, we introduce LeapAlign, a fine-tuning method that reduces computational cost and enables direct gradient propagation from reward to early generation steps. Specifically, we shorten the long trajectory into only two steps by designing two consecutive leaps, each skipping multiple ODE sampling steps and predicting future latents in a single step. By randomizing the start and end timesteps of the leaps, LeapAlign leads to efficient and stable model updates at any generation step. To better use such shortened trajectories, we assign higher training weights to those that are more consistent with the long generation path. To further enhance gradient stability, we reduce the weights of gradient terms with large magnitude, instead of completely removing them as done in previous works. When fine-tuning the Flux model, LeapAlign consistently outperforms state-of-the-art GRPO-based and direct-gradient methods across various metrics, achieving superior image quality and image-text alignment.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5a5f59918dccfe99b68d6dcd9d9d9ecb116b03d2",
+    "externalIds": {
+      "ArXiv": "2604.14379",
+      "CorpusId": 287508174
+    },
+    "title": "Step-level Denoising-time Diffusion Alignment with Multiple Objectives",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.14379, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2374299112",
+        "name": "Qi Zhang"
+      },
+      {
+        "authorId": "2143915861",
+        "name": "Dawei Wang"
+      },
+      {
+        "authorId": "2303398215",
+        "name": "Shaofeng Zou"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) has emerged as a powerful tool for aligning diffusion models with human preferences, typically by optimizing a single reward function under a KL regularization constraint. In practice, however, human preferences are inherently pluralistic, and aligned models must balance multiple downstream objectives, such as aesthetic quality and text-image consistency. Existing multi-objective approaches either rely on costly multi-objective RL fine-tuning or on fusing separately aligned models at denoising time, but they generally require access to reward values (or their gradients) and/or introduce approximation error in the resulting denoising objectives. In this paper, we revisit the problem of RL fine-tuning for diffusion models and address the intractability of identifying the optimal policy by introducing a step-level RL formulation. Building on this, we further propose Multi-objective Step-level Denoising-time Diffusion Alignment (MSDDA), a retraining-free framework for aligning diffusion models with multiple objectives, obtaining the optimal reverse denoising distribution in closed form, with mean and variance expressed directly in terms of single-objective base models. We prove that this denoising-time objective is exactly equivalent to the step-level RL fine-tuning, introducing no approximation error. Moreover, we provide numerical results, which indicate our method outperforms existing denoising-time approaches.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "4376cd3e758a217e31afb2a76da225916d1a17fb",
+    "externalIds": {
+      "ArXiv": "2604.12617",
+      "CorpusId": 287472315
+    },
+    "title": "SOAR: Self-Correction for Optimal Alignment and Refinement in Diffusion Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.12617, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269361573",
+        "name": "Youhao Qin"
+      },
+      {
+        "authorId": "2355930541",
+        "name": "Linqing Wang"
+      },
+      {
+        "authorId": "2342504726",
+        "name": "Hao Fei"
+      },
+      {
+        "authorId": "2301213794",
+        "name": "Roger Zimmermann"
+      },
+      {
+        "authorId": "2315936764",
+        "name": "Liefeng Bo"
+      },
+      {
+        "authorId": "2365376135",
+        "name": "Qinglin Lu"
+      },
+      {
+        "authorId": "2276270775",
+        "name": "Chunyu Wang"
+      }
+    ],
+    "abstract": "The post-training pipeline for diffusion models currently has two stages: supervised fine-tuning (SFT) on curated data and reinforcement learning (RL) with reward models. A fundamental gap separates them. SFT optimizes the denoiser only on ground-truth states sampled from the forward noising process; once inference deviates from these ideal states, subsequent denoising relies on out-of-distribution generalization rather than learned correction, exhibiting the same exposure bias that afflicts autoregressive models, but accumulated along the denoising trajectory instead of the token sequence. RL can in principle address this mismatch, yet its terminal reward signal is sparse, suffers from credit-assignment difficulty, and risks reward hacking. We propose SOAR (Self-Correction for Optimal Alignment and Refinement), a bias-correction post-training method that fills this gap. Starting from a real sample, SOAR performs a single stop-gradient rollout with the current model, re-noises the resulting off-trajectory state, and supervises the model to steer back toward the original clean target. The method is on-policy, reward-free, and provides dense per-timestep supervision with no credit-assignment problem. On SD3.5-Medium, SOAR improves GenEval from 0.70 to 0.78 and OCR from 0.64 to 0.67 over SFT, while simultaneously raising all model-based preference scores. In controlled reward-specific experiments, SOAR surpasses Flow-GRPO in final metric value on both aesthetic and text-image alignment tasks, despite having no access to a reward model. Since SOAR's base loss subsumes the standard SFT objective, it can directly replace SFT as a stronger first post-training stage after pretraining, while remaining fully compatible with subsequent RL alignment.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "4c4fd6d6c64114f11bf8be266142be1f6119fe8e",
+    "externalIds": {
+      "ArXiv": "2604.12652",
+      "CorpusId": 287474967
+    },
+    "title": "PromptEcho: Annotation-Free Reward from Vision-Language Models for Text-to-Image Reinforcement Learning",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.12652, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2322996621",
+        "name": "Jinlong Liu"
+      },
+      {
+        "authorId": "2266409364",
+        "name": "Wanggui He"
+      },
+      {
+        "authorId": "2301621159",
+        "name": "Peng Zhang"
+      },
+      {
+        "authorId": "2378727682",
+        "name": "Mu Liu"
+      },
+      {
+        "authorId": "2313699597",
+        "name": "Hao Jiang"
+      },
+      {
+        "authorId": "1756575",
+        "name": "Pipei Huang"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) can improve the prompt following capability of text-to-image (T2I) models, yet obtaining high-quality reward signals remains challenging: CLIP Score is too coarse-grained, while VLM-based reward models (e.g., RewardDance) require costly human-annotated preference data and additional fine-tuning. We propose PromptEcho, a reward construction method that requires \\emph{no} annotation and \\emph{no} reward model training. Given a generated image and a guiding query, PromptEcho computes the token-level cross-entropy loss of a frozen VLM with the original prompt as the label, directly extracting the image-text alignment knowledge encoded during VLM pretraining. The reward is deterministic, computationally efficient, and improves automatically as stronger open-source VLMs become available. For evaluation, we develop DenseAlignBench, a benchmark of concept-rich dense captions for rigorously testing prompt following capability. Experimental results on two state-of-the-art T2I models (Z-Image and QwenImage-2512) demonstrate that PromptEcho achieves substantial improvements on DenseAlignBench (+26.8pp / +16.2pp net win rate), along with consistent gains on GenEval, DPG-Bench, and TIIFBench without any task-specific training. Ablation studies confirm that PromptEcho comprehensively outperforms inference-based scoring with the same VLM, and that reward quality scales with VLM size. We will open-source the trained models and the DenseAlignBench.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f98ac5becfab688ef04eb8c6dbabbece3223562f",
+    "externalIds": {
+      "ArXiv": "2604.10125",
+      "CorpusId": 287425525
+    },
+    "title": "PhyMix: Towards Physically Consistent Single-Image 3D Indoor Scene Generation with Implicit--Explicit Optimization",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.10125, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2341653787",
+        "name": "Dongli Wu"
+      },
+      {
+        "authorId": "2265492151",
+        "name": "Jingyu Hu"
+      },
+      {
+        "authorId": "1405688230",
+        "name": "Ka-Hei Hui"
+      },
+      {
+        "authorId": "2308483254",
+        "name": "Xiaobao Wei"
+      },
+      {
+        "authorId": "2294680628",
+        "name": "Chengwen Luo"
+      },
+      {
+        "authorId": "2327679204",
+        "name": "Jianqiang Li"
+      },
+      {
+        "authorId": "2350225459",
+        "name": "Zhengzhe Liu"
+      }
+    ],
+    "abstract": "Existing single-image 3D indoor scene generators often produce results that look visually plausible but fail to obey real-world physics, limiting their reliability in robotics, embodied AI, and design. To examine this gap, we introduce a unified Physics Evaluator that measures four main aspects: geometric priors, contact, stability, and deployability, which are further decomposed into nine sub-constraints, establishing the first benchmark to measure physical consistency. Based on this evaluator, our analysis shows that state-of-the-art methods remain largely physics-unaware. To overcome this limitation, we further propose a framework that integrates feedback from the Physics Evaluator into both training and inference, enhancing the physical plausibility of generated scenes. Specifically, we propose PhyMix, which is composed of two complementary components: (i) implicit alignment via Scene-GRPO, a critic-free group-relative policy optimization that leverages the Physics Evaluator as a preference signal and biases sampling towards physically feasible layouts, and (ii) explicit refinement via a plug-and-play Test-Time Optimizer (TTO) that uses differentiable evaluator signals to correct residual violations during generation. Overall, our method unifies evaluation, reward shaping, and inference-time correction, producing 3D indoor scenes that are visually faithful and physically plausible. Extensive synthetic evaluations confirm state-of-the-art performance in both visual fidelity and physical plausibility, and extensive qualitative examples in stylized and real-world images further showcase the robustness of the method. We will release codes and models upon publication.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5c0718edea1d473e26b0ae1edc36ad9f38cbb160",
+    "externalIds": {
+      "ArXiv": "2604.09386",
+      "CorpusId": 287352204
+    },
+    "title": "Region-Constrained Group Relative Policy Optimization for Flow-Based Image Editing",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.09386, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2429075856",
+        "name": "Zhuohan Ouyang"
+      },
+      {
+        "authorId": "2397699485",
+        "name": "Zhengyan Qian"
+      },
+      {
+        "authorId": "2429076080",
+        "name": "Wenhuo Cui"
+      },
+      {
+        "authorId": "2144555593",
+        "name": "Chaoqun Wang"
+      }
+    ],
+    "abstract": "Instruction-guided image editing requires balancing target modification with non-target preservation. Recently, flow-based models have emerged as a strong and increasingly adopted backbone for instruction-guided image editing, thanks to their high fidelity and efficient deterministic ODE sampling. Building on this foundation, GRPO-based reward-driven post-training has been explored to directly optimize editing-specific rewards, improving instruction following and editing consistency. However, existing methods often suffer from noisy credit assignment: global exploration also perturbs non-target regions, inflating within-group reward variance and yielding noisy GRPO advantages. To address this, we propose RC-GRPO-Editing, a region-constrained GRPO post-training framework for flow-based image editing under deterministic ODE sampling. It suppresses background-induced nuisance variance to enable cleaner localized credit assignment, improving editing region instruction adherence while preserving non-target content. Concretely, we localize exploration via region-decoupled initial noise perturbations to reduce background-induced reward variance and stabilize GRPO advantages, and introduce an attention concentration reward that aligns cross-attention with the intended editing region throughout the rollout, reducing unintended changes in non-target regions. Experiments on CompBench show consistent improvements in editing region instruction adherence and non-target preservation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "37b3a8152c1edd74d72383c1025c04297b1b07b1",
+    "externalIds": {
+      "ArXiv": "2604.07884",
+      "CorpusId": 287256065
+    },
+    "title": "Reinforcement-Guided Synthetic Data Generation for Privacy-Sensitive Identity Recognition",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.07884, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2100723008",
+        "name": "Xuemei Jia"
+      },
+      {
+        "authorId": "2322018360",
+        "name": "Jiawei Du"
+      },
+      {
+        "authorId": "2335402119",
+        "name": "Hui Wei"
+      },
+      {
+        "authorId": "2355601095",
+        "name": "Jun Chen"
+      },
+      {
+        "authorId": "2265459102",
+        "name": "Joey Tianyi Zhou"
+      },
+      {
+        "authorId": "2335662235",
+        "name": "Zheng Wang"
+      }
+    ],
+    "abstract": "High-fidelity generative models are increasingly needed in privacy-sensitive scenarios, where access to data is severely restricted due to regulatory and copyright constraints. This scarcity hampers model development--ironically, in settings where generative models are most needed to compensate for the lack of data. This creates a self-reinforcing challenge: limited data leads to poor generative models, which in turn fail to mitigate data scarcity. To break this cycle, we propose a reinforcement-guided synthetic data generation framework that adapts general-domain generative priors to privacy-sensitive identity recognition tasks. We first perform a cold-start adaptation to align a pretrained generator with the target domain, establishing semantic relevance and initial fidelity. Building on this foundation, we introduce a multi-objective reward that jointly optimizes semantic consistency, coverage diversity, and expression richness, guiding the generator to produce both realistic and task-effective samples. During downstream training, a dynamic sample selection mechanism further prioritizes high-utility synthetic samples, enabling adaptive data scaling and improved domain alignment. Extensive experiments on benchmark datasets demonstrate that our framework significantly improves both generation fidelity and classification accuracy, while also exhibiting strong generalization to novel categories in small-data regimes.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a817a9e68df81202740ab27ac99ae1cb5c4d4789",
+    "externalIds": {
+      "ArXiv": "2604.08209",
+      "CorpusId": 287256481
+    },
+    "title": "OmniJigsaw: Enhancing Omni-Modal Reasoning via Modality-Orchestrated Reordering",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.08209, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2384326885",
+        "name": "Yiduo Jia"
+      },
+      {
+        "authorId": "2217950521",
+        "name": "Muzhi Zhu"
+      },
+      {
+        "authorId": "2345797033",
+        "name": "Haoyang Zhong"
+      },
+      {
+        "authorId": "2290717723",
+        "name": "Mingyu Liu"
+      },
+      {
+        "authorId": "2364633578",
+        "name": "Yu Xi"
+      },
+      {
+        "authorId": "2292645524",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "2381359029",
+        "name": "Bin Qin"
+      },
+      {
+        "authorId": "2279704669",
+        "name": "Yong-Liang Yang"
+      },
+      {
+        "authorId": "2363405807",
+        "name": "Zhenbo Luo"
+      },
+      {
+        "authorId": "2257324242",
+        "name": "Chunhua Shen"
+      }
+    ],
+    "abstract": "To extend the reinforcement learning post-training paradigm to omni-modal models for concurrently bolstering video-audio understanding and collaborative reasoning, we propose OmniJigsaw, a generic self-supervised framework built upon a temporal reordering proxy task. Centered on the chronological reconstruction of shuffled audio-visual clips, this paradigm strategically orchestrates visual and auditory signals to compel cross-modal integration through three distinct strategies: Joint Modality Integration, Sample-level Modality Selection, and Clip-level Modality Masking. Recognizing that the efficacy of such proxy tasks is fundamentally tied to puzzle quality, we design a two-stage coarse-to-fine data filtering pipeline, which facilitates the efficient adaptation of OmniJigsaw to massive unannotated omni-modal data. Our analysis reveals a ``bi-modal shortcut phenomenon''in joint modality integration and demonstrates that fine-grained clip-level modality masking mitigates this issue while outperforming sample-level modality selection. Extensive evaluations on 15 benchmarks show substantial gains in video, audio, and collaborative reasoning, validating OmniJigsaw as a scalable paradigm for self-supervised omni-modal learning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0120a91f2d5e2843c1e2659b9760f149edeee02a",
+    "externalIds": {
+      "ArXiv": "2604.06916",
+      "CorpusId": 287247852
+    },
+    "title": "FP4 Explore, BF16 Train: Diffusion Reinforcement Learning via Efficient Rollout Scaling",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.06916, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2308048091",
+        "name": "Yitong Li"
+      },
+      {
+        "authorId": "2212250873",
+        "name": "Junsong Chen"
+      },
+      {
+        "authorId": "2238955619",
+        "name": "Shuchen Xue"
+      },
+      {
+        "authorId": "2428546445",
+        "name": "Pengcuo Zeren"
+      },
+      {
+        "authorId": "2072784648",
+        "name": "Siyuan Fu"
+      },
+      {
+        "authorId": "1387901091",
+        "name": "Dinghao Yang"
+      },
+      {
+        "authorId": "2393398313",
+        "name": "Yang Tang"
+      },
+      {
+        "authorId": "2289085383",
+        "name": "Junjie Bai"
+      },
+      {
+        "authorId": "2265384343",
+        "name": "Ping Luo"
+      },
+      {
+        "authorId": "2283171540",
+        "name": "Song Han"
+      },
+      {
+        "authorId": "2320149516",
+        "name": "Enze Xie"
+      }
+    ],
+    "abstract": "Reinforcement-Learning-based post-training has recently emerged as a promising paradigm for aligning text-to-image diffusion models with human preferences. In recent studies, increasing the rollout group size yields pronounced performance improvements, indicating substantial room for further alignment gains. However, scaling rollouts on large-scale foundational diffusion models (e.g., FLUX.1-12B) imposes a heavy computational burden. To alleviate this bottleneck, we explore the integration of FP4 quantization into Diffusion RL rollouts. Yet, we identify that naive quantized pipelines inherently introduce risks of performance degradation. To overcome this dilemma between efficiency and training integrity, we propose Sol-RL (Speed-of-light RL), a novel FP4-empowered Two-stage Reinforcement Learning framework. First, we utilize high-throughput NVFP4 rollouts to generate a massive candidate pool and extract a highly contrastive subset. Second, we regenerate these selected samples in BF16 precision and optimize the policy exclusively on them. By decoupling candidate exploration from policy optimization, Sol-RL integrates the algorithmic mechanisms of rollout scaling with the system-level throughput gains of NVFP4. This synergistic algorithm-hardware design effectively accelerates the rollout phase while reserving high-fidelity samples for optimization. We empirically demonstrate that our framework maintains the training integrity of BF16 precision pipeline while fully exploiting the throughput gains enabled by FP4 arithmetic. Extensive experiments across SANA, FLUX.1, and SD3.5-L substantiate that our approach delivers superior alignment performance across multiple metrics while accelerating training convergence by up to $4.64\\times$, unlocking the power of massive rollout scaling at a fraction of the cost.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "72e305a63c2f8acaf75a113739b53b12df8171a9",
+    "externalIds": {
+      "ArXiv": "2604.06779",
+      "CorpusId": 287248141
+    },
+    "title": "FVD: Inference-Time Alignment of Diffusion Models via Fleming-Viot Resampling",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.06779, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2185282852",
+        "name": "Shivanshu Shekhar"
+      },
+      {
+        "authorId": "2360149178",
+        "name": "Sagnik Mukherjee"
+      },
+      {
+        "authorId": "2276747263",
+        "name": "Jia Yi Zhang"
+      },
+      {
+        "authorId": "2257374234",
+        "name": "Tong Zhang"
+      }
+    ],
+    "abstract": "We introduce Fleming-Viot Diffusion (FVD), an inference-time alignment method that resolves the diversity collapse commonly observed in Sequential Monte Carlo (SMC) based diffusion samplers. Existing SMC-based diffusion samplers often rely on multinomial resampling or closely related resampling schemes, which can still reduce diversity and lead to lineage collapse under strong selection pressure. Inspired by Fleming-Viot population dynamics, FVD replaces multinomial resampling with a specialized birth-death mechanism designed for diffusion alignment. To handle cases where rewards are only approximately available and naive rebirth would collapse deterministic trajectories, FVD integrates independent reward-based survival decisions with stochastic rebirth noise. This yields flexible population dynamics that preserve broader trajectory support while effectively exploring reward-tilted distributions, all without requiring value function approximation or costly rollouts. FVD is fully parallelizable and scales efficiently with inference compute. Empirically, it achieves substantial gains across settings: on DrawBench it outperforms prior methods by 7% in ImageReward, while on class-conditional tasks it improves FID by roughly 14-20% over strong baselines and is up to 66 times faster than value-based approaches.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4e771559a5d47a302b973f13c5411ae6e00fcbc2",
+    "externalIds": {
+      "ArXiv": "2604.07427",
+      "CorpusId": 287255825
+    },
+    "title": "Personalizing Text-to-Image Generation to Individual Taste",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.07427, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1382483483",
+        "name": "A. Maerten"
+      },
+      {
+        "authorId": "2180209854",
+        "name": "Juliane Verwiebe"
+      },
+      {
+        "authorId": "1387873091",
+        "name": "Shyamgopal Karthik"
+      },
+      {
+        "authorId": "2311885852",
+        "name": "Ameya Prabhu"
+      },
+      {
+        "authorId": "2238157094",
+        "name": "Johan Wagemans"
+      },
+      {
+        "authorId": "2256998402",
+        "name": "Matthias Bethge"
+      }
+    ],
+    "abstract": "Modern text-to-image (T2I) models generate high-fidelity visuals but remain indifferent to individual user preferences. While existing reward models optimize for\"average\"human appeal, they fail to capture the inherent subjectivity of aesthetic judgment. In this work, we introduce a novel dataset and predictive framework, called PAMELA, designed to model personalized image evaluations. Our dataset comprises 70,000 ratings across 5,000 diverse images generated by state-of-the-art models (Flux 2 and Nano Banana). Each image is evaluated by 15 unique users, providing a rich distribution of subjective preferences across domains such as art, design, fashion, and cinematic photography. Leveraging this data, we propose a personalized reward model trained jointly on our high-quality annotations and existing aesthetic assessment subsets. We demonstrate that our model predicts individual liking with higher accuracy than the majority of current state-of-the-art methods predict population-level preferences. Using our personalized predictor, we demonstrate how simple prompt optimization methods can be used to steer generations towards individual user preferences. Our results highlight the importance of data quality and personalization to handle the subjectivity of user preferences. We release our dataset and model to facilitate standardized research in personalized T2I alignment and subjective visual quality assessment.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1748165699e788875643ca8455f72e4055a73047",
+    "externalIds": {
+      "ArXiv": "2604.06129",
+      "CorpusId": 287209553
+    },
+    "title": "PoM: A Linear-Time Replacement for Attention with the Polynomial Mixer",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.06129, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2375047042",
+        "name": "David Picard"
+      },
+      {
+        "authorId": "2212307989",
+        "name": "Nicolas Dufour"
+      },
+      {
+        "authorId": "2352074964",
+        "name": "L. Degeorge"
+      },
+      {
+        "authorId": "2353579803",
+        "name": "A. Ghosh"
+      },
+      {
+        "authorId": "100897435",
+        "name": "Davide Allegro"
+      },
+      {
+        "authorId": "2428365985",
+        "name": "Tom Ravaud"
+      },
+      {
+        "authorId": "2311116156",
+        "name": "Yohann Perron"
+      },
+      {
+        "authorId": "2160711622",
+        "name": "Corentin Sautier"
+      },
+      {
+        "authorId": "2133346460",
+        "name": "Z. S. Baltaci"
+      },
+      {
+        "authorId": "2396642500",
+        "name": "Fei Meng"
+      },
+      {
+        "authorId": "2291065801",
+        "name": "Syrine Kalleli"
+      },
+      {
+        "authorId": "2364685601",
+        "name": "Marta L'opez-Rauhut"
+      },
+      {
+        "authorId": "2347534863",
+        "name": "T. Loiseau"
+      },
+      {
+        "authorId": "2291063704",
+        "name": "S. Albouy"
+      },
+      {
+        "authorId": "2051177002",
+        "name": "Raphael Baena"
+      },
+      {
+        "authorId": "2086971830",
+        "name": "Elliot Vincent"
+      },
+      {
+        "authorId": "2311115028",
+        "name": "Loic Landrieu"
+      }
+    ],
+    "abstract": "This paper introduces the Polynomial Mixer (PoM), a novel token mixing mechanism with linear complexity that serves as a drop-in replacement for self-attention. PoM aggregates input tokens into a compact representation through a learned polynomial function, from which each token retrieves contextual information. We prove that PoM satisfies the contextual mapping property, ensuring that transformers equipped with PoM remain universal sequence-to-sequence approximators. We replace standard self-attention with PoM across five diverse domains: text generation, handwritten text recognition, image generation, 3D modeling, and Earth observation. PoM matches the performance of attention-based models while drastically reducing computational cost when working with long sequences. The code is available at https://github.com/davidpicard/pom.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "009747d9ca4fd603329aa1bae85803f697166166",
+    "externalIds": {
+      "ArXiv": "2604.04780",
+      "CorpusId": 287202613
+    },
+    "title": "CLEAR: Unlocking Generative Potential for Degraded Image Understanding in Unified Multimodal Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.04780, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2371013539",
+        "name": "Xiangzhao Hao"
+      },
+      {
+        "authorId": "2344794450",
+        "name": "Zefeng Zhang"
+      },
+      {
+        "authorId": "2344804206",
+        "name": "Zhenyu Zhang"
+      },
+      {
+        "authorId": "2363686275",
+        "name": "Linhao Yu"
+      },
+      {
+        "authorId": "2274205191",
+        "name": "Yao Chen"
+      },
+      {
+        "authorId": "2375751807",
+        "name": "Yiqian Zhang"
+      },
+      {
+        "authorId": "2313045",
+        "name": "Haiyun Guo"
+      },
+      {
+        "authorId": "104463827",
+        "name": "Shuohuan Wang"
+      },
+      {
+        "authorId": "2296100360",
+        "name": "Yu Sun"
+      }
+    ],
+    "abstract": "Image degradation from blur, noise, compression, and poor illumination severely undermines multimodal understanding in real-world settings. Unified multimodal models that combine understanding and generation within a single architecture are a natural fit for this challenge, as their generative pathway can model the fine-grained visual structure that degradation destroys. Yet these models fail to leverage their own generative capacity on degraded inputs. We trace this disconnect to two compounding factors: existing training regimes never ask the model to invoke generation during reasoning, and the standard decode-reencode pathway does not support effective joint optimization. We present CLEAR, a framework that connects the two capabilities through three progressive steps: (1) supervised fine-tuning on a degradation-aware dataset to establish the generate-then-answer reasoning pattern; (2) a Latent Representation Bridge that replaces the decode-reencode detour with a direct, optimizable connection between generation and reasoning; (3) Interleaved GRPO, a reinforcement learning method that jointly optimizes text reasoning and visual generation under answer-correctness rewards. We construct MMD-Bench, covering three degradation severity levels across six standard multimodal benchmarks. Experiments show that CLEAR substantially improves robustness on degraded inputs while preserving clean-image performance. Our analysis further reveals that removing pixel-level reconstruction supervision leads to intermediate visual states with higher perceptual quality, suggesting that task-driven optimization and visual quality are naturally aligned.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0669e190db883c1ea921c34c69e422d484b5e349",
+    "externalIds": {
+      "ArXiv": "2604.04142",
+      "CorpusId": 287202703
+    },
+    "title": "OP-GRPO: Efficient Off-Policy GRPO for Flow-Matching Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.04142, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2394200648",
+        "name": "Liyu Zhang"
+      },
+      {
+        "authorId": "2380869175",
+        "name": "Kehan Li"
+      },
+      {
+        "authorId": "2353656901",
+        "name": "Ting Han"
+      },
+      {
+        "authorId": "2274925081",
+        "name": "Tao Zhao"
+      },
+      {
+        "authorId": "2381832097",
+        "name": "Yuxuan Sheng"
+      },
+      {
+        "authorId": "2377415357",
+        "name": "Shibo He"
+      },
+      {
+        "authorId": "2150356563",
+        "name": "Chao Li"
+      }
+    ],
+    "abstract": "Post training via GRPO has demonstrated remarkable effectiveness in improving the generation quality of flow-matching models. However, GRPO suffers from inherently low sample efficiency due to its on-policy training paradigm. To address this limitation, we present OP-GRPO, the first Off-Policy GRPO framework tailored for flow-matching models. First, we actively select high-quality trajectories and adaptively incorporate them into a replay buffer for reuse in subsequent training iterations. Second, to mitigate the distribution shift introduced by off-policy samples, we propose a sequence-level importance sampling correction that preserves the integrity of GRPO's clipping mechanism while ensuring stable policy updates. Third, we theoretically and empirically show that late denoising steps yield ill-conditioned off-policy ratios, and mitigate this by truncating trajectories at late steps. Across image and video generation benchmarks, OP-GRPO achieves comparable or superior performance to Flow-GRPO with only 34.2% of the training steps on average, yielding substantial gains in training efficiency while maintaining generation quality.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a6d63665b19c88b1803b6c692d6d695035e51eeb",
+    "externalIds": {
+      "ArXiv": "2604.00849",
+      "CorpusId": 287023798
+    },
+    "title": "Disentangling to Re-couple: Resolving the Similarity-Controllability Paradox in Subject-Driven Text-to-Image Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.00849, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275543733",
+        "name": "Shuangfeng Li"
+      },
+      {
+        "authorId": "41036094",
+        "name": "Chaorui Deng"
+      },
+      {
+        "authorId": "2224460907",
+        "name": "Hang Chen"
+      },
+      {
+        "authorId": "2303915405",
+        "name": "Liqun Liu"
+      },
+      {
+        "authorId": "2303898642",
+        "name": "Zhenyu Hu"
+      },
+      {
+        "authorId": "2172230110",
+        "name": "Tengbao Cao"
+      },
+      {
+        "authorId": "2303850710",
+        "name": "Mengge Xue"
+      },
+      {
+        "authorId": "2257360192",
+        "name": "Yuantian Chen"
+      },
+      {
+        "authorId": "2399032315",
+        "name": "Peng Shu"
+      },
+      {
+        "authorId": "2399049892",
+        "name": "Huan Yu"
+      },
+      {
+        "authorId": "2399109446",
+        "name": "Jie Jiang"
+      }
+    ],
+    "abstract": "Subject-Driven Text-to-Image (T2I) Generation aims to preserve a subject's identity while editing its context based on a text prompt. A core challenge in this task is the\"similarity-controllability paradox\", where enhancing textual control often degrades the subject's fidelity, and vice-versa. We argue this paradox stems from the ambiguous role of text prompts, which are often tasked with describing both the subject and the desired modifications, leading to conflicting signals for the model. To resolve this, we propose DisCo, a novel framework that first Disntangles and then re-Couples visual and textual information. First, our textual-visual decoupling module isolates the sources of information: subject identity is extracted exclusively from the reference image with the entity word of the subject, while the text prompt is simplified to contain only the modification command, where the subject refers to general pronouns, eliminating descriptive ambiguity. However, this strict separation can lead to unnatural compositions between the subject and its contexts. We address this by designing a dedicated reward signal and using reinforcement learning to seamlessly recouple the visually-defined subject and the textually-generated context. Our approach effectively resolves the paradox, enabling simultaneous high-fidelity subject preservation and precise textual control. Extensive experiments demonstrate that our method achieves state-of-the-art performance, producing highly realistic and coherent images.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "54a7e080edc1438eee6a3dbfa08d96f5e028598b",
+    "externalIds": {
+      "ArXiv": "2603.28162",
+      "CorpusId": 286973878
+    },
+    "title": "ColorFLUX: A Structure-Color Decoupling Framework for Old Photo Colorization",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.28162, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2289786700",
+        "name": "Bingchen Li"
+      },
+      {
+        "authorId": "2357855640",
+        "name": "Zhixin Wang"
+      },
+      {
+        "authorId": "2382931787",
+        "name": "Fan Li"
+      },
+      {
+        "authorId": "2356576850",
+        "name": "Jiaqi Xu"
+      },
+      {
+        "authorId": "2297169435",
+        "name": "Jiaming Guo"
+      },
+      {
+        "authorId": "2233152667",
+        "name": "Renjing Pei"
+      },
+      {
+        "authorId": "2253011048",
+        "name": "Xin Li"
+      },
+      {
+        "authorId": "2249544371",
+        "name": "Zhibo Chen"
+      }
+    ],
+    "abstract": "Old photos preserve invaluable historical memories, making their restoration and colorization highly desirable. While existing restoration models can address some degradation issues like denoising and scratch removal, they often struggle with accurate colorization. This limitation arises from the unique degradation inherent in old photos, such as faded brightness and altered color hues, which are different from modern photo distributions, creating a substantial domain gap during colorization. In this paper, we propose a novel old photo colorization framework based on the generative diffusion model FLUX. Our approach introduces a structure-color decoupling strategy that separates structure preservation from color restoration, enabling accurate colorization of old photos while maintaining structural consistency. We further enhance the model with a progressive Direct Preference Optimization (Pro-DPO) strategy, which allows the model to learn subtle color preferences through coarse-to-fine transitions in color augmentation. Additionally, we address the limitations of text-based prompts by introducing visual semantic prompts, which extract fine-grained semantic information directly from old photos, helping to eliminate the color bias inherent in old photos. Experimental results on both synthetic and real datasets demonstrate that our approach outperforms existing state-of-the-art colorization methods, including closed-source commercial models, producing high-quality and vivid colorization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b06b937ea928d6578a97adbbc384f922d92bc730",
+    "externalIds": {
+      "ArXiv": "2603.28460",
+      "CorpusId": 286974303
+    },
+    "title": "$R_\\text{dm}$: Re-conceptualizing Distribution Matching as a Reward for Diffusion Distillation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.28460, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2147261384",
+        "name": "Linqian Fan"
+      },
+      {
+        "authorId": "2399557951",
+        "name": "Peiqin Sun"
+      },
+      {
+        "authorId": "2055590635",
+        "name": "Tiancheng Wen"
+      },
+      {
+        "authorId": "2399181482",
+        "name": "Shun Lu"
+      },
+      {
+        "authorId": "2241686105",
+        "name": "Chengru Song"
+      }
+    ],
+    "abstract": "Diffusion models achieve state-of-the-art generative performance but are fundamentally bottlenecked by their slow, iterative sampling process. While diffusion distillation techniques enable high-fidelity, few-step generation, traditional objectives often restrict the student's performance by anchoring it solely to the teacher. Recent approaches have attempted to break this ceiling by integrating Reinforcement Learning (RL), typically through a simple summation of distillation and RL objectives. In this work, we propose a novel paradigm by re-conceptualizing distribution matching as a reward, denoted as $R_\\text{dm}$. This unified perspective bridges the algorithmic gap between Diffusion Matching Distillation (DMD) and RL, providing several primary benefits. (1) Enhanced Optimization Stability: We introduce Group Normalized Distribution Matching (GNDM), which adapts standard RL group normalization to stabilize $R_\\text{dm}$ estimation. By leveraging group-mean statistics, GNDM establishes a more robust and effective optimization direction. (2) Seamless Reward Integration: Our reward-centric formulation inherently supports adaptive weighting mechanisms, allowing for the fluid combination of DMD with external reward models. (3) Improved Sampling Efficiency: By aligning with RL principles, the framework readily incorporates Importance Sampling (IS), leading to a significant boost in sampling efficiency. Extensive experiments demonstrate that GNDM outperforms vanilla DMD, reducing the FID by 1.87. Furthermore, our multi-reward variant, GNDMR, surpasses existing baselines by striking an optimal balance between aesthetic quality and fidelity, achieving a peak HPS of 30.37 and a low FID-SD of 12.21. Ultimately, $R_\\text{dm}$ provides a flexible, stable, and efficient framework for real-time, high-fidelity synthesis. Codes are coming soon.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c56f07d33487579ce070662a1149e3b4af7ed567",
+    "externalIds": {
+      "ArXiv": "2603.28713",
+      "CorpusId": 286974331
+    },
+    "title": "DreamLite: A Lightweight On-Device Unified Model for Image Generation and Editing",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.28713, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2236697280",
+        "name": "Kailai Feng"
+      },
+      {
+        "authorId": "2156252416",
+        "name": "Yuxiang Wei"
+      },
+      {
+        "authorId": "2237102939",
+        "name": "Bo-Wei Chen"
+      },
+      {
+        "authorId": "2392604612",
+        "name": "Yan Pan"
+      },
+      {
+        "authorId": "2257022477",
+        "name": "Hu Ye"
+      },
+      {
+        "authorId": "2263566608",
+        "name": "Songwei Liu"
+      },
+      {
+        "authorId": "2296754720",
+        "name": "Chenqian Yan"
+      },
+      {
+        "authorId": "2276607265",
+        "name": "Yuan Gao"
+      }
+    ],
+    "abstract": "Diffusion models have made significant progress in both text-to-image (T2I) generation and text-guided image editing. However, these models are typically built with billions of parameters, leading to high latency and increased deployment challenges. While on-device diffusion models improve efficiency, they largely focus on T2I generation and lack support for image editing. In this paper, we propose DreamLite, a compact unified on-device diffusion model (0.39B) that supports both T2I generation and text-guided image editing within a single network. DreamLite is built on a pruned mobile U-Net backbone and unifies conditioning through in-context spatial concatenation in the latent space. It concatenates images horizontally as input, using a (target | blank) configuration for generation tasks and (target | source) for editing tasks. To stabilize the training of this compact model, we introduce a task-progressive joint pretraining strategy that sequentially targets T2I, editing, and joint tasks. After high-quality SFT and reinforcement learning, DreamLite achieves GenEval (0.72) for image generation and ImgEdit (4.11) for image editing, outperforming existing on-device models and remaining competitive with several server-side models. By employing step distillation, we further reduce denoising processing to just 4 steps, enabling our DreamLite could generate or edit a 1024 x 1024 image in less than 1s on a Xiaomi 14 smartphone. To the best of our knowledge, DreamLite is the first unified on-device diffusion model that supports both image generation and image editing.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4b6707de66479b7b39f3171d61e41104f4ef14aa",
+    "externalIds": {
+      "ArXiv": "2603.28763",
+      "CorpusId": 286974535
+    },
+    "title": "PoseDreamer: Scalable and Photorealistic Human Data Generation Pipeline with Diffusion Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.28763, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2141831883",
+        "name": "Lorenza Prospero"
+      },
+      {
+        "authorId": "47133874",
+        "name": "Orest Kupyn"
+      },
+      {
+        "authorId": "1750521014",
+        "name": "Ostap Viniavskyi"
+      },
+      {
+        "authorId": "2305683744",
+        "name": "João F. Henriques"
+      },
+      {
+        "authorId": "2305815280",
+        "name": "Christian Rupprecht"
+      }
+    ],
+    "abstract": "Acquiring labeled datasets for 3D human mesh estimation is challenging due to depth ambiguities and the inherent difficulty of annotating 3D geometry from monocular images. Existing datasets are either real, with manually annotated 3D geometry and limited scale, or synthetic, rendered from 3D engines that provide precise labels but suffer from limited photorealism, low diversity, and high production costs. In this work, we explore a third path: generated data. We introduce PoseDreamer, a novel pipeline that leverages diffusion models to generate large-scale synthetic datasets with 3D mesh annotations. Our approach combines controllable image generation with Direct Preference Optimization for control alignment, curriculum-based hard sample mining, and multi-stage quality filtering. Together, these components naturally maintain correspondence between 3D labels and generated images, while prioritizing challenging samples to maximize dataset utility. Using PoseDreamer, we generate more than 500,000 high-quality synthetic samples, achieving a 76% improvement in image-quality metrics compared to rendering-based datasets. Models trained on PoseDreamer achieve performance comparable to or superior to those trained on real-world and traditional synthetic datasets. In addition, combining PoseDreamer with synthetic datasets results in better performance than combining real-world and synthetic datasets, demonstrating the complementary nature of our dataset. We will release the full dataset and generation code.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fcbc8a61e579394728efa65f81f39a69cca94dc3",
+    "externalIds": {
+      "ArXiv": "2603.27693",
+      "CorpusId": 286973980
+    },
+    "title": "LVRPO: Language-Visual Alignment with GRPO for Multimodal Understanding and Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.27693, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2328299351",
+        "name": "Shentong Mo"
+      },
+      {
+        "authorId": "66863443",
+        "name": "Sukmin Yun"
+      }
+    ],
+    "abstract": "Unified multimodal pretraining has emerged as a promising paradigm for jointly modeling language and vision within a single foundation model. However, existing approaches largely rely on implicit or indirect alignment signals and remain suboptimal for simultaneously supporting multimodal understanding and generation, particularly in settings that require fine-grained language-visual reasoning and controllable generation. In this work, we propose LVRPO, a language-visual reinforcement-based preference optimization framework that explicitly aligns language and visual representations using Group Relative Policy Optimization (GRPO). Instead of introducing additional alignment losses at the representation level, LVRPO directly optimizes multimodal model behaviors through preference-driven reinforcement signals, encouraging consistent and semantically grounded interactions between language and vision across both understanding and generation tasks. This formulation enables effective alignment without requiring auxiliary encoders or handcrafted cross-modal objectives, and naturally extends to diverse multimodal capabilities. Empirically, LVRPO consistently outperforms strong unified-pretraining baselines on a broad suite of benchmarks spanning multimodal understanding, generation, and reasoning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1be88ceb8e7f12c0e08327b49b6d9b181903f114",
+    "externalIds": {
+      "ArXiv": "2603.27185",
+      "CorpusId": 286961223
+    },
+    "title": "MotionRFT: Unified Reinforcement Fine-Tuning for Text-to-Motion Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.27185, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2333979919",
+        "name": "Xiaofeng Tan"
+      },
+      {
+        "authorId": "2334863203",
+        "name": "Wanjiang Weng"
+      },
+      {
+        "authorId": "2334883886",
+        "name": "Hongsong Wang"
+      },
+      {
+        "authorId": "2211626931",
+        "name": "Fang Zhao"
+      },
+      {
+        "authorId": "2274936394",
+        "name": "Xin Geng"
+      },
+      {
+        "authorId": "2363622384",
+        "name": "Liang Wang"
+      }
+    ],
+    "abstract": "Text-to-motion generation has advanced with diffusion- and flow-based generative models, yet supervised pretraining remains insufficient to align models with high-level objectives such as semantic consistency, realism, and human preference. Existing post-training methods have key limitations: they (1) target a specific motion representation, such as joints, (2) optimize a particular aspect, such as text-motion alignment, and may compromise other factors; and (3) incur substantial computational overhead, data dependence, and coarse-grained optimization. We present a reinforcement fine-tuning framework that comprises a heterogeneous-representation, multi-dimensional reward model, MotionReward, and an efficient, fine-grained fine-tuning method, EasyTune. To obtain a unified semantics representation, MotionReward maps heterogeneous motions into a shared semantic space anchored by text, enabling multidimensional reward learning; Self-refinement Preference Learning further enhances semantics without additional annotations. For efficient and effective fine-tuning, we identify the recursive gradient dependence across denoising steps as the key bottleneck, and propose EasyTune, which optimizes step-wise rather than over the full trajectory, yielding dense, fine-grained, and memory-efficient updates. Extensive experiments validate the effectiveness of our framework, achieving FID 0.132 at 22.10 GB peak memory for MLD model and saving up to 15.22 GB over DRaFT. It reduces FID by 22.9% on joint-based ACMDM, and achieves a 12.6% R-Precision gain and 23.3% FID improvement on rotation-based HY Motion. Our project page with code is publicly available.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "11139e31bbce9b1d5cf6ba39620912b8cf92e2b5",
+    "externalIds": {
+      "ArXiv": "2603.26599",
+      "CorpusId": 286944233
+    },
+    "title": "VGGRPO: Towards World-Consistent Video Generation with 4D Latent Reward",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.26599, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2395669918",
+        "name": "Zhaochong An"
+      },
+      {
+        "authorId": "47133874",
+        "name": "Orest Kupyn"
+      },
+      {
+        "authorId": "2205313664",
+        "name": "Théo Uscidda"
+      },
+      {
+        "authorId": "2297771356",
+        "name": "Andrea Colaço"
+      },
+      {
+        "authorId": "2297771352",
+        "name": "Karan Ahuja"
+      },
+      {
+        "authorId": "2356550683",
+        "name": "Serge Belongie"
+      },
+      {
+        "authorId": "2297771166",
+        "name": "Mar González-Franco"
+      },
+      {
+        "authorId": "1478480944",
+        "name": "Marta Tintoré Gazulla"
+      }
+    ],
+    "abstract": "Large-scale video diffusion models achieve impressive visual quality, yet often fail to preserve geometric consistency. Prior approaches improve consistency either by augmenting the generator with additional modules or applying geometry-aware alignment. However, architectural modifications can compromise the generalization of internet-scale pretrained models, while existing alignment methods are limited to static scenes and rely on RGB-space rewards that require repeated VAE decoding, incurring substantial compute overhead and failing to generalize to highly dynamic real-world scenes. To preserve the pretrained capacity while improving geometric consistency, we propose VGGRPO (Visual Geometry GRPO), a latent geometry-guided framework for geometry-aware video post-training. VGGRPO introduces a Latent Geometry Model (LGM) that stitches video diffusion latents to geometry foundation models, enabling direct decoding of scene geometry from the latent space. By constructing LGM from a geometry model with 4D reconstruction capability, VGGRPO naturally extends to dynamic scenes, overcoming the static-scene limitations of prior methods. Building on this, we perform latent-space Group Relative Policy Optimization with two complementary rewards: a camera motion smoothness reward that penalizes jittery trajectories, and a geometry reprojection consistency reward that enforces cross-view geometric coherence. Experiments on both static and dynamic benchmarks show that VGGRPO improves camera stability, geometry consistency, and overall quality while eliminating costly VAE decoding, making latent-space geometry-guided reinforcement an efficient and flexible approach to world-consistent video generation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f0e952c9a5a0317471f8074d7508936280fc11f2",
+    "externalIds": {
+      "ArXiv": "2603.25188",
+      "CorpusId": 286789833
+    },
+    "title": "AnyID: Ultra-Fidelity Universal Identity-Preserving Video Generation from Any Visual References",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.25188, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293559365",
+        "name": "Jiahao Wang"
+      },
+      {
+        "authorId": "1702989270",
+        "name": "Hualian Sheng"
+      },
+      {
+        "authorId": "2277492516",
+        "name": "Sijia Cai"
+      },
+      {
+        "authorId": "2334480357",
+        "name": "Yuxiao Yang"
+      },
+      {
+        "authorId": "2378477422",
+        "name": "Weizhan Zhang"
+      },
+      {
+        "authorId": "2269431401",
+        "name": "Caixia Yan"
+      },
+      {
+        "authorId": "2277529448",
+        "name": "Bing Deng"
+      },
+      {
+        "authorId": "2277872527",
+        "name": "Jieping Ye"
+      }
+    ],
+    "abstract": "Identity-preserving video generation offers powerful tools for creative expression, allowing users to customize videos featuring their beloved characters. However, prevailing methods are typically designed and optimized for a single identity reference. This underlying assumption restricts creative flexibility by inadequately accommodating diverse real-world input formats. Relying on a single source also constitutes an ill-posed scenario, causing an inherently ambiguous setting that makes it difficult for the model to faithfully reproduce an identity across novel contexts. To address these issues, we present AnyID, an ultra-fidelity identity-preservation video generation framework that features two core contributions. First, we introduce a scalable omni-referenced architecture that effectively unifies heterogeneous identity inputs (e.g., faces, portraits, and videos) into a cohesive representation. Second, we propose a primary-referenced generation paradigm, which designates one reference as a canonical anchor and uses a novel differential prompt to enable precise, attribute-level controllability. We conduct training on a large-scale, meticulously curated dataset to ensure robustness and high fidelity, and then perform a final fine-tuning stage using reinforcement learning. This process leverages a preference dataset constructed from human evaluations, where annotators performed pairwise comparisons of videos based on two key criteria: identity fidelity and prompt controllability. Extensive evaluations validate that AnyID achieves ultra-high identity fidelity as well as superior attribute-level controllability across different task settings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fb1d93b5687524cd251b73384049d9db84d814a7",
+    "externalIds": {
+      "ArXiv": "2603.25020",
+      "CorpusId": 286789477
+    },
+    "title": "GDPO-Listener: Expressive Interactive Head Generation via Auto-Regressive Flow Matching and Group reward-Decoupled Policy Optimization",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.25020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2305480070",
+        "name": "Zhangyu Jin"
+      },
+      {
+        "authorId": "2291145687",
+        "name": "Maksim Siniukov"
+      },
+      {
+        "authorId": "2284873738",
+        "name": "Deuksin Kwon"
+      },
+      {
+        "authorId": "2064705432",
+        "name": "Ashutosh Chaubey"
+      },
+      {
+        "authorId": "2267490889",
+        "name": "Mohammad Soleymani"
+      }
+    ],
+    "abstract": "Generating realistic 3D head motion for dyadic interactions is a significant challenge in virtual human synthesis. While recent methods achieve impressive results with speaking heads, they frequently suffer from the `Regression-to-the-Mean'problem in listener motions, collapsing into static faces, and lack the parameter space for complex nonverbal motions. In this paper, we propose GDPO-Listener, a novel framework that achieves highly expressive speaking and listening motion generation. First, we introduce an Auto-Regressive Flow Matching architecture enabling stable supervised learning. Second, to overcome kinematic stillness, we apply the Group reward-Decoupled Policy Optimization (GDPO). By isolating reward normalization across distinct FLAME parameter groups, GDPO explicitly incentivizes high variance expressive generations. Finally, we enable explicit semantic text control for customizable responses. Extensive evaluations across the Seamless Interaction and DualTalk datasets demonstrate superior performance compared to existing baselines on long-term kinematic variance, visual expressivity and semantic controllability.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "59a07872e39db6443109a585ab8bdd158d18438d",
+    "externalIds": {
+      "ArXiv": "2603.25685",
+      "CorpusId": 286791369
+    },
+    "title": "Persistent Robot World Models: Stabilizing Multi-Step Rollouts via Reinforcement Learning",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.25685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2193550968",
+        "name": "Jai Bardhan"
+      },
+      {
+        "authorId": "2425627264",
+        "name": "Patrik Drozdik"
+      },
+      {
+        "authorId": "2265755786",
+        "name": "Josef Sivic"
+      },
+      {
+        "authorId": "2265755285",
+        "name": "Vladimír Petrík"
+      }
+    ],
+    "abstract": "Action-conditioned robot world models generate future video frames of the manipulated scene given a robot action sequence, offering a promising alternative for simulating tasks that are difficult to model with traditional physics engines. However, these models are optimized for short-term prediction and break down when deployed autoregressively: each predicted clip feeds back as context for the next, causing errors to compound and visual quality to rapidly degrade. We address this through the following contributions. First, we introduce a reinforcement learning (RL) post-training scheme that trains the world model on its own autoregressive rollouts rather than on ground-truth histories. We achieve this by adapting a recent contrastive RL objective for diffusion models to our setting and show that its convergence guarantees carry over exactly. Second, we design a training protocol that generates and compares multiple candidate variable-length futures from the same rollout state, reinforcing higher-fidelity predictions over lower-fidelity ones. Third, we develop efficient, multi-view visual fidelity rewards that combine complementary perceptual metrics across camera views and are aggregated at the clip level for dense, low-variance training signal. Fourth, we show that our approach establishes a new state-of-the-art for rollout fidelity on the DROID dataset, outperforming the strongest baseline on all metrics (e.g., LPIPS reduced by 14% on external cameras, SSIM improved by 9.1% on the wrist camera), winning 98% of paired comparisons, and achieving an 80% preference rate in a blind human study.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d23619bedc5bb90b2bfc75a4e2cab9edeea782ac",
+    "externalIds": {
+      "ArXiv": "2603.25738",
+      "CorpusId": 286791344
+    },
+    "title": "PSDesigner: Automated Graphic Design with a Human-Like Creative Workflow",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.25738, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2307469190",
+        "name": "Xincheng Shuai"
+      },
+      {
+        "authorId": "2363690338",
+        "name": "Songlin Tang"
+      },
+      {
+        "authorId": "2288040136",
+        "name": "Yutong Huang"
+      },
+      {
+        "authorId": "2400363489",
+        "name": "Henghui Ding"
+      },
+      {
+        "authorId": "2391535818",
+        "name": "Dacheng Tao"
+      }
+    ],
+    "abstract": "Graphic design is a creative and innovative process that plays a crucial role in applications such as e-commerce and advertising. However, developing an automated design system that can faithfully translate user intentions into editable design files remains an open challenge. Although recent studies have leveraged powerful text-to-image models and MLLMs to assist graphic design, they typically simplify professional workflows, resulting in limited flexibility and intuitiveness. To address these limitations, we propose PSDesigner, an automated graphic design system that emulates the creative workflow of human designers. Building upon multiple specialized components, PSDesigner collects theme-related assets based on user instructions, and autonomously infers and executes tool calls to manipulate design files, such as integrating new assets or refining inferior elements. To endow the system with strong tool-use capabilities, we construct a design dataset, CreativePSD, which contains a large amount of high-quality PSD design files annotated with operation traces across a wide range of design scenarios and artistic styles, enabling models to learn expert design procedures. Extensive experiments demonstrate that PSDesigner outperforms existing methods across diverse graphic design tasks, empowering non-specialists to conveniently create production-quality designs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c3c8354239f906470c841920d13cd3d2fba9ab83",
+    "externalIds": {
+      "ArXiv": "2603.25711",
+      "CorpusId": 286791565
+    },
+    "title": "Seeing to Ground: Visual Attention for Hallucination-Resilient MDLLMs",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.25711, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2213873421",
+        "name": "Vishal Narnaware"
+      },
+      {
+        "authorId": "2366104405",
+        "name": "Animesh Gupta"
+      },
+      {
+        "authorId": "2383302368",
+        "name": "Kevin Zhai"
+      },
+      {
+        "authorId": "2254008335",
+        "name": "Zhenyi Wang"
+      },
+      {
+        "authorId": "2349243540",
+        "name": "Mubarak Shah"
+      }
+    ],
+    "abstract": "Multimodal Diffusion Large Language Models (MDLLMs) achieve high-concurrency generation through parallel masked decoding, yet the architectures remain prone to multimodal hallucinations. This structural vulnerability stems from an algorithmic flaw: the decoder ranks candidate tokens based on textual likelihood without verifying localized visual support. We establish that this language-only ranking induces an objective mismatch, where language probability mass acts as a misspecified proxy for the intended multimodal task. Consequently, we reinterpret hallucination as a localized optimization error, a phenomenon where the decoder exploits language shortcuts to maximize a proxy score at the expense of visual grounding. To address this objective mismatch, we introduce VISAGE, a training-free decoding framework that calibrates the objective at inference time. VISAGE estimates the proxy discrepancy by quantifying the spatial entropy of cross-attention distributions. By enforcing a localization consensus across attention heads, the method penalizes spatially uniform distributions and re-ranks token commitments to favor visually grounded outcomes. We provide an analytical stability guarantee establishing that VISAGE maintains a bounded objective loss under estimation error. Evaluations across hallucination-sensitive and general-purpose benchmarks demonstrate the robustness of the framework, yielding relative gains of 8.59% on MMMU-val and 7.75% on HallusionBench.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c1c2d06664ed638c7ac22bba163ec26a8d0af8ac",
+    "externalIds": {
+      "ArXiv": "2603.25931",
+      "CorpusId": 286942226
+    },
+    "title": "DiReCT: Disentangled Regularization of Contrastive Trajectories for Physics-Refined Video Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.25931, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2046955604",
+        "name": "Abolfazl Meyarian"
+      },
+      {
+        "authorId": "1418203134",
+        "name": "Amin Karimi Monsefi"
+      },
+      {
+        "authorId": "2333288098",
+        "name": "R. Ramnath"
+      },
+      {
+        "authorId": "2320714716",
+        "name": "Ser-Nam Lim"
+      }
+    ],
+    "abstract": "Flow-matching video generators produce temporally coherent, high-fidelity outputs yet routinely violate elementary physics because their reconstruction objectives penalize per-frame deviations without distinguishing physically consistent dynamics from impossible ones. Contrastive flow matching offers a principled remedy by pushing apart velocity-field trajectories of differing conditions, but we identify a fundamental obstacle in the text-conditioned video setting: semantic-physics entanglement. Because natural-language prompts couple scene content with physical behavior, naive negative sampling draws conditions whose velocity fields largely overlap with the positive sample's, causing the contrastive gradient to directly oppose the flow-matching objective. We formalize this gradient conflict, deriving a precise alignment condition that reveals when contrastive learning helps versus harms training. Guided by this analysis, we introduce DiReCT (Disentangled Regularization of Contrastive Trajectories), a lightweight post-training framework that decomposes the contrastive signal into two complementary scales: a macro-contrastive term that draws partition-exclusive negatives from semantically distant regions for interference-free global trajectory separation, and a micro-contrastive term that constructs hard negatives sharing full scene semantics with the positive sample but differing along a single, LLM-perturbed axis of physical behavior; spanning kinematics, forces, materials, interactions, and magnitudes. A velocity-space distributional regularizer helps to prevent catastrophic forgetting of pretrained visual quality. When applied to Wan 2.1-1.3B, our method improves the physical commonsense score on VideoPhy by 16.7% and 11.3% compared to the baseline and SFT, respectively, without increasing training time.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0bd91493907c41aef99322a30c89e8bfdc830683",
+    "externalIds": {
+      "ArXiv": "2603.24198",
+      "CorpusId": 286775480
+    },
+    "title": "RefReward-SR: LR-Conditioned Reward Modeling for Preference-Aligned Super-Resolution",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.24198, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2358313919",
+        "name": "Yu Song"
+      },
+      {
+        "authorId": "3457738",
+        "name": "Weize Quan"
+      },
+      {
+        "authorId": "2145532006",
+        "name": "Weining Wang"
+      },
+      {
+        "authorId": "2295794777",
+        "name": "Jiahui Sun"
+      },
+      {
+        "authorId": "2307457158",
+        "name": "Jing Liu"
+      },
+      {
+        "authorId": "2283820273",
+        "name": "Meng Li"
+      },
+      {
+        "authorId": "2216515816",
+        "name": "Pengbin Yu"
+      },
+      {
+        "authorId": "2272001282",
+        "name": "Zhentao Chen"
+      },
+      {
+        "authorId": "2316410770",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "2275542417",
+        "name": "Lu Yuan"
+      },
+      {
+        "authorId": "2331340635",
+        "name": "Dong Yan"
+      }
+    ],
+    "abstract": "Recent advances in generative super-resolution (SR) have greatly improved visual realism, yet existing evaluation and optimization frameworks remain misaligned with human perception. Full-Reference and No-Reference metrics often fail to reflect perceptual preference, either penalizing semantically plausible details due to pixel misalignment or favoring visually sharp but inconsistent artifacts. Moreover, most SR methods rely on ground-truth (GT)-dependent distribution matching, which does not necessarily correspond to human judgments. In this work, we propose RefReward-SR, a low-resolution (LR) reference-aware reward model for preference-aligned SR. Instead of relying on GT supervision or NR evaluation, RefReward-SR assesses high-resolution (HR) reconstructions conditioned on their LR inputs, treating the LR image as a semantic anchor. Leveraging the visual-linguistic priors of a Multimodal Large Language Models (MLLM), it evaluates semantic consistency and plausibility in a reasoning-aware manner. To support this paradigm, we construct RefSR-18K, the first large-scale LR-conditioned preference dataset for SR, providing pairwise rankings based on LR-HR consistency and HR naturalness. We fine-tune the MLLM with Group Relative Policy Optimization (GRPO) using LR-conditioned ranking rewards, and further integrate GRPO into SR model training with RefReward-SR as the core reward signal for preference-aligned generation. Extensive experiments show that our framework achieves substantially better alignment with human judgments, producing reconstructions that preserve semantic consistency while enhancing perceptual plausibility and visual naturalness. Code, models, and datasets will be released upon paper acceptance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8bbf492143bc4c0ab8949d1312bc1c464e41bf7e",
+    "externalIds": {
+      "ArXiv": "2603.24849",
+      "DOI": "10.1145/3797246.3803031",
+      "CorpusId": 286789468
+    },
+    "title": "Gaze patterns predict preference and confidence in pairwise AI image evaluation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.24849, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299230752",
+        "name": "N. Papadopoulos"
+      },
+      {
+        "authorId": "2274011921",
+        "name": "Shreenithi Navaneethan"
+      },
+      {
+        "authorId": "2291063805",
+        "name": "Shengyuan Bai"
+      },
+      {
+        "authorId": "2174081898",
+        "name": "Ankur Samanta"
+      },
+      {
+        "authorId": "2371075062",
+        "name": "Paul Sajda"
+      }
+    ],
+    "abstract": "Preference learning methods, such as Reinforcement Learning from Human Feedback (RLHF) and Direct Preference Optimization (DPO), rely on pairwise human judgments, yet little is known about the cognitive processes underlying these judgments. We investigate whether eye-tracking can reveal preference formation during pairwise AI-generated image evaluation. Thirty participants completed 1,800 trials while their gaze was recorded. We replicated the gaze cascade effect, with gaze shifting toward chosen images approximately one second before the decision. Cascade dynamics were consistent across confidence levels. Gaze features predicted binary choice (68% accuracy), with chosen images receiving more dwell time, fixations, and revisits. Gaze transitions distinguished high-confidence from uncertain decisions (66% accuracy), with low-confidence trials showing more image switches per second. These results show that gaze patterns predict both choice and confidence in pairwise image evaluations, suggesting that eye-tracking provides implicit signals relevant to the quality of preference annotations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "520015f50fd5cc334622309209eb29660c9e990c",
+    "externalIds": {
+      "ArXiv": "2603.24800",
+      "CorpusId": 286790102
+    },
+    "title": "Calibri: Enhancing Diffusion Transformers via Parameter-Efficient Calibration",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.24800, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2425602094",
+        "name": "Danil Tokhchukov"
+      },
+      {
+        "authorId": "2079146919",
+        "name": "A. Mirzoeva"
+      },
+      {
+        "authorId": "2310950808",
+        "name": "Andrey N. Kuznetsov"
+      },
+      {
+        "authorId": "2066451093",
+        "name": "Konstantin Sobolev"
+      }
+    ],
+    "abstract": "In this paper, we uncover the hidden potential of Diffusion Transformers (DiTs) to significantly enhance generative tasks. Through an in-depth analysis of the denoising process, we demonstrate that introducing a single learned scaling parameter can significantly improve the performance of DiT blocks. Building on this insight, we propose Calibri, a parameter-efficient approach that optimally calibrates DiT components to elevate generative quality. Calibri frames DiT calibration as a black-box reward optimization problem, which is efficiently solved using an evolutionary algorithm and modifies just ~100 parameters. Experimental results reveal that despite its lightweight design, Calibri consistently improves performance across various text-to-image models. Notably, Calibri also reduces the inference steps required for image generation, all while maintaining high-quality outputs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bf9b8ad131daea678bafdeffff262a9a2f695255",
+    "externalIds": {
+      "ArXiv": "2603.23500",
+      "CorpusId": 286774604
+    },
+    "title": "UniGRPO: Unified Policy Optimization for Reasoning-Driven Visual Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.23500, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285060791",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2315093795",
+        "name": "Zilyu Ye"
+      },
+      {
+        "authorId": "2244269818",
+        "name": "Li-Yan Yuan"
+      },
+      {
+        "authorId": "2313331985",
+        "name": "Shenhan Zhu"
+      },
+      {
+        "authorId": "2319400617",
+        "name": "Yu Gao"
+      },
+      {
+        "authorId": "2346458190",
+        "name": "Jiehao Wu"
+      },
+      {
+        "authorId": "2335920477",
+        "name": "Kunchang Li"
+      },
+      {
+        "authorId": "50141950",
+        "name": "Xionghui Wang"
+      },
+      {
+        "authorId": "2247508625",
+        "name": "Xiao-Ping Nie"
+      },
+      {
+        "authorId": "2295680253",
+        "name": "Weilin Huang"
+      },
+      {
+        "authorId": "2383310059",
+        "name": "Wanli Ouyang"
+      }
+    ],
+    "abstract": "Unified models capable of interleaved generation have emerged as a promising paradigm, with the community increasingly converging on autoregressive modeling for text and flow matching for image generation. To advance this direction, we propose a unified reinforcement learning framework tailored for interleaved generation. We validate our approach on its fundamental unit: a single round of reasoning-driven image generation, where the model first expands the user prompt through reasoning, followed by image synthesis. Formulating this multimodal generation process as a Markov Decision Process with sparse terminal rewards, we introduce UniGRPO to jointly optimize text and image generation policies using GRPO. Adopting a minimalist methodology to avoid over-design, we leverage established training recipes for both modalities by seamlessly integrating standard GRPO for reasoning and FlowGRPO for visual synthesis. To ensure scalability to multi-round interleaved generation, we introduce two critical modifications to the original FlowGRPO: (1) eliminating classifier-free guidance to maintain linear, unbranched rollouts, which is essential for scaling to complex scenarios involving multi-turn interactions and multi-condition generation (e.g., editing); and (2) replacing the standard latent KL penalty with an MSE penalty directly on the velocity fields, providing a more robust and direct regularization signal to mitigate reward hacking effectively. Our experiments demonstrate that this unified training recipe significantly enhances image generation quality through reasoning, providing a robust and scalable baseline for the future post-training of fully interleaved models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bedb750285d8f8a1f97481a6ed0c11d429d25794",
+    "externalIds": {
+      "ArXiv": "2603.23086",
+      "CorpusId": 286774274
+    },
+    "title": "Policy-based Tuning of Autoregressive Image Models with Instance- and Distribution-Level Rewards",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.23086, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1505785792",
+        "name": "Orhun Bugra Baran"
+      },
+      {
+        "authorId": "11213556",
+        "name": "M. Kandemir"
+      },
+      {
+        "authorId": "1939006",
+        "name": "R. G. Cinbis"
+      }
+    ],
+    "abstract": "Autoregressive (AR) models are highly effective for image generation, yet their standard maximum-likelihood estimation training lacks direct optimization for sample quality and diversity. While reinforcement learning (RL) has been used to align diffusion models, these methods typically suffer from output diversity collapse. Similarly, concurrent RL methods for AR models rely strictly on instance-level rewards, often trading off distributional coverage for quality. To address these limitations, we propose a lightweight RL framework that casts token-based AR synthesis as a Markov Decision Process, optimized via Group Relative Policy Optimization (GRPO). Our core contribution is the introduction of a novel distribution-level Leave-One-Out FID (LOO-FID) reward; by leveraging an exponential moving average of feature moments, it explicitly encourages sample diversity and prevents mode collapse during policy updates. We integrate this with composite instance-level rewards (CLIP and HPSv2) for strict semantic and perceptual fidelity, and stabilize the multi-objective learning with an adaptive entropy regularization term. Extensive experiments on LlamaGen and VQGAN architectures demonstrate clear improvements across standard quality and diversity metrics within only a few hundred tuning iterations. The results also show that the model can be updated to produce competitive samples even without Classifier-Free Guidance, and bypass its 2x inference cost.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "54a051a85a560334479ef1965d9d7ff7ea97a9f3",
+    "externalIds": {
+      "ArXiv": "2603.22228",
+      "CorpusId": 286766460
+    },
+    "title": "SpatialReward: Verifiable Spatial Reward Modeling for Fine-Grained Spatial Consistency in Text-to-Image Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.22228, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2352210285",
+        "name": "Sashuai Zhou"
+      },
+      {
+        "authorId": "2266512639",
+        "name": "Qiang Zhou"
+      },
+      {
+        "authorId": "2400961243",
+        "name": "Junpeng Ma"
+      },
+      {
+        "authorId": "2312369775",
+        "name": "Yue Cao"
+      },
+      {
+        "authorId": "2292212981",
+        "name": "Ruofan Hu"
+      },
+      {
+        "authorId": "2116461847",
+        "name": "Ziang Zhang"
+      },
+      {
+        "authorId": "2308224151",
+        "name": "Xiaoda Yang"
+      },
+      {
+        "authorId": "2261358809",
+        "name": "Zhibin Wang"
+      },
+      {
+        "authorId": "2377886372",
+        "name": "Jun Song"
+      },
+      {
+        "authorId": "2303327375",
+        "name": "Chengjun Yu"
+      },
+      {
+        "authorId": "2336160587",
+        "name": "Bo Zheng"
+      },
+      {
+        "authorId": "2358285525",
+        "name": "Zhou Zhao"
+      }
+    ],
+    "abstract": "Recent advances in text-to-image (T2I) generation via reinforcement learning (RL) have benefited from reward models that assess semantic alignment and visual quality. However, most existing reward models pay limited attention to fine-grained spatial relationships, often producing images that appear plausible overall yet contain inaccuracies in object positioning. In this work, we present \\textbf{SpatialReward}, a verifiable reward model explicitly designed to evaluate spatial layouts in generated images. SpatialReward adopts a multi-stage pipeline: a \\emph{Prompt Decomposer} extracts entities, attributes, and spatial metadata from free-form prompts; expert detectors provide accurate visual grounding of object positions and attributes; and a vision-language model applies chain-of-thought reasoning over grounded observations to assess complex spatial relations that are challenging for rule-based methods. To more comprehensively evaluate spatial relationships in generated images, we introduce \\textbf{SpatRelBench}, a benchmark covering object attributes, orientation, inter-object relations, and rendered text placement. Experiments on Stable Diffusion and FLUX show that incorporating SpatialReward into RL training consistently improves spatial consistency and overall generation quality, with results aligned more closely to human judgments. These findings indicate that verifiable reward models hold considerable potential for enabling more accurate and controllable optimization in text-to-image generation models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cf4c32be282e10f9c3093c107a44d0bd501c7f5a",
+    "externalIds": {
+      "ArXiv": "2603.21872",
+      "CorpusId": 286766625
+    },
+    "title": "Manifold-Aware Exploration for Reinforcement Learning in Video Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.21872, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2333836576",
+        "name": "Mingzhe Zheng"
+      },
+      {
+        "authorId": "2333896208",
+        "name": "Weijie Kong"
+      },
+      {
+        "authorId": "2292401973",
+        "name": "Yue Wu"
+      },
+      {
+        "authorId": "2385445043",
+        "name": "Dengyang Jiang"
+      },
+      {
+        "authorId": "2329343628",
+        "name": "Yue Ma"
+      },
+      {
+        "authorId": "2329309860",
+        "name": "Xuanhua He"
+      },
+      {
+        "authorId": "2333420566",
+        "name": "Bin Lin"
+      },
+      {
+        "authorId": "2395535279",
+        "name": "Kaixiong Gong"
+      },
+      {
+        "authorId": "2375371350",
+        "name": "Zhao Zhong"
+      },
+      {
+        "authorId": "2322502930",
+        "name": "Liefeng Bo"
+      },
+      {
+        "authorId": "2333519256",
+        "name": "Qifeng Chen"
+      },
+      {
+        "authorId": "2333412178",
+        "name": "Harry Yang"
+      }
+    ],
+    "abstract": "Group Relative Policy Optimization (GRPO) methods for video generation like FlowGRPO remain far less reliable than their counterparts for language models and images. This gap arises because video generation has a complex solution space, and the ODE-to-SDE conversion used for exploration can inject excess noise, lowering rollout quality and making reward estimates less reliable, which destabilizes post-training alignment. To address this problem, we view the pre-trained model as defining a valid video data manifold and formulate the core problem as constraining exploration within the vicinity of this manifold, ensuring that rollout quality is preserved and reward estimates remain reliable. We propose SAGE-GRPO (Stable Alignment via Exploration), which applies constraints at both micro and macro levels. At the micro level, we derive a precise manifold-aware SDE with a logarithmic curvature correction and introduce a gradient norm equalizer to stabilize sampling and updates across timesteps. At the macro level, we use a dual trust region with a periodic moving anchor and stepwise constraints so that the trust region tracks checkpoints that are closer to the manifold and limits long-horizon drift. We evaluate SAGE-GRPO on HunyuanVideo1.5 using the original VideoAlign as the reward model and observe consistent gains over previous methods in VQ, MQ, TA, and visual metrics (CLIPScore, PickScore), demonstrating superior performance in both reward maximization and overall video quality. The code and visual gallery are available at https://dungeonmassster.github.io/SAGE-GRPO-Page/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "beb521fa4076508ea4b547f0467c1c3c76f7ab94",
+    "externalIds": {
+      "ArXiv": "2603.21175",
+      "CorpusId": 286766089
+    },
+    "title": "Reward Sharpness-Aware Fine-Tuning for Diffusion Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.21175, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2392413316",
+        "name": "Kwanyoung Kim"
+      },
+      {
+        "authorId": "1381100521",
+        "name": "Byeongsu Sim"
+      }
+    ],
+    "abstract": "Reinforcement learning from human feedback (RLHF) has proven effective in aligning large language models with human preferences, inspiring the development of reward-centric diffusion reinforcement learning (RDRL) to achieve similar alignment and controllability. While diffusion models can generate high-quality outputs, RDRL remains susceptible to reward hacking, where the reward score increases without corresponding improvements in perceptual quality. We demonstrate that this vulnerability arises from the non-robustness of reward model gradients, particularly when the reward landscape with respect to the input image is sharp. To mitigate this issue, we introduce methods that exploit gradients from a robustified reward model without requiring its retraining. Specifically, we employ gradients from a flattened reward model, obtained through parameter perturbations of the diffusion model and perturbations of its generated samples. Empirically, each method independently alleviates reward hacking and improves robustness, while their joint use amplifies these benefits. Our resulting framework, RSA-FT (Reward Sharpness-Aware Fine-Tuning), is simple, broadly compatible, and consistently enhances the reliability of RDRL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "988ea1abf275dbc9c45e605de9af4d97cbff3fb1",
+    "externalIds": {
+      "ArXiv": "2603.20828",
+      "CorpusId": 286762600
+    },
+    "title": "EruDiff: Refactoring Knowledge in Diffusion Models for Advanced Text-to-Image Synthesis",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.20828, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2124836291",
+        "name": "Xiefan Guo"
+      },
+      {
+        "authorId": "2378070412",
+        "name": "Xinzhu Ma"
+      },
+      {
+        "authorId": "2269417099",
+        "name": "Haoxiang Ma"
+      },
+      {
+        "authorId": "2311646662",
+        "name": "Zihao Zhou"
+      },
+      {
+        "authorId": "2304710481",
+        "name": "Di Huang"
+      }
+    ],
+    "abstract": "Text-to-image diffusion models have achieved remarkable fidelity in synthesizing images from explicit text prompts, yet exhibit a critical deficiency in processing implicit prompts that require deep-level world knowledge, ranging from natural sciences to cultural commonsense, resulting in counter-factual synthesis. This paper traces the root of this limitation to a fundamental dislocation of the underlying knowledge structures, manifesting as a chaotic organization of implicit prompts compared to their explicit counterparts. In this paper, we propose EruDiff, which aims to refactor the knowledge within diffusion models. Specifically, we develop the Diffusion Knowledge Distribution Matching (DK-DM) to register the knowledge distribution of intractable implicit prompts with that of well-defined explicit anchors. Furthermore, to rectify the inherent biases in explicit prompt rendering, we employ the Negative-Only Reinforcement Learning (NO-RL) strategy for fine-grained correction. Rigorous empirical evaluations demonstrate that our method significantly enhances the performance of leading diffusion models, including FLUX and Qwen-Image, across both the scientific knowledge benchmark (i.e., Science-T2I) and the world knowledge benchmark (i.e., WISE), underscoring the effectiveness and generalizability. Our code is available at https://github.com/xiefan-guo/erudiff.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ee2f8e0d88332f7ed3f3e061492da6fde0ef5b58",
+    "externalIds": {
+      "ArXiv": "2603.20725",
+      "CorpusId": 286762705
+    },
+    "title": "Premier: Personalized Preference Modulation with Learnable User Embedding in Text-to-Image Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.20725, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2345064259",
+        "name": "Zihao Wang"
+      },
+      {
+        "authorId": "2156252416",
+        "name": "Yuxiang Wei"
+      },
+      {
+        "authorId": "2340091289",
+        "name": "Xinpeng Zhou"
+      },
+      {
+        "authorId": "2333482933",
+        "name": "Tianyu Zhang"
+      },
+      {
+        "authorId": "2089140998",
+        "name": "Tao Liang"
+      },
+      {
+        "authorId": "2281418241",
+        "name": "Yalong Bai"
+      },
+      {
+        "authorId": "2289358983",
+        "name": "Hongzhi Zhang"
+      },
+      {
+        "authorId": "2363810664",
+        "name": "Wangmeng Zuo"
+      }
+    ],
+    "abstract": "Text-to-image generation has advanced rapidly, yet it still struggles to capture the nuanced user preferences. Existing approaches typically rely on multimodal large language models to infer user preferences, but the derived prompts or latent codes rarely reflect them faithfully, leading to suboptimal personalization. We present Premier, a novel preference modulation framework for personalized image generation. Premier represents each user's preference as a learnable embedding and introduces a preference adapter that fuses the user embedding with the text prompt. To enable accurate and fine-grained preference control, the fused preference embedding is further used to modulate the generative process. To enhance the distinctness of individual preference and improve alignment between outputs and user-specific styles, we incorporate a dispersion loss that enforces separation among user embeddings. When user data are scarce, new users are represented as linear combinations of existing preference embeddings learned during training, enabling effective generalization. Experiments show that Premier outperforms prior methods under the same history length, achieving stronger preference alignment and superior performance on text consistency, ViPer proxy metrics, and expert evaluations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "02f69ae25e05216b18ccdb4cb001460919d6ecd0",
+    "externalIds": {
+      "ArXiv": "2603.18528",
+      "CorpusId": 286669932
+    },
+    "title": "Correlation-Weighted Multi-Reward Optimization for Compositional Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.18528, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2381374886",
+        "name": "Jungmyung Wi"
+      },
+      {
+        "authorId": "2366173571",
+        "name": "Hyunsoo Kim"
+      },
+      {
+        "authorId": "2244785087",
+        "name": "Donghyun Kim"
+      }
+    ],
+    "abstract": "Text-to-image models produce images that align well with natural language prompts, but compositional generation has long been a central challenge. Models often struggle to satisfy multiple concepts within a single prompt, frequently omitting some concepts and resulting in partial success. Such failures highlight the difficulty of jointly optimizing multiple concepts during reward optimization, where competing concepts can interfere with one another. To address this limitation, we propose Correlation-Weighted Multi-Reward Optimization (\\ours), a framework that leverages the correlation structure among concept rewards to adaptively weight each attribute concept in optimization. By accounting for interactions among concepts, \\ours balances competing reward signals and emphasizes concepts that are partially satisfied yet inconsistently generated across samples, improving compositional generation. Specifically, we decompose multi-concept prompts into pre-defined concept groups (\\eg, objects, attributes, and relations) and obtain reward signals from dedicated reward models for each concept. We then adaptively reweight these rewards, assigning higher weights to conflicting or hard-to-satisfy concepts using correlation-based difficulty estimation. By focusing optimization on the most challenging concepts within each group, \\ours encourages the model to consistently satisfy all requested attributes simultaneously. We apply our approach to train state-of-the-art diffusion models, SD3.5 and FLUX.1-dev, and demonstrate consistent improvements on challenging multi-concept benchmarks, including ConceptMix, GenEval 2, and T2I-CompBench.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a7612393d478c4e7f43c7fc78fe8aaafbcec8914",
+    "externalIds": {
+      "ArXiv": "2603.18991",
+      "CorpusId": 286673860
+    },
+    "title": "CRAFT: Aligning Diffusion Models with Fine-Tuning Is Easier Than You Think",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.18991, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2424728642",
+        "name": "Zening Sun"
+      },
+      {
+        "authorId": "2281948678",
+        "name": "Zhengpeng Xie"
+      },
+      {
+        "authorId": "2313033296",
+        "name": "Lichen Bai"
+      },
+      {
+        "authorId": "2320725011",
+        "name": "Shitong Shao"
+      },
+      {
+        "authorId": "2338865985",
+        "name": "Shuo Yang"
+      },
+      {
+        "authorId": "2311626289",
+        "name": "Zeke Xie"
+      }
+    ],
+    "abstract": "Aligning Diffusion models has achieved remarkable breakthroughs in generating high-quality, human preference-aligned images. Existing techniques, such as supervised fine-tuning (SFT) and DPO-style preference optimization, have become principled tools for fine-tuning diffusion models. However, SFT relies on high-quality images that are costly to obtain, while DPO-style methods depend on large-scale preference datasets, which are often inconsistent in quality. Beyond data dependency, these methods are further constrained by computational inefficiency. To address these two challenges, we propose Composite Reward Assisted Fine-Tuning (CRAFT), a lightweight yet powerful fine-tuning paradigm that requires significantly reduced training data while maintaining computational efficiency. It first leverages a Composite Reward Filtering (CRF) technique to construct a high-quality and consistent training dataset and then perform an enhanced variant of SFT. We also theoretically prove that CRAFT actually optimizes the lower bound of group-based reinforcement learning, establishing a principled connection between SFT with selected data and reinforcement learning. Our extensive empirical results demonstrate that CRAFT with only 100 samples can easily outperform recent SOTA preference optimization methods with thousands of preference-paired samples. Moreover, CRAFT can even achieve 11-220$\\times$ faster convergences than the baseline preference optimization methods, highlighting its extremely high efficiency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16fecb95450d7a1fce5fa0b41f75f2bc2d123304",
+    "externalIds": {
+      "ArXiv": "2603.19169",
+      "CorpusId": 286673334
+    },
+    "title": "ARIADNE: A Perception-Reasoning Synergy Framework for Trustworthy Coronary Angiography Analysis",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.19169, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2374191065",
+        "name": "Zhanpeng Jin"
+      },
+      {
+        "authorId": "48001622",
+        "name": "Yuchen Luo"
+      },
+      {
+        "authorId": "2119597880",
+        "name": "Yizhou Zhang"
+      },
+      {
+        "authorId": "2265121954",
+        "name": "Ziyang Cui"
+      },
+      {
+        "authorId": "2158296363",
+        "name": "Yuqing Wei"
+      },
+      {
+        "authorId": "2335416648",
+        "name": "Xianchao Liu"
+      },
+      {
+        "authorId": "2257433211",
+        "name": "Xueying Zeng"
+      },
+      {
+        "authorId": "2112725744",
+        "name": "Qing Zhang"
+      }
+    ],
+    "abstract": "Conventional pixel-wise loss functions fail to enforce topological constraints in coronary vessel segmentation, producing fragmented vascular trees despite high pixel-level accuracy. We present ARIADNE, a two-stage framework coupling preference-aligned perception with RL-based diagnostic reasoning for topologically coherent stenosis detection. The perception module employs DPO to fine-tune the Sa2VA vision-language foundation model using Betti number constraints as preference signals, aligning the policy toward geometrically complete vessel structures rather than pixel-wise overlap metrics. The reasoning module formulates stenosis localization as a Markov Decision Process with an explicit rejection mechanism that autonomously defers ambiguous anatomical candidates such as bifurcations and vessel crossings, shifting from coverage maximization to reliability optimization. On 1,400 clinical angiograms, ARIADNE achieves state-of-the-art centerline Dice of 0.838, reduces false positives by 41% compared to geometric baselines. External validation on multi-center benchmarks ARCADE and XCAD confirms generalization across acquisition protocols. This represents the first application of DPO for topological alignment in medical imaging, demonstrating that preference-based learning over structural constraints mitigates topological violations while maintaining diagnostic sensitivity in interventional cardiology workflows.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c55dd3b17f1ea959bc7bd98d362222b9927ee9f7",
+    "externalIds": {
+      "ArXiv": "2603.17461",
+      "CorpusId": 286643738
+    },
+    "title": "AR-CoPO: Align Autoregressive Video Generation with Contrastive Policy Optimization",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.17461, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2336030565",
+        "name": "Dailan He"
+      },
+      {
+        "authorId": "2395598614",
+        "name": "Guanlin Feng"
+      },
+      {
+        "authorId": "2287929890",
+        "name": "Xingtong Ge"
+      },
+      {
+        "authorId": "2312196784",
+        "name": "Yi Zhang"
+      },
+      {
+        "authorId": "2261489892",
+        "name": "Bingqi Ma"
+      },
+      {
+        "authorId": "12920342",
+        "name": "Guanglu Song"
+      },
+      {
+        "authorId": "2279858439",
+        "name": "Yu Liu"
+      },
+      {
+        "authorId": "2261394248",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Streaming autoregressive (AR) video generators combined with few-step distillation achieve low-latency, high-quality synthesis, yet remain difficult to align via reinforcement learning from human feedback (RLHF). Existing SDE-based GRPO methods face challenges in this setting: few-step ODEs and consistency model samplers deviate from standard flow-matching ODEs, and their short, low-stochasticity trajectories are highly sensitive to initialization noise, rendering intermediate SDE exploration ineffective. We propose AR-CoPO (AutoRegressive Contrastive Policy Optimization), a framework that adapts the Neighbor GRPO contrastive perspective to streaming AR generation. AR-CoPO introduces chunk-level alignment via a forking mechanism that constructs neighborhood candidates at a randomly selected chunk, assigns sequence-level rewards, and performs localized GRPO updates. We further propose a semi-on-policy training strategy that complements on-policy exploration with exploitation over a replay buffer of reference rollouts, improving generation quality across domains. Experiments on Self-Forcing demonstrate that AR-CoPO improves both out-of-domain generalization and in-domain human preference alignment over the baseline, providing evidence of genuine alignment rather than reward hacking.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e0b4be0a0e2cf9f86f10365877e7ab9a046e10f9",
+    "externalIds": {
+      "ArXiv": "2603.17044",
+      "CorpusId": 286638616
+    },
+    "title": "Do Understanding and Generation Fight? A Diagnostic Study of DPO for Unified Multimodal Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.17044, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2421904484",
+        "name": "A. Rao"
+      },
+      {
+        "authorId": "148120421",
+        "name": "Sujana Rachuri"
+      }
+    ],
+    "abstract": "Unified multimodal models share a language model backbone for both understanding and generating images. Can DPO align both capabilities simultaneously? We present the first systematic study of this question, applying DPO to Janus-Pro at 1B and 7B parameters under seven training strategies and two post-hoc methods. The central finding is negative: generation quality resists DPO alignment across all tested conditions on this architecture. No method improves generation CLIPScore at 7B (|Delta|<0.2, p>0.5 at n=200 per seed, 3 seeds); at 1B, all methods degrade generation, and the result holds across preference data types (real-vs-generated and model-vs-model) and the data volumes tested (150-288 pairs). Gradient analysis reveals why: understanding and generation gradients are near-orthogonal (cos ~ 0) with ~11-14x magnitude imbalance driven by VQ token count asymmetry (576 generation tokens vs. ~30-100 text tokens). This imbalance is the dominant interference mechanism in multi-task DPO; magnitude-balancing yields directionally positive understanding deltas (+0.01-0.04 VQA, though individually not significant), but the generation gap persists regardless. We identify discrete VQ tokenization as a likely structural bottleneck -- supported by the generation DPO loss converging to ln(2) -- and provide practical guidance for practitioners working with VQ-based unified models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8296639ae4b3b1c115d8184f5d4a11f67972d6ac",
+    "externalIds": {
+      "ArXiv": "2603.15616",
+      "CorpusId": 286571945
+    },
+    "title": "GlyphPrinter: Region-Grouped Direct Preference Optimization for Glyph-Accurate Visual Text Rendering",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.15616, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2307469190",
+        "name": "Xincheng Shuai"
+      },
+      {
+        "authorId": "2118272953",
+        "name": "Ziye Li"
+      },
+      {
+        "authorId": "2400363489",
+        "name": "Henghui Ding"
+      },
+      {
+        "authorId": "2391535818",
+        "name": "Dacheng Tao"
+      }
+    ],
+    "abstract": "Generating accurate glyphs for visual text rendering is essential yet challenging. Existing methods typically enhance text rendering by training on a large amount of high-quality scene text images, but the limited coverage of glyph variations and excessive stylization often compromise glyph accuracy, especially for complex or out-of-domain characters. Some methods leverage reinforcement learning to alleviate this issue, yet their reward models usually depend on text recognition systems that are insensitive to fine-grained glyph errors, so images with incorrect glyphs may still receive high rewards. Inspired by Direct Preference Optimization (DPO), we propose GlyphPrinter, a preference-based text rendering method that eliminates reliance on explicit reward models. However, the standard DPO objective only models overall preference between two samples, which is insufficient for visual text rendering where glyph errors typically occur in localized regions. To address this issue, we construct the GlyphCorrector dataset with region-level glyph preference annotations and propose Region-Grouped DPO (R-GDPO), a region-based objective that optimizes inter- and intra-sample preferences over annotated regions, substantially enhancing glyph accuracy. Furthermore, we introduce Regional Reward Guidance, an inference strategy that samples from an optimal distribution with controllable glyph accuracy. Extensive experiments demonstrate that the proposed GlyphPrinter outperforms existing methods in glyph accuracy while maintaining a favorable balance between stylization and precision.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "b67c5a767197aa10ee06337804e385a89aeb88af",
+    "externalIds": {
+      "ArXiv": "2603.16769",
+      "CorpusId": 286584267
+    },
+    "title": "GDPO-SR: Group Direct Preference Optimization for One-Step Generative Image Super-Resolution",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.16769, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2301456497",
+        "name": "Qiaosi Yi"
+      },
+      {
+        "authorId": "2175859832",
+        "name": "Shuai Li"
+      },
+      {
+        "authorId": "2268649292",
+        "name": "Rongyuan Wu"
+      },
+      {
+        "authorId": "2268726801",
+        "name": "Lingchen Sun"
+      },
+      {
+        "authorId": "2238946866",
+        "name": "Zhengqiang Zhang"
+      },
+      {
+        "authorId": "2350433580",
+        "name": "Lei Zhang"
+      }
+    ],
+    "abstract": "Recently, reinforcement learning (RL) has been employed for improving generative image super-resolution (ISR) performance. However, the current efforts are focused on multi-step generative ISR, while one-step generative ISR remains underexplored due to its limited stochasticity. In addition, RL methods such as Direct Preference Optimization (DPO) require the generation of positive and negative sample pairs offline, leading to a limited number of samples, while Group Relative Policy Optimization (GRPO) only calculates the likelihood of the entire image, ignoring local details that are crucial for ISR. In this paper, we propose Group Direct Preference Optimization (GDPO), a novel approach to integrate RL into one-step generative ISR model training. First, we introduce a noise-aware one-step diffusion model that can generate diverse ISR outputs. To prevent performance degradation caused by noise injection, we introduce an unequal-timestep strategy to decouple the timestep of noise addition from that of diffusion. We then present the GDPO strategy, which integrates the principle of GRPO into DPO, to calculate the group-relative advantage of each online generated sample for model optimization. Meanwhile, an attribute-aware reward function is designed to dynamically evaluate the score of each sample based on its statistics of smooth and texture areas. Experiments demonstrate the effectiveness of GDPO in enhancing the performance of one-step generative ISR models. Code: https://github.com/Joyies/GDPO.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "d02dcdeb4c56ec01b8557a9b5ea50a15573ccf54",
+    "externalIds": {
+      "ArXiv": "2603.15020",
+      "CorpusId": 286573111
+    },
+    "title": "MER-Bench: A Comprehensive Benchmark for Multimodal Meme Reappraisal",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.15020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2343743848",
+        "name": "Yiqi Nie"
+      },
+      {
+        "authorId": "2331754606",
+        "name": "Fei Wang"
+      },
+      {
+        "authorId": "2260645247",
+        "name": "Junjie Chen"
+      },
+      {
+        "authorId": "2115467392",
+        "name": "Kun Li"
+      },
+      {
+        "authorId": "2424134788",
+        "name": "Yudi Cai"
+      },
+      {
+        "authorId": "2237968578",
+        "name": "Dan Guo"
+      },
+      {
+        "authorId": "2400355407",
+        "name": "Chenglong Li"
+      },
+      {
+        "authorId": "2146058169",
+        "name": "Meng Wang"
+      }
+    ],
+    "abstract": "Memes represent a tightly coupled, multimodal form of social expression, in which visual context and overlaid text jointly convey nuanced affect and commentary. Inspired by cognitive reappraisal in psychology, we introduce Meme Reappraisal, a novel multimodal generation task that aims to transform negatively framed memes into constructive ones while preserving their underlying scenario, entities, and structural layout. Unlike prior works on meme understanding or generation, Meme Reappraisal requires emotion-controllable, structure-preserving multimodal transformation under multiple semantic and stylistic constraints. To support this task, we construct MER-Bench, a benchmark of real-world memes with fine-grained multimodal annotations, including source and target emotions, positively rewritten meme text, visual editing specifications, and taxonomy labels covering visual type, sentiment polarity, and layout structure. We further propose a structured evaluation framework based on a multimodal large language model (MLLM)-as-a-Judge paradigm, decomposing performance into modality-level generation quality, affect controllability, structural fidelity, and global affective alignment. Extensive experiments across representative image-editing and multimodal-generation systems reveal substantial gaps in satisfying the constraints of structural preservation, semantic consistency, and affective transformation. We believe MER-Bench establishes a foundation for research on controllable meme editing and emotion-aware multimodal generation. Our code is available at: https://github.com/one-seven17/MER-Bench.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e7efb61777f2a320aae07a521230c7ee29d4972d",
+    "externalIds": {
+      "ArXiv": "2603.14128",
+      "CorpusId": 286572550
+    },
+    "title": "Diffusion Reinforcement Learning via Centered Reward Distillation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.14128, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2312265028",
+        "name": "Yuanzhi Zhu"
+      },
+      {
+        "authorId": "2297729854",
+        "name": "Xi Wang"
+      },
+      {
+        "authorId": "2349639004",
+        "name": "Stéphane Lathuilière"
+      },
+      {
+        "authorId": "2306786839",
+        "name": "Vicky Kalogeiton"
+      }
+    ],
+    "abstract": "Diffusion and flow models achieve State-Of-The-Art (SOTA) generative performance, yet many practically important behaviors such as fine-grained prompt fidelity, compositional correctness, and text rendering are weakly specified by score or flow matching pretraining objectives. Reinforcement Learning (RL) fine-tuning with external, black-box rewards is a natural remedy, but diffusion RL is often brittle. Trajectory-based methods incur high memory cost and high-variance gradient estimates; forward-process approaches converge faster but can suffer from distribution drift, and hence reward hacking. In this work, we present \\textbf{Centered Reward Distillation (CRD)}, a diffusion RL framework derived from KL-regularized reward maximization built on forward-process-based fine-tuning. The key insight is that the intractable normalizing constant cancels under \\emph{within-prompt centering}, yielding a well-posed reward-matching objective. To enable reliable text-to-image fine-tuning, we introduce techniques that explicitly control distribution drift: (\\textit{i}) decoupling the sampler from the moving reference to prevent ratio-signal collapse, (\\textit{ii}) KL anchoring to a CFG-guided pretrained model to control long-run drift and align with the inference-time semantics of the pre-trained model, and (\\textit{iii}) reward-adaptive KL strength to accelerate early learning under large KL regularization while reducing late-stage exploitation of reward-model loopholes. Experiments on text-to-image post-training with \\texttt{GenEval} and \\texttt{OCR} rewards show that CRD achieves competitive SOTA reward optimization results with fast convergence and reduced reward hacking, as validated on unseen preference metrics.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9db63625f4290fa5cfef6ee51711ebeeeaba349e",
+    "externalIds": {
+      "ArXiv": "2603.13228",
+      "CorpusId": 286519781
+    },
+    "title": "PhysMoDPO: Physically-Plausible Humanoid Motion with Preference Optimization",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.13228, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2267385769",
+        "name": "Yangsong Zhang"
+      },
+      {
+        "authorId": "2278089996",
+        "name": "Anujith Muraleedharan"
+      },
+      {
+        "authorId": "2311509450",
+        "name": "Rikhat Akizhanov"
+      },
+      {
+        "authorId": "2378684527",
+        "name": "Abdul Ahad Butt"
+      },
+      {
+        "authorId": "2285565592",
+        "name": "G. Varol"
+      },
+      {
+        "authorId": "2257186858",
+        "name": "Pascal Fua"
+      },
+      {
+        "authorId": "122043967",
+        "name": "Fabio Pizzati"
+      },
+      {
+        "authorId": "2378706619",
+        "name": "Ivan Laptev"
+      }
+    ],
+    "abstract": "Recent progress in text-conditioned human motion generation has been largely driven by diffusion models trained on large-scale human motion data. Building on this progress, recent methods attempt to transfer such models for character animation and real robot control by applying a Whole-Body Controller (WBC) that converts diffusion-generated motions into executable trajectories. While WBC trajectories become compliant with physics, they may expose substantial deviations from original motion. To address this issue, we here propose PhysMoDPO, a Direct Preference Optimization framework. Unlike prior work that relies on hand-crafted physics-aware heuristics such as foot-sliding penalties, we integrate WBC into our training pipeline and optimize diffusion model such that the output of WBC becomes compliant both with physics and original text instructions. To train PhysMoDPO we deploy physics-based and task-specific rewards and use them to assign preference to synthesized trajectories. Our extensive experiments on text-to-motion and spatial control tasks demonstrate consistent improvements of PhysMoDPO in both physical realism and task-related metrics on simulated robots. Moreover, we demonstrate that PhysMoDPO results in significant improvements when applied to zero-shot motion transfer in simulation and for real-world deployment on a G1 humanoid robot.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "69ada5f5f186657526d1b6bbdc8af6d47ab1aadf",
+    "externalIds": {
+      "ArXiv": "2603.12648",
+      "CorpusId": 286517781
+    },
+    "title": "From Sparse to Dense: Multi-View GRPO for Flow Models via Augmented Condition Space",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.12648, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281827319",
+        "name": "Jiazi Bu"
+      },
+      {
+        "authorId": "2218843242",
+        "name": "Pengyang Ling"
+      },
+      {
+        "authorId": "2355729700",
+        "name": "Yujie Zhou"
+      },
+      {
+        "authorId": "2376550824",
+        "name": "Yibin Wang"
+      },
+      {
+        "authorId": "12862495",
+        "name": "Yuhang Zang"
+      },
+      {
+        "authorId": "2384403649",
+        "name": "Tianyi Wei"
+      },
+      {
+        "authorId": "2392965868",
+        "name": "Xiaohang Zhan"
+      },
+      {
+        "authorId": "2267494294",
+        "name": "Jiaqi Wang"
+      },
+      {
+        "authorId": "2307034605",
+        "name": "Tong Wu"
+      },
+      {
+        "authorId": "2276626530",
+        "name": "Xingang Pan"
+      },
+      {
+        "authorId": "2237734015",
+        "name": "Dahua Lin"
+      }
+    ],
+    "abstract": "Group Relative Policy Optimization (GRPO) has emerged as a powerful framework for preference alignment in text-to-image (T2I) flow models. However, we observe that the standard paradigm where evaluating a group of generated samples against a single condition suffers from insufficient exploration of inter-sample relationships, constraining both alignment efficacy and performance ceilings. To address this sparse single-view evaluation scheme, we propose Multi-View GRPO (MV-GRPO), a novel approach that enhances relationship exploration by augmenting the condition space to create a dense multi-view reward mapping. Specifically, for a group of samples generated from one prompt, MV-GRPO leverages a flexible Condition Enhancer to generate semantically adjacent yet diverse captions. These captions enable multi-view advantage re-estimation, capturing diverse semantic attributes and providing richer optimization signals. By deriving the probability distribution of the original samples conditioned on these new captions, we can incorporate them into the training process without costly sample regeneration. Extensive experiments demonstrate that MV-GRPO achieves superior alignment performance over state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7b707b1ecff9a00121f17a736144a3087fb17f28",
+    "externalIds": {
+      "ArXiv": "2603.12554",
+      "CorpusId": 286517599
+    },
+    "title": "Reinforcement Learning for Diffusion LLMs with Entropy-Guided Step Selection and Stepwise Advantages",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.12554, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2264463811",
+        "name": "Vishnu Teja Kunde"
+      },
+      {
+        "authorId": "2291141822",
+        "name": "Fatemeh Doudi"
+      },
+      {
+        "authorId": "2384128804",
+        "name": "Mahdi Farahbakhsh"
+      },
+      {
+        "authorId": "1956081",
+        "name": "D. Kalathil"
+      },
+      {
+        "authorId": "2367516194",
+        "name": "Krishna Narayanan"
+      },
+      {
+        "authorId": "1750037",
+        "name": "J. Chamberland"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) has been effective for post-training autoregressive (AR) language models, but extending these methods to diffusion language models (DLMs) is challenging due to intractable sequence-level likelihoods. Existing approaches therefore rely on surrogate likelihoods or heuristic approximations, which can introduce bias and obscure the sequential structure of denoising. We formulate diffusion-based sequence generation as a finite-horizon Markov decision process over the denoising trajectory and derive an exact, unbiased policy gradient that decomposes over denoising steps and is expressed in terms of intermediate advantages, without requiring explicit evaluation of the sequence likelihood. To obtain a practical and compute-efficient estimator, we (i) select denoising steps for policy updates via an entropy-guided approximation bound, and (ii) estimate intermediate advantages using a one-step denoising reward naturally provided by the diffusion model, avoiding costly multi-step rollouts. Experiments on coding and logical reasoning benchmarks demonstrate state-of-the-art results, with strong competitive performance on mathematical reasoning, outperforming existing RL post-training approaches for DLMs. Code is available at https://github.com/vishnutez/egspo-dllm-rl.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "99b9a90def8b6d24a171b709acea7e1cf1654a35",
+    "externalIds": {
+      "ArXiv": "2603.12811",
+      "CorpusId": 286517394
+    },
+    "title": "OARS: Process-Aware Online Alignment for Generative Real-World Image Super-Resolution",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.12811, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293357663",
+        "name": "Shijie Zhao"
+      },
+      {
+        "authorId": "2163952062",
+        "name": "Xuanyu Zhang"
+      },
+      {
+        "authorId": "2146712367",
+        "name": "Bin Chen"
+      },
+      {
+        "authorId": "2238117197",
+        "name": "Weiqi Li"
+      },
+      {
+        "authorId": "73768108",
+        "name": "Qunliang Xing"
+      },
+      {
+        "authorId": "2349369603",
+        "name": "Kexin Zhang"
+      },
+      {
+        "authorId": "2288161917",
+        "name": "Yan Wang"
+      },
+      {
+        "authorId": "2117978564",
+        "name": "Junli Li"
+      },
+      {
+        "authorId": "2288131019",
+        "name": "Li Zhang"
+      },
+      {
+        "authorId": "2244141436",
+        "name": "Jian Zhang"
+      },
+      {
+        "authorId": "2274105863",
+        "name": "Tianfan Xue"
+      }
+    ],
+    "abstract": "Aligning generative real-world image super-resolution models with human visual preference is challenging due to the perception--fidelity trade-off and diverse, unknown degradations. Prior approaches rely on offline preference optimization and static metric aggregation, which are often non-interpretable and prone to pseudo-diversity under strong conditioning. We propose OARS, a process-aware online alignment framework built on COMPASS, a MLLM-based reward that evaluates the LR to SR transition by jointly modeling fidelity preservation and perceptual gain with an input-quality-adaptive trade-off. To train COMPASS, we curate COMPASS-20K spanning synthetic and real degradations, and introduce a three-stage perceptual annotation pipeline that yields calibrated, fine-grained training labels. Guided by COMPASS, OARS performs progressive online alignment from cold-start flow matching to full-reference and finally reference-free RL via shallow LoRA optimization for on-policy exploration. Extensive experiments and user studies demonstrate consistent perceptual improvements while maintaining fidelity, achieving state-of-the-art performance on Real-ISR benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d221064f79676c67530066a57212af84d44f040f",
+    "externalIds": {
+      "ArXiv": "2603.12893",
+      "CorpusId": 286517734
+    },
+    "title": "Finite Difference Flow Optimization for RL Post-Training of Text-to-Image Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.12893, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2306066645",
+        "name": "David McAllister"
+      },
+      {
+        "authorId": "1907688",
+        "name": "M. Aittala"
+      },
+      {
+        "authorId": "2269733477",
+        "name": "T. Karras"
+      },
+      {
+        "authorId": "1454226629",
+        "name": "Janne Hellsten"
+      },
+      {
+        "authorId": "20615377",
+        "name": "Angjoo Kanazawa"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      },
+      {
+        "authorId": "36436218",
+        "name": "S. Laine"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) has become a standard technique for post-training diffusion-based image synthesis models, as it enables learning from reward signals to explicitly improve desirable aspects such as image quality and prompt alignment. In this paper, we propose an online RL variant that reduces the variance in the model updates by sampling paired trajectories and pulling the flow velocity in the direction of the more favorable image. Unlike existing methods that treat each sampling step as a separate policy action, we consider the entire sampling process as a single action. We experiment with both high-quality vision language models and off-the-shelf quality metrics for rewards, and evaluate the outputs using a broad set of metrics. Our method converges faster and yields higher output quality and prompt alignment than previous approaches.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4f336529484dca4037c6ea98cb3d883cf6f157a5",
+    "externalIds": {
+      "ArXiv": "2603.11661",
+      "CorpusId": 286488999
+    },
+    "title": "Resonate: Reinforcing Text-to-Audio Generation via Online Feedback from Large Audio Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.11661, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2305735629",
+        "name": "Xiquan Li"
+      },
+      {
+        "authorId": "2375340805",
+        "name": "Junxi Liu"
+      },
+      {
+        "authorId": "2278584538",
+        "name": "Wenxi Chen"
+      },
+      {
+        "authorId": "2338118921",
+        "name": "Haina Zhu"
+      },
+      {
+        "authorId": "2381784895",
+        "name": "Ziyang Ma"
+      },
+      {
+        "authorId": "2303894362",
+        "name": "Xie Chen"
+      }
+    ],
+    "abstract": "Reinforcement Learning (RL) has become an effective paradigm for enhancing Large Language Models (LLMs) and visual generative models. However, its application in text-to-audio (TTA) generation remains largely under-explored. Prior work typically employs offline methods like Direct Preference Optimization (DPO) and leverages Contrastive Language-Audio Pretraining (CLAP) models as reward functions. In this study, we investigate the integration of online Group Relative Policy Optimization (GRPO) into TTA generation. We adapt the algorithm for Flow Matching-based audio models and demonstrate that online RL significantly outperforms its offline counterparts. Furthermore, we incorporate rewards derived from Large Audio Language Models (LALMs), which can provide fine-grained scoring signals that are better aligned with human perception. With only 470M parameters, our final model, \\textbf{Resonate}, establishes a new SOTA on TTA-Bench in terms of both audio quality and semantic alignment.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cc6da8111269c09924c766483802a5f97c70fb6c",
+    "externalIds": {
+      "ArXiv": "2603.11534",
+      "CorpusId": 286489298
+    },
+    "title": "Risk-Controllable Multi-View Diffusion for Driving Scenario Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.11534, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2190257665",
+        "name": "Hongyi Lin"
+      },
+      {
+        "authorId": "2351820424",
+        "name": "Wenxiu Shi"
+      },
+      {
+        "authorId": "2284699773",
+        "name": "Heye Huang"
+      },
+      {
+        "authorId": "1580217088",
+        "name": "Dingyi Zhuang"
+      },
+      {
+        "authorId": "2201302996",
+        "name": "Songchun Zhang"
+      },
+      {
+        "authorId": "2318684844",
+        "name": "Yang Liu"
+      },
+      {
+        "authorId": "2179886423",
+        "name": "Xiaobo Qu"
+      },
+      {
+        "authorId": "2283883570",
+        "name": "Jinhua Zhao"
+      }
+    ],
+    "abstract": "Generating safety-critical driving scenarios is crucial for evaluating and improving autonomous driving systems, but long-tail risky situations are rarely observed in real-world data and difficult to specify through manual scenario design. Existing generative approaches typically treat risk as an after-the-fact label and struggle to maintain geometric consistency in multi-view driving scenes. We present RiskMV-DPO, a general and systematic pipeline for physically-informed, risk-controllable multi-view scenario generation. By integrating target risk levels with physically-grounded risk modeling, we autonomously synthesize diverse and high-stakes dynamic trajectories that serve as explicit geometric anchors for a diffusion-based video generator. To ensure spatial-temporal coherence and geometric fidelity, we introduce a geometry-appearance alignment module and a region-aware direct preference optimization (RA-DPO) strategy with motion-aware masking to focus learning on localized dynamic regions.Experiments on the nuScenes dataset show that RiskMV-DPO can freely generate a wide spectrum of diverse long-tail scenarios while maintaining state-of-the-art visual quality, improving 3D detection mAP from 18.17 to 30.50 and reducing FID to 15.70. Our work shifts the role of world models from passive environment prediction to proactive, risk-controllable synthesis, providing a scalable toolchain for the safety-oriented development of embodied intelligence.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e9e185e3bf6b09df4f46488aa8e32a9523ce367a",
+    "externalIds": {
+      "ArXiv": "2603.11089",
+      "DOI": "10.1109/icassp55912.2026.11463624",
+      "CorpusId": 286489453
+    },
+    "title": "V2A-DPO: Omni-Preference Optimization for Video-To-Audio Generation",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2026,
+    "citationCount": 0,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.11089, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2423414676",
+        "name": "Nolan Chan"
+      },
+      {
+        "authorId": "2423414541",
+        "name": "Timmy Gang"
+      },
+      {
+        "authorId": "2249907753",
+        "name": "Yongqiang Wang"
+      },
+      {
+        "authorId": "2371168637",
+        "name": "Yuzhe Liang"
+      },
+      {
+        "authorId": "2304933795",
+        "name": "Dingdong Wang"
+      }
+    ],
+    "abstract": "This paper introduces V2A-DPO, a novel Direct Preference Optimization (DPO) framework tailored for flow-based video-to-audio generation (V2A) models, incorporating key adaptations to effectively align generated audio with human preferences. Our approach incorporates three core innovations: (1) AudioScore-a comprehensive human preference-aligned scoring system for assessing semantic consistency, temporal alignment, and perceptual quality of synthesized audio; (2) an automated AudioScore-driven pipeline for generating large-scale preference pair data for DPO optimization; (3) a curriculum learning-empowered DPO optimization strategy specifically tailored for flow-based generative models. Experiments on benchmark VGGSound dataset demonstrate that human-preference aligned Frieren and MMAudio using V2A-DPO outperform their counterparts optimized using Denoising Diffusion Policy Optimization (DDPO) as well as pre-trained baselines. Furthermore, our DPO-optimized MMAudio achieves state-of-the-art performance across multiple metrics, surpassing published V2A models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6ac50693987a997a199b76f3ecab4f31b4c7df88",
+    "externalIds": {
+      "ArXiv": "2603.09094",
+      "CorpusId": 286424310
+    },
+    "title": "Chain of Event-Centric Causal Thought for Physically Plausible Video Generation",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.09094, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261451967",
+        "name": "Zixuan Wang"
+      },
+      {
+        "authorId": "2346965712",
+        "name": "Yixin Hu"
+      },
+      {
+        "authorId": "2346986009",
+        "name": "Haolan Wang"
+      },
+      {
+        "authorId": "2311458523",
+        "name": "Feng Chen"
+      },
+      {
+        "authorId": "2356589199",
+        "name": "Yan Liu"
+      },
+      {
+        "authorId": "2308551185",
+        "name": "Wen Li"
+      },
+      {
+        "authorId": "2261432782",
+        "name": "Yinjie Lei"
+      }
+    ],
+    "abstract": "Physically Plausible Video Generation (PPVG) has emerged as a promising avenue for modeling real-world physical phenomena. PPVG requires an understanding of commonsense knowledge, which remains a challenge for video diffusion models. Current approaches leverage commonsense reasoning capability of large language models to embed physical concepts into prompts. However, generation models often render physical phenomena as a single moment defined by prompts, due to the lack of conditioning mechanisms for modeling causal progression. In this paper, we view PPVG as generating a sequence of causally connected and dynamically evolving events. To realize this paradigm, we design two key modules: (1) Physics-driven Event Chain Reasoning. This module decomposes the physical phenomena described in prompts into multiple elementary event units, leveraging chain-of-thought reasoning. To mitigate causal ambiguity, we embed physical formulas as constraints to impose deterministic causal dependencies during reasoning. (2) Transition-aware Cross-modal Prompting (TCP). To maintain continuity between events, this module transforms causal event units into temporally aligned vision-language prompts. It summarizes discrete event descriptions to obtain causally consistent narratives, while progressively synthesizing visual keyframes of individual events by interactive editing. Comprehensive experiments on PhyGenBench and VideoPhy benchmarks demonstrate that our framework achieves superior performance in generating physically plausible videos across diverse physical domains. Code is available at https://github.com/ZixuanWang0525/CoECT.",
+    "_is_influential": false,
+    "_intents": []
+  }
+]

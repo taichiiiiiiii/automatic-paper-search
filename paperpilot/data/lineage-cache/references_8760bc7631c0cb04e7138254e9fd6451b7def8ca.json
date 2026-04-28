@@ -1,0 +1,1898 @@
+[
+  {
+    "paperId": "76ae2eb617d2ad12edf6b84539fce6e5cf76b00e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/PapandreouZKTTB17",
+      "MAG": "2949359214",
+      "ArXiv": "1701.01779",
+      "DOI": "10.1109/CVPR.2017.395",
+      "CorpusId": 5267028
+    },
+    "title": "Towards Accurate Multi-person Pose Estimation in the Wild",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 863,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1701.01779",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.01779, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "8791781",
+        "name": "Tyler Lixuan Zhu"
+      },
+      {
+        "authorId": "8804320",
+        "name": "Nori Kanazawa"
+      },
+      {
+        "authorId": "1726415",
+        "name": "Alexander Toshev"
+      },
+      {
+        "authorId": "2704494",
+        "name": "Jonathan Tompson"
+      },
+      {
+        "authorId": "2428034",
+        "name": "C. Bregler"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      }
+    ],
+    "abstract": "We propose a method for multi-person detection and 2-D pose estimation that achieves state-of-art results on the challenging COCO keypoints task. It is a simple, yet powerful, top-down approach consisting of two stages. In the first stage, we predict the location and scale of boxes which are likely to contain people, for this we use the Faster RCNN detector. In the second stage, we estimate the keypoints of the person potentially contained in each proposed bounding box. For each keypoint type we predict dense heatmaps and offsets using a fully convolutional ResNet. To combine these outputs we introduce a novel aggregation procedure to obtain highly localized keypoint predictions. We also use a novel form of keypoint-based Non-Maximum-Suppression (NMS), instead of the cruder box-level NMS, and a novel form of keypoint-based confidence score estimation, instead of box-level scoring. Trained on COCO data alone, our final system achieves average precision of 0.649 on the COCO test-dev set and the 0.643 test-standard sets, outperforming the winner of the 2016 COCO keypoints challenge and other recent state-of-art. Further, by using additional in-house labeled data we obtain an even higher average precision of 0.685 on the test-dev set and 0.673 on the test-standard set, more than 5% absolute improvement compared to the previous best performing method on the same dataset.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "a312a573ef81793d56401e932ef6c9498791a3d1",
+    "externalIds": {
+      "MAG": "2953390309",
+      "DBLP": "conf/cvpr/HuangRSZKFFWSG017",
+      "ArXiv": "1611.10012",
+      "DOI": "10.1109/CVPR.2017.351",
+      "CorpusId": 206595627
+    },
+    "title": "Speed/Accuracy Trade-Offs for Modern Convolutional Object Detectors",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 2670,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.10012",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.10012, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2136435893",
+        "name": "Jonathan Huang"
+      },
+      {
+        "authorId": "1382126732",
+        "name": "V. Rathod"
+      },
+      {
+        "authorId": "1491624845",
+        "name": "Chen Sun"
+      },
+      {
+        "authorId": "2717876",
+        "name": "Menglong Zhu"
+      },
+      {
+        "authorId": "34786378",
+        "name": "Anoop Korattikara Balan"
+      },
+      {
+        "authorId": "50706340",
+        "name": "A. Fathi"
+      },
+      {
+        "authorId": "33091759",
+        "name": "Ian S. Fischer"
+      },
+      {
+        "authorId": "3282833",
+        "name": "Z. Wojna"
+      },
+      {
+        "authorId": "2157997231",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "1687120",
+        "name": "S. Guadarrama"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      }
+    ],
+    "abstract": "The goal of this paper is to serve as a guide for selecting a detection architecture that achieves the right speed/memory/accuracy balance for a given application and platform. To this end, we investigate various ways to trade accuracy for speed and memory usage in modern convolutional object detection systems. A number of successful systems have been proposed in recent years, but apples-toapples comparisons are difficult due to different base feature extractors (e.g., VGG, Residual Networks), different default image resolutions, as well as different hardware and software platforms. We present a unified implementation of the Faster R-CNN [30], R-FCN [6] and SSD [25] systems, which we view as meta-architectures and trace out the speed/accuracy trade-off curve created by using alternative feature extractors and varying other critical parameters such as image size within each of these meta-architectures. On one extreme end of this spectrum where speed and memory are critical, we present a detector that achieves real time speeds and can be deployed on a mobile device. On the opposite end in which accuracy is critical, we present a detector that achieves state-of-the-art performance measured on the COCO detection task.",
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "dfad8f616bd2a05c8cae5f61060f743f966ece85",
+    "externalIds": {
+      "MAG": "2951856387",
+      "ArXiv": "1611.08050",
+      "DBLP": "journals/corr/CaoSWS16",
+      "DOI": "10.1109/CVPR.2017.143",
+      "CorpusId": 16224674
+    },
+    "title": "Realtime Multi-person 2D Pose Estimation Using Part Affinity Fields",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 7211,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.08050",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.08050, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47060433",
+        "name": "Zhe Cao"
+      },
+      {
+        "authorId": "145386542",
+        "name": "T. Simon"
+      },
+      {
+        "authorId": "2797981",
+        "name": "S. Wei"
+      },
+      {
+        "authorId": "1774867",
+        "name": "Yaser Sheikh"
+      }
+    ],
+    "abstract": "We present an approach to efficiently detect the 2D pose of multiple people in an image. The approach uses a nonparametric representation, which we refer to as Part Affinity Fields (PAFs), to learn to associate body parts with individuals in the image. The architecture encodes global context, allowing a greedy bottom-up parsing step that maintains high accuracy while achieving realtime performance, irrespective of the number of people in the image. The architecture is designed to jointly learn part locations and their association via two branches of the same sequential prediction process. Our method placed first in the inaugural COCO 2016 keypoints challenge, and significantly exceeds the previous state-of-the-art result on the MPII Multi-Person benchmark, both in performance and efficiency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5b6ec746d309b165f9f9def873a2375b6fb40f3d",
+    "externalIds": {
+      "MAG": "2531409750",
+      "DBLP": "conf/cvpr/Chollet17",
+      "ArXiv": "1610.02357",
+      "DOI": "10.1109/CVPR.2017.195",
+      "CorpusId": 2375110
+    },
+    "title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 17472,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1610.02357",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.02357, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1565641737",
+        "name": "François Chollet"
+      }
+    ],
+    "abstract": "We present an interpretation of Inception modules in convolutional neural networks as being an intermediate step in-between regular convolution and the depthwise separable convolution operation (a depthwise convolution followed by a pointwise convolution). In this light, a depthwise separable convolution can be understood as an Inception module with a maximally large number of towers. This observation leads us to propose a novel deep convolutional neural network architecture inspired by Inception, where Inception modules have been replaced with depthwise separable convolutions. We show that this architecture, dubbed Xception, slightly outperforms Inception V3 on the ImageNet dataset (which Inception V3 was designed for), and significantly outperforms Inception V3 on a larger image classification dataset comprising 350 million images and 17,000 classes. Since the Xception architecture has the same number of parameters as Inception V3, the performance gains are not due to increased capacity but rather to a more efficient use of model parameters.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ee091ccf24c4f053c5c3dfbefe4a7975ed3447c1",
+    "externalIds": {
+      "MAG": "2520707650",
+      "ArXiv": "1609.02612",
+      "DBLP": "conf/nips/VondrickPT16",
+      "DOI": "10.13016/M26GIH-TNYZ",
+      "CorpusId": 9933254
+    },
+    "title": "Generating Videos with Scene Dynamics",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 1566,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.02612, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1856025",
+        "name": "Carl Vondrick"
+      },
+      {
+        "authorId": "2367683",
+        "name": "H. Pirsiavash"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "We capitalize on large amounts of unlabeled video in order to learn a model of scene dynamics for both video recognition tasks (e.g. action classification) and video generation tasks (e.g. future prediction). We propose a generative adversarial network for video with a spatio-temporal convolutional architecture that untangles the scene's foreground from the background. Experiments suggest this model can generate tiny videos up to a second at full frame rate better than simple baselines, and we show its utility at predicting plausible futures of static images. Moreover, experiments and visualizations show the model internally learns useful features for recognizing actions with minimal supervision, suggesting scene dynamics are a promising signal for representation learning. We believe generative video models can impact many applications in video understanding and simulation.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "540b5b4919d345e4da3cc4f3e8a7862329bf41a2",
+    "externalIds": {
+      "ArXiv": "1608.08614",
+      "MAG": "2510153535",
+      "DBLP": "journals/corr/HuhAE16",
+      "CorpusId": 7824159
+    },
+    "title": "What makes ImageNet good for transfer learning?",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 709,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1608.08614, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46213138",
+        "name": "Minyoung Huh"
+      },
+      {
+        "authorId": "33932184",
+        "name": "Pulkit Agrawal"
+      },
+      {
+        "authorId": "1763086",
+        "name": "Alexei A. Efros"
+      }
+    ],
+    "abstract": "The tremendous success of ImageNet-trained deep features on a wide range of transfer tasks begs the question: what are the properties of the ImageNet dataset that are critical for learning good, general-purpose features? This work provides an empirical investigation of various facets of this question: Is more pre-training data always better? How does feature quality depend on the number of training examples per class? Does adding more object classes improve performance? For the same data budget, how should the data be split into classes? Is fine-grained recognition necessary for learning good features? Given the same number of training classes, is it better to have coarse classes or fine-grained classes? Which is better: more classes or more examples per class? To answer these and related questions, we pre-trained CNN features on various subsets of the ImageNet dataset and evaluated transfer performance on PASCAL detection, PASCAL action classification, and SUN scene classification tasks. Our overall findings suggest that most changes in the choice of pre-training data long thought to be critical do not significantly affect transfer performance.? Given the same number of training classes, is it better to have coarse classes or fine-grained classes? Which is better: more classes or more examples per class?",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cab372bc3824780cce20d9dd1c22d4df39ed081a",
+    "externalIds": {
+      "ArXiv": "1606.00915",
+      "MAG": "2952865063",
+      "DBLP": "journals/pami/ChenPKMY18",
+      "DOI": "10.1109/TPAMI.2017.2699184",
+      "CorpusId": 3429309,
+      "PubMed": "28463186"
+    },
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 20750,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1606.00915",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.00915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7 percent mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "1db6e3078597386ac4222ba6c3f4f61b61f53539",
+    "externalIds": {
+      "MAG": "2963265008",
+      "ArXiv": "1605.09782",
+      "DBLP": "journals/corr/DonahueKD16",
+      "CorpusId": 84591
+    },
+    "title": "Adversarial Feature Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 1902,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.09782, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7408951",
+        "name": "Jeff Donahue"
+      },
+      {
+        "authorId": "2562966",
+        "name": "Philipp Krähenbühl"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "The ability of the Generative Adversarial Networks (GANs) framework to learn generative models mapping from simple latent distributions to arbitrarily complex data distributions has been demonstrated empirically, with compelling results showing that the latent space of such generators captures semantic variation in the data distribution. Intuitively, models trained to predict these semantic latent representations given data may serve as useful feature representations for auxiliary problems where semantics are relevant. However, in their existing form, GANs have no means of learning the inverse mapping -- projecting data back into the latent space. We propose Bidirectional Generative Adversarial Networks (BiGANs) as a means of learning this inverse mapping, and demonstrate that the resulting learned feature representation is useful for auxiliary supervised discrimination tasks, competitive with contemporary approaches to unsupervised and self-supervised feature learning.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d93ececdc44e7700cd84fc75ca069125022d8c9d",
+    "externalIds": {
+      "DBLP": "conf/eccv/PintoGHPG16",
+      "MAG": "2338684808",
+      "ArXiv": "1604.01360",
+      "DOI": "10.1007/978-3-319-46475-6_1",
+      "CorpusId": 7469546
+    },
+    "title": "The Curious Robot: Learning Visual Representations via Physical Interactions",
+    "venue": "European Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 193,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1604.01360",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1604.01360, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34026610",
+        "name": "Lerrel Pinto"
+      },
+      {
+        "authorId": "3393217",
+        "name": "Dhiraj Gandhi"
+      },
+      {
+        "authorId": "2164288",
+        "name": "Yuanfeng Han"
+      },
+      {
+        "authorId": "1783778",
+        "name": "Yong‐Lae Park"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      }
+    ],
+    "abstract": "What is the right supervisory signal to train visual representations? Current approaches in computer vision use category labels from datasets such as ImageNet to train ConvNets. However, in case of biological agents, visual representation learning does not require millions of semantic labels. We argue that biological agents use physical interactions with the world to learn visual representations unlike current vision systems which just use passive observations (images and videos downloaded from web). For example, babies push objects, poke them, put them in their mouth and throw them to learn representations. Towards this goal, we build one of the first systems on a Baxter platform that pushes, pokes, grasps and observes objects in a tabletop environment. It uses four different types of physical interactions to collect more than 130K datapoints, with each datapoint providing supervision to a shared ConvNet architecture allowing us to learn visual representations. We show the quality of learned representations by observing neuron activations and performing nearest neighbor retrieval on this learned representation. Quantitatively, we evaluate our learned ConvNet on image classification tasks and show improvements compared to learning without external data. Finally, on the task of instance retrieval, our network outperforms the ImageNet network on recall@1 by 3%",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b5c26ab8767d046cb6e32d959fdf726aee89bb62",
+    "externalIds": {
+      "DBLP": "conf/aaai/SzegedyIVA17",
+      "MAG": "2952505871",
+      "ArXiv": "1602.07261",
+      "DOI": "10.1609/aaai.v31i1.11231",
+      "CorpusId": 1023605
+    },
+    "title": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2016,
+    "citationCount": 15425,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/11231/11090",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.07261, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "122113652",
+        "name": "Alexander A. Alemi"
+      }
+    ],
+    "abstract": "\n \n Very deep convolutional networks have been central to the largest advances in image recognition performance in recent years. One example is the Inception architecture that has been shown to achieve very good performance at relatively low computational cost. Recently, the introduction of residual connections in conjunction with a more traditional architecture has yielded state-of-the-art performance in the 2015 ILSVRC challenge; its performance was similar to the latest generation Inception-v3 network. This raises the question: Are there any benefits to combining Inception architectures with residual connections? Here we give clear empirical evidence that training with residual connections accelerates the training of Inception networks significantly. There is also some evidence of residual Inception networks outperforming similarly expensive Inception networks without residual connections by a thin margin. We also present several new streamlined architectures for both residual and non-residual Inception networks. These variations improve the single-frame recognition performance on the ILSVRC 2012 classification task significantly. We further demonstrate how proper activation scaling stabilizes the training of very wide residual Inception networks. With an ensemble of three residual and one Inception-v4 networks, we achieve 3.08% top-5 error on the test set of the ImageNet classification (CLS) challenge.\n \n",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1b93a123d352ea09b4c8aaac933f1d4c8bd42009",
+    "externalIds": {
+      "MAG": "2284646714",
+      "DBLP": "journals/corr/WeyandKP16",
+      "ArXiv": "1602.05314",
+      "DOI": "10.1007/978-3-319-46484-8_3",
+      "CorpusId": 171846
+    },
+    "title": "PlaNet - Photo Geolocation with Convolutional Neural Networks",
+    "venue": "European Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 478,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.05314, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47447630",
+        "name": "Tobias Weyand"
+      },
+      {
+        "authorId": "2000906",
+        "name": "Ilya Kostrikov"
+      },
+      {
+        "authorId": "2066819269",
+        "name": "James Philbin"
+      }
+    ],
+    "abstract": "Is it possible to determine the location of a photo from just its pixels? While the general problem seems exceptionally difficult, photos often contain cues such as landmarks, weather patterns, vegetation, road markings, or architectural details, which in combination allow to infer where the photo was taken. Previously, this problem has been approached using image retrieval methods. In contrast, we pose the problem as one of classification by subdividing the surface of the earth into thousands of multi-scale geographic cells, and train a deep network using millions of geotagged images. We show that the resulting model, called PlaNet, outperforms previous approaches and even attains superhuman accuracy in some cases. Moreover, we extend our model to photo albums by combining it with a long short-term memory (LSTM) architecture. By learning to exploit temporal coherence to geolocate uncertain photos, this model achieves a 50 % performance improvement over the single-image model.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226125,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "4e6d882a4d2e6351cdf3013f0f7785941e3efd00",
+    "externalIds": {
+      "DBLP": "journals/corr/KrauseSHZTDPL15",
+      "ArXiv": "1511.06789",
+      "MAG": "2951558862",
+      "DOI": "10.1007/978-3-319-46487-9_19",
+      "CorpusId": 15080437
+    },
+    "title": "The Unreasonable Effectiveness of Noisy Data for Fine-Grained Recognition",
+    "venue": "European Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 371,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.06789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285165",
+        "name": "J. Krause"
+      },
+      {
+        "authorId": "9133363",
+        "name": "Benjamin Sapp"
+      },
+      {
+        "authorId": "2288389545",
+        "name": "Andrew Howard"
+      },
+      {
+        "authorId": "2401836",
+        "name": "Howard Zhou"
+      },
+      {
+        "authorId": "1726415",
+        "name": "Alexander Toshev"
+      },
+      {
+        "authorId": "2066508193",
+        "name": "Tom Duerig"
+      },
+      {
+        "authorId": "2300318398",
+        "name": "J. Philbin"
+      },
+      {
+        "authorId": "2240380688",
+        "name": "Fei-Fei Li"
+      }
+    ],
+    "abstract": "Current approaches for fine-grained recognition do the following: First, recruit experts to annotate a dataset of images, optionally also collecting more structured data in the form of part annotations and bounding boxes. Second, train a model utilizing this data. Toward the goal of solving fine-grained recognition, we introduce an alternative approach, leveraging free, noisy data from the web and simple, generic methods of recognition. This approach has benefits in both performance and scalability. We demonstrate its efficacy on four fine-grained datasets, greatly exceeding existing state of the art without the manual collection of even a single label, and furthermore show first results at scaling to more than 10,000 fine-grained categories. Quantitatively, we achieve top-1 accuracies of \\(92.3\\,\\%\\) on CUB-200-2011, \\(85.4\\,\\%\\) on Birdsnap, \\(93.4\\,\\%\\) on FGVC-Aircraft, and \\(80.8\\,\\%\\) on Stanford Dogs without using their annotated training sets. We compare our approach to an active learning approach for expanding fine-grained datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8c30968d96e0c601adaa74db8907fa6ad73bae31",
+    "externalIds": {
+      "MAG": "2100031962",
+      "DBLP": "conf/eccv/JoulinMJV16",
+      "ArXiv": "1511.02251",
+      "DOI": "10.1007/978-3-319-46478-7_5",
+      "CorpusId": 5776303
+    },
+    "title": "Learning Visual Features from Large Weakly Supervised Data",
+    "venue": "European Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 426,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.02251, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "1803520",
+        "name": "L. Maaten"
+      },
+      {
+        "authorId": "14258597",
+        "name": "A. Jabri"
+      },
+      {
+        "authorId": "1800919",
+        "name": "Nicolas Vasilache"
+      }
+    ],
+    "abstract": "Convolutional networks trained on large supervised datasets produce visual features which form the basis for the state-of-the-art in many computer-vision problems. Further improvements of these visual features will likely require even larger manually labeled data sets, which severely limits the pace at which progress can be made. In this paper, we explore the potential of leveraging massive, weakly-labeled image collections for learning good visual features. We train convolutional networks on a dataset of 100 million Flickr photos and comments, and show that these networks produce features that perform well in a range of vision problems. We also show that the networks appropriately capture word similarity and learn correspondences between different languages.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "004aa2cb4b68850ee006af8a6807b3c1a6a198f0",
+    "externalIds": {
+      "DBLP": "conf/mm/IzadiniaRFHH15",
+      "MAG": "1977500159",
+      "DOI": "10.1145/2814815.2814821",
+      "CorpusId": 14888659
+    },
+    "title": "Deep Classifiers from Image Tags in the Wild",
+    "venue": "MMCommons '15",
+    "year": 2015,
+    "citationCount": 63,
+    "openAccessPdf": {
+      "url": "http://homes.cs.washington.edu/%7Eizadinia/files/DeepTagging-mmcommons.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/2814815.2814821?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/2814815.2814821, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2992579",
+        "name": "Hamid Izadinia"
+      },
+      {
+        "authorId": "145160921",
+        "name": "Bryan C. Russell"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "28552618",
+        "name": "M. Hoffman"
+      },
+      {
+        "authorId": "1747779",
+        "name": "Aaron Hertzmann"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f03b4ff1b4943691cec703b508c0a91f2d97a881",
+    "externalIds": {
+      "MAG": "2201912979",
+      "DBLP": "journals/corr/PintoG15",
+      "ArXiv": "1509.06825",
+      "DOI": "10.1109/ICRA.2016.7487517",
+      "CorpusId": 3177253
+    },
+    "title": "Supersizing self-supervision: Learning to grasp from 50K tries and 700 robot hours",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2015,
+    "citationCount": 1207,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1509.06825",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1509.06825, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34026610",
+        "name": "Lerrel Pinto"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      }
+    ],
+    "abstract": "Current model free learning-based robot grasping approaches exploit human-labeled datasets for training the models. However, there are two problems with such a methodology: (a) since each object can be grasped in multiple ways, manually labeling grasp locations is not a trivial task; (b) human labeling is biased by semantics. While there have been attempts to train robots using trial-and-error experiments, the amount of data used in such experiments remains substantially low and hence makes the learner prone to over-fitting. In this paper, we take the leap of increasing the available training data to 40 times more than prior work, leading to a dataset size of 50K data points collected over 700 hours of robot grasping attempts. This allows us to train a Convolutional Neural Network (CNN) for the task of predicting grasp locations without severe overfitting. In our formulation, we recast the regression problem to an 18-way binary classification over image patches. We also present a multi-stage learning approach where a CNN trained in one stage is used to collect hard negatives in subsequent stages. Our experiments clearly show the benefit of using large-scale datasets (and multi-stage training) for the task of grasping. We also compare to several baselines and show state-of-the-art performance on generalization to unseen objects for grasping.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "90d44ce126b1ca7107f555db4d546d0e1843d075",
+    "externalIds": {
+      "DBLP": "conf/cvpr/JainGS15",
+      "MAG": "2095242101",
+      "DOI": "10.1109/CVPR.2015.7298599",
+      "CorpusId": 14866771
+    },
+    "title": "What do 15,000 object categories tell us about classifying and localizing actions?",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 190,
+    "openAccessPdf": {
+      "url": "https://pure.uva.nl/ws/files/106797262/What_do_15000_object_categories_tell_us_about_classifying_and_localizing_actions.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2015.7298599?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2015.7298599, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143798882",
+        "name": "Mihir Jain"
+      },
+      {
+        "authorId": "1738975",
+        "name": "J. V. Gemert"
+      },
+      {
+        "authorId": "145404204",
+        "name": "Cees G. M. Snoek"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "424561d8585ff8ebce7d5d07de8dbf7aae5e7270",
+    "externalIds": {
+      "MAG": "2953106684",
+      "ArXiv": "1506.01497",
+      "DBLP": "journals/pami/RenHG017",
+      "DOI": "10.1109/TPAMI.2016.2577031",
+      "CorpusId": 10328909,
+      "PubMed": "27295650"
+    },
+    "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2015,
+    "citationCount": 71971,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1506.01497",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.01497, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "2032184078",
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "State-of-the-art object detection networks depend on region proposal algorithms to hypothesize object locations. Advances like SPPnet and Fast R-CNN have reduced the running time of these detection networks, exposing region proposal computation as a bottleneck. In this work, we introduce a Region Proposal Network (RPN) that shares full-image convolutional features with the detection network, thus enabling nearly cost-free region proposals. An RPN is a fully convolutional network that simultaneously predicts object bounds and objectness scores at each position. The RPN is trained end-to-end to generate high-quality region proposals, which are used by Fast R-CNN for detection. We further merge RPN and Fast R-CNN into a single network by sharing their convolutional features---using the recently popular terminology of neural networks with 'attention' mechanisms, the RPN component tells the unified network where to look. For the very deep VGG-16 model, our detection system has a frame rate of 5fps (including all steps) on a GPU, while achieving state-of-the-art object detection accuracy on PASCAL VOC 2007, 2012, and MS COCO datasets with only 300 proposals per image. In ILSVRC and COCO 2015 competitions, Faster R-CNN and RPN are the foundations of the 1st-place winning entries in several tracks. Code has been made publicly available",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "fc1b1c9364c58ec406f494dd944b609a6a038ba6",
+    "externalIds": {
+      "MAG": "343636949",
+      "DBLP": "journals/corr/DoerschGE15",
+      "ArXiv": "1505.05192",
+      "DOI": "10.1109/ICCV.2015.167",
+      "CorpusId": 9062671
+    },
+    "title": "Unsupervised Visual Representation Learning by Context Prediction",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 2949,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1505.05192",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.05192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2786693",
+        "name": "Carl Doersch"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      },
+      {
+        "authorId": "1763086",
+        "name": "Alexei A. Efros"
+      }
+    ],
+    "abstract": "This work explores the use of spatial context as a source of free and plentiful supervisory signal for training a rich visual representation. Given only a large, unlabeled image collection, we extract random pairs of patches from each image and train a convolutional neural net to predict the position of the second patch relative to the first. We argue that doing well on this task requires the model to learn to recognize objects and their parts. We demonstrate that the feature representation learned using this within-image context indeed captures visual similarity across images. For example, this representation allows us to perform unsupervised visual discovery of objects like cats, people, and even birds from the Pascal VOC 2011 detection dataset. Furthermore, we show that the learned ConvNet can be used in the R-CNN framework [19] and provides a significant boost over a randomly-initialized ConvNet, resulting in state-of-the-art performance among algorithms which use only Pascal-provided training set annotations.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4645661d49e3b4b767b104336fa966bff1335705",
+    "externalIds": {
+      "DBLP": "conf/iccv/ChenG15",
+      "MAG": "2124219775",
+      "ArXiv": "1505.01554",
+      "DOI": "10.1109/ICCV.2015.168",
+      "CorpusId": 5658192
+    },
+    "title": "Webly Supervised Learning of Convolutional Networks",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 396,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1505.01554",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.01554, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39717886",
+        "name": "Xinlei Chen"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      }
+    ],
+    "abstract": "We present an approach to utilize large amounts of web data for learning CNNs. Specifically inspired by curriculum learning, we present a two-step approach for CNN training. First, we use easy images to train an initial visual representation. We then use this initial CNN and adapt it to harder, more realistic images by leveraging the structure of data and categories. We demonstrate that our two-stage CNN outperforms a fine-tuned CNN trained on ImageNet on Pascal VOC 2012. We also demonstrate the strength of webly supervised learning by localizing objects in web images and training a R-CNN style [19] detector. It achieves the best performance on VOC 2007 where no VOC training data is used. Finally, we show our approach is quite robust to noise and performs comparably even when we use image search results from March 2013 (pre-CNN image search era).",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "0c908739fbff75f03469d13d4a1a07de3414ee19",
+    "externalIds": {
+      "ArXiv": "1503.02531",
+      "MAG": "1821462560",
+      "DBLP": "journals/corr/HintonVD15",
+      "CorpusId": 7200347
+    },
+    "title": "Distilling the Knowledge in a Neural Network",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 23776,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.02531, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "A very simple way to improve the performance of almost any machine learning algorithm is to train many different models on the same data and then to average their predictions. Unfortunately, making predictions using a whole ensemble of models is cumbersome and may be too computationally expensive to allow deployment to a large number of users, especially if the individual models are large neural nets. Caruana and his collaborators have shown that it is possible to compress the knowledge in an ensemble into a single model which is much easier to deploy and we develop this approach further using a different compression technique. We achieve some surprising results on MNIST and we show that we can significantly improve the acoustic model of a heavily used commercial system by distilling the knowledge in an ensemble of models into a single model. We also introduce a new type of ensemble composed of one or more full models and many specialist models which learn to distinguish fine-grained classes that the full models confuse. Unlike a mixture of experts, these specialist models can be trained rapidly and in parallel.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a6e695ddd07aad719001c0fc1129328452385949",
+    "externalIds": {
+      "DBLP": "journals/corr/ThomeeSFENPBL15",
+      "MAG": "1544092585",
+      "CorpusId": 195345989
+    },
+    "title": "The New Data and New Challenges in Multimedia Research",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 330,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2463875",
+        "name": "B. Thomee"
+      },
+      {
+        "authorId": "1760364",
+        "name": "David A. Shamma"
+      },
+      {
+        "authorId": "1797144",
+        "name": "G. Friedland"
+      },
+      {
+        "authorId": "2532460",
+        "name": "Benjamin Elizalde"
+      },
+      {
+        "authorId": "36845351",
+        "name": "Karl S. Ni"
+      },
+      {
+        "authorId": "40429372",
+        "name": "Douglas N. Poland"
+      },
+      {
+        "authorId": "1772549",
+        "name": "Damian Borth"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "454639ed30a2d336ea976c53b9fe851acbedb7fd",
+    "externalIds": {
+      "DBLP": "journals/corr/NiPBEBCW15",
+      "MAG": "203719604",
+      "ArXiv": "1502.03409",
+      "CorpusId": 16942808
+    },
+    "title": "Large-Scale Deep Learning on the YFCC100M Dataset",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03409, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "36845351",
+        "name": "Karl S. Ni"
+      },
+      {
+        "authorId": "2157171",
+        "name": "R. Pearce"
+      },
+      {
+        "authorId": "145908678",
+        "name": "K. Boakye"
+      },
+      {
+        "authorId": "32977294",
+        "name": "B. V. Essen"
+      },
+      {
+        "authorId": "1772549",
+        "name": "Damian Borth"
+      },
+      {
+        "authorId": "2108424673",
+        "name": "Barry Y. Chen"
+      },
+      {
+        "authorId": "22190850",
+        "name": "E. Wang"
+      }
+    ],
+    "abstract": "We present a work-in-progress snapshot of learning with a 15 billion parameter deep learning network on HPC architectures applied to the largest publicly available natural image and video dataset released to-date. Recent advancements in unsupervised deep neural networks suggest that scaling up such networks in both model and training dataset size can yield significant improvements in the learning of concepts at the highest layers. We train our three-layer deep neural network on the Yahoo! Flickr Creative Commons 100M dataset. The dataset comprises approximately 99.2 million images and 800,000 user-created videos from Yahoo's Flickr image and video sharing platform. Training of our network takes eight days on 98 GPU nodes at the High Performance Computing Center at Lawrence Livermore National Laboratory. Encouraging preliminary results and future research directions are presented and discussed.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "995c5f5e62614fcb4d2796ad2faab969da51713e",
+    "externalIds": {
+      "MAG": "1836465849",
+      "ArXiv": "1502.03167",
+      "DBLP": "conf/icml/IoffeS15",
+      "CorpusId": 5808102
+    },
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 46486,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03167, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      }
+    ],
+    "abstract": "Training Deep Neural Networks is complicated by the fact that the distribution of each layer's inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities. We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs. Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization, and in some cases eliminates the need for Dropout. Applied to a state-of-the-art image classification model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a significant margin. Using an ensemble of batch-normalized networks, we improve upon the best published result on ImageNet classification: reaching 4.82% top-5 test error, exceeding the accuracy of human raters.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e15cf50aa89fee8535703b9f9512fca5bfc43327",
+    "externalIds": {
+      "DBLP": "journals/corr/SzegedyLJSRAEVR14",
+      "MAG": "2097117768",
+      "ArXiv": "1409.4842",
+      "DOI": "10.1109/CVPR.2015.7298594",
+      "CorpusId": 206592484
+    },
+    "title": "Going deeper with convolutions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 47005,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1409.4842",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.4842, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2157222093",
+        "name": "Wei Liu"
+      },
+      {
+        "authorId": "39978391",
+        "name": "Yangqing Jia"
+      },
+      {
+        "authorId": "3142556",
+        "name": "P. Sermanet"
+      },
+      {
+        "authorId": "144828948",
+        "name": "Scott E. Reed"
+      },
+      {
+        "authorId": "1838674",
+        "name": "Dragomir Anguelov"
+      },
+      {
+        "authorId": "1761978",
+        "name": "D. Erhan"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "39863668",
+        "name": "A. Rabinovich"
+      }
+    ],
+    "abstract": "We propose a deep convolutional neural network architecture codenamed Inception that achieves the new state of the art for classification and detection in the ImageNet Large-Scale Visual Recognition Challenge 2014 (ILSVRC14). The main hallmark of this architecture is the improved utilization of the computing resources inside the network. By a carefully crafted design, we increased the depth and width of the network while keeping the computational budget constant. To optimize quality, the architectural decisions were based on the Hebbian principle and the intuition of multi-scale processing. One particular incarnation used in our submission for ILSVRC14 is called GoogLeNet, a 22 layers deep network, the quality of which is assessed in the context of classification and detection.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "eb42cf88027de515750f230b23b1a057dc782108",
+    "externalIds": {
+      "MAG": "2949429431",
+      "ArXiv": "1409.1556",
+      "DBLP": "journals/corr/SimonyanZ14a",
+      "CorpusId": 14124313
+    },
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 110769,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.1556, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "In this work we investigate the effect of the convolutional network depth on its accuracy in the large-scale image recognition setting. Our main contribution is a thorough evaluation of networks of increasing depth using an architecture with very small (3x3) convolution filters, which shows that a significant improvement on the prior-art configurations can be achieved by pushing the depth to 16-19 weight layers. These findings were the basis of our ImageNet Challenge 2014 submission, where our team secured the first and the second places in the localisation and classification tracks respectively. We also show that our representations generalise well to other datasets, where they achieve state-of-the-art results. We have made our two best-performing ConvNet models publicly available to facilitate further research on the use of deep visual representations in computer vision.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e74f9b7f8eec6ba4704c206b93bc8079af3da4bd",
+    "externalIds": {
+      "ArXiv": "1409.0575",
+      "DBLP": "journals/corr/RussakovskyDSKSMHKKBBF14",
+      "MAG": "2546241758",
+      "DOI": "10.1007/s11263-015-0816-y",
+      "CorpusId": 2930547
+    },
+    "title": "ImageNet Large Scale Visual Recognition Challenge",
+    "venue": "International Journal of Computer Vision",
+    "year": 2014,
+    "citationCount": 42393,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.0575, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2314850892",
+        "name": "Olga Russakovsky"
+      },
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144914140",
+        "name": "Hao Su"
+      },
+      {
+        "authorId": "2285165",
+        "name": "J. Krause"
+      },
+      {
+        "authorId": "145031342",
+        "name": "S. Satheesh"
+      },
+      {
+        "authorId": "2261887230",
+        "name": "Sean Ma"
+      },
+      {
+        "authorId": "3109481",
+        "name": "Zhiheng Huang"
+      },
+      {
+        "authorId": "2354728",
+        "name": "A. Karpathy"
+      },
+      {
+        "authorId": "2556428",
+        "name": "A. Khosla"
+      },
+      {
+        "authorId": "145879842",
+        "name": "Michael S. Bernstein"
+      },
+      {
+        "authorId": "39668247",
+        "name": "A. Berg"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": "The ImageNet Large Scale Visual Recognition Challenge is a benchmark in object category classification and detection on hundreds of object categories and millions of images. The challenge has been run annually from 2010 to present, attracting participation from more than fifty institutions. This paper describes the creation of this benchmark dataset and the advances in object recognition that have been possible as a result. We discuss the challenges of collecting large-scale ground truth annotation, highlight key breakthroughs in categorical object recognition, provide a detailed analysis of the current state of the field of large-scale image classification and object detection, and compare the state-of-the-art computer vision accuracy with human accuracy. We conclude with lessons learned in the 5 years of the challenge, and propose future directions and improvements.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "dcbf587642c39f495117552ca453a4f955ffa76a",
+    "externalIds": {
+      "DBLP": "conf/eccv/AgrawalGM14",
+      "MAG": "2160921898",
+      "ArXiv": "1407.1610",
+      "DOI": "10.1007/978-3-319-10584-0_22",
+      "CorpusId": 1811598
+    },
+    "title": "Analyzing the Performance of Multilayer Neural Networks for Object Recognition",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 461,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1407.1610, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33932184",
+        "name": "Pulkit Agrawal"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      }
+    ],
+    "abstract": "In the last two years, convolutional neural networks (CNNs) have achieved an impressive suite of results on standard recognition datasets and tasks. CNN-based features seem poised to quickly replace engineered representations, such as SIFT and HOG. However, compared to SIFT and HOG, we understand much less about the nature of the features learned by large CNNs. In this paper, we experimentally probe several aspects of CNN feature learning in an attempt to help practitioners gain useful, evidence-backed intuitions about how to apply CNNs to computer vision problems.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b0ab8aa7a5b684532b4ff30f8d34b35a99759a46",
+    "externalIds": {
+      "MAG": "2081613070",
+      "DBLP": "conf/cvpr/DivvalaFG14",
+      "DOI": "10.1109/CVPR.2014.412",
+      "CorpusId": 7748515
+    },
+    "title": "Learning Everything about Anything: Webly-Supervised Visual Concept Learning",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 324,
+    "openAccessPdf": {
+      "url": "http://levan.cs.washington.edu/ngrams/objectNgrams_cvpr14.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.412?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.412, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2038685",
+        "name": "S. Divvala"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1730156",
+        "name": "Carlos Guestrin"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c08f5fa876181fc040d76c75fe2433eee3c9b001",
+    "externalIds": {
+      "MAG": "2161381512",
+      "DBLP": "conf/cvpr/OquabBLS14",
+      "DOI": "10.1109/CVPR.2014.222",
+      "CorpusId": 206592191
+    },
+    "title": "Learning and Transferring Mid-level Image Representations Using Convolutional Neural Networks",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 3285,
+    "openAccessPdf": {
+      "url": "http://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Oquab_Learning_and_Transferring_2014_CVPR_paper.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.222?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.222, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2093491",
+        "name": "M. Oquab"
+      },
+      {
+        "authorId": "52184096",
+        "name": "L. Bottou"
+      },
+      {
+        "authorId": "143991676",
+        "name": "I. Laptev"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "67dccc9a856b60bdc4d058d83657a089b8ad4486",
+    "externalIds": {
+      "MAG": "2952186347",
+      "DBLP": "conf/nips/SimonyanZ14",
+      "ArXiv": "1406.2199",
+      "CorpusId": 11797475
+    },
+    "title": "Two-Stream Convolutional Networks for Action Recognition in Videos",
+    "venue": "Neural Information Processing Systems",
+    "year": 2014,
+    "citationCount": 8140,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1406.2199, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "We investigate architectures of discriminatively trained deep Convolutional Networks (ConvNets) for action recognition in video. The challenge is to capture the complementary information on appearance from still frames and motion between frames. We also aim to generalise the best performing hand-crafted features within a data-driven learning framework. \n \nOur contribution is three-fold. First, we propose a two-stream ConvNet architecture which incorporates spatial and temporal networks. Second, we demonstrate that a ConvNet trained on multi-frame dense optical flow is able to achieve very good performance in spite of limited training data. Finally, we show that multitask learning, applied to two different action classification datasets, can be used to increase the amount of training data and improve the performance on both. Our architecture is trained and evaluated on the standard video actions benchmarks of UCF-101 and HMDB-51, where it is competitive with the state of the art. It also exceeds by a large margin previous attempts to use deep nets for video classification.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "71b7178df5d2b112d07e45038cb5637208659ff7",
+    "externalIds": {
+      "ArXiv": "1405.0312",
+      "DBLP": "conf/eccv/LinMBHPRDZ14",
+      "MAG": "2952122856",
+      "DOI": "10.1007/978-3-319-10602-1_48",
+      "CorpusId": 14113767
+    },
+    "title": "Microsoft COCO: Common Objects in Context",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 52014,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2F978-3-319-10602-1_48.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1405.0312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "48966748",
+        "name": "James Hays"
+      },
+      {
+        "authorId": "1690922",
+        "name": "P. Perona"
+      },
+      {
+        "authorId": "1770537",
+        "name": "Deva Ramanan"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "1699161",
+        "name": "C. L. Zitnick"
+      }
+    ],
+    "abstract": "We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "53e4ab9730e983242a3409c7bf1af945041a6563",
+    "externalIds": {
+      "DBLP": "conf/iccv/ChenSG13",
+      "MAG": "1964763677",
+      "DOI": "10.1109/ICCV.2013.178",
+      "CorpusId": 12350611
+    },
+    "title": "NEIL: Extracting Visual Knowledge from Web Data",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2013,
+    "citationCount": 497,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2013.178?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2013.178, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39717886",
+        "name": "Xinlei Chen"
+      },
+      {
+        "authorId": "1781242",
+        "name": "Abhinav Shrivastava"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2f4df08d9072fc2ac181b7fced6a245315ce05c8",
+    "externalIds": {
+      "DBLP": "journals/corr/GirshickDDM13",
+      "MAG": "2951638509",
+      "ArXiv": "1311.2524",
+      "DOI": "10.1109/CVPR.2014.81",
+      "CorpusId": 215827080
+    },
+    "title": "Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2013,
+    "citationCount": 28778,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1311.2524",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1311.2524, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "7408951",
+        "name": "Jeff Donahue"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "153652147",
+        "name": "J. Malik"
+      }
+    ],
+    "abstract": "Object detection performance, as measured on the canonical PASCAL VOC dataset, has plateaued in the last few years. The best-performing methods are complex ensemble systems that typically combine multiple low-level image features with high-level context. In this paper, we propose a simple and scalable detection algorithm that improves mean average precision (mAP) by more than 30% relative to the previous best result on VOC 2012 -- achieving a mAP of 53.3%. Our approach combines two key insights: (1) one can apply high-capacity convolutional neural networks (CNNs) to bottom-up region proposals in order to localize and segment objects and (2) when labeled training data is scarce, supervised pre-training for an auxiliary task, followed by domain-specific fine-tuning, yields a significant performance boost. Since we combine region proposals with CNNs, we call our method R-CNN: Regions with CNN features. We also present experiments that provide insight into what the network learns, revealing a rich hierarchy of image features. Source code for the complete system is available at http://www.cs.berkeley.edu/~rbg/rcnn.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e99be23407b4965ab0e34ed2998cb6fafec7822a",
+    "externalIds": {
+      "MAG": "1996140089",
+      "DBLP": "conf/cvpr/RubinsteinJKL13",
+      "DOI": "10.1109/CVPR.2013.253",
+      "CorpusId": 10592859
+    },
+    "title": "Unsupervised Joint Object Discovery and Segmentation in Internet Images",
+    "venue": "2013 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2013,
+    "citationCount": 391,
+    "openAccessPdf": {
+      "url": "https://hal.inria.fr/hal-01064227/file/ObjectDiscovery-cvpr13.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2013.253?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2013.253, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144544291",
+        "name": "Michael Rubinstein"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "6867165",
+        "name": "J. Kopf"
+      },
+      {
+        "authorId": "1681442",
+        "name": "Ce Liu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3127190433230b3dc1abd0680bb58dced4bcd90e",
+    "externalIds": {
+      "DBLP": "conf/nips/DeanCMCDLMRSTYN12",
+      "MAG": "2168231600",
+      "CorpusId": 372467
+    },
+    "title": "Large Scale Distributed Deep Networks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2012,
+    "citationCount": 4130,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "3089272",
+        "name": "R. Monga"
+      },
+      {
+        "authorId": "2118440152",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "145139947",
+        "name": "M. Devin"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1715548",
+        "name": "Mark Z. Mao"
+      },
+      {
+        "authorId": "1706809",
+        "name": "Marc'Aurelio Ranzato"
+      },
+      {
+        "authorId": "33666044",
+        "name": "A. Senior"
+      },
+      {
+        "authorId": "2080690",
+        "name": "P. Tucker"
+      },
+      {
+        "authorId": "143781496",
+        "name": "Ke Yang"
+      },
+      {
+        "authorId": "34699434",
+        "name": "A. Ng"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "abd1c342495432171beb7ca8fd9551ef13cbd0ff",
+    "externalIds": {
+      "DBLP": "conf/nips/KrizhevskySH12",
+      "MAG": "2618530766",
+      "DOI": "10.1145/3065386",
+      "CorpusId": 195908774
+    },
+    "title": "ImageNet classification with deep convolutional neural networks",
+    "venue": "Communications of the ACM",
+    "year": 2012,
+    "citationCount": 128384,
+    "openAccessPdf": {
+      "url": "http://dl.acm.org/ft_gateway.cfm?id=3065386&type=pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3065386?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3065386, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "82fae97673a353271b1d4c001afda1af6ef6dc23",
+    "externalIds": {
+      "DBLP": "conf/iccv/HariharanABMM11",
+      "MAG": "2144794286",
+      "DOI": "10.1109/ICCV.2011.6126343",
+      "CorpusId": 6683607
+    },
+    "title": "Semantic contours from inverse detectors",
+    "venue": "Vision",
+    "year": 2011,
+    "citationCount": 1866,
+    "openAccessPdf": {
+      "url": "http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/papers/habmm_iccv2011.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2011.6126343?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2011.6126343, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1790580",
+        "name": "Bharath Hariharan"
+      },
+      {
+        "authorId": "1778133",
+        "name": "Pablo Arbeláez"
+      },
+      {
+        "authorId": "1769383",
+        "name": "Lubomir D. Bourdev"
+      },
+      {
+        "authorId": "35208858",
+        "name": "Subhransu Maji"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      }
+    ],
+    "abstract": "We study the challenging problem of localizing and classifying category-specific object contours in real world images. For this purpose, we present a simple yet effective method for combining generic object detectors with bottom-up contours to identify object contours. We also provide a principled way of combining information from different part detectors and across categories. In order to study the problem and evaluate quantitatively our approach, we present a dataset of semantic exterior boundaries on more than 20, 000 object instances belonging to 20 categories, using the images from the VOC2011 PASCAL challenge [7].",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "0302bb2d5476540cfb21467473f5eca843caf90b",
+    "externalIds": {
+      "DBLP": "conf/cvpr/TorralbaE11",
+      "MAG": "2031342017",
+      "DOI": "10.1109/CVPR.2011.5995347",
+      "CorpusId": 2777306
+    },
+    "title": "Unbiased look at dataset bias",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2011,
+    "citationCount": 2736,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2011.5995347?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2011.5995347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      },
+      {
+        "authorId": "1763086",
+        "name": "Alexei A. Efros"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d2b1b73bf5ecbff21b5d709ed0e5ab513c8a24ec",
+    "externalIds": {
+      "MAG": "2107250100",
+      "DBLP": "conf/nips/BergamoT10",
+      "CorpusId": 14627863
+    },
+    "title": "Exploiting weakly-labeled Web images to improve object classification: a domain adaptation approach",
+    "venue": "Neural Information Processing Systems",
+    "year": 2010,
+    "citationCount": 261,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "145041406",
+        "name": "Alessandro Bergamo"
+      },
+      {
+        "authorId": "1732879",
+        "name": "L. Torresani"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3a9b175324ba11bc0e16c0633912d897b2fac4e2",
+    "externalIds": {
+      "DBLP": "journals/ijcv/EveringhamGWWZ10",
+      "MAG": "2031489346",
+      "DOI": "10.1007/s11263-009-0275-4",
+      "CorpusId": 4246903
+    },
+    "title": "The Pascal Visual Object Classes (VOC) Challenge",
+    "venue": "International Journal of Computer Vision",
+    "year": 2010,
+    "citationCount": 15977,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11263-009-0275-4?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11263-009-0275-4, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3056091",
+        "name": "M. Everingham"
+      },
+      {
+        "authorId": "2246990749",
+        "name": "L. V. Gool"
+      },
+      {
+        "authorId": "2248834687",
+        "name": "Christopher K. I. Williams"
+      },
+      {
+        "authorId": "33652486",
+        "name": "J. Winn"
+      },
+      {
+        "authorId": "2252432062",
+        "name": "A. Zisserman"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c1787db25af5614f41e56938aa594f2dbb1dca07",
+    "externalIds": {
+      "MAG": "2103018059",
+      "DBLP": "journals/expert/HalevyNP09",
+      "DOI": "10.1109/MIS.2009.36",
+      "CorpusId": 14300215
+    },
+    "title": "The Unreasonable Effectiveness of Data",
+    "venue": "IEEE Intelligent Systems",
+    "year": 2009,
+    "citationCount": 1685,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/MIS.2009.36?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/MIS.2009.36, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1770962",
+        "name": "A. Halevy"
+      },
+      {
+        "authorId": "2784519",
+        "name": "Peter Norvig"
+      },
+      {
+        "authorId": "145366908",
+        "name": "Fernando C Pereira"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6c11626ae08706e6185fceff0a6d05e4bfd6bd06",
+    "externalIds": {
+      "CorpusId": 2057504
+    },
+    "title": "Unsupervised Learning of Visual Representations using Videos",
+    "venue": "",
+    "year": 2015,
+    "citationCount": 1007,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2897313",
+        "name": "Nitish Srivastava"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  }
+]

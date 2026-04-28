@@ -1,0 +1,4704 @@
+[
+  {
+    "paperId": "23af54b82c951317f1fc1841164d8a441a2d8120",
+    "externalIds": {
+      "DBLP": "conf/iclr/XuSC24",
+      "ArXiv": "2310.04408",
+      "DOI": "10.48550/arXiv.2310.04408",
+      "CorpusId": 263830734
+    },
+    "title": "RECOMP: Improving Retrieval-Augmented LMs with Compression and Selective Augmentation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 257,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.04408, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2159829626",
+        "name": "Fangyuan Xu"
+      },
+      {
+        "authorId": "2254168373",
+        "name": "Weijia Shi"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      }
+    ],
+    "abstract": "Retrieving documents and prepending them in-context at inference time improves performance of language model (LMs) on a wide range of tasks. However, these documents, often spanning hundreds of words, make inference substantially more expensive. We propose compressing the retrieved documents into textual summaries prior to in-context integration. This not only reduces the computational costs but also relieves the burden of LMs to identify relevant information in long retrieved documents. We present two compressors -- an extractive compressor which selects useful sentences from retrieved documents and an abstractive compressor which generates summaries by synthesizing information from multiple documents. Both compressors are trained to improve LMs' performance on end tasks when the generated summaries are prepended to the LMs' input, while keeping the summary concise.If the retrieved documents are irrelevant to the input or offer no additional information to LM, our compressor can return an empty string, implementing selective augmentation.We evaluate our approach on language modeling task and open domain question answering task. We achieve a compression rate of as low as 6% with minimal loss in performance for both tasks, significantly outperforming the off-the-shelf summarization models. We show that our compressors trained for one LM can transfer to other LMs on the language modeling task and provide summaries largely faithful to the retrieved documents.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "700bd9681f1b9e9e2212e10415d27b11c7e6836b",
+    "externalIds": {
+      "ArXiv": "2310.04406",
+      "DBLP": "journals/corr/abs-2310-04406",
+      "DOI": "10.48550/arXiv.2310.04406",
+      "CorpusId": 263829963
+    },
+    "title": "Language Agent Tree Search Unifies Reasoning Acting and Planning in Language Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 434,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.04406, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2244620107",
+        "name": "Andy Zhou"
+      },
+      {
+        "authorId": "2256998882",
+        "name": "Kai Yan"
+      },
+      {
+        "authorId": "2256998400",
+        "name": "Michal Shlapentokh-Rothman"
+      },
+      {
+        "authorId": "2256769308",
+        "name": "Haohan Wang"
+      },
+      {
+        "authorId": "2257110226",
+        "name": "Yu-Xiong Wang"
+      }
+    ],
+    "abstract": "While language models (LMs) have shown potential across a range of decision-making tasks, their reliance on simple acting processes limits their broad deployment as autonomous agents. In this paper, we introduce Language Agent Tree Search (LATS) -- the first general framework that synergizes the capabilities of LMs in reasoning, acting, and planning. By leveraging the in-context learning ability of LMs, we integrate Monte Carlo Tree Search into LATS to enable LMs as agents, along with LM-powered value functions and self-reflections for proficient exploration and enhanced decision-making. A key feature of our approach is the incorporation of an environment for external feedback, which offers a more deliberate and adaptive problem-solving mechanism that surpasses the constraints of existing techniques. Our experimental evaluation across diverse domains, including programming, interactive question-answering (QA), web navigation, and math, validates the effectiveness and generality of LATS in decision-making while maintaining competitive or improved reasoning performance. Notably, LATS achieves state-of-the-art pass@1 accuracy (92.7%) for programming on HumanEval with GPT-4 and demonstrates gradient-free performance (average score of 75.9) comparable to gradient-based fine-tuning for web navigation on WebShop with GPT-3.5. Code can be found at https://github.com/lapisrocks/LanguageAgentTreeSearch",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3aee33831e0bdea1a1eaae21c7586e4f7c0396d6",
+    "externalIds": {
+      "ArXiv": "2310.01558",
+      "DBLP": "conf/iclr/YoranWRB24",
+      "DOI": "10.48550/arXiv.2310.01558",
+      "CorpusId": 263608822
+    },
+    "title": "Making Retrieval-Augmented Language Models Robust to Irrelevant Context",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 358,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.01558",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.01558, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2074100429",
+        "name": "Ori Yoran"
+      },
+      {
+        "authorId": "51174907",
+        "name": "Tomer Wolfson"
+      },
+      {
+        "authorId": "73775461",
+        "name": "Ori Ram"
+      },
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      }
+    ],
+    "abstract": "Retrieval-augmented language models (RALMs) hold promise to produce language understanding systems that are are factual, efficient, and up-to-date. An important desideratum of RALMs, is that retrieved information helps model performance when it is relevant, and does not harm performance when it is not. This is particularly important in multi-hop reasoning scenarios, where misuse of irrelevant evidence can lead to cascading errors. However, recent work has shown that retrieval augmentation can sometimes have a negative effect on performance. In this work, we present a thorough analysis on five open-domain question answering benchmarks, characterizing cases when retrieval reduces accuracy. We then propose two methods to mitigate this issue. First, a simple baseline that filters out retrieved passages that do not entail question-answer pairs according to a natural language inference (NLI) model. This is effective in preventing performance reduction, but at a cost of also discarding relevant passages. Thus, we propose a method for automatically generating data to fine-tune the language model to properly leverage retrieved passages, using a mix of relevant and irrelevant contexts at training time. We empirically show that even 1,000 examples suffice to train the model to be robust to irrelevant contexts while maintaining high performance on examples with relevant ones.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4b0b56be0ae9479d2bd5c2f0943db1906343c10f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2309-11495",
+      "ArXiv": "2309.11495",
+      "DOI": "10.48550/arXiv.2309.11495",
+      "CorpusId": 262062565
+    },
+    "title": "Chain-of-Verification Reduces Hallucination in Large Language Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 421,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.11495",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.11495, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3448411",
+        "name": "S. Dhuliawala"
+      },
+      {
+        "authorId": "100653935",
+        "name": "M. Komeili"
+      },
+      {
+        "authorId": "2276766957",
+        "name": "Jing Xu"
+      },
+      {
+        "authorId": "48647153",
+        "name": "R. Raileanu"
+      },
+      {
+        "authorId": "2243015223",
+        "name": "Xian Li"
+      },
+      {
+        "authorId": "1709797",
+        "name": "Asli Celikyilmaz"
+      },
+      {
+        "authorId": "2243265350",
+        "name": "Jason Weston"
+      }
+    ],
+    "abstract": "Generation of plausible yet incorrect factual information, termed hallucination, is an unsolved issue in large language models. We study the ability of language models to deliberate on the responses they give in order to correct their mistakes. We develop the Chain-of-Verification (CoVe) method whereby the model first (i) drafts an initial response; then (ii) plans verification questions to fact-check its draft; (iii) answers those questions independently so the answers are not biased by other responses; and (iv) generates its final verified response. In experiments, we show CoVe decreases hallucinations across a variety of tasks, from list-based questions from Wikidata, closed book MultiSpanQA and longform text generation.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "83b90f4a0ae4cc214eb3cc140ccfef9cd99fac05",
+    "externalIds": {
+      "DBLP": "conf/sosp/KwonLZ0ZY0ZS23",
+      "ArXiv": "2309.06180",
+      "DOI": "10.1145/3600006.3613165",
+      "CorpusId": 261697361
+    },
+    "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+    "venue": "Symposium on Operating Systems Principles",
+    "year": 2023,
+    "citationCount": 5527,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3600006.3613165",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.06180, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2239096468",
+        "name": "Woosuk Kwon"
+      },
+      {
+        "authorId": "2141335450",
+        "name": "Zhuohan Li"
+      },
+      {
+        "authorId": "92721493",
+        "name": "Siyuan Zhuang"
+      },
+      {
+        "authorId": "2209360681",
+        "name": "Ying Sheng"
+      },
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "2239168517",
+        "name": "Cody Hao Yu"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      },
+      {
+        "authorId": "145140331",
+        "name": "Haotong Zhang"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      }
+    ],
+    "abstract": "High throughput serving of large language models (LLMs) requires batching sufficiently many requests at a time. However, existing systems struggle because the key-value cache (KV cache) memory for each request is huge and grows and shrinks dynamically. When managed inefficiently, this memory can be significantly wasted by fragmentation and redundant duplication, limiting the batch size. To address this problem, we propose PagedAttention, an attention algorithm inspired by the classical virtual memory and paging techniques in operating systems. On top of it, we build vLLM, an LLM serving system that achieves (1) near-zero waste in KV cache memory and (2) flexible sharing of KV cache within and across requests to further reduce memory usage. Our evaluations show that vLLM improves the throughput of popular LLMs by 2--4× with the same level of latency compared to the state-of-the-art systems, such as FasterTransformer and Orca. The improvement is more pronounced with longer sequences, larger models, and more complex decoding algorithms. vLLM's source code is publicly available at https://github.com/vllm-project/vllm.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e51d38bbabca719cd9c845d1e004c724e9cbdfa4",
+    "externalIds": {
+      "ArXiv": "2307.09009",
+      "DBLP": "journals/corr/abs-2307-09009",
+      "DOI": "10.48550/arXiv.2307.09009",
+      "CorpusId": 259951081
+    },
+    "title": "How is ChatGPT's behavior changing over time?",
+    "venue": "Special Issue 5: Grappling With the Generative AI Revolution",
+    "year": 2023,
+    "citationCount": 607,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.09009",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.09009, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119322954",
+        "name": "Lingjiao Chen"
+      },
+      {
+        "authorId": "2221547236",
+        "name": "Matei Zaharia"
+      },
+      {
+        "authorId": "145085305",
+        "name": "James Y. Zou"
+      }
+    ],
+    "abstract": "GPT-3.5 and GPT-4 are the two most widely used large language model (LLM) services. However, when and how these models are updated over time is opaque. Here, we evaluate the March 2023 and June 2023 versions of GPT-3.5 and GPT-4 on several diverse tasks: 1) math problems, 2) sensitive/dangerous questions, 3) opinion surveys, 4) multi-hop knowledge-intensive questions, 5) generating code, 6) US Medical License tests, and 7) visual reasoning. We find that the performance and behavior of both GPT-3.5 and GPT-4 can vary greatly over time. For example, GPT-4 (March 2023) was reasonable at identifying prime vs. composite numbers (84% accuracy) but GPT-4 (June 2023) was poor on these same questions (51% accuracy). This is partly explained by a drop in GPT-4's amenity to follow chain-of-thought prompting. Interestingly, GPT-3.5 was much better in June than in March in this task. GPT-4 became less willing to answer sensitive questions and opinion survey questions in June than in March. GPT-4 performed better at multi-hop questions in June than in March, while GPT-3.5's performance dropped on this task. Both GPT-4 and GPT-3.5 had more formatting mistakes in code generation in June than in March. We provide evidence that GPT-4's ability to follow user instructions has decreased over time, which is one common factor behind the many behavior drifts. Overall, our findings show that the behavior of the\"same\"LLM service can change substantially in a relatively short amount of time, highlighting the need for continuous monitoring of LLMs.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "104b0bb1da562d53cbda87aec79ef6a2827d191a",
+    "externalIds": {
+      "ArXiv": "2307.09288",
+      "DBLP": "journals/corr/abs-2307-09288",
+      "CorpusId": 259950998
+    },
+    "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 16625,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.09288, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113243762",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "143792623",
+        "name": "Louis Martin"
+      },
+      {
+        "authorId": "2059203763",
+        "name": "Kevin R. Stone"
+      },
+      {
+        "authorId": "2214809450",
+        "name": "Peter Albert"
+      },
+      {
+        "authorId": "2634674",
+        "name": "Amjad Almahairi"
+      },
+      {
+        "authorId": "2223764353",
+        "name": "Yasmine Babaei"
+      },
+      {
+        "authorId": "2223756247",
+        "name": "Niko-lay Bashlykov"
+      },
+      {
+        "authorId": "47505161",
+        "name": "Soumya Batra"
+      },
+      {
+        "authorId": "51229603",
+        "name": "Prajjwal Bhargava"
+      },
+      {
+        "authorId": "2116473",
+        "name": "Shruti Bhosale"
+      },
+      {
+        "authorId": "2023469",
+        "name": "D. Bikel"
+      },
+      {
+        "authorId": "2040305955",
+        "name": "Lukas Blecher"
+      },
+      {
+        "authorId": "66286536",
+        "name": "Cristian Canton Ferrer"
+      },
+      {
+        "authorId": "2108267192",
+        "name": "Moya Chen"
+      },
+      {
+        "authorId": "7153363",
+        "name": "Guillem Cucurull"
+      },
+      {
+        "authorId": "71039937",
+        "name": "David Esiobu"
+      },
+      {
+        "authorId": "2166312768",
+        "name": "Jude Fernandes"
+      },
+      {
+        "authorId": "2430465950",
+        "name": "Jeremy Fu"
+      },
+      {
+        "authorId": "2223742000",
+        "name": "Wenyin Fu"
+      },
+      {
+        "authorId": "2223748737",
+        "name": "Brian Fuller"
+      },
+      {
+        "authorId": "2107063269",
+        "name": "Cynthia Gao"
+      },
+      {
+        "authorId": "28554843",
+        "name": "Vedanuj Goswami"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "4305645",
+        "name": "A. Hartshorn"
+      },
+      {
+        "authorId": "2195458",
+        "name": "Saghar Hosseini"
+      },
+      {
+        "authorId": "2132302721",
+        "name": "Rui Hou"
+      },
+      {
+        "authorId": "2065277797",
+        "name": "Hakan Inan"
+      },
+      {
+        "authorId": "2059886128",
+        "name": "Marcin Kardas"
+      },
+      {
+        "authorId": "2190957318",
+        "name": "Viktor Kerkez"
+      },
+      {
+        "authorId": "2072010",
+        "name": "Madian Khabsa"
+      },
+      {
+        "authorId": "2207049",
+        "name": "Isabel M. Kloumann"
+      },
+      {
+        "authorId": "2294453195",
+        "name": "A. Korenev"
+      },
+      {
+        "authorId": "2146367061",
+        "name": "Punit Singh Koura"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "2223749565",
+        "name": "Jenya Lee"
+      },
+      {
+        "authorId": "2145259939",
+        "name": "Diana Liskovich"
+      },
+      {
+        "authorId": "1768032",
+        "name": "Yinghai Lu"
+      },
+      {
+        "authorId": "3375249",
+        "name": "Yuning Mao"
+      },
+      {
+        "authorId": "1490887583",
+        "name": "X. Martinet"
+      },
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "3047561",
+        "name": "Pushkar Mishra"
+      },
+      {
+        "authorId": "2322981055",
+        "name": "Igor Molybog"
+      },
+      {
+        "authorId": "40383658",
+        "name": "Yixin Nie"
+      },
+      {
+        "authorId": "38579672",
+        "name": "Andrew Poulton"
+      },
+      {
+        "authorId": "39906022",
+        "name": "J. Reizenstein"
+      },
+      {
+        "authorId": "150282885",
+        "name": "Rashi Rungta"
+      },
+      {
+        "authorId": "1859294",
+        "name": "Kalyan Saladi"
+      },
+      {
+        "authorId": "14279694",
+        "name": "A. Schelten"
+      },
+      {
+        "authorId": "2214818043",
+        "name": "Ruan Silva"
+      },
+      {
+        "authorId": "51324296",
+        "name": "Eric Michael Smith"
+      },
+      {
+        "authorId": "2066074360",
+        "name": "R. Subramanian"
+      },
+      {
+        "authorId": "2112782199",
+        "name": "Xia Tan"
+      },
+      {
+        "authorId": "71292072",
+        "name": "Binh Tang"
+      },
+      {
+        "authorId": "2110697298",
+        "name": "Ross Taylor"
+      },
+      {
+        "authorId": "2110032535",
+        "name": "Adina Williams"
+      },
+      {
+        "authorId": "2223770369",
+        "name": "Jian Xiang Kuan"
+      },
+      {
+        "authorId": "2214843767",
+        "name": "Puxin Xu"
+      },
+      {
+        "authorId": "14701107",
+        "name": "Zhengxu Yan"
+      },
+      {
+        "authorId": "121929334",
+        "name": "Iliyan Zarov"
+      },
+      {
+        "authorId": "2108473229",
+        "name": "Yuchen Zhang"
+      },
+      {
+        "authorId": "144270981",
+        "name": "Angela Fan"
+      },
+      {
+        "authorId": "2165660870",
+        "name": "M. Kambadur"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "2166043087",
+        "name": "Aur'elien Rodriguez"
+      },
+      {
+        "authorId": "1962768",
+        "name": "Robert Stojnic"
+      },
+      {
+        "authorId": "2068070",
+        "name": "Sergey Edunov"
+      },
+      {
+        "authorId": "2073456043",
+        "name": "Thomas Scialom"
+      }
+    ],
+    "abstract": "In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters. Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our models outperform open-source chat models on most benchmarks we tested, and based on our human evaluations for helpfulness and safety, may be a suitable substitute for closed-source models. We provide a detailed description of our approach to fine-tuning and safety improvements of Llama 2-Chat in order to enable the community to build on our work and contribute to the responsible development of LLMs.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "fbd2c8089870814449f9254a711041bbae145a82",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-04751",
+      "ArXiv": "2306.04751",
+      "DOI": "10.48550/arXiv.2306.04751",
+      "CorpusId": 259108263
+    },
+    "title": "How Far Can Camels Go? Exploring the State of Instruction Tuning on Open Resources",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 488,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.04751",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.04751, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1705260",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "2056776606",
+        "name": "Hamish Ivison"
+      },
+      {
+        "authorId": "2697425",
+        "name": "Pradeep Dasigi"
+      },
+      {
+        "authorId": "2689239",
+        "name": "Jack Hessel"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "37619618",
+        "name": "Khyathi Raghavi Chandu"
+      },
+      {
+        "authorId": "30051202",
+        "name": "David Wadden"
+      },
+      {
+        "authorId": "2071601396",
+        "name": "Kelsey MacMillan"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "46181066",
+        "name": "Iz Beltagy"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "In this work we explore recent advances in instruction-tuning language models on a range of open instruction-following datasets. Despite recent claims that open models can be on par with state-of-the-art proprietary models, these claims are often accompanied by limited evaluation, making it difficult to compare models across the board and determine the utility of various resources. We provide a large set of instruction-tuned models from 6.7B to 65B parameters in size, trained on 12 instruction datasets ranging from manually curated (e.g., OpenAssistant) to synthetic and distilled (e.g., Alpaca) and systematically evaluate them on their factual knowledge, reasoning, multilinguality, coding, and open-ended instruction following abilities through a collection of automatic, model-based, and human-based metrics. We further introduce T\\\"ulu, our best performing instruction-tuned model suite finetuned on a combination of high-quality open resources. Our experiments show that different instruction-tuning datasets can uncover or enhance specific skills, while no single dataset (or combination) provides the best performance across all evaluations. Interestingly, we find that model and human preference-based evaluations fail to reflect differences in model capabilities exposed by benchmark-based evaluations, suggesting the need for the type of systemic evaluation performed in this work. Our evaluations show that the best model in any given evaluation reaches on average 87% of ChatGPT performance, and 73% of GPT-4 performance, suggesting that further investment in building better base models and instruction-tuning data is required to close the gap. We release our instruction-tuned models, including a fully finetuned 65B T\\\"ulu, along with our code, data, and evaluation framework at https://github.com/allenai/open-instruct to facilitate future research.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e2e52461194bc81351da7caa978ac42e9e9549cc",
+    "externalIds": {
+      "DBLP": "conf/nips/WuHSDSASOH23",
+      "ArXiv": "2306.01693",
+      "DOI": "10.48550/arXiv.2306.01693",
+      "CorpusId": 259064099
+    },
+    "title": "Fine-Grained Human Feedback Gives Better Rewards for Language Model Training",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 449,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.01693",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.01693, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7806955",
+        "name": "Zeqiu Wu"
+      },
+      {
+        "authorId": "2112209725",
+        "name": "Yushi Hu"
+      },
+      {
+        "authorId": "3040379",
+        "name": "Weijia Shi"
+      },
+      {
+        "authorId": "46217681",
+        "name": "Nouha Dziri"
+      },
+      {
+        "authorId": "32849969",
+        "name": "Alane Suhr"
+      },
+      {
+        "authorId": "19179135",
+        "name": "Prithviraj Ammanabrolu"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "144339506",
+        "name": "Mari Ostendorf"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "Language models (LMs) often exhibit undesirable text generation behaviors, including generating false, toxic, or irrelevant outputs. Reinforcement learning from human feedback (RLHF) - where human preference judgments on LM outputs are transformed into a learning signal - has recently shown promise in addressing these issues. However, such holistic feedback conveys limited information on long text outputs; it does not indicate which aspects of the outputs influenced user preference; e.g., which parts contain what type(s) of errors. In this paper, we use fine-grained human feedback (e.g., which sentence is false, which sub-sentence is irrelevant) as an explicit training signal. We introduce Fine-Grained RLHF, a framework that enables training and learning from reward functions that are fine-grained in two respects: (1) density, providing a reward after every segment (e.g., a sentence) is generated; and (2) incorporating multiple reward models associated with different feedback types (e.g., factual incorrectness, irrelevance, and information incompleteness). We conduct experiments on detoxification and long-form question answering to illustrate how learning with such reward functions leads to improved performance, supported by both automatic and human evaluation. Additionally, we show that LM behaviors can be customized using different combinations of fine-grained reward models. We release all data, collected human feedback, and codes at https://FineGrainedRLHF.github.io.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e7c97e953849f1a8e5d85ceb4cfcc0a5d54d2365",
+    "externalIds": {
+      "DBLP": "conf/emnlp/GaoYYC23",
+      "ArXiv": "2305.14627",
+      "DOI": "10.48550/arXiv.2305.14627",
+      "CorpusId": 258865710
+    },
+    "title": "Enabling Large Language Models to Generate Text with Citations",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 586,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.14627",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.14627, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4800645",
+        "name": "Tianyu Gao"
+      },
+      {
+        "authorId": "2287806228",
+        "name": "Howard Yen"
+      },
+      {
+        "authorId": "2257230025",
+        "name": "Jiatong Yu"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      }
+    ],
+    "abstract": "Large language models (LLMs) have emerged as a widely-used tool for information seeking, but their generated outputs are prone to hallucination. In this work, our aim is to allow LLMs to generate text with citations, improving their factual correctness and verifiability. Existing work mainly relies on commercial search engines and human evaluation, making it challenging to reproduce and compare different modeling approaches. We propose ALCE, the first benchmark for Automatic LLMs' Citation Evaluation. ALCE collects a diverse set of questions and retrieval corpora and requires building end-to-end systems to retrieve supporting evidence and generate answers with citations. We develop automatic metrics along three dimensions -- fluency, correctness, and citation quality -- and demonstrate their strong correlation with human judgements. Our experiments with state-of-the-art LLMs and novel prompting strategies show that current systems have considerable room for improvement -- For example, on the ELI5 dataset, even the best models lack complete citation support 50% of the time. Our analyses further highlight promising future directions, including developing better retrievers, advancing long-context LLMs, and improving the ability to synthesize information from multiple sources.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "a7977870b58e716cd93f571a3b75a610167a75bd",
+    "externalIds": {
+      "DBLP": "conf/emnlp/LuoZCGKWMG23",
+      "ArXiv": "2305.15225",
+      "DOI": "10.48550/arXiv.2305.15225",
+      "CorpusId": 258865283
+    },
+    "title": "SAIL: Search-Augmented Instruction Learning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 36,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.15225",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.15225, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1944274",
+        "name": "Hongyin Luo"
+      },
+      {
+        "authorId": "2475831",
+        "name": "Yung-Sung Chuang"
+      },
+      {
+        "authorId": "145802952",
+        "name": "Yuan Gong"
+      },
+      {
+        "authorId": "2146333115",
+        "name": "Tianhua Zhang"
+      },
+      {
+        "authorId": "143827730",
+        "name": "Yoon Kim"
+      },
+      {
+        "authorId": "1847260",
+        "name": "Xixin Wu"
+      },
+      {
+        "authorId": "31997718",
+        "name": "D. Fox"
+      },
+      {
+        "authorId": "145199941",
+        "name": "H. Meng"
+      },
+      {
+        "authorId": "145898106",
+        "name": "James R. Glass"
+      }
+    ],
+    "abstract": "Large language models (LLMs) have been significantly improved by instruction fine-tuning, but still lack transparency and the ability to utilize up-to-date knowledge and information. In this work, we propose search-augmented instruction learning (SAIL), which grounds the language generation and instruction following abilities on complex search results generated by in-house and external search engines. With an instruction tuning corpus, we collect search results for each training case from different search APIs and domains, and construct a new search-grounded training set containing \\textit{(instruction, grounding information, response)} triplets. We then fine-tune the LLaMA-7B model on the constructed training set. Since the collected results contain unrelated and disputing languages, the model needs to learn to ground on trustworthy search results, filter out distracting passages, and generate the target response. The search result-denoising process entails explicit trustworthy information selection and multi-hop reasoning, since the retrieved passages might be informative but not contain the instruction-following answer. Experiments show that the fine-tuned SAIL-7B model has a strong instruction-following ability, and it performs significantly better on transparency-sensitive tasks, including open-ended question answering and fact checking.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "bd5deadc58ee45b5e004378ba1d54a96bc947b4a",
+    "externalIds": {
+      "ArXiv": "2305.14251",
+      "DBLP": "conf/emnlp/MinKLLYKIZH23",
+      "DOI": "10.48550/arXiv.2305.14251",
+      "CorpusId": 258841470
+    },
+    "title": "FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 1214,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.14251",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.14251, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "26161085",
+        "name": "Kalpesh Krishna"
+      },
+      {
+        "authorId": "2156533327",
+        "name": "Xinxi Lyu"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "2072801764",
+        "name": "Wen-tau Yih"
+      },
+      {
+        "authorId": "2572525",
+        "name": "Pang Wei Koh"
+      },
+      {
+        "authorId": "2136562",
+        "name": "Mohit Iyyer"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "Evaluating the factuality of long-form text generated by large language models (LMs) is non-trivial because (1) generations often contain a mixture of supported and unsupported pieces of information, making binary judgments of quality inadequate, and (2) human evaluation is time-consuming and costly. In this paper, we introduce FACTSCORE, a new evaluation that breaks a generation into a series of atomic facts and computes the percentage of atomic facts supported by a reliable knowledge source. We conduct an extensive human evaluation to obtain FACTSCOREs of people biographies generated by several state-of-the-art commercial LMs -- InstructGPT, ChatGPT, and the retrieval-augmented PerplexityAI -- and report new analysis demonstrating the need for such a fine-grained score (e.g., ChatGPT only achieves 58%). Since human evaluation is costly, we also introduce an automated model that estimates FACTSCORE using retrieval and a strong language model, with less than a 2% error rate. Finally, we use this automated metric to evaluate 6,500 generations from a new set of 13 recent LMs that would have cost $26K if evaluated by humans, with various findings: GPT-4 and ChatGPT are more factual than public models, and Vicuna and Alpaca are some of the best public models. FACTSCORE is available for public use via `pip install factscore`.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "88884b8806262a4095036041e3567d450dba39f7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-06983",
+      "ArXiv": "2305.06983",
+      "DOI": "10.48550/arXiv.2305.06983",
+      "CorpusId": 258615731
+    },
+    "title": "Active Retrieval Augmented Generation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 618,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.06983",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.06983, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2669515",
+        "name": "Zhengbao Jiang"
+      },
+      {
+        "authorId": "40027632",
+        "name": "Frank F. Xu"
+      },
+      {
+        "authorId": "49715441",
+        "name": "Luyu Gao"
+      },
+      {
+        "authorId": "48064856",
+        "name": "Zhiqing Sun"
+      },
+      {
+        "authorId": "1409707585",
+        "name": "Qian Liu"
+      },
+      {
+        "authorId": "2173509991",
+        "name": "Jane Dwivedi-Yu"
+      },
+      {
+        "authorId": "2257099254",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "144987107",
+        "name": "Jamie Callan"
+      },
+      {
+        "authorId": "1700325",
+        "name": "Graham Neubig"
+      }
+    ],
+    "abstract": "Despite the remarkable ability of large language models (LMs) to comprehend and generate language, they have a tendency to hallucinate and create factually inaccurate output. Augmenting LMs by retrieving information from external knowledge resources is one promising solution. Most existing retrieval augmented LMs employ a retrieve-and-generate setup that only retrieves information once based on the input. This is limiting, however, in more general scenarios involving generation of long texts, where continually gathering information throughout generation is essential. In this work, we provide a generalized view of active retrieval augmented generation, methods that actively decide when and what to retrieve across the course of the generation. We propose Forward-Looking Active REtrieval augmented generation (FLARE), a generic method which iteratively uses a prediction of the upcoming sentence to anticipate future content, which is then utilized as a query to retrieve relevant documents to regenerate the sentence if it contains low-confidence tokens. We test FLARE along with baselines comprehensively over 4 long-form knowledge-intensive generation tasks/datasets. FLARE achieves superior or competitive performance on all tasks, demonstrating the effectiveness of our method. Code and datasets are available at https://github.com/jzbjyb/FLARE.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "acf90b4d165690fe27c62c4af1a28d540c784000",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-06311",
+      "ArXiv": "2305.06311",
+      "DOI": "10.48550/arXiv.2305.06311",
+      "CorpusId": 258587884
+    },
+    "title": "Automatic Evaluation of Attribution by Large Language Models",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.06311",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.06311, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145548079",
+        "name": "Xiang Yue"
+      },
+      {
+        "authorId": "7425689",
+        "name": "Boshi Wang"
+      },
+      {
+        "authorId": "145086492",
+        "name": "Kai Zhang"
+      },
+      {
+        "authorId": "11832104",
+        "name": "Ziru Chen"
+      },
+      {
+        "authorId": "1758652",
+        "name": "Yu Su"
+      },
+      {
+        "authorId": "1515546612",
+        "name": "Huan Sun"
+      }
+    ],
+    "abstract": "A recent focus of large language model (LLM) development, as exemplified by generative search engines, is to incorporate external references to generate and support its claims. However, evaluating the attribution, i.e., verifying whether the generated statement is fully supported by the cited reference, remains an open problem. Although human evaluation is common practice, it is costly and time-consuming. In this paper, we investigate the automatic evaluation of attribution given by LLMs. We begin by defining different types of attribution errors, and then explore two approaches for automatic evaluation: prompting LLMs and fine-tuning smaller LMs. The fine-tuning data is repurposed from related tasks such as question answering, fact-checking, natural language inference, and summarization. We manually curate a set of test examples covering 12 domains from a generative search engine, New Bing. Our results on this curated test set and simulated examples from existing benchmarks highlight both promising signals and challenges. We hope our problem formulation, testbeds, and findings will help lay the foundation for future studies on this important problem.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e03dc5bd72bea7d1db03de380d4c43b7e610fbee",
+    "externalIds": {
+      "DBLP": "conf/emnlp/LiuZL23",
+      "ArXiv": "2304.09848",
+      "DOI": "10.48550/arXiv.2304.09848",
+      "CorpusId": 258212854
+    },
+    "title": "Evaluating Verifiability in Generative Search Engines",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 363,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.09848",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.09848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22243769",
+        "name": "Nelson F. Liu"
+      },
+      {
+        "authorId": "2146331419",
+        "name": "Tianyi Zhang"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "Generative search engines directly generate responses to user queries, along with in-line citations. A prerequisite trait of a trustworthy generative search engine is verifiability, i.e., systems should cite comprehensively (high citation recall; all statements are fully supported by citations) and accurately (high citation precision; every cite supports its associated statement). We conduct human evaluation to audit four popular generative search engines -- Bing Chat, NeevaAI, perplexity.ai, and YouChat -- across a diverse set of queries from a variety of sources (e.g., historical Google user queries, dynamically-collected open-ended questions on Reddit, etc.). We find that responses from existing generative search engines are fluent and appear informative, but frequently contain unsupported statements and inaccurate citations: on average, a mere 51.5% of generated sentences are fully supported by citations and only 74.5% of citations support their associated sentence. We believe that these results are concerningly low for systems that may serve as a primary tool for information-seeking users, especially given their facade of trustworthiness. We hope that our results further motivate the development of trustworthy generative search engines and help researchers and users better understand the shortcomings of existing commercial systems.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3fcc8cb68488cfdfe4c52b81f27a236352fe5582",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-03728",
+      "ArXiv": "2304.03728",
+      "DOI": "10.48550/arXiv.2304.03728",
+      "CorpusId": 258041307
+    },
+    "title": "Interpretable Unified Language Checking",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 34,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.03728",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.03728, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2146333115",
+        "name": "Tianhua Zhang"
+      },
+      {
+        "authorId": "1944274",
+        "name": "Hongyin Luo"
+      },
+      {
+        "authorId": "2475831",
+        "name": "Yung-Sung Chuang"
+      },
+      {
+        "authorId": "2117161925",
+        "name": "Wei Fang"
+      },
+      {
+        "authorId": "2214001322",
+        "name": "Luc Gaitskell"
+      },
+      {
+        "authorId": "32452740",
+        "name": "Thomas Hartvigsen"
+      },
+      {
+        "authorId": "1847260",
+        "name": "Xixin Wu"
+      },
+      {
+        "authorId": "31997718",
+        "name": "D. Fox"
+      },
+      {
+        "authorId": "2057833292",
+        "name": "Helen M. Meng"
+      },
+      {
+        "authorId": "145898106",
+        "name": "James R. Glass"
+      }
+    ],
+    "abstract": "Despite recent concerns about undesirable behaviors generated by large language models (LLMs), including non-factual, biased, and hateful language, we find LLMs are inherent multi-task language checkers based on their latent representations of natural and social knowledge. We present an interpretable, unified, language checking (UniLC) method for both human and machine-generated language that aims to check if language input is factual and fair. While fairness and fact-checking tasks have been handled separately with dedicated models, we find that LLMs can achieve high performance on a combination of fact-checking, stereotype detection, and hate speech detection tasks with a simple, few-shot, unified set of prompts. With the ``1/2-shot'' multi-task language checking method proposed in this work, the GPT3.5-turbo model outperforms fully supervised baselines on several language tasks. The simple approach and results suggest that based on strong latent knowledge representations, an LLM can be an adaptive and explainable tool for detecting misinformation, stereotypes, and hate speech.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c715914c388fa64dd8686cd8755e5adfebbf2388",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-01904",
+      "ArXiv": "2304.01904",
+      "ACL": "2024.eacl-long.67",
+      "DOI": "10.48550/arXiv.2304.01904",
+      "CorpusId": 257921623
+    },
+    "title": "REFINER: Reasoning Feedback on Intermediate Representations",
+    "venue": "Conference of the European Chapter of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 240,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.01904",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.01904, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261760962",
+        "name": "Debjit Paul"
+      },
+      {
+        "authorId": "2190955045",
+        "name": "Mete Ismayilzada"
+      },
+      {
+        "authorId": "35512303",
+        "name": "Maxime Peyrard"
+      },
+      {
+        "authorId": "2097711585",
+        "name": "Beatriz Borges"
+      },
+      {
+        "authorId": "2691021",
+        "name": "Antoine Bosselut"
+      },
+      {
+        "authorId": "145387102",
+        "name": "Robert West"
+      },
+      {
+        "authorId": "1735128",
+        "name": "B. Faltings"
+      }
+    ],
+    "abstract": "Language models (LMs) have recently shown remarkable performance on reasoning tasks by explicitly generating intermediate inferences,e.g., chain-of-thought prompting. However, these intermediate inference steps may be inappropriate deductions from the initial contextand lead to incorrect final predictions. Here we introduce REFINER, a framework for finetuning LMs to explicitly generate intermediate reasoning steps while interacting with a critic model that provides automated feedback on the reasoning. Specifically, the critic provides structured feedback that the reasoning LM uses to iteratively improve its intermediate arguments. Empirical evaluations of REFINER on three diverse reasoning tasks show significant improvements over baseline LMs of comparable scale. Furthermore, when using GPT-3.5 or ChatGPT as the reasoner, the trained critic significantly improves reasoning without finetuning the reasoner. Finally, our critic model is trained without expensive human-in-the-loop data but can be substituted with humans at inference time.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3aaf6a2cbad5850ad81ab5c163599cb3d523436f",
+    "externalIds": {
+      "ArXiv": "2303.17651",
+      "DBLP": "journals/corr/abs-2303-17651",
+      "DOI": "10.48550/arXiv.2303.17651",
+      "CorpusId": 257900871
+    },
+    "title": "Self-Refine: Iterative Refinement with Self-Feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 3260,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2303.17651",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.17651, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "21626987",
+        "name": "Aman Madaan"
+      },
+      {
+        "authorId": "1721168",
+        "name": "Niket Tandon"
+      },
+      {
+        "authorId": "1491232062",
+        "name": "Prakhar Gupta"
+      },
+      {
+        "authorId": "1474550731",
+        "name": "Skyler Hallinan"
+      },
+      {
+        "authorId": "49715441",
+        "name": "Luyu Gao"
+      },
+      {
+        "authorId": "35823986",
+        "name": "Sarah Wiegreffe"
+      },
+      {
+        "authorId": "47051926",
+        "name": "Uri Alon"
+      },
+      {
+        "authorId": "46217681",
+        "name": "Nouha Dziri"
+      },
+      {
+        "authorId": "9358910",
+        "name": "Shrimai Prabhumoye"
+      },
+      {
+        "authorId": "46286308",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "2129663",
+        "name": "S. Welleck"
+      },
+      {
+        "authorId": "3165738",
+        "name": "Bodhisattwa Prasad Majumder"
+      },
+      {
+        "authorId": "2152953535",
+        "name": "Shashank Gupta"
+      },
+      {
+        "authorId": "2112229",
+        "name": "A. Yazdanbakhsh"
+      },
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      }
+    ],
+    "abstract": "Like humans, large language models (LLMs) do not always generate the best output on their first try. Motivated by how humans refine their written text, we introduce Self-Refine, an approach for improving initial outputs from LLMs through iterative feedback and refinement. The main idea is to generate an initial output using an LLMs; then, the same LLMs provides feedback for its output and uses it to refine itself, iteratively. Self-Refine does not require any supervised training data, additional training, or reinforcement learning, and instead uses a single LLM as the generator, refiner, and feedback provider. We evaluate Self-Refine across 7 diverse tasks, ranging from dialog response generation to mathematical reasoning, using state-of-the-art (GPT-3.5, ChatGPT, and GPT-4) LLMs. Across all evaluated tasks, outputs generated with Self-Refine are preferred by humans and automatic metrics over those generated with the same LLM using conventional one-step generation, improving by ~20% absolute on average in task performance. Our work demonstrates that even state-of-the-art LLMs like GPT-4 can be further improved at test time using our simple, standalone approach.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "381ab7a640f5b46b62f7e08d1af4a8e0d3eadd55",
+    "externalIds": {
+      "DBLP": "conf/emnlp/LiuIXWXZ23",
+      "ArXiv": "2303.16634",
+      "DOI": "10.18653/v1/2023.emnlp-main.153",
+      "CorpusId": 257804696
+    },
+    "title": "G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 2224,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.emnlp-main.153.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.16634, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2152797401",
+        "name": "Yang Liu"
+      },
+      {
+        "authorId": "3310951",
+        "name": "Dan Iter"
+      },
+      {
+        "authorId": "2110197273",
+        "name": "Yichong Xu"
+      },
+      {
+        "authorId": "2146294891",
+        "name": "Shuo Wang"
+      },
+      {
+        "authorId": "8233965",
+        "name": "Ruochen Xu"
+      },
+      {
+        "authorId": "8652308",
+        "name": "Chenguang Zhu"
+      }
+    ],
+    "abstract": "The quality of texts generated by natural language generation (NLG) systems is hard to measure automatically. Conventional reference-based metrics, such as BLEU and ROUGE, have been shown to have relatively low correlation with human judgments, especially for tasks that require creativity and diversity. Recent studies suggest using large language models (LLMs) as reference-free metrics for NLG evaluation, which have the benefit of being applicable to new tasks that lack human references. However, these LLM-based evaluators still have lower human correspondence than medium-size neural evaluators. In this work, we present G-Eval, a framework of using large language models with chain-of-thoughts (CoT) and a form-filling paradigm, to assess the quality of NLG outputs. We experiment with two generation tasks, text summarization and dialogue generation. We show that G-Eval with GPT-4 as the backbone model achieves a Spearman correlation of 0.514 with human on summarization task, outperforming all previous methods by a large margin. We also propose preliminary analysis on the behavior of LLM-based evaluators, and highlight the potential issue of LLM-based evaluators having a bias towards the LLM-generated texts. The code is at https://github.com/nlpyang/geval",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "163b4d6a79a5b19af88b8585456363340d9efd04",
+    "externalIds": {
+      "ArXiv": "2303.08774",
+      "CorpusId": 257532815
+    },
+    "title": "GPT-4 Technical Report",
+    "venue": "",
+    "year": 2023,
+    "citationCount": 23912,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.08774, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275249853",
+        "name": "OpenAI Josh Achiam"
+      },
+      {
+        "authorId": "2275250875",
+        "name": "Steven Adler"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2274773568",
+        "name": "L. Ahmad"
+      },
+      {
+        "authorId": "2258629",
+        "name": "Ilge Akkaya"
+      },
+      {
+        "authorId": "2275244794",
+        "name": "Florencia Leoni Aleman"
+      },
+      {
+        "authorId": "2275252021",
+        "name": "D. Almeida"
+      },
+      {
+        "authorId": "2275252424",
+        "name": "Janko Altenschmidt"
+      },
+      {
+        "authorId": "2275245579",
+        "name": "S. Altman"
+      },
+      {
+        "authorId": "2275246437",
+        "name": "Shyamal Anadkat"
+      },
+      {
+        "authorId": "2275139370",
+        "name": "Red Avila"
+      },
+      {
+        "authorId": "2256699302",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "2275251659",
+        "name": "Valerie Balcom"
+      },
+      {
+        "authorId": "47626612",
+        "name": "Paul Baltescu"
+      },
+      {
+        "authorId": "2275198557",
+        "name": "Haim-ing Bao"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2275245092",
+        "name": "Jeff Belgum"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "2275245414",
+        "name": "Jake Berdine"
+      },
+      {
+        "authorId": "2275245581",
+        "name": "Gabriel Bernadett-Shapiro"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "2275251674",
+        "name": "Lenny Bogdonoff"
+      },
+      {
+        "authorId": "2275246071",
+        "name": "O. Boiko"
+      },
+      {
+        "authorId": "2275248137",
+        "name": "Made-laine Boyd"
+      },
+      {
+        "authorId": "2275245419",
+        "name": "Anna-Luisa Brakman"
+      },
+      {
+        "authorId": "2065151121",
+        "name": "Greg Brockman"
+      },
+      {
+        "authorId": "2275219628",
+        "name": "Tim Brooks"
+      },
+      {
+        "authorId": "35167962",
+        "name": "Miles Brundage"
+      },
+      {
+        "authorId": "2146257251",
+        "name": "Kevin Button"
+      },
+      {
+        "authorId": "2275157286",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "2274782053",
+        "name": "Rosie Campbell"
+      },
+      {
+        "authorId": "2275245404",
+        "name": "Andrew Cann"
+      },
+      {
+        "authorId": "2275246368",
+        "name": "Brittany Carey"
+      },
+      {
+        "authorId": "2275120298",
+        "name": "Chelsea Carlson"
+      },
+      {
+        "authorId": "144114446",
+        "name": "Rory Carmichael"
+      },
+      {
+        "authorId": "1466431052",
+        "name": "Brooke Chan"
+      },
+      {
+        "authorId": "2275545855",
+        "name": "Che Chang"
+      },
+      {
+        "authorId": "2057091285",
+        "name": "Fotis Chantzis"
+      },
+      {
+        "authorId": "2253841704",
+        "name": "Derek Chen"
+      },
+      {
+        "authorId": "2275188918",
+        "name": "Sully Chen"
+      },
+      {
+        "authorId": "2275179180",
+        "name": "Ruby Chen"
+      },
+      {
+        "authorId": "2275289833",
+        "name": "Jason Chen"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2275251158",
+        "name": "Chester Cho"
+      },
+      {
+        "authorId": "2276186593",
+        "name": "Casey Chu"
+      },
+      {
+        "authorId": "2275839391",
+        "name": "Hyung Won Chung"
+      },
+      {
+        "authorId": "2275231534",
+        "name": "Dave Cummings"
+      },
+      {
+        "authorId": "49645091",
+        "name": "Jeremiah Currier"
+      },
+      {
+        "authorId": "2276187456",
+        "name": "Yunxing Dai"
+      },
+      {
+        "authorId": "2275251205",
+        "name": "Cory Decareaux"
+      },
+      {
+        "authorId": "2275244920",
+        "name": "Thomas Degry"
+      },
+      {
+        "authorId": "2275247090",
+        "name": "Noah Deutsch"
+      },
+      {
+        "authorId": "2275251200",
+        "name": "Damien Deville"
+      },
+      {
+        "authorId": "2275244298",
+        "name": "Arka Dhar"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "2275252295",
+        "name": "Steve Dowling"
+      },
+      {
+        "authorId": "2275245491",
+        "name": "Sheila Dunning"
+      },
+      {
+        "authorId": "66821245",
+        "name": "Adrien Ecoffet"
+      },
+      {
+        "authorId": "2275245457",
+        "name": "Atty Eleti"
+      },
+      {
+        "authorId": "2146257131",
+        "name": "Tyna Eloundou"
+      },
+      {
+        "authorId": "2065430571",
+        "name": "David Farhi"
+      },
+      {
+        "authorId": "2096916416",
+        "name": "L. Fedus"
+      },
+      {
+        "authorId": "2275249996",
+        "name": "Niko Felix"
+      },
+      {
+        "authorId": "2275245820",
+        "name": "S. Fishman"
+      },
+      {
+        "authorId": "2275244914",
+        "name": "Juston Forte"
+      },
+      {
+        "authorId": "2275251173",
+        "name": "Is-abella Fulford"
+      },
+      {
+        "authorId": "2027599537",
+        "name": "Leo Gao"
+      },
+      {
+        "authorId": "2275200811",
+        "name": "Elie Georges"
+      },
+      {
+        "authorId": "2275254804",
+        "name": "C. Gibson"
+      },
+      {
+        "authorId": "2275144649",
+        "name": "Vik Goel"
+      },
+      {
+        "authorId": "2325028819",
+        "name": "Tarun Gogineni"
+      },
+      {
+        "authorId": "2261041177",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "2158366935",
+        "name": "Raphael Gontijo-Lopes"
+      },
+      {
+        "authorId": "2265066144",
+        "name": "J. Gordon"
+      },
+      {
+        "authorId": "2275250003",
+        "name": "Morgan Grafstein"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "2275247307",
+        "name": "Ryan Greene"
+      },
+      {
+        "authorId": "2275137274",
+        "name": "Joshua Gross"
+      },
+      {
+        "authorId": "2253699903",
+        "name": "S. Gu"
+      },
+      {
+        "authorId": "2276101257",
+        "name": "Yufei Guo"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "2275540338",
+        "name": "Jesse Han"
+      },
+      {
+        "authorId": "2275295848",
+        "name": "J. Harris"
+      },
+      {
+        "authorId": "2275226809",
+        "name": "Yuchen He"
+      },
+      {
+        "authorId": "2275245527",
+        "name": "Mike Heaton"
+      },
+      {
+        "authorId": "2151087994",
+        "name": "Johannes Heidecke"
+      },
+      {
+        "authorId": "2242286342",
+        "name": "Chris Hesse"
+      },
+      {
+        "authorId": "2226452668",
+        "name": "Alan Hickey"
+      },
+      {
+        "authorId": "2275246148",
+        "name": "W. Hickey"
+      },
+      {
+        "authorId": "2275245339",
+        "name": "P. Hoeschele"
+      },
+      {
+        "authorId": "103681415",
+        "name": "Brandon Houghton"
+      },
+      {
+        "authorId": "2275214107",
+        "name": "Kenny Hsu"
+      },
+      {
+        "authorId": "2275210604",
+        "name": "Shengli Hu"
+      },
+      {
+        "authorId": "2275777049",
+        "name": "Xin Hu"
+      },
+      {
+        "authorId": "39378983",
+        "name": "Joost Huizinga"
+      },
+      {
+        "authorId": "2276187117",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "2171110177",
+        "name": "Shawn Jain"
+      },
+      {
+        "authorId": "2151094350",
+        "name": "Joanne Jang"
+      },
+      {
+        "authorId": "2253471334",
+        "name": "Angela Jiang"
+      },
+      {
+        "authorId": "2275172062",
+        "name": "R. Jiang"
+      },
+      {
+        "authorId": "2275752035",
+        "name": "Haozhun Jin"
+      },
+      {
+        "authorId": "2275203081",
+        "name": "Denny Jin"
+      },
+      {
+        "authorId": "2275250083",
+        "name": "Shino Jomoto"
+      },
+      {
+        "authorId": "2275247096",
+        "name": "Billie Jonn"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "2403754",
+        "name": "Tomer Kaftan"
+      },
+      {
+        "authorId": "2275230678",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2275169038",
+        "name": "Ali Kamali"
+      },
+      {
+        "authorId": "3151440",
+        "name": "I. Kanitscheider"
+      },
+      {
+        "authorId": "2844898",
+        "name": "N. Keskar"
+      },
+      {
+        "authorId": "2152264064",
+        "name": "Tabarak Khan"
+      },
+      {
+        "authorId": "2314112114",
+        "name": "Logan Kilpatrick"
+      },
+      {
+        "authorId": "2260346092",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2149054292",
+        "name": "Christina Kim"
+      },
+      {
+        "authorId": "2275296777",
+        "name": "Yongjik Kim"
+      },
+      {
+        "authorId": "2275112980",
+        "name": "Hendrik Kirchner"
+      },
+      {
+        "authorId": "51131802",
+        "name": "J. Kiros"
+      },
+      {
+        "authorId": "2146257375",
+        "name": "Matthew Knight"
+      },
+      {
+        "authorId": "1485556711",
+        "name": "Daniel Kokotajlo"
+      },
+      {
+        "authorId": "2275246094",
+        "name": "Lukasz Kondraciuk"
+      },
+      {
+        "authorId": "1666171360",
+        "name": "Andrew Kondrich"
+      },
+      {
+        "authorId": "2317096965",
+        "name": "Aris Konstantinidis"
+      },
+      {
+        "authorId": "2275245594",
+        "name": "Kyle Kosic"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2275229877",
+        "name": "Vishal Kuo"
+      },
+      {
+        "authorId": "2275247085",
+        "name": "Michael Lampe"
+      },
+      {
+        "authorId": "2275246287",
+        "name": "Ikai Lan"
+      },
+      {
+        "authorId": "2274915115",
+        "name": "Teddy Lee"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "52152632",
+        "name": "Jade Leung"
+      },
+      {
+        "authorId": "2275256930",
+        "name": "Daniel Levy"
+      },
+      {
+        "authorId": "2275285124",
+        "name": "Chak Li"
+      },
+      {
+        "authorId": "2275176375",
+        "name": "Rachel Lim"
+      },
+      {
+        "authorId": "2275759230",
+        "name": "Molly Lin"
+      },
+      {
+        "authorId": "2253840098",
+        "name": "Stephanie L. Lin"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "2275248327",
+        "name": "Theresa Lopez"
+      },
+      {
+        "authorId": "2257272397",
+        "name": "Ryan Lowe"
+      },
+      {
+        "authorId": "2275245628",
+        "name": "Patricia Lue"
+      },
+      {
+        "authorId": "119341078",
+        "name": "A. Makanju"
+      },
+      {
+        "authorId": "2275245649",
+        "name": "Kim Malfacini"
+      },
+      {
+        "authorId": "46430291",
+        "name": "Sam Manning"
+      },
+      {
+        "authorId": "14113256",
+        "name": "Todor Markov"
+      },
+      {
+        "authorId": "2275245336",
+        "name": "Yaniv Markovski"
+      },
+      {
+        "authorId": "2114362965",
+        "name": "Bianca Martin"
+      },
+      {
+        "authorId": "2275231822",
+        "name": "Katie Mayer"
+      },
+      {
+        "authorId": "2275247045",
+        "name": "Andrew Mayne"
+      },
+      {
+        "authorId": "39593364",
+        "name": "Bob McGrew"
+      },
+      {
+        "authorId": "2047820455",
+        "name": "S. McKinney"
+      },
+      {
+        "authorId": "3028785",
+        "name": "Christine McLeavey"
+      },
+      {
+        "authorId": "2274772421",
+        "name": "Paul McMillan"
+      },
+      {
+        "authorId": "2275234856",
+        "name": "Jake McNeil"
+      },
+      {
+        "authorId": "2275210659",
+        "name": "David Medina"
+      },
+      {
+        "authorId": "2275132306",
+        "name": "Aalok Mehta"
+      },
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "2275246330",
+        "name": "Luke Metz"
+      },
+      {
+        "authorId": "2275252694",
+        "name": "Andrey Mishchenko"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2275245453",
+        "name": "Vinnie Monaco"
+      },
+      {
+        "authorId": "1404556973",
+        "name": "Evan Morikawa"
+      },
+      {
+        "authorId": "3407880",
+        "name": "Daniel P. Mossing"
+      },
+      {
+        "authorId": "2275154456",
+        "name": "Tong Mu"
+      },
+      {
+        "authorId": "2117715631",
+        "name": "M. Murati"
+      },
+      {
+        "authorId": "147746767",
+        "name": "O. Murk"
+      },
+      {
+        "authorId": "2275246116",
+        "name": "David M'ely"
+      },
+      {
+        "authorId": "3422774",
+        "name": "Ashvin Nair"
+      },
+      {
+        "authorId": "7406311",
+        "name": "Reiichiro Nakano"
+      },
+      {
+        "authorId": "2057426488",
+        "name": "Rajeev Nayak"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "2273886618",
+        "name": "R. Ngo"
+      },
+      {
+        "authorId": "2275115983",
+        "name": "Hyeonwoo Noh"
+      },
+      {
+        "authorId": "2228518120",
+        "name": "Ouyang Long"
+      },
+      {
+        "authorId": "1435765036",
+        "name": "Cullen O'Keefe"
+      },
+      {
+        "authorId": "2713380",
+        "name": "J. Pachocki"
+      },
+      {
+        "authorId": "34800652",
+        "name": "A. Paino"
+      },
+      {
+        "authorId": "2275244652",
+        "name": "Joe Palermo"
+      },
+      {
+        "authorId": "2275246178",
+        "name": "Ashley Pantuliano"
+      },
+      {
+        "authorId": "50213542",
+        "name": "Giambattista Parascandolo"
+      },
+      {
+        "authorId": "2275245818",
+        "name": "J. Parish"
+      },
+      {
+        "authorId": "2275245435",
+        "name": "Emy Parparita"
+      },
+      {
+        "authorId": "2274774915",
+        "name": "Alexandre Passos"
+      },
+      {
+        "authorId": "2068123790",
+        "name": "Mikhail Pavlov"
+      },
+      {
+        "authorId": "2275125663",
+        "name": "Andrew Peng"
+      },
+      {
+        "authorId": "2275245529",
+        "name": "Adam Perelman"
+      },
+      {
+        "authorId": "2275250075",
+        "name": "Filipe de Avila Belbute Peres"
+      },
+      {
+        "authorId": "2136008481",
+        "name": "Michael Petrov"
+      },
+      {
+        "authorId": "1463773776",
+        "name": "Henrique Pondé de Oliveira Pinto"
+      },
+      {
+        "authorId": "2275246346",
+        "name": "Michael Pokorny"
+      },
+      {
+        "authorId": "2275246814",
+        "name": "Michelle Pokrass"
+      },
+      {
+        "authorId": "144401061",
+        "name": "Vitchyr H. Pong"
+      },
+      {
+        "authorId": "2275150061",
+        "name": "Tolly Powell"
+      },
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "2151088845",
+        "name": "Boris Power"
+      },
+      {
+        "authorId": "2275243930",
+        "name": "Elizabeth Proehl"
+      },
+      {
+        "authorId": "2285654208",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2275178294",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "2261024614",
+        "name": "Aditya Ramesh"
+      },
+      {
+        "authorId": "2275225165",
+        "name": "Cameron Raymond"
+      },
+      {
+        "authorId": "2275252438",
+        "name": "F. Real"
+      },
+      {
+        "authorId": "2275252095",
+        "name": "Kendra Rimbach"
+      },
+      {
+        "authorId": "2275207240",
+        "name": "Carl Ross"
+      },
+      {
+        "authorId": "11150265",
+        "name": "Bob Rotsted"
+      },
+      {
+        "authorId": "2275250007",
+        "name": "Henri Roussez"
+      },
+      {
+        "authorId": "2260406867",
+        "name": "N. Ryder"
+      },
+      {
+        "authorId": "47204843",
+        "name": "M. Saltarelli"
+      },
+      {
+        "authorId": "2275246803",
+        "name": "Ted Sanders"
+      },
+      {
+        "authorId": "2852106",
+        "name": "Shibani Santurkar"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "2275265666",
+        "name": "Heather Schmidt"
+      },
+      {
+        "authorId": "2252874293",
+        "name": "David Schnurr"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2196579",
+        "name": "Daniel Selsam"
+      },
+      {
+        "authorId": "2275244711",
+        "name": "Kyla Sheppard"
+      },
+      {
+        "authorId": "102475503",
+        "name": "T. Sherbakov"
+      },
+      {
+        "authorId": "2275246834",
+        "name": "Jessica Shieh"
+      },
+      {
+        "authorId": "118335789",
+        "name": "S. Shoker"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "2700360",
+        "name": "Szymon Sidor"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "2275252299",
+        "name": "Jordan Sitkin"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "103422608",
+        "name": "Ian Sohl"
+      },
+      {
+        "authorId": "2901424",
+        "name": "Benjamin Sokolowsky"
+      },
+      {
+        "authorId": "2307592658",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2275245668",
+        "name": "N. Staudacher"
+      },
+      {
+        "authorId": "9927844",
+        "name": "F. Such"
+      },
+      {
+        "authorId": "2275252251",
+        "name": "Natalie Summers"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2275750817",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "145950540",
+        "name": "N. Tezak"
+      },
+      {
+        "authorId": "2151289331",
+        "name": "Madeleine Thompson"
+      },
+      {
+        "authorId": "2275252092",
+        "name": "P. Tillet"
+      },
+      {
+        "authorId": "2267339677",
+        "name": "Amin Tootoonchian"
+      },
+      {
+        "authorId": "2275249879",
+        "name": "Elizabeth Tseng"
+      },
+      {
+        "authorId": "2275249709",
+        "name": "Preston Tuggle"
+      },
+      {
+        "authorId": "2275244171",
+        "name": "Nick Turley"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "2275203310",
+        "name": "Juan Felipe Cer'on Uribe"
+      },
+      {
+        "authorId": "2275244586",
+        "name": "Andrea Vallone"
+      },
+      {
+        "authorId": "2275245661",
+        "name": "Arun Vijayvergiya"
+      },
+      {
+        "authorId": "153387869",
+        "name": "Chelsea Voss"
+      },
+      {
+        "authorId": "2275245962",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2305029155",
+        "name": "Justin Wang"
+      },
+      {
+        "authorId": "3209373",
+        "name": "Alvin Wang"
+      },
+      {
+        "authorId": "2275189326",
+        "name": "Ben Wang"
+      },
+      {
+        "authorId": "2170081200",
+        "name": "Jonathan Ward"
+      },
+      {
+        "authorId": "2253952872",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "2275244218",
+        "name": "CJ Weinmann"
+      },
+      {
+        "authorId": "2275245663",
+        "name": "Akila Welihinda"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "2275139180",
+        "name": "Jiayi Weng"
+      },
+      {
+        "authorId": "2065741038",
+        "name": "Lilian Weng"
+      },
+      {
+        "authorId": "2275252154",
+        "name": "Matt Wiethoff"
+      },
+      {
+        "authorId": "2275249733",
+        "name": "Dave Willner"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "2275244177",
+        "name": "Samuel Wolrich"
+      },
+      {
+        "authorId": "2275225207",
+        "name": "Hannah Wong"
+      },
+      {
+        "authorId": "2275245771",
+        "name": "Lauren Workman"
+      },
+      {
+        "authorId": "2275299848",
+        "name": "Sherwin Wu"
+      },
+      {
+        "authorId": "2274911253",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2307456650",
+        "name": "Michael Wu"
+      },
+      {
+        "authorId": "2275190169",
+        "name": "Kai Xiao"
+      },
+      {
+        "authorId": "2275452480",
+        "name": "Tao Xu"
+      },
+      {
+        "authorId": "2275310096",
+        "name": "Sarah Yoo"
+      },
+      {
+        "authorId": "2275593618",
+        "name": "Kevin Yu"
+      },
+      {
+        "authorId": "2275194186",
+        "name": "Qim-ing Yuan"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      },
+      {
+        "authorId": "49629836",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "2262080679",
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "2275288889",
+        "name": "Marvin Zhang"
+      },
+      {
+        "authorId": "2275545682",
+        "name": "Shengjia Zhao"
+      },
+      {
+        "authorId": "2275257857",
+        "name": "Tianhao Zheng"
+      },
+      {
+        "authorId": "2275201537",
+        "name": "Juntang Zhuang"
+      },
+      {
+        "authorId": "2275245715",
+        "name": "William Zhuk"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      }
+    ],
+    "abstract": "We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs. While less capable than humans in many real-world scenarios, GPT-4 exhibits human-level performance on various professional and academic benchmarks, including passing a simulated bar exam with a score around the top 10% of test takers. GPT-4 is a Transformer-based model pre-trained to predict the next token in a document. The post-training alignment process results in improved performance on measures of factuality and adherence to desired behavior. A core component of this project was developing infrastructure and optimization methods that behave predictably across a wide range of scales. This allowed us to accurately predict some aspects of GPT-4's performance based on models trained with no more than 1/1,000th the compute of GPT-4.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c5120b546f1bd99df5bd2e2bf44db5c7c46d1545",
+    "externalIds": {
+      "DBLP": "conf/icml/KorbakSCBBPBP23",
+      "ArXiv": "2302.08582",
+      "DOI": "10.48550/arXiv.2302.08582",
+      "CorpusId": 257020046
+    },
+    "title": "Pretraining Language Models with Human Preferences",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 287,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.08582",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.08582, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "30023177",
+        "name": "Tomasz Korbak"
+      },
+      {
+        "authorId": "46749263",
+        "name": "Kejian Shi"
+      },
+      {
+        "authorId": "13336152",
+        "name": "Angelica Chen"
+      },
+      {
+        "authorId": "49550275",
+        "name": "Rasika Bhalerao"
+      },
+      {
+        "authorId": "2199030491",
+        "name": "C. L. Buckley"
+      },
+      {
+        "authorId": "80842917",
+        "name": "Jason Phang"
+      },
+      {
+        "authorId": "1799822",
+        "name": "Sam Bowman"
+      },
+      {
+        "authorId": "3439053",
+        "name": "Ethan Perez"
+      }
+    ],
+    "abstract": "Language models (LMs) are pretrained to imitate internet text, including content that would violate human preferences if generated by an LM: falsehoods, offensive comments, personally identifiable information, low-quality or buggy code, and more. Here, we explore alternative objectives for pretraining LMs in a way that also guides them to generate text aligned with human preferences. We benchmark five objectives for pretraining with human feedback across three tasks and study how they affect the trade-off between alignment and capabilities of pretrained LMs. We find a Pareto-optimal and simple approach among those we explored: conditional training, or learning distribution over tokens conditional on their human preference scores given by a reward model. Conditional training reduces the rate of undesirable content by up to an order of magnitude, both when generating without a prompt and with an adversarially-chosen prompt. Moreover, conditional training maintains the downstream task performance of standard LM pretraining, both before and after task-specific finetuning. Pretraining with human feedback results in much better preference satisfaction than standard LM pretraining followed by finetuning with feedback, i.e., learning and then unlearning undesirable behavior. Our results suggest that we should move beyond imitation learning when pretraining LMs and incorporate human preferences from the start of training.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "53d128ea815bcc0526856eb5a9c42cc977cb36a7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-04761",
+      "ArXiv": "2302.04761",
+      "DOI": "10.48550/arXiv.2302.04761",
+      "CorpusId": 256697342
+    },
+    "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 3561,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.04761",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.04761, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32246932",
+        "name": "Timo Schick"
+      },
+      {
+        "authorId": "2173509991",
+        "name": "Jane Dwivedi-Yu"
+      },
+      {
+        "authorId": "145188261",
+        "name": "Roberto Dessì"
+      },
+      {
+        "authorId": "48647153",
+        "name": "R. Raileanu"
+      },
+      {
+        "authorId": "3376175",
+        "name": "M. Lomeli"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      },
+      {
+        "authorId": "2313189469",
+        "name": "Nicola Cancedda"
+      },
+      {
+        "authorId": "90745780",
+        "name": "Thomas Scialom"
+      }
+    ],
+    "abstract": "Language models (LMs) exhibit remarkable abilities to solve new tasks from just a few examples or textual instructions, especially at scale. They also, paradoxically, struggle with basic functionality, such as arithmetic or factual lookup, where much simpler and smaller models excel. In this paper, we show that LMs can teach themselves to use external tools via simple APIs and achieve the best of both worlds. We introduce Toolformer, a model trained to decide which APIs to call, when to call them, what arguments to pass, and how to best incorporate the results into future token prediction. This is done in a self-supervised way, requiring nothing more than a handful of demonstrations for each API. We incorporate a range of tools, including a calculator, a Q\\&A system, two different search engines, a translation system, and a calendar. Toolformer achieves substantially improved zero-shot performance across a variety of downstream tasks, often competitive with much larger models, without sacrificing its core language modeling abilities.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3d68522abfadfc8ee6b7ec9edaaf91f1b2f38e5e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-00093",
+      "ArXiv": "2302.00093",
+      "DOI": "10.48550/arXiv.2302.00093",
+      "CorpusId": 256459776
+    },
+    "title": "Large Language Models Can Be Easily Distracted by Irrelevant Context",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 959,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.00093",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.00093, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8815141",
+        "name": "Freda Shi"
+      },
+      {
+        "authorId": "1425082935",
+        "name": "Xinyun Chen"
+      },
+      {
+        "authorId": "145274478",
+        "name": "Kanishka Misra"
+      },
+      {
+        "authorId": "1471909492",
+        "name": "Nathan Scales"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "2226805",
+        "name": "Ed H. Chi"
+      },
+      {
+        "authorId": "1821614764",
+        "name": "Nathanael Scharli"
+      },
+      {
+        "authorId": "65855107",
+        "name": "Denny Zhou"
+      }
+    ],
+    "abstract": "Large language models have achieved impressive performance on various natural language processing tasks. However, so far they have been evaluated primarily on benchmarks where all information in the input context is relevant for solving the task. In this work, we investigate the distractibility of large language models, i.e., how the model problem-solving accuracy can be influenced by irrelevant context. In particular, we introduce Grade-School Math with Irrelevant Context (GSM-IC), an arithmetic reasoning dataset with irrelevant information in the problem description. We use this benchmark to measure the distractibility of cutting-edge prompting techniques for large language models, and find that the model performance is dramatically decreased when irrelevant information is included. We also identify several approaches for mitigating this deficiency, such as decoding with self-consistency and adding to the prompt an instruction that tells the language model to ignore the irrelevant information.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "465471bb5bf1a945549d6291c2d23367966b4957",
+    "externalIds": {
+      "ArXiv": "2302.00083",
+      "DBLP": "journals/corr/abs-2302-00083",
+      "DOI": "10.1162/tacl_a_00605",
+      "CorpusId": 256459451
+    },
+    "title": "In-Context Retrieval-Augmented Language Models",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 962,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00605/2178834/tacl_a_00605.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.00083, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "73775461",
+        "name": "Ori Ram"
+      },
+      {
+        "authorId": "152754428",
+        "name": "Yoav Levine"
+      },
+      {
+        "authorId": "1491822146",
+        "name": "Itay Dalmedigos"
+      },
+      {
+        "authorId": "51918041",
+        "name": "Dor Muhlgay"
+      },
+      {
+        "authorId": "3140335",
+        "name": "A. Shashua"
+      },
+      {
+        "authorId": "2066411743",
+        "name": "Kevin Leyton-Brown"
+      },
+      {
+        "authorId": "1701353",
+        "name": "Y. Shoham"
+      }
+    ],
+    "abstract": "Abstract Retrieval-Augmented Language Modeling (RALM) methods, which condition a language model (LM) on relevant documents from a grounding corpus during generation, were shown to significantly improve language modeling performance. In addition, they can mitigate the problem of factually inaccurate text generation and provide natural source attribution mechanism. Existing RALM approaches focus on modifying the LM architecture in order to facilitate the incorporation of external information, significantly complicating deployment. This paper considers a simple alternative, which we dub In-Context RALM: leaving the LM architecture unchanged and prepending grounding documents to the input, without any further training of the LM. We show that In-Context RALM that builds on off-the-shelf general purpose retrievers provides surprisingly large LM gains across model sizes and diverse corpora. We also demonstrate that the document retrieval and ranking mechanism can be specialized to the RALM setting to further boost performance. We conclude that In-Context RALM has considerable potential to increase the prevalence of LM grounding, particularly in settings where a pretrained LM must be used without modification or even via API access.1",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c6ee979c2da4b55a8486abae4cd720422ab09b26",
+    "externalIds": {
+      "ArXiv": "2212.10511",
+      "ACL": "2023.acl-long.546",
+      "DBLP": "conf/acl/MallenAZDKH23",
+      "DOI": "10.18653/v1/2023.acl-long.546",
+      "CorpusId": 254877603
+    },
+    "title": "When Not to Trust Language Models: Investigating Effectiveness of Parametric and Non-Parametric Memories",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 1075,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.acl-long.546.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.10511, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269472940",
+        "name": "Alex Troy Mallen"
+      },
+      {
+        "authorId": "35584853",
+        "name": "Akari Asai"
+      },
+      {
+        "authorId": "3428769",
+        "name": "Victor Zhong"
+      },
+      {
+        "authorId": "143863023",
+        "name": "Rajarshi Das"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "1783281",
+        "name": "Daniel Khashabi"
+      }
+    ],
+    "abstract": "Despite their impressive performance on diverse tasks, large language models (LMs) still struggle with tasks requiring rich world knowledge, implying the difficulty of encoding a wealth of world knowledge in their parameters. This paper aims to understand LMs’ strengths and limitations in memorizing factual knowledge, by conducting large-scale knowledge probing experiments on two open-domain entity-centric QA datasets: PopQA, our new dataset with 14k questions about long-tail entities, and EntityQuestions, a widely used open-domain QA dataset. We find that LMs struggle with less popular factual knowledge, and that retrieval augmentation helps significantly in these cases. Scaling, on the other hand, mainly improves memorization of popular knowledge, and fails to appreciably improve memorization of factual knowledge in the tail. Based on those findings, we devise a new method for retrieval-augmentation that improves performance and reduces inference costs by only retrieving non-parametric memories when necessary.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "05d77715d49714506a920f26c5432b92078cd37c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-08037",
+      "ArXiv": "2212.08037",
+      "DOI": "10.48550/arXiv.2212.08037",
+      "CorpusId": 254685584
+    },
+    "title": "Attributed Question Answering: Evaluation and Modeling for Attributed Large Language Models",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 94,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2212.08037",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.08037, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1678747",
+        "name": "Bernd Bohnet"
+      },
+      {
+        "authorId": "2057663102",
+        "name": "Vinh Q. Tran"
+      },
+      {
+        "authorId": "2986975",
+        "name": "Pat Verga"
+      },
+      {
+        "authorId": "2335771",
+        "name": "Roee Aharoni"
+      },
+      {
+        "authorId": "3365603",
+        "name": "D. Andor"
+      },
+      {
+        "authorId": "7353832",
+        "name": "Livio Baldini Soares"
+      },
+      {
+        "authorId": "144154709",
+        "name": "Jacob Eisenstein"
+      },
+      {
+        "authorId": "144422385",
+        "name": "Kuzman Ganchev"
+      },
+      {
+        "authorId": "47426264",
+        "name": "Jonathan Herzig"
+      },
+      {
+        "authorId": "47214884",
+        "name": "Kai Hui"
+      },
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      },
+      {
+        "authorId": "2359098271",
+        "name": "Ji Ma"
+      },
+      {
+        "authorId": "2148023",
+        "name": "Jianmo Ni"
+      },
+      {
+        "authorId": "32303439",
+        "name": "Tal Schuster"
+      },
+      {
+        "authorId": "50056360",
+        "name": "William W. Cohen"
+      },
+      {
+        "authorId": "123052390",
+        "name": "Michael Collins"
+      },
+      {
+        "authorId": "143790066",
+        "name": "Dipanjan Das"
+      },
+      {
+        "authorId": "1680617",
+        "name": "Donald Metzler"
+      },
+      {
+        "authorId": "1754497",
+        "name": "Slav Petrov"
+      },
+      {
+        "authorId": "20825661",
+        "name": "Kellie Webster"
+      }
+    ],
+    "abstract": "Large language models (LLMs) have shown impressive results while requiring little or no direct supervision. Further, there is mounting evidence that LLMs may have potential in information-seeking scenarios. We believe the ability of an LLM to attribute the text that it generates is likely to be crucial in this setting. We formulate and study Attributed QA as a key first step in the development of attributed LLMs. We propose a reproducible evaluation framework for the task and benchmark a broad set of architectures. We take human annotations as a gold standard and show that a correlated automatic metric is suitable for development. Our experimental work gives concrete answers to two key questions (How to measure attribution?, and How well do current state-of-the-art methods perform on attribution?), and give some hints as to how to address a third (How to build LLMs with attribution?).",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8cf05ed2b7cd3b0f601c454914a678c24d393de3",
+    "externalIds": {
+      "DBLP": "conf/acl/AsaiSL0I0HY23",
+      "ArXiv": "2211.09260",
+      "DOI": "10.48550/arXiv.2211.09260",
+      "CorpusId": 253581733
+    },
+    "title": "Task-aware Retrieval with Instructions",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 126,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2211.09260",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.09260, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35584853",
+        "name": "Akari Asai"
+      },
+      {
+        "authorId": "32246932",
+        "name": "Timo Schick"
+      },
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "1769736",
+        "name": "Xilun Chen"
+      },
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "2072801764",
+        "name": "Wen-tau Yih"
+      }
+    ],
+    "abstract": "We study the problem of retrieval with instructions, where users of a retrieval system explicitly describe their intent along with their queries. We aim to develop a general-purpose task-aware retrieval system using multi-task instruction tuning, which can follow human-written instructions to find the best documents for a given query. We introduce the first large-scale collection of approximately 40 retrieval datasets with instructions, BERRI, and present TART, a multi-task retrieval system trained on BERRI with instructions. TART shows strong capabilities to adapt to a new retrieval task via instructions and advances the state of the art on two zero-shot retrieval benchmarks, BEIR and LOTTE, outperforming models up to three times larger. We further introduce a new evaluation setup, X^2-Retrieval to better reflect real-world scenarios, where diverse domains and tasks are pooled and a system needs to find documents aligning users' intents. In this setup, TART significantly outperforms competitive baselines, further demonstrating the effectiveness of guiding retrieval with instructions.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "916be31cbf847faa65cad0549e153f0c25b9f424",
+    "externalIds": {
+      "ArXiv": "2208.03299",
+      "DBLP": "journals/jmlr/IzacardLLHPSDJRG23",
+      "CorpusId": 251371732
+    },
+    "title": "Few-shot Learning with Retrieval Augmented Language Models",
+    "venue": "Journal of machine learning research",
+    "year": 2022,
+    "citationCount": 1177,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2208.03299, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "3376175",
+        "name": "M. Lomeli"
+      },
+      {
+        "authorId": "26360550",
+        "name": "Lucas Hosseini"
+      },
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "32246932",
+        "name": "Timo Schick"
+      },
+      {
+        "authorId": "2129456957",
+        "name": "Jane A. Yu"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      }
+    ],
+    "abstract": "Large language models have shown impressive few-shot results on a wide range of tasks. However, when knowledge is key for such results, as is the case for tasks such as question answering and fact checking, massive parameter counts to store knowledge seem to be needed. Retrieval augmented models are known to excel at knowledge intensive tasks without the need for as many parameters, but it is unclear whether they work in few-shot settings. In this work we present Atlas, a carefully designed and pre-trained retrieval augmented language model able to learn knowledge intensive tasks with very few training examples. We perform evaluations on a wide range of tasks, including MMLU, KILT and NaturalQuestions, and study the impact of the content of the document index, showing that it can easily be updated. Notably, Atlas reaches over 42% accuracy on Natural Questions using only 64 examples, outperforming a 540B parameters model by 3% despite having 50x fewer parameters.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "87c5b281fa43e6f27191b20a8dd694eda1126336",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2205-14135",
+      "ArXiv": "2205.14135",
+      "DOI": "10.52202/068431-1189",
+      "CorpusId": 249151871
+    },
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 4098,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.14135, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      },
+      {
+        "authorId": "49577833",
+        "name": "Daniel Y. Fu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "1755572",
+        "name": "A. Rudra"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "Transformers are slow and memory-hungry on long sequences, since the time and memory complexity of self-attention are quadratic in sequence length. Approximate attention methods have attempted to address this problem by trading off model quality to reduce the compute complexity, but often do not achieve wall-clock speedup. We argue that a missing principle is making attention algorithms IO-aware -- accounting for reads and writes between levels of GPU memory. We propose FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce the number of memory reads/writes between GPU high bandwidth memory (HBM) and GPU on-chip SRAM. We analyze the IO complexity of FlashAttention, showing that it requires fewer HBM accesses than standard attention, and is optimal for a range of SRAM sizes. We also extend FlashAttention to block-sparse attention, yielding an approximate attention algorithm that is faster than any existing approximate attention method. FlashAttention trains Transformers faster than existing baselines: 15% end-to-end wall-clock speedup on BERT-large (seq. length 512) compared to the MLPerf 1.1 training speed record, 3$\\times$ speedup on GPT-2 (seq. length 1K), and 2.4$\\times$ speedup on long-range arena (seq. length 1K-4K). FlashAttention and block-sparse FlashAttention enable longer context in Transformers, yielding higher quality models (0.7 better perplexity on GPT-2 and 6.4 points of lift on long-document classification) and entirely new capabilities: the first Transformers to achieve better-than-chance performance on the Path-X challenge (seq. length 16K, 61.4% accuracy) and Path-256 (seq. length 64K, 63.1% accuracy).",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "023edab4738690444e3924e224c2641017a0d794",
+    "externalIds": {
+      "DBLP": "conf/nips/LuWHJQWA022",
+      "ArXiv": "2205.13636",
+      "DOI": "10.48550/arXiv.2205.13636",
+      "CorpusId": 249152301
+    },
+    "title": "Quark: Controllable Text Generation with Reinforced Unlearning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 266,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.13636",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.13636, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50085131",
+        "name": "Ximing Lu"
+      },
+      {
+        "authorId": "2129663",
+        "name": "S. Welleck"
+      },
+      {
+        "authorId": "2112504145",
+        "name": "Liwei Jiang"
+      },
+      {
+        "authorId": "2689239",
+        "name": "Jack Hessel"
+      },
+      {
+        "authorId": "3444092",
+        "name": "Lianhui Qin"
+      },
+      {
+        "authorId": "119659229",
+        "name": "Peter West"
+      },
+      {
+        "authorId": "19179135",
+        "name": "Prithviraj Ammanabrolu"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Large-scale language models often learn behaviors that are misaligned with user expectations. Generated text may contain offensive or toxic language, contain significant repetition, or be of a different sentiment than desired by the user. We consider the task of unlearning these misalignments by fine-tuning the language model on signals of what not to do. We introduce Quantized Reward Konditioning (Quark), an algorithm for optimizing a reward function that quantifies an (un)wanted property, while not straying too far from the original model. Quark alternates between (i) collecting samples with the current language model, (ii) sorting them into quantiles based on reward, with each quantile identified by a reward token prepended to the language model's input, and (iii) using a standard language modeling loss on samples from each quantile conditioned on its reward token, while remaining nearby the original language model via a KL-divergence penalty. By conditioning on a high-reward token at generation time, the model generates text that exhibits less of the unwanted property. For unlearning toxicity, negative sentiment, and repetition, our experiments show that Quark outperforms both strong baselines and state-of-the-art reinforcement learning methods like PPO (Schulman et al. 2017), while relying only on standard language modeling primitives.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "fcd7bdf37cec0845f6960aa1ab87685b73fcfd2f",
+    "externalIds": {
+      "ACL": "2022.emnlp-main.566",
+      "DBLP": "conf/emnlp/StelmakhLDC22",
+      "ArXiv": "2204.06092",
+      "DOI": "10.48550/arXiv.2204.06092",
+      "CorpusId": 248157463
+    },
+    "title": "ASQA: Factoid Questions Meet Long-Form Answers",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2022,
+    "citationCount": 255,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.06092",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.06092, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50825200",
+        "name": "Ivan Stelmakh"
+      },
+      {
+        "authorId": "116300663",
+        "name": "Yi Luan"
+      },
+      {
+        "authorId": "2060730422",
+        "name": "Bhuwan Dhingra"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      }
+    ],
+    "abstract": "Recent progress on open domain factoid question answering (QA) does not easily transfer to the task of long-form QA, where the goal is to answer questions that require in-depth explanations. The hurdles include a lack of high-quality data and the absence of a well-defined notion of an answer’s quality. In this work, we address these problems by releasing a novel dataset and a task that we call ASQA (Answer Summaries for Questions which are Ambiguous); and proposing a reliable metric for measuring performance on ASQA. Our task focuses on ambiguous factoid questions which have different correct answers depending on the interpretation. Answers to ambiguous questions should combine factual information from multiple sources into a coherent long-form summary that resolves the ambiguity. In contrast to existing long-form QA tasks (such as ELI5), ASQA admits a clear notion of correctness: a user faced with a good summary should be able to answer different interpretations of the original ambiguous question. Our analysis demonstrates an agreement between this metric and human judgments, and reveals a considerable gap between human performance and strong baselines.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "8666f9f379389a5dff31e72fb0f992a37763ba41",
+    "externalIds": {
+      "ArXiv": "2203.11147",
+      "DBLP": "journals/corr/abs-2203-11147",
+      "DOI": "10.48550/arXiv.2203.11147",
+      "CorpusId": 247594830
+    },
+    "title": "Teaching language models to support answers with verified quotes",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 324,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.11147",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.11147, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "1994939814",
+        "name": "Maja Trebacz"
+      },
+      {
+        "authorId": "148305440",
+        "name": "Vladimir Mikulik"
+      },
+      {
+        "authorId": "9958912",
+        "name": "John Aslanides"
+      },
+      {
+        "authorId": "2059836321",
+        "name": "Francis Song"
+      },
+      {
+        "authorId": "2159545857",
+        "name": "Martin Chadwick"
+      },
+      {
+        "authorId": "2143471164",
+        "name": "Mia Glaese"
+      },
+      {
+        "authorId": "116494324",
+        "name": "Susannah Young"
+      },
+      {
+        "authorId": "2151248210",
+        "name": "Lucy Campbell-Gillingham"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      },
+      {
+        "authorId": "147687624",
+        "name": "Nat McAleese"
+      }
+    ],
+    "abstract": "Recent large language models often answer factual questions correctly. But users can't trust any given claim a model makes without fact-checking, because language models can hallucinate convincing nonsense. In this work we use reinforcement learning from human preferences (RLHP) to train\"open-book\"QA models that generate answers whilst also citing specific evidence for their claims, which aids in the appraisal of correctness. Supporting evidence is drawn from multiple documents found via a search engine, or from a single user-provided document. Our 280 billion parameter model, GopherCite, is able to produce answers with high quality supporting evidence and abstain from answering when unsure. We measure the performance of GopherCite by conducting human evaluation of answers to questions in a subset of the NaturalQuestions and ELI5 datasets. The model's response is found to be high-quality 80\\% of the time on this Natural Questions subset, and 67\\% of the time on the ELI5 subset. Abstaining from the third of questions for which it is most unsure improves performance to 90\\% and 80\\% respectively, approaching human baselines. However, analysis on the adversarial TruthfulQA dataset shows why citation is only one part of an overall strategy for safety and trustworthiness: not all claims supported by evidence are true.",
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "d766bffc357127e0dc86dd69561d5aeb520d6f4c",
+    "externalIds": {
+      "ArXiv": "2203.02155",
+      "DBLP": "journals/corr/abs-2203-02155",
+      "DOI": "10.52202/068431-2011",
+      "CorpusId": 246426909
+    },
+    "title": "Training language models to follow instructions with human feedback",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 20076,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31793034",
+        "name": "Long Ouyang"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "2061137049",
+        "name": "Diogo Almeida"
+      },
+      {
+        "authorId": "2064084601",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": null,
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "2064770039",
+        "name": "Alex Ray"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2151735262",
+        "name": "Fraser Kelton"
+      },
+      {
+        "authorId": "2142365973",
+        "name": "Luke E. Miller"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "49407415",
+        "name": "Ryan J. Lowe"
+      }
+    ],
+    "abstract": "Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2f3efe44083af91cef562c1a3451eee2f8601d22",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2112-09332",
+      "ArXiv": "2112.09332",
+      "CorpusId": 245329531
+    },
+    "title": "WebGPT: Browser-assisted question-answering with human feedback",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1782,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.09332, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7406311",
+        "name": "Reiichiro Nakano"
+      },
+      {
+        "authorId": "2052366271",
+        "name": "Jacob Hilton"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2228518120",
+        "name": "Ouyang Long"
+      },
+      {
+        "authorId": "2149054292",
+        "name": "Christina Kim"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "150298413",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "13622184",
+        "name": "Vineet Kosaraju"
+      },
+      {
+        "authorId": "2058848938",
+        "name": "W. Saunders"
+      },
+      {
+        "authorId": "2115903168",
+        "name": "Xu Jiang"
+      },
+      {
+        "authorId": "6062736",
+        "name": "K. Cobbe"
+      },
+      {
+        "authorId": "2146257131",
+        "name": "Tyna Eloundou"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2146257251",
+        "name": "Kevin Button"
+      },
+      {
+        "authorId": "2146257375",
+        "name": "Matthew Knight"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      }
+    ],
+    "abstract": "We fine-tune GPT-3 to answer long-form questions using a text-based web-browsing environment, which allows the model to search and navigate the web. By setting up the task so that it can be performed by humans, we are able to train models on the task using imitation learning, and then optimize answer quality with human feedback. To make human evaluation of factual accuracy easier, models must collect references while browsing in support of their answers. We train and evaluate our models on ELI5, a dataset of questions asked by Reddit users. Our best model is obtained by fine-tuning GPT-3 using behavior cloning, and then performing rejection sampling against a reward model trained to predict human preferences. This model's answers are preferred by humans 56% of the time to those of our human demonstrators, and 69% of the time to the highest-voted answer from Reddit.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4f4a409f701f7552d45c46a5b0fea69dca6f8e84",
+    "externalIds": {
+      "ArXiv": "2112.09118",
+      "DBLP": "journals/tmlr/IzacardCHRBJG22",
+      "CorpusId": 249097975
+    },
+    "title": "Unsupervised Dense Information Retrieval with Contrastive Learning",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2021,
+    "citationCount": 1443,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.09118, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "2062862676",
+        "name": "Mathilde Caron"
+      },
+      {
+        "authorId": "26360550",
+        "name": "Lucas Hosseini"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "2329288",
+        "name": "Piotr Bojanowski"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      }
+    ],
+    "abstract": "Recently, information retrieval has seen the emergence of dense retrievers, using neural networks, as an alternative to classical sparse methods based on term-frequency. These models have obtained state-of-the-art results on datasets and tasks where large training sets are available. However, they do not transfer well to new applications with no training data, and are outperformed by unsupervised term-frequency methods such as BM25. In this work, we explore the limits of contrastive learning as a way to train unsupervised dense retrievers and show that it leads to strong performance in various retrieval settings. On the BEIR benchmark our unsupervised model outperforms BM25 on 11 out of 15 datasets for the Recall@100. When used as pre-training before fine-tuning, either on a few thousands in-domain examples or on the large MS~MARCO dataset, our contrastive model leads to improvements on the BEIR benchmark. Finally, we evaluate our approach for multi-lingual retrieval, where training data is even scarcer than for English, and show that our approach leads to strong unsupervised performance. Our model also exhibits strong cross-lingual transfer when fine-tuned on supervised English data only and evaluated on low resources language such as Swahili. We show that our unsupervised models can perform cross-lingual retrieval between different scripts, such as retrieving English documents from Arabic queries, which would not be possible with term matching methods.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9f2cf7b35224aad3a8d261e4456fe2d65a5f5d3e",
+    "externalIds": {
+      "DBLP": "conf/emnlp/Ni0LDAMZLHCY22",
+      "ACL": "2022.emnlp-main.669",
+      "ArXiv": "2112.07899",
+      "DOI": "10.18653/v1/2022.emnlp-main.669",
+      "CorpusId": 245144556
+    },
+    "title": "Large Dual Encoders Are Generalizable Retrievers",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2021,
+    "citationCount": 599,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.emnlp-main.669.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.07899, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2148023",
+        "name": "Jianmo Ni"
+      },
+      {
+        "authorId": "51051670",
+        "name": "Chen Qu"
+      },
+      {
+        "authorId": "2115404379",
+        "name": "Jing Lu"
+      },
+      {
+        "authorId": "2475437",
+        "name": "Zhuyun Dai"
+      },
+      {
+        "authorId": "2124016663",
+        "name": "Gustavo Hernández Abrego"
+      },
+      {
+        "authorId": "2109919783",
+        "name": "Ji Ma"
+      },
+      {
+        "authorId": "2664737",
+        "name": "Vincent Zhao"
+      },
+      {
+        "authorId": "116300663",
+        "name": "Yi Luan"
+      },
+      {
+        "authorId": "32580243",
+        "name": "Keith B. Hall"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2118771180",
+        "name": "Yinfei Yang"
+      }
+    ],
+    "abstract": "It has been shown that dual encoders trained on one domain often fail to generalize to other domains for retrieval tasks. One widespread belief is that the bottleneck layer of a dual encoder, where the final score is simply a dot-product between a query vector and a passage vector, is too limited compared to models with fine-grained interactions between the query and the passage. In this paper, we challenge this belief by scaling up the size of the dual encoder model while keeping the bottleneck layer as a single dot-product with a fixed size. With multi-stage training, scaling up the model size brings significant improvement on a variety of retrieval tasks, especially for out-of-domain generalization. We further analyze the impact of the bottleneck layer and demonstrate diminishing improvement when scaling up the embedding size. Experimental results show that our dual encoders, Generalizable T5-based dense Retrievers (GTR), outperform previous sparse and dense retrievers on the BEIR dataset significantly. Most surprisingly, our ablation study finds that GTR is very data efficient, as it only needs 10% of MS Marco supervised data to match the out-of-domain performance of using all supervised data.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "17dd3555fd1ccf1141cf984347fa1b3fd6b009ca",
+    "externalIds": {
+      "ArXiv": "2110.08207",
+      "DBLP": "journals/corr/abs-2110-08207",
+      "CorpusId": 239009562
+    },
+    "title": "Multitask Prompted Training Enables Zero-Shot Task Generalization",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1971,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.08207, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51918868",
+        "name": "Victor Sanh"
+      },
+      {
+        "authorId": "1991019030",
+        "name": "Albert Webson"
+      },
+      {
+        "authorId": "2402716",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "2870504",
+        "name": "Stephen H. Bach"
+      },
+      {
+        "authorId": "35566806",
+        "name": "Lintang Sutawika"
+      },
+      {
+        "authorId": "25098419",
+        "name": "Zaid Alyafeai"
+      },
+      {
+        "authorId": "2129106958",
+        "name": "Antoine Chaffin"
+      },
+      {
+        "authorId": "114762823",
+        "name": "Arnaud Stiegler"
+      },
+      {
+        "authorId": "1379806208",
+        "name": "Teven Le Scao"
+      },
+      {
+        "authorId": "2048082186",
+        "name": "Arun Raja"
+      },
+      {
+        "authorId": "1879591269",
+        "name": "Manan Dey"
+      },
+      {
+        "authorId": "31773000",
+        "name": "M Saiful Bari"
+      },
+      {
+        "authorId": "66247317",
+        "name": "Canwen Xu"
+      },
+      {
+        "authorId": "70296695",
+        "name": "Urmish Thakker"
+      },
+      {
+        "authorId": "1409842673",
+        "name": "S. Sharma"
+      },
+      {
+        "authorId": "50812522",
+        "name": "Eliza Szczechla"
+      },
+      {
+        "authorId": "2111181991",
+        "name": "Taewoon Kim"
+      },
+      {
+        "authorId": "1509809381",
+        "name": "Gunjan Chhablani"
+      },
+      {
+        "authorId": "22209084",
+        "name": "Nihal V. Nayak"
+      },
+      {
+        "authorId": "2852125",
+        "name": "Debajyoti Datta"
+      },
+      {
+        "authorId": "80936017",
+        "name": "Jonathan D. Chang"
+      },
+      {
+        "authorId": "5745221",
+        "name": "Mike Tian-Jian Jiang"
+      },
+      {
+        "authorId": "144407394",
+        "name": "Han Wang"
+      },
+      {
+        "authorId": "35904689",
+        "name": "Matteo Manica"
+      },
+      {
+        "authorId": "2191455",
+        "name": "Sheng Shen"
+      },
+      {
+        "authorId": "1725420331",
+        "name": "Zheng-Xin Yong"
+      },
+      {
+        "authorId": "144834468",
+        "name": "Harshit Pandey"
+      },
+      {
+        "authorId": "48983885",
+        "name": "Rachel Bawden"
+      },
+      {
+        "authorId": "2135734748",
+        "name": "Thomas Wang"
+      },
+      {
+        "authorId": "10729963",
+        "name": "Trishala Neeraj"
+      },
+      {
+        "authorId": "120419790",
+        "name": "Jos Rozen"
+      },
+      {
+        "authorId": "2051500420",
+        "name": "Abheesht Sharma"
+      },
+      {
+        "authorId": "2065039862",
+        "name": "Andrea Santilli"
+      },
+      {
+        "authorId": "79215748",
+        "name": "Thibault Févry"
+      },
+      {
+        "authorId": "31592365",
+        "name": "Jason Alan Fries"
+      },
+      {
+        "authorId": "2131107966",
+        "name": "R. Teehan"
+      },
+      {
+        "authorId": "103476203",
+        "name": "Stella Biderman"
+      },
+      {
+        "authorId": "2027599537",
+        "name": "Leo Gao"
+      },
+      {
+        "authorId": "94251255",
+        "name": "T. Bers"
+      },
+      {
+        "authorId": "50335211",
+        "name": "Thomas Wolf"
+      },
+      {
+        "authorId": "2531268",
+        "name": "Alexander M. Rush"
+      }
+    ],
+    "abstract": "Large language models have recently been shown to attain reasonable zero-shot generalization on a diverse set of tasks (Brown et al., 2020). It has been hypothesized that this is a consequence of implicit multitask learning in language models' pretraining (Radford et al., 2019). Can zero-shot generalization instead be directly induced by explicit multitask learning? To test this question at scale, we develop a system for easily mapping any natural language tasks into a human-readable prompted form. We convert a large set of supervised datasets, each with multiple prompts with diverse wording. These prompted datasets allow for benchmarking the ability of a model to perform completely held-out tasks. We fine-tune a pretrained encoder-decoder model (Raffel et al., 2020; Lester et al., 2021) on this multitask mixture covering a wide variety of tasks. The model attains strong zero-shot performance on several standard datasets, often outperforming models up to 16x its size. Further, our approach attains strong performance on a subset of tasks from the BIG-bench benchmark, outperforming models up to 6x its size. All trained models are available at https://github.com/bigscience-workshop/t-zero and all prompts are available at https://github.com/bigscience-workshop/promptsource.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ff0b2681d7b05e16c46dfb71d980cc2f605907cd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-01652",
+      "ArXiv": "2109.01652",
+      "CorpusId": 237416585
+    },
+    "title": "Finetuned Language Models Are Zero-Shot Learners",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 4941,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.01652, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144026731",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "2286156826",
+        "name": "Vincent Y. Zhao"
+      },
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "40625240",
+        "name": "Adams Wei Yu"
+      },
+      {
+        "authorId": "144104130",
+        "name": "Brian Lester"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "This paper explores a simple method for improving the zero-shot learning abilities of language models. We show that instruction tuning -- finetuning language models on a collection of tasks described via instructions -- substantially improves zero-shot performance on unseen tasks. We take a 137B parameter pretrained language model and instruction-tune it on over 60 NLP tasks verbalized via natural language instruction templates. We evaluate this instruction-tuned model, which we call FLAN, on unseen task types. FLAN substantially improves the performance of its unmodified counterpart and surpasses zero-shot 175B GPT-3 on 20 of 25 tasks that we evaluate. FLAN even outperforms few-shot GPT-3 by a large margin on ANLI, RTE, BoolQ, AI2-ARC, OpenbookQA, and StoryCloze. Ablation studies reveal that number of finetuning datasets, model scale, and natural language instructions are key to the success of instruction tuning.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "8484fdb56e4690927dc0191ede11c2d24bc5e2ef",
+    "externalIds": {
+      "ArXiv": "2102.01454",
+      "DBLP": "conf/nips/PillutlaSZTWCH21",
+      "CorpusId": 244488758
+    },
+    "title": "MAUVE: Measuring the Gap Between Neural Text and Human Text using Divergence Frontiers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 485,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.01454, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1507584470",
+        "name": "Krishna Pillutla"
+      },
+      {
+        "authorId": "2133324514",
+        "name": "Swabha Swayamdipta"
+      },
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "50343904",
+        "name": "John Thickstun"
+      },
+      {
+        "authorId": "2129663",
+        "name": "S. Welleck"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      },
+      {
+        "authorId": "1753355",
+        "name": "Z. Harchaoui"
+      }
+    ],
+    "abstract": "As major progress is made in open-ended text generation, measuring how close machine-generated text is to human language remains a critical open problem. We introduce MAUVE, a comparison measure for open-ended text generation, which directly compares the learnt distribution from a text generation model to the distribution of human-written text using divergence frontiers. MAUVE scales up to modern text generation models by computing information divergences in a quantized embedding space. Through an extensive empirical study on three open-ended generation tasks, we find that MAUVE identifies known properties of generated text, scales naturally with model size, and correlates with human judgments, with fewer restrictions than existing distributional evaluation metrics.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3af229f3da1bd24378fd8d76c88fd393b4464058",
+    "externalIds": {
+      "MAG": "3083182073",
+      "DBLP": "journals/corr/abs-2009-02252",
+      "ArXiv": "2009.02252",
+      "ACL": "2021.naacl-main.200",
+      "DOI": "10.18653/V1/2021.NAACL-MAIN.200",
+      "CorpusId": 221507798
+    },
+    "title": "KILT: a Benchmark for Knowledge Intensive Language Tasks",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2020,
+    "citationCount": 749,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.naacl-main.200.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.02252, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "120174856",
+        "name": "Aleksandra Piktus"
+      },
+      {
+        "authorId": "144270981",
+        "name": "Angela Fan"
+      },
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "69910001",
+        "name": "Majid Yazdani"
+      },
+      {
+        "authorId": "41019080",
+        "name": "Nicola De Cao"
+      },
+      {
+        "authorId": "2053211210",
+        "name": "James Thorne"
+      },
+      {
+        "authorId": "2262249",
+        "name": "Yacine Jernite"
+      },
+      {
+        "authorId": "1798301",
+        "name": "Vassilis Plachouras"
+      },
+      {
+        "authorId": "1389854357",
+        "name": "Tim Rocktaschel"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      }
+    ],
+    "abstract": "Challenging problems such as open-domain question answering, fact checking, slot filling and entity linking require access to large, external knowledge sources. While some models do well on individual tasks, developing general models is difficult as each task might require computationally expensive indexing of custom knowledge sources, in addition to dedicated infrastructure. To catalyze research on models that condition on specific information in large textual resources, we present a benchmark for knowledge-intensive language tasks (KILT). All tasks in KILT are grounded in the same snapshot of Wikipedia, reducing engineering turnaround through the re-use of components, as well as accelerating research into task-agnostic memory architectures. We test both task-specific and general baselines, evaluating downstream performance in addition to the ability of the models to provide provenance. We find that a shared dense vector index coupled with a seq2seq model is a strong baseline, outperforming more tailor-made approaches for fact checking, open-domain question answering and dialogue, and yielding competitive results on entity linking and slot filling, by generating disambiguated text. KILT data and code are available at https://github.com/facebookresearch/KILT.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "659bf9ce7175e1ec266ff54359e2bd76e0b7ff31",
+    "externalIds": {
+      "DBLP": "conf/nips/LewisPPPKGKLYR020",
+      "MAG": "3027879771",
+      "ArXiv": "2005.11401",
+      "CorpusId": 218869575
+    },
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 13228,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.11401, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "3439053",
+        "name": "Ethan Perez"
+      },
+      {
+        "authorId": "1716179427",
+        "name": "Aleksandara Piktus"
+      },
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "2067091563",
+        "name": "Vladimir Karpukhin"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "103131985",
+        "name": "Heinrich Kuttler"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "144105277",
+        "name": "Wen-tau Yih"
+      },
+      {
+        "authorId": "2620211",
+        "name": "Tim Rocktäschel"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "1743722",
+        "name": "Douwe Kiela"
+      }
+    ],
+    "abstract": "Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when fine-tuned on downstream NLP tasks. However, their ability to access and precisely manipulate knowledge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-specific architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre-trained models with a differentiable access mechanism to explicit non-parametric memory can overcome this issue, but have so far been only investigated for extractive downstream tasks. We explore a general-purpose fine-tuning recipe for retrieval-augmented generation (RAG) -- models which combine pre-trained parametric and non-parametric memory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We compare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, the other can use different passages per token. We fine-tune and evaluate our models on a wide range of knowledge-intensive NLP tasks and set the state-of-the-art on three open domain QA tasks, outperforming parametric seq2seq models and task-specific retrieve-and-extract architectures. For language generation tasks, we find that RAG models generate more specific, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "832fff14d2ed50eb7969c4c4b976c35776548f56",
+    "externalIds": {
+      "ArXiv": "2002.08909",
+      "MAG": "3034671305",
+      "DBLP": "conf/icml/GuuLTPC20",
+      "CorpusId": 211204736
+    },
+    "title": "REALM: Retrieval-Augmented Language Model Pre-Training",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2916,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.08909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "9941702",
+        "name": "Zora Tung"
+      },
+      {
+        "authorId": "2616463",
+        "name": "Panupong Pasupat"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      }
+    ],
+    "abstract": "Language model pre-training has been shown to capture a surprising amount of world knowledge, crucial for NLP tasks such as question answering. However, this knowledge is stored implicitly in the parameters of a neural network, requiring ever-larger networks to cover more facts. \nTo capture knowledge in a more modular and interpretable way, we augment language model pre-training with a latent knowledge retriever, which allows the model to retrieve and attend over documents from a large corpus such as Wikipedia, used during pre-training, fine-tuning and inference. For the first time, we show how to pre-train such a knowledge retriever in an unsupervised manner, using masked language modeling as the learning signal and backpropagating through a retrieval step that considers millions of documents. \nWe demonstrate the effectiveness of Retrieval-Augmented Language Model pre-training (REALM) by fine-tuning on the challenging task of Open-domain Question Answering (Open-QA). We compare against state-of-the-art models for both explicit and implicit knowledge storage on three popular Open-QA benchmarks, and find that we outperform all previous methods by a significant margin (4-16% absolute accuracy), while also providing qualitative benefits such as interpretability and modularity.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "521b4e26df0f1cf5763dece14cbb218df152dc59",
+    "externalIds": {
+      "MAG": "2990928880",
+      "DBLP": "conf/iclr/AsaiHHSX20",
+      "ArXiv": "1911.10470",
+      "CorpusId": 208267807
+    },
+    "title": "Learning to Retrieve Reasoning Paths over Wikipedia Graph for Question Answering",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 321,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.10470, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35584853",
+        "name": "Akari Asai"
+      },
+      {
+        "authorId": "20851195",
+        "name": "Kazuma Hashimoto"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2228109",
+        "name": "Caiming Xiong"
+      }
+    ],
+    "abstract": "Answering questions that require multi-hop reasoning at web-scale necessitates retrieving multiple evidence documents, one of which often has little lexical or semantic relationship to the question. This paper introduces a new graph-based recurrent retrieval approach that learns to retrieve reasoning paths over the Wikipedia graph to answer multi-hop open-domain questions. Our retriever model trains a recurrent neural network that learns to sequentially retrieve evidence paragraphs in the reasoning path by conditioning on the previously retrieved documents. Our reader model ranks the reasoning paths and extracts the answer span included in the best reasoning path. Experimental results show state-of-the-art results in three open-domain QA datasets, showcasing the effectiveness and robustness of our method. Notably, our method achieves significant improvement in HotpotQA, outperforming the previous best model by more than 14 points.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "00c957711b12468cb38424caccdf5291bb354033",
+    "externalIds": {
+      "MAG": "3025935268",
+      "DBLP": "conf/sc/RajbhandariRRH20",
+      "ArXiv": "1910.02054",
+      "DOI": "10.1109/SC41405.2020.00024",
+      "CorpusId": 269617042
+    },
+    "title": "ZeRO: Memory optimizations Toward Training Trillion Parameter Models",
+    "venue": "International Conference for High Performance Computing, Networking, Storage and Analysis",
+    "year": 2019,
+    "citationCount": 1630,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1910.02054",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.02054, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32817044",
+        "name": "Samyam Rajbhandari"
+      },
+      {
+        "authorId": "3299496",
+        "name": "Jeff Rasley"
+      },
+      {
+        "authorId": "2537545",
+        "name": "Olatunji Ruwase"
+      },
+      {
+        "authorId": "2300208615",
+        "name": "Yuxiong He"
+      }
+    ],
+    "abstract": "Large deep learning models offer significant accuracy gains, but training billions to trillions of parameters is challenging. Existing solutions such as data and model parallelisms exhibit fundamental limitations to fit these models into limited device memory, while obtaining computation, communication and development efficiency. We develop a novel solution, Zero Redundancy Optimizer (ZeRO), to optimize memory, vastly improving training speed while increasing the model size that can be efficiently trained. ZeRO eliminates memory redundancies in data- and model-parallel training while retaining low communication volume and high computational granularity, allowing us to scale the model size proportional to the number of devices with sustained high efficiency. Our analysis on memory requirements and communication volume demonstrates: ZeRO has the potential to scale beyond 1 Trillion parameters using today’s hardware. We implement and evaluate ZeRO: it trains large models of over 100B parameter with super-linear speedup on 400 GPUs, achieving throughput of 15 Petaflops. This represents an 8x increase in model size and 10x increase in achievable performance over state-of-the-art. In terms of usability, ZeRO can train large models of up to 13B parameters (e.g., larger than Megatron GPT 8. 3B and T5 11B) without requiring model parallelism which is harder for scientists to apply. Last but not the least, researchers have used the system breakthroughs of ZeRO to create Turing-NLG, the world’s largest language model at the time (17B parameters) with record breaking accuracy.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7a15950dc71079285a4eaf195de5aadd87c41b40",
+    "externalIds": {
+      "MAG": "2973379954",
+      "DBLP": "journals/corr/abs-1909-08593",
+      "ArXiv": "1909.08593",
+      "CorpusId": 202660943
+    },
+    "title": "Fine-Tuning Language Models from Human Preferences",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 2423,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.08593, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "1387983862",
+        "name": "Nisan Stiennon"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "145370786",
+        "name": "Paul Christiano"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      }
+    ],
+    "abstract": "Reward learning enables the application of reinforcement learning (RL) to tasks where reward is defined by human judgment, building a model of reward by asking humans questions. Most work on reward learning has used simulated environments, but complex information about values is often expressed in natural language, and we believe reward learning for language is a key to making RL practical and safe for real-world tasks. In this paper, we build on advances in generative pretraining of language models to apply reward learning to four natural language tasks: continuing text with positive sentiment or physically descriptive language, and summarization tasks on the TL;DR and CNN/Daily Mail datasets. For stylistic continuation we achieve good results with only 5,000 comparisons evaluated by humans. For summarization, models trained with 60,000 comparisons copy whole sentences from the input but skip irrelevant preamble; this leads to reasonable ROUGE scores and very good performance according to our human labelers, but may be exploiting the fact that labelers rely on simple heuristics.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "75acc731bdd2b626edc74672a30da3bc51010ae8",
+    "externalIds": {
+      "ArXiv": "1909.05858",
+      "MAG": "2973049837",
+      "DBLP": "journals/corr/abs-1909-05858",
+      "CorpusId": 202573071
+    },
+    "title": "CTRL: A Conditional Transformer Language Model for Controllable Generation",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 1405,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.05858, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2844898",
+        "name": "N. Keskar"
+      },
+      {
+        "authorId": "143775536",
+        "name": "Bryan McCann"
+      },
+      {
+        "authorId": "1697944",
+        "name": "L. Varshney"
+      },
+      {
+        "authorId": "2228109",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      }
+    ],
+    "abstract": "Large-scale language models show promising text generation capabilities, but users cannot easily control particular aspects of the generated text. We release CTRL, a 1.63 billion-parameter conditional transformer language model, trained to condition on control codes that govern style, content, and task-specific behavior. Control codes were derived from structure that naturally co-occurs with raw text, preserving the advantages of unsupervised learning while providing more explicit control over text generation. These codes also allow CTRL to predict which parts of the training data are most likely given a sequence. This provides a potential method for analyzing large amounts of data via model-based source attribution. We have released multiple full-sized, pretrained versions of CTRL at this https URL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "30eff53e981695c7296d258b8dc44b4c7b482a0c",
+    "externalIds": {
+      "MAG": "2973123473",
+      "ACL": "D19-1284",
+      "ArXiv": "1909.04849",
+      "DBLP": "conf/emnlp/MinCHZ19",
+      "DOI": "10.18653/v1/D19-1284",
+      "CorpusId": 202558815
+    },
+    "title": "A Discrete Hard EM Approach for Weakly Supervised Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2019,
+    "citationCount": 170,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D19-1284.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.04849, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "Many question answering (QA) tasks only provide weak supervision for how the answer should be computed. For example, TriviaQA answers are entities that can be mentioned multiple times in supporting documents, while DROP answers can be computed by deriving many different equations from numbers in the reference text. In this paper, we show it is possible to convert such tasks into discrete latent variable learning problems with a precomputed, task-specific set of possible solutions (e.g. different mentions or equations) that contains one correct option. We then develop a hard EM learning scheme that computes gradients relative to the most likely solution at each update. Despite its simplicity, we show that this approach significantly outperforms previous methods on six QA tasks, including absolute gains of 2–10%, and achieves the state-of-the-art on five of them. Using hard updates instead of maximizing marginal likelihood is key to these results as it encourages the model to find the one correct answer, which we show through detailed qualitative analysis.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "17dbd7b72029181327732e4d11b52a08ed4630d0",
+    "externalIds": {
+      "ACL": "Q19-1026",
+      "MAG": "2912924812",
+      "DBLP": "journals/tacl/KwiatkowskiPRCP19",
+      "DOI": "10.1162/tacl_a_00276",
+      "CorpusId": 86611921
+    },
+    "title": "Natural Questions: A Benchmark for Question Answering Research",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 4552,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00276/1923288/tacl_a_00276.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/Q19-1026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      },
+      {
+        "authorId": "52578817",
+        "name": "J. Palomaki"
+      },
+      {
+        "authorId": "90784578",
+        "name": "Olivia Redfield"
+      },
+      {
+        "authorId": "123052390",
+        "name": "Michael Collins"
+      },
+      {
+        "authorId": "144729897",
+        "name": "Ankur P. Parikh"
+      },
+      {
+        "authorId": "114577307",
+        "name": "Chris Alberti"
+      },
+      {
+        "authorId": "153215783",
+        "name": "D. Epstein"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      },
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "2554321",
+        "name": "Matthew Kelcey"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1754497",
+        "name": "Slav Petrov"
+      }
+    ],
+    "abstract": "We present the Natural Questions corpus, a question answering data set. Questions consist of real anonymized, aggregated queries issued to the Google search engine. An annotator is presented with a question along with a Wikipedia page from the top 5 search results, and annotates a long answer (typically a paragraph) and a short answer (one or more entities) if present on the page, or marks null if no long/short answer is present. The public release consists of 307,373 training examples with single annotations; 7,830 examples with 5-way annotations for development data; and a further 7,842 examples with 5-way annotated sequestered as test data. We present experiments validating quality of the data. We also describe analysis of 25-way annotations on 302 examples, giving insights into human variability on the annotation task. We introduce robust metrics for the purposes of evaluating question answering systems; demonstrate high human upper bounds on these metrics; and establish baseline results using competitive methods drawn from related literature.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "227458886343b86bd15adf58c769be326b4b058a",
+    "externalIds": {
+      "MAG": "2898875342",
+      "DBLP": "conf/iclr/DinanRSFAW19",
+      "ArXiv": "1811.01241",
+      "CorpusId": 53218829
+    },
+    "title": "Wizard of Wikipedia: Knowledge-Powered Conversational agents",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 1015,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.01241, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31461304",
+        "name": "Emily Dinan"
+      },
+      {
+        "authorId": "3849208",
+        "name": "Stephen Roller"
+      },
+      {
+        "authorId": "35752280",
+        "name": "Kurt Shuster"
+      },
+      {
+        "authorId": "144270981",
+        "name": "Angela Fan"
+      },
+      {
+        "authorId": "2325985",
+        "name": "Michael Auli"
+      },
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      }
+    ],
+    "abstract": "In open-domain dialogue intelligent agents should exhibit the use of knowledge, however there are few convincing demonstrations of this to date. The most popular sequence to sequence models typically \"generate and hope\" generic utterances that can be memorized in the weights of the model when mapping from input utterance(s) to output, rather than employing recalled knowledge as context. Use of knowledge has so far proved difficult, in part because of the lack of a supervised learning benchmark task which exhibits knowledgeable open dialogue with clear grounding. To that end we collect and release a large dataset with conversations directly grounded with knowledge retrieved from Wikipedia. We then design architectures capable of retrieving knowledge, reading and conditioning on it, and finally generating natural responses. Our best performing dialogue models are able to conduct knowledgeable discussions on open-domain topics as evaluated by automatic metrics and human evaluations, while our new benchmark allows for measuring further improvements in this important research direction.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1536e8958697c5364f68b2e2448905dbbeb3a0ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1809-02789",
+      "MAG": "2952396187",
+      "ACL": "D18-1260",
+      "ArXiv": "1809.02789",
+      "DOI": "10.18653/v1/D18-1260",
+      "CorpusId": 52183757
+    },
+    "title": "Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 2321,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1260.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.02789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      }
+    ],
+    "abstract": "We present a new kind of question answering dataset, OpenBookQA, modeled after open book exams for assessing human understanding of a subject. The open book that comes with our questions is a set of 1326 elementary level science facts. Roughly 6000 questions probe an understanding of these facts and their application to novel situations. This requires combining an open book fact (e.g., metals conduct electricity) with broad common knowledge (e.g., a suit of armor is made of metal) obtained from other sources. While existing QA datasets over documents or knowledge bases, being generally self-contained, focus on linguistic understanding, OpenBookQA probes a deeper understanding of both the topic—in the context of common knowledge—and the language it is expressed in. Human performance on OpenBookQA is close to 92%, but many state-of-the-art pre-trained QA methods perform surprisingly poorly, worse than several simple neural baselines we develop. Our oracle experiments designed to circumvent the knowledge retrieval bottleneck demonstrate the value of both the open book and additional facts. We leave it as a challenge to solve the retrieval problem in this multi-hop setting and to close the large gap to human performance.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "88bb0a28bb58d847183ec505dda89b63771bb495",
+    "externalIds": {
+      "ArXiv": "1803.05457",
+      "DBLP": "journals/corr/abs-1803-05457",
+      "MAG": "2794325560",
+      "CorpusId": 3922816
+    },
+    "title": "Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 4431,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.05457, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "3390191",
+        "name": "Isaac Cowhey"
+      },
+      {
+        "authorId": "1741101",
+        "name": "Oren Etzioni"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      },
+      {
+        "authorId": "3393851",
+        "name": "Carissa Schoenick"
+      },
+      {
+        "authorId": "3385516",
+        "name": "Oyvind Tafjord"
+      }
+    ],
+    "abstract": "We present a new question set, text corpus, and baselines assembled to encourage AI research in advanced question answering. Together, these constitute the AI2 Reasoning Challenge (ARC), which requires far more powerful knowledge and reasoning than previous challenges such as SQuAD or SNLI. The ARC question set is partitioned into a Challenge Set and an Easy Set, where the Challenge Set contains only questions answered incorrectly by both a retrieval-based algorithm and a word co-occurence algorithm. The dataset contains only natural, grade-school science questions (authored for human tests), and is the largest public-domain set of this kind (7,787 questions). We test several baselines on the Challenge Set, including leading neural models from the SQuAD and SNLI tasks, and find that none are able to significantly outperform a random baseline, reflecting the difficult nature of this task. We are also releasing the ARC Corpus, a corpus of 14M science sentences relevant to the task, and implementations of the three neural baseline models tested. Can your model perform better? We pose ARC as a challenge to the community.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b1d24e8e08435b7c52335485a0d635abf9bc604c",
+    "externalIds": {
+      "MAG": "2789566302",
+      "ACL": "N18-1074",
+      "ArXiv": "1803.05355",
+      "DBLP": "conf/naacl/ThorneVCM18",
+      "DOI": "10.18653/v1/N18-1074",
+      "CorpusId": 4711425
+    },
+    "title": "FEVER: a Large-scale Dataset for Fact Extraction and VERification",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2018,
+    "citationCount": 2124,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/N18-1074.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.05355, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144603330",
+        "name": "James Thorne"
+      },
+      {
+        "authorId": "2064056928",
+        "name": "Andreas Vlachos"
+      },
+      {
+        "authorId": "2718039",
+        "name": "Christos Christodoulopoulos"
+      },
+      {
+        "authorId": "2008596",
+        "name": "Arpit Mittal"
+      }
+    ],
+    "abstract": "In this paper we introduce a new publicly available dataset for verification against textual sources, FEVER: Fact Extraction and VERification. It consists of 185,445 claims generated by altering sentences extracted from Wikipedia and subsequently verified without knowledge of the sentence they were derived from. The claims are classified as Supported, Refuted or NotEnoughInfo by annotators achieving 0.6841 in Fleiss kappa. For the first two classes, the annotators also recorded the sentence(s) forming the necessary evidence for their judgment. To characterize the challenge of the dataset presented, we develop a pipeline approach and compare it to suitably designed oracles. The best accuracy we achieve on labeling a claim accompanied by the correct evidence is 31.87%, while if we ignore the evidence we achieve 50.91%. Thus we believe that FEVER is a challenging testbed that will help stimulate progress on claim verification against textual sources.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+    "externalIds": {
+      "MAG": "2736601468",
+      "DBLP": "journals/corr/SchulmanWDRK17",
+      "ArXiv": "1707.06347",
+      "CorpusId": 28695052
+    },
+    "title": "Proximal Policy Optimization Algorithms",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 26838,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.06347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "143909660",
+        "name": "Filip Wolski"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2067138712",
+        "name": "Oleg Klimov"
+      }
+    ],
+    "abstract": "We propose a new family of policy gradient methods for reinforcement learning, which alternate between sampling data through interaction with the environment, and optimizing a \"surrogate\" objective function using stochastic gradient ascent. Whereas standard policy gradient methods perform one gradient update per data sample, we propose a novel objective function that enables multiple epochs of minibatch updates. The new methods, which we call proximal policy optimization (PPO), have some of the benefits of trust region policy optimization (TRPO), but they are much simpler to implement, more general, and have better sample complexity (empirically). Our experiments test PPO on a collection of benchmark tasks, including simulated robotic locomotion and Atari game playing, and we show that PPO outperforms other online policy gradient methods, and overall strikes a favorable balance between sample complexity, simplicity, and wall-time.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f010affab57b5fcf1cd6be23df79d8ec98c7289c",
+    "externalIds": {
+      "MAG": "2612431505",
+      "ArXiv": "1705.03551",
+      "ACL": "P17-1147",
+      "DBLP": "journals/corr/JoshiCWZ17",
+      "DOI": "10.18653/v1/P17-1147",
+      "CorpusId": 26501419
+    },
+    "title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 3690,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P17-1147.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      },
+      {
+        "authorId": "1780531",
+        "name": "Daniel S. Weld"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We present TriviaQA, a challenging reading comprehension dataset containing over 650K question-answer-evidence triples. TriviaQA includes 95K question-answer pairs authored by trivia enthusiasts and independently gathered evidence documents, six per question on average, that provide high quality distant supervision for answering the questions. We show that, in comparison to other recently introduced large-scale datasets, TriviaQA (1) has relatively complex, compositional questions, (2) has considerable syntactic and lexical variability between questions and corresponding answer-evidence sentences, and (3) requires more cross sentence reasoning to find answers. We also present two baseline algorithms: a feature-based classifier and a state-of-the-art neural network, that performs well on SQuAD reading comprehension. Neither approach comes close to human performance (23% and 40% vs. 80%), suggesting that TriviaQA is a challenging testbed that is worth significant future study.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "277dd00ab02f122133bf56b485dfb7c730acdcde",
+    "externalIds": {
+      "ACL": "2023.acl-tutorials.6",
+      "DBLP": "conf/acm/AsaiMZC23",
+      "DOI": "10.18653/v1/2023.acl-tutorials.6",
+      "CorpusId": 263866951
+    },
+    "title": "Retrieval-based Language Models and Applications",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 139,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.acl-tutorials.6.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/2023.acl-tutorials.6, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2290402940",
+        "name": "Akari Asai"
+      },
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "49164966",
+        "name": "Zexuan Zhong"
+      },
+      {
+        "authorId": "2286629648",
+        "name": "Danqi Chen"
+      }
+    ],
+    "abstract": "Retrieval-based language models (LMs) have shown impressive performance on diverse NLP tasks. In this tutorial, we will provide a comprehensive and coherent overview of recent advances in retrieval-based LMs. We will start by providing preliminaries covering the foundation of LMs (e.g., masked LMs, autoregressive LMs) and retrieval systems (e.g., nearest-neighbor search). We will then detail recent progress in retrieval-based models, focusing on their model architectures and learning approaches. Finally, we will show how retrieval-based LMs are adapted to downstream applications, and extended to multilingual and multi-modal settings. Finally, we will use an exercise to showcase the effectiveness of retrieval-based LMs.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "83dd3fe72d741c05549ff22b845821e4112aa8a0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-00633",
+      "DOI": "10.48550/arXiv.2305.00633",
+      "CorpusId": 275516644
+    },
+    "title": "Decomposition Enhances Reasoning via Self-Evaluation Guided Decoding",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.00633",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2305.00633?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2305.00633, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325017947",
+        "name": "Yuxi Xie"
+      },
+      {
+        "authorId": "2288267321",
+        "name": "Kenji Kawaguchi"
+      },
+      {
+        "authorId": "2249827256",
+        "name": "Yiran Zhao"
+      },
+      {
+        "authorId": "2264958689",
+        "name": "Xu Zhao"
+      },
+      {
+        "authorId": "2257033898",
+        "name": "Min-Yen Kan"
+      },
+      {
+        "authorId": "2264312133",
+        "name": "Junxian He"
+      },
+      {
+        "authorId": "2263884363",
+        "name": "Qizhe Xie"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "91fe695c23509a4760c836db1d6e82f3384dac5b",
+    "externalIds": {
+      "CorpusId": 204919298
+    },
+    "title": "A Simulation Framework",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144908467",
+        "name": "Rafael Diaz"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

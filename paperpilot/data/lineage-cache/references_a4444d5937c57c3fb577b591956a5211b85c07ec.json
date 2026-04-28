@@ -1,0 +1,2211 @@
+[
+  {
+    "paperId": "709bda5ae9fac001e4ac84ff178e22f9903d95b7",
+    "externalIds": {
+      "ArXiv": "2504.06214",
+      "DBLP": "journals/corr/abs-2504-06214",
+      "DOI": "10.48550/arXiv.2504.06214",
+      "CorpusId": 277626738
+    },
+    "title": "From 128K to 4M: Efficient Training of Ultra-Long Context Large Language Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.06214, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153079868",
+        "name": "Chejian Xu"
+      },
+      {
+        "authorId": "2253664013",
+        "name": "Wei Ping"
+      },
+      {
+        "authorId": "2254989105",
+        "name": "Peng Xu"
+      },
+      {
+        "authorId": "2256582287",
+        "name": "Zihan Liu"
+      },
+      {
+        "authorId": "2256656241",
+        "name": "Boxin Wang"
+      },
+      {
+        "authorId": "1911755",
+        "name": "M. Shoeybi"
+      },
+      {
+        "authorId": "2268670739",
+        "name": "Bo Li"
+      },
+      {
+        "authorId": "2264406909",
+        "name": "Bryan Catanzaro"
+      }
+    ],
+    "abstract": "Long-context capabilities are essential for a wide range of applications, including document and video understanding, in-context learning, and inference-time scaling, all of which require models to process and reason over long sequences of text and multimodal data. In this work, we introduce a efficient training recipe for building ultra-long context LLMs from aligned instruct model, pushing the boundaries of context lengths from 128K to 1M, 2M, and 4M tokens. Our approach leverages efficient continued pretraining strategies to extend the context window and employs effective instruction tuning to maintain the instruction-following and reasoning abilities. Our UltraLong-8B, built on Llama3.1-Instruct with our recipe, achieves state-of-the-art performance across a diverse set of long-context benchmarks. Importantly, models trained with our approach maintain competitive performance on standard benchmarks, demonstrating balanced improvements for both long and short context tasks. We further provide an in-depth analysis of key design choices, highlighting the impacts of scaling strategies and data composition. Our findings establish a robust framework for efficiently scaling context lengths while preserving general model capabilities. We release all model weights at: https://ultralong.github.io/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e6b867fd81eb90c67ee64d9a768d3c5c867c9ab4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-18795",
+      "ArXiv": "2501.18795",
+      "DOI": "10.48550/arXiv.2501.18795",
+      "CorpusId": 276079501
+    },
+    "title": "Rope to Nope and Back Again: A New Hybrid Attention Strategy",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.18795, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299163003",
+        "name": "Bowen Yang"
+      },
+      {
+        "authorId": "8795464",
+        "name": "Bharat Venkitesh"
+      },
+      {
+        "authorId": "2303258186",
+        "name": "Dwarak Talupuru"
+      },
+      {
+        "authorId": "2303832658",
+        "name": "Hangyu Lin"
+      },
+      {
+        "authorId": "2303257254",
+        "name": "David Cairuz"
+      },
+      {
+        "authorId": "2283848746",
+        "name": "Phil Blunsom"
+      },
+      {
+        "authorId": "153563548",
+        "name": "Acyr F. Locatelli"
+      }
+    ],
+    "abstract": "Long-context large language models (LLMs) have achieved remarkable advancements, driven by techniques like Rotary Position Embedding (RoPE) (Su et al., 2023) and its extensions (Chen et al., 2023; Liu et al., 2024c; Peng et al., 2023). By adjusting RoPE parameters and incorporating training data with extended contexts, we can train performant models with considerably longer input sequences. However, existing RoPE-based methods exhibit performance limitations when applied to extended context lengths. This paper presents a comprehensive analysis of various attention mechanisms, including RoPE, No Positional Embedding (NoPE), and Query-Key Normalization (QK-Norm), identifying their strengths and shortcomings in long-context modeling. Our investigation identifies distinctive attention patterns in these methods and highlights their impact on long-context performance, providing valuable insights for architectural design. Building on these findings, we propose a novel architecture featuring a hybrid attention mechanism that integrates global and local attention spans. This design not only surpasses conventional RoPE-based transformer models with full attention in both long and short context tasks but also delivers substantial efficiency gains during training and inference.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "06796ca506bb28419a734f777f069ea2f42c1eb9",
+    "externalIds": {
+      "ArXiv": "2412.15204",
+      "DBLP": "journals/corr/abs-2412-15204",
+      "DOI": "10.48550/arXiv.2412.15204",
+      "CorpusId": 274859535
+    },
+    "title": "LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 213,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.15204, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2141377570",
+        "name": "Yushi Bai"
+      },
+      {
+        "authorId": "2116520118",
+        "name": "Shangqing Tu"
+      },
+      {
+        "authorId": "2107983722",
+        "name": "Jiajie Zhang"
+      },
+      {
+        "authorId": "2257621785",
+        "name": "Hao Peng"
+      },
+      {
+        "authorId": "48631777",
+        "name": "Xiaozhi Wang"
+      },
+      {
+        "authorId": "2268485303",
+        "name": "Xin Lv"
+      },
+      {
+        "authorId": "1712738522",
+        "name": "S. Cao"
+      },
+      {
+        "authorId": "2214082934",
+        "name": "Jiazheng Xu"
+      },
+      {
+        "authorId": "2257250848",
+        "name": "Lei Hou"
+      },
+      {
+        "authorId": "2243402027",
+        "name": "Yuxiao Dong"
+      },
+      {
+        "authorId": "2327297599",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "2133353675",
+        "name": "Juanzi Li"
+      }
+    ],
+    "abstract": "This paper introduces LongBench v2, a benchmark designed to assess the ability of LLMs to handle long-context problems requiring deep understanding and reasoning across real-world multitasks. LongBench v2 consists of 503 challenging multiple-choice questions, with contexts ranging from 8k to 2M words, across six major task categories: single-document QA, multi-document QA, long in-context learning, long-dialogue history understanding, code repository understanding, and long structured data understanding. To ensure the breadth and the practicality, we collect data from nearly 100 highly educated individuals with diverse professional backgrounds. We employ both automated and manual review processes to maintain high quality and difficulty, resulting in human experts achieving only 53.7% accuracy under a 15-minute time constraint. Our evaluation reveals that the best-performing model, when directly answers the questions, achieves only 50.1% accuracy. In contrast, the o1-preview model, which includes longer reasoning, achieves 57.7%, surpassing the human baseline by 4%. These results highlight the importance of enhanced reasoning ability and scaling inference-time compute to tackle the long-context challenges in LongBench v2. The project is available at https://longbench2.github.io.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "08efe5dc8055b842c44ea5b984f9d8ccff6d7317",
+    "externalIds": {
+      "ArXiv": "2410.18745",
+      "DBLP": "journals/corr/abs-2410-18745",
+      "DOI": "10.48550/arXiv.2410.18745",
+      "CorpusId": 273549240
+    },
+    "title": "Why Does the Effective Context Length of LLMs Fall Short?",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.18745, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258962279",
+        "name": "Chenxin An"
+      },
+      {
+        "authorId": "2288068660",
+        "name": "Jun Zhang"
+      },
+      {
+        "authorId": "2327337430",
+        "name": "Ming Zhong"
+      },
+      {
+        "authorId": "49192881",
+        "name": "Lei Li"
+      },
+      {
+        "authorId": "2165001433",
+        "name": "Shansan Gong"
+      },
+      {
+        "authorId": "2348197760",
+        "name": "Yao Luo"
+      },
+      {
+        "authorId": "2257464374",
+        "name": "Jingjing Xu"
+      },
+      {
+        "authorId": "2316451407",
+        "name": "Lingpeng Kong"
+      }
+    ],
+    "abstract": "Advancements in distributed training and efficient attention mechanisms have significantly expanded the context window sizes of large language models (LLMs). However, recent work reveals that the effective context lengths of open-source LLMs often fall short, typically not exceeding half of their training lengths. In this work, we attribute this limitation to the left-skewed frequency distribution of relative positions formed in LLMs pretraining and post-training stages, which impedes their ability to effectively gather distant information. To address this challenge, we introduce ShifTed Rotray position embeddING (STRING). STRING shifts well-trained positions to overwrite the original ineffective positions during inference, enhancing performance within their existing training lengths. Experimental results show that without additional training, STRING dramatically improves the performance of the latest large-scale models, such as Llama3.1 70B and Qwen2 72B, by over 10 points on popular long-context benchmarks RULER and InfiniteBench, establishing new state-of-the-art results for open-source LLMs. Compared to commercial models, Llama 3.1 70B with \\method even achieves better performance than GPT-4-128K and clearly surpasses Claude 2 and Kimi-chat.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5630d71a0ca608985a7beb00ce6a302c2142762d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-02660",
+      "ArXiv": "2410.02660",
+      "DOI": "10.48550/arXiv.2410.02660",
+      "CorpusId": 273098476
+    },
+    "title": "How to Train Long-Context Language Models (Effectively)",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 123,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.02660, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256993940",
+        "name": "Tianyu Gao"
+      },
+      {
+        "authorId": "2127066887",
+        "name": "Alexander Wettig"
+      },
+      {
+        "authorId": "2287806228",
+        "name": "Howard Yen"
+      },
+      {
+        "authorId": "2311929494",
+        "name": "Danqi Chen"
+      }
+    ],
+    "abstract": "We study continued training and supervised fine-tuning (SFT) of a language model (LM) to make effective use of long-context information. We first establish a reliable evaluation protocol to guide model development -- instead of perplexity or simple needle-in-a-haystack (NIAH) tests, we use a broad set of long-context downstream tasks, and we evaluate models after SFT as this better reveals long-context abilities. Supported by our robust evaluations, we run thorough experiments to decide the data mix for continued pre-training, the instruction tuning dataset, and many other design choices such as position extrapolation. We find that (1) code repositories and books are excellent sources of long data, but it is crucial to combine them with high-quality short-context data; (2) training with a sequence length beyond the evaluation length boosts long-context performance; (3) for SFT, using only short instruction datasets yields strong performance on long-context tasks. Our final model, ProLong-8B, which is initialized from Llama-3 and trained on 40B tokens, demonstrates state-of-the-art long-context performance among similarly sized models at a length of 128K. ProLong outperforms Llama-3.1-8B-Instruct on the majority of long-context tasks despite using only 5% as many tokens during long-context training. Additionally, ProLong can effectively process up to 512K tokens, one of the longest context windows of publicly available LMs.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "4a2c19f0cfc48f166a8fd34cb8fb2bcfcb275569",
+    "externalIds": {
+      "ArXiv": "2410.02694",
+      "DBLP": "journals/corr/abs-2410-02694",
+      "DOI": "10.48550/arXiv.2410.02694",
+      "CorpusId": 273098808
+    },
+    "title": "HELMET: How to Evaluate Long-Context Language Models Effectively and Thoroughly",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 93,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.02694, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2287806228",
+        "name": "Howard Yen"
+      },
+      {
+        "authorId": "2256993940",
+        "name": "Tianyu Gao"
+      },
+      {
+        "authorId": "2324000474",
+        "name": "Minmin Hou"
+      },
+      {
+        "authorId": "2323992275",
+        "name": "Ke Ding"
+      },
+      {
+        "authorId": "2324055501",
+        "name": "Daniel Fleischer"
+      },
+      {
+        "authorId": "2477428",
+        "name": "Peter Izsak"
+      },
+      {
+        "authorId": "2134755",
+        "name": "Moshe Wasserblat"
+      },
+      {
+        "authorId": "2311929494",
+        "name": "Danqi Chen"
+      }
+    ],
+    "abstract": "Many benchmarks exist for evaluating long-context language models (LCLMs), yet developers often rely on synthetic tasks such as needle-in-a-haystack (NIAH) or an arbitrary subset of tasks. However, it remains unclear whether these benchmarks reflect the diverse downstream applications of LCLMs, and such inconsistencies further complicate model comparison. We investigate the underlying reasons behind these practices and find that existing benchmarks often provide noisy signals due to limited coverage of applications, insufficient context lengths, unreliable metrics, and incompatibility with base models. In this work, we introduce HELMET (How to Evaluate Long-context Models Effectively and Thoroughly), a comprehensive benchmark encompassing seven diverse, application-centric categories. We also address several issues in previous benchmarks by adding controllable lengths up to 128K tokens, model-based evaluation for reliable metrics, and few-shot prompting for robustly evaluating base models. Consequently, we demonstrate that HELMET offers more reliable and consistent rankings of frontier LCLMs. Through a comprehensive study of 59 LCLMs, we find that (1) synthetic tasks like NIAH do not reliably predict downstream performance; (2) the diverse categories in HELMET exhibit distinct trends and low correlations with each other; and (3) while most LCLMs achieve perfect NIAH scores, open-source models significantly lag behind closed ones when tasks require full-context reasoning or following complex instructions -- the gap widens as length increases. Finally, we recommend using our RAG tasks for fast model development, as they are easy to run and better predict other downstream performance; ultimately, we advocate for a holistic evaluation across diverse tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "188bdd2edb3126b357dc646f2ff1f0b2699ad407",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2409-00509",
+      "ArXiv": "2409.00509",
+      "DOI": "10.48550/arXiv.2409.00509",
+      "CorpusId": 272366871
+    },
+    "title": "LongRecipe: Recipe for Efficient Long Context Generalization in Large Language Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.00509, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2267163621",
+        "name": "Zhiyuan Hu"
+      },
+      {
+        "authorId": "2223889915",
+        "name": "Yuliang Liu"
+      },
+      {
+        "authorId": "2289776744",
+        "name": "Jinman Zhao"
+      },
+      {
+        "authorId": "1643451565",
+        "name": "Suyuchen Wang"
+      },
+      {
+        "authorId": "2275772533",
+        "name": "Yan Wang"
+      },
+      {
+        "authorId": "2319630583",
+        "name": "Wei Shen"
+      },
+      {
+        "authorId": "2303397651",
+        "name": "Qing Gu"
+      },
+      {
+        "authorId": "1755919",
+        "name": "A. Luu"
+      },
+      {
+        "authorId": "2269762964",
+        "name": "See-Kiong Ng"
+      },
+      {
+        "authorId": "3226550",
+        "name": "Zhiwei Jiang"
+      },
+      {
+        "authorId": "2258715976",
+        "name": "Bryan Hooi"
+      }
+    ],
+    "abstract": "Large language models (LLMs) face significant challenges in handling long-context tasks because of their limited effective context window size during pretraining, which restricts their ability to generalize over extended sequences. Meanwhile, extending the context window in LLMs through post-pretraining is highly resource-intensive. To address this, we introduce LongRecipe, an efficient training strategy for extending the context window of LLMs, including impactful token analysis, position index transformation, and training optimization strategies. It simulates long-sequence inputs while maintaining training efficiency and significantly improves the model's understanding of long-range dependencies. Experiments on three types of LLMs show that LongRecipe can utilize long sequences while requiring only 30% of the target context window size, and reduces computational training resource over 85% compared to full sequence training. Furthermore, LongRecipe also preserves the original LLM's capabilities in general tasks. Ultimately, we can extend the effective context window of open-source LLMs from 8k to 128k, achieving performance close to GPT-4 with just one day of dedicated training using a single GPU with 80G memory. Our code is released at https://github.com/zhiyuanhubj/LongRecipe.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "54fb839f621e3fe787437ab8ca5f37e7e4726bfe",
+    "externalIds": {
+      "ArXiv": "2407.10671",
+      "DBLP": "journals/corr/abs-2407-10671",
+      "DOI": "10.48550/arXiv.2407.10671",
+      "CorpusId": 271212307
+    },
+    "title": "Qwen2 Technical Report",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 2050,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.10671, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2311633047",
+        "name": "An Yang"
+      },
+      {
+        "authorId": "2257101724",
+        "name": "Baosong Yang"
+      },
+      {
+        "authorId": "151471590",
+        "name": "Binyuan Hui"
+      },
+      {
+        "authorId": "2312091718",
+        "name": "Bo Zheng"
+      },
+      {
+        "authorId": "2249451832",
+        "name": "Bowen Yu"
+      },
+      {
+        "authorId": "2302295311",
+        "name": "Chang Zhou"
+      },
+      {
+        "authorId": "2257039734",
+        "name": "Chengpeng Li"
+      },
+      {
+        "authorId": "2311714296",
+        "name": "Chengyuan Li"
+      },
+      {
+        "authorId": "2248487202",
+        "name": "Dayiheng Liu"
+      },
+      {
+        "authorId": "152159016",
+        "name": "Fei Huang"
+      },
+      {
+        "authorId": "51490462",
+        "name": "Guanting Dong"
+      },
+      {
+        "authorId": "2312183452",
+        "name": "Haoran Wei"
+      },
+      {
+        "authorId": "2314068968",
+        "name": "Huan Lin"
+      },
+      {
+        "authorId": "2299550823",
+        "name": "Jialong Tang"
+      },
+      {
+        "authorId": "2182966132",
+        "name": "Jialin Wang"
+      },
+      {
+        "authorId": "2243424858",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "49365463",
+        "name": "Jianhong Tu"
+      },
+      {
+        "authorId": "2258670763",
+        "name": "Jianwei Zhang"
+      },
+      {
+        "authorId": "47793076",
+        "name": "Jianxin Ma"
+      },
+      {
+        "authorId": "2257108556",
+        "name": "Jin Xu"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "41211611",
+        "name": "Jinze Bai"
+      },
+      {
+        "authorId": "2312070548",
+        "name": "Jinzheng He"
+      },
+      {
+        "authorId": "35996608",
+        "name": "Junyang Lin"
+      },
+      {
+        "authorId": "2247877609",
+        "name": "K. Dang"
+      },
+      {
+        "authorId": "2257001403",
+        "name": "Keming Lu"
+      },
+      {
+        "authorId": "2293321194",
+        "name": "Ke-Yang Chen"
+      },
+      {
+        "authorId": "2303430522",
+        "name": "Kexin Yang"
+      },
+      {
+        "authorId": "2223106060",
+        "name": "Mei Li"
+      },
+      {
+        "authorId": "2301649171",
+        "name": "Min Xue"
+      },
+      {
+        "authorId": "2311440332",
+        "name": "Na Ni"
+      },
+      {
+        "authorId": "2288896179",
+        "name": "Pei Zhang"
+      },
+      {
+        "authorId": "2298005769",
+        "name": "Peng Wang"
+      },
+      {
+        "authorId": "2310233042",
+        "name": "Ru Peng"
+      },
+      {
+        "authorId": "47447639",
+        "name": "Rui Men"
+      },
+      {
+        "authorId": "2311453186",
+        "name": "Ruize Gao"
+      },
+      {
+        "authorId": "2248039532",
+        "name": "Runji Lin"
+      },
+      {
+        "authorId": "2311456728",
+        "name": "Shijie Wang"
+      },
+      {
+        "authorId": "2247821453",
+        "name": "Shuai Bai"
+      },
+      {
+        "authorId": "2110171536",
+        "name": "Sinan Tan"
+      },
+      {
+        "authorId": "2248127832",
+        "name": "Tianhang Zhu"
+      },
+      {
+        "authorId": "2309297259",
+        "name": "Tianhao Li"
+      },
+      {
+        "authorId": "2311842337",
+        "name": "Tianyu Liu"
+      },
+      {
+        "authorId": "2311391178",
+        "name": "Wenbin Ge"
+      },
+      {
+        "authorId": "2249717428",
+        "name": "Xiaodong Deng"
+      },
+      {
+        "authorId": "2141874108",
+        "name": "Xiaohuan Zhou"
+      },
+      {
+        "authorId": "2274095735",
+        "name": "Xingzhang Ren"
+      },
+      {
+        "authorId": "2294009097",
+        "name": "Xinyu Zhang"
+      },
+      {
+        "authorId": "2312041712",
+        "name": "Xipin Wei"
+      },
+      {
+        "authorId": "2312110505",
+        "name": "Xuancheng Ren"
+      },
+      {
+        "authorId": "2234000716",
+        "name": "Yang Fan"
+      },
+      {
+        "authorId": "2153951714",
+        "name": "Yang Yao"
+      },
+      {
+        "authorId": "29343468",
+        "name": "Yichang Zhang"
+      },
+      {
+        "authorId": "2244411465",
+        "name": "Yunyang Wan"
+      },
+      {
+        "authorId": "2256981628",
+        "name": "Yunfei Chu"
+      },
+      {
+        "authorId": "2248072386",
+        "name": "Zeyu Cui"
+      },
+      {
+        "authorId": "2321656193",
+        "name": "Zhenru Zhang"
+      },
+      {
+        "authorId": "2232106310",
+        "name": "Zhi-Wei Fan"
+      }
+    ],
+    "abstract": "This report introduces the Qwen2 series, the latest addition to our large language models and large multimodal models. We release a comprehensive suite of foundational and instruction-tuned language models, encompassing a parameter range from 0.5 to 72 billion, featuring dense models and a Mixture-of-Experts model. Qwen2 surpasses most prior open-weight models, including its predecessor Qwen1.5, and exhibits competitive performance relative to proprietary models across diverse benchmarks on language understanding, generation, multilingual proficiency, coding, mathematics, and reasoning. The flagship model, Qwen2-72B, showcases remarkable performance: 84.2 on MMLU, 37.9 on GPQA, 64.6 on HumanEval, 89.5 on GSM8K, and 82.4 on BBH as a base language model. The instruction-tuned variant, Qwen2-72B-Instruct, attains 9.1 on MT-Bench, 48.1 on Arena-Hard, and 35.7 on LiveCodeBench. Moreover, Qwen2 demonstrates robust multilingual capabilities, proficient in approximately 30 languages, spanning English, Chinese, Spanish, French, German, Arabic, Russian, Korean, Japanese, Thai, Vietnamese, and more, underscoring its versatility and global reach. To foster community innovation and accessibility, we have made the Qwen2 model weights openly available on Hugging Face and ModelScope, and the supplementary materials including example code on GitHub. These platforms also include resources for quantization, fine-tuning, and deployment, facilitating a wide range of applications and research endeavors.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9e015a8524261d4c040c10fa773ddbb02a49ee38",
+    "externalIds": {
+      "ArXiv": "2406.15319",
+      "DBLP": "journals/corr/abs-2406-15319",
+      "DOI": "10.48550/arXiv.2406.15319",
+      "CorpusId": 270688725
+    },
+    "title": "LongRAG: Enhancing Retrieval-Augmented Generation with Long-context LLMs",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 127,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.15319, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112347577",
+        "name": "Ziyan Jiang"
+      },
+      {
+        "authorId": "2307982793",
+        "name": "Xueguang Ma"
+      },
+      {
+        "authorId": "2253811180",
+        "name": "Wenhu Chen"
+      }
+    ],
+    "abstract": "In traditional RAG framework, the basic retrieval units are normally short. The common retrievers like DPR normally work with 100-word Wikipedia paragraphs. Such a design forces the retriever to search over a large corpus to find the `needle' unit. In contrast, the readers only need to generate answers from the short retrieved units. The imbalanced `heavy' retriever and `light' reader design can lead to sub-optimal performance. The loss of contextual information in the short, chunked units may increase the likelihood of introducing hard negatives during the retrieval stage. Additionally, the reader might not fully leverage the capabilities of recent advancements in LLMs. In order to alleviate the imbalance, we propose a new framework LongRAG, consisting of a `long retriever' and a `long reader'. In the two Wikipedia-based datasets, NQ and HotpotQA, LongRAG processes the entire Wikipedia corpus into 4K-token units by grouping related documents. By increasing the unit size, we significantly reduce the total number of units. This greatly reduces the burden on the retriever, resulting in strong retrieval performance with only a few (less than 8) top units. Without requiring any training, LongRAG achieves an EM of 62.7% on NQ and 64.3% on HotpotQA, which are on par with the (fully-trained) SoTA model. Furthermore, we test on two non-Wikipedia-based datasets, Qasper and MultiFieldQA-en. LongRAG processes each individual document as a single (long) unit rather than chunking them into smaller units. By doing so, we achieve an F1 score of 25.9% on Qasper and 57.5% on MultiFieldQA-en. Our study offers insights into the future roadmap for combining RAG with long-context LLMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f8fbeb821ee7618cd478c46096960978b6ac6b2e",
+    "externalIds": {
+      "DBLP": "conf/nips/WuZZ24",
+      "ArXiv": "2406.07138",
+      "DOI": "10.52202/079017-1794",
+      "CorpusId": 270379556
+    },
+    "title": "An Efficient Recipe for Long Context Extension via Middle-Focused Positional Encoding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.07138, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2305744825",
+        "name": "Tong Wu"
+      },
+      {
+        "authorId": "49339267",
+        "name": "Yanpeng Zhao"
+      },
+      {
+        "authorId": "2305710447",
+        "name": "Zilong Zheng"
+      }
+    ],
+    "abstract": "Recently, many methods have been developed to extend the context length of pre-trained large language models (LLMs), but they often require fine-tuning at the target length ($\\gg4K$) and struggle to effectively utilize information from the middle part of the context. To address these issues, we propose $\\textbf{C}$ontinuity-$\\textbf{R}$elativity ind$\\textbf{E}$xing with g$\\textbf{A}$ussian $\\textbf{M}$iddle ($\\texttt{CREAM}$), which interpolates positional encodings by manipulating position indices. Apart from being simple, $\\texttt{CREAM}$ is training-efficient: it only requires fine-tuning at the pre-trained context window (e.g., Llama 2-4K) and can extend LLMs to a much longer target context length (e.g., 256K). To ensure that the model focuses more on the information in the middle, we introduce a truncated Gaussian to encourage sampling from the middle part of the context during fine-tuning, thus alleviating the\"Lost-in-the-Middle\"problem faced by long-context LLMs. Experimental results show that $\\texttt{CREAM}$ successfully extends LLMs to the target length for both Base and Chat versions of $\\texttt{Llama2-7B}$ with\"Never Miss A Beat\". Our code is publicly available at https://github.com/bigai-nlco/cream.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ebc746fe7d2d580912498a98ec76a1e60020c95d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-03939",
+      "ArXiv": "2405.03939",
+      "DOI": "10.48550/arXiv.2405.03939",
+      "CorpusId": 269614327
+    },
+    "title": "Long Context Alignment with Short Instructions and Synthesized Positions",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.03939, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2298066086",
+        "name": "Wenhao Wu"
+      },
+      {
+        "authorId": "2298204000",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "2298042109",
+        "name": "Yao Fu"
+      },
+      {
+        "authorId": "2333878735",
+        "name": "Xiang Yue"
+      },
+      {
+        "authorId": "2116276849",
+        "name": "Dawei Zhu"
+      },
+      {
+        "authorId": "2257095532",
+        "name": "Sujian Li"
+      }
+    ],
+    "abstract": "Effectively handling instructions with extremely long context remains a challenge for Large Language Models (LLMs), typically necessitating high-quality long data and substantial computational resources. This paper introduces Step-Skipping Alignment (SkipAlign), a new technique designed to enhance the long-context capabilities of LLMs in the phase of alignment without the need for additional efforts beyond training with original data length. SkipAlign is developed on the premise that long-range dependencies are fundamental to enhancing an LLM's capacity of long context. Departing from merely expanding the length of input samples, SkipAlign synthesizes long-range dependencies from the aspect of positions indices. This is achieved by the strategic insertion of skipped positions within instruction-following samples, which utilizes the semantic structure of the data to effectively expand the context. Through extensive experiments on base models with a variety of context window sizes, SkipAlign demonstrates its effectiveness across a spectrum of long-context tasks. Particularly noteworthy is that with a careful selection of the base model and alignment datasets, SkipAlign with only 6B parameters achieves it's best performance and comparable with strong baselines like GPT-3.5-Turbo-16K on LongBench.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ac5824e9ff924a937d9eef379d0b581de2417678",
+    "externalIds": {
+      "ArXiv": "2404.06654",
+      "DBLP": "journals/corr/abs-2404-06654",
+      "DOI": "10.48550/arXiv.2404.06654",
+      "CorpusId": 269032933
+    },
+    "title": "RULER: What's the Real Context Size of Your Long-Context Language Models?",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 805,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.06654, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2295886165",
+        "name": "Cheng-Ping Hsieh"
+      },
+      {
+        "authorId": "23134878",
+        "name": "Simeng Sun"
+      },
+      {
+        "authorId": "1380253623",
+        "name": "Samuel Kriman"
+      },
+      {
+        "authorId": "9528018",
+        "name": "Shantanu Acharya"
+      },
+      {
+        "authorId": "2239169883",
+        "name": "Dima Rekesh"
+      },
+      {
+        "authorId": "2187456778",
+        "name": "Fei Jia"
+      },
+      {
+        "authorId": "2241631811",
+        "name": "Boris Ginsburg"
+      }
+    ],
+    "abstract": "The needle-in-a-haystack (NIAH) test, which examines the ability to retrieve a piece of information (the\"needle\") from long distractor texts (the\"haystack\"), has been widely adopted to evaluate long-context language models (LMs). However, this simple retrieval-based test is indicative of only a superficial form of long-context understanding. To provide a more comprehensive evaluation of long-context LMs, we create a new synthetic benchmark RULER with flexible configurations for customized sequence length and task complexity. RULER expands upon the vanilla NIAH test to encompass variations with diverse types and quantities of needles. Moreover, RULER introduces new task categories multi-hop tracing and aggregation to test behaviors beyond searching from context. We evaluate 17 long-context LMs with 13 representative tasks in RULER. Despite achieving nearly perfect accuracy in the vanilla NIAH test, almost all models exhibit large performance drops as the context length increases. While these models all claim context sizes of 32K tokens or greater, only half of them can maintain satisfactory performance at the length of 32K. Our analysis of Yi-34B, which supports context length of 200K, reveals large room for improvement as we increase input length and task complexity. We open source RULER to spur comprehensive evaluation of long-context LMs.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "275b005c33a315ad603f236cd5766efe07ef6a54",
+    "externalIds": {
+      "ArXiv": "2403.04797",
+      "DBLP": "conf/nips/0015C0YRCWW24",
+      "DOI": "10.48550/arXiv.2403.04797",
+      "CorpusId": 268296885
+    },
+    "title": "Found in the Middle: How Language Models Use Long Contexts Better via Plug-and-Play Positional Encoding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 76,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.04797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109338656",
+        "name": "Zhenyu (Allen) Zhang"
+      },
+      {
+        "authorId": "2284222685",
+        "name": "Runjin Chen"
+      },
+      {
+        "authorId": "2255081092",
+        "name": "Shiwei Liu"
+      },
+      {
+        "authorId": "2262242352",
+        "name": "Zhewei Yao"
+      },
+      {
+        "authorId": "2537545",
+        "name": "Olatunji Ruwase"
+      },
+      {
+        "authorId": "2249538643",
+        "name": "Beidi Chen"
+      },
+      {
+        "authorId": "2129511744",
+        "name": "Xiaoxia Wu"
+      },
+      {
+        "authorId": "2284563898",
+        "name": "Zhangyang Wang"
+      }
+    ],
+    "abstract": "This paper aims to overcome the\"lost-in-the-middle\"challenge of large language models (LLMs). While recent advancements have successfully enabled LLMs to perform stable language modeling with up to 4 million tokens, the persistent difficulty faced by most LLMs in identifying relevant information situated in the middle of the context has not been adequately tackled. To address this problem, this paper introduces Multi-scale Positional Encoding (Ms-PoE) which is a simple yet effective plug-and-play approach to enhance the capacity of LLMs to handle the relevant information located in the middle of the context, without fine-tuning or introducing any additional overhead. Ms-PoE leverages the position indice rescaling to relieve the long-term decay effect introduced by RoPE, while meticulously assigning distinct scaling ratios to different attention heads to preserve essential knowledge learned during the pre-training step, forming a multi-scale context fusion from short to long distance. Extensive experiments with a wide range of LLMs demonstrate the efficacy of our approach. Notably, Ms-PoE achieves an average accuracy gain of up to 3.8 on the Zero-SCROLLS benchmark over the original LLMs. Code are available at https://github.com/VITA-Group/Ms-PoE.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f016f079ee63a0487756f895c1d93ff0110d3ecd",
+    "externalIds": {
+      "ArXiv": "2403.00071",
+      "DBLP": "journals/corr/abs-2403-00071",
+      "DOI": "10.48550/arXiv.2403.00071",
+      "CorpusId": 268201728
+    },
+    "title": "Resonance RoPE: Improving Context Length Generalization of Large Language Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.00071, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1643451565",
+        "name": "Suyuchen Wang"
+      },
+      {
+        "authorId": "66895761",
+        "name": "I. Kobyzev"
+      },
+      {
+        "authorId": "2273575428",
+        "name": "Peng Lu"
+      },
+      {
+        "authorId": "2066076226",
+        "name": "Mehdi Rezagholizadeh"
+      },
+      {
+        "authorId": "2241485472",
+        "name": "Bang Liu"
+      }
+    ],
+    "abstract": "This paper addresses the challenge of train-short-test-long (TSTL) scenarios in Large Language Models (LLMs) equipped with Rotary Position Embedding (RoPE), where models pre-trained on shorter sequences face difficulty with out-of-distribution (OOD) token positions in longer sequences. We introduce Resonance RoPE, a novel approach designed to narrow the generalization gap in TSTL scenarios by refining the interpolation of RoPE features for OOD positions, significantly improving the model performance without additional online computational costs. Furthermore, we present PosGen, a new synthetic benchmark specifically designed for fine-grained behavior analysis in TSTL scenarios, aiming to isolate the constantly increasing difficulty of token generation on long contexts from the challenges of recognizing new token positions. Our experiments on synthetic tasks show that after applying Resonance RoPE, Transformers recognize OOD position better and more robustly. Our extensive LLM experiments also show superior performance after applying Resonance RoPE to the current state-of-the-art RoPE scaling method, YaRN, on both upstream language modeling tasks and a variety of downstream long-text applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c9603ec967879c24973b5bd48861df2e5555932e",
+    "externalIds": {
+      "ArXiv": "2402.13753",
+      "DBLP": "conf/icml/DingZZXSX0Y24",
+      "DOI": "10.48550/arXiv.2402.13753",
+      "CorpusId": 267770308
+    },
+    "title": "LongRoPE: Extending LLM Context Window Beyond 2 Million Tokens",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 312,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.13753, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2363136704",
+        "name": "Yiran Ding"
+      },
+      {
+        "authorId": "2274195530",
+        "name": "L. Zhang"
+      },
+      {
+        "authorId": "2284970741",
+        "name": "Chengruidong Zhang"
+      },
+      {
+        "authorId": "2223246729",
+        "name": "Yuanyuan Xu"
+      },
+      {
+        "authorId": "2284868563",
+        "name": "Ning Shang"
+      },
+      {
+        "authorId": "2257094139",
+        "name": "Jiahang Xu"
+      },
+      {
+        "authorId": "145338263",
+        "name": "Fan Yang"
+      },
+      {
+        "authorId": "2257128651",
+        "name": "Mao Yang"
+      }
+    ],
+    "abstract": "Large context window is a desirable feature in large language models (LLMs). However, due to high fine-tuning costs, scarcity of long texts, and catastrophic values introduced by new token positions, current extended context windows are limited to around 128k tokens. This paper introduces LongRoPE that, for the first time, extends the context window of pre-trained LLMs to an impressive 2048k tokens, with up to only 1k fine-tuning steps at within 256k training lengths, while maintaining performance at the original short context window. This is achieved by three key innovations: (i) we identify and exploit two forms of non-uniformities in positional interpolation through an efficient search, providing a better initialization for fine-tuning and enabling an 8x extension in non-fine-tuning scenarios; (ii) we introduce a progressive extension strategy that first fine-tunes a 256k length LLM and then conducts a second positional interpolation on the fine-tuned extended LLM to achieve a 2048k context window; (iii) we readjust LongRoPE on 8k length to recover the short context window performance. Extensive experiments on LLaMA2 and Mistral across various tasks demonstrate the effectiveness of our method. Models extended via LongRoPE retain the original architecture with minor modifications to the positional embedding, and can reuse most pre-existing optimizations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f288e2238ac8725baa7ca9874bbc3fed1e89a632",
+    "externalIds": {
+      "ArXiv": "2402.10171",
+      "DBLP": "journals/corr/abs-2402-10171",
+      "DOI": "10.48550/arXiv.2402.10171",
+      "CorpusId": 267682361
+    },
+    "title": "Data Engineering for Scaling Language Models to 128K Context",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 199,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.10171, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258864892",
+        "name": "Yao Fu"
+      },
+      {
+        "authorId": "1819152",
+        "name": "Rameswar Panda"
+      },
+      {
+        "authorId": "2284224531",
+        "name": "Xinyao Niu"
+      },
+      {
+        "authorId": "2284224134",
+        "name": "Xiang Yue"
+      },
+      {
+        "authorId": "2264251662",
+        "name": "Hanna Hajishirzi"
+      },
+      {
+        "authorId": "2282921670",
+        "name": "Yoon Kim"
+      },
+      {
+        "authorId": "2258803434",
+        "name": "Hao Peng"
+      }
+    ],
+    "abstract": "We study the continual pretraining recipe for scaling language models' context lengths to 128K, with a focus on data engineering. We hypothesize that long context modeling, in particular \\textit{the ability to utilize information at arbitrary input locations}, is a capability that is mostly already acquired through large-scale pretraining, and that this capability can be readily extended to contexts substantially longer than seen during training~(e.g., 4K to 128K) through lightweight continual pretraining on appropriate data mixture. We investigate the \\textit{quantity} and \\textit{quality} of the data for continual pretraining: (1) for quantity, we show that 500 million to 5 billion tokens are enough to enable the model to retrieve information anywhere within the 128K context; (2) for quality, our results equally emphasize \\textit{domain balance} and \\textit{length upsampling}. Concretely, we find that naively upsampling longer data on certain domains like books, a common practice of existing work, gives suboptimal performance, and that a balanced domain mixture is important. We demonstrate that continual pretraining of the full model on 1B-5B tokens of such data is an effective and affordable strategy for scaling the context length of language models to 128K. Our recipe outperforms strong open-source long-context models and closes the gap to frontier models like GPT-4 128K.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "46f9f7b8f88f72e12cbdb21e3311f995eb6e65c5",
+    "externalIds": {
+      "ArXiv": "2312.10997",
+      "DBLP": "journals/corr/abs-2312-10997",
+      "CorpusId": 266359151
+    },
+    "title": "Retrieval-Augmented Generation for Large Language Models: A Survey",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 3210,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.10997, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2280046531",
+        "name": "Yunfan Gao"
+      },
+      {
+        "authorId": "2275320371",
+        "name": "Yun Xiong"
+      },
+      {
+        "authorId": "2275341478",
+        "name": "Xinyu Gao"
+      },
+      {
+        "authorId": "2275191447",
+        "name": "Kangxiang Jia"
+      },
+      {
+        "authorId": "2403237825",
+        "name": "Jin Pan"
+      },
+      {
+        "authorId": "2275171009",
+        "name": "Yuxi Bi"
+      },
+      {
+        "authorId": "2220823886",
+        "name": "Yi Dai"
+      },
+      {
+        "authorId": "2275540959",
+        "name": "Jiawei Sun"
+      },
+      {
+        "authorId": "2258800561",
+        "name": "Qianyu Guo"
+      },
+      {
+        "authorId": "2291409458",
+        "name": "Meng Wang"
+      },
+      {
+        "authorId": "2256769434",
+        "name": "Haofen Wang"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) showcase impressive capabilities but encounter challenges like hallucination, outdated knowledge, and non-transparent, untraceable reasoning processes. Retrieval-Augmented Generation (RAG) has emerged as a promising solution by incorporating knowledge from external databases. This enhances the accuracy and credibility of the generation, particularly for knowledge-intensive tasks, and allows for continuous knowledge updates and integration of domain-specific information. RAG synergistically merges LLMs' intrinsic knowledge with the vast, dynamic repositories of external databases. This comprehensive review paper offers a detailed examination of the progression of RAG paradigms, encompassing the Naive RAG, the Advanced RAG, and the Modular RAG. It meticulously scrutinizes the tripartite foundation of RAG frameworks, which includes the retrieval, the generation and the augmentation techniques. The paper highlights the state-of-the-art technologies embedded in each of these critical components, providing a profound understanding of the advancements in RAG systems. Furthermore, this paper introduces up-to-date evaluation framework and benchmark. At the end, this article delineates the challenges currently faced and points out prospective avenues for research and development.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "ddbd8fe782ac98e9c64dd98710687a962195dd9b",
+    "externalIds": {
+      "DBLP": "conf/iclr/AsaiWWSH24",
+      "ArXiv": "2310.11511",
+      "CorpusId": 264288947
+    },
+    "title": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 1743,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.11511, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35584853",
+        "name": "Akari Asai"
+      },
+      {
+        "authorId": "7806955",
+        "name": "Zeqiu Wu"
+      },
+      {
+        "authorId": "1705260",
+        "name": "Yizhong Wang"
+      },
+      {
+        "authorId": "2707234",
+        "name": "Avirup Sil"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "Despite their remarkable capabilities, large language models (LLMs) often produce responses containing factual inaccuracies due to their sole reliance on the parametric knowledge they encapsulate. Retrieval-Augmented Generation (RAG), an ad hoc approach that augments LMs with retrieval of relevant knowledge, decreases such issues. However, indiscriminately retrieving and incorporating a fixed number of retrieved passages, regardless of whether retrieval is necessary, or passages are relevant, diminishes LM versatility or can lead to unhelpful response generation. We introduce a new framework called Self-Reflective Retrieval-Augmented Generation (Self-RAG) that enhances an LM's quality and factuality through retrieval and self-reflection. Our framework trains a single arbitrary LM that adaptively retrieves passages on-demand, and generates and reflects on retrieved passages and its own generations using special tokens, called reflection tokens. Generating reflection tokens makes the LM controllable during the inference phase, enabling it to tailor its behavior to diverse task requirements. Experiments show that Self-RAG (7B and 13B parameters) significantly outperforms state-of-the-art LLMs and retrieval-augmented models on a diverse set of tasks. Specifically, Self-RAG outperforms ChatGPT and retrieval-augmented Llama2-chat on Open-domain QA, reasoning and fact verification tasks, and it shows significant gains in improving factuality and citation accuracy for long-form generations relative to these models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "94a5f96308729e31c1ffbc0f0618db87795092fe",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-06770",
+      "ArXiv": "2310.06770",
+      "DOI": "10.48550/arXiv.2310.06770",
+      "CorpusId": 263829697
+    },
+    "title": "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 1983,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.06770",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.06770, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2155269683",
+        "name": "Carlos E. Jimenez"
+      },
+      {
+        "authorId": "2109727379",
+        "name": "John Yang"
+      },
+      {
+        "authorId": "2127066887",
+        "name": "Alexander Wettig"
+      },
+      {
+        "authorId": "2256984659",
+        "name": "Shunyu Yao"
+      },
+      {
+        "authorId": "2256993083",
+        "name": "Kexin Pei"
+      },
+      {
+        "authorId": "40170001",
+        "name": "Ofir Press"
+      },
+      {
+        "authorId": "2135381714",
+        "name": "Karthik Narasimhan"
+      }
+    ],
+    "abstract": "Language models have outpaced our ability to evaluate them effectively, but for their future development it is essential to study the frontier of their capabilities. We find real-world software engineering to be a rich, sustainable, and challenging testbed for evaluating the next generation of language models. To this end, we introduce SWE-bench, an evaluation framework consisting of $2,294$ software engineering problems drawn from real GitHub issues and corresponding pull requests across $12$ popular Python repositories. Given a codebase along with a description of an issue to be resolved, a language model is tasked with editing the codebase to address the issue. Resolving issues in SWE-bench frequently requires understanding and coordinating changes across multiple functions, classes, and even files simultaneously, calling for models to interact with execution environments, process extremely long contexts and perform complex reasoning that goes far beyond traditional code generation tasks. Our evaluations show that both state-of-the-art proprietary models and our fine-tuned model SWE-Llama can resolve only the simplest issues. The best-performing model, Claude 2, is able to solve a mere $1.96$% of the issues. Advances on SWE-bench represent steps towards LMs that are more practical, intelligent, and autonomous.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c4d3b9a87295db0b9f6466b7f3ce2f175c6d3157",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-00576",
+      "ArXiv": "2310.00576",
+      "DOI": "10.48550/arXiv.2310.00576",
+      "CorpusId": 263334451
+    },
+    "title": "GrowLength: Accelerating LLMs Pretraining by Progressively Growing Training Length",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.00576",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.00576, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1791983892",
+        "name": "Hongye Jin"
+      },
+      {
+        "authorId": "2249766229",
+        "name": "Xiaotian Han"
+      },
+      {
+        "authorId": "2250031863",
+        "name": "Jingfeng Yang"
+      },
+      {
+        "authorId": "47653902",
+        "name": "Zhimeng Jiang"
+      },
+      {
+        "authorId": "2166879577",
+        "name": "Chia-yuan Chang"
+      },
+      {
+        "authorId": "2249844820",
+        "name": "Xia Hu"
+      }
+    ],
+    "abstract": "The evolving sophistication and intricacies of Large Language Models (LLMs) yield unprecedented advancements, yet they simultaneously demand considerable computational resources and incur significant costs. To alleviate these challenges, this paper introduces a novel, simple, and effective method named ``\\growlength'' to accelerate the pretraining process of LLMs. Our method progressively increases the training length throughout the pretraining phase, thereby mitigating computational costs and enhancing efficiency. For instance, it begins with a sequence length of 128 and progressively extends to 4096. This approach enables models to process a larger number of tokens within limited time frames, potentially boosting their performance. In other words, the efficiency gain is derived from training with shorter sequences optimizing the utilization of resources. Our extensive experiments with various state-of-the-art LLMs have revealed that models trained using our method not only converge more swiftly but also exhibit superior performance metrics compared to those trained with existing methods. Furthermore, our method for LLMs pretraining acceleration does not require any additional engineering efforts, making it a practical solution in the realm of LLMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fdc53c2c10742464087c0525f77e32604827a21d",
+    "externalIds": {
+      "DBLP": "conf/iclr/XiaoTCHL24",
+      "ArXiv": "2309.17453",
+      "DOI": "10.48550/arXiv.2309.17453",
+      "CorpusId": 263310483
+    },
+    "title": "Efficient Streaming Language Models with Attention Sinks",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 1659,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.17453",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.17453, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2046958974",
+        "name": "Guangxuan Xiao"
+      },
+      {
+        "authorId": "2249538771",
+        "name": "Yuandong Tian"
+      },
+      {
+        "authorId": "2249538643",
+        "name": "Beidi Chen"
+      },
+      {
+        "authorId": "2249530374",
+        "name": "Song Han"
+      },
+      {
+        "authorId": "2249533054",
+        "name": "Mike Lewis"
+      }
+    ],
+    "abstract": "Deploying Large Language Models (LLMs) in streaming applications such as multi-round dialogue, where long interactions are expected, is urgently needed but poses two major challenges. Firstly, during the decoding stage, caching previous tokens' Key and Value states (KV) consumes extensive memory. Secondly, popular LLMs cannot generalize to longer texts than the training sequence length. Window attention, where only the most recent KVs are cached, is a natural approach -- but we show that it fails when the text length surpasses the cache size. We observe an interesting phenomenon, namely attention sink, that keeping the KV of initial tokens will largely recover the performance of window attention. In this paper, we first demonstrate that the emergence of attention sink is due to the strong attention scores towards initial tokens as a\"sink\"even if they are not semantically important. Based on the above analysis, we introduce StreamingLLM, an efficient framework that enables LLMs trained with a finite length attention window to generalize to infinite sequence lengths without any fine-tuning. We show that StreamingLLM can enable Llama-2, MPT, Falcon, and Pythia to perform stable and efficient language modeling with up to 4 million tokens and more. In addition, we discover that adding a placeholder token as a dedicated attention sink during pre-training can further improve streaming deployment. In streaming settings, StreamingLLM outperforms the sliding window recomputation baseline by up to 22.2x speedup. Code and datasets are provided at https://github.com/mit-han-lab/streaming-llm.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5e0cb1c4b91a7486e1c2b15a44a0be56bd74bdc0",
+    "externalIds": {
+      "ACL": "2024.naacl-long.260",
+      "ArXiv": "2309.16039",
+      "DBLP": "journals/corr/abs-2309-16039",
+      "DOI": "10.48550/arXiv.2309.16039",
+      "CorpusId": 263134982
+    },
+    "title": "Effective Long-Context Scaling of Foundation Models",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 328,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.16039",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.16039, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22253126",
+        "name": "Wenhan Xiong"
+      },
+      {
+        "authorId": "2301500865",
+        "name": "Jingyu Liu"
+      },
+      {
+        "authorId": "2322981055",
+        "name": "Igor Molybog"
+      },
+      {
+        "authorId": "2248727777",
+        "name": "Hejia Zhang"
+      },
+      {
+        "authorId": "51229603",
+        "name": "Prajjwal Bhargava"
+      },
+      {
+        "authorId": "2266467782",
+        "name": "Rui Hou"
+      },
+      {
+        "authorId": "2249724552",
+        "name": "Louis Martin"
+      },
+      {
+        "authorId": "150282885",
+        "name": "Rashi Rungta"
+      },
+      {
+        "authorId": "2178963",
+        "name": "Karthik Abinav Sankararaman"
+      },
+      {
+        "authorId": "9185192",
+        "name": "Barlas Oğuz"
+      },
+      {
+        "authorId": "2072010",
+        "name": "Madian Khabsa"
+      },
+      {
+        "authorId": "2263641898",
+        "name": "Han Fang"
+      },
+      {
+        "authorId": "2121361882",
+        "name": "Yashar Mehdad"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "2279924280",
+        "name": "Kshitiz Malik"
+      },
+      {
+        "authorId": "2247818297",
+        "name": "Angela Fan"
+      },
+      {
+        "authorId": "2116473",
+        "name": "Shruti Bhosale"
+      },
+      {
+        "authorId": "2068070",
+        "name": "Sergey Edunov"
+      },
+      {
+        "authorId": "2247796743",
+        "name": "Mike Lewis"
+      },
+      {
+        "authorId": "2096387",
+        "name": "Sinong Wang"
+      },
+      {
+        "authorId": "2248016651",
+        "name": "Hao Ma"
+      }
+    ],
+    "abstract": "We present an effective recipe to train strong long-context LLMs that are capable of utilizing massive context windows of up to 32,000 tokens. Our models are built through continual pretraining from Llama 2 checkpoints with longer text sequences and on a dataset where long texts are upsampled. We perform extensive evaluation using language modeling, synthetic context probing tasks, and a wide range of downstream benchmarks. Across all evaluations, our models achieve consistent improvements on most regular-context tasks and significant improvements on long-context tasks over Llama 2. Moreover, with a cost-effective instruction tuning procedure that is free of expensive annotation, the presented models can already surpass \\texttt{gpt-3.5-turbo-16k}‘s overall performance on long-context benchmarks. Alongside these results, we provide an in-depth analysis on each individual component of our method. We delve into Llama’s position encodings and discuss its key limitation in modeling long data. We examine the impact of various design choices in the pretraining process, including the data mix and the training curriculum of sequence lengths – ablation results suggest that having abundant long texts in the pretrain dataset is \\textit{not} the key to achieving strong performance, and we empirically verify that long context continual pretraining is more efficient and similarly effective compared to pretraining from scratch with long sequences.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "73290ecbec2f38d1d647ddef1ada69cee41725b3",
+    "externalIds": {
+      "DBLP": "conf/iclr/Zhu00SWWL24",
+      "ArXiv": "2309.10400",
+      "DOI": "10.48550/arXiv.2309.10400",
+      "CorpusId": 262053659
+    },
+    "title": "PoSE: Efficient Context Window Extension of LLMs via Positional Skip-wise Training",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 110,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.10400",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.10400, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116276849",
+        "name": "Dawei Zhu"
+      },
+      {
+        "authorId": "2242947624",
+        "name": "Nan Yang"
+      },
+      {
+        "authorId": "145769448",
+        "name": "Liang Wang"
+      },
+      {
+        "authorId": "2183730942",
+        "name": "Yifan Song"
+      },
+      {
+        "authorId": "2139644141",
+        "name": "Wenhao Wu"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      },
+      {
+        "authorId": "1695451",
+        "name": "Sujian Li"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) are trained with a pre-defined context length, restricting their use in scenarios requiring long inputs. Previous efforts for adapting LLMs to a longer length usually requires fine-tuning with this target length (Full-length fine-tuning), suffering intensive training cost. To decouple train length from target length for efficient context window extension, we propose Positional Skip-wisE (PoSE) training that smartly simulates long inputs using a fixed context window. This is achieved by first dividing the original context window into several chunks, then designing distinct skipping bias terms to manipulate the position indices of each chunk. These bias terms and the lengths of each chunk are altered for every training example, allowing the model to adapt to all positions within target length. Experimental results show that PoSE greatly reduces memory and time overhead compared with Full-length fine-tuning, with minimal impact on performance. Leveraging this advantage, we have successfully extended the LLaMA model to 128k tokens using a 2k training context window. Furthermore, we empirically confirm that PoSE is compatible with all RoPE-based LLMs and position interpolation strategies. Notably, our method can potentially support infinite length, limited only by memory usage in inference. With ongoing progress for efficient inference, we believe PoSE can further scale the context window beyond 128k.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "819bbdc2dac9e13d9ca3e2508a6e063186ce5e40",
+    "externalIds": {
+      "DBLP": "conf/iclr/PengQFS24",
+      "ArXiv": "2309.00071",
+      "DOI": "10.48550/arXiv.2309.00071",
+      "CorpusId": 261493986
+    },
+    "title": "YaRN: Efficient Context Window Extension of Large Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 496,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.00071",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.00071, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2237425757",
+        "name": "Bowen Peng"
+      },
+      {
+        "authorId": "31964220",
+        "name": "Jeffrey Quesnelle"
+      },
+      {
+        "authorId": "2273749369",
+        "name": "Honglu Fan"
+      },
+      {
+        "authorId": "2261554775",
+        "name": "Enrico Shippole"
+      }
+    ],
+    "abstract": "Rotary Position Embeddings (RoPE) have been shown to effectively encode positional information in transformer-based language models. However, these models fail to generalize past the sequence length they were trained on. We present YaRN (Yet another RoPE extensioN method), a compute-efficient method to extend the context window of such models, requiring 10x less tokens and 2.5x less training steps than previous methods. Using YaRN, we show that LLaMA models can effectively utilize and extrapolate to context lengths much longer than their original pre-training would allow, while also surpassing previous the state-of-the-art at context window extension. In addition, we demonstrate that YaRN exhibits the capability to extrapolate beyond the limited context of a fine-tuning dataset. Code is available at https://github.com/jquesnelle/yarn",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a7fc585cc4c2b6822646b2c410e0c427a20798f2",
+    "externalIds": {
+      "ACL": "2024.naacl-long.222",
+      "DBLP": "conf/naacl/HanWPX0JW24",
+      "ArXiv": "2308.16137",
+      "DOI": "10.18653/v1/2024.naacl-long.222",
+      "CorpusId": 268357635
+    },
+    "title": "LM-Infinite: Zero-Shot Extreme Length Generalization for Large Language Models",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 112,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.16137, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118642562",
+        "name": "Chi Han"
+      },
+      {
+        "authorId": "2290856179",
+        "name": "Qifan Wang"
+      },
+      {
+        "authorId": "2288239343",
+        "name": "Hao Peng"
+      },
+      {
+        "authorId": "2290750668",
+        "name": "Wenhan Xiong"
+      },
+      {
+        "authorId": "2181535101",
+        "name": "Yu Chen"
+      },
+      {
+        "authorId": "2290907632",
+        "name": "Heng Ji"
+      },
+      {
+        "authorId": "2237101143",
+        "name": "Sinong Wang"
+      }
+    ],
+    "abstract": "Today’s large language models (LLMs) typically train on short text segments (e.g., <4K tokens) due to the quadratic complexity of their Transformer architectures. As a result, their performance suffers drastically on inputs longer than those encountered during training, substantially limiting their applications in real-world tasks involving long contexts such as encod- ing scientific articles, code repositories, or long dialogues. Through both theoretical analysis and empirical investigation, this work identifies three major factors contributing to this length generalization failure. Our theoretical analysis reveals that commonly used techniques like using a sliding-window attention pattern or relative positional encodings are inadequate to address them. Answering these challenges, we propose LM-Infinite, a simple and effective method for enhancing LLMs’ capabilities of handling long contexts. LM-Infinite is highly flexible and can be used with most modern LLMs off-the-shelf. Without any parameter updates, it allows LLMs pre-trained with 2K or 4K-long segments to generalize to up to 200M length inputs while retaining perplexity. It also improves performance on downstream tasks such as Passkey Retrieval and Qasper in the zero-shot setting. LM-Infinite brings substantial efficiency improvements: it achieves 2.7× decoding speed up and 7.5× memory saving over the original model. Our code will be publicly available upon publication.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1733eb7792f7a43dd21f51f4d1017a1bffd217b5",
+    "externalIds": {
+      "DBLP": "journals/tacl/LiuLHPBPL24",
+      "ArXiv": "2307.03172",
+      "ACL": "2024.tacl-1.9",
+      "DOI": "10.1162/tacl_a_00638",
+      "CorpusId": 259360665
+    },
+    "title": "Lost in the Middle: How Language Models Use Long Contexts",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 3443,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1162/tacl_a_00638",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.03172, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22243769",
+        "name": "Nelson F. Liu"
+      },
+      {
+        "authorId": "48085802",
+        "name": "Kevin Lin"
+      },
+      {
+        "authorId": "145430120",
+        "name": "John Hewitt"
+      },
+      {
+        "authorId": "40404493",
+        "name": "Ashwin Paranjape"
+      },
+      {
+        "authorId": "143802044",
+        "name": "Michele Bevilacqua"
+      },
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "While recent language models have the ability to take long contexts as input, relatively little is known about how well they use longer context. We analyze the performance of language models on two tasks that require identifying relevant information in their input contexts: multi-document question answering and key-value retrieval. We find that performance can degrade significantly when changing the position of relevant information, indicating that current language models do not robustly make use of information in long input contexts. In particular, we observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and significantly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models. Our analysis provides a better understanding of how language models use their input context and provides new evaluation protocols for future long-context language models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e586a4591ba0303b769f2c07cbddaf1899cb72e4",
+    "externalIds": {
+      "ArXiv": "2306.14048",
+      "DBLP": "conf/nips/Zhang00CZC0TRBW23",
+      "DOI": "10.48550/arXiv.2306.14048",
+      "CorpusId": 259263947
+    },
+    "title": "H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 640,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2306.14048",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.14048, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109338656",
+        "name": "Zhenyu (Allen) Zhang"
+      },
+      {
+        "authorId": "2209360681",
+        "name": "Ying Sheng"
+      },
+      {
+        "authorId": "2190694474",
+        "name": "Tianyi Zhou"
+      },
+      {
+        "authorId": "2034263179",
+        "name": "Tianlong Chen"
+      },
+      {
+        "authorId": "2149970173",
+        "name": "Lianmin Zheng"
+      },
+      {
+        "authorId": "2209882676",
+        "name": "Ruisi Cai"
+      },
+      {
+        "authorId": "2214956470",
+        "name": "Zhao Song"
+      },
+      {
+        "authorId": "1932187449",
+        "name": "Yuandong Tian"
+      },
+      {
+        "authorId": "1803218",
+        "name": "Christopher Ré"
+      },
+      {
+        "authorId": "2052981589",
+        "name": "Clark W. Barrett"
+      },
+      {
+        "authorId": "2108404505",
+        "name": "Zhangyang Wang"
+      },
+      {
+        "authorId": "4319427",
+        "name": "Beidi Chen"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs), despite their recent impressive accomplishments, are notably cost-prohibitive to deploy, particularly for applications involving long-content generation, such as dialogue systems and story writing. Often, a large amount of transient state information, referred to as the KV cache, is stored in GPU memory in addition to model parameters, scaling linearly with the sequence length and batch size. In this paper, we introduce a novel approach for implementing the KV cache which significantly reduces its memory footprint. Our approach is based on the noteworthy observation that a small portion of tokens contributes most of the value when computing attention scores. We call these tokens Heavy Hitters (H$_2$). Through a comprehensive investigation, we find that (i) the emergence of H$_2$ is natural and strongly correlates with the frequent co-occurrence of tokens in the text, and (ii) removing them results in significant performance degradation. Based on these insights, we propose Heavy Hitter Oracle (H$_2$O), a KV cache eviction policy that dynamically retains a balance of recent and H$_2$ tokens. We formulate the KV cache eviction as a dynamic submodular problem and prove (under mild assumptions) a theoretical guarantee for our novel eviction algorithm which could help guide future work. We validate the accuracy of our algorithm with OPT, LLaMA, and GPT-NeoX across a wide range of tasks. Our implementation of H$_2$O with 20% heavy hitters improves the throughput over three leading inference systems DeepSpeed Zero-Inference, Hugging Face Accelerate, and FlexGen by up to 29$\\times$, 29$\\times$, and 3$\\times$ on OPT-6.7B and OPT-30B. With the same batch size, H2O can reduce the latency by up to 1.9$\\times$. The code is available at https://github.com/FMInference/H2O.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6f6e2e0311589a9af045f6acd00b7dee6d19fce4",
+    "externalIds": {
+      "ArXiv": "2305.19466",
+      "DBLP": "conf/nips/KazemnejadPRDR23",
+      "DOI": "10.48550/arXiv.2305.19466",
+      "CorpusId": 258987259
+    },
+    "title": "The Impact of Positional Encoding on Length Generalization in Transformers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 350,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.19466",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.19466, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1754452702",
+        "name": "Amirhossein Kazemnejad"
+      },
+      {
+        "authorId": "8350409",
+        "name": "Inkit Padhi"
+      },
+      {
+        "authorId": "1704263",
+        "name": "K. Ramamurthy"
+      },
+      {
+        "authorId": "1730372",
+        "name": "Payel Das"
+      },
+      {
+        "authorId": "145732771",
+        "name": "Siva Reddy"
+      }
+    ],
+    "abstract": "Length generalization, the ability to generalize from small training context sizes to larger ones, is a critical challenge in the development of Transformer-based language models. Positional encoding (PE) has been identified as a major factor influencing length generalization, but the exact impact of different PE schemes on extrapolation in downstream tasks remains unclear. In this paper, we conduct a systematic empirical study comparing the length generalization performance of decoder-only Transformers with five different position encoding approaches including Absolute Position Embedding (APE), T5's Relative PE, ALiBi, and Rotary, in addition to Transformers without positional encoding (NoPE). Our evaluation encompasses a battery of reasoning and mathematical tasks. Our findings reveal that the most commonly used positional encoding methods, such as ALiBi, Rotary, and APE, are not well suited for length generalization in downstream tasks. More importantly, NoPE outperforms other explicit positional encoding methods while requiring no additional computation. We theoretically demonstrate that NoPE can represent both absolute and relative PEs, but when trained with SGD, it mostly resembles T5's relative PE attention patterns. Finally, we find that scratchpad is not always helpful to solve length generalization and its format highly impacts the model's performance. Overall, our work suggests that explicit position embeddings are not essential for decoder-only Transformers to generalize well to longer sequences.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "af385c0fdd0eda2bbf429bea6fedffc327c8a180",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-16843",
+      "ArXiv": "2305.16843",
+      "ACL": "2023.acl-short.161",
+      "DOI": "10.48550/arXiv.2305.16843",
+      "CorpusId": 258947457
+    },
+    "title": "Randomized Positional Encodings Boost Length Generalization of Transformers",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 132,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.16843",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.16843, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150920166",
+        "name": "Anian Ruoss"
+      },
+      {
+        "authorId": "2133452357",
+        "name": "Gr'egoire Del'etang"
+      },
+      {
+        "authorId": "3081854",
+        "name": "Tim Genewein"
+      },
+      {
+        "authorId": "1399315491",
+        "name": "Jordi Grau-Moya"
+      },
+      {
+        "authorId": "3190548",
+        "name": "R. Csordás"
+      },
+      {
+        "authorId": "1753631148",
+        "name": "Mehdi Abbana Bennani"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "144056327",
+        "name": "J. Veness"
+      }
+    ],
+    "abstract": "Transformers have impressive generalization capabilities on tasks with a fixed context length. However, they fail to generalize to sequences of arbitrary length, even for seemingly simple tasks such as duplicating a string. Moreover, simply training on longer sequences is inefficient due to the quadratic computation complexity of the global attention mechanism. In this work, we demonstrate that this failure mode is linked to positional encodings being out-of-distribution for longer sequences (even for relative encodings) and introduce a novel family of positional encodings that can overcome this problem. Concretely, our randomized positional encoding scheme simulates the positions of longer sequences and randomly selects an ordered subset to fit the sequence’s length. Our large-scale empirical evaluation of 6000 models across 15 algorithmic reasoning tasks shows that our method allows Transformers to generalize to sequences of unseen length (increasing test accuracy by 12.0% on average).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "594d8e1696619f3cebb7c6bffdad8e0a5592f006",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-11062",
+      "ArXiv": "2304.11062",
+      "DOI": "10.48550/arXiv.2304.11062",
+      "CorpusId": 258291566
+    },
+    "title": "Scaling Transformer to 1M tokens and beyond with RMT",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 115,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.11062",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.11062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2176183932",
+        "name": "A. Bulatov"
+      },
+      {
+        "authorId": "51114080",
+        "name": "Yuri Kuratov"
+      },
+      {
+        "authorId": "3359236",
+        "name": "M. Burtsev"
+      }
+    ],
+    "abstract": "A major limitation for the broader scope of problems solvable by transformers is the quadratic scaling of computational complexity with input size. In this study, we investigate the recurrent memory augmentation of pre-trained transformer models to extend input context length while linearly scaling compute. Our approach demonstrates the capability to store information in memory for sequences of up to an unprecedented two million tokens while maintaining high retrieval accuracy. Experiments with language modeling tasks show perplexity improvement as the number of processed input segments increases. These results underscore the effectiveness of our method, which has significant potential to enhance long-term dependency handling in natural language understanding and generation tasks, as well as enable large-scale context processing for memory-intensive applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "66c10bf1f11bc1b2d92204d8f8391d087f6de1c4",
+    "externalIds": {
+      "DBLP": "journals/ijon/SuALPBL24",
+      "ArXiv": "2104.09864",
+      "DOI": "10.1016/j.neucom.2023.127063",
+      "CorpusId": 233307138
+    },
+    "title": "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+    "venue": "Neurocomputing",
+    "year": 2021,
+    "citationCount": 4926,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2104.09864",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.09864, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51111230",
+        "name": "Jianlin Su"
+      },
+      {
+        "authorId": "2140045110",
+        "name": "Yu Lu"
+      },
+      {
+        "authorId": "1382633722",
+        "name": "Shengfeng Pan"
+      },
+      {
+        "authorId": "2079396269",
+        "name": "Bo Wen"
+      },
+      {
+        "authorId": "1807486863",
+        "name": "Yunfeng Liu"
+      }
+    ],
+    "abstract": "Position encoding recently has shown effective in the transformer architecture. It enables valuable supervision for dependency modeling between elements at different positions of the sequence. In this paper, we first investigate various methods to integrate positional information into the learning process of transformer-based language models. Then, we propose a novel method named Rotary Position Embedding(RoPE) to effectively leverage the positional information. Specifically, the proposed RoPE encodes the absolute position with a rotation matrix and meanwhile incorporates the explicit relative position dependency in self-attention formulation. Notably, RoPE enables valuable properties, including the flexibility of sequence length, decaying inter-token dependency with increasing relative distances, and the capability of equipping the linear self-attention with relative position encoding. Finally, we evaluate the enhanced transformer with rotary position embedding, also called RoFormer, on various long text classification benchmark datasets. Our experiments show that it consistently overcomes its alternatives. Furthermore, we provide a theoretical analysis to explain some experimental results. RoFormer is already integrated into Huggingface: \\url{https://huggingface.co/docs/transformers/model_doc/roformer}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "814a4f680b9ba6baba23b93499f4b48af1a27678",
+    "externalIds": {
+      "ArXiv": "2009.03300",
+      "DBLP": "journals/corr/abs-2009-03300",
+      "MAG": "3083410900",
+      "CorpusId": 221516475
+    },
+    "title": "Measuring Massive Multitask Language Understanding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 7786,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.03300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "1380103052",
+        "name": "Andy Zou"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "We propose a new test to measure a text model's multitask accuracy. The test covers 57 tasks including elementary mathematics, US history, computer science, law, and more. To attain high accuracy on this test, models must possess extensive world knowledge and problem solving ability. We find that while most recent models have near random-chance accuracy, the very largest GPT-3 model improves over random chance by almost 20 percentage points on average. However, on every one of the 57 tasks, the best models still need substantial improvements before they can reach expert-level accuracy. Models also have lopsided performance and frequently do not know when they are wrong. Worse, they still have near-random accuracy on some socially important subjects such as morality and law. By comprehensively evaluating the breadth and depth of a model's academic and professional understanding, our test can be used to analyze models across many tasks and to identify important shortcomings.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "044e13d7dd4e0655eb76f0bd00b2c1bdb44e2be3",
+    "externalIds": {
+      "ArXiv": "2007.14062",
+      "DBLP": "journals/corr/abs-2007-14062",
+      "MAG": "3045733172",
+      "CorpusId": 220831004
+    },
+    "title": "Big Bird: Transformers for Longer Sequences",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 2736,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.14062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1771307",
+        "name": "M. Zaheer"
+      },
+      {
+        "authorId": "1947314",
+        "name": "Guru Guruganesh"
+      },
+      {
+        "authorId": "89890133",
+        "name": "Kumar Avinava Dubey"
+      },
+      {
+        "authorId": "1643737606",
+        "name": "J. Ainslie"
+      },
+      {
+        "authorId": "114577307",
+        "name": "Chris Alberti"
+      },
+      {
+        "authorId": "1722671",
+        "name": "Santiago Ontañón"
+      },
+      {
+        "authorId": "38552691",
+        "name": "Philip Pham"
+      },
+      {
+        "authorId": "101210026",
+        "name": "Anirudh Ravula"
+      },
+      {
+        "authorId": "2401629861",
+        "name": "Qifan Wang"
+      },
+      {
+        "authorId": "113906155",
+        "name": "Li Yang"
+      },
+      {
+        "authorId": "143629707",
+        "name": "Amr Ahmed"
+      }
+    ],
+    "abstract": "Transformers-based models, such as BERT, have been one of the most successful deep learning models for NLP. Unfortunately, one of their core limitations is the quadratic dependency (mainly in terms of memory) on the sequence length due to their full attention mechanism. To remedy this, we propose, BigBird, a sparse attention mechanism that reduces this quadratic dependency to linear. We show that BigBird is a universal approximator of sequence functions and is Turing complete, thereby preserving these properties of the quadratic, full attention model. Along the way, our theoretical analysis reveals some of the benefits of having $O(1)$ global tokens (such as CLS), that attend to the entire sequence as part of the sparse attention mechanism. The proposed sparse attention can handle sequences of length up to 8x of what was previously possible using similar hardware. As a consequence of the capability to handle longer context, BigBird drastically improves performance on various NLP tasks such as question answering and summarization. We also propose novel applications to genomics data.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "925ad2897d1b5decbea320d07e99afa9110e09b2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2004-05150",
+      "MAG": "3015468748",
+      "ArXiv": "2004.05150",
+      "CorpusId": 215737171
+    },
+    "title": "Longformer: The Long-Document Transformer",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 5320,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.05150, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46181066",
+        "name": "Iz Beltagy"
+      },
+      {
+        "authorId": "39139825",
+        "name": "Matthew E. Peters"
+      },
+      {
+        "authorId": "2527954",
+        "name": "Arman Cohan"
+      }
+    ],
+    "abstract": "Transformer-based models are unable to process long sequences due to their self-attention operation, which scales quadratically with the sequence length. To address this limitation, we introduce the Longformer with an attention mechanism that scales linearly with sequence length, making it easy to process documents of thousands of tokens or longer. Longformer's attention mechanism is a drop-in replacement for the standard self-attention and combines a local windowed attention with a task motivated global attention. Following prior work on long-sequence transformers, we evaluate Longformer on character-level language modeling and achieve state-of-the-art results on text8 and enwik8. In contrast to most prior work, we also pretrain Longformer and finetune it on a variety of downstream tasks. Our pretrained Longformer consistently outperforms RoBERTa on long document tasks and sets new state-of-the-art results on WikiHop and TriviaQA. We finally introduce the Longformer-Encoder-Decoder (LED), a Longformer variant for supporting long document generative sequence-to-sequence tasks, and demonstrate its effectiveness on the arXiv summarization dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8b0f27bb594b1eaaf493eaf1e2ee723a2b0a19ad",
+    "externalIds": {
+      "MAG": "2946609015",
+      "DBLP": "journals/corr/abs-1905-07830",
+      "ACL": "P19-1472",
+      "ArXiv": "1905.07830",
+      "DOI": "10.18653/v1/P19-1472",
+      "CorpusId": 159041722
+    },
+    "title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 3988,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1472.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.07830, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Recent work by Zellers et al. (2018) introduced a new task of commonsense natural language inference: given an event description such as “A woman sits at a piano,” a machine must select the most likely followup: “She sets her fingers on the keys.” With the introduction of BERT, near human-level performance was reached. Does this mean that machines can perform human level commonsense inference? In this paper, we show that commonsense inference still proves difficult for even state-of-the-art models, by presenting HellaSwag, a new challenge dataset. Though its questions are trivial for humans (>95% accuracy), state-of-the-art models struggle (<48%). We achieve this via Adversarial Filtering (AF), a data collection paradigm wherein a series of discriminators iteratively select an adversarial set of machine-generated wrong answers. AF proves to be surprisingly robust. The key insight is to scale up the length and complexity of the dataset examples towards a critical ‘Goldilocks’ zone wherein generated text is ridiculous to humans, yet often misclassified by state-of-the-art models. Our construction of HellaSwag, and its resulting difficulty, sheds light on the inner workings of deep pretrained models. More broadly, it suggests a new path forward for NLP research, in which benchmarks co-evolve with the evolving state-of-the-art in an adversarial way, so as to present ever-harder challenges.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "1536e8958697c5364f68b2e2448905dbbeb3a0ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1809-02789",
+      "MAG": "2952396187",
+      "ACL": "D18-1260",
+      "ArXiv": "1809.02789",
+      "DOI": "10.18653/v1/D18-1260",
+      "CorpusId": 52183757
+    },
+    "title": "Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 2321,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1260.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.02789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      }
+    ],
+    "abstract": "We present a new kind of question answering dataset, OpenBookQA, modeled after open book exams for assessing human understanding of a subject. The open book that comes with our questions is a set of 1326 elementary level science facts. Roughly 6000 questions probe an understanding of these facts and their application to novel situations. This requires combining an open book fact (e.g., metals conduct electricity) with broad common knowledge (e.g., a suit of armor is made of metal) obtained from other sources. While existing QA datasets over documents or knowledge bases, being generally self-contained, focus on linguistic understanding, OpenBookQA probes a deeper understanding of both the topic—in the context of common knowledge—and the language it is expressed in. Human performance on OpenBookQA is close to 92%, but many state-of-the-art pre-trained QA methods perform surprisingly poorly, worse than several simple neural baselines we develop. Our oracle experiments designed to circumvent the knowledge retrieval bottleneck demonstrate the value of both the open book and additional facts. We leave it as a challenge to solve the retrieval problem in this multi-hop setting and to close the large gap to human performance.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "89979e2ea7ef98369b49b035314bf9abad648c2a",
+    "externalIds": {
+      "DBLP": "conf/iclr/2025",
+      "CorpusId": 278497714
+    },
+    "title": "The Thirteenth International Conference on Learning Representations, ICLR 2025, Singapore, April 24-28, 2025",
+    "venue": "International Conference on Learning Representations",
+    "year": 2025,
+    "citationCount": 38,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "6e5fce29cbd9db7f1053b310df253b6b4b3c2991",
+    "externalIds": {
+      "DBLP": "conf/acl/YuJLWL000Q25",
+      "DOI": "10.18653/v1/2025.findings-acl.316",
+      "CorpusId": 280035249
+    },
+    "title": "Mitigate Position Bias in LLMs via Scaling a Single Hidden States Channel",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 6,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.18653/v1/2025.findings-acl.316?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.18653/v1/2025.findings-acl.316, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275622434",
+        "name": "Yijiong Yu"
+      },
+      {
+        "authorId": "2181120463",
+        "name": "Huiqiang Jiang"
+      },
+      {
+        "authorId": "13289447",
+        "name": "Xufang Luo"
+      },
+      {
+        "authorId": "2108728536",
+        "name": "Qianhui Wu"
+      },
+      {
+        "authorId": "2257359863",
+        "name": "Chin-Yew Lin"
+      },
+      {
+        "authorId": "2305587638",
+        "name": "Dongsheng Li"
+      },
+      {
+        "authorId": "2125051198",
+        "name": "Yuqing Yang"
+      },
+      {
+        "authorId": "2304858305",
+        "name": "Yongfeng Huang"
+      },
+      {
+        "authorId": "2160727304",
+        "name": "Lili Qiu"
+      }
+    ],
+    "abstract": "Long-context language models (LCLMs) can process long context, but still exhibit position bias, also known as “lost in the middle”, which indicates placing key information in the middle of the context will significantly affect performance. To mitigating this, we first explore the micro-level manifestations of position bias, concluding that attention weights are a micro-level expression of position bias. Then we identify that, in addition to position embeddings, positional information in hidden states also contributes to position bias, and it manifests itself in specific channels of hidden states, called positional hidden states. Based on these, we propose a method to mitigate position bias by scaling positional hidden states. Experiments on NaturalQuestions Multi-document QA, KV retrieval and LongBench, using various models including RoPE models, context window-extended models, and Alibi models, demonstrate the effectiveness and generalizability of our approach. Our method can improve performance by up to 15.2% in “lost in the mid-dle” benchmark by modifying just one channel of hidden states. Our code is available at https://aka.ms/PositionalHidden .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "92e121c6e114fe3cfb89370df03847c66a9b4e28",
+    "externalIds": {
+      "CorpusId": 199370376
+    },
+    "title": "An Adversarial Winograd Schema Challenge at Scale",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 2999,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2325708",
+        "name": "Keisuke Sakaguchi"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "1857797",
+        "name": "Chandra Bhagavatula"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": []
+  }
+]

@@ -1,0 +1,1326 @@
+[
+  {
+    "paperId": "6a5c0fc737b6fbd6672fc4265b5e0ca38de17416",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2002-05645",
+      "MAG": "3006131567",
+      "ArXiv": "2002.05645",
+      "CorpusId": 211096822
+    },
+    "title": "Training Large Neural Networks with Constant Memory using a New Execution Algorithm",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 72,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.05645, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2400372",
+        "name": "B. Pudipeddi"
+      },
+      {
+        "authorId": "2351557",
+        "name": "Maral Mesmakhosroshahi"
+      },
+      {
+        "authorId": "2679708",
+        "name": "Jinwen Xi"
+      },
+      {
+        "authorId": "31482508",
+        "name": "S. Bharadwaj"
+      }
+    ],
+    "abstract": "Widely popular transformer-based NLP models such as BERT and Turing-NLG have enormous capacity trending to billions of parameters. Current execution methods demand brute-force resources such as HBM devices and high speed interconnectivity for data parallelism. In this paper, we introduce a new relay-style execution technique called L2L (layer-to-layer) where at any given moment, the device memory is primarily populated only with the executing layer(s)'s footprint. The model resides in the DRAM memory attached to either a CPU or an FPGA as an entity we call eager param-server (EPS). To overcome the bandwidth issues of shuttling parameters to and from EPS, the model is executed a layer at a time across many micro-batches instead of the conventional method of minibatches over whole model. L2L is implemented using 16GB V100 devices for BERT-Large running it with a device batch size of up to 256. Our results show 45% reduction in memory and 40% increase in the throughput compared to the state-of-the-art baseline. L2L is also able to fit models up to 50 Billion parameters on a machine with a single 16GB V100 and 512GB CPU memory and without requiring any model partitioning. L2L scales to arbitrary depth allowing researchers to develop on affordable devices which is a big step toward democratizing AI. By running the optimizer in the host EPS, we show a new form of mixed precision for faster throughput and convergence. In addition, the EPS enables dynamic neural architecture approaches by varying layers across iterations. Finally, we also propose and demonstrate a constant memory variation of L2L and we propose future enhancements. This work has been performed on GPUs first, but also targeted towards all high TFLOPS/Watt accelerators.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e6c561d02500b2596a230b341a8eb8b921ca5bf2",
+    "externalIds": {
+      "MAG": "3001279689",
+      "ArXiv": "2001.08361",
+      "DBLP": "journals/corr/abs-2001-08361",
+      "CorpusId": 210861095
+    },
+    "title": "Scaling Laws for Neural Language Models",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 7651,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.08361, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "We study empirical scaling laws for language model performance on the cross-entropy loss. The loss scales as a power-law with model size, dataset size, and the amount of compute used for training, with some trends spanning more than seven orders of magnitude. Other architectural details such as network width or depth have minimal effects within a wide range. Simple equations govern the dependence of overfitting on model/dataset size and the dependence of training speed on model size. These relationships allow us to determine the optimal allocation of a fixed compute budget. Larger models are significantly more sample-efficient, such that optimally compute-efficient training involves training very large models on a relatively modest amount of data and stopping significantly before convergence.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3fd7c9ba742dd2b435afa75217847e5087e2f2a8",
+    "externalIds": {
+      "DBLP": "conf/sosp/NarayananHPSDGG19",
+      "MAG": "2969388332",
+      "DOI": "10.1145/3341301.3359646",
+      "CorpusId": 202488191
+    },
+    "title": "PipeDream: generalized pipeline parallelism for DNN training",
+    "venue": "Symposium on Operating Systems Principles",
+    "year": 2019,
+    "citationCount": 1133,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3341301.3359646?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3341301.3359646, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "22252150",
+        "name": "D. Narayanan"
+      },
+      {
+        "authorId": "3459901",
+        "name": "A. Harlap"
+      },
+      {
+        "authorId": "3078275",
+        "name": "Amar Phanishayee"
+      },
+      {
+        "authorId": "1720084",
+        "name": "Vivek Seshadri"
+      },
+      {
+        "authorId": "7692691",
+        "name": "Nikhil R. Devanur"
+      },
+      {
+        "authorId": "1707164",
+        "name": "G. Ganger"
+      },
+      {
+        "authorId": "1974678",
+        "name": "Phillip B. Gibbons"
+      },
+      {
+        "authorId": "143834867",
+        "name": "M. Zaharia"
+      }
+    ],
+    "abstract": "DNN training is extremely time-consuming, necessitating efficient multi-accelerator parallelization. Current approaches to parallelizing training primarily use intra-batch parallelization, where a single iteration of training is split over the available workers, but suffer from diminishing returns at higher worker counts. We present PipeDream, a system that adds inter-batch pipelining to intra-batch parallelism to further improve parallel training throughput, helping to better overlap computation with communication and reduce the amount of communication when possible. Unlike traditional pipelining, DNN training is bi-directional, where a forward pass through the computation graph is followed by a backward pass that uses state and intermediate data computed during the forward pass. Naïve pipelining can thus result in mismatches in state versions used in the forward and backward passes, or excessive pipeline flushes and lower hardware efficiency. To address these challenges, PipeDream versions model parameters for numerically correct gradient computations, and schedules forward and backward passes of different minibatches concurrently on different workers with minimal pipeline stalls. PipeDream also automatically partitions DNN layers among workers to balance work and minimize communication. Extensive experimentation with a range of DNN tasks, models, and hardware configurations shows that PipeDream trains models to high accuracy up to 5.3X faster than commonly used intra-batch parallelism techniques.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
+    "externalIds": {
+      "MAG": "2981852735",
+      "DBLP": "journals/corr/abs-1910-10683",
+      "ArXiv": "1910.10683",
+      "CorpusId": 204838007
+    },
+    "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+    "venue": "Journal of machine learning research",
+    "year": 2019,
+    "citationCount": 25339,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.10683, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2402716",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "145625142",
+        "name": "Adam Roberts"
+      },
+      {
+        "authorId": "3844009",
+        "name": "Katherine Lee"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "1380243217",
+        "name": "Michael Matena"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "2157338362",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      }
+    ],
+    "abstract": "Transfer learning, where a model is first pre-trained on a data-rich task before being fine-tuned on a downstream task, has emerged as a powerful technique in natural language processing (NLP). The effectiveness of transfer learning has given rise to a diversity of approaches, methodology, and practice. In this paper, we explore the landscape of transfer learning techniques for NLP by introducing a unified framework that converts every language problem into a text-to-text format. Our systematic study compares pre-training objectives, architectures, unlabeled datasets, transfer approaches, and other factors on dozens of language understanding tasks. By combining the insights from our exploration with scale and our new \"Colossal Clean Crawled Corpus\", we achieve state-of-the-art results on many benchmarks covering summarization, question answering, text classification, and more. To facilitate future work on transfer learning for NLP, we release our dataset, pre-trained models, and code.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fd431005d26100f5453590080683cbae9dc1189f",
+    "externalIds": {
+      "ArXiv": "1910.02653",
+      "MAG": "3037639655",
+      "DBLP": "journals/corr/abs-1910-02653",
+      "CorpusId": 203837073
+    },
+    "title": "Checkmate: Breaking the Memory Wall with Optimal Tensor Rematerialization",
+    "venue": "Conference on Machine Learning and Systems",
+    "year": 2019,
+    "citationCount": 237,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.02653, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2066974703",
+        "name": "Paras Jain"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1383116857",
+        "name": "Aniruddha Nrusimha"
+      },
+      {
+        "authorId": "10419477",
+        "name": "A. Gholami"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1732330",
+        "name": "K. Keutzer"
+      },
+      {
+        "authorId": "2055174324",
+        "name": "Ion Stoica"
+      },
+      {
+        "authorId": "49988044",
+        "name": "Joseph E. Gonzalez"
+      }
+    ],
+    "abstract": "We formalize the problem of trading-off DNN training time and memory requirements as the tensor rematerialization optimization problem, a generalization of prior checkpointing strategies. We introduce Checkmate, a system that solves for optimal rematerialization schedules in reasonable times (under an hour) using off-the-shelf MILP solvers or near-optimal schedules with an approximation algorithm, then uses these schedules to accelerate millions of training iterations. Our method scales to complex, realistic architectures and is hardware-aware through the use of accelerator-specific, profile-based cost models. In addition to reducing training cost, Checkmate enables real-world networks to be trained with up to 5.1x larger input sizes. Checkmate is an open-source project, available at this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8323c591e119eb09b28b29fd6c7bc76bd889df7a",
+    "externalIds": {
+      "MAG": "2973727699",
+      "ArXiv": "1909.08053",
+      "DBLP": "journals/corr/abs-1909-08053",
+      "CorpusId": 202660670
+    },
+    "title": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 2687,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.08053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1911755",
+        "name": "M. Shoeybi"
+      },
+      {
+        "authorId": "66870756",
+        "name": "M. Patwary"
+      },
+      {
+        "authorId": "41158993",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "3081566",
+        "name": "P. LeGresley"
+      },
+      {
+        "authorId": "48991386",
+        "name": "J. Casper"
+      },
+      {
+        "authorId": "2301680",
+        "name": "Bryan Catanzaro"
+      }
+    ],
+    "abstract": "Recent work in language modeling demonstrates that training large transformer models advances the state of the art in Natural Language Processing applications. However, very large models can be quite difficult to train due to memory constraints. In this work, we present our techniques for training very large transformer models and implement a simple, efficient intra-layer model parallel approach that enables training transformer models with billions of parameters. Our approach does not require a new compiler or library changes, is orthogonal and complimentary to pipeline model parallelism, and can be fully implemented with the insertion of a few communication operations in native PyTorch. We illustrate this approach by converging transformer based models up to 8.3 billion parameters using 512 GPUs. We sustain 15.1 PetaFLOPs across the entire application with 76% scaling efficiency when compared to a strong single GPU baseline that sustains 39 TeraFLOPs, which is 30% of peak FLOPs. To demonstrate that large language models can further advance the state of the art (SOTA), we train an 8.3 billion parameter transformer language model similar to GPT-2 and a 3.9 billion parameter model similar to BERT. We show that careful attention to the placement of layer normalization in BERT-like models is critical to achieving increased performance as the model size grows. Using the GPT-2 model we achieve SOTA results on the WikiText103 (10.8 compared to SOTA perplexity of 15.8) and LAMBADA (66.5% compared to SOTA accuracy of 63.2%) datasets. Our BERT model achieves SOTA results on the RACE dataset (90.9% compared to SOTA accuracy of 89.4%).",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "077f8329a7b6fa3b7c877a57b81eb6c18b5f87de",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1907-11692",
+      "ArXiv": "1907.11692",
+      "MAG": "2965373594",
+      "CorpusId": 198953378
+    },
+    "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 29343,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.11692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "11323179",
+        "name": "Yinhan Liu"
+      },
+      {
+        "authorId": "40511414",
+        "name": "Myle Ott"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "3048577",
+        "name": "Jingfei Du"
+      },
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "39455775",
+        "name": "Omer Levy"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      },
+      {
+        "authorId": "1759422",
+        "name": "Veselin Stoyanov"
+      }
+    ],
+    "abstract": "Language model pretraining has led to significant performance gains but careful comparison between different approaches is challenging. Training is computationally expensive, often done on private datasets of different sizes, and, as we will show, hyperparameter choices have significant impact on the final results. We present a replication study of BERT pretraining (Devlin et al., 2019) that carefully measures the impact of many key hyperparameters and training data size. We find that BERT was significantly undertrained, and can match or exceed the performance of every model published after it. Our best model achieves state-of-the-art results on GLUE, RACE and SQuAD. These results highlight the importance of previously overlooked design choices, and raise questions about the source of recently reported improvements. We release our models and code.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3c6dca9041f54583aeab60587c9e6e9272104dc1",
+    "externalIds": {
+      "MAG": "2930786691",
+      "DBLP": "journals/corr/abs-1904-00962",
+      "CorpusId": 90242403
+    },
+    "title": "Reducing BERT Pre-Training Time from 3 Days to 76 Minutes",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 125,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144259229",
+        "name": "Yang You"
+      },
+      {
+        "authorId": "2152907411",
+        "name": "Jing Li"
+      },
+      {
+        "authorId": "50157269",
+        "name": "Jonathan Hseu"
+      },
+      {
+        "authorId": "1718192",
+        "name": "Xiaodan Song"
+      },
+      {
+        "authorId": "1700326",
+        "name": "J. Demmel"
+      },
+      {
+        "authorId": "1793529",
+        "name": "Cho-Jui Hsieh"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e5b2843d3fbb3260a3f84872230ed1437552b131",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1901-11150",
+      "MAG": "2912018747",
+      "ArXiv": "1901.11150",
+      "CorpusId": 202565730
+    },
+    "title": "Memory-Efficient Adaptive Optimization for Large-Scale Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 50,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.11150, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1508890387",
+        "name": "Rohan Anil"
+      },
+      {
+        "authorId": "50811638",
+        "name": "Vineet Gupta"
+      },
+      {
+        "authorId": "1711492",
+        "name": "Tomer Koren"
+      },
+      {
+        "authorId": "1740765",
+        "name": "Y. Singer"
+      }
+    ],
+    "abstract": "Adaptive gradient-based optimizers such as AdaGrad and Adam are among the methods of choice in modern machine learning. These methods maintain second-order statistics of each parameter, thus doubling the memory footprint of the optimizer. In behemoth-size applications, this memory overhead restricts the size of the model being used as well as the number of examples in a mini-batch. We describe a novel, simple, and flexible adaptive optimization method with sublinear memory cost that retains the benefits of per-parameter adaptivity while allowing for larger models and mini-batches. We give convergence guarantees for our method and demonstrate its effectiveness in training very large deep models.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "eefa0df7c5678fa6004f8b48dbbc1c2696702fee",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1812-06162",
+      "ArXiv": "1812.06162",
+      "MAG": "2903697572",
+      "CorpusId": 56262183
+    },
+    "title": "An Empirical Model of Large-Batch Training",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 391,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.06162, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "52238704",
+        "name": "OpenAI Dota Team"
+      }
+    ],
+    "abstract": "In an increasing number of domains it has been demonstrated that deep learning models can be trained using relatively large batch sizes without sacrificing data efficiency. However the limits of this massive data parallelism seem to differ from domain to domain, ranging from batches of tens of thousands in ImageNet to batches of millions in RL agents that play the game Dota 2. To our knowledge there is limited conceptual understanding of why these limits to batch size differ or how we might choose the correct batch size in a new domain. In this paper, we demonstrate that a simple and easy-to-measure statistic called the gradient noise scale predicts the largest useful batch size across many domains and applications, including a number of supervised learning datasets (MNIST, SVHN, CIFAR-10, ImageNet, Billion Word), reinforcement learning domains (Atari and Dota), and even generative model training (autoencoders on SVHN). We find that the noise scale increases as the loss decreases over a training run and depends on the model size primarily through improved model performance. Our empirically-motivated theory also describes the tradeoff between compute-efficiency and time-efficiency, and provides a rough model of the benefits of adaptive batch-size training.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d79a26226393f687ddbc375e32055b40b8ad8d38",
+    "externalIds": {
+      "MAG": "2991040477",
+      "DBLP": "conf/nips/HuangCBFCCLNLWC19",
+      "CorpusId": 53670168
+    },
+    "title": "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 2054,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "50607661",
+        "name": "Yonglong Cheng"
+      },
+      {
+        "authorId": "7167328",
+        "name": "Dehao Chen"
+      },
+      {
+        "authorId": "34946720",
+        "name": "HyoukJoong Lee"
+      },
+      {
+        "authorId": "2020608",
+        "name": "Jiquan Ngiam"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2270b8628fd8ca67ae39d277f45bc3c38ac63d5f",
+    "externalIds": {
+      "ArXiv": "1811.02084",
+      "DBLP": "journals/corr/abs-1811-02084",
+      "MAG": "2963351145",
+      "CorpusId": 53236433
+    },
+    "title": "Mesh-TensorFlow: Deep Learning for Supercomputers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 433,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.02084, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "73416451",
+        "name": "Youlong Cheng"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "47497262",
+        "name": "Dustin Tran"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "3344182",
+        "name": "Penporn Koanantakool"
+      },
+      {
+        "authorId": "2052793706",
+        "name": "Peter G. Hawkins"
+      },
+      {
+        "authorId": "34946720",
+        "name": "HyoukJoong Lee"
+      },
+      {
+        "authorId": "2069751443",
+        "name": "Mingsheng Hong"
+      },
+      {
+        "authorId": "39660914",
+        "name": "C. Young"
+      },
+      {
+        "authorId": "35474601",
+        "name": "Ryan Sepassi"
+      },
+      {
+        "authorId": "3135881",
+        "name": "Blake A. Hechtman"
+      }
+    ],
+    "abstract": "Batch-splitting (data-parallelism) is the dominant distributed Deep Neural Network (DNN) training strategy, due to its universal applicability and its amenability to Single-Program-Multiple-Data (SPMD) programming. However, batch-splitting suffers from problems including the inability to train very large models (due to memory constraints), high latency, and inefficiency at small batch sizes. All of these can be solved by more general distribution strategies (model-parallelism). Unfortunately, efficient model-parallel algorithms tend to be complicated to discover, describe, and to implement, particularly on large clusters. We introduce Mesh-TensorFlow, a language for specifying a general class of distributed tensor computations. Where data-parallelism can be viewed as splitting tensors and operations along the \"batch\" dimension, in Mesh-TensorFlow, the user can specify any tensor-dimensions to be split across any dimensions of a multi-dimensional mesh of processors. A Mesh-TensorFlow graph compiles into a SPMD program consisting of parallel operations coupled with collective communication primitives such as Allreduce. We use Mesh-TensorFlow to implement an efficient data-parallel, model-parallel version of the Transformer sequence-to-sequence model. Using TPU meshes of up to 512 cores, we train Transformer models with up to 5 billion parameters, surpassing state of the art results on WMT'14 English-to-French translation task and the one-billion-word language modeling benchmark. Mesh-Tensorflow is available at this https URL .",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "7dd7198bb8a61dd22879068e8c4619b32f0470f8",
+    "externalIds": {
+      "MAG": "2952760404",
+      "DBLP": "conf/eurosys/WangHL19",
+      "ArXiv": "1807.08887",
+      "DOI": "10.1145/3302424.3303953",
+      "CorpusId": 50780068
+    },
+    "title": "Supporting Very Large Models using Automatic Dataflow Graph Partitioning",
+    "venue": "European Conference on Computer Systems",
+    "year": 2018,
+    "citationCount": 171,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1807.08887",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.08887, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1508337194",
+        "name": "Minjie Wang"
+      },
+      {
+        "authorId": "153622443",
+        "name": "Chien-chin Huang"
+      },
+      {
+        "authorId": "46276184",
+        "name": "Jinyang Li"
+      }
+    ],
+    "abstract": "This paper presents Tofu, a system that partitions very large DNN models across multiple GPU devices to reduce per-GPU memory footprint. Tofu is designed to partition a dataflow graph of fine-grained tensor operators used by platforms like MXNet and TensorFlow. In order to automatically partition each operator, we propose to describe the semantics of an operator in a simple language inspired by Halide. To optimally partition different operators in a dataflow graph, Tofu uses a recursive search algorithm that minimizes the total communication cost. Our experiments on an 8-GPU machine show that Tofu enables the training of very large CNN and RNN models. It also achieves 25% - 400% speedup over alternative approaches to train very large models.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ed9dfd432361e428ee084fb43d6165d388e0d887",
+    "externalIds": {
+      "MAG": "2809901035",
+      "ArXiv": "1807.02037",
+      "DBLP": "journals/corr/abs-1807-02037",
+      "CorpusId": 49576264
+    },
+    "title": "TFLMS: Large Model Support in TensorFlow by Graph Rewriting",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 53,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.02037, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34306980",
+        "name": "Tung D. Le"
+      },
+      {
+        "authorId": "8157092",
+        "name": "Haruki Imai"
+      },
+      {
+        "authorId": "1724292",
+        "name": "Yasushi Negishi"
+      },
+      {
+        "authorId": "1697424",
+        "name": "K. Kawachiya"
+      }
+    ],
+    "abstract": "While accelerators such as GPUs have limited memory, deep neural networks are becoming larger and will not fit with the memory limitation of accelerators for training. We propose an approach to tackle this problem by rewriting the computational graph of a neural network, in which swap-out and swap-in operations are inserted to temporarily store intermediate results on CPU memory. In particular, we first revise the concept of a computational graph by defining a concrete semantics for variables in a graph. We then formally show how to derive swap-out and swap-in operations from an existing graph and present rules to optimize the graph. To realize our approach, we developed a module in TensorFlow, named TFLMS. TFLMS is published as a pull request in the TensorFlow repository for contributing to the TensorFlow community. With TFLMS, we were able to train ResNet-50 and 3DUnet with 4.7x and 2x larger batch size, respectively. In particular, we were able to train 3DUNet using images of size of $192^3$ for image segmentation, which, without TFLMS, had been done only by dividing the images to smaller images, which affects the accuracy.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c314d97d75b4a988b106ddcec8a40a4d3bcdb8bd",
+    "externalIds": {
+      "ArXiv": "1806.03377",
+      "MAG": "2807147113",
+      "DBLP": "journals/corr/abs-1806-03377",
+      "CorpusId": 47016772
+    },
+    "title": "PipeDream: Fast and Efficient Pipeline Parallel DNN Training",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 298,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.03377, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3459901",
+        "name": "A. Harlap"
+      },
+      {
+        "authorId": "22252150",
+        "name": "D. Narayanan"
+      },
+      {
+        "authorId": "3078275",
+        "name": "Amar Phanishayee"
+      },
+      {
+        "authorId": "1720084",
+        "name": "Vivek Seshadri"
+      },
+      {
+        "authorId": "7692691",
+        "name": "Nikhil R. Devanur"
+      },
+      {
+        "authorId": "1707164",
+        "name": "G. Ganger"
+      },
+      {
+        "authorId": "1974678",
+        "name": "Phillip B. Gibbons"
+      }
+    ],
+    "abstract": "PipeDream is a Deep Neural Network(DNN) training system for GPUs that parallelizes computation by pipelining execution across multiple machines. Its pipeline parallel computing model avoids the slowdowns faced by data-parallel training when large models and/or limited network bandwidth induce high communication-to-computation ratios. PipeDream reduces communication by up to 95% for large DNNs relative to data-parallel training, and allows perfect overlap of communication and computation. PipeDream keeps all available GPUs productive by systematically partitioning DNN layers among them to balance work and minimize communication, versions model parameters for backward pass correctness, and schedules the forward and backward passes of different inputs in round-robin fashion to optimize \"time to target accuracy\". Experiments with five different DNNs on two different clusters show that PipeDream is up to 5x faster in time-to-accuracy compared to data-parallel training.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "aa0e749388e10318d9bfab43400e1f303a9e7394",
+    "externalIds": {
+      "DBLP": "conf/isca/JainPMTP18",
+      "MAG": "2883283076",
+      "DOI": "10.1109/ISCA.2018.00070",
+      "CorpusId": 44157904
+    },
+    "title": "Gist: Efficient Data Encoding for Deep Neural Network Training",
+    "venue": "International Symposium on Computer Architecture",
+    "year": 2018,
+    "citationCount": 153,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ISCA.2018.00070?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ISCA.2018.00070, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2626493",
+        "name": "Animesh Jain"
+      },
+      {
+        "authorId": "3078275",
+        "name": "Amar Phanishayee"
+      },
+      {
+        "authorId": "144603405",
+        "name": "Jason Mars"
+      },
+      {
+        "authorId": "2235128",
+        "name": "Lingjia Tang"
+      },
+      {
+        "authorId": "3257164",
+        "name": "Gennady Pekhimenko"
+      }
+    ],
+    "abstract": "Modern deep neural networks (DNNs) training typically relies on GPUs to train complex hundred-layer deep networks. A significant problem facing both researchers and industry practitioners is that, as the networks get deeper, the available GPU main memory becomes a primary bottleneck, limiting the size of networks it can train. In this paper, we investigate widely used DNNs and find that the major contributors to memory footprint are intermediate layer outputs (feature maps). We then introduce a framework for DNN-layer-specific optimizations (e.g., convolution, ReLU, pool) that significantly reduce this source of main memory pressure on GPUs. We find that a feature map typically has two uses that are spread far apart temporally. Our key approach is to store an encoded representation of feature maps for this temporal gap and decode this data for use in the backward pass; the full-fidelity feature maps are used in the forward pass and relinquished immediately. Based on this approach, we present Gist, our system that employs two classes of layer-specific encoding schemes – lossless and lossy – to exploit existing value redundancy in DNN training to significantly reduce the memory consumption of targeted feature maps. For example, one insight is by taking advantage of the computational nature of back propagation from pool to ReLU layer, we can store the intermediate feature map using just 1 bit instead of 32 bits per value. We deploy these mechanisms in a state-of-the-art DNN framework (CNTK) and observe that Gist reduces the memory footprint to upto 2x across 5 state-of-the-art image classification DNNs, with an average of 1.8x with only 4% performance overhead. We also show that further software (e.g., CuDNN) and hardware (e.g., dynamic allocation) optimizations can result in even larger footprint reduction (upto 4.1x).",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "54a13bcc9613dcaa76fb25fbe96572f376cfcca9",
+    "externalIds": {
+      "MAG": "2949215200",
+      "ArXiv": "1804.04235",
+      "DBLP": "conf/icml/ShazeerS18",
+      "CorpusId": 4786918
+    },
+    "title": "Adafactor: Adaptive Learning Rates with Sublinear Memory Cost",
+    "venue": "International Conference on Machine Learning",
+    "year": 2018,
+    "citationCount": 1252,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.04235, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "144872294",
+        "name": "Mitchell Stern"
+      }
+    ],
+    "abstract": "In several recently proposed stochastic optimization methods (e.g. RMSProp, Adam, Adadelta), parameter updates are scaled by the inverse square roots of exponential moving averages of squared past gradients. Maintaining these per-parameter second-moment estimators requires memory equal to the number of parameters. For the case of neural network weight matrices, we propose maintaining only the per-row and per-column sums of these moving averages, and estimating the per-parameter second moments based on these sums. We demonstrate empirically that this method produces similar results to the baseline. Secondly, we show that adaptive methods can produce larger-than-desired updates when the decay rate of the second moment accumulator is too slow. We propose update clipping and a gradually increasing decay rate scheme as remedies. Combining these methods and dropping momentum, we achieve comparable results to the published Adam regime in training the Transformer model on the WMT 2014 English-German machine translation task, while using very little auxiliary storage in the optimizer. Finally, we propose scaling the parameter updates based on the scale of the parameters themselves.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e2c8726d092aea573e69f5b0a2654225883cfacf",
+    "externalIds": {
+      "MAG": "2787998955",
+      "DBLP": "journals/corr/abs-1802-05799",
+      "ArXiv": "1802.05799",
+      "CorpusId": 3398835
+    },
+    "title": "Horovod: fast and easy distributed deep learning in TensorFlow",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 1362,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.05799, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064034552",
+        "name": "Alexander Sergeev"
+      },
+      {
+        "authorId": "35816153",
+        "name": "Mike Del Balso"
+      }
+    ],
+    "abstract": "Training modern deep learning models requires large amounts of computation, often provided by GPUs. Scaling computation from one GPU to many can enable much faster training and research progress but entails two complications. First, the training library must support inter-GPU communication. Depending on the particular methods employed, this communication may entail anywhere from negligible to significant overhead. Second, the user must modify his or her training code to take advantage of inter-GPU communication. Depending on the training library's API, the modification required may be either significant or minimal. \nExisting methods for enabling multi-GPU training under the TensorFlow library entail non-negligible communication overhead and require users to heavily modify their model-building code, leading many researchers to avoid the whole mess and stick with slower single-GPU training. In this paper we introduce Horovod, an open source library that improves on both obstructions to scaling: it employs efficient inter-GPU communication via ring reduction and requires only a few lines of modification to user code, enabling faster, easier distributed training in TensorFlow. Horovod is available under the Apache 2.0 license at this https URL",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ca45e17cf41cf1fd0aa7c9536f0a27bc0f4d3b33",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1801-04380",
+      "MAG": "2783292547",
+      "ArXiv": "1801.04380",
+      "DOI": "10.1145/3178487.3178491",
+      "CorpusId": 3385866
+    },
+    "title": "Superneurons: dynamic GPU memory management for training deep neural networks",
+    "venue": "ACM SIGPLAN Symposium on Principles & Practice of Parallel Programming",
+    "year": 2018,
+    "citationCount": 291,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3200691.3178491?download=true",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.04380, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3221830",
+        "name": "Linnan Wang"
+      },
+      {
+        "authorId": "7173620",
+        "name": "Jinmian Ye"
+      },
+      {
+        "authorId": "2109893289",
+        "name": "Yiyang Zhao"
+      },
+      {
+        "authorId": "39533001",
+        "name": "Wei Wu"
+      },
+      {
+        "authorId": "2108667898",
+        "name": "Ang Li"
+      },
+      {
+        "authorId": "1798309",
+        "name": "S. Song"
+      },
+      {
+        "authorId": "1683510",
+        "name": "Zenglin Xu"
+      },
+      {
+        "authorId": "1746961",
+        "name": "Tim Kraska"
+      }
+    ],
+    "abstract": "Going deeper and wider in neural architectures improves their accuracy, while the limited GPU DRAM places an undesired restriction on the network design domain. Deep Learning (DL) practitioners either need to change to less desired network architectures, or nontrivially dissect a network across multiGPUs. These distract DL practitioners from concentrating on their original machine learning tasks. We present SuperNeurons: a dynamic GPU memory scheduling runtime to enable the network training far beyond the GPU DRAM capacity. SuperNeurons features 3 memory optimizations, Liveness Analysis, Unified Tensor Pool, and Cost-Aware Recomputation; together they effectively reduce the network-wide peak memory usage down to the maximal memory usage among layers. We also address the performance issues in these memory-saving techniques. Given the limited GPU DRAM, SuperNeurons not only provisions the necessary memory for the training, but also dynamically allocates the memory for convolution workspaces to achieve the high performance. Evaluations against Caffe, Torch, MXNet and TensorFlow have demonstrated that SuperNeurons trains at least 3.2432 deeper network than current ones with the leading performance. Particularly, SuperNeurons can train ResNet2500 that has 104 basic network layers on a 12GB K40c.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e7fd6848cb29ca221a7e17d823e06fb566f1f135",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1710-03740",
+      "ArXiv": "1710.03740",
+      "MAG": "2963112338",
+      "CorpusId": 3297437
+    },
+    "title": "Mixed Precision Training",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 2314,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.03740, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1802359",
+        "name": "P. Micikevicius"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "67038137",
+        "name": "Jonah Alben"
+      },
+      {
+        "authorId": "2040049",
+        "name": "G. Diamos"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "2082313059",
+        "name": "David García"
+      },
+      {
+        "authorId": "31963005",
+        "name": "Boris Ginsburg"
+      },
+      {
+        "authorId": "122523478",
+        "name": "Michael Houston"
+      },
+      {
+        "authorId": "2787022",
+        "name": "Oleksii Kuchaiev"
+      },
+      {
+        "authorId": "145595812",
+        "name": "Ganesh Venkatesh"
+      },
+      {
+        "authorId": "1491232360",
+        "name": "Hao Wu"
+      }
+    ],
+    "abstract": "Deep neural networks have enabled progress in a wide variety of applications. Growing the size of the neural network typically results in improved accuracy. As model sizes grow, the memory and compute requirements for training these models also increases. We introduce a technique to train deep neural networks using half precision floating point numbers. In our technique, weights, activations and gradients are stored in IEEE half-precision format. Half-precision floating numbers have limited numerical range compared to single-precision numbers. We propose two techniques to handle this loss of information. Firstly, we recommend maintaining a single-precision copy of the weights that accumulates the gradients after each optimizer step. This single-precision copy is rounded to half-precision format during training. Secondly, we propose scaling the loss appropriately to handle the loss of information with half-precision gradients. We demonstrate that this approach works for a wide variety of models including convolution neural networks, recurrent neural networks and generative adversarial networks. This technique works for large scale models with more than 100 million parameters trained on large datasets. Using this approach, we can reduce the memory consumption of deep learning models by nearly 2x. In future processors, we can also expect a significant computation speedup using half-precision hardware units.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e6e64043c66b83a8787a69a70d7c0a85fd9d23c3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1708-03888",
+      "MAG": "2749988060",
+      "CorpusId": 5919268
+    },
+    "title": "Scaling SGD Batch Size to 32K for ImageNet Training",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 422,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144259229",
+        "name": "Yang You"
+      },
+      {
+        "authorId": "25683112",
+        "name": "Igor Gitman"
+      },
+      {
+        "authorId": "31963005",
+        "name": "Boris Ginsburg"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "942deb7d865b7782c03176d95e3a0d56cb71009e",
+    "externalIds": {
+      "DBLP": "journals/corr/ChenXZG16",
+      "ArXiv": "1604.06174",
+      "MAG": "2338908902",
+      "CorpusId": 15865278
+    },
+    "title": "Training Deep Nets with Sublinear Memory Cost",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 1421,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1604.06174, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1913774",
+        "name": "Tianqi Chen"
+      },
+      {
+        "authorId": "2113742783",
+        "name": "Bing Xu"
+      },
+      {
+        "authorId": "151505981",
+        "name": "Chiyuan Zhang"
+      },
+      {
+        "authorId": "1730156",
+        "name": "Carlos Guestrin"
+      }
+    ],
+    "abstract": "We propose a systematic approach to reduce the memory consumption of deep neural network training. Specifically, we design an algorithm that costs O( √ n) memory to train a n layer network, with only the computational cost of an extra forward pass per mini-batch. As many of the state-of-the-art models hit the upper bound of the GPU memory, our algorithm allows deeper and more complex models to be explored, and helps advance the innovations in deep learning research. We focus on reducing the memory cost to store the intermediate feature maps and gradients during training. Computation graph analysis is used for automatic in-place operation and memory sharing optimizations. We show that it is possible to trade computation for memory giving a more memory efficient training algorithm with a little extra computation cost. In the extreme case, our analysis also shows that the memory consumption can be reduced to O(logn) with as little as O(n logn) extra cost for forward computation. Our experiments show that we can reduce the memory cost of a 1,000-layer deep residual network from 48G to 7G on ImageNet problems. Similarly, significant memory cost reduction is observed in training complex recurrent neural networks on very long sequences.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b1ee2e7040c396e2002022f876abc6dec61aa501",
+    "externalIds": {
+      "MAG": "2964174152",
+      "DBLP": "conf/micro/RhuGCZK16",
+      "DOI": "10.1109/MICRO.2016.7783721",
+      "CorpusId": 3776655
+    },
+    "title": "vDNN: Virtualized deep neural networks for scalable, memory-efficient neural network design",
+    "venue": "Micro",
+    "year": 2016,
+    "citationCount": 466,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1602.08124",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/MICRO.2016.7783721?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/MICRO.2016.7783721, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1998820",
+        "name": "Minsoo Rhu"
+      },
+      {
+        "authorId": "3365851",
+        "name": "N. Gimelshein"
+      },
+      {
+        "authorId": "144334042",
+        "name": "Jason Clemons"
+      },
+      {
+        "authorId": "2908881",
+        "name": "A. Zulfiqar"
+      },
+      {
+        "authorId": "1715863",
+        "name": "S. Keckler"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "externalIds": {
+      "MAG": "2964121744",
+      "DBLP": "journals/corr/KingmaB14",
+      "ArXiv": "1412.6980",
+      "CorpusId": 6628106
+    },
+    "title": "Adam: A Method for Stochastic Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 165311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "413c1142de9d91804d6d11c67ff3fed59c9fc279",
+    "externalIds": {
+      "MAG": "2405601855",
+      "DBLP": "journals/jmlr/DuchiHS11",
+      "DOI": "10.5555/1953048.2021068",
+      "CorpusId": 538820
+    },
+    "title": "Adaptive Subgradient Methods for Online Learning and Stochastic Optimization",
+    "venue": "Journal of machine learning research",
+    "year": 2011,
+    "citationCount": 11244,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.5555/1953048.2021068?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5555/1953048.2021068, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1734693",
+        "name": "John C. Duchi"
+      },
+      {
+        "authorId": "34840427",
+        "name": "Elad Hazan"
+      },
+      {
+        "authorId": "1740765",
+        "name": "Y. Singer"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9405cc0d6169988371b2755e573cc28650d14dfe",
+    "externalIds": {
+      "MAG": "2955855238",
+      "CorpusId": 160025533
+    },
+    "title": "Language Models are Unsupervised Multitask Learners",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 28234,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "150970919",
+        "name": "D. Luan"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+    "externalIds": {
+      "MAG": "2951055169",
+      "ACL": "N19-1423",
+      "DBLP": "journals/corr/abs-1810-04805",
+      "ArXiv": "1810.04805",
+      "DOI": "10.18653/v1/N19-1423",
+      "CorpusId": 52967399
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 113539,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.04805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+    "_is_influential": false,
+    "_intents": []
+  }
+]

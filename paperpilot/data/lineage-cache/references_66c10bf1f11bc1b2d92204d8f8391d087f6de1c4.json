@@ -1,0 +1,2390 @@
+[
+  {
+    "paperId": "9ca329408813d209b1dcb36936f7f9cba82506bd",
+    "externalIds": {
+      "ArXiv": "2108.12409",
+      "DBLP": "journals/corr/abs-2108-12409",
+      "CorpusId": 237347130
+    },
+    "title": "Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 1152,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.12409, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40170001",
+        "name": "Ofir Press"
+      },
+      {
+        "authorId": "144365875",
+        "name": "Noah A. Smith"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      }
+    ],
+    "abstract": "Since the introduction of the transformer model by Vaswani et al. (2017), a fundamental question has yet to be answered: how does a model achieve extrapolation at inference time for sequences that are longer than it saw during training? We first show that extrapolation can be enabled by simply changing the position representation method, though we find that current methods do not allow for efficient extrapolation. We therefore introduce a simpler and more efficient position method, Attention with Linear Biases (ALiBi). ALiBi does not add positional embeddings to word embeddings; instead, it biases query-key attention scores with a penalty that is proportional to their distance. We show that this method trains a 1.3 billion parameter model on input sequences of length 1024 that extrapolates to input sequences of length 2048, achieving the same perplexity as a sinusoidal position embedding model trained on inputs of length 2048 but training 11% faster and using 11% less memory. ALiBi's inductive bias towards recency also leads it to outperform multiple strong position methods on the WikiText-103 benchmark.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "08ffdec40291a2ccb5f8a6cc048b01247fb34b96",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-08399",
+      "ArXiv": "2105.08399",
+      "CorpusId": 234762885
+    },
+    "title": "Relative Positional Encoding for Transformers with Linear Complexity",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 62,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.08399, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47515529",
+        "name": "A. Liutkus"
+      },
+      {
+        "authorId": "41022618",
+        "name": "Ondřej Cífka"
+      },
+      {
+        "authorId": "1854017630",
+        "name": "Shih-Lun Wu"
+      },
+      {
+        "authorId": "1808437",
+        "name": "Umut Simsekli"
+      },
+      {
+        "authorId": "145142378",
+        "name": "Yi-Hsuan Yang"
+      },
+      {
+        "authorId": "2060044798",
+        "name": "G. Richard"
+      }
+    ],
+    "abstract": "Recent advances in Transformer models allow for unprecedented sequence lengths, due to linear space and time complexity. In the meantime, relative positional encoding (RPE) was proposed as beneficial for classical Transformers and consists in exploiting lags instead of absolute positions for inference. Still, RPE is not available for the recent linear-variants of the Transformer, because it requires the explicit computation of the attention matrix, which is precisely what is avoided by such methods. In this paper, we bridge this gap and present Stochastic Positional Encoding as a way to generate PE that can be used as a replacement to the classical additive (sinusoidal) PE and provably behaves like RPE. The main theoretical contribution is to make a connection between positional encoding and cross-covariance structures of correlated Gaussian processes. We illustrate the performance of our approach on the Long-Range Arena benchmark and on music generation.",
+    "_is_influential": false,
+    "_intents": [
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "868d4d9c9d8afee78f21a0113cff762ff5eb4961",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-07680",
+      "ArXiv": "2102.07680",
+      "CorpusId": 231924431
+    },
+    "title": "Translational Equivariance in Kernelizable Attention",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.07680, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144122244",
+        "name": "Max Horn"
+      },
+      {
+        "authorId": "2065212009",
+        "name": "Kumar Shridhar"
+      },
+      {
+        "authorId": "2050137665",
+        "name": "Elrich Groenewald"
+      },
+      {
+        "authorId": "2053177523",
+        "name": "Philipp F. M. Baumann"
+      }
+    ],
+    "abstract": "While Transformer architectures have show remarkable success, they are bound to the computation of all pairwise interactions of input element and thus suffer from limited scalability. Recent work has been successful by avoiding the computation of the complete attention matrix, yet leads to problems down the line. The absence of an explicit attention matrix makes the inclusion of inductive biases relying on relative interactions between elements more challenging. An extremely powerful inductive bias is translational equivariance, which has been conjectured to be responsible for much of the success of Convolutional Neural Networks on image recognition tasks. In this work we show how translational equivariance can be implemented in efficient Transformers based on kernelizable attention - Performers. Our experiments highlight that the devised approach significantly improves robustness of Performers to shifts of input images compared to their naive application. This represents an important step on the path of replacing Convolutional Neural Networks with more expressive Transformer architectures and will help to improve sample efficiency and robustness in this realm.",
+    "_is_influential": false,
+    "_intents": [
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "3fbf6339273c50b04e886fa9bd4ad18c952a683d",
+    "externalIds": {
+      "DBLP": "conf/iclr/ChoromanskiLDSG21",
+      "ArXiv": "2009.14794",
+      "MAG": "3091156754",
+      "CorpusId": 222067132
+    },
+    "title": "Rethinking Attention with Performers",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 2170,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.14794, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1805203",
+        "name": "K. Choromanski"
+      },
+      {
+        "authorId": "52314889",
+        "name": "Valerii Likhosherstov"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "32725720",
+        "name": "Xingyou Song"
+      },
+      {
+        "authorId": "3071104",
+        "name": "Andreea Gane"
+      },
+      {
+        "authorId": "2227764",
+        "name": "Tamás Sarlós"
+      },
+      {
+        "authorId": "2052793706",
+        "name": "Peter G. Hawkins"
+      },
+      {
+        "authorId": "29827891",
+        "name": "Jared Davis"
+      },
+      {
+        "authorId": "1579862074",
+        "name": "Afroz Mohiuddin"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2636941",
+        "name": "David Belanger"
+      },
+      {
+        "authorId": "2654847",
+        "name": "Lucy J. Colwell"
+      },
+      {
+        "authorId": "145689461",
+        "name": "Adrian Weller"
+      }
+    ],
+    "abstract": "We introduce Performers, Transformer architectures which can estimate regular (softmax) full-rank-attention Transformers with provable accuracy, but using only linear (as opposed to quadratic) space and time complexity, without relying on any priors such as sparsity or low-rankness. To approximate softmax attention-kernels, Performers use a novel Fast Attention Via positive Orthogonal Random features approach (FAVOR+), which may be of independent interest for scalable kernel methods. FAVOR+ can be also used to efficiently model kernelizable attention mechanisms beyond softmax. This representational power is crucial to accurately compare softmax with other kernels for the first time on large-scale tasks, beyond the reach of regular Transformers, and investigate optimal attention-kernels. Performers are linear architectures fully compatible with regular Transformers and with strong theoretical guarantees: unbiased or nearly-unbiased estimation of the attention matrix, uniform convergence and low estimation variance. We tested Performers on a rich set of tasks stretching from pixel-prediction through text models to protein sequence modeling. We demonstrate competitive results with other examined efficient sparse and dense attention methods, showcasing effectiveness of the novel attention-learning paradigm leveraged by Performers.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "84476fdf6ead3553f4493dff8e02308439d6222b",
+    "externalIds": {
+      "DBLP": "conf/emnlp/HuangLXX20",
+      "ArXiv": "2009.13658",
+      "ACL": "2020.findings-emnlp.298",
+      "MAG": "3089892483",
+      "DOI": "10.18653/v1/2020.findings-emnlp.298",
+      "CorpusId": 221995630
+    },
+    "title": "Improve Transformer Models with Better Relative Position Embeddings",
+    "venue": "Findings",
+    "year": 2020,
+    "citationCount": 159,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.findings-emnlp.298.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.13658, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3109481",
+        "name": "Zhiheng Huang"
+      },
+      {
+        "authorId": "25130521",
+        "name": "Davis Liang"
+      },
+      {
+        "authorId": "104382958",
+        "name": "Peng Xu"
+      },
+      {
+        "authorId": "144028698",
+        "name": "Bing Xiang"
+      }
+    ],
+    "abstract": "The transformer model has demonstrated superior results on NLP tasks including machine translation and question answering. In this paper, we argue that the position information is not fully utilized in existing work. For example, the initial proposal of a sinusoid embedding is fixed and not learnable. In this paper, we first review the absolute position embeddings and existing relative position embedding methods. We then propose new methods to encourage increased interaction between query, key and relative position embeddings in the self-attention mechanism. Our most promising approach is a generalization of the absolute position embedding. Our method results in increased accuracy compared to previous approaches in absolute and relative position embeddings on the SQuAD1.1 dataset. In addition, we address the inductive property of whether a position embedding can be robust enough to handle long sequences. We demonstrate empirically that our relative embedding method can be reasonably generalized to and is robust in the inductive perspective. Finally, we show that our proposed method can be effectively and efficiently adopted as a near drop-in replacement for improving the accuracy of large models with little computational overhead.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6f68e1bb253925d8431588555d3010419f322e04",
+    "externalIds": {
+      "DBLP": "conf/icml/KatharopoulosV020",
+      "MAG": "3037798801",
+      "ArXiv": "2006.16236",
+      "CorpusId": 220250819
+    },
+    "title": "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2639,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.16236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3493855",
+        "name": "Angelos Katharopoulos"
+      },
+      {
+        "authorId": "2992087",
+        "name": "Apoorv Vyas"
+      },
+      {
+        "authorId": "143958923",
+        "name": "Nikolaos Pappas"
+      },
+      {
+        "authorId": "116272138",
+        "name": "Franccois Fleuret"
+      }
+    ],
+    "abstract": "Transformers achieve remarkable performance in several tasks but due to their quadratic complexity, with respect to the input's length, they are prohibitively slow for very long sequences. To address this limitation, we express the self-attention as a linear dot-product of kernel feature maps and make use of the associativity property of matrix products to reduce the complexity from $\\mathcal{O}\\left(N^2\\right)$ to $\\mathcal{O}\\left(N\\right)$, where $N$ is the sequence length. We show that this formulation permits an iterative implementation that dramatically accelerates autoregressive transformers and reveals their relationship to recurrent neural networks. Our linear transformers achieve similar performance to vanilla transformers and they are up to 4000x faster on autoregressive prediction of very long sequences.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "8256f48f759cf85044db251cc512f965834945b3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2006-15595",
+      "ArXiv": "2006.15595",
+      "CorpusId": 220249871
+    },
+    "title": "Rethinking Positional Encoding in Language Pre-training",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 357,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.15595, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35286545",
+        "name": "Guolin Ke"
+      },
+      {
+        "authorId": "1391126980",
+        "name": "Di He"
+      },
+      {
+        "authorId": "2110264337",
+        "name": "Tie-Yan Liu"
+      }
+    ],
+    "abstract": "How to explicitly encode positional information into neural networks is important in learning the representation of natural languages, such as BERT. Based on the Transformer architecture, the positional information is simply encoded as embedding vectors, which are used in the input layer, or encoded as a bias term in the self-attention module. In this work, we investigate the problems in the previous formulations and propose a new positional encoding method for BERT called Transformer with Untied Positional Encoding (TUPE). Different from all other works, TUPE only uses the word embedding as input. In the self-attention module, the word contextual correlation and positional correlation are computed separately with different parameterizations and then added together. This design removes the addition over heterogeneous embeddings in the input, which may potentially bring randomness, and gives more expressiveness to characterize the relationship between words/positions by using different projection matrices. Furthermore, TUPE unties the [CLS] symbol from other positions to provide it with a more specific role to capture the global representation of the sentence. Extensive experiments and ablation studies on GLUE benchmark demonstrate the effectiveness and efficiency of the proposed method: TUPE outperforms several baselines on almost all tasks by a large margin. In particular, it can achieve a higher score than baselines while only using 30% pre-training computational costs. We release our code at https://github.com/guolinke/TUPE.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "14b65a86c82e38fce0eb3506e0d4084ad5cdb583",
+    "externalIds": {
+      "MAG": "3033187248",
+      "DBLP": "conf/iclr/HeLGC21",
+      "ArXiv": "2006.03654",
+      "CorpusId": 219531210
+    },
+    "title": "DeBERTa: Decoding-enhanced BERT with Disentangled Attention",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 3698,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.03654, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50462546",
+        "name": "Pengcheng He"
+      },
+      {
+        "authorId": "2108860856",
+        "name": "Xiaodong Liu"
+      },
+      {
+        "authorId": "1800422",
+        "name": "Jianfeng Gao"
+      },
+      {
+        "authorId": "2109136147",
+        "name": "Weizhu Chen"
+      }
+    ],
+    "abstract": "Recent progress in pre-trained neural language models has significantly improved the performance of many natural language processing (NLP) tasks. In this paper we propose a new model architecture DeBERTa (Decoding-enhanced BERT with disentangled attention) that improves the BERT and RoBERTa models using two novel techniques. The first is the disentangled attention mechanism, where each word is represented using two vectors that encode its content and position, respectively, and the attention weights among words are computed using disentangled matrices on their contents and relative positions. Second, an enhanced mask decoder is used to replace the output softmax layer to predict the masked tokens for model pretraining. We show that these two techniques significantly improve the efficiency of model pre-training and performance of downstream tasks. Compared to RoBERTa-Large, a DeBERTa model trained on half of the training data performs consistently better on a wide range of NLP tasks, achieving improvements on MNLI by +0.9% (90.2% vs. 91.1%), on SQuAD v2.0 by +2.3% (88.4% vs. 90.7%) and RACE by +3.6% (83.2% vs. 86.8%). The DeBERTa code and pre-trained models will be made publicly available at this https URL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
+    "externalIds": {
+      "ArXiv": "2005.14165",
+      "DBLP": "conf/nips/BrownMRSKDNSSAA20",
+      "MAG": "3030163527",
+      "CorpusId": 218971783
+    },
+    "title": "Language Models are Few-Shot Learners",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 57154,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.14165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2065894334",
+        "name": "Melanie Subbiah"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from simple instructions - something which current NLP systems still largely struggle to do. Here we show that scaling up language models greatly improves task-agnostic, few-shot performance, sometimes even reaching competitiveness with prior state-of-the-art fine-tuning approaches. Specifically, we train GPT-3, an autoregressive language model with 175 billion parameters, 10x more than any previous non-sparse language model, and test its performance in the few-shot setting. For all tasks, GPT-3 is applied without any gradient updates or fine-tuning, with tasks and few-shot demonstrations specified purely via text interaction with the model. GPT-3 achieves strong performance on many NLP datasets, including translation, question-answering, and cloze tasks, as well as several tasks that require on-the-fly reasoning or domain adaptation, such as unscrambling words, using a novel word in a sentence, or performing 3-digit arithmetic. At the same time, we also identify some datasets where GPT-3's few-shot learning still struggles, as well as some datasets where GPT-3 faces methodological issues related to training on large web corpora. Finally, we find that GPT-3 can generate samples of news articles which human evaluators have difficulty distinguishing from articles written by humans. We discuss broader societal impacts of this finding and of GPT-3 in general.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e8984c6e6c24aab26c332728a5fff616dfb3adbb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2003-09229",
+      "ArXiv": "2003.09229",
+      "MAG": "3035206215",
+      "CorpusId": 214605593
+    },
+    "title": "Learning to Encode Position for Transformer with Continuous Dynamical Model",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 138,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.09229, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "23979212",
+        "name": "Xuanqing Liu"
+      },
+      {
+        "authorId": "46185316",
+        "name": "Hsiang-Fu Yu"
+      },
+      {
+        "authorId": "1783667",
+        "name": "I. Dhillon"
+      },
+      {
+        "authorId": "1793529",
+        "name": "Cho-Jui Hsieh"
+      }
+    ],
+    "abstract": "We introduce a new way of learning to encode position information for non-recurrent models, such as Transformer models. Unlike RNN and LSTM, which contain inductive bias by loading the input tokens sequentially, non-recurrent models are less sensitive to position. The main reason is that position information among input units is not inherently encoded, i.e., the models are permutation equivalent; this problem justifies why all of the existing models are accompanied by a sinusoidal encoding/embedding layer at the input. However, this solution has clear limitations: the sinusoidal encoding is not flexible enough as it is manually designed and does not contain any learnable parameters, whereas the position embedding restricts the maximum length of input sequences. It is thus desirable to design a new position layer that contains learnable parameters to adjust to different datasets and different architectures. At the same time, we would also like the encodings to extrapolate in accordance with the variable length of inputs. In our proposed solution, we borrow from the recent Neural ODE approach, which may be viewed as a versatile continuous version of a ResNet. This model is capable of modeling many kinds of dynamical systems. We model the evolution of encoded results along position index by such a dynamical system, thereby overcoming the above limitations of existing methods. We evaluate our new position layers on a variety of neural machine translation and language understanding tasks, the experimental results show consistent improvements over the baselines.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "43f2ad297941db230c089ba353efc3f281ab678c",
+    "externalIds": {
+      "MAG": "3033156098",
+      "CorpusId": 226096901
+    },
+    "title": "5分で分かる!? 有名論文ナナメ読み：Jacob Devlin et al. : BERT : Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 13593,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "136309159",
+        "name": "知秀 柴田"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d14e56568dc5f57ccdae899d84f91e34ad847670",
+    "externalIds": {
+      "MAG": "2995426144",
+      "DBLP": "conf/iclr/IslamJB20",
+      "ArXiv": "2001.08248",
+      "CorpusId": 210861275
+    },
+    "title": "How Much Position Information Do Convolutional Neural Networks Encode?",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 391,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.08248, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3240989",
+        "name": "Md. Amirul Islam"
+      },
+      {
+        "authorId": "1805367",
+        "name": "Sen Jia"
+      },
+      {
+        "authorId": "2866780",
+        "name": "Neil D. B. Bruce"
+      }
+    ],
+    "abstract": "In contrast to fully connected networks, Convolutional Neural Networks (CNNs) achieve efficiency by learning weights associated with local filters with a finite spatial extent. An implication of this is that a filter may know what it is looking at, but not where it is positioned in the image. Information concerning absolute position is inherently useful, and it is reasonable to assume that deep CNNs may implicitly learn to encode this information if there is a means to do so. In this paper, we test this hypothesis revealing the surprising degree of absolute position information that is encoded in commonly used neural networks. A comprehensive set of experiments show the validity of this hypothesis and shed light on how and where this information is represented while offering clues to where positional information is derived from in deep CNNs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d0e28f5dc1feae19e41087a92a87992977fd85af",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1912-12333",
+      "ArXiv": "1912.12333",
+      "MAG": "2997175890",
+      "CorpusId": 209516262
+    },
+    "title": "Encoding word order in complex embeddings",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 134,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.12333, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2894465",
+        "name": "Benyou Wang"
+      },
+      {
+        "authorId": "2110997376",
+        "name": "Donghao Zhao"
+      },
+      {
+        "authorId": "1784800",
+        "name": "C. Lioma"
+      },
+      {
+        "authorId": "41219390",
+        "name": "Qiuchi Li"
+      },
+      {
+        "authorId": "2151331126",
+        "name": "Peng Zhang"
+      },
+      {
+        "authorId": "1707651",
+        "name": "J. Simonsen"
+      }
+    ],
+    "abstract": "Sequential word order is important when processing text. Currently, neural networks (NNs) address this by modeling word position using position embeddings. The problem is that position embeddings capture the position of individual words, but not the ordered relationship (e.g., adjacency or precedence) between individual word positions. We present a novel and principled solution for modeling both the global absolute positions of words and their order relationships. Our solution generalizes word embeddings, previously defined as independent vectors, to continuous word functions over a variable (position). The benefit of continuous functions over variable positions is that word representations shift smoothly with increasing positions. Hence, word representations in different positions can correlate with each other in a continuous function. The general solution of these functions can be extended to complex-valued variants. We extend CNN, RNN and Transformer NNs to complex-valued versions to incorporate our complex embedding (we make all code available). Experiments on text classification, machine translation and language modeling show gains over both classical word embeddings and position-enriched word embeddings. To our knowledge, this is the first work in NLP to link imaginary numbers in complex-valued representations to concrete meanings (i.e., word order).",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "509b4661ed74a24c2ffdbf131f9e1c6a1783752d",
+    "externalIds": {
+      "MAG": "2995744795",
+      "DBLP": "conf/iclr/YunBRRK20",
+      "ArXiv": "1912.10077",
+      "CorpusId": 209444410
+    },
+    "title": "Are Transformers universal approximators of sequence-to-sequence functions?",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 479,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.10077, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2674870",
+        "name": "Chulhee Yun"
+      },
+      {
+        "authorId": "1798880",
+        "name": "Srinadh Bhojanapalli"
+      },
+      {
+        "authorId": "2241094",
+        "name": "A. Rawat"
+      },
+      {
+        "authorId": "1981186",
+        "name": "Sashank J. Reddi"
+      },
+      {
+        "authorId": "152663162",
+        "name": "Sanjiv Kumar"
+      }
+    ],
+    "abstract": "Despite the widespread adoption of Transformer models for NLP tasks, the expressive power of these models is not well-understood. In this paper, we establish that Transformer models are universal approximators of continuous permutation equivariant sequence-to-sequence functions with compact support, which is quite surprising given the amount of shared parameters in these models. Furthermore, using positional encodings, we circumvent the restriction of permutation equivariance, and show that Transformer models can universally approximate arbitrary continuous sequence-to-sequence functions on a compact domain. Interestingly, our proof techniques clearly highlight the different roles of the self-attention and the feed-forward layers in Transformers. In particular, we prove that fixed width self-attention layers can compute contextual mappings of the input sequences, playing a key role in the universal approximation property of Transformers. Based on this insight from our analysis, we consider other architectures that can compute contextual mappings and empirically evaluate them.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e19f4b0c4208dc479d12127c54d19479f78ba8c4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1911-08962",
+      "ArXiv": "1911.08962",
+      "MAG": "2991316439",
+      "CorpusId": 208175568
+    },
+    "title": "CAIL2019-SCM: A Dataset of Similar Case Matching in Legal Domain",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 78,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.08962, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51131083",
+        "name": "Chaojun Xiao"
+      },
+      {
+        "authorId": "51125639",
+        "name": "Haoxiang Zhong"
+      },
+      {
+        "authorId": "46673183",
+        "name": "Zhipeng Guo"
+      },
+      {
+        "authorId": "2652217",
+        "name": "Cunchao Tu"
+      },
+      {
+        "authorId": "49293587",
+        "name": "Zhiyuan Liu"
+      },
+      {
+        "authorId": "1753344",
+        "name": "Maosong Sun"
+      },
+      {
+        "authorId": "50615630",
+        "name": "Tianyang Zhang"
+      },
+      {
+        "authorId": "3194601",
+        "name": "Xianpei Han"
+      },
+      {
+        "authorId": "2111375426",
+        "name": "Zhen Hu"
+      },
+      {
+        "authorId": "2149696982",
+        "name": "Heng Wang"
+      },
+      {
+        "authorId": "2116855108",
+        "name": "Jianfeng Xu"
+      }
+    ],
+    "abstract": "In this paper, we introduce CAIL2019-SCM, Chinese AI and Law 2019 Similar Case Matching dataset. CAIL2019-SCM contains 8,964 triplets of cases published by the Supreme People's Court of China. CAIL2019-SCM focuses on detecting similar cases, and the participants are required to check which two cases are more similar in the triplets. There are 711 teams who participated in this year's competition, and the best team has reached a score of 71.88. We have also implemented several baselines to help researchers better understand this task. The dataset and more details can be found from this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
+    "externalIds": {
+      "MAG": "2981852735",
+      "DBLP": "journals/corr/abs-1910-10683",
+      "ArXiv": "1910.10683",
+      "CorpusId": 204838007
+    },
+    "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+    "venue": "Journal of machine learning research",
+    "year": 2019,
+    "citationCount": 25339,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.10683, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2402716",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "145625142",
+        "name": "Adam Roberts"
+      },
+      {
+        "authorId": "3844009",
+        "name": "Katherine Lee"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "1380243217",
+        "name": "Michael Matena"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "2157338362",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      }
+    ],
+    "abstract": "Transfer learning, where a model is first pre-trained on a data-rich task before being fine-tuned on a downstream task, has emerged as a powerful technique in natural language processing (NLP). The effectiveness of transfer learning has given rise to a diversity of approaches, methodology, and practice. In this paper, we explore the landscape of transfer learning techniques for NLP by introducing a unified framework that converts every language problem into a text-to-text format. Our systematic study compares pre-training objectives, architectures, unlabeled datasets, transfer approaches, and other factors on dozens of language understanding tasks. By combining the insights from our exploration with scale and our new \"Colossal Clean Crawled Corpus\", we achieve state-of-the-art results on many benchmarks covering summarization, question answering, text classification, and more. To facilitate future work on transfer learning for NLP, we release our dataset, pre-trained models, and code.",
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "7a064df1aeada7e69e5173f7d4c8606f4470365b",
+    "externalIds": {
+      "MAG": "2996428491",
+      "DBLP": "journals/corr/abs-1909-11942",
+      "ArXiv": "1909.11942",
+      "CorpusId": 202888986
+    },
+    "title": "ALBERT: A Lite BERT for Self-supervised Learning of Language Representations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2019,
+    "citationCount": 7394,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.11942, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2362534",
+        "name": "Zhenzhong Lan"
+      },
+      {
+        "authorId": "46221498",
+        "name": "Mingda Chen"
+      },
+      {
+        "authorId": "7685850",
+        "name": "Sebastian Goodman"
+      },
+      {
+        "authorId": "1700980",
+        "name": "Kevin Gimpel"
+      },
+      {
+        "authorId": "48267618",
+        "name": "Piyush Sharma"
+      },
+      {
+        "authorId": "1737285",
+        "name": "Radu Soricut"
+      }
+    ],
+    "abstract": "Increasing model size when pretraining natural language representations often results in improved performance on downstream tasks. However, at some point further model increases become harder due to GPU/TPU memory limitations and longer training times. To address these problems, we present two parameter-reduction techniques to lower memory consumption and increase the training speed of BERT. Comprehensive empirical evidence shows that our proposed methods lead to models that scale much better compared to the original BERT. We also use a self-supervised loss that focuses on modeling inter-sentence coherence, and show it consistently helps downstream tasks with multi-sentence inputs. As a result, our best model establishes new state-of-the-art results on the GLUE, RACE, and \\squad benchmarks while having fewer parameters compared to BERT-large. The code and the pretrained models are available at this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6c1beae31b92c70b42ebeb99e5598d73bff6eea5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1909-00204",
+      "MAG": "2971871542",
+      "ArXiv": "1909.00204",
+      "CorpusId": 202537635
+    },
+    "title": "NEZHA: Neural Contextualized Representation for Chinese Language Understanding",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 126,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.00204, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153693128",
+        "name": "Junqiu Wei"
+      },
+      {
+        "authorId": "153457264",
+        "name": "Xiaozhe Ren"
+      },
+      {
+        "authorId": "2108181908",
+        "name": "Xiaoguang Li"
+      },
+      {
+        "authorId": "2129867182",
+        "name": "WenYong Huang"
+      },
+      {
+        "authorId": "2048004675",
+        "name": "Yi Liao"
+      },
+      {
+        "authorId": "2108738457",
+        "name": "Yasheng Wang"
+      },
+      {
+        "authorId": "2379215003",
+        "name": "Jiashu Lin"
+      },
+      {
+        "authorId": "145820291",
+        "name": "Xin Jiang"
+      },
+      {
+        "authorId": "2117025507",
+        "name": "Xiao Chen"
+      },
+      {
+        "authorId": "1688015",
+        "name": "Qun Liu"
+      }
+    ],
+    "abstract": "The pre-trained language models have achieved great successes in various natural language understanding (NLU) tasks due to its capacity to capture the deep contextualized information in text by pre-training on large-scale corpora. In this technical report, we present our practice of pre-training language models named NEZHA (NEural contextualiZed representation for CHinese lAnguage understanding) on Chinese corpora and finetuning for the Chinese NLU tasks. The current version of NEZHA is based on BERT with a collection of proven improvements, which include Functional Relative Positional Encoding as an effective positional encoding scheme, Whole Word Masking strategy, Mixed Precision Training and the LAMB Optimizer in training the models. The experimental results show that NEZHA achieves the state-of-the-art performances when finetuned on several representative Chinese tasks, including named entity recognition (People's Daily NER), sentence matching (LCQMC), Chinese sentiment classification (ChnSenti) and natural language inference (XNLI).",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e0c6abdbdecf04ffac65c440da77fb9d66bb474c",
+    "externalIds": {
+      "MAG": "2950813464",
+      "DBLP": "journals/corr/abs-1906-08237",
+      "ArXiv": "1906.08237",
+      "CorpusId": 195069387
+    },
+    "title": "XLNet: Generalized Autoregressive Pretraining for Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 9310,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.08237, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "35729970",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "143712374",
+        "name": "J. Carbonell"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "With the capability of modeling bidirectional contexts, denoising autoencoding based pretraining like BERT achieves better performance than pretraining approaches based on autoregressive language modeling. However, relying on corrupting the input with masks, BERT neglects dependency between the masked positions and suffers from a pretrain-finetune discrepancy. In light of these pros and cons, we propose XLNet, a generalized autoregressive pretraining method that (1) enables learning bidirectional contexts by maximizing the expected likelihood over all permutations of the factorization order and (2) overcomes the limitations of BERT thanks to its autoregressive formulation. Furthermore, XLNet integrates ideas from Transformer-XL, the state-of-the-art autoregressive model, into pretraining. Empirically, under comparable experiment settings, XLNet outperforms BERT on 20 tasks, often by a large margin, including question answering, natural language inference, sentiment analysis, and document ranking.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8b0f27bb594b1eaaf493eaf1e2ee723a2b0a19ad",
+    "externalIds": {
+      "MAG": "2946609015",
+      "DBLP": "journals/corr/abs-1905-07830",
+      "ACL": "P19-1472",
+      "ArXiv": "1905.07830",
+      "DOI": "10.18653/v1/P19-1472",
+      "CorpusId": 159041722
+    },
+    "title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 3988,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1472.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.07830, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Recent work by Zellers et al. (2018) introduced a new task of commonsense natural language inference: given an event description such as “A woman sits at a piano,” a machine must select the most likely followup: “She sets her fingers on the keys.” With the introduction of BERT, near human-level performance was reached. Does this mean that machines can perform human level commonsense inference? In this paper, we show that commonsense inference still proves difficult for even state-of-the-art models, by presenting HellaSwag, a new challenge dataset. Though its questions are trivial for humans (>95% accuracy), state-of-the-art models struggle (<48%). We achieve this via Adversarial Filtering (AF), a data collection paradigm wherein a series of discriminators iteratively select an adversarial set of machine-generated wrong answers. AF proves to be surprisingly robust. The key insight is to scale up the length and complexity of the dataset examples towards a critical ‘Goldilocks’ zone wherein generated text is ridiculous to humans, yet often misclassified by state-of-the-art models. Our construction of HellaSwag, and its resulting difficulty, sheds light on the inner workings of deep pretrained models. More broadly, it suggests a new path forward for NLP research, in which benchmarks co-evolve with the evolving state-of-the-art in an adversarial way, so as to present ever-harder challenges.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "faadd7d081c8d67e8c2567e8a5579e46cd6b2280",
+    "externalIds": {
+      "MAG": "2952509486",
+      "DBLP": "journals/corr/abs-1904-01038",
+      "ArXiv": "1904.01038",
+      "ACL": "N19-4009",
+      "DOI": "10.18653/v1/N19-4009",
+      "CorpusId": 91184134
+    },
+    "title": "fairseq: A Fast, Extensible Toolkit for Sequence Modeling",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 3370,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1904.01038",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.01038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40511414",
+        "name": "Myle Ott"
+      },
+      {
+        "authorId": "2068070",
+        "name": "Sergey Edunov"
+      },
+      {
+        "authorId": "51428394",
+        "name": "Alexei Baevski"
+      },
+      {
+        "authorId": "144270981",
+        "name": "Angela Fan"
+      },
+      {
+        "authorId": "39793298",
+        "name": "Sam Gross"
+      },
+      {
+        "authorId": "144055124",
+        "name": "Nathan Ng"
+      },
+      {
+        "authorId": "2529182",
+        "name": "David Grangier"
+      },
+      {
+        "authorId": "2325985",
+        "name": "Michael Auli"
+      }
+    ],
+    "abstract": "fairseq is an open-source sequence modeling toolkit that allows researchers and developers to train custom models for translation, summarization, language modeling, and other text generation tasks. The toolkit is based on PyTorch and supports distributed training across multiple GPUs and machines. We also support fast mixed-precision training and inference on modern GPUs. A demo video can be found at https://www.youtube.com/watch?v=OtgDdWtHvto",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c4744a7c2bb298e4a52289a1e085c71cc3d37bc6",
+    "externalIds": {
+      "ArXiv": "1901.02860",
+      "DBLP": "conf/acl/DaiYYCLS19",
+      "MAG": "2964110616",
+      "ACL": "P19-1285",
+      "DOI": "10.18653/v1/P19-1285",
+      "CorpusId": 57759363
+    },
+    "title": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 4275,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1285.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.02860, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "35729970",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "143712374",
+        "name": "J. Carbonell"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      }
+    ],
+    "abstract": "Transformers have a potential of learning longer-term dependency, but are limited by a fixed-length context in the setting of language modeling. We propose a novel neural architecture Transformer-XL that enables learning dependency beyond a fixed length without disrupting temporal coherence. It consists of a segment-level recurrence mechanism and a novel positional encoding scheme. Our method not only enables capturing longer-term dependency, but also resolves the context fragmentation problem. As a result, Transformer-XL learns dependency that is 80% longer than RNNs and 450% longer than vanilla Transformers, achieves better performance on both short and long sequences, and is up to 1,800+ times faster than vanilla Transformers during evaluation. Notably, we improve the state-of-the-art results of bpc/perplexity to 0.99 on enwiki8, 1.08 on text8, 18.3 on WikiText-103, 21.8 on One Billion Word, and 54.5 on Penn Treebank (without finetuning). When trained only on WikiText-103, Transformer-XL manages to generate reasonably coherent, novel text articles with thousands of tokens. Our code, pretrained models, and hyperparameters are available in both Tensorflow and PyTorch.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5f4a22ee70ca613d9c0630eafc96364fe365fdf8",
+    "externalIds": {
+      "MAG": "2991526275",
+      "ArXiv": "1812.01243",
+      "DBLP": "conf/wacv/ShenZZY021",
+      "DOI": "10.1109/WACV48630.2021.00357",
+      "CorpusId": 215999966
+    },
+    "title": "Efficient Attention: Attention with Linear Complexities",
+    "venue": "IEEE Workshop/Winter Conference on Applications of Computer Vision",
+    "year": 2018,
+    "citationCount": 720,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1812.01243",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.01243, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49019589",
+        "name": "Zhuoran Shen"
+      },
+      {
+        "authorId": "2119682611",
+        "name": "Mingyuan Zhang"
+      },
+      {
+        "authorId": "49453102",
+        "name": "Haiyu Zhao"
+      },
+      {
+        "authorId": "2447593",
+        "name": "Shuai Yi"
+      },
+      {
+        "authorId": "47893312",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Dot-product attention has wide applications in computer vision and natural language processing. However, its memory and computational costs grow quadratically with the input size. Such growth prohibits its application on high- resolution inputs. To remedy this drawback, this paper proposes a novel efficient attention mechanism equivalent to dot-product attention but with substantially less memory and computational costs. Its resource efficiency allows more widespread and flexible integration of attention modules into a network, which leads to better accuracies. Empirical evaluations demonstrated the effectiveness of its advantages. Efficient attention modules brought significant performance boosts to object detectors and instance segmenters on MS-COCO 2017. Further, the resource efficiency democratizes attention to complex models, where high costs prohibit the use of dot-product attention. As an exemplar, a model with efficient attention achieved state-of- the-art accuracies for stereo depth estimation on the Scene Flow dataset. Code is available at https://github.com/cmsflash/efficient-attention.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fb507ada871d1e8c29e376dbf7b7879689aa89f9",
+    "externalIds": {
+      "MAG": "2896197082",
+      "ArXiv": "1809.04281",
+      "DBLP": "conf/iclr/HuangVUSHSDHDE19",
+      "CorpusId": 54477714
+    },
+    "title": "Music Transformer: Generating Music with Long-Term Structure",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 569,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.04281, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7900665",
+        "name": "Cheng-Zhi Anna Huang"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "35577716",
+        "name": "Ian Simon"
+      },
+      {
+        "authorId": "41231781",
+        "name": "Curtis Hawthorne"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "28552618",
+        "name": "M. Hoffman"
+      },
+      {
+        "authorId": "47153176",
+        "name": "Monica Dinculescu"
+      },
+      {
+        "authorId": "2396681",
+        "name": "D. Eck"
+      }
+    ],
+    "abstract": "Music relies heavily on repetition to build structure and meaning. Self-reference occurs on multiple timescales, from motifs to phrases to reusing of entire sections of music, such as in pieces with ABA structure. The Transformer (Vaswani et al., 2017), a sequence model based on self-attention, has achieved compelling results in many generation tasks that require maintaining long-range coherence. This suggests that self-attention might also be well-suited to modeling music. In musical composition and performance, however, relative timing is critically important. Existing approaches for representing relative positional information in the Transformer modulate attention based on pairwise distance (Shaw et al., 2018). This is impractical for long sequences such as musical compositions since their memory complexity for intermediate relative information is quadratic in the sequence length. We propose an algorithm that reduces their intermediate memory requirement to linear in the sequence length. This enables us to demonstrate that a Transformer with our modified relative attention mechanism can generate minute-long compositions (thousands of steps, four times the length modeled in Oore et al., 2018) with compelling structure, generate continuations that coherently elaborate on a given motif, and in a seq2seq setup generate accompaniments conditioned on melodies. We evaluate the Transformer with our relative attention mechanism on two datasets, JSB Chorales and Piano-e-Competition, and obtain state-of-the-art results on the latter.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "449310e3538b08b43227d660227dfd2875c3c3c1",
+    "externalIds": {
+      "MAG": "2808746463",
+      "DBLP": "conf/nips/ChenRBD18",
+      "ArXiv": "1806.07366",
+      "CorpusId": 49310446
+    },
+    "title": "Neural Ordinary Differential Equations",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 6748,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.07366, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "11126631",
+        "name": "T. Chen"
+      },
+      {
+        "authorId": "40959192",
+        "name": "Yulia Rubanova"
+      },
+      {
+        "authorId": "51012893",
+        "name": "J. Bettencourt"
+      },
+      {
+        "authorId": "1704657",
+        "name": "D. Duvenaud"
+      }
+    ],
+    "abstract": "We introduce a new family of deep neural network models. Instead of specifying a discrete sequence of hidden layers, we parameterize the derivative of the hidden state using a neural network. The output of the network is computed using a black-box differential equation solver. These continuous-depth models have constant memory cost, adapt their evaluation strategy to each input, and can explicitly trade numerical precision for speed. We demonstrate these properties in continuous-depth residual networks and continuous-time latent variable models. We also construct continuous normalizing flows, a generative model that can train by maximum likelihood, without partitioning or ordering the data dimensions. For training, we show how to scalably backpropagate through any ODE solver, without access to its internal operations. This allows end-to-end training of ODEs within larger models.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "451d4a16e425ecbf38c4b1cca0dcf5d9bec8255c",
+    "externalIds": {
+      "MAG": "2963310665",
+      "DBLP": "conf/emnlp/WangSMHLB18",
+      "ACL": "W18-5446",
+      "ArXiv": "1804.07461",
+      "DOI": "10.18653/v1/W18-5446",
+      "CorpusId": 5034059
+    },
+    "title": "GLUE: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding",
+    "venue": "BlackboxNLP@EMNLP",
+    "year": 2018,
+    "citationCount": 8432,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/W18-5446.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.07461, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144906624",
+        "name": "Alex Wang"
+      },
+      {
+        "authorId": "50286460",
+        "name": "Amanpreet Singh"
+      },
+      {
+        "authorId": "38614754",
+        "name": "Julian Michael"
+      },
+      {
+        "authorId": "145783676",
+        "name": "Felix Hill"
+      },
+      {
+        "authorId": "39455775",
+        "name": "Omer Levy"
+      },
+      {
+        "authorId": "3644767",
+        "name": "Samuel R. Bowman"
+      }
+    ],
+    "abstract": "Human ability to understand language is general, flexible, and robust. In contrast, most NLU models above the word level are designed for a specific task and struggle with out-of-domain data. If we aspire to develop models with understanding beyond the detection of superficial correspondences between inputs and outputs, then it is critical to develop a unified model that can execute a range of linguistic tasks across different domains. To facilitate research in this direction, we present the General Language Understanding Evaluation (GLUE, gluebenchmark.com): a benchmark of nine diverse NLU tasks, an auxiliary dataset for probing models for understanding of specific linguistic phenomena, and an online platform for evaluating and comparing models. For some benchmark tasks, training data is plentiful, but for others it is limited or does not match the genre of the test set. GLUE thus favors models that can represent linguistic knowledge in a way that facilitates sample-efficient learning and effective knowledge-transfer across tasks. While none of the datasets in GLUE were created from scratch for the benchmark, four of them feature privately-held test data, which is used to ensure that the benchmark is used fairly. We evaluate baselines that use ELMo (Peters et al., 2018), a powerful transfer learning technique, as well as state-of-the-art sentence representation models. The best models still achieve fairly low absolute scores. Analysis with our diagnostic dataset yields similarly weak performance over all phenomena tested, with some exceptions.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d3707cf521e3596313af1f53acba6413d0d528a6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1804-00247",
+      "ArXiv": "1804.00247",
+      "MAG": "2796108585",
+      "DOI": "10.2478/pralin-2018-0002",
+      "CorpusId": 4556964
+    },
+    "title": "Training Tips for the Transformer Model",
+    "venue": "Prague Bulletin of Mathematical Linguistics",
+    "year": 2018,
+    "citationCount": 331,
+    "openAccessPdf": {
+      "url": "https://content.sciendo.com/downloadpdf/journals/pralin/110/1/article-p43.pdf",
+      "status": "GOLD",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.00247, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3209310",
+        "name": "M. Popel"
+      },
+      {
+        "authorId": "143832874",
+        "name": "Ondrej Bojar"
+      }
+    ],
+    "abstract": "Abstract This article describes our experiments in neural machine translation using the recent Tensor2Tensor framework and the Transformer sequence-to-sequence model (Vaswani et al., 2017). We examine some of the critical parameters that affect the final translation quality, memory usage, training stability and training time, concluding each experiment with a set of recommendations for fellow researchers. In addition to confirming the general mantra “more data and larger models”, we address scaling to multiple GPUs and provide practical tips for improved training regarding batch size, learning rate, warmup steps, maximum sentence length and checkpoint averaging. We hope that our observations will allow others to get better results given their particular hardware and data constraints.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c8efcc854d97dfc2a42b83316a2109f9d166e43f",
+    "externalIds": {
+      "MAG": "2963925437",
+      "DBLP": "journals/corr/abs-1803-02155",
+      "ACL": "N18-2074",
+      "ArXiv": "1803.02155",
+      "DOI": "10.18653/v1/N18-2074",
+      "CorpusId": 3725815
+    },
+    "title": "Self-Attention with Relative Position Representations",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2018,
+    "citationCount": 2748,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/N18-2074.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38759328",
+        "name": "Peter Shaw"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      }
+    ],
+    "abstract": "Relying entirely on an attention mechanism, the Transformer introduced by Vaswani et al. (2017) achieves state-of-the-art results for machine translation. In contrast to recurrent and convolutional neural networks, it does not explicitly model relative or absolute position information in its structure. Instead, it requires adding representations of absolute positions to its inputs. In this work we present an alternative approach, extending the self-attention mechanism to efficiently consider representations of the relative positions, or distances between sequence elements. On the WMT 2014 English-to-German and English-to-French translation tasks, this approach yields improvements of 1.3 BLEU and 0.3 BLEU over absolute position representations, respectively. Notably, we observe that combining relative and absolute position representations yields no further improvement in translation quality. We describe an efficient implementation of our method and cast it as an instance of relation-aware self-attention mechanisms that can generalize to arbitrary graph-labeled inputs.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d07284a6811f1b2745d91bdb06b040b57f226882",
+    "externalIds": {
+      "MAG": "2950541952",
+      "DBLP": "conf/iclr/LoshchilovH19",
+      "CorpusId": 53592270
+    },
+    "title": "Decoupled Weight Decay Regularization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 33053,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "9ef902f3c427d697f3579cd79844b44de99bc93c",
+    "externalIds": {
+      "MAG": "2752127475",
+      "DBLP": "conf/semeval/Al-NatshehMMZ17",
+      "ACL": "S17-2013",
+      "DOI": "10.18653/v1/S17-2013",
+      "CorpusId": 1222366
+    },
+    "title": "UdL at SemEval-2017 Task 1: Semantic Textual Similarity Estimation of English Sentence Pairs Using Regression Model over Pairwise Features",
+    "venue": "International Workshop on Semantic Evaluation",
+    "year": 2017,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/S17-2013.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/S17-2013, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1403976844",
+        "name": "Hussein T. Al-Natsheh"
+      },
+      {
+        "authorId": "14610639",
+        "name": "Lucie Martinet"
+      },
+      {
+        "authorId": "3160416",
+        "name": "Fabrice Muhlenbach"
+      },
+      {
+        "authorId": "1678550",
+        "name": "D. Zighed"
+      }
+    ],
+    "abstract": "This paper describes the model UdL we proposed to solve the semantic textual similarity task of SemEval 2017 workshop. The track we participated in was estimating the semantics relatedness of a given set of sentence pairs in English. The best run out of three submitted runs of our model achieved a Pearson correlation score of 0.8004 compared to a hidden human annotation of 250 pairs. We used random forest ensemble learning to map an expandable set of extracted pairwise features into a semantic similarity estimated value bounded between 0 and 5. Most of these features were calculated using word embedding vectors similarity to align Part of Speech (PoS) and Name Entities (NE) tagged tokens of each sentence pair. Among other pairwise features, we experimented a classical tf-idf weighted Bag of Words (BoW) vector model but with character-based range of n-grams instead of words. This sentence vector BoW-based feature gave a relatively high importance value percentage in the feature importances analysis of the ensemble learning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174088,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "43428880d75b3a14257c3ee9bda054e61eb869c0",
+    "externalIds": {
+      "ArXiv": "1705.03122",
+      "MAG": "2950686565",
+      "DBLP": "journals/corr/GehringAGYD17",
+      "CorpusId": 3648736
+    },
+    "title": "Convolutional Sequence to Sequence Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 3510,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03122, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2401865",
+        "name": "Jonas Gehring"
+      },
+      {
+        "authorId": "2325985",
+        "name": "Michael Auli"
+      },
+      {
+        "authorId": "2529182",
+        "name": "David Grangier"
+      },
+      {
+        "authorId": "13759615",
+        "name": "Denis Yarats"
+      },
+      {
+        "authorId": "2921469",
+        "name": "Yann Dauphin"
+      }
+    ],
+    "abstract": "The prevalent approach to sequence to sequence learning maps an input sequence to a variable length output sequence via recurrent neural networks. We introduce an architecture based entirely on convolutional neural networks. Compared to recurrent models, computations over all elements can be fully parallelized during training and optimization is easier since the number of non-linearities is fixed and independent of the input length. Our use of gated linear units eases gradient propagation and we equip each decoder layer with a separate attention module. We outperform the accuracy of the deep LSTM setup of Wu et al. (2016) on both WMT'14 English-German and WMT'14 English-French translation at an order of magnitude faster speed, both on GPU and CPU.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f010affab57b5fcf1cd6be23df79d8ec98c7289c",
+    "externalIds": {
+      "MAG": "2612431505",
+      "ArXiv": "1705.03551",
+      "ACL": "P17-1147",
+      "DBLP": "journals/corr/JoshiCWZ17",
+      "DOI": "10.18653/v1/P17-1147",
+      "CorpusId": 26501419
+    },
+    "title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 3690,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P17-1147.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      },
+      {
+        "authorId": "1780531",
+        "name": "Daniel S. Weld"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We present TriviaQA, a challenging reading comprehension dataset containing over 650K question-answer-evidence triples. TriviaQA includes 95K question-answer pairs authored by trivia enthusiasts and independently gathered evidence documents, six per question on average, that provide high quality distant supervision for answering the questions. We show that, in comparison to other recently introduced large-scale datasets, TriviaQA (1) has relatively complex, compositional questions, (2) has considerable syntactic and lexical variability between questions and corresponding answer-evidence sentences, and (3) requires more cross sentence reasoning to find answers. We also present two baseline algorithms: a feature-based classifier and a state-of-the-art neural network, that performs well on SQuAD reading comprehension. Neither approach comes close to human performance (23% and 40% vs. 80%), suggesting that TriviaQA is a challenging testbed that is worth significant future study.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5ded2b8c64491b4a67f6d39ce473d4b9347a672e",
+    "externalIds": {
+      "DBLP": "journals/corr/WilliamsNB17",
+      "MAG": "2963846996",
+      "ArXiv": "1704.05426",
+      "ACL": "N18-1101",
+      "DOI": "10.18653/v1/N18-1101",
+      "CorpusId": 3432876
+    },
+    "title": "A Broad-Coverage Challenge Corpus for Sentence Understanding through Inference",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 4985,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/N18-1101.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.05426, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "81840293",
+        "name": "Adina Williams"
+      },
+      {
+        "authorId": "10666396",
+        "name": "Nikita Nangia"
+      },
+      {
+        "authorId": "3644767",
+        "name": "Samuel R. Bowman"
+      }
+    ],
+    "abstract": "This paper introduces the Multi-Genre Natural Language Inference (MultiNLI) corpus, a dataset designed for use in the development and evaluation of machine learning models for sentence understanding. At 433k examples, this resource is one of the largest corpora available for natural language inference (a.k.a. recognizing textual entailment), improving upon available resources in both its coverage and difficulty. MultiNLI accomplishes this by offering data from ten distinct genres of written and spoken English, making it possible to evaluate systems on nearly the full complexity of the language, while supplying an explicit setting for evaluating cross-genre domain adaptation. In addition, an evaluation using existing machine learning models designed for the Stanford NLI corpus shows that it represents a substantially more difficult task than does that corpus, despite the two showing similar levels of inter-annotator agreement.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3bc6bcb60c7c00efcb471191fb62fd3ebd231d66",
+    "externalIds": {
+      "MAG": "2527845440",
+      "DBLP": "conf/iwslt/Junczys-Dowmunt16",
+      "ArXiv": "1610.01108",
+      "ACL": "2016.iwslt-1.5",
+      "CorpusId": 930231
+    },
+    "title": "Is Neural Machine Translation Ready for Deployment? A Case Study on 30 Translation Directions",
+    "venue": "International Workshop on Spoken Language Translation",
+    "year": 2016,
+    "citationCount": 202,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.01108, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1733933",
+        "name": "Marcin Junczys-Dowmunt"
+      },
+      {
+        "authorId": "3407177",
+        "name": "Tomasz Dwojak"
+      },
+      {
+        "authorId": "152378023",
+        "name": "Hieu T. Hoang"
+      }
+    ],
+    "abstract": "In this paper we provide the largest published comparison of translation quality for phrase-based SMT and neural machine translation across 30 translation directions. For ten directions we also include hierarchical phrase-based MT. Experiments are performed for the recently published United Nations Parallel Corpus v1.0 and its large six-way sentence-aligned subcorpus. In the second part of the paper we investigate aspects of translation speed, introducing AmuNMT, our efficient neural machine translation decoder. We demonstrate that current neural machine translation could already be used for in-production systems when comparing words-persecond ratios.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5ed791f810da580c78df6a052c6b9f2e258f6b0a",
+    "externalIds": {
+      "MAG": "2952915793",
+      "ArXiv": "1606.06031",
+      "DBLP": "conf/acl/PapernoKLPBPBBF16",
+      "ACL": "P16-1144",
+      "DOI": "10.18653/v1/P16-1144",
+      "CorpusId": 2381275
+    },
+    "title": "The LAMBADA dataset: Word prediction requiring a broad discourse context",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2016,
+    "citationCount": 1022,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.18653/v1/p16-1144",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.06031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2129425",
+        "name": "Denis Paperno"
+      },
+      {
+        "authorId": "2067996",
+        "name": "Germán Kruszewski"
+      },
+      {
+        "authorId": "2672644",
+        "name": "Angeliki Lazaridou"
+      },
+      {
+        "authorId": "3422089",
+        "name": "Q. N. Pham"
+      },
+      {
+        "authorId": "145040726",
+        "name": "R. Bernardi"
+      },
+      {
+        "authorId": "3422247",
+        "name": "Sandro Pezzelle"
+      },
+      {
+        "authorId": "145283199",
+        "name": "Marco Baroni"
+      },
+      {
+        "authorId": "1807810",
+        "name": "Gemma Boleda"
+      },
+      {
+        "authorId": "144151273",
+        "name": "R. Fernández"
+      }
+    ],
+    "abstract": "We introduce LAMBADA, a dataset to evaluate the capabilities of computational models for text understanding by means of a word prediction task. LAMBADA is a collection of narrative passages sharing the characteristic that human subjects are able to guess their last word if they are exposed to the whole passage, but not if they only see the last sentence preceding the target word. To succeed on LAMBADA, computational models cannot simply rely on local context, but must be able to keep track of information in the broader discourse. We show that LAMBADA exemplifies a wide range of linguistic phenomena, and that none of several state-of-the-art language models reaches accuracy above 1% on this novel benchmark. We thus propose LAMBADA as a challenging test set, meant to encourage the development of new models capable of genuine understanding of broad context in natural language text.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "05dd7254b632376973f3a1b4d39485da17814df5",
+    "externalIds": {
+      "DBLP": "journals/corr/RajpurkarZLL16",
+      "MAG": "2963748441",
+      "ACL": "D16-1264",
+      "ArXiv": "1606.05250",
+      "DOI": "10.18653/v1/D16-1264",
+      "CorpusId": 11816014
+    },
+    "title": "SQuAD: 100,000+ Questions for Machine Comprehension of Text",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2016,
+    "citationCount": 9268,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/D16-1264.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.05250, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2706258",
+        "name": "Pranav Rajpurkar"
+      },
+      {
+        "authorId": "2151810148",
+        "name": "Jian Zhang"
+      },
+      {
+        "authorId": "2787620",
+        "name": "Konstantin Lopyrev"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "We present the Stanford Question Answering Dataset (SQuAD), a new reading comprehension dataset consisting of 100,000+ questions posed by crowdworkers on a set of Wikipedia articles, where the answer to each question is a segment of text from the corresponding reading passage. We analyze the dataset to understand the types of reasoning required to answer the questions, leaning heavily on dependency and constituency trees. We build a strong logistic regression model, which achieves an F1 score of 51.0%, a significant improvement over a simple baseline (20%). However, human performance (86.8%) is much higher, indicating that the dataset presents a good challenge problem for future research. \nThe dataset is freely available at this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2cd8e8f510c89c7c18268e8ad51c061e459ad321",
+    "externalIds": {
+      "DBLP": "journals/corr/ParikhT0U16",
+      "ACL": "D16-1244",
+      "MAG": "2413794162",
+      "ArXiv": "1606.01933",
+      "DOI": "10.18653/v1/D16-1244",
+      "CorpusId": 8495258
+    },
+    "title": "A Decomposable Attention Model for Natural Language Inference",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2016,
+    "citationCount": 1420,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D16-1244.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.01933, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144729897",
+        "name": "Ankur P. Parikh"
+      },
+      {
+        "authorId": "2556289",
+        "name": "Oscar Täckström"
+      },
+      {
+        "authorId": "143790066",
+        "name": "Dipanjan Das"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      }
+    ],
+    "abstract": "We propose a simple neural architecture for natural language inference. Our approach uses attention to decompose the problem into subproblems that can be solved separately, thus making it trivially parallelizable. On the Stanford Natural Language Inference (SNLI) dataset, we obtain state-of-the-art results with almost an order of magnitude fewer parameters than previous work and without relying on any word-order information. Adding intra-sentence attention that takes a minimum amount of order into account yields further improvements.",
+    "_is_influential": false,
+    "_intents": [
+      "result"
+    ]
+  },
+  {
+    "paperId": "1518039b5001f1836565215eb047526b3ac7f462",
+    "externalIds": {
+      "DBLP": "conf/acl/SennrichHB16a",
+      "ACL": "P16-1162",
+      "MAG": "1816313093",
+      "ArXiv": "1508.07909",
+      "DOI": "10.18653/v1/P16-1162",
+      "CorpusId": 1114678
+    },
+    "title": "Neural Machine Translation of Rare Words with Subword Units",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2015,
+    "citationCount": 8619,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P16-1162.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1508.07909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2082372",
+        "name": "Rico Sennrich"
+      },
+      {
+        "authorId": "2259100",
+        "name": "B. Haddow"
+      },
+      {
+        "authorId": "2539211",
+        "name": "Alexandra Birch"
+      }
+    ],
+    "abstract": "Neural machine translation (NMT) models typically operate with a fixed vocabulary, but translation is an open-vocabulary problem. Previous work addresses the translation of out-of-vocabulary words by backing off to a dictionary. In this paper, we introduce a simpler and more effective approach, making the NMT model capable of open-vocabulary translation by encoding rare and unknown words as sequences of subword units. This is based on the intuition that various word classes are translatable via smaller units than words, for instance names (via character copying or transliteration), compounds (via compositional translation), and cognates and loanwords (via phonological and morphological transformations). We discuss the suitability of different word segmentation techniques, including simple character n-gram models and a segmentation based on the byte pair encoding compression algorithm, and empirically show that subword models improve over a back-off dictionary baseline for the WMT 15 translation tasks English-German and English-Russian by 1.1 and 1.3 BLEU, respectively.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "0e6824e137847be0599bb0032e37042ed2ef5045",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhuKZSUTF15",
+      "ArXiv": "1506.06724",
+      "MAG": "2949433733",
+      "DOI": "10.1109/ICCV.2015.11",
+      "CorpusId": 6866988
+    },
+    "title": "Aligning Books and Movies: Towards Story-Like Visual Explanations by Watching Movies and Reading Books",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 2729,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1506.06724",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.06724, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334885409",
+        "name": "Yukun Zhu"
+      },
+      {
+        "authorId": "3450996",
+        "name": "Ryan Kiros"
+      },
+      {
+        "authorId": "1804104",
+        "name": "R. Zemel"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      }
+    ],
+    "abstract": "Books are a rich source of both fine-grained information, how a character, an object or a scene looks like, as well as high-level semantics, what someone is thinking, feeling and how these states evolve through a story. This paper aims to align books to their movie releases in order to provide rich descriptive explanations for visual content that go semantically far beyond the captions available in the current datasets. To align movies and books we propose a neural sentence embedding that is trained in an unsupervised way from a large corpus of books, as well as a video-text neural embedding for computing similarities between movie clips and sentences in the book. We propose a context-aware CNN to combine information from multiple sources. We demonstrate good quantitative performance for movie/book alignment and show several qualitative examples that showcase the diversity of tasks our model can be used for.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "5ec85a0d88adcc4344bb5cc81b0d1aef9bcd8dcc",
+    "externalIds": {
+      "MAG": "2257408573",
+      "DBLP": "conf/wmt/BojarBFHKLMPPSS14",
+      "ACL": "W14-3302",
+      "DOI": "10.3115/v1/W14-3302",
+      "CorpusId": 15535376
+    },
+    "title": "Findings of the 2014 Workshop on Statistical Machine Translation",
+    "venue": "WMT@ACL",
+    "year": 2014,
+    "citationCount": 825,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.3115/v1/w14-3302",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/W14-3302, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143832874",
+        "name": "Ondrej Bojar"
+      },
+      {
+        "authorId": "2064348170",
+        "name": "C. Buck"
+      },
+      {
+        "authorId": "3359291",
+        "name": "C. Federmann"
+      },
+      {
+        "authorId": "2259100",
+        "name": "B. Haddow"
+      },
+      {
+        "authorId": "1755162",
+        "name": "Philipp Koehn"
+      },
+      {
+        "authorId": "1725514",
+        "name": "Johannes Leveling"
+      },
+      {
+        "authorId": "1696402",
+        "name": "Christof Monz"
+      },
+      {
+        "authorId": "1758528",
+        "name": "Pavel Pecina"
+      },
+      {
+        "authorId": "38842528",
+        "name": "Matt Post"
+      },
+      {
+        "authorId": "1404569159",
+        "name": "Herve Saint-Amand"
+      },
+      {
+        "authorId": "1737285",
+        "name": "Radu Soricut"
+      },
+      {
+        "authorId": "1702974",
+        "name": "Lucia Specia"
+      },
+      {
+        "authorId": "2211536",
+        "name": "Ales Tamchyna"
+      }
+    ],
+    "abstract": "This paper presents the results of the WMT14 shared tasks, which included a standard news translation task, a separate medical translation task, a task for run-time estimation of machine translation quality, and a metrics task. This year, 143 machine translation systems from 23 institutions were submitted to the ten translation directions in the standard translation task. An additional 6 anonymized systems were included, and were then evaluated both automatically and manually. The quality estimation task had four subtasks, with a total of 10 teams, submitting 57 entries",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "687bac2d3320083eb4530bf18bb8f8f721477600",
+    "externalIds": {
+      "ACL": "D13-1170",
+      "DBLP": "conf/emnlp/SocherPWCMNP13",
+      "MAG": "2251939518",
+      "DOI": "10.18653/v1/d13-1170",
+      "CorpusId": 990233
+    },
+    "title": "Recursive Deep Models for Semantic Compositionality Over a Sentiment Treebank",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2013,
+    "citationCount": 9324,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/D13-1170, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "24590005",
+        "name": "Alex Perelygin"
+      },
+      {
+        "authorId": "2110402830",
+        "name": "Jean Wu"
+      },
+      {
+        "authorId": "1964541",
+        "name": "Jason Chuang"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "34699434",
+        "name": "A. Ng"
+      },
+      {
+        "authorId": "144922861",
+        "name": "Christopher Potts"
+      }
+    ],
+    "abstract": "Semantic word spaces have been very useful but cannot express the meaning of longer phrases in a principled way. Further progress towards understanding compositionality in tasks such as sentiment detection requires richer supervised training and evaluation resources and more powerful models of composition. To remedy this, we introduce a Sentiment Treebank. It includes fine grained sentiment labels for 215,154 phrases in the parse trees of 11,855 sentences and presents new challenges for sentiment compositionality. To address them, we introduce the Recursive Neural Tensor Network. When trained on the new treebank, this model outperforms all previous methods on several metrics. It pushes the state of the art in single sentence positive/negative classification from 80% up to 85.4%. The accuracy of predicting fine-grained sentiment labels for all phrases reaches 80.7%, an improvement of 9.7% over bag of features baselines. Lastly, it is the only model that can accurately capture the effects of negation and its scope at various tree levels for both positive and negative phrases.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d7da009f457917aa381619facfa5ffae9329a6e9",
+    "externalIds": {
+      "DBLP": "conf/acl/PapineniRWZ02",
+      "MAG": "2101105183",
+      "ACL": "P02-1040",
+      "DOI": "10.3115/1073083.1073135",
+      "CorpusId": 11080756
+    },
+    "title": "Bleu: a Method for Automatic Evaluation of Machine Translation",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2002,
+    "citationCount": 32834,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.3115/1073083.1073135",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/P02-1040, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3323275",
+        "name": "Kishore Papineni"
+      },
+      {
+        "authorId": "46924970",
+        "name": "Salim Roukos"
+      },
+      {
+        "authorId": "144582029",
+        "name": "T. Ward"
+      },
+      {
+        "authorId": "2587983",
+        "name": "Wei-Jing Zhu"
+      }
+    ],
+    "abstract": "Human evaluations of machine translation are extensive but expensive. Human evaluations can take months to finish and involve human labor that can not be reused. We propose a method of automatic machine translation evaluation that is quick, inexpensive, and language-independent, that correlates highly with human evaluation, and that has little marginal cost per run. We present this method as an automated understudy to skilled human judges which substitutes for them when there is need for quick or frequent evaluations.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+    "externalIds": {
+      "MAG": "2951055169",
+      "ACL": "N19-1423",
+      "DBLP": "journals/corr/abs-1810-04805",
+      "ArXiv": "1810.04805",
+      "DOI": "10.18653/v1/N19-1423",
+      "CorpusId": 52967399
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 113539,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.04805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+    "_is_influential": false,
+    "_intents": [
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "9405cc0d6169988371b2755e573cc28650d14dfe",
+    "externalIds": {
+      "MAG": "2955855238",
+      "CorpusId": 160025533
+    },
+    "title": "Language Models are Unsupervised Multitask Learners",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 28234,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "150970919",
+        "name": "D. Luan"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cd18800a0fe0b668a1cc19f2ec95b5003d0a5035",
+    "externalIds": {
+      "MAG": "2965425874",
+      "CorpusId": 49313245
+    },
+    "title": "Improving Language Understanding by Generative Pre-Training",
+    "venue": "",
+    "year": 2018,
+    "citationCount": 14618,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "144958935",
+        "name": "Karthik Narasimhan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "8ff46c88964a36985f2b45933a3d47b81bd87bd0",
+    "externalIds": {
+      "CorpusId": 233225749
+    },
+    "title": "Quora Question Pairs",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 263,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2117098079",
+        "name": "Zihang Chen"
+      },
+      {
+        "authorId": "2108838350",
+        "name": "Hongbo Zhang"
+      },
+      {
+        "authorId": "2108198028",
+        "name": "Xiaoji Zhang"
+      },
+      {
+        "authorId": "2285260626",
+        "name": "Le Zhao"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "475354f10798f110d34792b6d88f31d6d5cb099e",
+    "externalIds": {
+      "ACL": "I05-5002",
+      "DBLP": "conf/acl-iwp/DolanB05",
+      "MAG": "131533222",
+      "CorpusId": 16639476
+    },
+    "title": "Automatically Constructing a Corpus of Sentential Paraphrases",
+    "venue": "International Joint Conference on Natural Language Processing",
+    "year": 2005,
+    "citationCount": 1983,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://aclanthology.org/I05-5002, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "83415753",
+        "name": "W. Dolan"
+      },
+      {
+        "authorId": "3125776",
+        "name": "Chris Brockett"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "6038d62f22be3162324d3cb5214512966fc6ddb0",
+    "externalIds": {
+      "CorpusId": 266690063
+    },
+    "title": "Music Transformer 기반 음악",
+    "venue": "",
+    "year": null,
+    "citationCount": 358,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2111879020",
+        "name": "S. Cho"
+      },
+      {
+        "authorId": "2108806228",
+        "name": "Jaeho Lee"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "result"
+    ]
+  }
+]

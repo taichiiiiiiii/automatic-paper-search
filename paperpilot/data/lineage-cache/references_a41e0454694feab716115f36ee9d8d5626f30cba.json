@@ -1,0 +1,2128 @@
+[
+  {
+    "paperId": "a1467bd0b11e96f1aac74a91d4842433fd2a9541",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-22323",
+      "ArXiv": "2505.22323",
+      "DOI": "10.48550/arXiv.2505.22323",
+      "CorpusId": 278959367
+    },
+    "title": "Advancing Expert Specialization for Better MoE",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.22323, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355274982",
+        "name": "Hongcan Guo"
+      },
+      {
+        "authorId": "2308303348",
+        "name": "Haolang Lu"
+      },
+      {
+        "authorId": "2308273962",
+        "name": "Guoshun Nan"
+      },
+      {
+        "authorId": "2363875114",
+        "name": "Bolun Chu"
+      },
+      {
+        "authorId": "2363877105",
+        "name": "Jialin Zhuang"
+      },
+      {
+        "authorId": "2363828380",
+        "name": "Yuan Yang"
+      },
+      {
+        "authorId": "2363877449",
+        "name": "Wenhao Che"
+      },
+      {
+        "authorId": "2113966687",
+        "name": "Sicong Leng"
+      },
+      {
+        "authorId": "2293485367",
+        "name": "Qimei Cui"
+      },
+      {
+        "authorId": "2276487516",
+        "name": "Xudong Jiang"
+      }
+    ],
+    "abstract": "Mixture-of-Experts (MoE) models enable efficient scaling of large language models (LLMs) by activating only a subset of experts per input. However, we observe that the commonly used auxiliary load balancing loss often leads to expert overlap and overly uniform routing, which hinders expert specialization and degrades overall performance during post-training. To address this, we propose a simple yet effective solution that introduces two complementary objectives: (1) an orthogonality loss to encourage experts to process distinct types of tokens, and (2) a variance loss to encourage more discriminative routing decisions. Gradient-level analysis demonstrates that these objectives are compatible with the existing auxiliary loss and contribute to optimizing the training process. Experimental results over various model architectures and across multiple benchmarks show that our method significantly enhances expert specialization. Notably, our method improves classic MoE baselines with auxiliary loss by up to 23.79%, while also maintaining load balancing in downstream tasks, without any architectural modifications or additional components. We will release our code to contribute to the community.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e2775cd17afadcbe89b58d30494dc573eb23443c",
+    "externalIds": {
+      "ArXiv": "2406.05295",
+      "DBLP": "journals/ijon/ThiruthummalKS24",
+      "DOI": "10.1016/j.neucom.2024.128007",
+      "CorpusId": 270371012
+    },
+    "title": "Information geometry of evolution of neural network parameters while training",
+    "venue": "Neurocomputing",
+    "year": 2024,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2406.05295",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.05295, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2181703671",
+        "name": "A. Thiruthummal"
+      },
+      {
+        "authorId": "2305645946",
+        "name": "Eun-jin Kim"
+      },
+      {
+        "authorId": "2397179565",
+        "name": "Sergiy Shelyag"
+      }
+    ],
+    "abstract": "Artificial neural networks (ANNs) are powerful tools capable of approximating any arbitrary mathematical function, but their interpretability remains limited, rendering them as black box models. To address this issue, numerous methods have been proposed to enhance the explainability and interpretability of ANNs. In this study, we introduce the application of information geometric framework to investigate phase transition-like behavior during the training of ANNs and relate these transitions to overfitting in certain models. The evolution of ANNs during training is studied by looking at the probability distribution of its parameters. Information geometry utilizing the principles of differential geometry, offers a unique perspective on probability and statistics by considering probability density functions as points on a Riemannian manifold. We create this manifold using a metric based on Fisher information to define a distance and a velocity. By parameterizing this distance and velocity with training steps, we study how the ANN evolves as training progresses. Utilizing standard datasets like MNIST, FMNIST and CIFAR-10, we observe a transition in the motion on the manifold while training the ANN and this transition is identified with over-fitting in the ANN models considered. The information geometric transitions observed is shown to be mathematically similar to the phase transitions in physics. Preliminary results showing finite-size scaling behavior is also provided. This work contributes to the development of robust tools for improving the explainability and interpretability of ANNs, aiding in our understanding of the variability of the parameters these complex models exhibit during training.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16d6e1ed1cf72212f6154644f3aa59d18bc95fda",
+    "externalIds": {
+      "ArXiv": "2401.06066",
+      "DBLP": "conf/acl/DaiDZXGCLZYWXLH24",
+      "DOI": "10.48550/arXiv.2401.06066",
+      "CorpusId": 266933338
+    },
+    "title": "DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 791,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.06066, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "2278221484",
+        "name": "C. Deng"
+      },
+      {
+        "authorId": "2278389597",
+        "name": "Chenggang Zhao"
+      },
+      {
+        "authorId": "2274917091",
+        "name": "R. Xu"
+      },
+      {
+        "authorId": "2278395340",
+        "name": "Huazuo Gao"
+      },
+      {
+        "authorId": "2274200088",
+        "name": "Deli Chen"
+      },
+      {
+        "authorId": "2278337977",
+        "name": "Jiashi Li"
+      },
+      {
+        "authorId": "2279051415",
+        "name": "Wangding Zeng"
+      },
+      {
+        "authorId": "2279159169",
+        "name": "Xingkai Yu"
+      },
+      {
+        "authorId": "49176273",
+        "name": "Yu Wu"
+      },
+      {
+        "authorId": "2279107352",
+        "name": "Zhenda Xie"
+      },
+      {
+        "authorId": "2278599324",
+        "name": "Y. K. Li"
+      },
+      {
+        "authorId": "2278251752",
+        "name": "Panpan Huang"
+      },
+      {
+        "authorId": "2278218736",
+        "name": "Fuli Luo"
+      },
+      {
+        "authorId": "2278217940",
+        "name": "C. Ruan"
+      },
+      {
+        "authorId": "3335836",
+        "name": "Zhifang Sui"
+      },
+      {
+        "authorId": "2278618633",
+        "name": "W. Liang"
+      }
+    ],
+    "abstract": "In the era of large language models, Mixture-of-Experts (MoE) is a promising architecture for managing computational costs when scaling up model parameters. However, conventional MoE architectures like GShard, which activate the top-$K$ out of $N$ experts, face challenges in ensuring expert specialization, i.e. each expert acquires non-overlapping and focused knowledge. In response, we propose the DeepSeekMoE architecture towards ultimate expert specialization. It involves two principal strategies: (1) finely segmenting the experts into $mN$ ones and activating $mK$ from them, allowing for a more flexible combination of activated experts; (2) isolating $K_s$ experts as shared ones, aiming at capturing common knowledge and mitigating redundancy in routed experts. Starting from a modest scale with 2B parameters, we demonstrate that DeepSeekMoE 2B achieves comparable performance with GShard 2.9B, which has 1.5 times the expert parameters and computation. In addition, DeepSeekMoE 2B nearly approaches the performance of its dense counterpart with the same number of total parameters, which set the upper bound of MoE models. Subsequently, we scale up DeepSeekMoE to 16B parameters and show that it achieves comparable performance with LLaMA2 7B, with only about 40% of computations. Further, our preliminary efforts to scale up DeepSeekMoE to 145B parameters consistently validate its substantial advantages over the GShard architecture, and show its performance comparable with DeepSeek 67B, using only 28.5% (maybe even 18.2%) of computations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "411114f989a3d1083d90afd265103132fee94ebe",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-04088",
+      "ArXiv": "2401.04088",
+      "DOI": "10.48550/arXiv.2401.04088",
+      "CorpusId": 266844877
+    },
+    "title": "Mixtral of Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1797,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04088, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2278435713",
+        "name": "Albert Q. Jiang"
+      },
+      {
+        "authorId": "2256994781",
+        "name": "Alexandre Sablayrolles"
+      },
+      {
+        "authorId": "2278435471",
+        "name": "Antoine Roux"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "2278434888",
+        "name": "Blanche Savary"
+      },
+      {
+        "authorId": "2256994975",
+        "name": "Chris Bamford"
+      },
+      {
+        "authorId": "2328602",
+        "name": "Devendra Singh Chaplot"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "2168785331",
+        "name": "Emma Bou Hanna"
+      },
+      {
+        "authorId": "2256995640",
+        "name": "Florian Bressand"
+      },
+      {
+        "authorId": "2256993163",
+        "name": "Gianna Lengyel"
+      },
+      {
+        "authorId": "2278434464",
+        "name": "Guillaume Bour"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      },
+      {
+        "authorId": "2256995632",
+        "name": "Lélio Renard Lavaud"
+      },
+      {
+        "authorId": "2113836860",
+        "name": "Lucile Saulnier"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "2256994779",
+        "name": "Pierre Stock"
+      },
+      {
+        "authorId": "2278428931",
+        "name": "Sandeep Subramanian"
+      },
+      {
+        "authorId": "2303863687",
+        "name": "Sophia Yang"
+      },
+      {
+        "authorId": "2184103686",
+        "name": "Szymon Antoniak"
+      },
+      {
+        "authorId": "1379806208",
+        "name": "Teven Le Scao"
+      },
+      {
+        "authorId": "81588783",
+        "name": "Théophile Gervet"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "2278590503",
+        "name": "Thomas Wang"
+      },
+      {
+        "authorId": "47733973",
+        "name": "Timothée Lacroix"
+      },
+      {
+        "authorId": "2256992826",
+        "name": "William El Sayed"
+      }
+    ],
+    "abstract": "We introduce Mixtral 8x7B, a Sparse Mixture of Experts (SMoE) language model. Mixtral has the same architecture as Mistral 7B, with the difference that each layer is composed of 8 feedforward blocks (i.e. experts). For every token, at each layer, a router network selects two experts to process the current state and combine their outputs. Even though each token only sees two experts, the selected experts can be different at each timestep. As a result, each token has access to 47B parameters, but only uses 13B active parameters during inference. Mixtral was trained with a context size of 32k tokens and it outperforms or matches Llama 2 70B and GPT-3.5 across all evaluated benchmarks. In particular, Mixtral vastly outperforms Llama 2 70B on mathematics, code generation, and multilingual benchmarks. We also provide a model fine-tuned to follow instructions, Mixtral 8x7B - Instruct, that surpasses GPT-3.5 Turbo, Claude-2.1, Gemini Pro, and Llama 2 70B - chat model on human benchmarks. Both the base and instruct models are released under the Apache 2.0 license.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9d2860bd00652b08f5be1cd77c2934d3be98df21",
+    "externalIds": {
+      "ArXiv": "2310.09762",
+      "DBLP": "journals/corr/abs-2310-09762",
+      "DOI": "10.48550/arXiv.2310.09762",
+      "CorpusId": 264146569
+    },
+    "title": "Diversifying the Mixture-of-Experts Representation for Language Models with Orthogonal Optimizer",
+    "venue": "European Conference on Artificial Intelligence",
+    "year": 2023,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.09762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2185826034",
+        "name": "Boan Liu"
+      },
+      {
+        "authorId": "46573238",
+        "name": "Liang Ding"
+      },
+      {
+        "authorId": "2144035454",
+        "name": "Li Shen"
+      },
+      {
+        "authorId": "2065263152",
+        "name": "Keqin Peng"
+      },
+      {
+        "authorId": "143789117",
+        "name": "Yu Cao"
+      },
+      {
+        "authorId": "2296862172",
+        "name": "Dazhao Cheng"
+      },
+      {
+        "authorId": "2255502438",
+        "name": "D. Tao"
+      }
+    ],
+    "abstract": "The Mixture of Experts (MoE) has emerged as a highly successful technique in deep learning, based on the principle of divide-and-conquer to maximize model capacity without significant additional computational cost. Even in the era of large-scale language models (LLMs), MoE continues to play a crucial role, as some researchers have indicated that GPT-4 adopts the MoE structure to ensure diverse inference results. However, MoE is susceptible to performance degeneracy, particularly evident in the issues of imbalance and homogeneous representation among experts. While previous studies have extensively addressed the problem of imbalance, the challenge of homogeneous representation remains unresolved. In this study, we shed light on the homogeneous representation problem, wherein experts in the MoE fail to specialize and lack diversity, leading to frustratingly high similarities in their representations (up to 99\\% in a well-performed MoE model). This problem restricts the expressive power of the MoE and, we argue, contradicts its original intention. To tackle this issue, we propose a straightforward yet highly effective solution: OMoE, an orthogonal expert optimizer. Additionally, we introduce an alternating training strategy that encourages each expert to update in a direction orthogonal to the subspace spanned by other experts. Our algorithm facilitates MoE training in two key ways: firstly, it explicitly enhances representation diversity, and secondly, it implicitly fosters interaction between experts during orthogonal weights computation. Through extensive experiments, we demonstrate that our proposed optimization algorithm significantly improves the performance of fine-tuning the MoE model on the GLUE benchmark, SuperGLUE benchmark, question-answering task, and name entity recognition tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2edccb8fa562ed52cd49ea6fc67ed32db6218247",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2308-00951",
+      "ArXiv": "2308.00951",
+      "DOI": "10.48550/arXiv.2308.00951",
+      "CorpusId": 260378993
+    },
+    "title": "From Sparse to Soft Mixtures of Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.00951",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.00951, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1794202",
+        "name": "J. Puigcerver"
+      },
+      {
+        "authorId": "145814174",
+        "name": "C. Riquelme"
+      },
+      {
+        "authorId": "40608942",
+        "name": "Basil Mustafa"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "Sparse mixture of expert architectures (MoEs) scale model capacity without significant increases in training or inference costs. Despite their success, MoEs suffer from a number of issues: training instability, token dropping, inability to scale the number of experts, or ineffective finetuning. In this work, we propose Soft MoE, a fully-differentiable sparse Transformer that addresses these challenges, while maintaining the benefits of MoEs. Soft MoE performs an implicit soft assignment by passing different weighted combinations of all input tokens to each expert. As in other MoEs, experts in Soft MoE only process a subset of the (combined) tokens, enabling larger model capacity (and performance) at lower inference cost. In the context of visual recognition, Soft MoE greatly outperforms dense Transformers (ViTs) and popular MoEs (Tokens Choice and Experts Choice). Furthermore, Soft MoE scales well: Soft MoE Huge/14 with 128 experts in 16 MoE layers has over 40x more parameters than ViT Huge/14, with only 2% increased inference time, and substantially better quality.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e47da75675b9a3fe02ef1efadca39bc8cdfcdc17",
+    "externalIds": {
+      "DBLP": "conf/ipps/Zoph22",
+      "DOI": "10.1109/IPDPSW55747.2022.00171",
+      "CorpusId": 246996745
+    },
+    "title": "Designing Effective Sparse Expert Models",
+    "venue": "IEEE International Symposium on Parallel & Distributed Processing, Workshops and Phd Forum",
+    "year": 2022,
+    "citationCount": 110,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/IPDPSW55747.2022.00171?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/IPDPSW55747.2022.00171, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "49596195",
+        "name": "Sameer Kumar"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      }
+    ],
+    "abstract": "Scale has opened new frontiers in natural language processing -- but at a high cost. In response, Mixture-of-Experts (MoE) and Switch Transformers have been proposed as an energy efficient path to even larger and more capable language models. But advancing the state-of-the-art across a broad set of natural language tasks has been hindered by training instabilities and uncertain quality during fine-tuning. Our work focuses on these issues and acts as a design guide. We conclude by scaling a sparse model to 269B parameters, with a computational cost comparable to a 32B dense encoder-decoder Transformer (Stable and Transferable Mixture-of-Experts or ST-MoE-32B). For the first time, a sparse model achieves state-of-the-art performance in transfer learning, across a diverse set of tasks including reasoning (SuperGLUE, ARC Easy, ARC Challenge), summarization (XSum, CNN-DM), closed book question answering (WebQA, Natural Questions), and adversarially constructed tasks (Winogrande, ANLI R3).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c9550f0d1940ee1adf1549c9a0d699ef896dbefd",
+    "externalIds": {
+      "ACL": "2022.acl-long.489",
+      "ArXiv": "2204.08396",
+      "DBLP": "conf/acl/Dai0MZSCW22",
+      "DOI": "10.48550/arXiv.2204.08396",
+      "CorpusId": 248227505
+    },
+    "title": "StableMoE: Stable Routing Strategy for Mixture of Experts",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 110,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.08396",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.08396, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "145307652",
+        "name": "Li Dong"
+      },
+      {
+        "authorId": "2118866998",
+        "name": "Shuming Ma"
+      },
+      {
+        "authorId": "2112670329",
+        "name": "Bo Zheng"
+      },
+      {
+        "authorId": "3335836",
+        "name": "Zhifang Sui"
+      },
+      {
+        "authorId": "7267809",
+        "name": "Baobao Chang"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      }
+    ],
+    "abstract": "The Mixture-of-Experts (MoE) technique can scale up the model size of Transformers with an affordable computational overhead. We point out that existing learning-to-route MoE methods suffer from the routing fluctuation issue, i.e., the target expert of the same input may change along with training, but only one expert will be activated for the input during inference. The routing fluctuation tends to harm sample efficiency because the same input updates different experts but only one is finally used. In this paper, we propose StableMoE with two training stages to address the routing fluctuation problem. In the first training stage, we learn a balanced and cohesive routing strategy and distill it into a lightweight router decoupled from the backbone model. In the second training stage, we utilize the distilled router to determine the token-to-expert assignment and freeze it for a stable routing strategy. We validate our method on language modeling and multilingual machine translation. The results show that StableMoE outperforms existing MoE methods in terms of both convergence speed and performance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bbc57e1b3cf90e09b64377f13de455793bc81ad5",
+    "externalIds": {
+      "DBLP": "conf/nips/ZhouLLDHZDCLL22",
+      "ArXiv": "2202.09368",
+      "DOI": "10.52202/068431-0515",
+      "CorpusId": 247011948
+    },
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 696,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.09368, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1929135",
+        "name": "Yan-Quan Zhou"
+      },
+      {
+        "authorId": "2055852528",
+        "name": "Tao Lei"
+      },
+      {
+        "authorId": "46935491",
+        "name": "Han-Chu Liu"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2406193831",
+        "name": "Vincent Zhao"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2111317372",
+        "name": "Zhifeng Chen"
+      },
+      {
+        "authorId": "1397917613",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2926266",
+        "name": "J. Laudon"
+      }
+    ],
+    "abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choice method. Instead of letting tokens select the top-k experts, we have experts selecting the top-k tokens. As a result, each token can be routed to a variable number of experts and each expert can have a fixed bucket size. We systematically study pre-training speedups using the same computational resources of the Switch Transformer top-1 and GShard top-2 gating of prior work and find that our method improves training convergence time by more than 2x. For the same computational cost, our method demonstrates higher performance in fine-tuning 11 selected tasks in the GLUE and SuperGLUE benchmarks. For a smaller activation cost, our method outperforms the T5 dense model in 7 out of the 11 tasks.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "8690d62d4bbbd0b1ed5e1f25320d10853bfbeb01",
+    "externalIds": {
+      "ArXiv": "2106.05974",
+      "DBLP": "conf/nips/RiquelmePMNJPKH21",
+      "CorpusId": 235417196
+    },
+    "title": "Scaling Vision with Sparse Mixture of Experts",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 983,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.05974, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145814174",
+        "name": "C. Riquelme"
+      },
+      {
+        "authorId": "1794202",
+        "name": "J. Puigcerver"
+      },
+      {
+        "authorId": "40608942",
+        "name": "Basil Mustafa"
+      },
+      {
+        "authorId": "2060377146",
+        "name": "Maxim Neumann"
+      },
+      {
+        "authorId": "2068720",
+        "name": "Rodolphe Jenatton"
+      },
+      {
+        "authorId": "1809220",
+        "name": "André Susano Pinto"
+      },
+      {
+        "authorId": "51027911",
+        "name": "Daniel Keysers"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "Sparsely-gated Mixture of Experts networks (MoEs) have demonstrated excellent scalability in Natural Language Processing. In Computer Vision, however, almost all performant networks are\"dense\", that is, every input is processed by every parameter. We present a Vision MoE (V-MoE), a sparse version of the Vision Transformer, that is scalable and competitive with the largest dense networks. When applied to image recognition, V-MoE matches the performance of state-of-the-art networks, while requiring as little as half of the compute at inference time. Further, we propose an extension to the routing algorithm that can prioritize subsets of each input across the entire batch, leading to adaptive per-image compute. This allows V-MoE to trade-off performance and compute smoothly at test-time. Finally, we demonstrate the potential of V-MoE to scale vision models, and train a 15B parameter model that attains 90.35% on ImageNet.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "b15ea460c77a4ee8aa159a30ab0331deedfcf392",
+    "externalIds": {
+      "DBLP": "conf/icml/LewisBDGZ21",
+      "ArXiv": "2103.16716",
+      "CorpusId": 232428341
+    },
+    "title": "BASE Layers: Simplifying Training of Large, Sparse Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 379,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.16716, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "2116473",
+        "name": "Shruti Bhosale"
+      },
+      {
+        "authorId": "3239480",
+        "name": "Tim Dettmers"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We introduce a new balanced assignment of experts (BASE) layer for large language models that greatly simplifies existing high capacity sparse layers. Sparse layers can dramatically improve the efficiency of training and inference by routing each token to specialized expert modules that contain only a small fraction of the model parameters. However, it can be difficult to learn balanced routing functions that make full use of the available experts; existing approaches typically use routing heuristics or auxiliary expert-balancing loss functions. In contrast, we formulate token-to-expert allocation as a linear assignment problem, allowing an optimal assignment in which each expert receives an equal number of tokens. This optimal assignment scheme improves efficiency by guaranteeing balanced compute loads, and also simplifies training by not requiring any new hyperparameters or auxiliary losses. Code is publicly released at https://github.com/pytorch/fairseq/",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fdacf2a732f55befdc410ea927091cad3b791f13",
+    "externalIds": {
+      "DBLP": "journals/jmlr/FedusZS22",
+      "ArXiv": "2101.03961",
+      "CorpusId": 231573431
+    },
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "venue": "Journal of machine learning research",
+    "year": 2021,
+    "citationCount": 3707,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.03961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communication and computational costs. Our proposed training techniques help wrangle the instabilities and we show large sparse models may be trained, for the first time, with lower precision (bfloat16) formats. We design models based off T5-Base and T5-Large to obtain up to 7x increases in pre-training speed with the same computational resources. These improvements extend into multilingual settings where we measure gains over the mT5-Base version across all 101 languages. Finally, we advance the current scale of language models by pre-training up to trillion parameter models on the\"Colossal Clean Crawled Corpus\"and achieve a 4x speedup over the T5-XXL model.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "1882f194cb43828852cc052887671e55a80f945a",
+    "externalIds": {
+      "MAG": "3040573126",
+      "DBLP": "conf/iclr/LepikhinLXCFHKS21",
+      "ArXiv": "2006.16668",
+      "CorpusId": 220265858
+    },
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 1918,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.16668, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150077954",
+        "name": "Dmitry Lepikhin"
+      },
+      {
+        "authorId": "34946720",
+        "name": "HyoukJoong Lee"
+      },
+      {
+        "authorId": "2145139570",
+        "name": "Yuanzhong Xu"
+      },
+      {
+        "authorId": "7167328",
+        "name": "Dehao Chen"
+      },
+      {
+        "authorId": "2345617",
+        "name": "Orhan Firat"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      }
+    ],
+    "abstract": "Neural network scaling has been critical for improving the model quality in many real-world machine learning applications with vast amounts of training data and compute. Although this trend of scaling is affirmed to be a sure-fire approach for better model quality, there are challenges on the path such as the computation cost, ease of programming, and efficient implementation on parallel devices. GShard is a module composed of a set of lightweight annotation APIs and an extension to the XLA compiler. It provides an elegant way to express a wide range of parallel computation patterns with minimal changes to the existing model code. GShard enabled us to scale up multilingual neural machine translation Transformer model with Sparsely-Gated Mixture-of-Experts beyond 600 billion parameters using automatic sharding. We demonstrate that such a giant model can efficiently be trained on 2048 TPU v3 accelerators in 4 days to achieve far superior quality for translation from 100 languages to English compared to the prior art.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
+    "externalIds": {
+      "MAG": "2981852735",
+      "DBLP": "journals/corr/abs-1910-10683",
+      "ArXiv": "1910.10683",
+      "CorpusId": 204838007
+    },
+    "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+    "venue": "Journal of machine learning research",
+    "year": 2019,
+    "citationCount": 25339,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.10683, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2402716",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "145625142",
+        "name": "Adam Roberts"
+      },
+      {
+        "authorId": "3844009",
+        "name": "Katherine Lee"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "1380243217",
+        "name": "Michael Matena"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "2157338362",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "35025299",
+        "name": "Peter J. Liu"
+      }
+    ],
+    "abstract": "Transfer learning, where a model is first pre-trained on a data-rich task before being fine-tuned on a downstream task, has emerged as a powerful technique in natural language processing (NLP). The effectiveness of transfer learning has given rise to a diversity of approaches, methodology, and practice. In this paper, we explore the landscape of transfer learning techniques for NLP by introducing a unified framework that converts every language problem into a text-to-text format. Our systematic study compares pre-training objectives, architectures, unlabeled datasets, transfer approaches, and other factors on dozens of language understanding tasks. By combining the insights from our exploration with scale and our new \"Colossal Clean Crawled Corpus\", we achieve state-of-the-art results on many benchmarks covering summarization, question answering, text classification, and more. To facilitate future work on transfer learning for NLP, we release our dataset, pre-trained models, and code.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "64a09827ef8df1e58f5d18b714e06aa5fd0d07d6",
+    "externalIds": {
+      "DBLP": "conf/aistats/KarakidaAA19",
+      "ArXiv": "1806.01316",
+      "MAG": "2951111526",
+      "DOI": "10.1088/1742-5468/abc62e",
+      "CorpusId": 46937276
+    },
+    "title": "Universal statistics of Fisher information in deep neural networks: mean field approach",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2018,
+    "citationCount": 172,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1806.01316",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.01316, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3430922",
+        "name": "Ryo Karakida"
+      },
+      {
+        "authorId": "143683998",
+        "name": "S. Akaho"
+      },
+      {
+        "authorId": "144362425",
+        "name": "S. Amari"
+      }
+    ],
+    "abstract": "The Fisher information matrix (FIM) is a fundamental quantity to represent the characteristics of a stochastic model, including deep neural networks (DNNs). The present study reveals novel statistics of FIM that are universal among a wide class of DNNs. To this end, we use random weights and large width limits, which enables us to utilize mean field theories. We investigate the asymptotic statistics of the FIM’s eigenvalues and reveal that most of them are close to zero while the maximum eigenvalue takes a huge value. Because the landscape of the parameter space is defined by the FIM, it is locally flat in most dimensions, but strongly distorted in others. Moreover, we demonstrate the potential usage of the derived statistics in learning strategies. First, small eigenvalues that induce flatness can be connected to a norm-based capacity measure of generalization ability. Second, the maximum eigenvalue that induces the distortion enables us to quantitatively estimate an appropriately sized learning rate for gradient methods to converge.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ecd88d2ef770348e16b807ad5430314dcf219098",
+    "externalIds": {
+      "MAG": "2953306332",
+      "DBLP": "conf/aistats/LiangPRS19",
+      "ArXiv": "1711.01530",
+      "CorpusId": 21657631
+    },
+    "title": "Fisher-Rao Metric, Geometry, and Complexity of Neural Networks",
+    "venue": "International Conference on Artificial Intelligence and Statistics",
+    "year": 2017,
+    "citationCount": 249,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.01530, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9448283",
+        "name": "Tengyuan Liang"
+      },
+      {
+        "authorId": "1685292",
+        "name": "T. Poggio"
+      },
+      {
+        "authorId": "1680046",
+        "name": "A. Rakhlin"
+      },
+      {
+        "authorId": "144825621",
+        "name": "J. Stokes"
+      }
+    ],
+    "abstract": "We study the relationship between geometry and capacity measures for deep neural networks from an invariance viewpoint. We introduce a new notion of capacity --- the Fisher-Rao norm --- that possesses desirable invariance properties and is motivated by Information Geometry. We discover an analytical characterization of the new capacity measure, through which we establish norm-comparison inequalities and further show that the new measure serves as an umbrella for several existing norm-based complexity measures. We discuss upper bounds on the generalization error induced by the proposed measure. Extensive numerical experiments on CIFAR-10 support our theoretical findings. Our theoretical analysis rests on a key structural lemma about partial derivatives of multi-layer rectifier networks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+    "externalIds": {
+      "DBLP": "journals/corr/ShazeerMMDLHD17",
+      "MAG": "2952339051",
+      "ArXiv": "1701.06538",
+      "CorpusId": 12462234
+    },
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 4382,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.06538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "1861312",
+        "name": "Azalia Mirhoseini"
+      },
+      {
+        "authorId": "2275364713",
+        "name": "Krzysztof Maziarz"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational efficiency on modern GPU clusters. We introduce a Sparsely-Gated Mixture-of-Experts layer (MoE), consisting of up to thousands of feed-forward sub-networks. A trainable gating network determines a sparse combination of these experts to use for each example. We apply the MoE to the tasks of language modeling and machine translation, where model capacity is critical for absorbing the vast quantities of knowledge available in the training corpora. We present model architectures in which a MoE with up to 137 billion parameters is applied convolutionally between stacked LSTM layers. On large language modeling and machine translation benchmarks, these models achieve significantly better results than state-of-the-art at lower computational cost.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "efbd381493bb9636f489b965a2034d529cd56bcd",
+    "externalIds": {
+      "ArXiv": "1609.07843",
+      "MAG": "2525332836",
+      "DBLP": "journals/corr/MerityXBS16",
+      "CorpusId": 16299141
+    },
+    "title": "Pointer Sentinel Mixture Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 3902,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.07843, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3375440",
+        "name": "Stephen Merity"
+      },
+      {
+        "authorId": "2228109",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "40518045",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      }
+    ],
+    "abstract": "Recent neural network sequence models with softmax classifiers have achieved their best language modeling performance only with very large hidden states and large vocabularies. Even then they struggle to predict rare or unseen words even if the context makes the prediction unambiguous. We introduce the pointer sentinel mixture architecture for neural sequence models which has the ability to either reproduce a word from the recent context or produce a word from a standard softmax classifier. Our pointer sentinel-LSTM model achieves state of the art language modeling performance on the Penn Treebank (70.9 perplexity) while using far fewer parameters than a standard softmax LSTM. In order to evaluate how well language models can exploit longer contexts and deal with more realistic vocabularies and larger corpora we also introduce the freely available WikiText corpus.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cb4dc7277d1c8c3bc76dd7425eb1cc7cbaf99487",
+    "externalIds": {
+      "MAG": "2155894447",
+      "DBLP": "journals/corr/MartensG15",
+      "ArXiv": "1503.05671",
+      "CorpusId": 11480464
+    },
+    "title": "Optimizing Neural Networks with Kronecker-factored Approximate Curvature",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 1261,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.05671, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145704247",
+        "name": "James Martens"
+      },
+      {
+        "authorId": "1785346",
+        "name": "R. Grosse"
+      }
+    ],
+    "abstract": "We propose an efficient method for approximating natural gradient descent in neural networks which we call Kronecker-Factored Approximate Curvature (K-FAC). K-FAC is based on an efficiently invertible approximation of a neural network's Fisher information matrix which is neither diagonal nor low-rank, and in some cases is completely non-sparse. It is derived by approximating various large blocks of the Fisher (corresponding to entire layers) as being the Kronecker product of two much smaller matrices. While only several times more expensive to compute than the plain stochastic gradient, the updates produced by K-FAC make much more progress optimizing the objective, which results in an algorithm that can be much faster than stochastic gradient descent with momentum in practice. And unlike some previously proposed approximate natural-gradient/Newton methods which use high-quality non-diagonal curvature matrices (such as Hessian-free optimization), K-FAC works very well in highly stochastic optimization regimes. This is because the cost of storing and inverting K-FAC's approximation to the curvature matrix does not depend on the amount of data used to estimate it, which is a feature typically associated only with diagonal or low-rank approximations to the curvature matrix.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3504565c8c3cbae18a50247604f07a7e01cde801",
+    "externalIds": {
+      "MAG": "1938444229",
+      "ArXiv": "1501.01571",
+      "DBLP": "journals/corr/Tropp15",
+      "DOI": "10.1561/2200000048",
+      "CorpusId": 5679583
+    },
+    "title": "An Introduction to Matrix Concentration Inequalities",
+    "venue": "Found. Trends Mach. Learn.",
+    "year": 2015,
+    "citationCount": 1279,
+    "openAccessPdf": {
+      "url": "https://authors.library.caltech.edu/records/4pzrk-r7g44/files/1501.01571v1.pdf?download=1",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1501.01571, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1788107",
+        "name": "J. Tropp"
+      }
+    ],
+    "abstract": "In recent years, random matrices have come to play a major role in computational mathematics, but most of the classical areas of random matrix theory remain the province of experts. Over the last decade, with the advent of matrix concentration inequalities, research has advanced to the point where we can conquer many (formerly) challenging problems with a page or two of arithmetic. The aim of this monograph is to describe the most successful methods from this area along with some interesting examples that these techniques can illuminate.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "189ef6bea81fe8ee3ed3214b9394f7e2027eff98",
+    "externalIds": {
+      "MAG": "2474694648",
+      "ArXiv": "1412.1193",
+      "DBLP": "journals/jmlr/Martens20",
+      "CorpusId": 10284405
+    },
+    "title": "New Insights and Perspectives on the Natural Gradient Method",
+    "venue": "Journal of machine learning research",
+    "year": 2014,
+    "citationCount": 772,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.1193, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145704247",
+        "name": "James Martens"
+      }
+    ],
+    "abstract": "Natural gradient descent is an optimization method traditionally motivated from the perspective of information geometry, and works well for many applications as an alternative to stochastic gradient descent. In this paper we critically analyze this method and its properties, and show how it can be viewed as a type of approximate 2nd-order optimization method, where the Fisher information matrix can be viewed as an approximation of the Hessian. This perspective turns out to have significant implications for how to design a practical and robust version of the method. Additionally, we make the following contributions to the understanding of natural gradient and 2nd-order methods: a thorough analysis of the convergence speed of stochastic natural gradient descent (and more general stochastic 2nd-order methods) as applied to convex quadratics, a critical examination of the oft-used \"empirical\" approximation of the Fisher matrix, and an analysis of the (approximate) parameterization invariance property possessed by natural gradient methods, which we show still holds for certain choices of the curvature matrix other than the Fisher, but notably not the Hessian.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DengDSLL009",
+      "MAG": "2108598243",
+      "DOI": "10.1109/CVPR.2009.5206848",
+      "CorpusId": 57246310
+    },
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2009,
+    "citationCount": 72470,
+    "openAccessPdf": {
+      "url": "http://www.image-net.org/papers/imagenet_cvpr09.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2009.5206848?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2009.5206848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144847596",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "94451829",
+        "name": "K. Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "da0877799c8daab985853c0aeed7c04f987bad4a",
+    "externalIds": {
+      "MAG": "1992208280",
+      "DBLP": "journals/siamjo/NemirovskiJLS09",
+      "DOI": "10.1137/070704277",
+      "CorpusId": 268069803
+    },
+    "title": "Robust Stochastic Approximation Approach to Stochastic Programming",
+    "venue": "SIAM Journal on Optimization",
+    "year": 2008,
+    "citationCount": 845,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1137/070704277?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1137/070704277, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145853268",
+        "name": "A. Nemirovski"
+      },
+      {
+        "authorId": "1754887",
+        "name": "A. Juditsky"
+      },
+      {
+        "authorId": "2258722015",
+        "name": "Guanghui Lan"
+      },
+      {
+        "authorId": "2262072473",
+        "name": "Alexander Shapiro"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4f0df7ed89d9a5bb5bafa5727ccdc0b6e2fb463d",
+    "externalIds": {
+      "MAG": "2016384870",
+      "DBLP": "journals/orl/BeckT03",
+      "DOI": "10.1016/S0167-6377(02)00231-6",
+      "CorpusId": 7036108
+    },
+    "title": "Mirror descent and nonlinear projected subgradient methods for convex optimization",
+    "venue": "Operations Research Letters",
+    "year": 2003,
+    "citationCount": 1357,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/S0167-6377(02)00231-6?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/S0167-6377(02)00231-6, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40204991",
+        "name": "A. Beck"
+      },
+      {
+        "authorId": "1727609",
+        "name": "M. Teboulle"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5a767a341364de1f75bea85e0b12ba7d3586a461",
+    "externalIds": {
+      "MAG": "2996841449",
+      "DBLP": "journals/neco/Amari98",
+      "DOI": "10.1162/089976698300017746",
+      "CorpusId": 207585383
+    },
+    "title": "Natural Gradient Works Efficiently in Learning",
+    "venue": "Neural Computation",
+    "year": 1998,
+    "citationCount": 3542,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/089976698300017746?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/089976698300017746, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144362425",
+        "name": "S. Amari"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5b6fdb2aea424d02c141da81d62b04d739d62b96",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-19437",
+      "CorpusId": 275118643
+    },
+    "title": "DeepSeek-V3 Technical Report",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 3059,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2307073216",
+        "name": "DeepSeek-AI"
+      },
+      {
+        "authorId": "2278677183",
+        "name": "A. Liu"
+      },
+      {
+        "authorId": "2337688451",
+        "name": "B. Feng"
+      },
+      {
+        "authorId": "2337687235",
+        "name": "Bing Xue"
+      },
+      {
+        "authorId": "2244285627",
+        "name": "Bing-Li Wang"
+      },
+      {
+        "authorId": "2337844023",
+        "name": "Bochao Wu"
+      },
+      {
+        "authorId": "2337772642",
+        "name": "Chengda Lu"
+      },
+      {
+        "authorId": "2278389597",
+        "name": "Chenggang Zhao"
+      },
+      {
+        "authorId": "2278221484",
+        "name": "C. Deng"
+      },
+      {
+        "authorId": "2337705874",
+        "name": "Chenyu Zhang"
+      },
+      {
+        "authorId": "2278217940",
+        "name": "C. Ruan"
+      },
+      {
+        "authorId": "2307085654",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "2278834796",
+        "name": "Daya Guo"
+      },
+      {
+        "authorId": "2278404250",
+        "name": "Dejian Yang"
+      },
+      {
+        "authorId": "2274200088",
+        "name": "Deli Chen"
+      },
+      {
+        "authorId": "2325992470",
+        "name": "Dong-Li Ji"
+      },
+      {
+        "authorId": "2278218944",
+        "name": "Erhang Li"
+      },
+      {
+        "authorId": "2278589731",
+        "name": "Fangyun Lin"
+      },
+      {
+        "authorId": "2337687526",
+        "name": "Fucong Dai"
+      },
+      {
+        "authorId": "2278218736",
+        "name": "Fuli Luo"
+      },
+      {
+        "authorId": "2278219957",
+        "name": "Guangbo Hao"
+      },
+      {
+        "authorId": "2278589675",
+        "name": "Guanting Chen"
+      },
+      {
+        "authorId": "2337746209",
+        "name": "Guowei Li"
+      },
+      {
+        "authorId": "2337801868",
+        "name": "H. Zhang"
+      },
+      {
+        "authorId": "2287769900",
+        "name": "Han Bao"
+      },
+      {
+        "authorId": "2278643857",
+        "name": "Hanwei Xu"
+      },
+      {
+        "authorId": "2316174862",
+        "name": "Haocheng Wang"
+      },
+      {
+        "authorId": "2278587222",
+        "name": "Haowei Zhang"
+      },
+      {
+        "authorId": "2278486342",
+        "name": "Honghui Ding"
+      },
+      {
+        "authorId": "2238628841",
+        "name": "Huajian Xin"
+      },
+      {
+        "authorId": "2278395340",
+        "name": "Huazuo Gao"
+      },
+      {
+        "authorId": "2338017035",
+        "name": "Hui Li"
+      },
+      {
+        "authorId": "2305476903",
+        "name": "Hui Qu"
+      },
+      {
+        "authorId": "2429790650",
+        "name": "J. Cai"
+      },
+      {
+        "authorId": "2337771119",
+        "name": "Jian Liang"
+      },
+      {
+        "authorId": "2278226003",
+        "name": "Jianzhong Guo"
+      },
+      {
+        "authorId": "2332054265",
+        "name": "J. Ni"
+      },
+      {
+        "authorId": "2278337977",
+        "name": "Jiashi Li"
+      },
+      {
+        "authorId": "2187553093",
+        "name": "Jiawei Wang"
+      },
+      {
+        "authorId": "2337786826",
+        "name": "Jin Chen"
+      },
+      {
+        "authorId": "2337776990",
+        "name": "JingChang Chen"
+      },
+      {
+        "authorId": "2337749769",
+        "name": "Jingyang Yuan"
+      },
+      {
+        "authorId": "2278355944",
+        "name": "Junjie Qiu"
+      },
+      {
+        "authorId": "2337836211",
+        "name": "Junlong Li"
+      },
+      {
+        "authorId": "2258088582",
+        "name": "Jun-Mei Song"
+      },
+      {
+        "authorId": "2278218552",
+        "name": "Kai Dong"
+      },
+      {
+        "authorId": "2335579723",
+        "name": "Kai Hu"
+      },
+      {
+        "authorId": "2278218724",
+        "name": "Kaige Gao"
+      },
+      {
+        "authorId": "2278219877",
+        "name": "Kang Guan"
+      },
+      {
+        "authorId": "2307742866",
+        "name": "Kexin Huang"
+      },
+      {
+        "authorId": "2329319668",
+        "name": "K. Yu"
+      },
+      {
+        "authorId": "2337705401",
+        "name": "Lean Wang"
+      },
+      {
+        "authorId": "2278256170",
+        "name": "Lecong Zhang"
+      },
+      {
+        "authorId": "2337753846",
+        "name": "Lei Xu"
+      },
+      {
+        "authorId": "2337787680",
+        "name": "Leyi Xia"
+      },
+      {
+        "authorId": "2330538675",
+        "name": "Liang Zhao"
+      },
+      {
+        "authorId": "15068726",
+        "name": "Litong Wang"
+      },
+      {
+        "authorId": "2278257096",
+        "name": "Liyue Zhang"
+      },
+      {
+        "authorId": "2338070273",
+        "name": "Meng Li"
+      },
+      {
+        "authorId": "2337775620",
+        "name": "Miaojun Wang"
+      },
+      {
+        "authorId": "1680884",
+        "name": "Mingchuan Zhang"
+      },
+      {
+        "authorId": "2337708168",
+        "name": "Minghua Zhang"
+      },
+      {
+        "authorId": "2322096554",
+        "name": "Minghui Tang"
+      },
+      {
+        "authorId": "2337751092",
+        "name": "Mingming Li"
+      },
+      {
+        "authorId": "2337686905",
+        "name": "Ning Tian"
+      },
+      {
+        "authorId": "2278251752",
+        "name": "Panpan Huang"
+      },
+      {
+        "authorId": "2330130435",
+        "name": "Peiyi Wang"
+      },
+      {
+        "authorId": "2333052802",
+        "name": "Peng Zhang"
+      },
+      {
+        "authorId": "2198632851",
+        "name": "Qiancheng Wang"
+      },
+      {
+        "authorId": "2278223869",
+        "name": "Qihao Zhu"
+      },
+      {
+        "authorId": "2307394725",
+        "name": "Qinyu Chen"
+      },
+      {
+        "authorId": "2278218583",
+        "name": "Qiushi Du"
+      },
+      {
+        "authorId": "2337764886",
+        "name": "R. J. Chen"
+      },
+      {
+        "authorId": "2337687334",
+        "name": "R. Jin"
+      },
+      {
+        "authorId": "2278218130",
+        "name": "Ruiqi Ge"
+      },
+      {
+        "authorId": "2337774448",
+        "name": "Ruisong Zhang"
+      },
+      {
+        "authorId": "2337687339",
+        "name": "Ruizhe Pan"
+      },
+      {
+        "authorId": "2337768965",
+        "name": "Runji Wang"
+      },
+      {
+        "authorId": "2274917091",
+        "name": "R. Xu"
+      },
+      {
+        "authorId": "2337775212",
+        "name": "Ruoyu Zhang"
+      },
+      {
+        "authorId": "2288751385",
+        "name": "Ruyi Chen"
+      },
+      {
+        "authorId": "2337775628",
+        "name": "S. Li"
+      },
+      {
+        "authorId": "2278389939",
+        "name": "Shanghao Lu"
+      },
+      {
+        "authorId": "2278397391",
+        "name": "Shangyan Zhou"
+      },
+      {
+        "authorId": "2278219833",
+        "name": "Shanhuang Chen"
+      },
+      {
+        "authorId": "2190930607",
+        "name": "Shao-Ping Wu"
+      },
+      {
+        "authorId": "2317259871",
+        "name": "Shengfeng Ye"
+      },
+      {
+        "authorId": "2278830967",
+        "name": "Shirong Ma"
+      },
+      {
+        "authorId": "2330054226",
+        "name": "Shiyu Wang"
+      },
+      {
+        "authorId": "2301799594",
+        "name": "Shuang Zhou"
+      },
+      {
+        "authorId": "2278408463",
+        "name": "Shuiping Yu"
+      },
+      {
+        "authorId": "2278398119",
+        "name": "Shunfeng Zhou"
+      },
+      {
+        "authorId": "2337787780",
+        "name": "Shuting Pan"
+      },
+      {
+        "authorId": "2337757182",
+        "name": "T. Wang"
+      },
+      {
+        "authorId": "2337686938",
+        "name": "Tao Yun"
+      },
+      {
+        "authorId": "2278220142",
+        "name": "Tian Pei"
+      },
+      {
+        "authorId": "2340400824",
+        "name": "T. Sun"
+      },
+      {
+        "authorId": "2337790804",
+        "name": "W. Xiao"
+      },
+      {
+        "authorId": "2279051415",
+        "name": "Wangding Zeng"
+      },
+      {
+        "authorId": "2257129965",
+        "name": "Wanjia Zhao"
+      },
+      {
+        "authorId": "2316966121",
+        "name": "Wei An"
+      },
+      {
+        "authorId": "2326440587",
+        "name": "Wen Liu"
+      },
+      {
+        "authorId": "2278618633",
+        "name": "W. Liang"
+      },
+      {
+        "authorId": "2377426032",
+        "name": "Wenjun Gao"
+      },
+      {
+        "authorId": "2328783207",
+        "name": "Wen-xuan Yu"
+      },
+      {
+        "authorId": "2266140993",
+        "name": "Wentao Zhang"
+      },
+      {
+        "authorId": "2337776625",
+        "name": "X. Q. Li"
+      },
+      {
+        "authorId": "2149112346",
+        "name": "Xiangyu Jin"
+      },
+      {
+        "authorId": "2337777409",
+        "name": "Xianzu Wang"
+      },
+      {
+        "authorId": "2289212464",
+        "name": "Xiaoling Bi"
+      },
+      {
+        "authorId": "2257346982",
+        "name": "Xiaodong Liu"
+      },
+      {
+        "authorId": "2337844470",
+        "name": "Xiaohan Wang"
+      },
+      {
+        "authorId": "2262432943",
+        "name": "Xi-Cheng Shen"
+      },
+      {
+        "authorId": "2326444644",
+        "name": "Xiaokang Chen"
+      },
+      {
+        "authorId": "2327287516",
+        "name": "Xiaokang Zhang"
+      },
+      {
+        "authorId": "2337775973",
+        "name": "Xiaosha Chen"
+      },
+      {
+        "authorId": "2278218185",
+        "name": "X. Nie"
+      },
+      {
+        "authorId": "2316956218",
+        "name": "Xiaowen Sun"
+      },
+      {
+        "authorId": "2299743807",
+        "name": "Xiaoxiang Wang"
+      },
+      {
+        "authorId": "2193630544",
+        "name": "Xin Cheng"
+      },
+      {
+        "authorId": "2336338617",
+        "name": "Xin Liu"
+      },
+      {
+        "authorId": "2239599436",
+        "name": "Xin Xie"
+      },
+      {
+        "authorId": "2326998908",
+        "name": "Xingchao Liu"
+      },
+      {
+        "authorId": "2279159169",
+        "name": "Xingkai Yu"
+      },
+      {
+        "authorId": "2337774374",
+        "name": "Xinnan Song"
+      },
+      {
+        "authorId": "2337688042",
+        "name": "Xinxia Shan"
+      },
+      {
+        "authorId": "2334871182",
+        "name": "Xinyi Zhou"
+      },
+      {
+        "authorId": "2312345351",
+        "name": "Xinyu Yang"
+      },
+      {
+        "authorId": "2337738744",
+        "name": "Xinyuan Li"
+      },
+      {
+        "authorId": "2278247813",
+        "name": "Xuecheng Su"
+      },
+      {
+        "authorId": "2337776686",
+        "name": "Xuheng Lin"
+      },
+      {
+        "authorId": "2278599324",
+        "name": "Y. K. Li"
+      },
+      {
+        "authorId": "2337725217",
+        "name": "Y. Q. Wang"
+      },
+      {
+        "authorId": "2337771864",
+        "name": "Y. X. Wei"
+      },
+      {
+        "authorId": "2337840145",
+        "name": "Y. X. Zhu"
+      },
+      {
+        "authorId": "2338171554",
+        "name": "Yang Zhang"
+      },
+      {
+        "authorId": "2324603956",
+        "name": "Yanhong Xu"
+      },
+      {
+        "authorId": "2272475376",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2278381130",
+        "name": "Yao Li"
+      },
+      {
+        "authorId": "2278398317",
+        "name": "Yao Zhao"
+      },
+      {
+        "authorId": "2278377738",
+        "name": "Yaofeng Sun"
+      },
+      {
+        "authorId": "2278381130",
+        "name": "Yao Li"
+      },
+      {
+        "authorId": "2278432120",
+        "name": "Yaohui Wang"
+      },
+      {
+        "authorId": "2338182791",
+        "name": "Yi Yu"
+      },
+      {
+        "authorId": "2279900058",
+        "name": "Yi Zheng"
+      },
+      {
+        "authorId": "2337243026",
+        "name": "Yichao Zhang"
+      },
+      {
+        "authorId": "2337801571",
+        "name": "Yifan Shi"
+      },
+      {
+        "authorId": "2308644697",
+        "name": "Yi Xiong"
+      },
+      {
+        "authorId": "2317034993",
+        "name": "Ying He"
+      },
+      {
+        "authorId": "2337979045",
+        "name": "Ying Tang"
+      },
+      {
+        "authorId": "2278218072",
+        "name": "Y. Piao"
+      },
+      {
+        "authorId": "2330376936",
+        "name": "Yisong Wang"
+      },
+      {
+        "authorId": "2316968504",
+        "name": "Yixuan Tan"
+      },
+      {
+        "authorId": "2251440674",
+        "name": "Yi-Bing Ma"
+      },
+      {
+        "authorId": "2278393359",
+        "name": "Yiyuan Liu"
+      },
+      {
+        "authorId": "2317130708",
+        "name": "Yongqiang Guo"
+      },
+      {
+        "authorId": "2335511292",
+        "name": "Yu Wu"
+      },
+      {
+        "authorId": "2337687328",
+        "name": "Y. Ou"
+      },
+      {
+        "authorId": "2291197888",
+        "name": "Yuchen Zhu"
+      },
+      {
+        "authorId": "2337765075",
+        "name": "Yuduan Wang"
+      },
+      {
+        "authorId": "2338990074",
+        "name": "Yue Gong"
+      },
+      {
+        "authorId": "2278317444",
+        "name": "Yuheng Zou"
+      },
+      {
+        "authorId": "2337718186",
+        "name": "Yujia He"
+      },
+      {
+        "authorId": "2337687962",
+        "name": "Y. Zha"
+      },
+      {
+        "authorId": "2326446831",
+        "name": "Yunfan Xiong"
+      },
+      {
+        "authorId": "2318919239",
+        "name": "Yunxiang Ma"
+      },
+      {
+        "authorId": "2337777710",
+        "name": "Yuting Yan"
+      },
+      {
+        "authorId": "2324528328",
+        "name": "Yu-Wei Luo"
+      },
+      {
+        "authorId": "2054452755",
+        "name": "Yu-mei You"
+      },
+      {
+        "authorId": "2337142726",
+        "name": "Yuxuan Liu"
+      },
+      {
+        "authorId": "2337775637",
+        "name": "Yuyang Zhou"
+      },
+      {
+        "authorId": "2316170048",
+        "name": "Z. F. Wu"
+      },
+      {
+        "authorId": "2278430558",
+        "name": "Z. Ren"
+      },
+      {
+        "authorId": "2278430558",
+        "name": "Z. Ren"
+      },
+      {
+        "authorId": "2278218357",
+        "name": "Zhangli Sha"
+      },
+      {
+        "authorId": "2278223920",
+        "name": "Zhe Fu"
+      },
+      {
+        "authorId": "2337940131",
+        "name": "Zhean Xu"
+      },
+      {
+        "authorId": "2337821867",
+        "name": "Zhen Huang"
+      },
+      {
+        "authorId": "2329999671",
+        "name": "Zhen Zhang"
+      },
+      {
+        "authorId": "2279107352",
+        "name": "Zhenda Xie"
+      },
+      {
+        "authorId": "2148906520",
+        "name": "Zhen-guo Zhang"
+      },
+      {
+        "authorId": "2278220653",
+        "name": "Zhewen Hao"
+      },
+      {
+        "authorId": "1797090",
+        "name": "Zhibin Gou"
+      },
+      {
+        "authorId": "2337695745",
+        "name": "Zhicheng Ma"
+      },
+      {
+        "authorId": "2337768819",
+        "name": "Zhigang Yan"
+      },
+      {
+        "authorId": "144485528",
+        "name": "Zhihong Shao"
+      },
+      {
+        "authorId": "2238223352",
+        "name": "Zhipeng Xu"
+      },
+      {
+        "authorId": "2326514370",
+        "name": "Zhiyu Wu"
+      },
+      {
+        "authorId": "2337972848",
+        "name": "Zhongyu Zhang"
+      },
+      {
+        "authorId": "2309773899",
+        "name": "Zhuoshu Li"
+      },
+      {
+        "authorId": "2307422404",
+        "name": "Zihui Gu"
+      },
+      {
+        "authorId": "2337838091",
+        "name": "Zijia Zhu"
+      },
+      {
+        "authorId": "2117942065",
+        "name": "Zijun Liu"
+      },
+      {
+        "authorId": "2405604733",
+        "name": "Zi-Long Li"
+      },
+      {
+        "authorId": "2279107375",
+        "name": "Ziwei Xie"
+      },
+      {
+        "authorId": "2271718109",
+        "name": "Ziyang Song"
+      },
+      {
+        "authorId": "2337771690",
+        "name": "Ziyi Gao"
+      },
+      {
+        "authorId": "2327000291",
+        "name": "Zizheng Pan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "02ded8fd5415556babb817c6a439eb5257047b2c",
+    "externalIds": {
+      "DBLP": "conf/nips/ChenDWGL22",
+      "DOI": "10.52202/068431-1675",
+      "CorpusId": 258509260
+    },
+    "title": "Towards Understanding the Mixture-of-Experts Layer in Deep Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 159,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.52202/068431-1675?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.52202/068431-1675, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117097635",
+        "name": "Zixiang Chen"
+      },
+      {
+        "authorId": "66357895",
+        "name": "Yihe Deng"
+      },
+      {
+        "authorId": "2109035455",
+        "name": "Yue Wu"
+      },
+      {
+        "authorId": "9937103",
+        "name": "Quanquan Gu"
+      },
+      {
+        "authorId": "152244300",
+        "name": "Yuan-Fang Li"
+      }
+    ],
+    "abstract": "The Mixture-of-Experts (MoE) layer, a sparsely-activated model controlled by a router, has achieved great success in deep learning. However, the understanding of such architecture remains elusive. In this paper, we formally study how the MoE layer improves the performance of neural network learning and why the mixture model will not collapse into a single model. Our empirical results suggest that the cluster structure of the underlying problem and the non-linearity of the expert are pivotal to the success of MoE. This motivates us to consider a challenging classiﬁcation problem with intrinsic cluster structures. Theoretically, we proved that this problem is hard to solve by a single expert such as a two-layer convolutional neural network (CNN). Yet with the MoE layer with each expert being a two-layer CNN, the problem can be solved successfully. In particular, our theory shows that the router can learn the cluster-center features, which helps divide the input complex problem into simpler classiﬁcation sub-problems that individual experts can conquer. To our knowledge, this is the ﬁrst theoretical result toward formally understanding the mechanism of the MoE layer for deep learning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c4f675cdb7d03aa1458091e4b1cf04e492ffc9f5",
+    "externalIds": {
+      "MAG": "1479979375",
+      "DOI": "10.1007/978-1-4612-0919-5_16",
+      "CorpusId": 117034671
+    },
+    "title": "Information and the Accuracy Attainable in the Estimation of Statistical Parameters",
+    "venue": "",
+    "year": 1992,
+    "citationCount": 2208,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-1-4612-0919-5_16?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-1-4612-0919-5_16, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144532256",
+        "name": "C. Rao"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

@@ -1,0 +1,3121 @@
+[
+  {
+    "paperId": "2502456fe8f317dfae1b2ef7aa02d9f4735073aa",
+    "externalIds": {
+      "ArXiv": "2604.10734",
+      "CorpusId": 287432140
+    },
+    "title": "Self-Correcting RAG: Enhancing Faithfulness via MMKP Context Selection and NLI-Guided MCTS",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.10734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2294317594",
+        "name": "Shijia Xu"
+      },
+      {
+        "authorId": "2375948972",
+        "name": "Zhouyang Wu"
+      },
+      {
+        "authorId": "2238403740",
+        "name": "Xiaolong Jia"
+      },
+      {
+        "authorId": "2316017010",
+        "name": "Yu Wang"
+      },
+      {
+        "authorId": "2335547920",
+        "name": "Kai Liu"
+      },
+      {
+        "authorId": "2429419907",
+        "name": "April Xiaowen Dong"
+      }
+    ],
+    "abstract": "Retrieval-augmented generation (RAG) substantially extends the knowledge boundary of large language models. However, it still faces two major challenges when handling complex reasoning tasks: low context utilization and frequent hallucinations. To address these issues, we propose Self-Correcting RAG, a unified framework that reformulates retrieval and generation as constrained optimization and path planning. On the input side, we move beyond traditional greedy retrieval and, for the first time, formalize context selection as a multi-dimensional multiple-choice knapsack problem (MMKP), thereby maximizing information density and removing redundancy under a strict token budget. On the output side, we introduce a natural language inference (NLI)-guided Monte Carlo Tree Search (MCTS) mechanism, which leverages test-time compute to dynamically explore reasoning trajectories and validate the faithfulness of generated answers. Experiments on six multi-hop question answering and fact-checking datasets demonstrate that our method significantly improves reasoning accuracy on complex queries while effectively reducing hallucinations, outperforming strong existing baselines.Our code is available at https://github.com/xjiacs/Self-Correcting-RAG .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a27a5b3c01117bacb4868a964c679a01eb8c5db9",
+    "externalIds": {
+      "ArXiv": "2604.07798",
+      "CorpusId": 287255697
+    },
+    "title": "Lightweight LLM Agent Memory with Small Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.07798, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355335469",
+        "name": "Jiaquan Zhang"
+      },
+      {
+        "authorId": "2289870232",
+        "name": "Chaoning Zhang"
+      },
+      {
+        "authorId": "2297926669",
+        "name": "Shuxu Chen"
+      },
+      {
+        "authorId": "2273614102",
+        "name": "Zhen Huang"
+      },
+      {
+        "authorId": "2406903354",
+        "name": "P. Zheng"
+      },
+      {
+        "authorId": "2390402457",
+        "name": "Zhicheng Wang"
+      },
+      {
+        "authorId": "2075394870",
+        "name": "Ping Guo"
+      },
+      {
+        "authorId": "2336865830",
+        "name": "Fan Mo"
+      },
+      {
+        "authorId": "2400490156",
+        "name": "Sung-Ho Bae"
+      },
+      {
+        "authorId": "2218059195",
+        "name": "Jie Zou"
+      },
+      {
+        "authorId": "1490652152",
+        "name": "Jiwei Wei"
+      },
+      {
+        "authorId": "2346885998",
+        "name": "Yang Yang"
+      }
+    ],
+    "abstract": "Although LLM agents can leverage tools for complex tasks, they still need memory to maintain cross-turn consistency and accumulate reusable information in long-horizon interactions. However, retrieval-based external memory systems incur low online overhead but suffer from unstable accuracy due to limited query construction and candidate filtering. In contrast, many systems use repeated large-model calls for online memory operations, improving accuracy but accumulating latency over long interactions. We propose LightMem, a lightweight memory system for better agent memory driven by Small Language Models (SLMs). LightMem modularizes memory retrieval, writing, and long-term consolidation, and separates online processing from offline consolidation to enable efficient memory invocation under bounded compute. We organize memory into short-term memory (STM) for immediate conversational context, mid-term memory (MTM) for reusable interaction summaries, and long-term memory (LTM) for consolidated knowledge, and uses user identifiers to support independent retrieval and incremental maintenance in multi-user settings. Online, LightMem operates under a fixed retrieval budget and selects memories via a two-stage procedure: vector-based coarse retrieval followed by semantic consistency re-ranking. Offline, it abstracts reusable interaction evidence and incrementally integrates it into LTM. Experiments show consistent gains across model scales, with an average F1 improvement of about 2.5 over A-MEM on LoCoMo, while achieving higher efficiency and low median latency (83 ms for retrieval and 581 ms end-to-end).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5d3bb9b2ce41e13918ace9a235e8f1a3186e9b1f",
+    "externalIds": {
+      "ArXiv": "2604.04942",
+      "CorpusId": 287208265
+    },
+    "title": "TDA-RC: Task-Driven Alignment for Knowledge-Based Reasoning Chains in Large Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.04942, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355335469",
+        "name": "Jiaquan Zhang"
+      },
+      {
+        "authorId": "2355951057",
+        "name": "Qigan Sun"
+      },
+      {
+        "authorId": "2289870232",
+        "name": "Chaoning Zhang"
+      },
+      {
+        "authorId": "2355333269",
+        "name": "Xudong Wang"
+      },
+      {
+        "authorId": "2273614102",
+        "name": "Zhen Huang"
+      },
+      {
+        "authorId": "2367819207",
+        "name": "Yitian Zhou"
+      },
+      {
+        "authorId": "2406903354",
+        "name": "P. Zheng"
+      },
+      {
+        "authorId": "2406840377",
+        "name": "Chi-lok Andy Tai"
+      },
+      {
+        "authorId": "2400490156",
+        "name": "Sung-Ho Bae"
+      },
+      {
+        "authorId": "2258527020",
+        "name": "Zeyu Ma"
+      },
+      {
+        "authorId": "2394255167",
+        "name": "Caiyan Qin"
+      },
+      {
+        "authorId": "2157960356",
+        "name": "Jinyu Guo"
+      },
+      {
+        "authorId": "2316836009",
+        "name": "Yang Yang"
+      },
+      {
+        "authorId": "2291084154",
+        "name": "H. Shen"
+      }
+    ],
+    "abstract": "Enhancing the reasoning capability of large language models (LLMs) remains a core challenge in natural language processing. The Chain-of-Thought (CoT) paradigm dominates practical applications for its single-round efficiency, yet its reasoning chains often exhibit logical gaps. While multi-round paradigms like Graph-of-Thoughts (GoT), Tree-of-Thoughts (ToT), and Atom of Thought (AoT) achieve strong performance and reveal effective reasoning structures, their high cost limits practical use. To address this problem, this paper proposes a topology-based method for optimizing reasoning chains. The framework embeds essential topological patterns of effective reasoning into the lightweight CoT paradigm. Using persistent homology, we map CoT, ToT, and GoT into a unified topological space to quantify their structural features. On this basis, we design a unified optimization system: a Topological Optimization Agent diagnoses deviations in CoT chains from desirable topological characteristics and simultaneously generates targeted strategies to repair these structural deficiencies. Compared with multi-round reasoning methods like ToT and GoT, experiments on multiple datasets show that our approach offers a superior balance between reasoning accuracy and efficiency, showcasing a practical solution to ``single-round generation with multi-round intelligence''.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0da02d635ce1106194b1cdea31b09085ede91686",
+    "externalIds": {
+      "ArXiv": "2603.13394",
+      "CorpusId": 286568412
+    },
+    "title": "Language-Guided Token Compression with Reinforcement Learning in Large Vision-Language Models",
+    "venue": "",
+    "year": 2026,
+    "citationCount": 7,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.13394, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2395724666",
+        "name": "Sihan Cao"
+      },
+      {
+        "authorId": "2258670763",
+        "name": "Jianwei Zhang"
+      },
+      {
+        "authorId": "2406903354",
+        "name": "P. Zheng"
+      },
+      {
+        "authorId": "2352317686",
+        "name": "Jiaxing Yan"
+      },
+      {
+        "authorId": "2394255167",
+        "name": "Caiyan Qin"
+      },
+      {
+        "authorId": "2397570144",
+        "name": "Ya-Qiong Ye"
+      },
+      {
+        "authorId": "2256991111",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2237868559",
+        "name": "Peng Wang"
+      },
+      {
+        "authorId": "2316836009",
+        "name": "Yang Yang"
+      },
+      {
+        "authorId": "2289870232",
+        "name": "Chaoning Zhang"
+      }
+    ],
+    "abstract": "Large Vision-Language Models (LVLMs) incur substantial inference costs due to the processing of a vast number of visual tokens. Existing methods typically struggle to model progressive visual token reduction as a multi-step decision process with sequential dependencies and often rely on hand-engineered scoring rules that lack adaptive optimization for complex reasoning trajectories. To overcome these limitations, we propose TPRL, a reinforcement learning framework that learns adaptive pruning trajectories through language-guided sequential optimization tied directly to end-task performance. We formulate visual token pruning as a sequential decision process with explicit state transitions and employ a self-supervised autoencoder to compress visual tokens into a compact state representation for efficient policy learning. The pruning policy is initialized through learning from demonstrations and subsequently fine-tuned using Proximal Policy Optimization (PPO) to jointly optimize task accuracy and computational efficiency. Our experimental results demonstrate that TPRL removes up to 66.7\\% of visual tokens and achieves up to a 54.2\\% reduction in FLOPs during inference while maintaining a near-lossless average accuracy drop of only 0.7\\%. Code is released at \\href{https://github.com/MagicVicCoder/TPRL}{\\textcolor{mypink}{https://github.com/MagicVicCoder/TPRL}}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "aa4441ceb2cd2ed6abeca878233cde7cdc8490ab",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-09821",
+      "ArXiv": "2602.09821",
+      "DOI": "10.48550/arXiv.2602.09821",
+      "CorpusId": 285462454
+    },
+    "title": "Text summarization via global structure awareness",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.09821, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355335469",
+        "name": "Jiaquan Zhang"
+      },
+      {
+        "authorId": "2289870232",
+        "name": "Chaoning Zhang"
+      },
+      {
+        "authorId": "2297926669",
+        "name": "Shuxu Chen"
+      },
+      {
+        "authorId": "2409977934",
+        "name": "Yibei Liu"
+      },
+      {
+        "authorId": "2279235628",
+        "name": "Chenghao Li"
+      },
+      {
+        "authorId": "2355951057",
+        "name": "Qigan Sun"
+      },
+      {
+        "authorId": "2411395328",
+        "name": "Shuai Yuan"
+      },
+      {
+        "authorId": "2188057919",
+        "name": "Fachrina Dewi Puspitasari"
+      },
+      {
+        "authorId": "2195713168",
+        "name": "Dongshen Han"
+      },
+      {
+        "authorId": "2408463499",
+        "name": "Guoqing Wang"
+      },
+      {
+        "authorId": "2400490156",
+        "name": "Sung-Ho Bae"
+      },
+      {
+        "authorId": "2316836009",
+        "name": "Yang Yang"
+      }
+    ],
+    "abstract": "Text summarization is a fundamental task in natural language processing (NLP), and the information explosion has made long-document processing increasingly demanding, making summarization essential. Existing research mainly focuses on model improvements and sentence-level pruning, but often overlooks global structure, leading to disrupted coherence and weakened downstream performance. Some studies employ large language models (LLMs), which achieve higher accuracy but incur substantial resource and time costs. To address these issues, we introduce GloSA-sum, the first summarization approach that achieves global structure awareness via topological data analysis (TDA). GloSA-sum summarizes text efficiently while preserving semantic cores and logical dependencies. Specifically, we construct a semantic-weighted graph from sentence embeddings, where persistent homology identifies core semantics and logical structures, preserved in a ``protection pool''as the backbone for summarization. We design a topology-guided iterative strategy, where lightweight proxy metrics approximate sentence importance to avoid repeated high-cost computations, thus preserving structural integrity while improving efficiency. To further enhance long-text processing, we propose a hierarchical strategy that integrates segment-level and global summarization. Experiments on multiple datasets demonstrate that GloSA-sum reduces redundancy while preserving semantic and logical integrity, striking a balance between accuracy and efficiency, and further benefits LLM downstream tasks by shortening contexts while retaining essential reasoning chains.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "13f865063fe152ef533bb4cc48f6f5b3f981005d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-09794",
+      "ArXiv": "2602.09794",
+      "DOI": "10.48550/arXiv.2602.09794",
+      "CorpusId": 285463234
+    },
+    "title": "Learning Global Hypothesis Space for Enhancing Synergistic Reasoning Chain",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.09794, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355335469",
+        "name": "Jiaquan Zhang"
+      },
+      {
+        "authorId": "2289870232",
+        "name": "Chaoning Zhang"
+      },
+      {
+        "authorId": "2297926669",
+        "name": "Shuxu Chen"
+      },
+      {
+        "authorId": "2355333269",
+        "name": "Xudong Wang"
+      },
+      {
+        "authorId": "2209325221",
+        "name": "Zhenzhen Huang"
+      },
+      {
+        "authorId": "2406903354",
+        "name": "P. Zheng"
+      },
+      {
+        "authorId": "2411395328",
+        "name": "Shuai Yuan"
+      },
+      {
+        "authorId": "2408680865",
+        "name": "Sheng Zheng"
+      },
+      {
+        "authorId": "2355951057",
+        "name": "Qigan Sun"
+      },
+      {
+        "authorId": "2409955789",
+        "name": "Jie Zou"
+      },
+      {
+        "authorId": "2188647130",
+        "name": "Lik-Hang Lee"
+      },
+      {
+        "authorId": "2316836009",
+        "name": "Yang Yang"
+      }
+    ],
+    "abstract": "Chain-of-Thought (CoT) has been shown to significantly improve the reasoning accuracy of large language models (LLMs) on complex tasks. However, due to the autoregressive, step-by-step generation paradigm, existing CoT methods suffer from two fundamental limitations. First, the reasoning process is highly sensitive to early decisions: once an initial error is introduced, it tends to propagate and amplify through subsequent steps, while the lack of a global coordination and revision mechanism makes such errors difficult to correct, ultimately leading to distorted reasoning chains. Second, current CoT approaches lack structured analysis techniques for filtering redundant reasoning and extracting key reasoning features, resulting in unstable reasoning processes and limited interpretability. To address these issues, we propose GHS-TDA. GHS-TDA first constructs a semantically enriched global hypothesis graph to aggregate, align, and coordinate multiple candidate reasoning paths, thereby providing alternative global correction routes when local reasoning fails. It then applies topological data analysis based on persistent homology to capture stable multi-scale structures, remove redundancy and inconsistencies, and extract a more reliable reasoning skeleton. By jointly leveraging reasoning diversity and topological stability, GHS-TDA achieves self-adaptive convergence, produces high-confidence and interpretable reasoning paths, and consistently outperforms strong baselines in terms of both accuracy and robustness across multiple reasoning benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0ec6a287ebb184fa964ca649aad84c09474583a6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2602-00135",
+      "ArXiv": "2602.00135",
+      "DOI": "10.48550/arXiv.2602.00135",
+      "CorpusId": 285270953
+    },
+    "title": "LLaVA-FA: Learning Fourier Approximation for Compressing Large Multimodal Models",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.00135, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2406903354",
+        "name": "P. Zheng"
+      },
+      {
+        "authorId": "2289870232",
+        "name": "Chaoning Zhang"
+      },
+      {
+        "authorId": "2279925861",
+        "name": "Ji-Hwan Mo"
+      },
+      {
+        "authorId": "2108466492",
+        "name": "Guohui Li"
+      },
+      {
+        "authorId": "2355335469",
+        "name": "Jiaquan Zhang"
+      },
+      {
+        "authorId": "2387204318",
+        "name": "Jiahao Zhang"
+      },
+      {
+        "authorId": "2343287039",
+        "name": "S. Cao"
+      },
+      {
+        "authorId": "2408680865",
+        "name": "Sheng Zheng"
+      },
+      {
+        "authorId": "2394255167",
+        "name": "Caiyan Qin"
+      },
+      {
+        "authorId": "2408463499",
+        "name": "Guoqing Wang"
+      },
+      {
+        "authorId": "2316836009",
+        "name": "Yang Yang"
+      }
+    ],
+    "abstract": "Large multimodal models (LMMs) have achieved impressive performance on various vision-language tasks, but their substantial computational and memory costs hinder their practical deployment. Existing compression methods often decouple low-rank decomposition and quantization, leading to compounded reconstruction errors, especially in multimodal architectures with cross-modal redundancy. To address this issue, we propose LLaVA-FA, a novel efficient LMM that performs joint low-rank plus quantization approximation in the frequency domain. By leveraging the de-correlation and conjugate symmetry properties of Fourier transform, LLaVA-FA achieves more compact and accurate weight representations. Furthermore, we introduce PolarQuant, a polar-coordinate quantization method tailored for complex matrices, and an optional diagonal calibration (ODC) scheme that eliminates the need for large-scale calibration data. Extensive experimental results demonstrate that our proposed LLaVA-FA outperforms existing efficient multimodal models across multiple benchmarks while maintaining minimal activated parameters and low computational costs, validating its effectiveness as a powerful solution for compressing LMMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1344baa0719ee8d01d6f31a989cc3d92be6f8950",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2601-17089",
+      "ArXiv": "2601.17089",
+      "DOI": "10.48550/arXiv.2601.17089",
+      "CorpusId": 285051752
+    },
+    "title": "GRASP: Guided Region-Aware Sparse Prompting for Adapting MLLMs to Remote Sensing",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.17089, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355951057",
+        "name": "Qigan Sun"
+      },
+      {
+        "authorId": "2289870232",
+        "name": "Chaoning Zhang"
+      },
+      {
+        "authorId": "2301232669",
+        "name": "Jianwei Zhang"
+      },
+      {
+        "authorId": "2355333269",
+        "name": "Xudong Wang"
+      },
+      {
+        "authorId": null,
+        "name": "Jiehui Xie"
+      },
+      {
+        "authorId": "2406903354",
+        "name": "P. Zheng"
+      },
+      {
+        "authorId": "2297185548",
+        "name": "Haoyu Wang"
+      },
+      {
+        "authorId": "2294829533",
+        "name": "Sung-Ju Lee"
+      },
+      {
+        "authorId": "2406840377",
+        "name": "Chi-lok Andy Tai"
+      },
+      {
+        "authorId": "2316836009",
+        "name": "Yang Yang"
+      },
+      {
+        "authorId": "2291084154",
+        "name": "H. Shen"
+      }
+    ],
+    "abstract": "In recent years, Multimodal Large Language Models (MLLMs) have made significant progress in visual question answering tasks. However, directly applying existing fine-tuning methods to remote sensing (RS) images often leads to issues such as overfitting on background noise or neglecting target details. This is primarily due to the large-scale variations, sparse target distributions, and complex regional semantic features inherent in RS images. These challenges limit the effectiveness of MLLMs in RS tasks. To address these challenges, we propose a parameter-efficient fine-tuning (PEFT) strategy called Guided Region-Aware Sparse Prompting (GRASP). GRASP introduces spatially structured soft prompts associated with spatial blocks extracted from a frozen visual token grid. Through a question-guided sparse fusion mechanism, GRASP dynamically aggregates task-specific context into a compact global prompt, enabling the model to focus on relevant regions while filtering out background noise. Extensive experiments on multiple RSVQA benchmarks show that GRASP achieves competitive performance compared to existing fine-tuning and prompt-based methods while maintaining high parameter efficiency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7de966f73cd63dfce1e579f63be99ce8b5134740",
+    "externalIds": {
+      "ArXiv": "2508.01782",
+      "CorpusId": 280421115
+    },
+    "title": "Joint Lossless Compression and Steganography for Medical Images via Large Language Models",
+    "venue": "",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.01782, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355425646",
+        "name": "PengCheng Zheng"
+      },
+      {
+        "authorId": "1783239",
+        "name": "X. Pu"
+      },
+      {
+        "authorId": "2000512096",
+        "name": "Kecheng Chen"
+      },
+      {
+        "authorId": "2189917492",
+        "name": "Jiaxin Huang"
+      },
+      {
+        "authorId": "2111077833",
+        "name": "Meng Yang"
+      },
+      {
+        "authorId": "2319216327",
+        "name": "B. Feng"
+      },
+      {
+        "authorId": "2261908032",
+        "name": "Yazhou Ren"
+      },
+      {
+        "authorId": "2290947564",
+        "name": "Jianan Jiang"
+      }
+    ],
+    "abstract": "Recently, large language models (LLMs) have driven promising progress in lossless image compression. However, directly adopting existing paradigms for medical images suffers from an unsatisfactory trade-off between compression performance and efficiency. Moreover, existing LLM-based compressors often overlook the security of the compression process, which is critical in modern medical scenarios. To this end, we propose a novel joint lossless compression and steganography framework. Inspired by bit plane slicing (BPS), we find it feasible to securely embed privacy messages into medical images in an invisible manner. Based on this insight, an adaptive modalities decomposition strategy is first devised to partition the entire image into two segments, providing global and local modalities for subsequent dual-path lossless compression. During this dual-path stage, we innovatively propose a segmented message steganography algorithm within the local modality path to ensure the security of the compression process. Coupled with the proposed anatomical priors-based low-rank adaptation (A-LoRA) fine-tuning strategy, extensive experimental results demonstrate the superiority of our proposed method in terms of compression ratios, efficiency, and security. The source code will be made publicly available.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "37a0cf2220d5da7d7d2353a18eb45c63d6b3fabe",
+    "externalIds": {
+      "DBLP": "journals/tbd/YanZTZ25",
+      "DOI": "10.1109/TBDATA.2024.3453749",
+      "CorpusId": 272384992
+    },
+    "title": "Multi-View Few-Shot Reasoning for Emerging Entities in Knowledge Graphs",
+    "venue": "IEEE Transactions on Big Data",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TBDATA.2024.3453749?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TBDATA.2024.3453749, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116549350",
+        "name": "Cheng Yan"
+      },
+      {
+        "authorId": "2273550488",
+        "name": "Feng Zhao"
+      },
+      {
+        "authorId": "2331429951",
+        "name": "Xiaohui Tao"
+      },
+      {
+        "authorId": "2244627387",
+        "name": "Xiaofeng Zhu"
+      }
+    ],
+    "abstract": "A knowledge graph (KG) is a form of representing knowledge of the objective world. With the expansion of knowledge, KGs frequently incorporate new entities, which often possess limited associated data, known as few-shot features. Addressing the missing knowledge for these emerging entities is crucial practically, but there are significant challenges due to data scarcity. Previously developed methods based on knowledge graph embedding (KGE) and graph neural networks (GNNs) focusing on instance-level KGs are confronted with challenges of data scarcity and model simplicity, rendering them inapplicable to reasoning tasks in few-shot scenarios. To tackle these issues, we propose a multi-view few-shot KG reasoning method for emerging entities. The primary focus of our method lies in resolving the problem of link prediction for emerging entities with limited associated triples from multiple perspectives. Distinct from previous methods, our approach initially abstracts a concept-view KG from the conventional instance-view KG, enabling the formulation of commonsense rules. Additionally, we employ the aggregation of multi-hop subgraph features to enhance the representation of emerging entities. Furthermore, we introduce a more efficient cross-domain negative sampling strategy and a multi-view triple scoring function based on commonsense rules. Our experimental evaluations highlight the effectiveness of our method in few-shot contexts, demonstrating its robustness and adaptability in both cross-shot and zero-shot scenarios, significantly outperforming existing models in these challenging settings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6f119697114ba712a97690295a96fb1b3e60e1a7",
+    "externalIds": {
+      "ArXiv": "2502.06864",
+      "DBLP": "conf/naacl/ZhuXLLH25",
+      "DOI": "10.48550/arXiv.2502.06864",
+      "CorpusId": 276258631
+    },
+    "title": "Knowledge Graph-Guided Retrieval Augmented Generation",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 63,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.06864, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2152489015",
+        "name": "Xiangrong Zhu"
+      },
+      {
+        "authorId": "52133762",
+        "name": "Yuexiang Xie"
+      },
+      {
+        "authorId": "2304129974",
+        "name": "Yi Liu"
+      },
+      {
+        "authorId": "2237607166",
+        "name": "Yaliang Li"
+      },
+      {
+        "authorId": "2293775825",
+        "name": "Wei Hu"
+      }
+    ],
+    "abstract": "Retrieval-augmented generation (RAG) has emerged as a promising technology for addressing hallucination issues in the responses generated by large language models (LLMs). Existing studies on RAG primarily focus on applying semantic-based approaches to retrieve isolated relevant chunks, which ignore their intrinsic relationships. In this paper, we propose a novel Knowledge Graph-Guided Retrieval Augmented Generation (KG$^2$RAG) framework that utilizes knowledge graphs (KGs) to provide fact-level relationships between chunks, improving the diversity and coherence of the retrieved results. Specifically, after performing a semantic-based retrieval to provide seed chunks, KG$^2$RAG employs a KG-guided chunk expansion process and a KG-based chunk organization process to deliver relevant and important knowledge in well-organized paragraphs. Extensive experiments conducted on the HotpotQA dataset and its variants demonstrate the advantages of KG$^2$RAG compared to existing RAG-based approaches, in terms of both response quality and retrieval quality.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7899f3ec633080ac9d9b6458f1e1c35e86e6ec5c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-16075",
+      "ArXiv": "2412.16075",
+      "DOI": "10.48550/arXiv.2412.16075",
+      "CorpusId": 274965430
+    },
+    "title": "Formal Mathematical Reasoning: A New Frontier in AI",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 80,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.16075, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2336860219",
+        "name": "Kaiyu Yang"
+      },
+      {
+        "authorId": "2113249490",
+        "name": "Gabriel Poesia"
+      },
+      {
+        "authorId": "2337844852",
+        "name": "Jingxuan He"
+      },
+      {
+        "authorId": "2336828803",
+        "name": "Wenda Li"
+      },
+      {
+        "authorId": "2336739192",
+        "name": "Kristin E. Lauter"
+      },
+      {
+        "authorId": "2248225759",
+        "name": "Swarat Chaudhuri"
+      },
+      {
+        "authorId": "2336822895",
+        "name": "Dawn Song"
+      }
+    ],
+    "abstract": "AI for Mathematics (AI4Math) is not only intriguing intellectually but also crucial for AI-driven discovery in science, engineering, and beyond. Extensive efforts on AI4Math have mirrored techniques in NLP, in particular, training large language models on carefully curated math datasets in text form. As a complementary yet less explored avenue, formal mathematical reasoning is grounded in formal systems such as proof assistants, which can verify the correctness of reasoning and provide automatic feedback. In this position paper, we advocate for formal mathematical reasoning and argue that it is indispensable for advancing AI4Math to the next level. In recent years, we have seen steady progress in using AI to perform formal reasoning, including core tasks such as theorem proving and autoformalization, as well as emerging applications such as verifiable generation of code and hardware designs. However, significant challenges remain to be solved for AI to truly master mathematics and achieve broader impact. We summarize existing progress, discuss open challenges, and envision critical milestones to measure future success. At this inflection point for formal mathematical reasoning, we call on the research community to come together to drive transformative advancements in this field.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b4bf71f36182faf43a036656f4ba2ae37034b281",
+    "externalIds": {
+      "DBLP": "journals/tbd/LiLHJW24",
+      "DOI": "10.1109/TBDATA.2024.3453757",
+      "CorpusId": 272390885
+    },
+    "title": "EduGraph: Learning Path-Based Hypergraph Neural Networks for MOOC Course Recommendation",
+    "venue": "IEEE Transactions on Big Data",
+    "year": 2024,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TBDATA.2024.3453757?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TBDATA.2024.3453757, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2150653876",
+        "name": "Ming Li"
+      },
+      {
+        "authorId": "2237949573",
+        "name": "Zhao Li"
+      },
+      {
+        "authorId": "2218853506",
+        "name": "Changqin Huang"
+      },
+      {
+        "authorId": "2284556407",
+        "name": "Yunliang Jiang"
+      },
+      {
+        "authorId": "2278806229",
+        "name": "Xindong Wu"
+      }
+    ],
+    "abstract": "In online learning, personalized course recommendations that align with learners’ preferences and future needs are essential. Thus, the development of efficient recommender systems is crucial to guide learners to appropriate courses. Graph learning in recommender systems has been extensively studied, yet many models focus on low-frequency information, underscoring similar learner preferences and overlooking high-frequency data that indicates varied learning trajectories. Furthermore, course co-occurrence and sequential relationships are often insufficiently investigated. In this paper, we introduce EduGraph, a novel framework developed specifically for MOOC course recommendation systems. EduGraph is characterized by its incorporation of a learning path-based hypergraph, a unique perspective wherein learners are represented as hyperedges, and courses are delineated as vertices. The framework incorporates a framelet-based hypergraph convolution, integrating low-pass filters to highlight similarities and high-pass filters to underscore distinct learning paths among learners. Furthermore, EduGraph features a dual hypergraph learning model, with channels designated for vertex and hyperedge encoding, fostering a collaborative information exchange that refines the learners’ preference embeddings. The empirical assessment of EduGraph is conducted through a comprehensive comparison with many existing baselines, utilizing two distinct MOOC datasets. Our experimental studies not only emphasize the enhanced recommendation performance of EduGraph but also elucidate the significant contributions of its individual components, such as the integration of low-pass and high-pass filters and the framelet-wise collaborative strategy that effectively bridges hyperedge-level and vertex-level representations, augmenting the overall efficacy of the course recommendation system.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d5c4c77fa4504873e7dad8f9e640b81a7161d5aa",
+    "externalIds": {
+      "ArXiv": "2410.19878",
+      "DBLP": "journals/corr/abs-2410-19878",
+      "DOI": "10.1007/s10462-025-11236-4",
+      "CorpusId": 278312811
+    },
+    "title": "Parameter-efficient fine-tuning in large language models: a survey of methodologies",
+    "venue": "Artificial Intelligence Review",
+    "year": 2024,
+    "citationCount": 96,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.19878, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153517307",
+        "name": "Luping Wang"
+      },
+      {
+        "authorId": "2405487775",
+        "name": "Sheng Chen"
+      },
+      {
+        "authorId": "2338356939",
+        "name": "Linnan Jiang"
+      },
+      {
+        "authorId": "2310566221",
+        "name": "Shuaiqun Pan"
+      },
+      {
+        "authorId": "2291132089",
+        "name": "Runze Cai"
+      },
+      {
+        "authorId": "2326545246",
+        "name": "Sen Yang"
+      },
+      {
+        "authorId": "2401667515",
+        "name": "Fei Yang"
+      }
+    ],
+    "abstract": "The large language models, as predicted by scaling law forecasts, have made groundbreaking progress in many fields, particularly in natural language generation tasks, where they have approached or even surpassed human levels. However, the unprecedented scale of their parameters brings significant computational and storage costs. These large language models require substantial computational resources and GPU memory to operate. When adapting large language models to specific downstream tasks, their massive parameter scale poses a significant challenge in fine-tuning on hardware platforms with limited computational power and GPU memory. To address this issue, parameter-efficient fine-tuning (PEFT) offers a practical solution by efficiently adjusting the parameters of large pre-trained models to suit various downstream tasks. Specifically, PEFT adjusts the parameters of pre-trained large language models to adapt to specific tasks or domains, minimizing the introduction of additional parameters and the computational resources required. This review mainly introduces the preliminary knowledge of PEFT, the core ideas and principles of various PEFT algorithms, the applications of PEFT, and potential future research directions. By reading this review, we believe that interested parties can quickly grasp the PEFT methodology, thereby accelerating its development and innovation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fe21b2d8005e0757fe76abb2dfcd09634cdf10cd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-13293",
+      "ArXiv": "2410.13293",
+      "DOI": "10.48550/arXiv.2410.13293",
+      "CorpusId": 273404050
+    },
+    "title": "SBI-RAG: Enhancing Math Word Problem Solving for Students through Schema-Based Instruction and Retrieval-Augmented Generation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.13293, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "100492835",
+        "name": "P. Dixit"
+      },
+      {
+        "authorId": "2339778123",
+        "name": "Tim Oates"
+      }
+    ],
+    "abstract": "Many students struggle with math word problems (MWPs), often finding it difficult to identify key information and select the appropriate mathematical operations. Schema-based instruction (SBI) is an evidence-based strategy that helps students categorize problems based on their structure, improving problem-solving accuracy. Building on this, we propose a Schema-Based Instruction Retrieval-Augmented Generation (SBI-RAG) framework that incorporates a large language model (LLM). Our approach emphasizes step-by-step reasoning by leveraging schemas to guide solution generation. We evaluate its performance on the GSM8K dataset, comparing it with GPT-4 and GPT-3.5 Turbo, and introduce a\"reasoning score\"metric to assess solution quality. Our findings suggest that SBI-RAG enhances reasoning clarity and facilitates a more structured problem-solving process potentially providing educational benefits for students.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1ea143c34b9bc359780f79ba4d68dee68bcc1129",
+    "externalIds": {
+      "DBLP": "conf/emnlp/GuoXYAH25",
+      "ArXiv": "2410.05779",
+      "DOI": "10.48550/arXiv.2410.05779",
+      "CorpusId": 273227829
+    },
+    "title": "LightRAG: Simple and Fast Retrieval-Augmented Generation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 259,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.05779, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281799094",
+        "name": "Zirui Guo"
+      },
+      {
+        "authorId": "1830455155",
+        "name": "Lianghao Xia"
+      },
+      {
+        "authorId": "2281950230",
+        "name": "Yanhua Yu"
+      },
+      {
+        "authorId": "2325093711",
+        "name": "Tu Ao"
+      },
+      {
+        "authorId": "2110926729",
+        "name": "Chao Huang"
+      }
+    ],
+    "abstract": "Retrieval-Augmented Generation (RAG) systems enhance large language models (LLMs) by integrating external knowledge sources, enabling more accurate and contextually relevant responses tailored to user needs. However, existing RAG systems have significant limitations, including reliance on flat data representations and inadequate contextual awareness, which can lead to fragmented answers that fail to capture complex inter-dependencies. To address these challenges, we propose LightRAG, which incorporates graph structures into text indexing and retrieval processes. This innovative framework employs a dual-level retrieval system that enhances comprehensive information retrieval from both low-level and high-level knowledge discovery. Additionally, the integration of graph structures with vector representations facilitates efficient retrieval of related entities and their relationships, significantly improving response times while maintaining contextual relevance. This capability is further enhanced by an incremental update algorithm that ensures the timely integration of new data, allowing the system to remain effective and responsive in rapidly changing data environments. Extensive experimental validation demonstrates considerable improvements in retrieval accuracy and efficiency compared to existing approaches. We have made our LightRAG open-source and available at the link: https://github.com/HKUDS/LightRAG",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fc24091a9b44953c71084449b4fa0eabfb58abb3",
+    "externalIds": {
+      "ArXiv": "2408.03297",
+      "DBLP": "conf/aaai/0013XXZJC0W25",
+      "DOI": "10.48550/arXiv.2408.03297",
+      "CorpusId": 271720290
+    },
+    "title": "KnowPO: Knowledge-aware Preference Optimization for Controllable Knowledge Selection in Retrieval-Augmented Language Models",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.03297, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276704515",
+        "name": "Ruizhe Zhang"
+      },
+      {
+        "authorId": "2215472732",
+        "name": "Yongxin Xu"
+      },
+      {
+        "authorId": "2315391190",
+        "name": "Yuzhen Xiao"
+      },
+      {
+        "authorId": "2315018080",
+        "name": "Runchuan Zhu"
+      },
+      {
+        "authorId": "2181297535",
+        "name": "Xinke Jiang"
+      },
+      {
+        "authorId": "2408544358",
+        "name": "Xu Chu"
+      },
+      {
+        "authorId": "2145804723",
+        "name": "Junfeng Zhao"
+      },
+      {
+        "authorId": "2253831765",
+        "name": "Yasha Wang"
+      }
+    ],
+    "abstract": "By integrating external knowledge, Retrieval-Augmented Generation (RAG) has become an effective strategy for mitigating the hallucination problems that large language models (LLMs) encounter when dealing with knowledge-intensive tasks. However, in the process of integrating external non-parametric supporting evidence with internal parametric knowledge, inevitable knowledge conflicts may arise, leading to confusion in the model's responses. To enhance the knowledge selection of LLMs in various contexts, some research has focused on refining their behavior patterns through instruction-tuning. Nonetheless, due to the absence of explicit negative signals and comparative objectives, models fine-tuned in this manner may still exhibit undesirable behaviors such as contextual ignorance and contextual overinclusion. To this end, we propose a Knowledge-aware Preference Optimization strategy, dubbed KnowPO, aimed at achieving adaptive knowledge selection based on contextual relevance in real retrieval scenarios. Concretely, we proposed a general paradigm for constructing knowledge conflict datasets, which comprehensively cover various error types and learn how to avoid these negative signals through preference optimization methods. Simultaneously, we proposed a rewriting strategy and data ratio optimization strategy to address preference imbalances. Experimental results show that KnowPO outperforms previous methods for handling knowledge conflicts by over 37%, while also exhibiting robust generalization across various out-of-distribution datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f3d5f9e3047709273d846e6008545880f4ac5cfa",
+    "externalIds": {
+      "DBLP": "journals/tbd/YangCYL24",
+      "DOI": "10.1109/TBDATA.2023.3346712",
+      "CorpusId": 266556884
+    },
+    "title": "Learning Causal Chain Graph Structure via Alternate Learning and Double Pruning",
+    "venue": "IEEE Transactions on Big Data",
+    "year": 2024,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TBDATA.2023.3346712?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TBDATA.2023.3346712, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276551874",
+        "name": "Shujing Yang"
+      },
+      {
+        "authorId": "40460915",
+        "name": "Fuyuan Cao"
+      },
+      {
+        "authorId": "2246444008",
+        "name": "Kui Yu"
+      },
+      {
+        "authorId": "2237914945",
+        "name": "Jiye Liang"
+      }
+    ],
+    "abstract": "Causal chain graphs model the dependency structure between individuals when the assumption of individual independence in causal inference is violated. However, causal chain graphs are often unknown in practice and require learning from data. Existing learning algorithms have certain limitations. Specifically, learning local information requires multiple subset searches, building the skeleton requires additional conditional independence testing, and directing the edges requires obtaining local information from the skeleton again. To remedy these problems, we propose a novel algorithm for learning causal chain graph structure. The algorithm alternately learns the adjacencies and spouses of each variable as local information and doubly prunes them to obtain more accurate local information, which reduces subset searches, improves its accuracy, and facilitates subsequent learning. It then directly constructs the chain graphs skeleton using the learned adjacencies without conditional independence testing. Finally, it directs the edges of complexes using the learned adjacencies and spouses to learn chain graphs without reacquiring local information, further improving its efficiency. We conduct theoretical analysis to prove the correctness of our algorithm and compare it with the state-of-the-art algorithms on synthetic and real-world datasets. The experimental results demonstrate our algorithm is more reliable than its rivals.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c1799bf28d1ae93e1631be5b59196ee1e568f538",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-16130",
+      "ArXiv": "2404.16130",
+      "CorpusId": 269363075
+    },
+    "title": "From Local to Global: A Graph RAG Approach to Query-Focused Summarization",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1342,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.16130, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2298275009",
+        "name": "Darren Edge"
+      },
+      {
+        "authorId": "2213073417",
+        "name": "Ha Trinh"
+      },
+      {
+        "authorId": "2298273973",
+        "name": "Newman Cheng"
+      },
+      {
+        "authorId": "2298275805",
+        "name": "Joshua Bradley"
+      },
+      {
+        "authorId": "2298274563",
+        "name": "A. Chao"
+      },
+      {
+        "authorId": "2210994342",
+        "name": "Apurva N. Mody"
+      },
+      {
+        "authorId": "2298273810",
+        "name": "Steven Truitt"
+      },
+      {
+        "authorId": "2298278846",
+        "name": "Jonathan Larson"
+      }
+    ],
+    "abstract": "The use of retrieval-augmented generation (RAG) to retrieve relevant information from an external knowledge source enables large language models (LLMs) to answer questions over private and/or previously unseen document collections. However, RAG fails on global questions directed at an entire text corpus, such as\"What are the main themes in the dataset?\", since this is inherently a query-focused summarization (QFS) task, rather than an explicit retrieval task. Prior QFS methods, meanwhile, do not scale to the quantities of text indexed by typical RAG systems. To combine the strengths of these contrasting methods, we propose GraphRAG, a graph-based approach to question answering over private text corpora that scales with both the generality of user questions and the quantity of source text. Our approach uses an LLM to build a graph index in two stages: first, to derive an entity knowledge graph from the source documents, then to pregenerate community summaries for all groups of closely related entities. Given a question, each community summary is used to generate a partial response, before all partial responses are again summarized in a final response to the user. For a class of global sensemaking questions over datasets in the 1 million token range, we show that GraphRAG leads to substantial improvements over a conventional RAG baseline for both the comprehensiveness and diversity of generated answers.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e1b2b1a20a8ca7cdafc9c0aa8c5f95590db98acc",
+    "externalIds": {
+      "DBLP": "conf/lak/LiLXBH24",
+      "DOI": "10.1145/3636555.3636860",
+      "CorpusId": 268272301
+    },
+    "title": "Automated Feedback for Student Math Responses Based on Multi-Modality and Fine-Tuning",
+    "venue": "International Conference on Learning Analytics and Knowledge",
+    "year": 2024,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3636555.3636860?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3636555.3636860, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2290242531",
+        "name": "Hai Li"
+      },
+      {
+        "authorId": "2255366203",
+        "name": "Chenglu Li"
+      },
+      {
+        "authorId": "2257373730",
+        "name": "Wanli Xing"
+      },
+      {
+        "authorId": "2282174881",
+        "name": "Sami Baral"
+      },
+      {
+        "authorId": "2282178065",
+        "name": "Neil T. Heffernan"
+      }
+    ],
+    "abstract": "Open-ended mathematical problems are a commonly used method for assessing students’ abilities by teachers. In previous automated assessments, natural language processing focusing on students’ textual answers has been the primary approach. However, mathematical questions often involve answers containing images, such as number lines, geometric shapes, and charts. Several existing computer-based learning systems allow students to upload their handwritten answers for grading. Yet, there are limited methods available for automated scoring of these image-based responses, with even fewer multi-modal approaches that can simultaneously handle both texts and images. In addition to scoring, another valuable scaffolding to procedurally and conceptually support students while lacking automation is comments. In this study, we developed a multi-task model to simultaneously output scores and comments using students’ multi-modal artifacts (texts and images) as inputs by extending BLIP, a multi-modal visual reasoning model. Benchmarked with three baselines, we fine-tuned and evaluated our approach on a dataset related to open-ended questions as well as students’ responses. We found that incorporating images with text inputs enhances feedback performance compared to using texts alone. Meanwhile, our model can effectively provide coherent and contextual feedback in mathematical settings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9111d6632e3ad648e65c57c52fd945641ccbdac2",
+    "externalIds": {
+      "ArXiv": "2403.01432",
+      "DBLP": "journals/corr/abs-2403-01432",
+      "DOI": "10.1145/3673791.3698415",
+      "CorpusId": 268248396
+    },
+    "title": "Fine Tuning vs. Retrieval Augmented Generation for Less Popular Knowledge",
+    "venue": "SIGIR-AP",
+    "year": 2024,
+    "citationCount": 104,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3673791.3698415",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.01432, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2165569122",
+        "name": "Heydar Soudani"
+      },
+      {
+        "authorId": "1713134",
+        "name": "E. Kanoulas"
+      },
+      {
+        "authorId": "1951737",
+        "name": "Faegheh Hasibi"
+      }
+    ],
+    "abstract": "Language Models (LMs) memorize a vast amount of factual knowledge, exhibiting strong performance across diverse tasks and domains. However, it has been observed that the performance diminishes when dealing with less-popular or low-frequency concepts and entities, for example in domain specific applications. The two prominent approaches to enhance the performance of LMs on low-frequent topics are: Retrieval Augmented Generation (RAG) and fine-tuning (FT) over synthetic data. This paper explores and evaluates the impact of RAG and FT on customizing LMs in handling low-frequency entities on question answering tasks. We conduct extensive experiments on twelve LMs of varying size and type and different FT methods, data augmentation, and retrieval models. Our findings indicate that while FT boosts the performance across entities of varying popularity, RAG surpasses FT by a large margin particularly for least popular factual knowledge. Additionally, the success of both RAG and FT approaches is amplified by improving retrieval and data augmentation techniques. Fine tuning, while beneficial for small LMs, requires extensive resources. To address this issue, we propose the new Stimulus RAG approach that surpasses the effectiveness of fine tuning based approaches, thereby eliminating the need for the costly data augmentation and fine tuning step for enriching LMs with less popular factual knowledge.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ab15463babf98fffc6f683fe2026de0725b5e1a9",
+    "externalIds": {
+      "DBLP": "journals/dase/ZhaoZYWGFYZJC26",
+      "ArXiv": "2402.19473",
+      "DOI": "10.48550/arXiv.2402.19473",
+      "CorpusId": 268091298
+    },
+    "title": "Retrieval-Augmented Generation for AI-Generated Content: A Survey",
+    "venue": "Data Science and Engineering",
+    "year": 2024,
+    "citationCount": 561,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.19473, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268718776",
+        "name": "Penghao Zhao"
+      },
+      {
+        "authorId": "2288557803",
+        "name": "Hailin Zhang"
+      },
+      {
+        "authorId": "2289597580",
+        "name": "Qinhan Yu"
+      },
+      {
+        "authorId": "2288675277",
+        "name": "Zhengren Wang"
+      },
+      {
+        "authorId": "2288532368",
+        "name": "Yunteng Geng"
+      },
+      {
+        "authorId": "46182701",
+        "name": "Fangcheng Fu"
+      },
+      {
+        "authorId": "2249513224",
+        "name": "Ling Yang"
+      },
+      {
+        "authorId": "2277807793",
+        "name": "Wentao Zhang"
+      },
+      {
+        "authorId": "2277742543",
+        "name": "Bin Cui"
+      }
+    ],
+    "abstract": "Advancements in model algorithms, the growth of foundational models, and access to high-quality datasets have propelled the evolution of Artificial Intelligence Generated Content (AIGC). Despite its notable successes, AIGC still faces hurdles such as updating knowledge, handling long-tail data, mitigating data leakage, and managing high training and inference costs. Retrieval-Augmented Generation (RAG) has recently emerged as a paradigm to address such challenges. In particular, RAG introduces the information retrieval process, which enhances the generation process by retrieving relevant objects from available data stores, leading to higher accuracy and better robustness. In this paper, we comprehensively review existing efforts that integrate RAG technique into AIGC scenarios. We first classify RAG foundations according to how the retriever augments the generator, distilling the fundamental abstractions of the augmentation methodologies for various retrievers and generators. This unified perspective encompasses all RAG scenarios, illuminating advancements and pivotal technologies that help with potential future progress. We also summarize additional enhancements methods for RAG, facilitating effective engineering and implementation of RAG systems. Then from another view, we survey on practical applications of RAG across different modalities and tasks, offering valuable references for researchers and practitioners. Furthermore, we introduce the benchmarks for RAG, discuss the limitations of current RAG systems, and suggest potential directions for future research. Github: https://github.com/PKU-DAIR/RAG-Survey.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "46f9f7b8f88f72e12cbdb21e3311f995eb6e65c5",
+    "externalIds": {
+      "ArXiv": "2312.10997",
+      "DBLP": "journals/corr/abs-2312-10997",
+      "CorpusId": 266359151
+    },
+    "title": "Retrieval-Augmented Generation for Large Language Models: A Survey",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 3210,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.10997, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2280046531",
+        "name": "Yunfan Gao"
+      },
+      {
+        "authorId": "2275320371",
+        "name": "Yun Xiong"
+      },
+      {
+        "authorId": "2275341478",
+        "name": "Xinyu Gao"
+      },
+      {
+        "authorId": "2275191447",
+        "name": "Kangxiang Jia"
+      },
+      {
+        "authorId": "2403237825",
+        "name": "Jin Pan"
+      },
+      {
+        "authorId": "2275171009",
+        "name": "Yuxi Bi"
+      },
+      {
+        "authorId": "2220823886",
+        "name": "Yi Dai"
+      },
+      {
+        "authorId": "2275540959",
+        "name": "Jiawei Sun"
+      },
+      {
+        "authorId": "2258800561",
+        "name": "Qianyu Guo"
+      },
+      {
+        "authorId": "2291409458",
+        "name": "Meng Wang"
+      },
+      {
+        "authorId": "2256769434",
+        "name": "Haofen Wang"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) showcase impressive capabilities but encounter challenges like hallucination, outdated knowledge, and non-transparent, untraceable reasoning processes. Retrieval-Augmented Generation (RAG) has emerged as a promising solution by incorporating knowledge from external databases. This enhances the accuracy and credibility of the generation, particularly for knowledge-intensive tasks, and allows for continuous knowledge updates and integration of domain-specific information. RAG synergistically merges LLMs' intrinsic knowledge with the vast, dynamic repositories of external databases. This comprehensive review paper offers a detailed examination of the progression of RAG paradigms, encompassing the Naive RAG, the Advanced RAG, and the Modular RAG. It meticulously scrutinizes the tripartite foundation of RAG frameworks, which includes the retrieval, the generation and the augmentation techniques. The paper highlights the state-of-the-art technologies embedded in each of these critical components, providing a profound understanding of the advancements in RAG systems. Furthermore, this paper introduces up-to-date evaluation framework and benchmark. At the end, this article delineates the challenges currently faced and points out prospective avenues for research and development.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "062fab31d30478b57457c8b7a94d7467f5bd770c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-05845",
+      "ArXiv": "2310.05845",
+      "DOI": "10.1109/TBDATA.2025.3627488",
+      "CorpusId": 263830019
+    },
+    "title": "GraphLLM: Boosting Graph Reasoning Ability of Large Language Model",
+    "venue": "IEEE Transactions on Big Data",
+    "year": 2023,
+    "citationCount": 103,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.05845, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2121930095",
+        "name": "Ziwei Chai"
+      },
+      {
+        "authorId": "2257036899",
+        "name": "Tianjie Zhang"
+      },
+      {
+        "authorId": "2383227431",
+        "name": "Liang Wu"
+      },
+      {
+        "authorId": "2238500757",
+        "name": "Kaiqiao Han"
+      },
+      {
+        "authorId": "1471331362",
+        "name": "Xiaohai Hu"
+      },
+      {
+        "authorId": "1490490227",
+        "name": "Xuanwen Huang"
+      },
+      {
+        "authorId": "2242793602",
+        "name": "Yang Yang"
+      }
+    ],
+    "abstract": "The advancement of Large Language Models (LLMs) has remarkably pushed the boundaries towards artificial general intelligence (AGI), with their exceptional ability on understanding diverse types of information, including but not limited to images and audio. Despite this progress, a critical gap remains in empowering LLMs to proficiently understand and reason on graph data, which is ubiquitous in Big Data applications such as social networks, knowledge graphs, and molecular databases. Recent studies underscore LLMs’ underwhelming performance on fundamental graph reasoning tasks. In this paper, we endeavor to unearth the obstacles that impede LLMs in graph reasoning, pinpointing the common practice of converting graphs into natural language descriptions (Graph2Text) as a fundamental bottleneck. To overcome this impediment, we introduce GraphLLM, a pioneering end-to-end approach that synergistically integrates graph learning models with LLMs through a novel Dynamic Task Configuration System. This system employs a Hierarchical Graph Processing Pipeline that combines Local Structure Analyzers for node-level features with Global Pattern Synthesizers for graph-level understanding, enabling scalable processing of large-scale graph data. Our empirical evaluations across four fundamental graph reasoning tasks validate the effectiveness of GraphLLM. The results exhibit a substantial average accuracy enhancement of 54.44%, alongside a noteworthy context reduction of 96.45% across various graph reasoning tasks, demonstrating significant potential for Big Data graph analytics.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3dc1b657bf821b731c5ed0396823b67c10d54ba1",
+    "externalIds": {
+      "ArXiv": "2310.03184",
+      "DBLP": "conf/edm/HenkelLLP24",
+      "DOI": "10.48550/arXiv.2310.03184",
+      "CorpusId": 263672082
+    },
+    "title": "Retrieval-augmented Generation to Improve Math Question-Answering: Trade-offs Between Groundedness and Human Preference",
+    "venue": "Educational Data Mining",
+    "year": 2023,
+    "citationCount": 66,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.03184",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.03184, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51915733",
+        "name": "Zachary Levonian"
+      },
+      {
+        "authorId": "2255366203",
+        "name": "Chenglu Li"
+      },
+      {
+        "authorId": "2238720345",
+        "name": "Wangda Zhu"
+      },
+      {
+        "authorId": "2242724478",
+        "name": "A. Gade"
+      },
+      {
+        "authorId": "2254260121",
+        "name": "Owen Henkel"
+      },
+      {
+        "authorId": "2254269074",
+        "name": "Millie-Ellen Postle"
+      },
+      {
+        "authorId": "2257373730",
+        "name": "Wanli Xing"
+      }
+    ],
+    "abstract": "For middle-school math students, interactive question-answering (QA) with tutors is an effective way to learn. The flexibility and emergent capabilities of generative large language models (LLMs) has led to a surge of interest in automating portions of the tutoring process - including interactive QA to support conceptual discussion of mathematical concepts. However, LLM responses to math questions can be incorrect or mismatched to the educational context - such as being misaligned with a school's curriculum. One potential solution is retrieval-augmented generation (RAG), which involves incorporating a vetted external knowledge source in the LLM prompt to increase response quality. In this paper, we designed prompts that retrieve and use content from a high-quality open-source math textbook to generate responses to real student questions. We evaluate the efficacy of this RAG system for middle-school algebra and geometry QA by administering a multi-condition survey, finding that humans prefer responses generated using RAG, but not when responses are too grounded in the textbook content. We argue that while RAG is able to improve response quality, designers of math QA systems must consider trade-offs between generating responses preferred by students and responses closely matched to specific educational resources.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b31a5884a8ebe96b6300839b28608b97f8f8ef76",
+    "externalIds": {
+      "DBLP": "conf/acl/BaiLZL0HDLZHDTL24",
+      "ArXiv": "2308.14508",
+      "DOI": "10.48550/arXiv.2308.14508",
+      "CorpusId": 261245264
+    },
+    "title": "LongBench: A Bilingual, Multitask Benchmark for Long Context Understanding",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 1177,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.14508",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.14508, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2141377570",
+        "name": "Yushi Bai"
+      },
+      {
+        "authorId": "48574888",
+        "name": "Xin Lv"
+      },
+      {
+        "authorId": "2107983722",
+        "name": "Jiajie Zhang"
+      },
+      {
+        "authorId": "2220304036",
+        "name": "Hong Lyu"
+      },
+      {
+        "authorId": "2204826271",
+        "name": "Jiankai Tang"
+      },
+      {
+        "authorId": "2234629967",
+        "name": "Zhidian Huang"
+      },
+      {
+        "authorId": "66395694",
+        "name": "Zhengxiao Du"
+      },
+      {
+        "authorId": "2111312892",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2051712753",
+        "name": "Aohan Zeng"
+      },
+      {
+        "authorId": "2055765060",
+        "name": "Lei Hou"
+      },
+      {
+        "authorId": "2047998",
+        "name": "Yuxiao Dong"
+      },
+      {
+        "authorId": "2148911975",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "2133353675",
+        "name": "Juanzi Li"
+      }
+    ],
+    "abstract": "Although large language models (LLMs) demonstrate impressive performance for many language tasks, most of them can only handle texts a few thousand tokens long, limiting their applications on longer sequence inputs, such as books, reports, and codebases. Recent works have proposed methods to improve LLMs' long context capabilities by extending context windows and more sophisticated memory mechanisms. However, comprehensive benchmarks tailored for evaluating long context understanding are lacking. In this paper, we introduce LongBench, the first bilingual, multi-task benchmark for long context understanding, enabling a more rigorous evaluation of long context understanding. LongBench comprises 21 datasets across 6 task categories in both English and Chinese, with an average length of 6,711 words (English) and 13,386 characters (Chinese). These tasks cover key long-text application areas including single-doc QA, multi-doc QA, summarization, few-shot learning, synthetic tasks, and code completion. All datasets in LongBench are standardized into a unified format, allowing for effortless automatic evaluation of LLMs. Upon comprehensive evaluation of 8 LLMs on LongBench, we find that: (1) Commercial model (GPT-3.5-Turbo-16k) outperforms other open-sourced models, but still struggles on longer contexts. (2) Scaled position embedding and fine-tuning on longer sequences lead to substantial improvement on long context understanding. (3) Context compression technique such as retrieval brings improvement for model with weak ability on long contexts, but the performance still lags behind models that have strong long context understanding capability. The code and datasets are available at https://github.com/THUDM/LongBench.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9e8b7b0d4c628c12b6a65ab56ac5f33a35eff2e6",
+    "externalIds": {
+      "ArXiv": "2306.08302",
+      "DBLP": "journals/corr/abs-2306-08302",
+      "DOI": "10.1109/TKDE.2024.3352100",
+      "CorpusId": 259165563
+    },
+    "title": "Unifying Large Language Models and Knowledge Graphs: A Roadmap",
+    "venue": "IEEE Transactions on Knowledge and Data Engineering",
+    "year": 2023,
+    "citationCount": 1376,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.08302",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.08302, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153326034",
+        "name": "Shirui Pan"
+      },
+      {
+        "authorId": "1382578305",
+        "name": "Linhao Luo"
+      },
+      {
+        "authorId": "46395829",
+        "name": "Yufei Wang"
+      },
+      {
+        "authorId": "2127380138",
+        "name": "Chen Chen"
+      },
+      {
+        "authorId": "2163833353",
+        "name": "Jiapu Wang"
+      },
+      {
+        "authorId": "1748808",
+        "name": "Xindong Wu"
+      }
+    ],
+    "abstract": "Large language models (LLMs), such as ChatGPT and GPT4, are making new waves in the field of natural language processing and artificial intelligence, due to their emergent ability and generalizability. However, LLMs are black-box models, which often fall short of capturing and accessing factual knowledge. In contrast, Knowledge Graphs (KGs), Wikipedia, and Huapu for example, are structured knowledge models that explicitly store rich factual knowledge. KGs can enhance LLMs by providing external knowledge for inference and interpretability. Meanwhile, KGs are difficult to construct and evolve by nature, which challenges the existing methods in KGs to generate new facts and represent unseen knowledge. Therefore, it is complementary to unify LLMs and KGs together and, simultaneously, leverage their advantages. In this article, we present a forward-looking roadmap for the unification of LLMs and KGs. Our roadmap consists of three general frameworks, namely: 1) KG-enhanced LLMs, which incorporate KGs during the pre-training and inference phases of LLMs, or for the purpose of enhancing understanding of the knowledge learned by LLMs; 2) LLM-augmented KGs, that leverage LLMs for different KG tasks such as embedding, completion, construction, graph-to-text generation, and question answering; and 3) Synergized LLMs + KGs, in which LLMs and KGs play equal roles and work in a mutually beneficial way to enhance both LLMs and KGs for bidirectional reasoning driven by both data and knowledge. We review and summarize existing efforts within these three frameworks in our roadmap and pinpoint their future research directions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a52dd1e900200e0733eea927edc7d6c27aeba187",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-12524",
+      "ArXiv": "2305.12524",
+      "DOI": "10.48550/arXiv.2305.12524",
+      "CorpusId": 258833200
+    },
+    "title": "TheoremQA: A Theorem-driven Question Answering dataset",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 220,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.12524",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.12524, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2928777",
+        "name": "Wenhu Chen"
+      },
+      {
+        "authorId": "2053888252",
+        "name": "Ming Yin"
+      },
+      {
+        "authorId": "2218153604",
+        "name": "Max W.F. Ku"
+      },
+      {
+        "authorId": "2165227666",
+        "name": "Yixin Wan"
+      },
+      {
+        "authorId": "2461713",
+        "name": "Xueguang Ma"
+      },
+      {
+        "authorId": "119858636",
+        "name": "Jianyu Xu"
+      },
+      {
+        "authorId": "2143749775",
+        "name": "Tony Xia"
+      },
+      {
+        "authorId": "2115553132",
+        "name": "Xinyi Wang"
+      },
+      {
+        "authorId": "2887562",
+        "name": "Pan Lu"
+      }
+    ],
+    "abstract": "The recent LLMs like GPT-4 and PaLM-2 have made tremendous progress in solving fundamental math problems like GSM8K by achieving over 90% accuracy. However, their capabilities to solve more challenging math problems which require domain-specific knowledge (i.e. theorem) have yet to be investigated. In this paper, we introduce TheoremQA, the first theorem-driven question-answering dataset designed to evaluate AI models' capabilities to apply theorems to solve challenging science problems. TheoremQA is curated by domain experts containing 800 high-quality questions covering 350 theorems (e.g. Taylor's theorem, Lagrange's theorem, Huffman coding, Quantum Theorem, Elasticity Theorem, etc) from Math, Physics, EE&CS, and Finance. We evaluate a wide spectrum of 16 large language and code models with different prompting strategies like Chain-of-Thoughts and Program-of-Thoughts. We found that GPT-4's capabilities to solve these problems are unparalleled, achieving an accuracy of 51% with Program-of-Thoughts Prompting. All the existing open-sourced models are below 15%, barely surpassing the random-guess baseline. Given the diversity and broad coverage of TheoremQA, we believe it can be used as a better benchmark to evaluate LLMs' capabilities to solve challenging science problems. The data and code are released in https://github.com/wenhuchen/TheoremQA.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "88884b8806262a4095036041e3567d450dba39f7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-06983",
+      "ArXiv": "2305.06983",
+      "DOI": "10.48550/arXiv.2305.06983",
+      "CorpusId": 258615731
+    },
+    "title": "Active Retrieval Augmented Generation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 618,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.06983",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.06983, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2669515",
+        "name": "Zhengbao Jiang"
+      },
+      {
+        "authorId": "40027632",
+        "name": "Frank F. Xu"
+      },
+      {
+        "authorId": "49715441",
+        "name": "Luyu Gao"
+      },
+      {
+        "authorId": "48064856",
+        "name": "Zhiqing Sun"
+      },
+      {
+        "authorId": "1409707585",
+        "name": "Qian Liu"
+      },
+      {
+        "authorId": "2173509991",
+        "name": "Jane Dwivedi-Yu"
+      },
+      {
+        "authorId": "2257099254",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "144987107",
+        "name": "Jamie Callan"
+      },
+      {
+        "authorId": "1700325",
+        "name": "Graham Neubig"
+      }
+    ],
+    "abstract": "Despite the remarkable ability of large language models (LMs) to comprehend and generate language, they have a tendency to hallucinate and create factually inaccurate output. Augmenting LMs by retrieving information from external knowledge resources is one promising solution. Most existing retrieval augmented LMs employ a retrieve-and-generate setup that only retrieves information once based on the input. This is limiting, however, in more general scenarios involving generation of long texts, where continually gathering information throughout generation is essential. In this work, we provide a generalized view of active retrieval augmented generation, methods that actively decide when and what to retrieve across the course of the generation. We propose Forward-Looking Active REtrieval augmented generation (FLARE), a generic method which iteratively uses a prediction of the upcoming sentence to anticipate future content, which is then utilized as a query to retrieve relevant documents to regenerate the sentence if it contains low-confidence tokens. We test FLARE along with baselines comprehensively over 4 long-form knowledge-intensive generation tasks/datasets. FLARE achieves superior or competitive performance on all tasks, demonstrating the effectiveness of our method. Code and datasets are available at https://github.com/jzbjyb/FLARE.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2029349c55c1dba3493c5b3bd25152f18ba21ae2",
+    "externalIds": {
+      "ArXiv": "2302.07842",
+      "DBLP": "journals/tmlr/MialonDLNPRRSDC23",
+      "CorpusId": 256868474
+    },
+    "title": "Augmented Language Models: a Survey",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2023,
+    "citationCount": 541,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.07842, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51888120",
+        "name": "G. Mialon"
+      },
+      {
+        "authorId": "145188261",
+        "name": "Roberto Dessì"
+      },
+      {
+        "authorId": "3376175",
+        "name": "M. Lomeli"
+      },
+      {
+        "authorId": "31434304",
+        "name": "Christoforos Nalmpantis"
+      },
+      {
+        "authorId": "10721120",
+        "name": "Ramakanth Pasunuru"
+      },
+      {
+        "authorId": "48647153",
+        "name": "R. Raileanu"
+      },
+      {
+        "authorId": "3361236",
+        "name": "Baptiste Rozière"
+      },
+      {
+        "authorId": "32246932",
+        "name": "Timo Schick"
+      },
+      {
+        "authorId": "2173509991",
+        "name": "Jane Dwivedi-Yu"
+      },
+      {
+        "authorId": "1709797",
+        "name": "Asli Celikyilmaz"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      },
+      {
+        "authorId": "90745780",
+        "name": "Thomas Scialom"
+      }
+    ],
+    "abstract": "This survey reviews works in which language models (LMs) are augmented with reasoning skills and the ability to use tools. The former is defined as decomposing a potentially complex task into simpler subtasks while the latter consists in calling external modules such as a code interpreter. LMs can leverage these augmentations separately or in combination via heuristics, or learn to do so from demonstrations. While adhering to a standard missing tokens prediction objective, such augmented LMs can use various, possibly non-parametric external modules to expand their context processing ability, thus departing from the pure language modeling paradigm. We therefore refer to them as Augmented Language Models (ALMs). The missing token objective allows ALMs to learn to reason, use tools, and even act, while still performing standard natural language tasks and even outperforming most regular LMs on several benchmarks. In this work, after reviewing current advance in ALMs, we conclude that this new research direction has the potential to address common limitations of traditional LMs such as interpretability, consistency, and scalability issues.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "07b14c24833400b79978b0a5f084803337e30a15",
+    "externalIds": {
+      "DBLP": "conf/naacl/ShiMYS0LZY24",
+      "ACL": "2024.naacl-long.463",
+      "ArXiv": "2301.12652",
+      "DOI": "10.48550/arXiv.2301.12652",
+      "CorpusId": 256389797
+    },
+    "title": "REPLUG: Retrieval-Augmented Black-Box Language Models",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 966,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.12652",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.12652, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3040379",
+        "name": "Weijia Shi"
+      },
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "19168196",
+        "name": "Michihiro Yasunaga"
+      },
+      {
+        "authorId": "4418074",
+        "name": "Minjoon Seo"
+      },
+      {
+        "authorId": "2191899140",
+        "name": "Rich James"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      },
+      {
+        "authorId": "2072801764",
+        "name": "Wen-tau Yih"
+      }
+    ],
+    "abstract": "We introduce REPLUG, a retrieval-augmented language modeling framework that treats the language model (LM) as a black box and augments it with a tuneable retrieval model. Unlike prior retrieval-augmented LMs that train language models with special cross-attention mechanisms to encode the retrieved text, REPLUG simply prepends retrieved documents to the input for the frozen black-box LM. This simple design can be easily applied to any existing language models. Furthermore, we show that the LM can be used to supervise the retrieval model, which can then find documents that help the LM make better predictions. Our experiments demonstrate that REPLUG with the tuned retriever significantly improves the performance of GPT-3 (175B) on language modeling by 6.3%, as well as the performance of Codex on five-shot MMLU by 5.1%. Code is publicly released at github.com/swj0419/REPLUG.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "99832586d55f540f603637e458a292406a0ed75d",
+    "externalIds": {
+      "DBLP": "conf/iclr/YaoZYDSN023",
+      "ArXiv": "2210.03629",
+      "CorpusId": 252762395
+    },
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 7235,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.03629, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2093302161",
+        "name": "Shunyu Yao"
+      },
+      {
+        "authorId": "2144551262",
+        "name": "Jeffrey Zhao"
+      },
+      {
+        "authorId": "150978762",
+        "name": "Dian Yu"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "1697494",
+        "name": "Izhak Shafran"
+      },
+      {
+        "authorId": "144958935",
+        "name": "Karthik Narasimhan"
+      },
+      {
+        "authorId": "145144022",
+        "name": "Yuan Cao"
+      }
+    ],
+    "abstract": "While large language models (LLMs) have demonstrated impressive capabilities across tasks in language understanding and interactive decision making, their abilities for reasoning (e.g. chain-of-thought prompting) and acting (e.g. action plan generation) have primarily been studied as separate topics. In this paper, we explore the use of LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between the two: reasoning traces help the model induce, track, and update action plans as well as handle exceptions, while actions allow it to interface with external sources, such as knowledge bases or environments, to gather additional information. We apply our approach, named ReAct, to a diverse set of language and decision making tasks and demonstrate its effectiveness over state-of-the-art baselines, as well as improved human interpretability and trustworthiness over methods without reasoning or acting components. Concretely, on question answering (HotpotQA) and fact verification (Fever), ReAct overcomes issues of hallucination and error propagation prevalent in chain-of-thought reasoning by interacting with a simple Wikipedia API, and generates human-like task-solving trajectories that are more interpretable than baselines without reasoning traces. On two interactive decision making benchmarks (ALFWorld and WebShop), ReAct outperforms imitation and reinforcement learning methods by an absolute success rate of 34% and 10% respectively, while being prompted with only one or two in-context examples. Project site with code: https://react-lm.github.io",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c28e95a06dfcf13fc65a1cac83722f53e34f12a5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2205-12615",
+      "ArXiv": "2205.12615",
+      "DOI": "10.48550/arXiv.2205.12615",
+      "CorpusId": 249063032
+    },
+    "title": "Autoformalization with Large Language Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 264,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.12615",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.12615, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3374063",
+        "name": "Yuhuai Wu"
+      },
+      {
+        "authorId": "2063969818",
+        "name": "Albert Qiaochu Jiang"
+      },
+      {
+        "authorId": "3172944",
+        "name": "Wenda Li"
+      },
+      {
+        "authorId": "1800714",
+        "name": "M. Rabe"
+      },
+      {
+        "authorId": "2144884927",
+        "name": "Charles Staats"
+      },
+      {
+        "authorId": "1708741",
+        "name": "M. Jamnik"
+      },
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      }
+    ],
+    "abstract": "Autoformalization is the process of automatically translating from natural language mathematics to formal specifications and proofs. A successful autoformalization system could advance the fields of formal verification, program synthesis, and artificial intelligence. While the long-term goal of autoformalization seemed elusive for a long time, we show large language models provide new prospects towards this goal. We make the surprising observation that LLMs can correctly translate a significant portion ($25.3\\%$) of mathematical competition problems perfectly to formal specifications in Isabelle/HOL. We demonstrate the usefulness of this process by improving a previously introduced neural theorem prover via training on these autoformalized theorems. Our methodology results in a new state-of-the-art result on the MiniF2F theorem proving benchmark, improving the proof rate from $29.6\\%$ to $35.2\\%$.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "002c256d30d6be4b23d365a8de8ae0e67e4c9641",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2112-04426",
+      "ArXiv": "2112.04426",
+      "CorpusId": 244954723
+    },
+    "title": "Improving language models by retrieving from trillions of tokens",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 1611,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.04426, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "148016269",
+        "name": "Sebastian Borgeaud"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "46616544",
+        "name": "Jordan Hoffmann"
+      },
+      {
+        "authorId": "2072572294",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "2143538252",
+        "name": "Eliza Rutherford"
+      },
+      {
+        "authorId": "2143434227",
+        "name": "Katie Millican"
+      },
+      {
+        "authorId": "47568983",
+        "name": "George van den Driessche"
+      },
+      {
+        "authorId": "143783339",
+        "name": "Jean-Baptiste Lespiau"
+      },
+      {
+        "authorId": "2143374656",
+        "name": "Bogdan Damoc"
+      },
+      {
+        "authorId": "31993415",
+        "name": "Aidan Clark"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "40895205",
+        "name": "Aurelia Guy"
+      },
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "81387328",
+        "name": "Roman Ring"
+      },
+      {
+        "authorId": "4629007",
+        "name": "T. Hennigan"
+      },
+      {
+        "authorId": "2148653469",
+        "name": "Saffron Huang"
+      },
+      {
+        "authorId": "108173905",
+        "name": "Lorenzo Maggiore"
+      },
+      {
+        "authorId": "2115601070",
+        "name": "Chris Jones"
+      },
+      {
+        "authorId": "51042571",
+        "name": "Albin Cassirer"
+      },
+      {
+        "authorId": "2065040422",
+        "name": "Andy Brock"
+      },
+      {
+        "authorId": "35550664",
+        "name": "Michela Paganini"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "2217144",
+        "name": "Simon Osindero"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "34269227",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      }
+    ],
+    "abstract": "We enhance auto-regressive language models by conditioning on document chunks retrieved from a large corpus, based on local similarity with preceding tokens. With a $2$ trillion token database, our Retrieval-Enhanced Transformer (RETRO) obtains comparable performance to GPT-3 and Jurassic-1 on the Pile, despite using 25$\\times$ fewer parameters. After fine-tuning, RETRO performance translates to downstream knowledge-intensive tasks such as question answering. RETRO combines a frozen Bert retriever, a differentiable encoder and a chunked cross-attention mechanism to predict tokens based on an order of magnitude more data than what is typically consumed during training. We typically train RETRO from scratch, yet can also rapidly RETROfit pre-trained transformers with retrieval and still achieve good performance. Our work opens up new avenues for improving language models through explicit memory at unprecedented scale.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f3a332ff1b73acda482e5d83696b2c701f487819",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2110-07602",
+      "ArXiv": "2110.07602",
+      "CorpusId": 238857040
+    },
+    "title": "P-Tuning v2: Prompt Tuning Can Be Comparable to Fine-tuning Universally Across Scales and Tasks",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1087,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.07602, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111312892",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2065056119",
+        "name": "Kaixuan Ji"
+      },
+      {
+        "authorId": "1998914086",
+        "name": "Yicheng Fu"
+      },
+      {
+        "authorId": "66395694",
+        "name": "Zhengxiao Du"
+      },
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "2109541439",
+        "name": "Jie Tang"
+      }
+    ],
+    "abstract": "Prompt tuning, which only tunes continuous prompts with a frozen language model, substantially reduces per-task storage and memory usage at training. However, in the context of NLU, prior work reveals that prompt tuning does not perform well for normal-sized pretrained models. We also find that existing methods of prompt tuning cannot handle hard sequence labeling tasks, indicating a lack of universality. We present a novel empirical finding that properly optimized prompt tuning can be universally effective across a wide range of model scales and NLU tasks. It matches the performance of finetuning while having only 0.1%-3% tuned parameters. Our method P-Tuning v2 is an implementation of Deep Prompt Tuning \\cite{li2021prefix,qin2021learning} optimized and adapted for NLU. Given the universality and simplicity of P-Tuning v2, we believe it can serve as an alternative to finetuning and a strong baseline for future research.Our code and data are released at https://github.com/THUDM/P-tuning-v2.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ec307b17f193b14292206b65a1bcc95bfd8f02ed",
+    "externalIds": {
+      "DBLP": "journals/tacl/TrivediBKS22",
+      "ACL": "2022.tacl-1.31",
+      "ArXiv": "2108.00573",
+      "DOI": "10.1162/tacl_a_00475",
+      "CorpusId": 236771976
+    },
+    "title": "♫ MuSiQue: Multihop Questions via Single-hop Question Composition",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 767,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00475/2020694/tacl_a_00475.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.00573, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "6365809",
+        "name": "H. Trivedi"
+      },
+      {
+        "authorId": "35217367",
+        "name": "Niranjan Balasubramanian"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      }
+    ],
+    "abstract": "Multihop reasoning remains an elusive goal as existing multihop benchmarks are known to be largely solvable via shortcuts. Can we create a question answering (QA) dataset that, by construction, requires proper multihop reasoning? To this end, we introduce a bottom–up approach that systematically selects composable pairs of single-hop questions that are connected, that is, where one reasoning step critically relies on information from another. This bottom–up methodology lets us explore a vast space of questions and add stringent filters as well as other mechanisms targeting connected reasoning. It provides fine-grained control over the construction process and the properties of the resulting k-hop questions. We use this methodology to create MuSiQue-Ans, a new multihop QA dataset with 25K 2–4 hop questions. Relative to existing datasets, MuSiQue-Ans is more difficult overall (3× increase in human–machine gap), and harder to cheat via disconnected reasoning (e.g., a single-hop model has a 30-point drop in F1). We further add unanswerable contrast questions to produce a more stringent dataset, MuSiQue-Full. We hope our datasets will help the NLP community develop models that perform genuine multihop reasoning.1",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a8ca46b171467ceb2d7652fbfb67fe701ad86092",
+    "externalIds": {
+      "DBLP": "conf/iclr/HuSWALWWC22",
+      "ArXiv": "2106.09685",
+      "CorpusId": 235458009
+    },
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 18493,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.09685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2157840220",
+        "name": "J. Hu"
+      },
+      {
+        "authorId": "1752875",
+        "name": "Yelong Shen"
+      },
+      {
+        "authorId": "104100507",
+        "name": "Phillip Wallis"
+      },
+      {
+        "authorId": "1388725932",
+        "name": "Zeyuan Allen-Zhu"
+      },
+      {
+        "authorId": "2110486765",
+        "name": "Yuanzhi Li"
+      },
+      {
+        "authorId": "2135571585",
+        "name": "Shean Wang"
+      },
+      {
+        "authorId": "2109136147",
+        "name": "Weizhu Chen"
+      }
+    ],
+    "abstract": "An important paradigm of natural language processing consists of large-scale pre-training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full fine-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example -- deploying independent instances of fine-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre-trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable parameters for downstream tasks. Compared to GPT-3 175B fine-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than fine-tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite having fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deficiency in language model adaptation, which sheds light on the efficacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at https://github.com/microsoft/LoRA.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ffdbd7f0b03b85747b001b4734d5ee31b5229aa4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2104-08691",
+      "ArXiv": "2104.08691",
+      "ACL": "2021.emnlp-main.243",
+      "DOI": "10.18653/v1/2021.emnlp-main.243",
+      "CorpusId": 233296808
+    },
+    "title": "The Power of Scale for Parameter-Efficient Prompt Tuning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2021,
+    "citationCount": 5407,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.emnlp-main.243.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.08691, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144104130",
+        "name": "Brian Lester"
+      },
+      {
+        "authorId": "1388360943",
+        "name": "Rami Al-Rfou"
+      },
+      {
+        "authorId": "40832517",
+        "name": "Noah Constant"
+      }
+    ],
+    "abstract": "In this work, we explore “prompt tuning,” a simple yet effective mechanism for learning “soft prompts” to condition frozen language models to perform specific downstream tasks. Unlike the discrete text prompts used by GPT-3, soft prompts are learned through backpropagation and can be tuned to incorporate signals from any number of labeled examples. Our end-to-end learned approach outperforms GPT-3’s few-shot learning by a large margin. More remarkably, through ablations on model size using T5, we show that prompt tuning becomes more competitive with scale: as models exceed billions of parameters, our method “closes the gap” and matches the strong performance of model tuning (where all model weights are tuned). This finding is especially relevant because large models are costly to share and serve and the ability to reuse one frozen model for multiple downstream tasks can ease this burden. Our method can be seen as a simplification of the recently proposed “prefix tuning” of Li and Liang (2021) and we provide a comparison to this and other similar approaches. Finally, we show that conditioning a frozen model with soft prompts confers benefits in robustness to domain transfer and enables efficient “prompt ensembling.” We release code and model checkpoints to reproduce our experiments.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bc37c6bdb8f39929a58b30464f72d6aa46cddc17",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-10385",
+      "ArXiv": "2103.10385",
+      "DOI": "10.1016/j.aiopen.2023.08.012",
+      "CorpusId": 232269696
+    },
+    "title": "GPT Understands, Too",
+    "venue": "AI Open",
+    "year": 2021,
+    "citationCount": 1415,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.aiopen.2023.08.012",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.10385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111312892",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2111090780",
+        "name": "Yanan Zheng"
+      },
+      {
+        "authorId": "66395694",
+        "name": "Zhengxiao Du"
+      },
+      {
+        "authorId": "2055623340",
+        "name": "Ming Ding"
+      },
+      {
+        "authorId": "5606742",
+        "name": "Yujie Qian"
+      },
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "2109541439",
+        "name": "Jie Tang"
+      }
+    ],
+    "abstract": "Prompting a pretrained language model with natural language patterns has been proved effective for natural language understanding (NLU). However, our preliminary study reveals that manual discrete prompts often lead to unstable performance -- e.g., changing a single word in the prompt might result in substantial performance drop. We propose a novel method P-Tuning that employs trainable continuous prompt embeddings in concatenation with discrete prompts. Empirically, P-Tuning not only stabilizes training by minimizing the gap between various discrete prompts, but also improves performance by a sizeable margin on a wide range of NLU tasks including LAMA and SuperGLUE. P-Tuning is generally effective for both frozen and tuned language models, under both the fully-supervised and few-shot settings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9001eb3c3d5a96ad3d804410c2437e6f60feade9",
+    "externalIds": {
+      "ArXiv": "2011.01060",
+      "MAG": "3101823922",
+      "ACL": "2020.coling-main.580",
+      "DBLP": "journals/corr/abs-2011-01060",
+      "DOI": "10.18653/V1/2020.COLING-MAIN.580",
+      "CorpusId": 226236740
+    },
+    "title": "Constructing A Multi-hop QA Dataset for Comprehensive Evaluation of Reasoning Steps",
+    "venue": "International Conference on Computational Linguistics",
+    "year": 2020,
+    "citationCount": 1154,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.coling-main.580.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.01060, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1643889940",
+        "name": "Xanh Ho"
+      },
+      {
+        "authorId": "1997993126",
+        "name": "A. Nguyen"
+      },
+      {
+        "authorId": "2673984",
+        "name": "Saku Sugawara"
+      },
+      {
+        "authorId": "1705519",
+        "name": "Akiko Aizawa"
+      }
+    ],
+    "abstract": "A multi-hop question answering (QA) dataset aims to test reasoning and inference skills by requiring a model to read multiple paragraphs to answer a given question. However, current datasets do not provide a complete explanation for the reasoning process from the question to the answer. Further, previous studies revealed that many examples in existing multi-hop datasets do not require multi-hop reasoning to answer a question. In this study, we present a new multi-hop QA dataset, called 2WikiMultiHopQA, which uses structured and unstructured data. In our dataset, we introduce the evidence information containing a reasoning path for multi-hop questions. The evidence information has two benefits: (i) providing a comprehensive explanation for predictions and (ii) evaluating the reasoning skills of a model. We carefully design a pipeline and a set of templates when generating a question-answer pair that guarantees the multi-hop steps and the quality of the questions. We also exploit the structured format in Wikidata and use logical rules to create questions that are natural but still require multi-hop reasoning. Through experiments, we demonstrate that our dataset is challenging for multi-hop models and it ensures that multi-hop reasoning is required.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ea8c46e193d5121e440daf96edfd15a47151c293",
+    "externalIds": {
+      "ACL": "2021.eacl-main.74",
+      "ArXiv": "2007.01282",
+      "MAG": "3039017601",
+      "DBLP": "conf/eacl/IzacardG21",
+      "DOI": "10.18653/v1/2021.eacl-main.74",
+      "CorpusId": 220302360
+    },
+    "title": "Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering",
+    "venue": "Conference of the European Chapter of the Association for Computational Linguistics",
+    "year": 2020,
+    "citationCount": 1676,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.eacl-main.74.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.01282, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1410231361",
+        "name": "Gautier Izacard"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      }
+    ],
+    "abstract": "Generative models for open domain question answering have proven to be competitive, without resorting to external knowledge. While promising, this approach requires to use models with billions of parameters, which are expensive to train and query. In this paper, we investigate how much these models can benefit from retrieving text passages, potentially containing evidence. We obtain state-of-the-art results on the Natural Questions and TriviaQA open benchmarks. Interestingly, we observe that the performance of this method significantly improves when increasing the number of retrieved passages. This is evidence that sequence-to-sequence models offers a flexible framework to efficiently aggregate and combine evidence from multiple passages.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ab38bbb36ba38047c5bb556694d148225971957f",
+    "externalIds": {
+      "ACL": "2020.acl-main.657",
+      "DBLP": "conf/acl/FerreiraF20",
+      "MAG": "3034902472",
+      "DOI": "10.18653/v1/2020.acl-main.657",
+      "CorpusId": 220044873
+    },
+    "title": "Premise Selection in Natural Language Mathematical Texts",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2020,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.acl-main.657.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/2020.acl-main.657, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2058261256",
+        "name": "Deborah Ferreira"
+      },
+      {
+        "authorId": "145528474",
+        "name": "A. Freitas"
+      }
+    ],
+    "abstract": "The discovery of supporting evidence for addressing complex mathematical problems is a semantically challenging task, which is still unexplored in the field of natural language processing for mathematical text. The natural language premise selection task consists in using conjectures written in both natural language and mathematical formulae to recommend premises that most likely will be useful to prove a particular statement. We propose an approach to solve this task as a link prediction problem, using Deep Convolutional Graph Neural Networks. This paper also analyses how different baselines perform in this task and shows that a graph structure can provide higher F1-score, especially when considering multi-hop premise selection.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "659bf9ce7175e1ec266ff54359e2bd76e0b7ff31",
+    "externalIds": {
+      "DBLP": "conf/nips/LewisPPPKGKLYR020",
+      "MAG": "3027879771",
+      "ArXiv": "2005.11401",
+      "CorpusId": 218869575
+    },
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 13228,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.11401, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "3439053",
+        "name": "Ethan Perez"
+      },
+      {
+        "authorId": "1716179427",
+        "name": "Aleksandara Piktus"
+      },
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "2067091563",
+        "name": "Vladimir Karpukhin"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "103131985",
+        "name": "Heinrich Kuttler"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "144105277",
+        "name": "Wen-tau Yih"
+      },
+      {
+        "authorId": "2620211",
+        "name": "Tim Rocktäschel"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "1743722",
+        "name": "Douwe Kiela"
+      }
+    ],
+    "abstract": "Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when fine-tuned on downstream NLP tasks. However, their ability to access and precisely manipulate knowledge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-specific architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre-trained models with a differentiable access mechanism to explicit non-parametric memory can overcome this issue, but have so far been only investigated for extractive downstream tasks. We explore a general-purpose fine-tuning recipe for retrieval-augmented generation (RAG) -- models which combine pre-trained parametric and non-parametric memory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We compare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, the other can use different passages per token. We fine-tune and evaluate our models on a wide range of knowledge-intensive NLP tasks and set the state-of-the-art on three open domain QA tasks, outperforming parametric seq2seq models and task-specific retrieve-and-extract architectures. For language generation tasks, we find that RAG models generate more specific, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "60b8ad6177230ad5402af409a6edb5af441baeb4",
+    "externalIds": {
+      "MAG": "3021397474",
+      "DBLP": "conf/sigir/KhattabZ20",
+      "ArXiv": "2004.12832",
+      "DOI": "10.1145/3397271.3401075",
+      "CorpusId": 216553223
+    },
+    "title": "ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT",
+    "venue": "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": 2020,
+    "citationCount": 2018,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.12832, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144112155",
+        "name": "O. Khattab"
+      },
+      {
+        "authorId": "143834867",
+        "name": "M. Zaharia"
+      }
+    ],
+    "abstract": "Recent progress in Natural Language Understanding (NLU) is driving fast-paced advances in Information Retrieval (IR), largely owed to fine-tuning deep language models (LMs) for document ranking. While remarkably effective, the ranking models based on these LMs increase computational cost by orders of magnitude over prior approaches, particularly as they must feed each query-document pair through a massive neural network to compute a single relevance score. To tackle this, we present ColBERT, a novel ranking model that adapts deep LMs (in particular, BERT) for efficient retrieval. ColBERT introduces a late interaction architecture that independently encodes the query and the document using BERT and then employs a cheap yet powerful interaction step that models their fine-grained similarity. By delaying and yet retaining this fine-granular interaction, ColBERT can leverage the expressiveness of deep LMs while simultaneously gaining the ability to pre-compute document representations offline, considerably speeding up query processing. Crucially, ColBERT's pruning-friendly interaction mechanism enables leveraging vector-similarity indexes for end-to-end retrieval directly from millions of documents. We extensively evaluate ColBERT using two recent passage search datasets. Results show that ColBERT's effectiveness is competitive with existing BERT-based models (and outperforms every non-BERT baseline), while executing two orders-of-magnitude faster and requiring up to four orders-of-magnitude fewer FLOPs per query.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b26f2037f769d5ffc5f7bdcec2de8da28ec14bee",
+    "externalIds": {
+      "MAG": "3015883388",
+      "ArXiv": "2004.04906",
+      "DBLP": "conf/emnlp/KarpukhinOMLWEC20",
+      "ACL": "2020.emnlp-main.550",
+      "DOI": "10.18653/v1/2020.emnlp-main.550",
+      "CorpusId": 215737187
+    },
+    "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2020,
+    "citationCount": 5554,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.emnlp-main.550.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.04906, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067091563",
+        "name": "Vladimir Karpukhin"
+      },
+      {
+        "authorId": "9185192",
+        "name": "Barlas Oğuz"
+      },
+      {
+        "authorId": "48872685",
+        "name": "Sewon Min"
+      },
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "51183248",
+        "name": "Ledell Yu Wu"
+      },
+      {
+        "authorId": "2068070",
+        "name": "Sergey Edunov"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "144105277",
+        "name": "Wen-tau Yih"
+      }
+    ],
+    "abstract": "Open-domain question answering relies on efficient passage retrieval to select candidate contexts, where traditional sparse vector space models, such as TF-IDF or BM25, are the de facto method. In this work, we show that retrieval can be practically implemented using dense representations alone, where embeddings are learned from a small number of questions and passages by a simple dual-encoder framework. When evaluated on a wide range of open-domain QA datasets, our dense retriever outperforms a strong Lucene-BM25 system largely by 9%-19% absolute in terms of top-20 passage retrieval accuracy, and helps our end-to-end QA system establish new state-of-the-art on multiple open-domain QA benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "832fff14d2ed50eb7969c4c4b976c35776548f56",
+    "externalIds": {
+      "ArXiv": "2002.08909",
+      "MAG": "3034671305",
+      "DBLP": "conf/icml/GuuLTPC20",
+      "CorpusId": 211204736
+    },
+    "title": "REALM: Retrieval-Augmented Language Model Pre-Training",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 2916,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.08909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "9941702",
+        "name": "Zora Tung"
+      },
+      {
+        "authorId": "2616463",
+        "name": "Panupong Pasupat"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      }
+    ],
+    "abstract": "Language model pre-training has been shown to capture a surprising amount of world knowledge, crucial for NLP tasks such as question answering. However, this knowledge is stored implicitly in the parameters of a neural network, requiring ever-larger networks to cover more facts. \nTo capture knowledge in a more modular and interpretable way, we augment language model pre-training with a latent knowledge retriever, which allows the model to retrieve and attend over documents from a large corpus such as Wikipedia, used during pre-training, fine-tuning and inference. For the first time, we show how to pre-train such a knowledge retriever in an unsupervised manner, using masked language modeling as the learning signal and backpropagating through a retrieval step that considers millions of documents. \nWe demonstrate the effectiveness of Retrieval-Augmented Language Model pre-training (REALM) by fine-tuning on the challenging task of Open-domain Question Answering (Open-QA). We compare against state-of-the-art models for both explicit and implicit knowledge storage on three popular Open-QA benchmarks, and find that we outperform all previous methods by a significant margin (4-16% absolute accuracy), while also providing qualitative benefits such as interpretability and modularity.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "80376bdec5f534be78ba82821f540590ebce5559",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2002-08910",
+      "MAG": "3102659883",
+      "ACL": "2020.emnlp-main.437",
+      "ArXiv": "2002.08910",
+      "DOI": "10.18653/v1/2020.emnlp-main.437",
+      "CorpusId": 211205183
+    },
+    "title": "How Much Knowledge Can You Pack into the Parameters of a Language Model?",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2020,
+    "citationCount": 1033,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.emnlp-main.437.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.08910, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145625142",
+        "name": "Adam Roberts"
+      },
+      {
+        "authorId": "2402716",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "It has recently been observed that neural language models trained on unstructured text can implicitly store and retrieve knowledge using natural language queries. In this short paper, we measure the practical utility of this approach by fine-tuning pre-trained models to answer questions without access to any external context or knowledge. We show that this approach scales surprisingly well with model size and outperforms models that explicitly look up knowledge on the open-domain variants of Natural Questions and WebQuestions. To facilitate reproducibility and future work, we release our code and trained models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "17dbd7b72029181327732e4d11b52a08ed4630d0",
+    "externalIds": {
+      "ACL": "Q19-1026",
+      "MAG": "2912924812",
+      "DBLP": "journals/tacl/KwiatkowskiPRCP19",
+      "DOI": "10.1162/tacl_a_00276",
+      "CorpusId": 86611921
+    },
+    "title": "Natural Questions: A Benchmark for Question Answering Research",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 4552,
+    "openAccessPdf": {
+      "url": "https://direct.mit.edu/tacl/article-pdf/doi/10.1162/tacl_a_00276/1923288/tacl_a_00276.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/Q19-1026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      },
+      {
+        "authorId": "52578817",
+        "name": "J. Palomaki"
+      },
+      {
+        "authorId": "90784578",
+        "name": "Olivia Redfield"
+      },
+      {
+        "authorId": "123052390",
+        "name": "Michael Collins"
+      },
+      {
+        "authorId": "144729897",
+        "name": "Ankur P. Parikh"
+      },
+      {
+        "authorId": "114577307",
+        "name": "Chris Alberti"
+      },
+      {
+        "authorId": "153215783",
+        "name": "D. Epstein"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      },
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "2554321",
+        "name": "Matthew Kelcey"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1754497",
+        "name": "Slav Petrov"
+      }
+    ],
+    "abstract": "We present the Natural Questions corpus, a question answering data set. Questions consist of real anonymized, aggregated queries issued to the Google search engine. An annotator is presented with a question along with a Wikipedia page from the top 5 search results, and annotates a long answer (typically a paragraph) and a short answer (one or more entities) if present on the page, or marks null if no long/short answer is present. The public release consists of 307,373 training examples with single annotations; 7,830 examples with 5-way annotations for development data; and a further 7,842 examples with 5-way annotated sequestered as test data. We present experiments validating quality of the data. We also describe analysis of 25-way annotations on 302 examples, giving insights into human variability on the annotation task. We introduce robust metrics for the purposes of evaluating question answering systems; demonstrate high human upper bounds on these metrics; and establish baseline results using competitive methods drawn from related literature.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "eef7cfe8267954adbb4675576072a1d80ca7a3a8",
+    "externalIds": {
+      "ArXiv": "1905.13319",
+      "MAG": "2945720633",
+      "DBLP": "journals/corr/abs-1905-13319",
+      "ACL": "N19-1245",
+      "DOI": "10.18653/v1/N19-1245",
+      "CorpusId": 173188048
+    },
+    "title": "MathQA: Towards Interpretable Math Word Problem Solving with Operation-Based Formalisms",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 836,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.13319, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "41183532",
+        "name": "Aida Amini"
+      },
+      {
+        "authorId": "119902504",
+        "name": "Saadia Gabriel"
+      },
+      {
+        "authorId": "32370203",
+        "name": "Shanchuan Lin"
+      },
+      {
+        "authorId": "1403698986",
+        "name": "Rik Koncel-Kedziorski"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      },
+      {
+        "authorId": "2548384",
+        "name": "Hannaneh Hajishirzi"
+      }
+    ],
+    "abstract": "We introduce a large-scale dataset of math word problems and an interpretable neural math problem solver by learning to map problems to their operation programs. Due to annotation challenges, current datasets in this domain have been either relatively small in scale or did not offer precise operational annotations over diverse problem types. We introduce a new representation language to model operation programs corresponding to each math problem that aim to improve both the performance and the interpretability of the learned models. Using this representation language, we significantly enhance the AQUA-RAT dataset with fully-specified operational programs. We additionally introduce a neural sequence-to-program model with automatic problem categorization. Our experiments show improvements over competitive baselines in our dataset as well as the AQUA-RAT dataset. The results are still lower than human performance indicating that the dataset poses new challenges for future research. Our dataset is available at https://math-qa.github.io/math-QA/",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "22655979df781d222eaf812b0d325fa9adf11594",
+    "externalIds": {
+      "ACL": "D18-1259",
+      "DBLP": "journals/corr/abs-1809-09600",
+      "MAG": "2952862139",
+      "ArXiv": "1809.09600",
+      "DOI": "10.18653/v1/D18-1259",
+      "CorpusId": 52822214
+    },
+    "title": "HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 4258,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1259.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.09600, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "50531624",
+        "name": "Peng Qi"
+      },
+      {
+        "authorId": "35097114",
+        "name": "Saizheng Zhang"
+      },
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      },
+      {
+        "authorId": "50056360",
+        "name": "William W. Cohen"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      }
+    ],
+    "abstract": "Existing question answering (QA) datasets fail to train QA systems to perform complex reasoning and provide explanations for answers. We introduce HotpotQA, a new dataset with 113k Wikipedia-based question-answer pairs with four key features: (1) the questions require finding and reasoning over multiple supporting documents to answer; (2) the questions are diverse and not constrained to any pre-existing knowledge bases or knowledge schemas; (3) we provide sentence-level supporting facts required for reasoning, allowing QA systems to reason with strong supervision and explain the predictions; (4) we offer a new type of factoid comparison questions to test QA systems’ ability to extract relevant facts and perform necessary comparison. We show that HotpotQA is challenging for the latest QA systems, and the supporting facts enable models to improve performance and make explainable predictions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "75c7e95a57d319ad5afed537331b30bae4328645",
+    "externalIds": {
+      "MAG": "2770430340",
+      "DBLP": "journals/jar/BancerekBGKMNP18",
+      "PubMedCentral": "6044251",
+      "DOI": "10.1007/s10817-017-9440-6",
+      "CorpusId": 42763551,
+      "PubMed": "30069070"
+    },
+    "title": "The Role of the Mizar Mathematical Library for Interactive Proof Development in Mizar",
+    "venue": "Journal of automated reasoning",
+    "year": 2017,
+    "citationCount": 209,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s10817-017-9440-6.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC6044251, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1697055",
+        "name": "G. Bancerek"
+      },
+      {
+        "authorId": "102447111",
+        "name": "Czeslaw Bylinski"
+      },
+      {
+        "authorId": "144394054",
+        "name": "Adam Grabowski"
+      },
+      {
+        "authorId": "1915398",
+        "name": "Artur Korniłowicz"
+      },
+      {
+        "authorId": "1936498",
+        "name": "R. Matuszewski"
+      },
+      {
+        "authorId": "1989973",
+        "name": "Adam Naumowicz"
+      },
+      {
+        "authorId": "145971695",
+        "name": "Karol Pąk"
+      }
+    ],
+    "abstract": "The Mizar system is one of the pioneering systems aimed at supporting mathematical proof development on a computer that have laid the groundwork for and eventually have evolved into modern interactive proof assistants. We claim that an important milestone in the development of these systems was the creation of organized libraries accumulating all previously available formalized knowledge in such a way that new works could effectively re-use all previously collected notions. In the case of Mizar, the turning point of its development was the decision to start building the Mizar Mathematical Library as a centrally-managed knowledge base maintained together with the formalization language and the verification system. In this paper we show the process of forming this library, the evolution of its design principles, and also present some data showing its current use with the modern version of the Mizar proof checker, but also as a rich corpus of semantically linked mathematical data in various areas including web-based and natural language proof presentation, maths education, and machine learning based automated theorem proving.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2cbb8de53759e75411bc528518947a3094fbce3a",
+    "externalIds": {
+      "MAG": "2998702515",
+      "DBLP": "journals/tbd/JohnsonDJ21",
+      "ArXiv": "1702.08734",
+      "DOI": "10.1109/tbdata.2019.2921572",
+      "CorpusId": 926364
+    },
+    "title": "Billion-Scale Similarity Search with GPUs",
+    "venue": "IEEE Transactions on Big Data",
+    "year": 2017,
+    "citationCount": 5044,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1702.08734",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.08734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115354049",
+        "name": "Jeff Johnson"
+      },
+      {
+        "authorId": "3271933",
+        "name": "Matthijs Douze"
+      },
+      {
+        "authorId": "1681054",
+        "name": "H. Jégou"
+      }
+    ],
+    "abstract": "Similarity search finds application in database systems handling complex data such as images or videos, which are typically represented by high-dimensional features and require specific indexing structures. This paper tackles the problem of better utilizing GPUs for this task. While GPUs excel at data parallel tasks such as distance computation, prior approaches in this domain are bottlenecked by algorithms that expose less parallelism, such as <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq1-2921572.gif\"/></alternatives></inline-formula>-min selection, or make poor use of the memory hierarchy. We propose a novel design for <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq2-2921572.gif\"/></alternatives></inline-formula>-selection. We apply it in different similarity search scenarios, by optimizing brute-force, approximate and compressed-domain search based on product quantization. In all these setups, we outperform the state of the art by large margins. Our implementation operates at up to 55 percent of theoretical peak performance, enabling a nearest neighbor implementation that is 8.5 × faster than prior GPU state of the art. It enables the construction of a high accuracy <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq3-2921572.gif\"/></alternatives></inline-formula>-NN graph on 95 million images from the <sc>Yfcc100M</sc> dataset in 35 minutes, and of a graph connecting 1 billion vectors in less than 12 hours on 4 Maxwell Titan X GPUs. We have open-sourced our approach for the sake of comparison and reproducibility.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "05dd7254b632376973f3a1b4d39485da17814df5",
+    "externalIds": {
+      "DBLP": "journals/corr/RajpurkarZLL16",
+      "MAG": "2963748441",
+      "ACL": "D16-1264",
+      "ArXiv": "1606.05250",
+      "DOI": "10.18653/v1/D16-1264",
+      "CorpusId": 11816014
+    },
+    "title": "SQuAD: 100,000+ Questions for Machine Comprehension of Text",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2016,
+    "citationCount": 9268,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/D16-1264.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.05250, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2706258",
+        "name": "Pranav Rajpurkar"
+      },
+      {
+        "authorId": "2151810148",
+        "name": "Jian Zhang"
+      },
+      {
+        "authorId": "2787620",
+        "name": "Konstantin Lopyrev"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "We present the Stanford Question Answering Dataset (SQuAD), a new reading comprehension dataset consisting of 100,000+ questions posed by crowdworkers on a set of Wikipedia articles, where the answer to each question is a segment of text from the corresponding reading passage. We analyze the dataset to understand the types of reasoning required to answer the questions, leaning heavily on dependency and constituency trees. We build a strong logistic regression model, which achieves an F1 score of 51.0%, a significant improvement over a simple baseline (20%). However, human performance (86.8%) is much higher, indicating that the dataset presents a good challenge problem for future research. \nThe dataset is freely available at this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2a441a46e228ed0ea2251a4e61be6c7025b45766",
+    "externalIds": {
+      "DBLP": "conf/cade/MouraKADR15",
+      "MAG": "1464569014",
+      "DOI": "10.1007/978-3-319-21401-6_26",
+      "CorpusId": 232990
+    },
+    "title": "The Lean Theorem Prover (System Description)",
+    "venue": "CADE",
+    "year": 2015,
+    "citationCount": 673,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-319-21401-6_26?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-319-21401-6_26, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144996001",
+        "name": "L. D. Moura"
+      },
+      {
+        "authorId": "1988163",
+        "name": "Soonho Kong"
+      },
+      {
+        "authorId": "1684632",
+        "name": "J. Avigad"
+      },
+      {
+        "authorId": "2597263",
+        "name": "Floris van Doorn"
+      },
+      {
+        "authorId": "3345260",
+        "name": "Jakob von Raumer"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "53d8b356551a2361020a948f64454a6d599af69f",
+    "externalIds": {
+      "DBLP": "conf/acl/LiL20",
+      "ACL": "2021.acl-long.353",
+      "ArXiv": "2101.00190",
+      "DOI": "10.18653/v1/2021.acl-long.353",
+      "CorpusId": 230433941
+    },
+    "title": "Prefix-Tuning: Optimizing Continuous Prompts for Generation",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 5694,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.acl-long.353.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.00190, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32551341",
+        "name": "Xiang Lisa Li"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "Fine-tuning is the de facto way of leveraging large pretrained language models for downstream tasks. However, fine-tuning modifies all the language model parameters and therefore necessitates storing a full copy for each task. In this paper, we propose prefix-tuning, a lightweight alternative to fine-tuning for natural language generation tasks, which keeps language model parameters frozen and instead optimizes a sequence of continuous task-specific vectors, which we call the prefix. Prefix-tuning draws inspiration from prompting for language models, allowing subsequent tokens to attend to this prefix as if it were “virtual tokens”. We apply prefix-tuning to GPT-2 for table-to-text generation and to BART for summarization. We show that by learning only 0.1% of the parameters, prefix-tuning obtains comparable performance in the full data setting, outperforms fine-tuning in low-data settings, and extrapolates better to examples with topics that are unseen during training.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1e4b28465d3166dd4fedeb5f23d4c768c170e859",
+    "externalIds": {
+      "DBLP": "conf/ecir/GaoDCFDC21",
+      "DOI": "10.1007/978-3-030-72113-8_10",
+      "CorpusId": 232423090
+    },
+    "title": "Complement Lexical Retrieval Model with Semantic Residual Embeddings",
+    "venue": "European Conference on Information Retrieval",
+    "year": 2021,
+    "citationCount": 111,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-030-72113-8_10?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-030-72113-8_10, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49715441",
+        "name": "Luyu Gao"
+      },
+      {
+        "authorId": "2475437",
+        "name": "Zhuyun Dai"
+      },
+      {
+        "authorId": "40364920",
+        "name": "Tongfei Chen"
+      },
+      {
+        "authorId": "143783743",
+        "name": "Zhen Fan"
+      },
+      {
+        "authorId": "7536576",
+        "name": "Benjamin Van Durme"
+      },
+      {
+        "authorId": "144987107",
+        "name": "Jamie Callan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "97efafdb4a3942ab3efba53ded7413199f79c054",
+    "externalIds": {
+      "MAG": "2121863487",
+      "DBLP": "journals/tnn/SuttonB98",
+      "DOI": "10.1109/TNN.1998.712192",
+      "CorpusId": 60035920
+    },
+    "title": "Reinforcement Learning: An Introduction",
+    "venue": "IEEE Trans. Neural Networks",
+    "year": 1998,
+    "citationCount": 42404,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TNN.1998.712192?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TNN.1998.712192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238176724",
+        "name": "R. S. Sutton"
+      },
+      {
+        "authorId": "1730590",
+        "name": "A. Barto"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fa95827bfe2b83c2e27e4d17214fb22eca13cc87",
+    "externalIds": {
+      "MAG": "1560253649",
+      "CorpusId": 54117279
+    },
+    "title": "The Coq proof assistant : reference manual, version 6.1",
+    "venue": "",
+    "year": 1997,
+    "citationCount": 1221,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2514726",
+        "name": "Bruno Barras"
+      },
+      {
+        "authorId": "69508739",
+        "name": "S. Boutin"
+      },
+      {
+        "authorId": "49786520",
+        "name": "C. Cornes"
+      },
+      {
+        "authorId": "2332063",
+        "name": "J. Courant"
+      },
+      {
+        "authorId": "1801659",
+        "name": "J. Filliâtre"
+      },
+      {
+        "authorId": "145361158",
+        "name": "Eduardo Giménez"
+      },
+      {
+        "authorId": "1745154",
+        "name": "Hugo Herbelin"
+      },
+      {
+        "authorId": "1741947",
+        "name": "G. Huet"
+      },
+      {
+        "authorId": "145429546",
+        "name": "C. Muñoz"
+      },
+      {
+        "authorId": "34838219",
+        "name": "Chetan R. Murthy"
+      },
+      {
+        "authorId": "2511541",
+        "name": "C. Parent"
+      },
+      {
+        "authorId": "1398787802",
+        "name": "Christine Paulin-Mohring"
+      },
+      {
+        "authorId": "2846060",
+        "name": "Amokrane Saïbi"
+      },
+      {
+        "authorId": "34541340",
+        "name": "Benjamin Werner"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

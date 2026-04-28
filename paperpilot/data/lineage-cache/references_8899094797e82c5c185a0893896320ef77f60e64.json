@@ -1,0 +1,2419 @@
+[
+  {
+    "paperId": "2a31b4bf2a294b6e67956a6cd5ed6d875af548e0",
+    "externalIds": {
+      "MAG": "2950614122",
+      "DBLP": "conf/nips/LiuMGZ0K17",
+      "ArXiv": "1710.01020",
+      "CorpusId": 3763726
+    },
+    "title": "Learning Affinity via Spatial Propagation Networks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 308,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.01020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2391885",
+        "name": "Sifei Liu"
+      },
+      {
+        "authorId": "24817039",
+        "name": "Shalini De Mello"
+      },
+      {
+        "authorId": "143785523",
+        "name": "Jinwei Gu"
+      },
+      {
+        "authorId": "39168231",
+        "name": "Guangyu Zhong"
+      },
+      {
+        "authorId": "1715634",
+        "name": "Ming-Hsuan Yang"
+      },
+      {
+        "authorId": "1690538",
+        "name": "Jan Kautz"
+      }
+    ],
+    "abstract": "In this paper, we propose spatial propagation networks for learning the affinity matrix for vision tasks. We show that by constructing a row/column linear propagation model, the spatially varying transformation matrix exactly constitutes an affinity matrix that models dense, global pairwise relationships of an image. Specifically, we develop a three-way connection for the linear propagation model, which (a) formulates a sparse transformation matrix, where all elements can be the output from a deep CNN, but (b) results in a dense affinity matrix that effectively models any task-specific pairwise similarity matrix. Instead of designing the similarity kernels according to image features of two points, we can directly output all the similarities in a purely data-driven manner. The spatial propagation network is a generic framework that can be applied to many affinity-related tasks, including but not limited to image matting, segmentation and colorization, to name a few. Essentially, the model can learn semantically-aware affinity values for high-level vision tasks due to the powerful learning capability of the deep neural network classifier. We validate the framework on the task of refinement for image segmentation boundaries. Experiments on the HELEN face parsing and PASCAL VOC-2012 semantic segmentation tasks show that the spatial propagation network provides a general, effective and efficient solution for generating high-quality segmentation results.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "73866bdb723841da93b6ad93afe3d72817e2b377",
+    "externalIds": {
+      "MAG": "2776638780",
+      "DBLP": "conf/iccv/ChandraUK17",
+      "DOI": "10.1109/ICCV.2017.546",
+      "CorpusId": 27240162
+    },
+    "title": "Dense and Low-Rank Gaussian CRFs Using Deep Embeddings",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 85,
+    "openAccessPdf": {
+      "url": "https://hal.inria.fr/hal-01646293/file/chandra-iccv-2017.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2017.546?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2017.546, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40340011",
+        "name": "Siddhartha Chandra"
+      },
+      {
+        "authorId": "1746841",
+        "name": "Nicolas Usunier"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fa8d736f7b8c9314f9632561f09c17317bbef0ae",
+    "externalIds": {
+      "DBLP": "conf/iccv/HarleyDK17",
+      "MAG": "2963321359",
+      "ArXiv": "1708.04607",
+      "DOI": "10.1109/ICCV.2017.539",
+      "CorpusId": 2864095
+    },
+    "title": "Segmentation-Aware Convolutional Networks Using Local Attention Masks",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 151,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1708.04607",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1708.04607, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34939798",
+        "name": "Adam W. Harley"
+      },
+      {
+        "authorId": "3150825",
+        "name": "K. Derpanis"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      }
+    ],
+    "abstract": "We introduce an approach to integrate segmentation information within a convolutional neural network (CNN). This counter-acts the tendency of CNNs to smooth information across regions and increases their spatial precision. To obtain segmentation information, we set up a CNN to provide an embedding space where region co-membership can be estimated based on Euclidean distance. We use these embeddings to compute a local attention mask relative to every neuron position. We incorporate such masks in CNNs and replace the convolution operation with a “segmentation-aware” variant that allows a neuron to selectively attend to inputs coming from its own region. We call the resulting network a segmentation-aware CNN because it adapts its filters at each image point according to local segmentation cues, while at the same time remaining fully-convolutional. We demonstrate the merit of our method on two widely different dense prediction tasks, that involve classification (semantic segmentation) and regression (optical flow). Our results show that in semantic segmentation we can replace DenseCRF inference with a cascade of segmentation-aware filters, and in optical flow we obtain clearly sharper responses than the ones obtained with comparable networks that do not use segmentation. In both cases segmentation-aware convolution yields systematic improvements over strong baselines.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e591e31b9b6326571951a5193dde1c0f87beba78",
+    "externalIds": {
+      "ArXiv": "1708.03805",
+      "DBLP": "journals/corr/abs-1708-03805",
+      "MAG": "2747804831",
+      "CorpusId": 26375302
+    },
+    "title": "Revisiting the Effectiveness of Off-the-shelf Temporal Modeling Approaches for Large-scale Video Classification",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1708.03805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2069792180",
+        "name": "Yunlong Bian"
+      },
+      {
+        "authorId": "144158271",
+        "name": "Chuang Gan"
+      },
+      {
+        "authorId": "73260353",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2115362955",
+        "name": "Fu Li"
+      },
+      {
+        "authorId": "46550737",
+        "name": "Xiang Long"
+      },
+      {
+        "authorId": "1527095795",
+        "name": "Yandong Li"
+      },
+      {
+        "authorId": "2072590761",
+        "name": "Heng Qi"
+      },
+      {
+        "authorId": "49178343",
+        "name": "Jie Zhou"
+      },
+      {
+        "authorId": "2671368",
+        "name": "Shilei Wen"
+      },
+      {
+        "authorId": "119916460",
+        "name": "Yuanqing Lin"
+      }
+    ],
+    "abstract": "This paper describes our solution for the video recognition task of ActivityNet Kinetics challenge that ranked the 1st place. Most of existing state-of-the-art video recognition approaches are in favor of an end-to-end pipeline. One exception is the framework of DevNet. The merit of DevNet is that they first use the video data to learn a network (i.e. fine-tuning or training from scratch). Instead of directly using the end-to-end classification scores (e.g. softmax scores), they extract the features from the learned network and then fed them into the off-the-shelf machine learning models to conduct video classification. However, the effectiveness of this line work has long-term been ignored and underestimated. In this submission, we extensively use this strategy. Particularly, we investigate four temporal modeling approaches using the learned features: Multi-group Shifting Attention Network, Temporal Xception Network, Multi-stream sequence Model and Fast-Forward Sequence Model. Experiment results on the challenging Kinetics dataset demonstrate that our proposed temporal modeling approaches can significantly improve existing approaches in the large-scale video recognition tasks. Most remarkably, our best single Multi-group Shifting Attention Network can achieve 77.7% in term of top-1 accuracy and 93.2% in term of top-5 accuracy on the validation set.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174088,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "0d57ba12a6d958e178d83be4c84513f7e42b24e5",
+    "externalIds": {
+      "MAG": "2622263826",
+      "DBLP": "journals/corr/GoyalDGNWKTJH17",
+      "ArXiv": "1706.02677",
+      "CorpusId": 13905106
+    },
+    "title": "Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 4048,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.02677, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47316088",
+        "name": "Priya Goyal"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "34837514",
+        "name": "P. Noordhuis"
+      },
+      {
+        "authorId": "2065373815",
+        "name": "L. Wesolowski"
+      },
+      {
+        "authorId": "1717990",
+        "name": "Aapo Kyrola"
+      },
+      {
+        "authorId": "3609856",
+        "name": "Andrew Tulloch"
+      },
+      {
+        "authorId": "39978391",
+        "name": "Yangqing Jia"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      }
+    ],
+    "abstract": "Deep learning thrives with large neural networks and large datasets. However, larger networks and larger datasets result in longer training times that impede research and development progress. Distributed synchronous SGD offers a potential solution to this problem by dividing SGD minibatches over a pool of parallel workers. Yet to make this scheme efficient, the per-worker workload must be large, which implies nontrivial growth in the SGD minibatch size. In this paper, we empirically show that on the ImageNet dataset large minibatches cause optimization difficulties, but when these are addressed the trained networks exhibit good generalization. Specifically, we show no loss of accuracy when training with large minibatch sizes up to 8192 images. To achieve this result, we adopt a hyper-parameter-free linear scaling rule for adjusting learning rates as a function of minibatch size and develop a new warmup scheme that overcomes optimization challenges early in training. With these simple techniques, our Caffe2-based system trains ResNet-50 with a minibatch size of 8192 on 256 GPUs in one hour, while matching small minibatch accuracy. Using commodity hardware, our implementation achieves ~90% scaling efficiency when moving from 8 to 256 GPUs. Our findings enable training visual recognition models on internet-scale data with high efficiency.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "007112213ece771be72cbecfd59f048209facabd",
+    "externalIds": {
+      "MAG": "2963907629",
+      "ArXiv": "1706.01427",
+      "DBLP": "conf/nips/SantoroRBMPBL17",
+      "CorpusId": 8528277
+    },
+    "title": "A simple neural network module for relational reasoning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 1684,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.01427, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35030998",
+        "name": "Adam Santoro"
+      },
+      {
+        "authorId": "143724694",
+        "name": "David Raposo"
+      },
+      {
+        "authorId": "50181861",
+        "name": "D. Barrett"
+      },
+      {
+        "authorId": "145478807",
+        "name": "Mateusz Malinowski"
+      },
+      {
+        "authorId": "1996134",
+        "name": "Razvan Pascanu"
+      },
+      {
+        "authorId": "2019153",
+        "name": "P. Battaglia"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      }
+    ],
+    "abstract": "Relational reasoning is a central component of generally intelligent behavior, but has proven difficult for neural networks to learn. In this paper we describe how to use Relation Networks (RNs) as a simple plug-and-play module to solve problems that fundamentally hinge on relational reasoning. We tested RN-augmented networks on three tasks: visual question answering using a challenging dataset called CLEVR, on which we achieve state-of-the-art, super-human performance; text-based question answering using the bAbI suite of tasks; and complex reasoning about dynamic physical systems. Then, using a curated dataset called Sort-of-CLEVR we show that powerful convolutional networks do not have a general capacity to solve relational questions, but can gain this capacity when augmented with RNs. Our work shows how a deep learning architecture equipped with an RN module can implicitly discover and learn to reason about entities and their relations.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "b61a3f8b80bbd44f24544dc915f52fd30bbdf485",
+    "externalIds": {
+      "ArXiv": "1705.07750",
+      "MAG": "2619082050",
+      "DBLP": "conf/cvpr/CarreiraZ17",
+      "DOI": "10.1109/CVPR.2017.502",
+      "CorpusId": 206596127
+    },
+    "title": "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 9402,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1705.07750",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.07750, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35681810",
+        "name": "João Carreira"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "The paucity of videos in current action classification datasets (UCF-101 and HMDB-51) has made it difficult to identify good video architectures, as most methods obtain similar performance on existing small-scale benchmarks. This paper re-evaluates state-of-the-art architectures in light of the new Kinetics Human Action Video dataset. Kinetics has two orders of magnitude more data, with 400 human action classes and over 400 clips per class, and is collected from realistic, challenging YouTube videos. We provide an analysis on how current architectures fare on the task of action classification on this dataset and how much performance improves on the smaller benchmark datasets after pre-training on Kinetics. We also introduce a new Two-Stream Inflated 3D ConvNet (I3D) that is based on 2D ConvNet inflation: filters and pooling kernels of very deep image classification ConvNets are expanded into 3D, making it possible to learn seamless spatio-temporal feature extractors from video while leveraging successful ImageNet architecture designs and even their parameters. We show that, after pre-training on Kinetics, I3D models considerably improve upon the state-of-the-art in action classification, reaching 80.2% on HMDB-51 and 97.9% on UCF-101.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "86e1bdbfd13b9ed137e4c4b8b459a3980eb257f6",
+    "externalIds": {
+      "DBLP": "journals/corr/KayCSZHVVGBNSZ17",
+      "ArXiv": "1705.06950",
+      "MAG": "2619947201",
+      "CorpusId": 27300853
+    },
+    "title": "The Kinetics Human Action Video Dataset",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 4390,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.06950, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2062879616",
+        "name": "W. Kay"
+      },
+      {
+        "authorId": "35681810",
+        "name": "João Carreira"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "2343920198",
+        "name": "B. Zhang"
+      },
+      {
+        "authorId": "38961760",
+        "name": "Chloe Hillier"
+      },
+      {
+        "authorId": "2259154",
+        "name": "Sudheendra Vijayanarasimhan"
+      },
+      {
+        "authorId": "47963165",
+        "name": "Fabio Viola"
+      },
+      {
+        "authorId": "1484039896",
+        "name": "Tim Green"
+      },
+      {
+        "authorId": "2830305",
+        "name": "T. Back"
+      },
+      {
+        "authorId": "1820908",
+        "name": "Apostol Natsev"
+      },
+      {
+        "authorId": "2573615",
+        "name": "Mustafa Suleyman"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "We describe the DeepMind Kinetics human action video dataset. The dataset contains 400 human action classes, with at least 400 video clips for each action. Each clip lasts around 10s and is taken from a different YouTube video. The actions are human focussed and cover a broad range of classes including human-object interactions such as playing instruments, as well as human-human interactions such as shaking hands. We describe the statistics of the dataset, how it was collected, and give some baseline performance figures for neural network architectures trained and tested for human action classification on this dataset. We also carry out a preliminary analysis of whether imbalance in the dataset leads to bias in the classifiers.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "43428880d75b3a14257c3ee9bda054e61eb869c0",
+    "externalIds": {
+      "ArXiv": "1705.03122",
+      "MAG": "2950686565",
+      "DBLP": "journals/corr/GehringAGYD17",
+      "CorpusId": 3648736
+    },
+    "title": "Convolutional Sequence to Sequence Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 3510,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03122, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2401865",
+        "name": "Jonas Gehring"
+      },
+      {
+        "authorId": "2325985",
+        "name": "Michael Auli"
+      },
+      {
+        "authorId": "2529182",
+        "name": "David Grangier"
+      },
+      {
+        "authorId": "13759615",
+        "name": "Denis Yarats"
+      },
+      {
+        "authorId": "2921469",
+        "name": "Yann Dauphin"
+      }
+    ],
+    "abstract": "The prevalent approach to sequence to sequence learning maps an input sequence to a variable length output sequence via recurrent neural networks. We introduce an architecture based entirely on convolutional neural networks. Compared to recurrent models, computations over all elements can be fully parallelized during training and optimization is easier since the number of non-linearities is fixed and independent of the input length. Our use of gated linear units eases gradient propagation and we equip each decoder layer with a separate attention module. We outperform the accuracy of the deep LSTM setup of Wu et al. (2016) on both WMT'14 English-German and WMT'14 English-French translation at an order of magnitude faster speed, both on GPU and CPU.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1a0912bb76777469295bb2c059faee907e7f3258",
+    "externalIds": {
+      "ArXiv": "1703.06870",
+      "CorpusId": 54465873
+    },
+    "title": "Mask R-CNN",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 31572,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.06870, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2082991",
+        "name": "Georgia Gkioxari"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We present a conceptually simple, flexible, and general framework for object instance segmentation. Our approach efficiently detects objects in an image while simultaneously generating a high-quality segmentation mask for each instance. The method, called Mask R-CNN, extends Faster R-CNN by adding a branch for predicting an object mask in parallel with the existing branch for bounding box recognition. Mask R-CNN is simple to train and adds only a small overhead to Faster R-CNN, running at 5 fps. Moreover, Mask R-CNN is easy to generalize to other tasks, e.g., allowing us to estimate human poses in the same framework. We show top results in all three tracks of the COCO suite of challenges, including instance segmentation, bounding-box object detection, and person keypoint detection. Without tricks, Mask R-CNN outperforms all existing, single-model entries on every task, including the COCO 2016 challenge winners. We hope our simple and effective approach will serve as a solid baseline and help ease future research in instance-level recognition. Code will be made available.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e61c8ec6e26df76c8f0a174740f86510a786c93b",
+    "externalIds": {
+      "DBLP": "conf/cvpr/SigurdssonDFG17",
+      "ArXiv": "1612.06371",
+      "MAG": "2950676144",
+      "DOI": "10.1109/CVPR.2017.599",
+      "CorpusId": 478489
+    },
+    "title": "Asynchronous Temporal Fields for Action Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 173,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.06371",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.06371, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34280810",
+        "name": "Gunnar A. Sigurdsson"
+      },
+      {
+        "authorId": "2038685",
+        "name": "S. Divvala"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      }
+    ],
+    "abstract": "Actions are more than just movements and trajectories: we cook to eat and we hold a cup to drink from it. A thorough understanding of videos requires going beyond appearance modeling and necessitates reasoning about the sequence of activities, as well as the higher-level constructs such as intentions. But how do we model and reason about these? We propose a fully-connected temporal CRF model for reasoning over various aspects of activities that includes objects, actions, and intentions, where the potentials are predicted by a deep network. End-to-end training of such structured models is a challenging endeavor: For inference and learning we need to construct mini-batches consisting of whole videos, leading to mini-batches with only a few videos. This causes high-correlation between data points leading to breakdown of the backprop algorithm. To address this challenge, we present an asynchronous variational inference method that allows efficient end-to-end training. Our method achieves a classification mAP of 22.4% on the Charades [42] benchmark, outperforming the state-of-the-art (17.2% mAP), and offers equal gains on the task of temporal localization.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "2a94c84383ee3de5e6211d43d16e7de387f68878",
+    "externalIds": {
+      "ArXiv": "1612.03144",
+      "DBLP": "conf/cvpr/LinDGHHB17",
+      "MAG": "2565639579",
+      "DOI": "10.1109/CVPR.2017.106",
+      "CorpusId": 10716717
+    },
+    "title": "Feature Pyramid Networks for Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 26440,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.03144",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1790580",
+        "name": "Bharath Hariharan"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      }
+    ],
+    "abstract": "Feature pyramids are a basic component in recognition systems for detecting objects at different scales. But pyramid representations have been avoided in recent object detectors that are based on deep convolutional networks, partially because they are slow to compute and memory intensive. In this paper, we exploit the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to construct feature pyramids with marginal extra cost. A top-down architecture with lateral connections is developed for building high-level semantic feature maps at all scales. This architecture, called a Feature Pyramid Network (FPN), shows significant improvement as a generic feature extractor in several applications. Using a basic Faster R-CNN system, our method achieves state-of-the-art single-model results on the COCO detection benchmark without bells and whistles, surpassing all existing single-model entries including those from the COCO 2016 challenge winners. In addition, our method can run at 5 FPS on a GPU and thus is a practical and accurate solution to multi-scale object detection. Code will be made publicly available.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ae42c0cff384495683192b06bd985cdd7a54632a",
+    "externalIds": {
+      "DBLP": "journals/corr/BattagliaPLRK16",
+      "ArXiv": "1612.00222",
+      "MAG": "2552391307",
+      "CorpusId": 2200675
+    },
+    "title": "Interaction Networks for Learning about Objects, Relations and Physics",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 1528,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.00222, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2019153",
+        "name": "P. Battaglia"
+      },
+      {
+        "authorId": "1996134",
+        "name": "Razvan Pascanu"
+      },
+      {
+        "authorId": "40227832",
+        "name": "M. Lai"
+      },
+      {
+        "authorId": "1748523",
+        "name": "Danilo Jimenez Rezende"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      }
+    ],
+    "abstract": "Reasoning about objects, relations, and physics is central to human intelligence, and a key goal of artificial intelligence. Here we introduce the interaction network, a model which can reason about how objects in complex systems interact, supporting dynamical predictions, as well as inferences about the abstract properties of the system. Our model takes graphs as input, performs object- and relation-centric reasoning in a way that is analogous to a simulation, and is implemented using deep neural networks. We evaluate its ability to reason about several challenging physical domains: n-body problems, rigid-body collision, and non-rigid dynamics. Our results show it can be trained to accurately simulate the physical trajectories of dozens of objects over thousands of time steps, estimate abstract quantities such as energy, and generalize automatically to systems with different numbers and configurations of objects and relations. Our interaction network implementation is the first general-purpose, learnable physics engine, and a powerful general framework for reasoning about object and relations in a wide variety of complex real-world domains.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9641851496107d59632cccbed80db29c39741155",
+    "externalIds": {
+      "MAG": "2550616896",
+      "ArXiv": "1611.06757",
+      "DBLP": "conf/cvpr/Lefkimmiatis17",
+      "DOI": "10.1109/CVPR.2017.623",
+      "CorpusId": 10352330
+    },
+    "title": "Non-local Color Image Denoising with Convolutional Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 351,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.06757",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.06757, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1766572",
+        "name": "Stamatios Lefkimmiatis"
+      }
+    ],
+    "abstract": "We propose a novel deep network architecture for grayscale and color image denoising that is based on a non-local image model. Our motivation for the overall design of the proposed network stems from variational methods that exploit the inherent non-local self-similarity property of natural images. We build on this concept and introduce deep networks that perform non-local processing and at the same time they significantly benefit from discriminative learning. Experiments on the Berkeley segmentation dataset, comparing several state-of-the-art methods, show that the proposed non-local models achieve the best reported denoising performance both for grayscale and color images for all the tested noise levels. It is also worth noting that this increase in performance comes at no extra cost on the capacity of the network compared to existing alternative deep network architectures. In addition, we highlight a direct link of the proposed non-local models to convolutional neural networks. This connection is of significant importance since it allows our models to take full advantage of the latest advances on GPU computing in deep learning and makes them amenable to efficient implementations through their inherent parallelism.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f6e0856b4a9199fa968ac00da612a9407b5cb85c",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XieGDTH17",
+      "MAG": "2953328958",
+      "ArXiv": "1611.05431",
+      "DOI": "10.1109/CVPR.2017.634",
+      "CorpusId": 8485068
+    },
+    "title": "Aggregated Residual Transformations for Deep Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 11565,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1611.05431",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.05431, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "144035504",
+        "name": "Z. Tu"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      }
+    ],
+    "abstract": "We present a simple, highly modularized network architecture for image classification. Our network is constructed by repeating a building block that aggregates a set of transformations with the same topology. Our simple design results in a homogeneous, multi-branch architecture that has only a few hyper-parameters to set. This strategy exposes a new dimension, which we call cardinality (the size of the set of transformations), as an essential factor in addition to the dimensions of depth and width. On the ImageNet-1K dataset, we empirically show that even under the restricted condition of maintaining complexity, increasing cardinality is able to improve classification accuracy. Moreover, increasing cardinality is more effective than going deeper or wider when we increase the capacity. Our models, named ResNeXt, are the foundations of our entry to the ILSVRC 2016 classification task in which we secured 2nd place. We further investigate ResNeXt on an ImageNet-5K set and the COCO detection set, also showing better results than its ResNet counterpart. The code and models are publicly available online.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "5f4d2f6ad967f7c9369c04e75cda08f12cb8afbd",
+    "externalIds": {
+      "DBLP": "conf/nips/FeichtenhoferPW16",
+      "MAG": "2952005526",
+      "ArXiv": "1611.02155",
+      "CorpusId": 2815465
+    },
+    "title": "Spatiotemporal Residual Networks for Video Action Recognition",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 742,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.02155, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2366173928",
+        "name": "Christoph Feichtenhofer"
+      },
+      {
+        "authorId": "1718587",
+        "name": "A. Pinz"
+      },
+      {
+        "authorId": "1709096",
+        "name": "Richard P. Wildes"
+      }
+    ],
+    "abstract": "Two-stream Convolutional Networks (ConvNets) have shown strong performance for human action recognition in videos. Recently, Residual Networks (ResNets) have arisen as a new technique to train extremely deep architectures. In this paper, we introduce spatiotemporal ResNets as a combination of these two approaches. Our novel architecture generalizes ResNets for the spatiotemporal domain by introducing residual connections in two ways. First, we inject residual connections between the appearance and motion pathways of a two-stream architecture to allow spatiotemporal interaction between the two streams. Second, we transform pretrained image ConvNets into spatiotemporal networks by equipping these with learnable convolutional filters that are initialized as temporal residual connections and operate on adjacent feature maps in time. This approach slowly increases the spatiotemporal receptive field as the depth of the model increases and naturally integrates image ConvNet design principles. The whole model is trained end-to-end to allow hierarchical learning of complex spatiotemporal features. We evaluate our novel spatiotemporal ResNet using two widely used action recognition benchmarks where it exceeds the previous state-of-the-art.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ac94ef90be9b0c3bf744d6744e47b38855f9a4c7",
+    "externalIds": {
+      "MAG": "2519224033",
+      "DBLP": "conf/icassp/XiongDHSSSYZ17",
+      "ArXiv": "1609.03528",
+      "DOI": "10.1109/ICASSP.2017.7953159",
+      "CorpusId": 7464806
+    },
+    "title": "The microsoft 2016 conversational speech recognition system",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2016,
+    "citationCount": 292,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1609.03528",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.03528, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145814376",
+        "name": "Wayne Xiong"
+      },
+      {
+        "authorId": "1755472",
+        "name": "J. Droppo"
+      },
+      {
+        "authorId": "144531812",
+        "name": "Xuedong Huang"
+      },
+      {
+        "authorId": "1745715",
+        "name": "F. Seide"
+      },
+      {
+        "authorId": "1727524",
+        "name": "M. Seltzer"
+      },
+      {
+        "authorId": "1762744",
+        "name": "A. Stolcke"
+      },
+      {
+        "authorId": "144580027",
+        "name": "Dong Yu"
+      },
+      {
+        "authorId": "1681543",
+        "name": "G. Zweig"
+      }
+    ],
+    "abstract": "We describe Microsoft's conversational speech recognition system, in which we combine recent developments in neural-network-based acoustic and language modeling to advance the state of the art on the Switchboard recognition task. Inspired by machine learning ensemble techniques, the system uses a range of convolutional and recurrent neural networks. I-vector modeling and lattice-free MMI training provide significant gains for all acoustic model architectures. Language model rescoring with multiple forward and backward running RNNLMs, and word posterior-based system combination provide a 20% boost. The best single system uses a ResNet architecture acoustic model with RNNLM rescoring, and achieves a word error rate of 6.9% on the NIST 2000 Switchboard task. The combined system has an error rate of 6.2%, representing an improvement over previously reported results on this benchmark task.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "df0402517a7338ae28bc54acaac400de6b456a46",
+    "externalIds": {
+      "MAG": "2519091744",
+      "ArXiv": "1609.03499",
+      "DBLP": "journals/corr/OordDZSVGKSK16",
+      "CorpusId": 6254678
+    },
+    "title": "WaveNet: A Generative Model for Raw Audio",
+    "venue": "Speech Synthesis Workshop",
+    "year": 2016,
+    "citationCount": 8157,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.03499, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422336",
+        "name": "Aäron van den Oord"
+      },
+      {
+        "authorId": "48373216",
+        "name": "S. Dieleman"
+      },
+      {
+        "authorId": "1691713",
+        "name": "H. Zen"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "2583391",
+        "name": "Nal Kalchbrenner"
+      },
+      {
+        "authorId": "33666044",
+        "name": "A. Senior"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      }
+    ],
+    "abstract": "This paper introduces WaveNet, a deep neural network for generating raw audio waveforms. The model is fully probabilistic and autoregressive, with the predictive distribution for each audio sample conditioned on all previous ones; nonetheless we show that it can be efficiently trained on data with tens of thousands of samples per second of audio. When applied to text-to-speech, it yields state-of-the-art performance, with human listeners rating it as significantly more natural sounding than the best parametric and concatenative systems for both English and Mandarin. A single WaveNet can capture the characteristics of many different speakers with equal fidelity, and can switch between them by conditioning on the speaker identity. When trained to model music, we find that it generates novel and often highly realistic musical fragments. We also show that it can be employed as a discriminative model, returning promising results for phoneme recognition.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "21334d1aac5422da88780f8e24e181bfa15ef0e1",
+    "externalIds": {
+      "MAG": "2337252826",
+      "DBLP": "conf/eccv/SigurdssonVWFLG16",
+      "ArXiv": "1604.01753",
+      "DOI": "10.1007/978-3-319-46448-0_31",
+      "CorpusId": 18061547
+    },
+    "title": "Hollywood in Homes: Crowdsourcing Data Collection for Activity Understanding",
+    "venue": "European Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 1387,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/978-3-319-46448-0_31.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1604.01753, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34280810",
+        "name": "Gunnar A. Sigurdsson"
+      },
+      {
+        "authorId": "2397485103",
+        "name": "Gül Varol"
+      },
+      {
+        "authorId": "39849136",
+        "name": "X. Wang"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "143991676",
+        "name": "I. Laptev"
+      },
+      {
+        "authorId": "1726095131",
+        "name": "A. Gupta"
+      }
+    ],
+    "abstract": "Computer vision has a great potential to help our daily lives by searching for lost keys, watering flowers or reminding us to take a pill. To succeed with such tasks, computer vision methods need to be trained from real and diverse examples of our daily dynamic scenes. While most of such scenes are not particularly exciting, they typically do not appear on YouTube, in movies or TV broadcasts. So how do we collect sufficiently many diverse but boring samples representing our lives? We propose a novel Hollywood in Homes approach to collect such data. Instead of shooting videos in the lab, we ensure diversity by distributing and crowdsourcing the whole process of video creation from script writing to video recording and annotation. Following this procedure we collect a new dataset, Charades, with hundreds of people recording videos in their own homes, acting out casual everyday activities. The dataset is composed of 9,848 annotated videos with an average length of 30 s, showing activities of 267 people from three continents. Each video is annotated by multiple free-text descriptions, action labels, action intervals and classes of interacted objects. In total, Charades provides 27,847 video descriptions, 66,500 temporally localized intervals for 157 action classes and 41,104 labels for 46 object classes. Using this rich data, we evaluate and provide baseline results for several tasks including action recognition and automatic description generation. We believe that the realism, diversity, and casual nature of this dataset will present unique challenges and new opportunities for computer vision community.",
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226125,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "result",
+      "background"
+    ]
+  },
+  {
+    "paperId": "424561d8585ff8ebce7d5d07de8dbf7aae5e7270",
+    "externalIds": {
+      "MAG": "2953106684",
+      "ArXiv": "1506.01497",
+      "DBLP": "journals/pami/RenHG017",
+      "DOI": "10.1109/TPAMI.2016.2577031",
+      "CorpusId": 10328909,
+      "PubMed": "27295650"
+    },
+    "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2015,
+    "citationCount": 71971,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1506.01497",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.01497, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "2032184078",
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "State-of-the-art object detection networks depend on region proposal algorithms to hypothesize object locations. Advances like SPPnet and Fast R-CNN have reduced the running time of these detection networks, exposing region proposal computation as a bottleneck. In this work, we introduce a Region Proposal Network (RPN) that shares full-image convolutional features with the detection network, thus enabling nearly cost-free region proposals. An RPN is a fully convolutional network that simultaneously predicts object bounds and objectness scores at each position. The RPN is trained end-to-end to generate high-quality region proposals, which are used by Fast R-CNN for detection. We further merge RPN and Fast R-CNN into a single network by sharing their convolutional features---using the recently popular terminology of neural networks with 'attention' mechanisms, the RPN component tells the unified network where to look. For the very deep VGG-16 model, our detection system has a frame rate of 5fps (including all steps) on a GPU, while achieving state-of-the-art object detection accuracy on PASCAL VOC 2007, 2012, and MS COCO datasets with only 300 proposals per image. In ILSVRC and COCO 2015 competitions, Faster R-CNN and RPN are the foundations of the 1st-place winning entries in several tracks. Code has been made publicly available",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "df658828fb4146877f1031ec9d07052f7eb31186",
+    "externalIds": {
+      "MAG": "3101453960",
+      "DBLP": "conf/cvpr/Wang0T15",
+      "ArXiv": "1505.04868",
+      "DOI": "10.1109/CVPR.2015.7299059",
+      "CorpusId": 4284367
+    },
+    "title": "Action recognition with trajectory-pooled deep-convolutional descriptors",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 1195,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1505.04868",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.04868, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109120086",
+        "name": "Limin Wang"
+      },
+      {
+        "authorId": "143970608",
+        "name": "Y. Qiao"
+      },
+      {
+        "authorId": "50295995",
+        "name": "Xiaoou Tang"
+      }
+    ],
+    "abstract": "Visual features are of vital importance for human action understanding in videos. This paper presents a new video representation, called trajectory-pooled deep-convolutional descriptor (TDD), which shares the merits of both hand-crafted features [31] and deep-learned features [24]. Specifically, we utilize deep architectures to learn discriminative convolutional feature maps, and conduct trajectory-constrained pooling to aggregate these convolutional features into effective descriptors. To enhance the robustness of TDDs, we design two normalization methods to transform convolutional feature maps, namely spatiotemporal normalization and channel normalization. The advantages of our features come from (i) TDDs are automatically learned and contain high discriminative capacity compared with those hand-crafted features; (ii) TDDs take account of the intrinsic characteristics of temporal dimension and introduce the strategies of trajectory-constrained sampling and pooling for aggregating deep-learned features. We conduct experiments on two challenging datasets: HMD-B51 and UCF101. Experimental results show that TDDs outperform previous hand-crafted features [31] and deep-learned features [24]. Our method also achieves superior performance to the state of the art on these datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5418b2a482720e013d487a385c26fae0f017c6a6",
+    "externalIds": {
+      "MAG": "1923404803",
+      "DBLP": "conf/cvpr/NgHVVMT15",
+      "ArXiv": "1503.08909",
+      "DOI": "10.1109/CVPR.2015.7299101",
+      "CorpusId": 4245530
+    },
+    "title": "Beyond short snippets: Deep networks for video classification",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 2450,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1503.08909",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.08909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2340579",
+        "name": "Joe Yue-Hei Ng"
+      },
+      {
+        "authorId": "3308897",
+        "name": "Matthew J. Hausknecht"
+      },
+      {
+        "authorId": "2259154",
+        "name": "Sudheendra Vijayanarasimhan"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "3089272",
+        "name": "R. Monga"
+      },
+      {
+        "authorId": "1805076",
+        "name": "G. Toderici"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) have been extensively applied for image recognition problems giving state-of-the-art results on recognition, detection, segmentation and retrieval. In this work we propose and evaluate several deep neural network architectures to combine image information across a video over longer time periods than previously attempted. We propose two methods capable of handling full length videos. The first method explores various convolutional temporal feature pooling architectures, examining the various design choices which need to be made when adapting a CNN for this task. The second proposed method explicitly models the video as an ordered sequence of frames. For this purpose we employ a recurrent neural network that uses Long Short-Term Memory (LSTM) cells which are connected to the output of the underlying CNN. Our best networks exhibit significant performance improvements over previously published results on the Sports 1 million dataset (73.1% vs. 60.9%) and the UCF-101 datasets with (88.6% vs. 88.0%) and without additional optical flow information (82.6% vs. 73.0%).",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "416a242f24246f8ee2c00f4d3d1561443dc65b59",
+    "externalIds": {
+      "MAG": "2102492119",
+      "ArXiv": "1503.02351",
+      "DBLP": "journals/corr/SchwingU15",
+      "CorpusId": 15939599
+    },
+    "title": "Fully Connected Deep Structured Networks",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 320,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.02351, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2068227",
+        "name": "A. Schwing"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      }
+    ],
+    "abstract": "Convolutional neural networks with many layers have recently been shown to achieve excellent results on many high-level tasks such as image classification, object detection and more recently also semantic segmentation. Particularly for semantic segmentation, a two-stage procedure is often employed. Hereby, convolutional networks are trained to provide good local pixel-wise features for the second step being traditionally a more global graphical model. In this work we unify this two-stage process into a single joint training algorithm. We demonstrate our method on the semantic image segmentation task and show encouraging results on the challenging PASCAL VOC 2012 dataset.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ca5c766b2d31a1f5ce8896a0a42b40a2bff9323a",
+    "externalIds": {
+      "ArXiv": "1502.03240",
+      "MAG": "3100332847",
+      "DBLP": "journals/corr/ZhengJRVSDHT15",
+      "DOI": "10.1109/ICCV.2015.179",
+      "CorpusId": 1318262
+    },
+    "title": "Conditional Random Fields as Recurrent Neural Networks",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 2582,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1502.03240",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03240, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40474289",
+        "name": "Shuai Zheng"
+      },
+      {
+        "authorId": "3078751",
+        "name": "Sadeep Jayasumana"
+      },
+      {
+        "authorId": "1403031665",
+        "name": "Bernardino Romera-Paredes"
+      },
+      {
+        "authorId": "143729959",
+        "name": "Vibhav Vineet"
+      },
+      {
+        "authorId": "3118650",
+        "name": "Zhizhong Su"
+      },
+      {
+        "authorId": "40359161",
+        "name": "Dalong Du"
+      },
+      {
+        "authorId": "48908475",
+        "name": "Chang Huang"
+      },
+      {
+        "authorId": "143635540",
+        "name": "Philip H. S. Torr"
+      }
+    ],
+    "abstract": "Pixel-level labelling tasks, such as semantic segmentation, play a central role in image understanding. Recent approaches have attempted to harness the capabilities of deep learning techniques for image recognition to tackle pixel-level labelling tasks. One central issue in this methodology is the limited capacity of deep learning techniques to delineate visual objects. To solve this problem, we introduce a new form of convolutional neural network that combines the strengths of Convolutional Neural Networks (CNNs) and Conditional Random Fields (CRFs)-based probabilistic graphical modelling. To this end, we formulate Conditional Random Fields with Gaussian pairwise potentials and mean-field approximate inference as Recurrent Neural Networks. This network, called CRF-RNN, is then plugged in as a part of a CNN to obtain a deep network that has desirable properties of both CNNs and CRFs. Importantly, our system fully integrates CRF modelling with CNNs, making it possible to train the whole deep network end-to-end with the usual back-propagation algorithm, avoiding offline post-processing methods for object delineation. We apply the proposed method to the problem of semantic image segmentation, obtaining top results on the challenging Pascal VOC 2012 segmentation benchmark.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "995c5f5e62614fcb4d2796ad2faab969da51713e",
+    "externalIds": {
+      "MAG": "1836465849",
+      "ArXiv": "1502.03167",
+      "DBLP": "conf/icml/IoffeS15",
+      "CorpusId": 5808102
+    },
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 46486,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03167, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      }
+    ],
+    "abstract": "Training Deep Neural Networks is complicated by the fact that the distribution of each layer's inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities. We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs. Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization, and in some cases eliminates the need for Dropout. Applied to a state-of-the-art image classification model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a significant margin. Using an ensemble of batch-normalized networks, we improve upon the best published result on ImageNet classification: reaching 4.82% top-5 test error, exceeding the accuracy of human raters.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d6f2f611da110b5b5061731be3fc4c7f45d8ee23",
+    "externalIds": {
+      "MAG": "1677182931",
+      "DBLP": "conf/iccv/HeZRS15",
+      "ArXiv": "1502.01852",
+      "DOI": "10.1109/ICCV.2015.123",
+      "CorpusId": 13740328
+    },
+    "title": "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 20364,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1502.01852",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.01852, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Rectified activation units (rectifiers) are essential for state-of-the-art neural networks. In this work, we study rectifier neural networks for image classification from two aspects. First, we propose a Parametric Rectified Linear Unit (PReLU) that generalizes the traditional rectified unit. PReLU improves model fitting with nearly zero extra computational cost and little overfitting risk. Second, we derive a robust initialization method that particularly considers the rectifier nonlinearities. This method enables us to train extremely deep rectified models directly from scratch and to investigate deeper or wider network architectures. Based on the learnable activation and advanced initialization, we achieve 4.94% top-5 test error on the ImageNet 2012 classification dataset. This is a 26% relative improvement over the ILSVRC 2014 winner (GoogLeNet, 6.66% [33]). To our knowledge, our result is the first to surpass the reported human-level performance (5.1%, [26]) on this dataset.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "39ad6c911f3351a3b390130a6e4265355b4d593b",
+    "externalIds": {
+      "MAG": "1923697677",
+      "DBLP": "journals/corr/ChenPKMY14",
+      "ArXiv": "1412.7062",
+      "CorpusId": 1996665
+    },
+    "title": "Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 5217,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.7062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "Deep Convolutional Neural Networks (DCNNs) have recently shown state of the art performance in high level vision tasks, such as image classification and object detection. This work brings together methods from DCNNs and probabilistic graphical models for addressing the task of pixel-level classification (also called \"semantic image segmentation\"). We show that responses at the final layer of DCNNs are not sufficiently localized for accurate object segmentation. This is due to the very invariance properties that make DCNNs good for high level tasks. We overcome this poor localization property of deep networks by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF). Qualitatively, our \"DeepLab\" system is able to localize segment boundaries at a level of accuracy which is beyond previous methods. Quantitatively, our method sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 71.6% IOU accuracy in the test set. We show how these results can be obtained efficiently: Careful network re-purposing and a novel application of the 'hole' algorithm from the wavelet community allow dense computation of neural net responses at 8 frames per second on a modern GPU.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d25c65d261ea0e6a458be4c50c40ffe5bc508f77",
+    "externalIds": {
+      "MAG": "1522734439",
+      "DBLP": "conf/iccv/TranBFTP15",
+      "DOI": "10.1109/ICCV.2015.510",
+      "CorpusId": 1122604
+    },
+    "title": "Learning Spatiotemporal Features with 3D Convolutional Networks",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 9180,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1412.0767",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2015.510?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2015.510, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1687325",
+        "name": "Du Tran"
+      },
+      {
+        "authorId": "1769383",
+        "name": "Lubomir D. Bourdev"
+      },
+      {
+        "authorId": "2276554",
+        "name": "R. Fergus"
+      },
+      {
+        "authorId": "1732879",
+        "name": "L. Torresani"
+      },
+      {
+        "authorId": "2210374",
+        "name": "Manohar Paluri"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f01fc808592ea7c473a69a6e7484040a435f36d9",
+    "externalIds": {
+      "DBLP": "journals/pami/DonahueHRVGSD17",
+      "MAG": "2951183276",
+      "ArXiv": "1411.4389",
+      "DOI": "10.1109/CVPR.2015.7298878",
+      "CorpusId": 5736847,
+      "PubMed": "27608449"
+    },
+    "title": "Long-term recurrent convolutional networks for visual recognition and description",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 6360,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/tpami.2016.2599174",
+      "status": "GREEN",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.4389, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7408951",
+        "name": "Jeff Donahue"
+      },
+      {
+        "authorId": "2234342",
+        "name": "Lisa Anne Hendricks"
+      },
+      {
+        "authorId": "34849128",
+        "name": "Marcus Rohrbach"
+      },
+      {
+        "authorId": "1811430",
+        "name": "Subhashini Venugopalan"
+      },
+      {
+        "authorId": "1687120",
+        "name": "S. Guadarrama"
+      },
+      {
+        "authorId": "2903226",
+        "name": "Kate Saenko"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "Models based on deep convolutional networks have dominated recent image interpretation tasks; we investigate whether models which are also recurrent, or “temporally deep”, are effective for tasks involving sequences, visual and otherwise. We develop a novel recurrent convolutional architecture suitable for large-scale visual learning which is end-to-end trainable, and demonstrate the value of these models on benchmark video recognition tasks, image description and retrieval problems, and video narration challenges. In contrast to current models which assume a fixed spatio-temporal receptive field or simple temporal averaging for sequential processing, recurrent convolutional models are “doubly deep” in that they can be compositional in spatial and temporal “layers”. Such models may have advantages when target concepts are complex and/or training data are limited. Learning long-term dependencies is possible when nonlinearities are incorporated into the network state updates. Long-term RNN models are appealing in that they directly can map variable-length inputs (e.g., video frames) to variable length outputs (e.g., natural language text) and can model complex temporal dynamics; yet they can be optimized with backpropagation. Our recurrent long-term models are directly connected to modern visual convnet models and can be jointly trained to simultaneously learn temporal dynamics and convolutional perceptual representations. Our results show such models have distinct advantages over state-of-the-art models for recognition or generation which are separately defined and/or optimized.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "eb42cf88027de515750f230b23b1a057dc782108",
+    "externalIds": {
+      "MAG": "2949429431",
+      "ArXiv": "1409.1556",
+      "DBLP": "journals/corr/SimonyanZ14a",
+      "CorpusId": 14124313
+    },
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 110770,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.1556, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "In this work we investigate the effect of the convolutional network depth on its accuracy in the large-scale image recognition setting. Our main contribution is a thorough evaluation of networks of increasing depth using an architecture with very small (3x3) convolution filters, which shows that a significant improvement on the prior-art configurations can be achieved by pushing the depth to 16-19 weight layers. These findings were the basis of our ImageNet Challenge 2014 submission, where our team secured the first and the second places in the localisation and classification tracks respectively. We also show that our representations generalise well to other datasets, where they achieve state-of-the-art results. We have made our two best-performing ConvNet models publicly available to facilitate further research on the use of deep visual representations in computer vision.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "e74f9b7f8eec6ba4704c206b93bc8079af3da4bd",
+    "externalIds": {
+      "ArXiv": "1409.0575",
+      "DBLP": "journals/corr/RussakovskyDSKSMHKKBBF14",
+      "MAG": "2546241758",
+      "DOI": "10.1007/s11263-015-0816-y",
+      "CorpusId": 2930547
+    },
+    "title": "ImageNet Large Scale Visual Recognition Challenge",
+    "venue": "International Journal of Computer Vision",
+    "year": 2014,
+    "citationCount": 42393,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.0575, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2314850892",
+        "name": "Olga Russakovsky"
+      },
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144914140",
+        "name": "Hao Su"
+      },
+      {
+        "authorId": "2285165",
+        "name": "J. Krause"
+      },
+      {
+        "authorId": "145031342",
+        "name": "S. Satheesh"
+      },
+      {
+        "authorId": "2261887230",
+        "name": "Sean Ma"
+      },
+      {
+        "authorId": "3109481",
+        "name": "Zhiheng Huang"
+      },
+      {
+        "authorId": "2354728",
+        "name": "A. Karpathy"
+      },
+      {
+        "authorId": "2556428",
+        "name": "A. Khosla"
+      },
+      {
+        "authorId": "145879842",
+        "name": "Michael S. Bernstein"
+      },
+      {
+        "authorId": "39668247",
+        "name": "A. Berg"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": "The ImageNet Large Scale Visual Recognition Challenge is a benchmark in object category classification and detection on hundreds of object categories and millions of images. The challenge has been run annually from 2010 to present, attracting participation from more than fifty institutions. This paper describes the creation of this benchmark dataset and the advances in object recognition that have been possible as a result. We discuss the challenges of collecting large-scale ground truth annotation, highlight key breakthroughs in categorical object recognition, provide a detailed analysis of the current state of the field of large-scale image classification and object detection, and compare the state-of-the-art computer vision accuracy with human accuracy. We conclude with lessons learned in the 5 years of the challenge, and propose future directions and improvements.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "67dccc9a856b60bdc4d058d83657a089b8ad4486",
+    "externalIds": {
+      "MAG": "2952186347",
+      "DBLP": "conf/nips/SimonyanZ14",
+      "ArXiv": "1406.2199",
+      "CorpusId": 11797475
+    },
+    "title": "Two-Stream Convolutional Networks for Action Recognition in Videos",
+    "venue": "Neural Information Processing Systems",
+    "year": 2014,
+    "citationCount": 8140,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1406.2199, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "We investigate architectures of discriminatively trained deep Convolutional Networks (ConvNets) for action recognition in video. The challenge is to capture the complementary information on appearance from still frames and motion between frames. We also aim to generalise the best performing hand-crafted features within a data-driven learning framework. \n \nOur contribution is three-fold. First, we propose a two-stream ConvNet architecture which incorporates spatial and temporal networks. Second, we demonstrate that a ConvNet trained on multi-frame dense optical flow is able to achieve very good performance in spite of limited training data. Finally, we show that multitask learning, applied to two different action classification datasets, can be used to increase the amount of training data and improve the performance on both. Our architecture is trained and evaluated on the standard video actions benchmarks of UCF-101 and HMDB-51, where it is competitive with the state of the art. It also exceeds by a large margin previous attempts to use deep nets for video classification.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "71b7178df5d2b112d07e45038cb5637208659ff7",
+    "externalIds": {
+      "ArXiv": "1405.0312",
+      "DBLP": "conf/eccv/LinMBHPRDZ14",
+      "MAG": "2952122856",
+      "DOI": "10.1007/978-3-319-10602-1_48",
+      "CorpusId": 14113767
+    },
+    "title": "Microsoft COCO: Common Objects in Context",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 52014,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2F978-3-319-10602-1_48.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1405.0312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "48966748",
+        "name": "James Hays"
+      },
+      {
+        "authorId": "1690922",
+        "name": "P. Perona"
+      },
+      {
+        "authorId": "1770537",
+        "name": "Deva Ramanan"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "1699161",
+        "name": "C. L. Zitnick"
+      }
+    ],
+    "abstract": "We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "59a6028ebb5a6056e80326388707fa642c98e10c",
+    "externalIds": {
+      "MAG": "2109337973",
+      "DBLP": "journals/corr/abs-1211-1552",
+      "ArXiv": "1211.1552",
+      "CorpusId": 15550180
+    },
+    "title": "Image denoising with multi-layer perceptrons, part 2: training trade-offs and analysis of their mechanisms",
+    "venue": "arXiv.org",
+    "year": 2012,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1211.1552, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2068427959",
+        "name": "Harold Christopher Burger"
+      },
+      {
+        "authorId": "1814533",
+        "name": "Christian J. Schuler"
+      },
+      {
+        "authorId": "1734990",
+        "name": "S. Harmeling"
+      }
+    ],
+    "abstract": "Image denoising can be described as the problem of mapping from a noisy image to a noise-free image. In Burger et al. (2012), we show that multi-layer perceptrons can achieve outstanding image denoising performance for various types of noise (additive white Gaussian noise, mixed Poisson-Gaussian noise, JPEG artifacts, salt-and-pepper noise and noise resembling stripes). In this work we discuss in detail which trade-os have to be considered during the training procedure. We will show how to achieve good results and which pitfalls to avoid. By analysing the activation patterns of the hidden units we are able to make observations regarding the functioning principle of multi-layer perceptrons trained for image denoising.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "0060745e006c5f14ec326904119dca19c6545e51",
+    "externalIds": {
+      "ArXiv": "1207.0580",
+      "MAG": "1904365287",
+      "DBLP": "journals/corr/abs-1207-0580",
+      "CorpusId": 14832074
+    },
+    "title": "Improving neural networks by preventing co-adaptation of feature detectors",
+    "venue": "arXiv.org",
+    "year": 2012,
+    "citationCount": 7979,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1207.0580, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "2897313",
+        "name": "Nitish Srivastava"
+      },
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      }
+    ],
+    "abstract": "When a large feedforward neural network is trained on a small training set, it typically performs poorly on held-out test data. This \"overfitting\" is greatly reduced by randomly omitting half of the feature detectors on each training case. This prevents complex co-adaptations in which a feature detector is only helpful in the context of several other specific feature detectors. Instead, each neuron learns to detect a feature that is generally helpful for producing the correct answer given the combinatorially large variety of internal contexts in which it must operate. Random \"dropout\" gives big improvements on many benchmark tasks and sets new records for speech and object recognition.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1d70937202d843664c5591fde4fb0d48627d1cf6",
+    "externalIds": {
+      "MAG": "2037642501",
+      "DBLP": "conf/cvpr/BurgerSH12",
+      "DOI": "10.1109/CVPR.2012.6247952",
+      "CorpusId": 7572570
+    },
+    "title": "Image denoising: Can plain neural networks compete with BM3D?",
+    "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2012,
+    "citationCount": 1336,
+    "openAccessPdf": {
+      "url": "http://www.is.tuebingen.mpg.de/fileadmin/user_upload/files/publications/2012/CVPR-2012-Burger.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2012.6247952?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2012.6247952, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2068427959",
+        "name": "Harold Christopher Burger"
+      },
+      {
+        "authorId": "1814533",
+        "name": "Christian J. Schuler"
+      },
+      {
+        "authorId": "1734990",
+        "name": "S. Harmeling"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c81c20109c809cfc47565a9477c04ee005d424bf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1210-5644",
+      "MAG": "2952793010",
+      "ArXiv": "1210.5644",
+      "CorpusId": 5574079
+    },
+    "title": "Efficient Inference in Fully Connected CRFs with Gaussian Edge Potentials",
+    "venue": "Neural Information Processing Systems",
+    "year": 2011,
+    "citationCount": 3673,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1210.5644, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2562966",
+        "name": "Philipp Krähenbühl"
+      },
+      {
+        "authorId": "145231047",
+        "name": "V. Koltun"
+      }
+    ],
+    "abstract": "Most state-of-the-art techniques for multi-class image segmentation and labeling use conditional random fields defined over pixels or image regions. While region-level models often feature dense pairwise connectivity, pixel-level models are considerably larger and have only permitted sparse graph structures. In this paper, we consider fully connected CRF models defined on the complete set of pixels in an image. The resulting graphs have billions of edges, making traditional inference algorithms impractical. Our main contribution is a highly efficient approximate inference algorithm for fully connected CRF models in which the pairwise edge potentials are defined by a linear combination of Gaussian kernels. Our experiments demonstrate that dense connectivity at the pixel level substantially improves segmentation and labeling accuracy.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a538b05ebb01a40323997629e171c91aa28b8e2f",
+    "externalIds": {
+      "MAG": "1665214252",
+      "DBLP": "conf/icml/NairH10",
+      "CorpusId": 15539264
+    },
+    "title": "Rectified Linear Units Improve Restricted Boltzmann Machines",
+    "venue": "International Conference on Machine Learning",
+    "year": 2010,
+    "citationCount": 18608,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2073603971",
+        "name": "Vinod Nair"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "89f62dd328cb3e0e7b1a7e03e5b39084b4a91d18",
+    "externalIds": {
+      "DBLP": "conf/iccv/GlasnerBI09",
+      "MAG": "2534320940",
+      "DOI": "10.1109/ICCV.2009.5459271",
+      "CorpusId": 6024639
+    },
+    "title": "Super-resolution from a single image",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2009,
+    "citationCount": 2014,
+    "openAccessPdf": {
+      "url": "http://www.wisdom.weizmann.ac.il/~vision/single_image_SR/files/single_image_SR.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2009.5459271?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2009.5459271, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1752652",
+        "name": "Daniel Glasner"
+      },
+      {
+        "authorId": "1944189",
+        "name": "Shai Bagon"
+      },
+      {
+        "authorId": "144611617",
+        "name": "M. Irani"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "744293fb92aa3dde3a5001885cf61eb7165eb95b",
+    "externalIds": {
+      "DBLP": "journals/tog/BarnesSFG09",
+      "MAG": "1993120651",
+      "DOI": "10.1145/1576246.1531330",
+      "CorpusId": 26169625
+    },
+    "title": "PatchMatch: a randomized correspondence algorithm for structural image editing",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2009,
+    "citationCount": 3284,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1576246.1531330?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1576246.1531330, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2496412",
+        "name": "Connelly Barnes"
+      },
+      {
+        "authorId": "2177801",
+        "name": "Eli Shechtman"
+      },
+      {
+        "authorId": "37737599",
+        "name": "Adam Finkelstein"
+      },
+      {
+        "authorId": "1976171",
+        "name": "Dan B. Goldman"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "51d267b782e7caf2b6bc7240b1a5f48044ffe115",
+    "externalIds": {
+      "MAG": "2056370875",
+      "DBLP": "journals/tip/DabovFKE07",
+      "DOI": "10.1109/TIP.2007.901238",
+      "CorpusId": 1475121,
+      "PubMed": "17688213"
+    },
+    "title": "Image Denoising by Sparse 3-D Transform-Domain Collaborative Filtering",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2007,
+    "citationCount": 8882,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TIP.2007.901238?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TIP.2007.901238, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2479485",
+        "name": "Kostadin Dabov"
+      },
+      {
+        "authorId": "49390793",
+        "name": "A. Foi"
+      },
+      {
+        "authorId": "1718100",
+        "name": "V. Katkovnik"
+      },
+      {
+        "authorId": "1683084",
+        "name": "K. Egiazarian"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9c842b2926fd60b9e6ff80fee28c65e7c1ae5f1d",
+    "externalIds": {
+      "MAG": "2097073572",
+      "DBLP": "conf/cvpr/BuadesCM05",
+      "DOI": "10.1109/CVPR.2005.38",
+      "CorpusId": 11206708
+    },
+    "title": "A non-local algorithm for image denoising",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2005,
+    "citationCount": 7677,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2005.38?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2005.38, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8070492",
+        "name": "A. Buades"
+      },
+      {
+        "authorId": "38689796",
+        "name": "B. Coll"
+      },
+      {
+        "authorId": "27053481",
+        "name": "J. Morel"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "f4ba954b0412773d047dc41231c733de0c1f4926",
+    "externalIds": {
+      "DBLP": "conf/icml/LaffertyMP01",
+      "MAG": "2147880316",
+      "CorpusId": 219683473
+    },
+    "title": "Conditional Random Fields: Probabilistic Models for Segmenting and Labeling Sequence Data",
+    "venue": "International Conference on Machine Learning",
+    "year": 2001,
+    "citationCount": 15507,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1739581",
+        "name": "J. Lafferty"
+      },
+      {
+        "authorId": "143753639",
+        "name": "A. McCallum"
+      },
+      {
+        "authorId": "113414328",
+        "name": "Fernando Pereira"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "bba3264d6794538381687ad6e151a7f42f3872a9",
+    "externalIds": {
+      "DBLP": "conf/iccv/EfrosL99",
+      "MAG": "2116013899",
+      "DOI": "10.1109/ICCV.1999.790383",
+      "CorpusId": 221583955
+    },
+    "title": "Texture synthesis by non-parametric sampling",
+    "venue": "Proceedings of the Seventh IEEE International Conference on Computer Vision",
+    "year": 1999,
+    "citationCount": 2926,
+    "openAccessPdf": {
+      "url": "http://http.cs.berkeley.edu/projects/vision/papers/efros-iccv99.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.1999.790383?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.1999.790383, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1763086",
+        "name": "Alexei A. Efros"
+      },
+      {
+        "authorId": "145266088",
+        "name": "Thomas K. Leung"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bfeaf424a2ea6ca4702d545c6e959e2caeb68e9b",
+    "externalIds": {
+      "MAG": "2099244020",
+      "DBLP": "conf/iccv/TomasiM98",
+      "DOI": "10.1109/ICCV.1998.710815",
+      "CorpusId": 14308539
+    },
+    "title": "Bilateral filtering for gray and color images",
+    "venue": "Sixth International Conference on Computer Vision (IEEE Cat. No.98CH36271)",
+    "year": 1998,
+    "citationCount": 9560,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.1998.710815?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.1998.710815, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145086151",
+        "name": "Carlo Tomasi"
+      },
+      {
+        "authorId": "1737048",
+        "name": "R. Manduchi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2e9d221c206e9503ceb452302d68d10e293f2a10",
+    "externalIds": {
+      "DBLP": "journals/neco/HochreiterS97",
+      "MAG": "2064675550",
+      "DOI": "10.1162/neco.1997.9.8.1735",
+      "CorpusId": 1915014,
+      "PubMed": "9377276"
+    },
+    "title": "Long Short-Term Memory",
+    "venue": "Neural Computation",
+    "year": 1997,
+    "citationCount": 103621,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco.1997.9.8.1735?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco.1997.9.8.1735, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "145341374",
+        "name": "J. Schmidhuber"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a8e8f3c8d4418c8d62e306538c9c1292635e9d27",
+    "externalIds": {
+      "MAG": "2147800946",
+      "DBLP": "journals/neco/LeCunBDHHHJ89",
+      "DOI": "10.1162/neco.1989.1.4.541",
+      "CorpusId": 41312633
+    },
+    "title": "Backpropagation Applied to Handwritten Zip Code Recognition",
+    "venue": "Neural Computation",
+    "year": 1989,
+    "citationCount": 12009,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco.1989.1.4.541?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco.1989.1.4.541, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1688882",
+        "name": "Yann LeCun"
+      },
+      {
+        "authorId": "2219581",
+        "name": "B. Boser"
+      },
+      {
+        "authorId": "1747317",
+        "name": "J. Denker"
+      },
+      {
+        "authorId": "37274089",
+        "name": "D. Henderson"
+      },
+      {
+        "authorId": "2799635",
+        "name": "R. Howard"
+      },
+      {
+        "authorId": "34859193",
+        "name": "W. Hubbard"
+      },
+      {
+        "authorId": "2041866",
+        "name": "L. Jackel"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "052b1d8ce63b07fec3de9dbb583772d860b7c769",
+    "externalIds": {
+      "MAG": "1498436455",
+      "DOI": "10.1038/323533a0",
+      "CorpusId": 205001834
+    },
+    "title": "Learning representations by back-propagating errors",
+    "venue": "Nature",
+    "year": 1986,
+    "citationCount": 30881,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/323533a0?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/323533a0, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2681887",
+        "name": "D. Rumelhart"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "2116648700",
+        "name": "Ronald J. Williams"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9f2231338d7d196a47df962b5bca2e0bf658f9be",
+    "externalIds": {
+      "MAG": "2750612866",
+      "CorpusId": 64687996
+    },
+    "title": "Multi-agent Predictive Modeling with Attentional CommNets",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2776254",
+        "name": "Yedid Hoshen"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3efd851140aa28e95221b55fcc5659eea97b172d",
+    "externalIds": {
+      "DBLP": "journals/tnn/ScarselliGTHM09",
+      "MAG": "2116341502",
+      "DOI": "10.1109/TNN.2008.2005605",
+      "CorpusId": 206756462,
+      "PubMed": "19068426"
+    },
+    "title": "The Graph Neural Network Model",
+    "venue": "IEEE Transactions on Neural Networks",
+    "year": 2009,
+    "citationCount": 9173,
+    "openAccessPdf": {
+      "url": "https://ro.uow.edu.au/articles/journal_contribution/The_graph_neural_network_model/27757629/1/files/50520873.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TNN.2008.2005605?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TNN.2008.2005605, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47260481",
+        "name": "F. Scarselli"
+      },
+      {
+        "authorId": "145467467",
+        "name": "M. Gori"
+      },
+      {
+        "authorId": "1733691",
+        "name": "A. Tsoi"
+      },
+      {
+        "authorId": "1784450",
+        "name": "M. Hagenbuchner"
+      },
+      {
+        "authorId": "3073217",
+        "name": "G. Monfardini"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9b2541b8d8ca872149b4dabd2ccdc0cacc46ebf5",
+    "externalIds": {
+      "MAG": "197865394",
+      "DOI": "10.1007/978-3-642-46466-9_18",
+      "CorpusId": 60159108
+    },
+    "title": "Neocognitron: A Self-Organizing Neural Network Model for a Mechanism of Visual Pattern Recognition",
+    "venue": "",
+    "year": 1982,
+    "citationCount": 1044,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-46466-9_18?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-46466-9_18, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3160228",
+        "name": "K. Fukushima"
+      },
+      {
+        "authorId": "3126340",
+        "name": "S. Miyake"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "070874b011f8eb2b18c8aa521ad0a7a932b4d9ad",
+    "externalIds": {
+      "CorpusId": 753512
+    },
+    "title": "Author manuscript, published in \"International Conference on Computer Vision (2013)\" Action Recognition with Improved Trajectories",
+    "venue": "",
+    "year": null,
+    "citationCount": 2784,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "52dfa20f6fdfcda8c11034e3d819f4bd47e6207d",
+    "externalIds": {
+      "CorpusId": 1923924
+    },
+    "title": "Ieee Transactions on Pattern Analysis and Machine Intelligence 1 3d Convolutional Neural Networks for Human Action Recognition",
+    "venue": "",
+    "year": null,
+    "citationCount": 3351,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1743600",
+        "name": "Shuiwang Ji"
+      },
+      {
+        "authorId": "143836295",
+        "name": "W. Xu"
+      },
+      {
+        "authorId": "41216159",
+        "name": "Ming Yang"
+      },
+      {
+        "authorId": "144782042",
+        "name": "Kai Yu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  }
+]

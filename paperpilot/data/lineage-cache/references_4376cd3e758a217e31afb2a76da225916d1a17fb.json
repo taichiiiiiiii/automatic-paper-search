@@ -1,0 +1,1794 @@
+[
+  {
+    "paperId": "96b7b18af643fffceeac93b739d3418bd3e42645",
+    "externalIds": {
+      "ArXiv": "2509.16117",
+      "DBLP": "journals/corr/abs-2509-16117",
+      "DOI": "10.48550/arXiv.2509.16117",
+      "CorpusId": 281411162
+    },
+    "title": "DiffusionNFT: Online Diffusion Reinforcement with Forward Process",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 67,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.16117, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1864036526",
+        "name": "Kaiwen Zheng"
+      },
+      {
+        "authorId": "2257328842",
+        "name": "Huayu Chen"
+      },
+      {
+        "authorId": "2364353756",
+        "name": "Haotian Ye"
+      },
+      {
+        "authorId": "2338962955",
+        "name": "Haoxiang Wang"
+      },
+      {
+        "authorId": "2288856236",
+        "name": "Qinsheng Zhang"
+      },
+      {
+        "authorId": "2342407392",
+        "name": "Kai Jiang"
+      },
+      {
+        "authorId": "2245088111",
+        "name": "Hang Su"
+      },
+      {
+        "authorId": "2302797121",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2257164913",
+        "name": "Jun Zhu"
+      },
+      {
+        "authorId": "2269736504",
+        "name": "Mingying Liu"
+      }
+    ],
+    "abstract": "Online reinforcement learning (RL) has been central to post-training language models, but its extension to diffusion models remains challenging due to intractable likelihoods. Recent works discretize the reverse sampling process to enable GRPO-style training, yet they inherit fundamental drawbacks, including solver restrictions, forward-reverse inconsistency, and complicated integration with classifier-free guidance (CFG). We introduce Diffusion Negative-aware FineTuning (DiffusionNFT), a new online RL paradigm that optimizes diffusion models directly on the forward process via flow matching. DiffusionNFT contrasts positive and negative generations to define an implicit policy improvement direction, naturally incorporating reinforcement signals into the supervised learning objective. This formulation enables training with arbitrary black-box solvers, eliminates the need for likelihood estimation, and requires only clean images rather than sampling trajectories for policy optimization. DiffusionNFT is up to $25\\times$ more efficient than FlowGRPO in head-to-head comparisons, while being CFG-free. For instance, DiffusionNFT improves the GenEval score from 0.24 to 0.98 within 1k steps, while FlowGRPO achieves 0.95 with over 5k steps and additional CFG employment. By leveraging multiple reward models, DiffusionNFT significantly boosts the performance of SD3.5-Medium in every benchmark tested.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "70a0f72b06327998b9274a5d7da6f89159b75d16",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-04545",
+      "ArXiv": "2509.04545",
+      "DOI": "10.48550/arXiv.2509.04545",
+      "CorpusId": 281195390
+    },
+    "title": "PromptEnhancer: A Simple Approach to Enhance Text-to-Image Models via Chain-of-Thought Prompt Rewriting",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 22,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.04545, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355930541",
+        "name": "Linqing Wang"
+      },
+      {
+        "authorId": "73224627",
+        "name": "Ximing Xing"
+      },
+      {
+        "authorId": "2352776123",
+        "name": "Yiji Cheng"
+      },
+      {
+        "authorId": "2380250554",
+        "name": "Zhiyuan Zhao"
+      },
+      {
+        "authorId": "2345323647",
+        "name": "Donghao Li"
+      },
+      {
+        "authorId": "2141507950",
+        "name": "Tiankai Hang"
+      },
+      {
+        "authorId": "2356376838",
+        "name": "Jiale Tao"
+      },
+      {
+        "authorId": "2362517658",
+        "name": "Qixun Wang"
+      },
+      {
+        "authorId": "2356100198",
+        "name": "Ruihuang Li"
+      },
+      {
+        "authorId": "2362426722",
+        "name": "Comi Chen"
+      },
+      {
+        "authorId": "2379643032",
+        "name": "Xin Li"
+      },
+      {
+        "authorId": "2145209101",
+        "name": "Ming Wu"
+      },
+      {
+        "authorId": "2291203760",
+        "name": "Xinchi Deng"
+      },
+      {
+        "authorId": "2351410258",
+        "name": "Shuyang Gu"
+      },
+      {
+        "authorId": "2276270775",
+        "name": "Chunyu Wang"
+      },
+      {
+        "authorId": "2365376135",
+        "name": "Qinglin Lu"
+      }
+    ],
+    "abstract": "Recent advancements in text-to-image (T2I) diffusion models have demonstrated remarkable capabilities in generating high-fidelity images. However, these models often struggle to faithfully render complex user prompts, particularly in aspects like attribute binding, negation, and compositional relationships. This leads to a significant mismatch between user intent and the generated output. To address this challenge, we introduce PromptEnhancer, a novel and universal prompt rewriting framework that enhances any pretrained T2I model without requiring modifications to its weights. Unlike prior methods that rely on model-specific fine-tuning or implicit reward signals like image-reward scores, our framework decouples the rewriter from the generator. We achieve this by training a Chain-of-Thought (CoT) rewriter through reinforcement learning, guided by a dedicated reward model we term the AlignEvaluator. The AlignEvaluator is trained to provide explicit and fine-grained feedback based on a systematic taxonomy of 24 key points, which are derived from a comprehensive analysis of common T2I failure modes. By optimizing the CoT rewriter to maximize the reward from our AlignEvaluator, our framework learns to generate prompts that are more precisely interpreted by T2I models. Extensive experiments on the HunyuanImage 2.1 model demonstrate that PromptEnhancer significantly improves image-text alignment across a wide range of semantic and compositional challenges. Furthermore, we introduce a new, high-quality human preference benchmark to facilitate future research in this direction.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "757a286592ffcc50735eb525edf32b9fbdd1309b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-17540",
+      "ArXiv": "2505.17540",
+      "DOI": "10.48550/arXiv.2505.17540",
+      "CorpusId": 278886871
+    },
+    "title": "RePrompt: Reasoning-Augmented Reprompting for Text-to-Image Generation via Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.17540, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275801",
+        "name": "Ming-Kuan Wu"
+      },
+      {
+        "authorId": "2163383329",
+        "name": "Lu Wang"
+      },
+      {
+        "authorId": "2261423358",
+        "name": "Pu Zhao"
+      },
+      {
+        "authorId": "2261394438",
+        "name": "Fangkai Yang"
+      },
+      {
+        "authorId": "2144231046",
+        "name": "Jianjin Zhang"
+      },
+      {
+        "authorId": "2284937854",
+        "name": "Jianfeng Liu"
+      },
+      {
+        "authorId": "2279698244",
+        "name": "Yuefeng Zhan"
+      },
+      {
+        "authorId": "2114924471",
+        "name": "Weihao Han"
+      },
+      {
+        "authorId": "2279736148",
+        "name": "Hao Sun"
+      },
+      {
+        "authorId": "2258718943",
+        "name": "Jiayi Ji"
+      },
+      {
+        "authorId": "2227806539",
+        "name": "Xiaoshuai Sun"
+      },
+      {
+        "authorId": "2303522901",
+        "name": "Qingwei Lin"
+      },
+      {
+        "authorId": "2066621592",
+        "name": "Weiwei Deng"
+      },
+      {
+        "authorId": "2307618254",
+        "name": "Dongmei Zhang"
+      },
+      {
+        "authorId": "2329333486",
+        "name": "Feng Sun"
+      },
+      {
+        "authorId": "2363449403",
+        "name": "Qi Zhang"
+      },
+      {
+        "authorId": "2232781359",
+        "name": "Rongrong Ji"
+      }
+    ],
+    "abstract": "Despite recent progress in text-to-image (T2I) generation, existing models often struggle to faithfully capture user intentions from short and under-specified prompts. While prior work has attempted to enhance prompts using large language models (LLMs), these methods frequently generate stylistic or unrealistic content due to insufficient grounding in visual semantics and real-world composition. Inspired by recent advances in reasoning for language model, we propose RePrompt, a novel reprompting framework that introduces explicit reasoning into the prompt enhancement process via reinforcement learning. Instead of relying on handcrafted rules or stylistic rewrites, our method trains a language model to generate structured, self-reflective prompts by optimizing for image-level outcomes. The tailored reward models assesse the generated images in terms of human preference, semantic alignment, and visual composition, providing indirect supervision to refine prompt generation. Our approach enables end-to-end training without human-annotated data. Experiments on GenEval and T2I-Compbench show that RePrompt significantly boosts spatial layout fidelity and compositional generalization across diverse T2I backbones, establishing new state-of-the-art results.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16c38a5b7d7d8487c9e03e7231330445eb64e5b1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-05470",
+      "ArXiv": "2505.05470",
+      "DOI": "10.48550/arXiv.2505.05470",
+      "CorpusId": 278394068
+    },
+    "title": "Flow-GRPO: Training Flow Matching Models via Online RL",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 327,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.05470, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285060791",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2269171464",
+        "name": "Gongye Liu"
+      },
+      {
+        "authorId": "2342646262",
+        "name": "Jiajun Liang"
+      },
+      {
+        "authorId": "2357852532",
+        "name": "Yangguang Li"
+      },
+      {
+        "authorId": "2359774530",
+        "name": "Jiaheng Liu"
+      },
+      {
+        "authorId": "2305033532",
+        "name": "Xintao Wang"
+      },
+      {
+        "authorId": "2276606835",
+        "name": "Pengfei Wan"
+      },
+      {
+        "authorId": "2332361648",
+        "name": "Di Zhang"
+      },
+      {
+        "authorId": "2336864797",
+        "name": "Wanli Ouyang"
+      }
+    ],
+    "abstract": "We propose Flow-GRPO, the first method to integrate online policy gradient reinforcement learning (RL) into flow matching models. Our approach uses two key strategies: (1) an ODE-to-SDE conversion that transforms a deterministic Ordinary Differential Equation (ODE) into an equivalent Stochastic Differential Equation (SDE) that matches the original model's marginal distribution at all timesteps, enabling statistical sampling for RL exploration; and (2) a Denoising Reduction strategy that reduces training denoising steps while retaining the original number of inference steps, significantly improving sampling efficiency without sacrificing performance. Empirically, Flow-GRPO is effective across multiple text-to-image tasks. For compositional generation, RL-tuned SD3.5-M generates nearly perfect object counts, spatial relations, and fine-grained attributes, increasing GenEval accuracy from $63\\%$ to $95\\%$. In visual text rendering, accuracy improves from $59\\%$ to $92\\%$, greatly enhancing text generation. Flow-GRPO also achieves substantial gains in human preference alignment. Notably, very little reward hacking occurred, meaning rewards did not increase at the cost of appreciable image quality or diversity degradation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "bc86760ec99d66033191822c4dfc3da95e0ccea4",
+    "externalIds": {
+      "ArXiv": "2505.00703",
+      "DBLP": "journals/corr/abs-2505-00703",
+      "DOI": "10.48550/arXiv.2505.00703",
+      "CorpusId": 278237703
+    },
+    "title": "T2I-R1: Reinforcing Image Generation with Collaborative Semantic-level and Token-level CoT",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 129,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.00703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2293242031",
+        "name": "Dongzhi Jiang"
+      },
+      {
+        "authorId": "145490494",
+        "name": "Ziyu Guo"
+      },
+      {
+        "authorId": "2274929565",
+        "name": "Renrui Zhang"
+      },
+      {
+        "authorId": "1571400317",
+        "name": "Zhuofan Zong"
+      },
+      {
+        "authorId": "2408832814",
+        "name": "Hao Li"
+      },
+      {
+        "authorId": "2300371391",
+        "name": "Le Zhuo"
+      },
+      {
+        "authorId": "2210554979",
+        "name": "Shilin Yan"
+      },
+      {
+        "authorId": "2274486861",
+        "name": "Pheng-Ann Heng"
+      },
+      {
+        "authorId": "2292396209",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Recent advancements in large language models have demonstrated how chain-of-thought (CoT) and reinforcement learning (RL) can improve performance. However, applying such reasoning strategies to the visual generation domain remains largely unexplored. In this paper, we present T2I-R1, a novel reasoning-enhanced text-to-image generation model, powered by RL with a bi-level CoT reasoning process. Specifically, we identify two levels of CoT that can be utilized to enhance different stages of generation: (1) the semantic-level CoT for high-level planning of the prompt and (2) the token-level CoT for low-level pixel processing during patch-by-patch generation. To better coordinate these two levels of CoT, we introduce BiCoT-GRPO with an ensemble of generation rewards, which seamlessly optimizes both generation CoTs within the same training step. By applying our reasoning strategies to the baseline model, Janus-Pro, we achieve superior performance with 13% improvement on T2I-CompBench and 19% improvement on the WISE benchmark, even surpassing the state-of-the-art model FLUX.1. Code is available at: https://github.com/CaraJ7/T2I-R1",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "553b88934271d572e4669298109c64c7401faefd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2504-11455",
+      "ArXiv": "2504.11455",
+      "DOI": "10.48550/arXiv.2504.11455",
+      "CorpusId": 277787506
+    },
+    "title": "SimpleAR: Pushing the Frontier of Autoregressive Visual Generation through Pretraining, SFT, and RL",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 72,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.11455, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2124919221",
+        "name": "Junke Wang"
+      },
+      {
+        "authorId": "2349951444",
+        "name": "Zhi Tian"
+      },
+      {
+        "authorId": "2349765186",
+        "name": "Xun Wang"
+      },
+      {
+        "authorId": "2180540554",
+        "name": "Xinyu Zhang"
+      },
+      {
+        "authorId": "2334824811",
+        "name": "Weilin Huang"
+      },
+      {
+        "authorId": "3099139",
+        "name": "Zuxuan Wu"
+      },
+      {
+        "authorId": "1717861",
+        "name": "Yu-Gang Jiang"
+      }
+    ],
+    "abstract": "This work presents SimpleAR, a vanilla autoregressive visual generation framework without complex architecure modifications. Through careful exploration of training and inference optimization, we demonstrate that: 1) with only 0.5B parameters, our model can generate 1024x1024 resolution images with high fidelity, and achieve competitive results on challenging text-to-image benchmarks, e.g., 0.59 on GenEval and 79.66 on DPG; 2) both supervised fine-tuning (SFT) and Group Relative Policy Optimization (GRPO) training could lead to significant improvements on generation aesthectics and prompt alignment; and 3) when optimized with inference acceleraton techniques like vLLM, the time for SimpleAR to generate an 1024x1024 image could be reduced to around 14 seconds. By sharing these findings and open-sourcing the code, we hope to reveal the potential of autoregressive visual generation and encourage more participation in this research field. Code is available at https://github.com/wdrink/SimpleAR.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1fa298e3f745099d39ca5bd088fcb62f87e8cc2f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2412-03603",
+      "ArXiv": "2412.03603",
+      "DOI": "10.48550/arXiv.2412.03603",
+      "CorpusId": 274514554
+    },
+    "title": "HunyuanVideo: A Systematic Framework For Large Video Generative Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1166,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.03603, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2333896208",
+        "name": "Weijie Kong"
+      },
+      {
+        "authorId": "2304750503",
+        "name": "Qi Tian"
+      },
+      {
+        "authorId": "2292883051",
+        "name": "Zijian Zhang"
+      },
+      {
+        "authorId": "2333907917",
+        "name": "Rox Min"
+      },
+      {
+        "authorId": "2334031240",
+        "name": "Zuozhuo Dai"
+      },
+      {
+        "authorId": "2314553207",
+        "name": "Jin Zhou"
+      },
+      {
+        "authorId": "2262109774",
+        "name": "Jia-Liang Xiong"
+      },
+      {
+        "authorId": "2334331255",
+        "name": "Xin Li"
+      },
+      {
+        "authorId": "2333959995",
+        "name": "Bo Wu"
+      },
+      {
+        "authorId": "2301232669",
+        "name": "Jianwei Zhang"
+      },
+      {
+        "authorId": "2333906659",
+        "name": "Kathrina Wu"
+      },
+      {
+        "authorId": "2301456725",
+        "name": "Qin Lin"
+      },
+      {
+        "authorId": "2304610230",
+        "name": "Junkun Yuan"
+      },
+      {
+        "authorId": "2301272172",
+        "name": "Yanxin Long"
+      },
+      {
+        "authorId": "2334442817",
+        "name": "Aladdin Wang"
+      },
+      {
+        "authorId": "2301515438",
+        "name": "Andong Wang"
+      },
+      {
+        "authorId": "2333990892",
+        "name": "Changlin Li"
+      },
+      {
+        "authorId": "2333971771",
+        "name": "Duojun Huang"
+      },
+      {
+        "authorId": "2329438495",
+        "name": "Fan Yang"
+      },
+      {
+        "authorId": "2262871912",
+        "name": "Hao Tan"
+      },
+      {
+        "authorId": "2319390362",
+        "name": "Hongmei Wang"
+      },
+      {
+        "authorId": "2329134064",
+        "name": "Jacob Song"
+      },
+      {
+        "authorId": "2335519457",
+        "name": "Jiawang Bai"
+      },
+      {
+        "authorId": "2259644290",
+        "name": "Jianbing Wu"
+      },
+      {
+        "authorId": "2302814808",
+        "name": "Jinbao Xue"
+      },
+      {
+        "authorId": "2333879277",
+        "name": "Joey Wang"
+      },
+      {
+        "authorId": "2324210490",
+        "name": "Kai Wang"
+      },
+      {
+        "authorId": "2268185479",
+        "name": "Mengyang Liu"
+      },
+      {
+        "authorId": "2349807061",
+        "name": "Pengyuan Li"
+      },
+      {
+        "authorId": "2320225721",
+        "name": "Shuai Li"
+      },
+      {
+        "authorId": "2292424837",
+        "name": "Weiyan Wang"
+      },
+      {
+        "authorId": "2334328325",
+        "name": "Wenqing Yu"
+      },
+      {
+        "authorId": "2269123220",
+        "name": "Xi Deng"
+      },
+      {
+        "authorId": "2334456131",
+        "name": "Yang Li"
+      },
+      {
+        "authorId": "2333179401",
+        "name": "Yi Chen"
+      },
+      {
+        "authorId": "2334226695",
+        "name": "Yutao Cui"
+      },
+      {
+        "authorId": "2311693690",
+        "name": "Yuanbo Peng"
+      },
+      {
+        "authorId": "2315128969",
+        "name": "Zhen Yu"
+      },
+      {
+        "authorId": "2334227440",
+        "name": "Zhiyu He"
+      },
+      {
+        "authorId": "2145166331",
+        "name": "Zhiyong Xu"
+      },
+      {
+        "authorId": "2244243543",
+        "name": "Zixiang Zhou"
+      },
+      {
+        "authorId": "2224549852",
+        "name": "Zunnan Xu"
+      },
+      {
+        "authorId": "2267016579",
+        "name": "Yang-Dan Tao"
+      },
+      {
+        "authorId": "2333353148",
+        "name": "Qinglin Lu"
+      },
+      {
+        "authorId": "2302788106",
+        "name": "Songtao Liu"
+      },
+      {
+        "authorId": "2333966740",
+        "name": "Daquan Zhou"
+      },
+      {
+        "authorId": "2253816773",
+        "name": "Hongfa Wang"
+      },
+      {
+        "authorId": "2284866832",
+        "name": "Yong Yang"
+      },
+      {
+        "authorId": "2295556567",
+        "name": "Di Wang"
+      },
+      {
+        "authorId": "2309874739",
+        "name": "Yuhong Liu"
+      },
+      {
+        "authorId": "2308066874",
+        "name": "Jie Jiang"
+      },
+      {
+        "authorId": "2333978977",
+        "name": "Caesar Zhong"
+      }
+    ],
+    "abstract": "Recent advancements in video generation have significantly impacted daily life for both individuals and industries. However, the leading video generation models remain closed-source, resulting in a notable performance gap between industry capabilities and those available to the public. In this report, we introduce HunyuanVideo, an innovative open-source video foundation model that demonstrates performance in video generation comparable to, or even surpassing, that of leading closed-source models. HunyuanVideo encompasses a comprehensive framework that integrates several key elements, including data curation, advanced architectural design, progressive model scaling and training, and an efficient infrastructure tailored for large-scale model training and inference. As a result, we successfully trained a video generative model with over 13 billion parameters, making it the largest among all open-source models. We conducted extensive experiments and implemented a series of targeted designs to ensure high visual quality, motion dynamics, text-video alignment, and advanced filming techniques. According to evaluations by professionals, HunyuanVideo outperforms previous state-of-the-art models, including Runway Gen-3, Luma 1.6, and three top-performing Chinese video generative models. By releasing the code for the foundation model and its applications, we aim to bridge the gap between closed-source and open-source communities. This initiative will empower individuals within the community to experiment with their ideas, fostering a more dynamic and vibrant video generation ecosystem. The code is publicly available at https://github.com/Tencent/HunyuanVideo.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7be9a0708300e42fd3c376b4f4027dd530f240af",
+    "externalIds": {
+      "ArXiv": "2404.04095",
+      "DBLP": "journals/corr/abs-2404-04095",
+      "DOI": "10.1109/CVPR52733.2024.02514",
+      "CorpusId": 268987752
+    },
+    "title": "Dynamic Prompt Optimizing for Text-to-Image Generation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2024,
+    "citationCount": 47,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.04095",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.04095, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2148661301",
+        "name": "Wenyi Mo"
+      },
+      {
+        "authorId": "2146332319",
+        "name": "Tianyu Zhang"
+      },
+      {
+        "authorId": "2281418241",
+        "name": "Yalong Bai"
+      },
+      {
+        "authorId": "2295513824",
+        "name": "Bing Su"
+      },
+      {
+        "authorId": "2293310016",
+        "name": "Ji-Rong Wen"
+      },
+      {
+        "authorId": "2281323801",
+        "name": "Qing Yang"
+      }
+    ],
+    "abstract": "Text-to-image generative models, specifically those based on diffusion models like Imagen and Stable Diffusion, have made substantial advancements. Recently, there has been a surge of interest in the delicate refinement of text prompts. Users assign weights or alter the injection time steps of certain words in the text prompts to improve the quality of generated images. However, the success of fine-control prompts depends on the accuracy of the text prompts and the careful selection of weights and time steps, which requires significant manual intervention. To address this, we introduce the Prompt Auto-Editing (PAE) method. Besides refining the original prompts for image generation, we further employ an online reinforcement learning strategy to explore the weights and injection time steps of each word, leading to the dynamic fine-control prompts. The re-wardfunction during training encourages the model to consider aesthetic score, semantic consistency, and user prefer-ences. Experimental results demonstrate that our proposed method effectively improves the original prompts, generating visually more appealing images while maintaining semantic alignment. Code is available at this https URL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4777305738fd1aa30243f96a1687d57d8f70fa5d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-17804",
+      "ArXiv": "2403.17804",
+      "DOI": "10.48550/arXiv.2403.17804",
+      "CorpusId": 268691649
+    },
+    "title": "Improving Text-to-Image Consistency via Automatic Prompt Optimization",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2024,
+    "citationCount": 80,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.17804, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1796269096",
+        "name": "Oscar Mañas"
+      },
+      {
+        "authorId": "2274101827",
+        "name": "Pietro Astolfi"
+      },
+      {
+        "authorId": "2293590162",
+        "name": "Melissa Hall"
+      },
+      {
+        "authorId": "2256372432",
+        "name": "Candace Ross"
+      },
+      {
+        "authorId": "39219656",
+        "name": "Jack Urbanek"
+      },
+      {
+        "authorId": "2293907712",
+        "name": "Adina Williams"
+      },
+      {
+        "authorId": "2801949",
+        "name": "Aishwarya Agrawal"
+      },
+      {
+        "authorId": "1456285042",
+        "name": "Adriana Romero-Soriano"
+      },
+      {
+        "authorId": "3325894",
+        "name": "M. Drozdzal"
+      }
+    ],
+    "abstract": "Impressive advances in text-to-image (T2I) generative models have yielded a plethora of high performing models which are able to generate aesthetically appealing, photorealistic images. Despite the progress, these models still struggle to produce images that are consistent with the input prompt, oftentimes failing to capture object quantities, relations and attributes properly. Existing solutions to improve prompt-image consistency suffer from the following challenges: (1) they oftentimes require model fine-tuning, (2) they only focus on nearby prompt samples, and (3) they are affected by unfavorable trade-offs among image quality, representation diversity, and prompt-image consistency. In this paper, we address these challenges and introduce a T2I optimization-by-prompting framework, OPT2I, which leverages a large language model (LLM) to improve prompt-image consistency in T2I models. Our framework starts from a user prompt and iteratively generates revised prompts with the goal of maximizing a consistency score. Our extensive validation on two datasets, MSCOCO and PartiPrompts, shows that OPT2I can boost the initial consistency score by up to 24.9% in terms of DSG score while preserving the FID and increasing the recall between generated and real data. Our work paves the way toward building more reliable and robust T2I systems by harnessing the power of LLMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "41a66997ce0a366bba3becf7c3f37c9aebb13fbd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-03206",
+      "ArXiv": "2403.03206",
+      "DOI": "10.48550/arXiv.2403.03206",
+      "CorpusId": 268247980
+    },
+    "title": "Scaling Rectified Flow Transformers for High-Resolution Image Synthesis",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 3561,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.03206, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35175531",
+        "name": "Patrick Esser"
+      },
+      {
+        "authorId": "3411322",
+        "name": "Sumith Kulal"
+      },
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "2316859494",
+        "name": "Rahim Entezari"
+      },
+      {
+        "authorId": "2188737195",
+        "name": "Jonas Muller"
+      },
+      {
+        "authorId": "2289994508",
+        "name": "Harry Saini"
+      },
+      {
+        "authorId": "2290013499",
+        "name": "Yam Levi"
+      },
+      {
+        "authorId": "2053482699",
+        "name": "Dominik Lorenz"
+      },
+      {
+        "authorId": "40562186",
+        "name": "Axel Sauer"
+      },
+      {
+        "authorId": "2290014125",
+        "name": "Frederic Boesel"
+      },
+      {
+        "authorId": "2221125727",
+        "name": "Dustin Podell"
+      },
+      {
+        "authorId": "102541178",
+        "name": "Tim Dockhorn"
+      },
+      {
+        "authorId": "2221127565",
+        "name": "Zion English"
+      },
+      {
+        "authorId": "2221126982",
+        "name": "Kyle Lacey"
+      },
+      {
+        "authorId": "2290014122",
+        "name": "Alex Goodwin"
+      },
+      {
+        "authorId": "2290014387",
+        "name": "Yannik Marek"
+      },
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      }
+    ],
+    "abstract": "Diffusion models create data from noise by inverting the forward paths of data towards noise and have emerged as a powerful generative modeling technique for high-dimensional, perceptual data such as images and videos. Rectified flow is a recent generative model formulation that connects data and noise in a straight line. Despite its better theoretical properties and conceptual simplicity, it is not yet decisively established as standard practice. In this work, we improve existing noise sampling techniques for training rectified flow models by biasing them towards perceptually relevant scales. Through a large-scale study, we demonstrate the superior performance of this approach compared to established diffusion formulations for high-resolution text-to-image synthesis. Additionally, we present a novel transformer-based architecture for text-to-image generation that uses separate weights for the two modalities and enables a bidirectional flow of information between image and text tokens, improving text comprehension, typography, and human preference ratings. We demonstrate that this architecture follows predictable scaling trends and correlates lower validation loss to improved text-to-image synthesis as measured by various metrics and human evaluations. Our largest models outperform state-of-the-art models, and we will make our experimental data, code, and model weights publicly available.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "140cfda71bfff852c3e205b7ad61854b78c76982",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-11708",
+      "ArXiv": "2401.11708",
+      "DOI": "10.48550/arXiv.2401.11708",
+      "CorpusId": 267068823
+    },
+    "title": "Mastering Text-to-Image Diffusion: Recaptioning, Planning, and Generating with Multimodal LLMs",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 226,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.11708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2280286886",
+        "name": "Ling Yang"
+      },
+      {
+        "authorId": "2280285892",
+        "name": "Zhaochen Yu"
+      },
+      {
+        "authorId": "83262128",
+        "name": "Chenlin Meng"
+      },
+      {
+        "authorId": "2257420991",
+        "name": "Minkai Xu"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2277742543",
+        "name": "Bin Cui"
+      }
+    ],
+    "abstract": "Diffusion models have exhibit exceptional performance in text-to-image generation and editing. However, existing methods often face challenges when handling complex text prompts that involve multiple objects with multiple attributes and relationships. In this paper, we propose a brand new training-free text-to-image generation/editing framework, namely Recaption, Plan and Generate (RPG), harnessing the powerful chain-of-thought reasoning ability of multimodal LLMs to enhance the compositionality of text-to-image diffusion models. Our approach employs the MLLM as a global planner to decompose the process of generating complex images into multiple simpler generation tasks within subregions. We propose complementary regional diffusion to enable region-wise compositional generation. Furthermore, we integrate text-guided image generation and editing within the proposed RPG in a closed-loop fashion, thereby enhancing generalization ability. Extensive experiments demonstrate our RPG outperforms state-of-the-art text-to-image diffusion models, including DALL-E 3 and SDXL, particularly in multi-category object composition and text-image semantic alignment. Notably, our RPG framework exhibits wide compatibility with various MLLM architectures (e.g., MiniGPT-4) and diffusion backbones (e.g., ControlNet). Our code is available at: https://github.com/YangLing0818/RPG-DiffusionMaster",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "42c4315b5d2e33d7d9a0afdf84e6a47ccd7a700e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2311-16090",
+      "ArXiv": "2311.16090",
+      "DOI": "10.1109/CVPR52733.2024.00605",
+      "CorpusId": 265457140
+    },
+    "title": "Self-Correcting LLM-Controlled Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 116,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2311.16090",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.16090, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2268428342",
+        "name": "Tsung-Han Wu"
+      },
+      {
+        "authorId": "2249587117",
+        "name": "Long Lian"
+      },
+      {
+        "authorId": "2260456251",
+        "name": "Joseph Gonzalez"
+      },
+      {
+        "authorId": "2381417161",
+        "name": "Boyi Li"
+      },
+      {
+        "authorId": "2267488244",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "Text-to-image generation has witnessed significant progress with the advent of diffusion models. Despite the ability to generate photorealistic images, current text-to-image diffusion models still often struggle to accurately interpret and follow complex input text prompts. In contrast to existing models that aim to generate images only with their best effort, we introduce Self-correcting LLM-controlled Diffusion (SLD). SLD is a framework that generates an image from the input prompt, assesses its alignment with the prompt, and performs self-corrections on the inaccuracies in the generated image. Steered by an LLM controller, SLD turns text-to-image generation into an iterative closed-loop process, ensuring correctness in the resulting image. SLD is not only training-free but can also be seamlessly integrated with diffusion models behind API access, such as DALL-E 3, to further boost the performance of state-of-the-art diffusion models. Experimental results show that our approach can rectify a majority of incorrect generations, particularly in generative numeracy, attribute binding, and spatial relationships. Furthermore, by simply adjusting the instructions to the LLM, SLD can perform image editing tasks, bridging the gap between text-to-image generation and image editing pipelines. Our code is available at: https://self-correcting-llm-diffusion.github.io.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f5275c61736781d236abe6700b822f1ea62f982e",
+    "externalIds": {
+      "ArXiv": "2311.12908",
+      "DBLP": "conf/cvpr/WallaceDRZLPEXJ24",
+      "DOI": "10.1109/CVPR52733.2024.00786",
+      "CorpusId": 265352136
+    },
+    "title": "Diffusion Model Alignment Using Direct Preference Optimization",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 661,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2311.12908",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.12908, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152823401",
+        "name": "Bram Wallace"
+      },
+      {
+        "authorId": "2267728871",
+        "name": "Meihua Dang"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "2249592181",
+        "name": "Linqi Zhou"
+      },
+      {
+        "authorId": "2261494043",
+        "name": "Aaron Lou"
+      },
+      {
+        "authorId": "3234247",
+        "name": "Senthil Purushwalkam"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2267728986",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "2708940",
+        "name": "Shafiq R. Joty"
+      },
+      {
+        "authorId": "2265756339",
+        "name": "Nikhil Naik"
+      }
+    ],
+    "abstract": "Large language models (LLMs) are fine-tuned using human comparison data with Reinforcement Learning from Human Feedback (RLHF) methods to make them better aligned with users' preferences. In contrast to LLMs, human preference learning has not been widely explored in text-to-image diffusion models; the best existing approach is to fine-tune a pretrained model using carefully curated high quality images and captions to improve visual appeal and text alignment. We propose Diffusion-DPO, a method to align diffusion models to human preferences by directly optimizing on human comparison data. Diffusion-DPO is adapted from the recently developed Direct Preference Optimization (DPO) [36], a simpler alternative to RLHF which directly optimizes a policy that best satisfies human preferences under a classification objective. We re-formulate DPO to account for a diffusion model notion of likelihood, utilizing the evidence lower bound to derive a differentiable objective. Using the Pick-a-Pic dataset of 851K crowdsourced pairwise preferences, we fine-tune the base model of the state-of-the-art Stable Diffusion XL (SDXL)-1.0 model with Diffusion-DPO. Our fine-tuned base model significantly outperforms both base SDXL-1.0 and the larger SDXL-1.0 model consisting of an additional refinement model in human evaluation, improving visual appeal and prompt alignment. We also develop a variant that uses AI feedback and has comparable performance to training on human preferences, opening the door for scaling of diffusion model alignment methods.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c62831f819d0e93ffb13804158af1d0148d706ee",
+    "externalIds": {
+      "DBLP": "conf/iclr/NingLSSE24",
+      "ArXiv": "2308.15321",
+      "DOI": "10.48550/arXiv.2308.15321",
+      "CorpusId": 261276856
+    },
+    "title": "Elucidating the Exposure Bias in Diffusion Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 93,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.15321",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.15321, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126191237",
+        "name": "Mang Ning"
+      },
+      {
+        "authorId": "2235230683",
+        "name": "Mingxiao Li"
+      },
+      {
+        "authorId": "51111230",
+        "name": "Jianlin Su"
+      },
+      {
+        "authorId": "1764521",
+        "name": "A. A. Salah"
+      },
+      {
+        "authorId": "35981826",
+        "name": "Itir Onal Ertugrul"
+      }
+    ],
+    "abstract": "Diffusion models have demonstrated impressive generative capabilities, but their \\textit{exposure bias} problem, described as the input mismatch between training and sampling, lacks in-depth exploration. In this paper, we systematically investigate the exposure bias problem in diffusion models by first analytically modelling the sampling distribution, based on which we then attribute the prediction error at each sampling step as the root cause of the exposure bias issue. Furthermore, we discuss potential solutions to this issue and propose an intuitive metric for it. Along with the elucidation of exposure bias, we propose a simple, yet effective, training-free method called Epsilon Scaling to alleviate the exposure bias. We show that Epsilon Scaling explicitly moves the sampling trajectory closer to the vector field learned in the training phase by scaling down the network output, mitigating the input mismatch between training and sampling. Experiments on various diffusion frameworks (ADM, DDIM, EDM, LDM, DiT, PFGM++) verify the effectiveness of our method. Remarkably, our ADM-ES, as a state-of-the-art stochastic sampler, obtains 2.17 FID on CIFAR-10 under 100-step unconditional generation. The code is available at \\url{https://github.com/forever208/ADM-ES} and \\url{https://github.com/forever208/EDM-ES}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d7890d1906d95c4ae4c430b350455156d6d8aed9",
+    "externalIds": {
+      "DBLP": "conf/iclr/PodellELBDMPR24",
+      "ArXiv": "2307.01952",
+      "CorpusId": 259341735
+    },
+    "title": "SDXL: Improving Latent Diffusion Models for High-Resolution Image Synthesis",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 4511,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.01952, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2221125727",
+        "name": "Dustin Podell"
+      },
+      {
+        "authorId": "2221127565",
+        "name": "Zion English"
+      },
+      {
+        "authorId": "2221126982",
+        "name": "Kyle Lacey"
+      },
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "102541178",
+        "name": "Tim Dockhorn"
+      },
+      {
+        "authorId": "2188737195",
+        "name": "Jonas Muller"
+      },
+      {
+        "authorId": "2215904682",
+        "name": "Joe Penna"
+      },
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      }
+    ],
+    "abstract": "We present SDXL, a latent diffusion model for text-to-image synthesis. Compared to previous versions of Stable Diffusion, SDXL leverages a three times larger UNet backbone: The increase of model parameters is mainly due to more attention blocks and a larger cross-attention context as SDXL uses a second text encoder. We design multiple novel conditioning schemes and train SDXL on multiple aspect ratios. We also introduce a refinement model which is used to improve the visual fidelity of samples generated by SDXL using a post-hoc image-to-image technique. We demonstrate that SDXL shows drastically improved performance compared the previous versions of Stable Diffusion and achieves results competitive with those of black-box state-of-the-art image generators. In the spirit of promoting open research and fostering transparency in large model training and evaluation, we provide access to code and model weights at https://github.com/Stability-AI/generative-models",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d8008ace077d72ccd277be795c720e9381623c10",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-09341",
+      "ArXiv": "2306.09341",
+      "DOI": "10.48550/arXiv.2306.09341",
+      "CorpusId": 259171771
+    },
+    "title": "Human Preference Score v2: A Solid Benchmark for Evaluating Human Preferences of Text-to-Image Synthesis",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 708,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2306.09341",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.09341, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2124853327",
+        "name": "Xiaoshi Wu"
+      },
+      {
+        "authorId": "2214829805",
+        "name": "Yiming Hao"
+      },
+      {
+        "authorId": "11837959",
+        "name": "Keqiang Sun"
+      },
+      {
+        "authorId": "2137372287",
+        "name": "Yixiong Chen"
+      },
+      {
+        "authorId": "2075369514",
+        "name": "Feng Zhu"
+      },
+      {
+        "authorId": "145638781",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "47893312",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Recent text-to-image generative models can generate high-fidelity images from text inputs, but the quality of these generated images cannot be accurately evaluated by existing evaluation metrics. To address this issue, we introduce Human Preference Dataset v2 (HPD v2), a large-scale dataset that captures human preferences on images from a wide range of sources. HPD v2 comprises 798,090 human preference choices on 433,760 pairs of images, making it the largest dataset of its kind. The text prompts and images are deliberately collected to eliminate potential bias, which is a common issue in previous datasets. By fine-tuning CLIP on HPD v2, we obtain Human Preference Score v2 (HPS v2), a scoring model that can more accurately predict human preferences on generated images. Our experiments demonstrate that HPS v2 generalizes better than previous metrics across various image distributions and is responsive to algorithmic improvements of text-to-image generative models, making it a preferable evaluation metric for these models. We also investigate the design of the evaluation prompts for text-to-image generative models, to make the evaluation stable, fair and easy-to-use. Finally, we establish a benchmark for text-to-image generative models using HPS v2, which includes a set of recent text-to-image models from the academic, community and industry. The code and dataset is available at https://github.com/tgxs002/HPSv2 .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1b2355c3c674b26a977768a91a164384ad51bbb1",
+    "externalIds": {
+      "ArXiv": "2304.05977",
+      "DBLP": "journals/corr/abs-2304-05977",
+      "DOI": "10.48550/arXiv.2304.05977",
+      "CorpusId": 258079316
+    },
+    "title": "ImageReward: Learning and Evaluating Human Preferences for Text-to-Image Generation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 919,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.05977",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.05977, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2214082934",
+        "name": "Jiazheng Xu"
+      },
+      {
+        "authorId": "2111312892",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2118477855",
+        "name": "Yuchen Wu"
+      },
+      {
+        "authorId": "2214060402",
+        "name": "Yuxuan Tong"
+      },
+      {
+        "authorId": "2214217084",
+        "name": "Qinkai Li"
+      },
+      {
+        "authorId": "2055623340",
+        "name": "Ming Ding"
+      },
+      {
+        "authorId": "2148911956",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "2047998",
+        "name": "Yuxiao Dong"
+      }
+    ],
+    "abstract": "We present a comprehensive solution to learn and improve text-to-image models from human preference feedback. To begin with, we build ImageReward -- the first general-purpose text-to-image human preference reward model -- to effectively encode human preferences. Its training is based on our systematic annotation pipeline including rating and ranking, which collects 137k expert comparisons to date. In human evaluation, ImageReward outperforms existing scoring models and metrics, making it a promising automatic metric for evaluating text-to-image synthesis. On top of it, we propose Reward Feedback Learning (ReFL), a direct tuning algorithm to optimize diffusion models against a scorer. Both automatic and human evaluation support ReFL's advantages over compared methods. All code and datasets are provided at \\url{https://github.com/THUDM/ImageReward}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9550076d9930dd3533ab9276126f1a9265fad7b4",
+    "externalIds": {
+      "ArXiv": "2303.14420",
+      "DBLP": "conf/iccv/WuSZZL23",
+      "DOI": "10.1109/ICCV51070.2023.00200",
+      "CorpusId": 257767281
+    },
+    "title": "Human Preference Score: Better Aligning Text-to-image Models with Human Preference",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 316,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.14420, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2124853327",
+        "name": "Xiaoshi Wu"
+      },
+      {
+        "authorId": "11837959",
+        "name": "Keqiang Sun"
+      },
+      {
+        "authorId": "2075369514",
+        "name": "Feng Zhu"
+      },
+      {
+        "authorId": "145638781",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "47893312",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Recent years have witnessed a rapid growth of deep generative models, with text-to-image models gaining significant attention from the public. However, existing models often generate images that do not align well with human preferences, such as awkward combinations of limbs and facial expressions. To address this issue, we collect a dataset of human choices on generated images from the Stable Foundation Discord channel. Our experiments demonstrate that current evaluation metrics for generative models do not correlate well with human choices. Thus, we train a human preference classifier with the collected dataset and derive a Human Preference Score (HPS) based on the classifier. Using HPS, we propose a simple yet effective method to adapt Stable Diffusion to better align with human preferences. Our experiments show that HPS outperforms CLIP in predicting human choices and has good generalization capability toward images generated from other models. By tuning Stable Diffusion with the guidance of HPS, the adapted model is able to generate images that are more preferred by human users. The project page is available here: https://tgxs002.github.io/alignsd-web/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e6a662cec0ad532371099a1397fbd4196ab8d8a1",
+    "externalIds": {
+      "ArXiv": "2301.11706",
+      "DBLP": "conf/icml/NingSPCC23",
+      "DOI": "10.48550/arXiv.2301.11706",
+      "CorpusId": 256358422
+    },
+    "title": "Input Perturbation Reduces Exposure Bias in Diffusion Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 100,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.11706",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.11706, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126191237",
+        "name": "Mang Ning"
+      },
+      {
+        "authorId": "1716310",
+        "name": "E. Sangineto"
+      },
+      {
+        "authorId": "51119730",
+        "name": "A. Porrello"
+      },
+      {
+        "authorId": "2175529",
+        "name": "S. Calderara"
+      },
+      {
+        "authorId": "1741922",
+        "name": "R. Cucchiara"
+      }
+    ],
+    "abstract": "Denoising Diffusion Probabilistic Models have shown an impressive generation quality, although their long sampling chain leads to high computational costs. In this paper, we observe that a long sampling chain also leads to an error accumulation phenomenon, which is similar to the exposure bias problem in autoregressive text generation. Specifically, we note that there is a discrepancy between training and testing, since the former is conditioned on the ground truth samples, while the latter is conditioned on the previously generated results. To alleviate this problem, we propose a very simple but effective training regularization, consisting in perturbing the ground truth samples to simulate the inference time prediction errors. We empirically show that, without affecting the recall and precision, the proposed input perturbation leads to a significant improvement in the sample quality while reducing both the training and the inference times. For instance, on CelebA 64$\\times$64, we achieve a new state-of-the-art FID score of 1.27, while saving 37.5% of the training time. The code is publicly available at https://github.com/forever208/DDPM-IP",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4d81c33b295c092016ac236cfd32020a5bb70b97",
+    "externalIds": {
+      "ArXiv": "2212.09611",
+      "DBLP": "conf/nips/HaoC0W23",
+      "DOI": "10.48550/arXiv.2212.09611",
+      "CorpusId": 254853701
+    },
+    "title": "Optimizing Prompts for Text-to-Image Generation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 258,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2212.09611",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.09611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34128716",
+        "name": "Y. Hao"
+      },
+      {
+        "authorId": "46221722",
+        "name": "Zewen Chi"
+      },
+      {
+        "authorId": "145307652",
+        "name": "Li Dong"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      }
+    ],
+    "abstract": "Well-designed prompts can guide text-to-image models to generate amazing images. However, the performant prompts are often model-specific and misaligned with user input. Instead of laborious human engineering, we propose prompt adaptation, a general framework that automatically adapts original user input to model-preferred prompts. Specifically, we first perform supervised fine-tuning with a pretrained language model on a small collection of manually engineered prompts. Then we use reinforcement learning to explore better prompts. We define a reward function that encourages the policy to generate more aesthetically pleasing images while preserving the original user intentions. Experimental results on Stable Diffusion show that our method outperforms manual prompt engineering in terms of both automatic metrics and human preference ratings. Moreover, reinforcement learning further boosts performance, especially on out-of-domain prompts. The pretrained checkpoints are available at https://aka.ms/promptist. The demo can be found at https://aka.ms/promptist-demo.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "736973165f98105fec3729b7db414ae4d80fcbeb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2212-09748",
+      "ArXiv": "2212.09748",
+      "DOI": "10.1109/ICCV51070.2023.00387",
+      "CorpusId": 254854389
+    },
+    "title": "Scalable Diffusion Models with Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 5459,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2212.09748",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.09748, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35235273",
+        "name": "William S. Peebles"
+      },
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      }
+    ],
+    "abstract": "We explore a new class of diffusion models based on the transformer architecture. We train latent diffusion models of images, replacing the commonly-used U-Net backbone with a transformer that operates on latent patches. We analyze the scalability of our Diffusion Transformers (DiTs) through the lens of forward pass complexity as measured by Gflops. We find that DiTs with higher Gflops—through increased transformer depth/width or increased number of input tokens—consistently have lower FID. In addition to possessing good scalability properties, our largest DiT-XL/2 models outperform all prior diffusion models on the class-conditional ImageNet 512×512 and 256×256 benchmarks, achieving a state-of-the-art FID of 2.27 on the latter.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "af68f10ab5078bfc519caae377c90ee6d9c504e9",
+    "externalIds": {
+      "ArXiv": "2210.02747",
+      "DBLP": "journals/corr/abs-2210-02747",
+      "CorpusId": 252734897
+    },
+    "title": "Flow Matching for Generative Modeling",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 4088,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.02747, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3232072",
+        "name": "Y. Lipman"
+      },
+      {
+        "authorId": "51466615",
+        "name": "Ricky T. Q. Chen"
+      },
+      {
+        "authorId": "1405681873",
+        "name": "Heli Ben-Hamu"
+      },
+      {
+        "authorId": "1729762",
+        "name": "Maximilian Nickel"
+      },
+      {
+        "authorId": "123542315",
+        "name": "Matt Le"
+      }
+    ],
+    "abstract": "We introduce a new paradigm for generative modeling built on Continuous Normalizing Flows (CNFs), allowing us to train CNFs at unprecedented scale. Specifically, we present the notion of Flow Matching (FM), a simulation-free approach for training CNFs based on regressing vector fields of fixed conditional probability paths. Flow Matching is compatible with a general family of Gaussian probability paths for transforming between noise and data samples -- which subsumes existing diffusion paths as specific instances. Interestingly, we find that employing FM with diffusion paths results in a more robust and stable alternative for training diffusion models. Furthermore, Flow Matching opens the door to training CNFs with other, non-diffusion probability paths. An instance of particular interest is using Optimal Transport (OT) displacement interpolation to define the conditional probability paths. These paths are more efficient than diffusion paths, provide faster training and sampling, and result in better generalization. Training CNFs using Flow Matching on ImageNet leads to consistently better performance than alternative diffusion-based methods in terms of both likelihood and sample quality, and allows fast and reliable sample generation using off-the-shelf numerical ODE solvers.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "244054a4254a2147e43a3dad9c124b9b7eb4a04a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2209-03003",
+      "ArXiv": "2209.03003",
+      "DOI": "10.48550/arXiv.2209.03003",
+      "CorpusId": 252111177
+    },
+    "title": "Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 2728,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.03003",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.03003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46521757",
+        "name": "Xingchao Liu"
+      },
+      {
+        "authorId": "29777869",
+        "name": "Chengyue Gong"
+      },
+      {
+        "authorId": "2165566517",
+        "name": "Qiang Liu"
+      }
+    ],
+    "abstract": "We present rectified flow, a surprisingly simple approach to learning (neural) ordinary differential equation (ODE) models to transport between two empirically observed distributions \\pi_0 and \\pi_1, hence providing a unified solution to generative modeling and domain transfer, among various other tasks involving distribution transport. The idea of rectified flow is to learn the ODE to follow the straight paths connecting the points drawn from \\pi_0 and \\pi_1 as much as possible. This is achieved by solving a straightforward nonlinear least squares optimization problem, which can be easily scaled to large models without introducing extra parameters beyond standard supervised learning. The straight paths are special and preferred because they are the shortest paths between two points, and can be simulated exactly without time discretization and hence yield computationally efficient models. We show that the procedure of learning a rectified flow from data, called rectification, turns an arbitrary coupling of \\pi_0 and \\pi_1 to a new deterministic coupling with provably non-increasing convex transport costs. In addition, recursively applying rectification allows us to obtain a sequence of flows with increasingly straight paths, which can be simulated accurately with coarse time discretization in the inference phase. In empirical studies, we show that rectified flow performs superbly on image generation, image-to-image translation, and domain adaptation. In particular, on image generation and translation, our method yields nearly straight flows that give high quality results even with a single Euler discretization step.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "9695824d7a01fad57ba9c01d7d76a519d78d65e7",
+    "externalIds": {
+      "ArXiv": "2205.11487",
+      "DBLP": "journals/corr/abs-2205-11487",
+      "DOI": "10.48550/arXiv.2205.11487",
+      "CorpusId": 248986576
+    },
+    "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 8123,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.11487",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.11487, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51497543",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2054003577",
+        "name": "Saurabh Saxena"
+      },
+      {
+        "authorId": "2111917831",
+        "name": "Lala Li"
+      },
+      {
+        "authorId": "21040156",
+        "name": "Jay Whang"
+      },
+      {
+        "authorId": "40081727",
+        "name": "Emily L. Denton"
+      },
+      {
+        "authorId": "81419386",
+        "name": "Seyed Kamyar Seyed Ghasemipour"
+      },
+      {
+        "authorId": "143990191",
+        "name": "Burcu Karagol Ayan"
+      },
+      {
+        "authorId": "1982213",
+        "name": "S. S. Mahdavi"
+      },
+      {
+        "authorId": "143826364",
+        "name": "Raphael Gontijo Lopes"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "We present Imagen, a text-to-image diffusion model with an unprecedented degree of photorealism and a deep level of language understanding. Imagen builds on the power of large transformer language models in understanding text and hinges on the strength of diffusion models in high-fidelity image generation. Our key discovery is that generic large language models (e.g. T5), pretrained on text-only corpora, are surprisingly effective at encoding text for image synthesis: increasing the size of the language model in Imagen boosts both sample fidelity and image-text alignment much more than increasing the size of the image diffusion model. Imagen achieves a new state-of-the-art FID score of 7.27 on the COCO dataset, without ever training on COCO, and human raters find Imagen samples to be on par with the COCO data itself in image-text alignment. To assess text-to-image models in greater depth, we introduce DrawBench, a comprehensive and challenging benchmark for text-to-image models. With DrawBench, we compare Imagen with recent methods including VQ-GAN+CLIP, Latent Diffusion Models, and DALL-E 2, and find that human raters prefer Imagen over other models in side-by-side comparisons, both in terms of sample quality and image-text alignment. See https://imagen.research.google/ for an overview of the results.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c10075b3746a9f3dd5811970e93c8ca3ad39b39d",
+    "externalIds": {
+      "ArXiv": "2112.10752",
+      "DBLP": "journals/corr/abs-2112-10752",
+      "DOI": "10.1109/CVPR52688.2022.01042",
+      "CorpusId": 245335280
+    },
+    "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 23886,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2112.10752",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.10752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      },
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "2053482699",
+        "name": "Dominik Lorenz"
+      },
+      {
+        "authorId": "35175531",
+        "name": "Patrick Esser"
+      },
+      {
+        "authorId": "1796707",
+        "name": "B. Ommer"
+      }
+    ],
+    "abstract": "By decomposing the image formation process into a sequential application of denoising autoencoders, diffusion models (DMs) achieve state-of-the-art synthesis results on image data and beyond. Additionally, their formulation allows for a guiding mechanism to control the image generation process without retraining. However, since these models typically operate directly in pixel space, optimization of powerful DMs often consumes hundreds of GPU days and inference is expensive due to sequential evaluations. To enable DM training on limited computational resources while retaining their quality and flexibility, we apply them in the latent space of powerful pretrained autoencoders. In contrast to previous work, training diffusion models on such a representation allows for the first time to reach a near-optimal point between complexity reduction and detail preservation, greatly boosting visual fidelity. By introducing cross-attention layers into the model architecture, we turn diffusion models into powerful and flexible generators for general conditioning inputs such as text or bounding boxes and high-resolution synthesis becomes possible in a convolutional manner. Our latent diffusion models (LDMs) achieve new state of the art scores for image inpainting and class-conditional image synthesis and highly competitive performance on various tasks, including unconditional image generation, text-to-image synthesis, and super-resolution, while significantly reducing computational requirements compared to pixel-based DMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "633e2fbfc0b21e959a244100937c5853afca4853",
+    "externalIds": {
+      "ArXiv": "2011.13456",
+      "DBLP": "journals/corr/abs-2011-13456",
+      "MAG": "3110257065",
+      "CorpusId": 227209335
+    },
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 10140,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.13456, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2109224633",
+        "name": "Abhishek Kumar"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "16443937",
+        "name": "Ben Poole"
+      }
+    ],
+    "abstract": "Creating noise from data is easy; creating data from noise is generative modeling. We present a stochastic differential equation (SDE) that smoothly transforms a complex data distribution to a known prior distribution by slowly injecting noise, and a corresponding reverse-time SDE that transforms the prior distribution back into the data distribution by slowly removing the noise. Crucially, the reverse-time SDE depends only on the time-dependent gradient field (\\aka, score) of the perturbed data distribution. By leveraging advances in score-based generative modeling, we can accurately estimate these scores with neural networks, and use numerical SDE solvers to generate samples. We show that this framework encapsulates previous approaches in score-based generative modeling and diffusion probabilistic modeling, allowing for new sampling procedures and new modeling capabilities. In particular, we introduce a predictor-corrector framework to correct errors in the evolution of the discretized reverse-time SDE. We also derive an equivalent neural ODE that samples from the same distribution as the SDE, but additionally enables exact likelihood computation, and improved sampling efficiency. In addition, we provide a new way to solve inverse problems with score-based models, as demonstrated with experiments on class-conditional generation, image inpainting, and colorization. Combined with multiple architectural improvements, we achieve record-breaking performance for unconditional image generation on CIFAR-10 with an Inception score of 9.89 and FID of 2.20, a competitive likelihood of 2.99 bits/dim, and demonstrate high fidelity generation of 1024 x 1024 images for the first time from a score-based generative model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29736,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "df137487e20ba7c6e1e2b9a1e749f2a578b5ad99",
+    "externalIds": {
+      "MAG": "648786980",
+      "DBLP": "conf/nips/BengioVJS15",
+      "ArXiv": "1506.03099",
+      "CorpusId": 1820089
+    },
+    "title": "Scheduled Sampling for Sequence Prediction with Recurrent Neural Networks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2015,
+    "citationCount": 2264,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.03099, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1751569",
+        "name": "Samy Bengio"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "3111912",
+        "name": "N. Jaitly"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "Recurrent Neural Networks can be trained to produce sequences of tokens given some input, as exemplified by recent results in machine translation and image captioning. The current approach to training them consists of maximizing the likelihood of each token in the sequence given the current (recurrent) state and the previous token. At inference, the unknown previous token is then replaced by a token generated by the model itself. This discrepancy between training and inference can yield errors that can accumulate quickly along the generated sequence. We propose a curriculum learning strategy to gently change the training process from a fully guided scheme using the true previous token, towards a less guided scheme which mostly uses the generated token instead. Experiments on several sequence prediction tasks show that this approach yields significant improvements. Moreover, it was used succesfully in our winning entry to the MSCOCO image captioning challenge, 2015.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "ad23a0ec0a6c08264891bd6e945cff153d06a4a2",
+    "externalIds": {
+      "DBLP": "conf/eccv/YangWLLLLW24",
+      "DOI": "10.1007/978-3-031-72920-1_10",
+      "CorpusId": 273232962
+    },
+    "title": "Idea2Img: Iterative Self-refinement with GPT-4V for Automatic Image Design and Generation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2024,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-031-72920-1_10?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-031-72920-1_10, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149231840",
+        "name": "Zhengyuan Yang"
+      },
+      {
+        "authorId": "2124948371",
+        "name": "Jianfeng Wang"
+      },
+      {
+        "authorId": "50703697",
+        "name": "Linjie Li"
+      },
+      {
+        "authorId": "2249717753",
+        "name": "K. Lin"
+      },
+      {
+        "authorId": "2249709105",
+        "name": "Chung-Ching Lin"
+      },
+      {
+        "authorId": "2251726216",
+        "name": "Zicheng Liu"
+      },
+      {
+        "authorId": "2316559955",
+        "name": "Lijuan Wang"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f5945b1421ee8e0cd59e674b73f4ad82a71f66c7",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2307-06350",
+      "DOI": "10.48550/arXiv.2307.06350",
+      "CorpusId": 285142107
+    },
+    "title": "T2I-CompBench: A Comprehensive Benchmark for Open-world Compositional Text-to-image Generation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 285,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.06350",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2307.06350?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2307.06350, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112769396",
+        "name": "Kaiyi Huang"
+      },
+      {
+        "authorId": "2312392026",
+        "name": "Kaiyue Sun"
+      },
+      {
+        "authorId": "2247612880",
+        "name": "Enze Xie"
+      },
+      {
+        "authorId": "2253395155",
+        "name": "Zhenguo Li"
+      },
+      {
+        "authorId": "2269789129",
+        "name": "Xihui Liu"
+      }
+    ],
+    "abstract": ",",
+    "_is_influential": true,
+    "_intents": []
+  }
+]
