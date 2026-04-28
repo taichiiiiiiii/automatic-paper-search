@@ -1413,6 +1413,63 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   opacity: 0.7;
 }
 
+/* #62: year-range slider — twin range inputs in the same pill so both
+   handles share a track-line visual reference. */
+.year-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink);
+}
+.year-range__icon {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+.year-range__min,
+.year-range__max {
+  min-width: 3.2em;
+  text-align: center;
+  color: var(--color-ink);
+}
+.year-range__slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 6rem;
+  height: 4px;
+  background: var(--color-rule);
+  border-radius: 4px;
+  outline: 0;
+  cursor: pointer;
+}
+.year-range__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-bg);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.year-range__slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-bg);
+  cursor: pointer;
+}
+.year-range__slider:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
 .node-card--theme .node-card__title {
   font-size: 0.9rem;
   line-height: 1.3;
