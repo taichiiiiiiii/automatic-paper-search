@@ -455,7 +455,9 @@ def test_build_drops_edges_for_non_influential_parents(tmp_path: Path, monkeypat
 def test_build_emits_templated_rationale(tmp_path: Path, monkeypatch):
     """Issue #53: derive_relation always emits a non-empty templated
     rationale (the stage-4 'drop empty rationale' filter would otherwise
-    silently kill every derived edge)."""
+    silently kill every derived edge). #80 added year/citation
+    heuristics so a 2-year delta now classifies as ``successor``; the
+    important property is still that *some* templated rationale fires."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
@@ -463,7 +465,7 @@ def test_build_emits_templated_rationale(tmp_path: Path, monkeypatch):
     _stub_external_calls(monkeypatch)
 
     seed = _mk_s2_paper("seed", year=2020)
-    # No _intents → derive_relation falls back to extends with default template.
+    # No _intents → derive_relation falls back to year/cite heuristic.
     parent = {**_mk_s2_paper("parent", year=2018), "_is_influential": True}
     with (
         patch.object(
@@ -485,7 +487,12 @@ def test_build_emits_templated_rationale(tmp_path: Path, monkeypatch):
         None,
     )
     assert bfs_edge is not None
-    assert bfs_edge["rel"] == "extends"
+    # #80: rel can be any of the heuristic-derived enums; just assert
+    # the relation is real and the rationale is a non-empty Japanese
+    # template line (the original empty-rationale guard).
+    assert bfs_edge["rel"] in {
+        "extends", "successor", "supersedes", "contrasts", "ablation", "baseline_only",
+    }
     assert bfs_edge["rationale"], "templated rationale must not be empty"
     assert "論文" in bfs_edge["rationale"]
 
@@ -1021,11 +1028,68 @@ def test_derive_relation_methodology_takes_precedence_over_background():
 
 
 def test_derive_relation_no_intents_falls_back_to_extends():
-    """Missing intents (older cache or S2 omission) — assume extends as a
-    safe default since the parent IS influential."""
+    """Missing intents (older cache or S2 omission), no year info → assume
+    extends. #80: when year + cite are available the heuristic refines
+    further (see test_derive_relation_heuristic_*)."""
     parent = {"_is_influential": True, "_intents": None}
     rel = build_theme_lineage.derive_relation(parent)
     assert rel is not None and rel["relation"] == "extends"
+
+
+# ---- #80: heuristic refinement when intents missing -------------------------
+
+
+def test_derive_relation_supersedes_via_heuristic():
+    """3+ year gap + child citation count overtakes parent → supersedes."""
+    parent = {"_is_influential": True, "year": 2017, "citationCount": 1000}
+    child = {"year": 2022, "citationCount": 5000}
+    rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
+    assert rel is not None and rel["relation"] == "supersedes"
+
+
+def test_derive_relation_contrasts_via_heuristic():
+    """Same / next year + similar citation profile → contrasts (parallel)."""
+    parent = {"_is_influential": True, "year": 2023, "citationCount": 800}
+    child = {"year": 2023, "citationCount": 600}
+    rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
+    assert rel is not None and rel["relation"] == "contrasts"
+
+
+def test_derive_relation_ablation_via_heuristic():
+    """Within 2y + tiny child cite count alongside high-cite parent →
+    ablation-style follow-up."""
+    parent = {"_is_influential": True, "year": 2022, "citationCount": 5000}
+    child = {"year": 2024, "citationCount": 30}
+    rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
+    assert rel is not None and rel["relation"] == "ablation"
+
+
+def test_derive_relation_successor_via_heuristic():
+    """1-5 year gap, no other strong signal → successor."""
+    parent = {"_is_influential": True, "year": 2020, "citationCount": 200}
+    child = {"year": 2022, "citationCount": 200}
+    rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
+    assert rel is not None and rel["relation"] == "successor"
+
+
+def test_derive_relation_long_lineage_falls_back_to_extends():
+    """6+ year gap with no special signals → extends (long-running line)."""
+    parent = {"_is_influential": True, "year": 2010, "citationCount": 200}
+    child = {"year": 2024, "citationCount": 50}
+    rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
+    assert rel is not None and rel["relation"] == "extends"
+
+
+def test_derive_relation_intents_take_precedence_over_heuristic():
+    """When intents are present, year/cite heuristic never runs."""
+    parent = {
+        "_is_influential": True,
+        "_intents": ["methodology"],
+        "year": 2020, "citationCount": 1000,
+    }
+    child = {"year": 2024, "citationCount": 5000}  # would normally → supersedes
+    rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
+    assert rel is not None and rel["relation"] == "extends"  # methodology wins
 
 
 def test_derive_relation_non_influential_returns_none():
