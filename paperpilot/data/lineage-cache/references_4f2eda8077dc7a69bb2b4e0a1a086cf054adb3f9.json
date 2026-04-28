@@ -1,0 +1,2181 @@
+[
+  {
+    "paperId": "d79a26226393f687ddbc375e32055b40b8ad8d38",
+    "externalIds": {
+      "MAG": "2991040477",
+      "DBLP": "conf/nips/HuangCBFCCLNLWC19",
+      "CorpusId": 53670168
+    },
+    "title": "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 2054,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "50607661",
+        "name": "Yonglong Cheng"
+      },
+      {
+        "authorId": "7167328",
+        "name": "Dehao Chen"
+      },
+      {
+        "authorId": "34946720",
+        "name": "HyoukJoong Lee"
+      },
+      {
+        "authorId": "2020608",
+        "name": "Jiquan Ngiam"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "a42eb9e4c2506640446f07df3a9a0134752b00da",
+    "externalIds": {
+      "MAG": "2901026139",
+      "DBLP": "journals/corr/abs-1811-07056",
+      "ArXiv": "1811.07056",
+      "CorpusId": 53712814
+    },
+    "title": "Domain Adaptive Transfer Learning with Specialist Models",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 115,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.07056, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2020608",
+        "name": "Jiquan Ngiam"
+      },
+      {
+        "authorId": "46255851",
+        "name": "Daiyi Peng"
+      },
+      {
+        "authorId": "2053781980",
+        "name": "Vijay Vasudevan"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "34320634",
+        "name": "Ruoming Pang"
+      }
+    ],
+    "abstract": "Transfer learning is a widely used method to build high performing computer vision models. In this paper, we study the efficacy of transfer learning by examining how the choice of data impacts performance. We find that more pre-training data does not always help, and transfer performance depends on a judicious choice of pre-training data. These findings are important given the continued increase in dataset sizes. We further propose domain adaptive transfer learning, a simple and effective pre-training method using importance weights computed based on the target dataset. Our method to compute importance weights follow from ideas in domain adaptation, and we show a novel application to transfer learning. Our methods achieve state-of-the-art results on multiple fine-grained classification datasets and are well-suited for use in practice."
+  },
+  {
+    "paperId": "f323407464c4cd492d3fc1afd7170eab08f44d9b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1812-00332",
+      "MAG": "2950483360",
+      "ArXiv": "1812.00332",
+      "CorpusId": 54438210
+    },
+    "title": "ProxylessNAS: Direct Neural Architecture Search on Target Task and Hardware",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 2036,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.00332, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145834074",
+        "name": "Han Cai"
+      },
+      {
+        "authorId": "20515689",
+        "name": "Ligeng Zhu"
+      },
+      {
+        "authorId": "143840275",
+        "name": "Song Han"
+      }
+    ],
+    "abstract": "Neural architecture search (NAS) has a great impact by automatically designing effective neural network architectures. However, the prohibitive computational demand of conventional NAS algorithms (e.g. $10^4$ GPU hours) makes it difficult to \\emph{directly} search the architectures on large-scale tasks (e.g. ImageNet). Differentiable NAS can reduce the cost of GPU hours via a continuous representation of network architecture but suffers from the high GPU memory consumption issue (grow linearly w.r.t. candidate set size). As a result, they need to utilize~\\emph{proxy} tasks, such as training on a smaller dataset, or learning with only a few blocks, or training just for a few epochs. These architectures optimized on proxy tasks are not guaranteed to be optimal on the target task. In this paper, we present \\emph{ProxylessNAS} that can \\emph{directly} learn the architectures for large-scale target tasks and target hardware platforms. We address the high memory consumption issue of differentiable NAS and reduce the computational cost (GPU hours and GPU memory) to the same level of regular training while still allowing a large candidate set. Experiments on CIFAR-10 and ImageNet demonstrate the effectiveness of directness and specialization. On CIFAR-10, our model achieves 2.08\\% test error with only 5.7M parameters, better than the previous state-of-the-art architecture AmoebaNet-B, while using 6$\\times$ fewer parameters. On ImageNet, our model achieves 3.1\\% better top-1 accuracy than MobileNetV2, while being 1.2$\\times$ faster with measured GPU latency. We also apply ProxylessNAS to specialize neural architectures for hardware with direct hardware metrics (e.g. latency) and provide insights for efficient CNN architecture design."
+  },
+  {
+    "paperId": "e73b0250971586e7d5a2ff71254a8acc60f9715a",
+    "externalIds": {
+      "MAG": "2888429796",
+      "ArXiv": "1808.07233",
+      "DBLP": "journals/corr/abs-1808-07233",
+      "CorpusId": 52071151
+    },
+    "title": "Neural Architecture Optimization",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 707,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.07233, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3440939",
+        "name": "Renqian Luo"
+      },
+      {
+        "authorId": "143853336",
+        "name": "Fei Tian"
+      },
+      {
+        "authorId": "143826491",
+        "name": "Tao Qin"
+      },
+      {
+        "authorId": "2110264337",
+        "name": "Tie-Yan Liu"
+      }
+    ],
+    "abstract": "Automatic neural architecture design has shown its potential in discovering powerful neural network architectures. Existing methods, no matter based on reinforcement learning or evolutionary algorithms (EA), conduct architecture search in a discrete space, which is highly inefficient. In this paper, we propose a simple and efficient method to automatic neural architecture design based on continuous optimization. We call this new approach neural architecture optimization (NAO). There are three key components in our proposed approach: (1) An encoder embeds/maps neural network architectures into a continuous space. (2) A predictor takes the continuous representation of a network as input and predicts its accuracy. (3) A decoder maps a continuous representation of a network back to its architecture. The performance predictor and the encoder enable us to perform gradient based optimization in the continuous space to find the embedding of a new architecture with potentially better accuracy. Such a better embedding is then decoded to a network by the decoder. Experiments show that the architecture discovered by our method is very competitive for image classification task on CIFAR-10 and language modeling task on PTB, outperforming or on par with the best results of previous architecture search methods with a significantly reduction of computational resources. Specifically we obtain $2.11\\%$ test set error rate for CIFAR-10 image classification task and $56.0$ test set perplexity of PTB language modeling task. The best discovered architectures on both tasks are successfully transferred to other tasks such as CIFAR-100 and WikiText-2. Furthermore, combined with the recent proposed weight sharing mechanism, we discover powerful architecture on CIFAR-10 (with error rate $3.53\\%$) and on PTB (with test set perplexity $56.6$), with very limited computational resources (less than $10$ GPU hours) for both tasks."
+  },
+  {
+    "paperId": "693c97ecedb0a84539b7162c95e89fa3cd84ca73",
+    "externalIds": {
+      "ArXiv": "1807.11626",
+      "DBLP": "conf/cvpr/TanCPVSHL19",
+      "MAG": "2886953980",
+      "DOI": "10.1109/CVPR.2019.00293",
+      "CorpusId": 51891697
+    },
+    "title": "MnasNet: Platform-Aware Neural Architecture Search for Mobile",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 3376,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1807.11626",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.11626, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "120805419",
+        "name": "Mingxing Tan"
+      },
+      {
+        "authorId": null,
+        "name": "Bo Chen"
+      },
+      {
+        "authorId": "34320634",
+        "name": "Ruoming Pang"
+      },
+      {
+        "authorId": "2053781980",
+        "name": "Vijay Vasudevan"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Designing convolutional neural networks (CNN) for mobile devices is challenging because mobile models need to be small and fast, yet still accurate. Although significant efforts have been dedicated to design and improve mobile CNNs on all dimensions, it is very difficult to manually balance these trade-offs when there are so many architectural possibilities to consider. In this paper, we propose an automated mobile neural architecture search (MNAS) approach, which explicitly incorporate model latency into the main objective so that the search can identify a model that achieves a good trade-off between accuracy and latency. Unlike previous work, where latency is considered via another, often inaccurate proxy (e.g., FLOPS), our approach directly measures real-world inference latency by executing the model on mobile phones. To further strike the right balance between flexibility and search space size, we propose a novel factorized hierarchical search space that encourages layer diversity throughout the network. Experimental results show that our approach consistently outperforms state-of-the-art mobile CNN models across multiple vision tasks. On the ImageNet classification task, our MnasNet achieves 75.2% top-1 accuracy with 78ms latency on a Pixel phone, which is 1.8× faster than MobileNetV2 with 0.5% higher accuracy and 2.3× faster than NASNet with 1.2% higher accuracy. Our MnasNet also achieves better mAP quality than MobileNets for COCO object detection. Code is at https://github.com/tensorflow/tpu/tree/master/models/official/mnasnet."
+  },
+  {
+    "paperId": "c02b909a514af6b9255315e2d50112845ca5ed0e",
+    "externalIds": {
+      "MAG": "2883780447",
+      "DBLP": "conf/eccv/MaZZS18",
+      "ArXiv": "1807.11164",
+      "DOI": "10.1007/978-3-030-01264-9_8",
+      "CorpusId": 51880435
+    },
+    "title": "ShuffleNet V2: Practical Guidelines for Efficient CNN Architecture Design",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 6213,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.11164, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2068605434",
+        "name": "Ningning Ma"
+      },
+      {
+        "authorId": "50875121",
+        "name": "Xiangyu Zhang"
+      },
+      {
+        "authorId": "16215052",
+        "name": "Haitao Zheng"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Currently, the neural network architecture design is mostly guided by the indirect metric of computation complexity, i.e., FLOPs. However, the direct metric, e.g., speed, also depends on the other factors such as memory access cost and platform characterics. Thus, this work proposes to evaluate the direct metric on the target platform, beyond only considering FLOPs. Based on a series of controlled experiments, this work derives several practical guidelines for efficient network design. Accordingly, a new architecture is presented, called ShuffleNet V2. Comprehensive ablation experiments verify that our model is the state-of-the-art in terms of speed and accuracy tradeoff."
+  },
+  {
+    "paperId": "fe9ea9160d3a357519765c3f7c1b829119f5a2d2",
+    "externalIds": {
+      "MAG": "2810898455",
+      "ArXiv": "1806.10909",
+      "DBLP": "conf/nips/LinJ18",
+      "CorpusId": 49527065
+    },
+    "title": "ResNet with one-neuron hidden layers is a Universal Approximator",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 248,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.10909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3376305",
+        "name": "Hongzhou Lin"
+      },
+      {
+        "authorId": "2594093",
+        "name": "S. Jegelka"
+      }
+    ],
+    "abstract": "We demonstrate that a very deep ResNet with stacked modules with one neuron per hidden layer and ReLU activation functions can uniformly approximate any Lebesgue integrable function in $d$ dimensions, i.e. $\\ell_1(\\mathbb{R}^d)$. Because of the identity mapping inherent to ResNets, our network has alternating layers of dimension one and $d$. This stands in sharp contrast to fully connected networks, which are not universal approximators if their width is the input dimension $d$ [Lu et al, 2017; Hanin and Sellke, 2017]. Hence, our result implies an increase in representational power for narrow deep networks by the ResNet architecture."
+  },
+  {
+    "paperId": "f723eb3e7159f07b97464c8d947d15e78612abe4",
+    "externalIds": {
+      "ArXiv": "1805.09501",
+      "MAG": "2804047946",
+      "DBLP": "journals/corr/abs-1805-09501",
+      "CorpusId": 43928340
+    },
+    "title": "AutoAugment: Learning Augmentation Policies from Data",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 1960,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.09501, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8132903",
+        "name": "E. D. Cubuk"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "30415265",
+        "name": "Dandelion Mané"
+      },
+      {
+        "authorId": "2053781980",
+        "name": "Vijay Vasudevan"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Data augmentation is an effective technique for improving the accuracy of modern image classifiers. However, current data augmentation implementations are manually designed. In this paper, we describe a simple procedure called AutoAugment to automatically search for improved data augmentation policies. In our implementation, we have designed a search space where a policy consists of many sub-policies, one of which is randomly chosen for each image in each mini-batch. A sub-policy consists of two operations, each operation being an image processing function such as translation, rotation, or shearing, and the probabilities and magnitudes with which the functions are applied. We use a search algorithm to find the best policy such that the neural network yields the highest validation accuracy on a target dataset. Our method achieves state-of-the-art accuracy on CIFAR-10, CIFAR-100, SVHN, and ImageNet (without additional data). On ImageNet, we attain a Top-1 accuracy of 83.5% which is 0.4% better than the previous record of 83.1%. On CIFAR-10, we achieve an error rate of 1.5%, which is 0.6% better than the previous state-of-the-art. Augmentation policies we find are transferable between datasets. The policy learned on ImageNet transfers well to achieve significant improvements on other datasets, such as Oxford Flowers, Caltech-101, Oxford-IIT Pets, FGVC Aircraft, and Stanford Cars."
+  },
+  {
+    "paperId": "8a8cfa45b4c0d071fbffa091c02670b19c94b693",
+    "externalIds": {
+      "ArXiv": "1805.08974",
+      "DBLP": "conf/cvpr/KornblithSL19",
+      "MAG": "2963328637",
+      "DOI": "10.1109/CVPR.2019.00277",
+      "CorpusId": 43928547
+    },
+    "title": "Do Better ImageNet Models Transfer Better?",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1513,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1805.08974",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.08974, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Transfer learning is a cornerstone of computer vision, yet little work has been done to evaluate the relationship between architecture and transfer. An implicit hypothesis in modern computer vision research is that models that perform better on ImageNet necessarily perform better on other vision tasks. However, this hypothesis has never been systematically tested. Here, we compare the performance of 16 classification networks on 12 image classification datasets. We find that, when networks are used as fixed feature extractors or fine-tuned, there is a strong correlation between ImageNet accuracy and transfer accuracy (r = 0.99 and 0.96, respectively). In the former setting, we find that this relationship is very sensitive to the way in which networks are trained on ImageNet; many common forms of regularization slightly improve ImageNet accuracy but yield features that are much worse for transfer learning. Additionally, we find that, on two small fine-grained image classification datasets, pretraining on ImageNet provides minimal benefits, indicating the learned features from ImageNet do not transfer well to fine-grained tasks. Together, our results show that ImageNet architectures generalize well across datasets, but ImageNet features are less general than previously suggested."
+  },
+  {
+    "paperId": "0f885fd46064d271d4404cf9bb3d758e1a6f8d55",
+    "externalIds": {
+      "MAG": "2799269579",
+      "DBLP": "conf/eccv/MahajanGRHPLBM18",
+      "ArXiv": "1805.00932",
+      "DOI": "10.1007/978-3-030-01216-8_12",
+      "CorpusId": 13751202
+    },
+    "title": "Exploring the Limits of Weakly Supervised Pretraining",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 1453,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.00932, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144542135",
+        "name": "D. Mahajan"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "34066479",
+        "name": "Vignesh Ramanathan"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2210374",
+        "name": "Manohar Paluri"
+      },
+      {
+        "authorId": "1527103472",
+        "name": "Yixuan Li"
+      },
+      {
+        "authorId": "1842920",
+        "name": "Ashwin R. Bharambe"
+      },
+      {
+        "authorId": "1803520",
+        "name": "L. Maaten"
+      }
+    ],
+    "abstract": "State-of-the-art visual perception models for a wide range of tasks rely on supervised pretraining. ImageNet classification is the de facto pretraining task for these models. Yet, ImageNet is now nearly ten years old and is by modern standards \"small\". Even so, relatively little is known about the behavior of pretraining with datasets that are multiple orders of magnitude larger. The reasons are obvious: such datasets are difficult to collect and annotate. In this paper, we present a unique study of transfer learning with large convolutional networks trained to predict hashtags on billions of social media images. Our experiments demonstrate that training for large-scale hashtag prediction leads to excellent results. We show improvements on several image classification and object detection tasks, and report the highest ImageNet-1k single-crop, top-1 accuracy to date: 85.4% (97.6% top-5). We also perform extensive experiments that provide novel empirical data on the relationship between large-scale pretraining and transfer learning performance."
+  },
+  {
+    "paperId": "d16b21f3e99171c86365679435f9f03766750639",
+    "externalIds": {
+      "DBLP": "conf/eccv/YangHCZGSSA18",
+      "ArXiv": "1804.03230",
+      "MAG": "2797480241",
+      "DOI": "10.1007/978-3-030-01249-6_18",
+      "CorpusId": 4746618
+    },
+    "title": "NetAdapt: Platform-Aware Neural Network Adaptation for Mobile Applications",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 557,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.03230, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1950815",
+        "name": "Tien-Ju Yang"
+      },
+      {
+        "authorId": "144727050",
+        "name": "Andrew G. Howard"
+      },
+      {
+        "authorId": null,
+        "name": "Bo Chen"
+      },
+      {
+        "authorId": "2115476987",
+        "name": "Xiao Zhang"
+      },
+      {
+        "authorId": "2072476561",
+        "name": "Alec Go"
+      },
+      {
+        "authorId": "1691305",
+        "name": "V. Sze"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "This work proposes an algorithm, called NetAdapt, that automatically adapts a pre-trained deep neural network to a mobile platform given a resource budget. While many existing algorithms simplify networks based on the number of MACs or weights, optimizing those indirect metrics may not necessarily reduce the direct metrics, such as latency and energy consumption. To solve this problem, NetAdapt incorporates direct metrics into its adaptation algorithm. These direct metrics are evaluated using empirical measurements, so that detailed knowledge of the platform and toolchain is not required. NetAdapt automatically and progressively simplifies a pre-trained network until the resource budget is met while maximizing the accuracy. Experiment results show that NetAdapt achieves better accuracy versus latency trade-offs on both mobile CPU and mobile GPU, compared with the state-of-the-art automated network simplification algorithms. For image classification on the ImageNet dataset, NetAdapt achieves up to a 1.7$\\times$ speedup in measured inference latency with equal or higher accuracy on MobileNets (V1&V2)."
+  },
+  {
+    "paperId": "b5c03413b37f06bd94144ebfae5b2e0632ca604e",
+    "externalIds": {
+      "MAG": "2962697884",
+      "DBLP": "journals/corr/abs-1803-10615",
+      "ArXiv": "1803.10615",
+      "DOI": "10.1109/CVPRW.2018.00215",
+      "CorpusId": 4390700
+    },
+    "title": "SqueezeNext: Hardware-Aware Neural Network Design",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2018,
+    "citationCount": 324,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1803.10615",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.10615, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10419477",
+        "name": "A. Gholami"
+      },
+      {
+        "authorId": "34662118",
+        "name": "K. Kwon"
+      },
+      {
+        "authorId": "3130257",
+        "name": "Bichen Wu"
+      },
+      {
+        "authorId": "9541802",
+        "name": "Zizheng Tai"
+      },
+      {
+        "authorId": "27577617",
+        "name": "Xiangyu Yue"
+      },
+      {
+        "authorId": "32294544",
+        "name": "Peter H. Jin"
+      },
+      {
+        "authorId": "1755487",
+        "name": "Sicheng Zhao"
+      },
+      {
+        "authorId": "1732330",
+        "name": "K. Keutzer"
+      }
+    ],
+    "abstract": "One of the main barriers for deploying neural networks on embedded systems has been large memory and power consumption of existing neural networks. In this work, we introduce SqueezeNext, a new family of neural network architectures whose design was guided by considering previous architectures such as SqueezeNet, as well as by simulation results on a neural network accelerator. This new network is able to match AlexNet's accuracy on the ImageNet benchmark with 112× fewer parameters, and one of its deeper variants is able to achieve VGG-19 accuracy with only 4.4 Million parameters, (31× smaller than VGG-19). SqueezeNext also achieves better top-5 classification accuracy with 1.3× fewer parameters as compared to MobileNet, but avoids using depthwise-separable convolutions that are inefficient on some mobile processor platforms. This wide range of accuracy gives the user the ability to make speed-accuracy tradeoffs, depending on the available resources on the target hardware. Using hardware simulation results for power and inference speed on an embedded system has guided us to design variations of the baseline model that are 2.59×/8.26× faster and 2.25×/7.5× more energy efficient as compared to SqueezeNet/AlexNet without any accuracy degradation."
+  },
+  {
+    "paperId": "1717255b6aea01fe956cef998abbc3c399b5d7cf",
+    "externalIds": {
+      "MAG": "2886851211",
+      "DBLP": "conf/eccv/HeLLWLH18",
+      "ArXiv": "1802.03494",
+      "DOI": "10.1007/978-3-030-01234-2_48",
+      "CorpusId": 52048008
+    },
+    "title": "AMC: AutoML for Model Compression and Acceleration on Mobile Devices",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 1471,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.03494, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39838894",
+        "name": "Yihui He"
+      },
+      {
+        "authorId": "46698300",
+        "name": "Ji Lin"
+      },
+      {
+        "authorId": "47781592",
+        "name": "Zhijian Liu"
+      },
+      {
+        "authorId": "35446689",
+        "name": "Hanrui Wang"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "143840275",
+        "name": "Song Han"
+      }
+    ],
+    "abstract": "Model compression is an effective technique to efficiently deploy neural network models on mobile devices which have limited computation resources and tight power budgets. Conventional model compression techniques rely on hand-crafted features and require domain experts to explore the large design space trading off among model size, speed, and accuracy, which is usually sub-optimal and time-consuming. In this paper, we propose AutoML for Model Compression (AMC) which leverages reinforcement learning to efficiently sample the design space and can improve the model compression quality. We achieved state-of-the-art model compression results in a fully automated way without any human efforts. Under 4\\(\\times \\) FLOPs reduction, we achieved 2.7% better accuracy than the hand-crafted model compression method for VGG-16 on ImageNet. We applied this automated, push-the-button compression pipeline to MobileNet-V1 and achieved a speedup of 1.53\\(\\times \\) on the GPU (Titan Xp) and 1.95\\(\\times \\) on an Android phone (Google Pixel 1), with negligible loss of accuracy."
+  },
+  {
+    "paperId": "50bdda28de3dcf82a0e10f9ec13eea248b19edb5",
+    "externalIds": {
+      "MAG": "2785430118",
+      "DBLP": "journals/corr/abs-1802-01548",
+      "ArXiv": "1802.01548",
+      "DOI": "10.1609/aaai.v33i01.33014780",
+      "CorpusId": 3640974
+    },
+    "title": "Regularized Evolution for Image Classifier Architecture Search",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2018,
+    "citationCount": 3297,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/4405/4283",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.01548, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2892780",
+        "name": "Esteban Real"
+      },
+      {
+        "authorId": "1737322",
+        "name": "A. Aggarwal"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "The effort devoted to hand-crafting neural network image classifiers has motivated the use of architecture search to discover them automatically. Although evolutionary algorithms have been repeatedly applied to neural network topologies, the image classifiers thus discovered have remained inferior to human-crafted ones. Here, we evolve an image classifier— AmoebaNet-A—that surpasses hand-designs for the first time. To do this, we modify the tournament selection evolutionary algorithm by introducing an age property to favor the younger genotypes. Matching size, AmoebaNet-A has comparable accuracy to current state-of-the-art ImageNet models discovered with more complex architecture-search methods. Scaled to larger size, AmoebaNet-A sets a new state-of-theart 83.9% top-1 / 96.6% top-5 ImageNet accuracy. In a controlled comparison against a well known reinforcement learning algorithm, we give evidence that evolution can obtain results faster with the same hardware, especially at the earlier stages of the search. This is relevant when fewer compute resources are available. Evolution is, thus, a simple method to effectively discover high-quality architectures."
+  },
+  {
+    "paperId": "dd9cfe7124c734f5a6fc90227d541d3dbcd72ba4",
+    "externalIds": {
+      "MAG": "2949261999",
+      "ArXiv": "1801.04381",
+      "DBLP": "conf/cvpr/SandlerHZZC18",
+      "DOI": "10.1109/CVPR.2018.00474",
+      "CorpusId": 4555207
+    },
+    "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 23995,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1801.04381",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.04381, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144882893",
+        "name": "M. Sandler"
+      },
+      {
+        "authorId": "144727050",
+        "name": "Andrew G. Howard"
+      },
+      {
+        "authorId": "2717876",
+        "name": "Menglong Zhu"
+      },
+      {
+        "authorId": "3422677",
+        "name": "A. Zhmoginov"
+      },
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      }
+    ],
+    "abstract": "In this paper we describe a new mobile architecture, MobileNetV2, that improves the state of the art performance of mobile models on multiple tasks and benchmarks as well as across a spectrum of different model sizes. We also describe efficient ways of applying these mobile models to object detection in a novel framework we call SSDLite. Additionally, we demonstrate how to build mobile semantic segmentation models through a reduced form of DeepLabv3 which we call Mobile DeepLabv3. is based on an inverted residual structure where the shortcut connections are between the thin bottleneck layers. The intermediate expansion layer uses lightweight depthwise convolutions to filter features as a source of non-linearity. Additionally, we find that it is important to remove non-linearities in the narrow layers in order to maintain representational power. We demonstrate that this improves performance and provide an intuition that led to this design. Finally, our approach allows decoupling of the input/output domains from the expressiveness of the transformation, which provides a convenient framework for further analysis. We measure our performance on ImageNet [1] classification, COCO object detection [2], VOC image segmentation [3]. We evaluate the trade-offs between accuracy, and number of operations measured by multiply-adds (MAdd), as well as actual latency, and the number of parameters."
+  },
+  {
+    "paperId": "5f79398057bf0bbda9ff50067bc1f2950c2a2266",
+    "externalIds": {
+      "MAG": "2963821229",
+      "DBLP": "journals/corr/abs-1712-00559",
+      "ArXiv": "1712.00559",
+      "DOI": "10.1007/978-3-030-01246-5_2",
+      "CorpusId": 40430109
+    },
+    "title": "Progressive Neural Architecture Search",
+    "venue": "European Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 2129,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1712.00559, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50557601",
+        "name": "Chenxi Liu"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "2052830834",
+        "name": "Wei Hua"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      },
+      {
+        "authorId": "2136435893",
+        "name": "Jonathan Huang"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      }
+    ],
+    "abstract": "We propose a new method for learning the structure of convolutional neural networks (CNNs) that is more efficient than recent state-of-the-art methods based on reinforcement learning and evolutionary algorithms. Our approach uses a sequential model-based optimization (SMBO) strategy, in which we search for structures in order of increasing complexity, while simultaneously learning a surrogate model to guide the search through structure space. Direct comparison under the same search space shows that our method is up to 5 times more efficient than the RL method of Zoph et al. (2018) in terms of number of models evaluated, and 8 times faster in terms of total compute. The structures we discover in this way achieve state of the art classification accuracies on CIFAR-10 and ImageNet."
+  },
+  {
+    "paperId": "4f57f486adea0bf95c252620a4e8af39232ef8bc",
+    "externalIds": {
+      "MAG": "2765833400",
+      "ArXiv": "1710.05941",
+      "CorpusId": 196158220
+    },
+    "title": "Swish: a Self-Gated Activation Function",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 700,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.05941, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3377142",
+        "name": "Prajit Ramachandran"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "The choice of activation functions in deep networks has a significant effect on the training dynamics and task performance. Currently, the most successful and widely-used activation function is the Rectified Linear Unit (ReLU). Although various alternatives to ReLU have been proposed, none have managed to replace it due to inconsistent gains. In this work, we propose a new activation function, named Swish, which is simply $f(x) = x \\cdot \\text{sigmoid}(x)$. Our experiments show that Swish tends to work better than ReLU on deeper models across a number of challenging datasets. For example, simply replacing ReLUs with Swish units improves top-1 classification accuracy on ImageNet by 0.9% for Mobile NASNet-A and 0.6% for Inception-ResNet-v2. The simplicity of Swish and its similarity to ReLU make it easy for practitioners to replace ReLUs with Swish units in any neural network."
+  },
+  {
+    "paperId": "53bfec9b34e40000d9f2174c8ac6191087fe4d57",
+    "externalIds": {
+      "MAG": "2963097630",
+      "DBLP": "journals/corr/abs-1709-02540",
+      "ArXiv": "1709.02540",
+      "CorpusId": 3235741
+    },
+    "title": "The Expressive Power of Neural Networks: A View from the Width",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 989,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1709.02540, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110248966",
+        "name": "Zhou Lu"
+      },
+      {
+        "authorId": "32471978",
+        "name": "Hongming Pu"
+      },
+      {
+        "authorId": "9112744",
+        "name": "Feicheng Wang"
+      },
+      {
+        "authorId": null,
+        "name": "Zhiqiang Hu"
+      },
+      {
+        "authorId": "24952249",
+        "name": "Liwei Wang"
+      }
+    ],
+    "abstract": "The expressive power of neural networks is important for understanding deep learning. Most existing works consider this problem from the view of the depth of a network. In this paper, we study how width affects the expressiveness of neural networks. Classical results state that depth-bounded (e.g. depth-$2$) networks with suitable activation functions are universal approximators. We show a universal approximation theorem for width-bounded ReLU networks: width-$(n+4)$ ReLU networks, where $n$ is the input dimension, are universal approximators. Moreover, except for a measure zero set, all functions cannot be approximated by width-$n$ ReLU networks, which exhibits a phase transition. Several recent works demonstrate the benefits of depth by proving the depth-efficiency of neural networks. That is, there are classes of deep networks which cannot be realized by any shallow network whose size is no more than an exponential bound. Here we pose the dual question on the width-efficiency of ReLU networks: Are there wide networks that cannot be realized by narrow networks whose size is not substantially larger? We show that there exist classes of wide networks which cannot be realized by any narrow network whose depth is no more than a polynomial bound. On the other hand, we demonstrate by extensive experiments that narrow networks whose size exceed the polynomial bound by a constant factor can approximate wide and shallow network with high accuracy. Our results provide more comprehensive evidence that depth is more effective than width for the expressiveness of ReLU networks."
+  },
+  {
+    "paperId": "fb37561499573109fc2cebb6a7b08f44917267dd",
+    "externalIds": {
+      "MAG": "2963420686",
+      "DBLP": "journals/corr/abs-1709-01507",
+      "ArXiv": "1709.01507",
+      "DOI": "10.1109/CVPR.2018.00745",
+      "CorpusId": 140309863
+    },
+    "title": "Squeeze-and-Excitation Networks",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 33468,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1709.01507",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1709.01507, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145815850",
+        "name": "Jie Hu"
+      },
+      {
+        "authorId": "152148573",
+        "name": "Li Shen"
+      },
+      {
+        "authorId": "7641268",
+        "name": "Samuel Albanie"
+      },
+      {
+        "authorId": "2087137982",
+        "name": "Gang Sun"
+      },
+      {
+        "authorId": "145344139",
+        "name": "E. Wu"
+      }
+    ],
+    "abstract": "Convolutional neural networks are built upon the convolution operation, which extracts informative features by fusing spatial and channel-wise information together within local receptive fields. In order to boost the representational power of a network, several recent approaches have shown the benefit of enhancing spatial encoding. In this work, we focus on the channel relationship and propose a novel architectural unit, which we term the \"Squeeze-and-Excitation\" (SE) block, that adaptively recalibrates channel-wise feature responses by explicitly modelling interdependencies between channels. We demonstrate that by stacking these blocks together, we can construct SENet architectures that generalise extremely well across challenging datasets. Crucially, we find that SE blocks produce significant performance improvements for existing state-of-the-art deep architectures at minimal additional computational cost. SENets formed the foundation of our ILSVRC 2017 classification submission which won first place and significantly reduced the top-5 error to 2.251%, achieving a ~25% relative improvement over the winning entry of 2016. Code and models are available at https://github.com/hujie-frank/SENet."
+  },
+  {
+    "paperId": "d0611891b9e8a7c5731146097b6f201578f47b2f",
+    "externalIds": {
+      "MAG": "2964081807",
+      "DBLP": "journals/corr/ZophVSL17",
+      "ArXiv": "1707.07012",
+      "DOI": "10.1109/CVPR.2018.00907",
+      "CorpusId": 12227989
+    },
+    "title": "Learning Transferable Architectures for Scalable Image Recognition",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 6131,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1707.07012",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.07012, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "2053781980",
+        "name": "Vijay Vasudevan"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "1397917613",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Developing neural network image classification models often requires significant architecture engineering. In this paper, we study a method to learn the model architectures directly on the dataset of interest. As this approach is expensive when the dataset is large, we propose to search for an architectural building block on a small dataset and then transfer the block to a larger dataset. The key contribution of this work is the design of a new search space (which we call the \"NASNet search space\") which enables transferability. In our experiments, we search for the best convolutional layer (or \"cell\") on the CIFAR-10 dataset and then apply this cell to the ImageNet dataset by stacking together more copies of this cell, each with their own parameters to design a convolutional architecture, which we name a \"NASNet architecture\". We also introduce a new regularization technique called ScheduledDropPath that significantly improves generalization in the NASNet models. On CIFAR-10 itself, a NASNet found by our method achieves 2.4% error rate, which is state-of-the-art. Although the cell is not searched for directly on ImageNet, a NASNet constructed from the best cell achieves, among the published works, state-of-the-art accuracy of 82.7% top-1 and 96.2% top-5 on ImageNet. Our model is 1.2% better in top-1 accuracy than the best human-invented architectures while having 9 billion fewer FLOPS - a reduction of 28% in computational demand from the previous state-of-the-art model. When evaluated at different levels of computational cost, accuracies of NASNets exceed those of the state-of-the-art human-designed models. For instance, a small version of NASNet also achieves 74% top-1 accuracy, which is 3.1% better than equivalently-sized, state-of-the-art models for mobile platforms. Finally, the image features learned from image classification are generically useful and can be transferred to other computer vision problems. On the task of object detection, the learned features by NASNet used with the Faster-RCNN framework surpass state-of-the-art by 4.0% achieving 43.1% mAP on the COCO dataset."
+  },
+  {
+    "paperId": "9da734397acd7ff7c557960c62fb1b400b27bd89",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhangZLS17",
+      "MAG": "2724359148",
+      "ArXiv": "1707.01083",
+      "DOI": "10.1109/CVPR.2018.00716",
+      "CorpusId": 24982157
+    },
+    "title": "ShuffleNet: An Extremely Efficient Convolutional Neural Network for Mobile Devices",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 8242,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1707.01083",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.01083, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50875121",
+        "name": "Xiangyu Zhang"
+      },
+      {
+        "authorId": "2148927556",
+        "name": "Xinyu Zhou"
+      },
+      {
+        "authorId": "3287035",
+        "name": "Mengxiao Lin"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "We introduce an extremely computation-efficient CNN architecture named ShuffleNet, which is designed specially for mobile devices with very limited computing power (e.g., 10-150 MFLOPs). The new architecture utilizes two new operations, pointwise group convolution and channel shuffle, to greatly reduce computation cost while maintaining accuracy. Experiments on ImageNet classification and MS COCO object detection demonstrate the superior performance of ShuffleNet over other structures, e.g. lower top-1 error (absolute 7.8%) than recent MobileNet [12] on ImageNet classification task, under the computation budget of 40 MFLOPs. On an ARM-based mobile device, ShuffleNet achieves ~13Ã— actual speedup over AlexNet while maintaining comparable accuracy."
+  },
+  {
+    "paperId": "3647d6d0f151dc05626449ee09cc7bce55be497e",
+    "externalIds": {
+      "DBLP": "journals/corr/HowardZCKWWAA17",
+      "ArXiv": "1704.04861",
+      "MAG": "2612445135",
+      "CorpusId": 12670695
+    },
+    "title": "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 24605,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.04861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144727050",
+        "name": "Andrew G. Howard"
+      },
+      {
+        "authorId": "2717876",
+        "name": "Menglong Zhu"
+      },
+      {
+        "authorId": null,
+        "name": "Bo Chen"
+      },
+      {
+        "authorId": "2741985",
+        "name": "Dmitry Kalenichenko"
+      },
+      {
+        "authorId": "2108301072",
+        "name": "Weijun Wang"
+      },
+      {
+        "authorId": "47447630",
+        "name": "Tobias Weyand"
+      },
+      {
+        "authorId": "2612392",
+        "name": "M. Andreetto"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "We present a class of efficient models called MobileNets for mobile and embedded vision applications. MobileNets are based on a streamlined architecture that uses depth-wise separable convolutions to build light weight deep neural networks. We introduce two simple global hyper-parameters that efficiently trade off between latency and accuracy. These hyper-parameters allow the model builder to choose the right sized model for their application based on the constraints of the problem. We present extensive experiments on resource and accuracy tradeoffs and show strong performance compared to other popular models on ImageNet classification. We then demonstrate the effectiveness of MobileNets across a wide range of applications and use cases including object detection, finegrain classification, face attributes and large scale geo-localization."
+  },
+  {
+    "paperId": "1a0912bb76777469295bb2c059faee907e7f3258",
+    "externalIds": {
+      "ArXiv": "1703.06870",
+      "CorpusId": 54465873
+    },
+    "title": "Mask R-CNN",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 31572,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.06870, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2082991",
+        "name": "Georgia Gkioxari"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We present a conceptually simple, flexible, and general framework for object instance segmentation. Our approach efficiently detects objects in an image while simultaneously generating a high-quality segmentation mask for each instance. The method, called Mask R-CNN, extends Faster R-CNN by adding a branch for predicting an object mask in parallel with the existing branch for bounding box recognition. Mask R-CNN is simple to train and adds only a small overhead to Faster R-CNN, running at 5 fps. Moreover, Mask R-CNN is easy to generalize to other tasks, e.g., allowing us to estimate human poses in the same framework. We show top results in all three tracks of the COCO suite of challenges, including instance segmentation, bounding-box object detection, and person keypoint detection. Without tricks, Mask R-CNN outperforms all existing, single-model entries on every task, including the COCO 2016 challenge winners. We hope our simple and effective approach will serve as a solid baseline and help ease future research in instance-level recognition. Code will be made available."
+  },
+  {
+    "paperId": "59228743a2f01445a5ecdb616b3c1a550343cdc1",
+    "externalIds": {
+      "MAG": "2766224267",
+      "DBLP": "conf/iclr/SharirS18",
+      "CorpusId": 3537649
+    },
+    "title": "On the Expressive Power of Overlapping Architectures of Deep Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3074811",
+        "name": "Or Sharir"
+      },
+      {
+        "authorId": "3140335",
+        "name": "A. Shashua"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "b587ee7c802a5bd222a69090f59285e0dfdb29f1",
+    "externalIds": {
+      "MAG": "2962834855",
+      "ArXiv": "1702.03118",
+      "DBLP": "journals/corr/ElfwingUD17",
+      "DOI": "10.1016/j.neunet.2017.12.012",
+      "CorpusId": 6940861,
+      "PubMed": "29395652"
+    },
+    "title": "Sigmoid-Weighted Linear Units for Neural Network Function Approximation in Reinforcement Learning",
+    "venue": "Neural Networks",
+    "year": 2017,
+    "citationCount": 2433,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.neunet.2017.12.012",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.03118, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2169762",
+        "name": "Stefan Elfwing"
+      },
+      {
+        "authorId": "1773761",
+        "name": "E. Uchibe"
+      },
+      {
+        "authorId": "1714997",
+        "name": "K. Doya"
+      }
+    ],
+    "abstract": "In recent years, neural networks have enjoyed a renaissance as function approximators in reinforcement learning. Two decades after Tesauro's TD-Gammon achieved near top-level human performance in backgammon, the deep reinforcement learning algorithm DQN achieved human-level performance in many Atari 2600 games. The purpose of this study is twofold. First, we propose two activation functions for neural network function approximation in reinforcement learning: the sigmoid-weighted linear unit (SiLU) and its derivative function (dSiLU). The activation of the SiLU is computed by the sigmoid function multiplied by its input. Second, we suggest that the more traditional approach of using on-policy learning with eligibility traces, instead of experience replay, and softmax action selection can be competitive with DQN, without the need for a separate target network. We validate our proposed approach by, first, achieving new state-of-the-art results in both stochastic SZ-Tetris and Tetris with a small 10 × 10 board, using TD(λ) learning and shallow dSiLU network agents, and, then, by outperforming DQN in the Atari 2600 domain by using a deep Sarsa(λ) agent with SiLU and dSiLU hidden units."
+  },
+  {
+    "paperId": "2a94c84383ee3de5e6211d43d16e7de387f68878",
+    "externalIds": {
+      "ArXiv": "1612.03144",
+      "DBLP": "conf/cvpr/LinDGHHB17",
+      "MAG": "2565639579",
+      "DOI": "10.1109/CVPR.2017.106",
+      "CorpusId": 10716717
+    },
+    "title": "Feature Pyramid Networks for Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 26438,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.03144",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1790580",
+        "name": "Bharath Hariharan"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      }
+    ],
+    "abstract": "Feature pyramids are a basic component in recognition systems for detecting objects at different scales. But pyramid representations have been avoided in recent object detectors that are based on deep convolutional networks, partially because they are slow to compute and memory intensive. In this paper, we exploit the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to construct feature pyramids with marginal extra cost. A top-down architecture with lateral connections is developed for building high-level semantic feature maps at all scales. This architecture, called a Feature Pyramid Network (FPN), shows significant improvement as a generic feature extractor in several applications. Using a basic Faster R-CNN system, our method achieves state-of-the-art single-model results on the COCO detection benchmark without bells and whistles, surpassing all existing single-model entries including those from the COCO 2016 challenge winners. In addition, our method can run at 5 FPS on a GPU and thus is a practical and accurate solution to multi-scale object detection. Code will be made publicly available."
+  },
+  {
+    "paperId": "aad34665649953fa4bbacdc6eff4edb5408df6b3",
+    "externalIds": {
+      "MAG": "2552294571",
+      "DBLP": "journals/corr/ZhangLLL16",
+      "ArXiv": "1611.05725",
+      "DOI": "10.1109/CVPR.2017.415",
+      "CorpusId": 17265670
+    },
+    "title": "PolyNet: A Pursuit of Structural Diversity in Very Deep Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 277,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.05725",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.05725, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153649520",
+        "name": "Xingcheng Zhang"
+      },
+      {
+        "authorId": "2109714662",
+        "name": "Zhizhong Li"
+      },
+      {
+        "authorId": "1717179",
+        "name": "Chen Change Loy"
+      },
+      {
+        "authorId": "1807606",
+        "name": "Dahua Lin"
+      }
+    ],
+    "abstract": "A number of studies have shown that increasing the depth or width of convolutional networks is a rewarding approach to improve the performance of image recognition. In our study, however, we observed difficulties along both directions. On one hand, the pursuit for very deep networks is met with a diminishing return and increased training difficulty, on the other hand, widening a network would result in a quadratic growth in both computational cost and memory demand. These difficulties motivate us to explore structural diversity in designing deep networks, a new dimension beyond just depth and width. Specifically, we present a new family of modules, namely the PolyInception, which can be flexibly inserted in isolation or in a composition as replacements of different parts of a network. Choosing PolyInception modules with the guidance of architectural efficiency can improve the expressive power while preserving comparable computational cost. The Very Deep PolyNet, designed following this direction, demonstrates substantial improvements over the state-of-the-art on the ILSVRC 2012 benchmark. Compared to Inception-ResNet-v2, it reduces the top-5 validation error on single crops from 4.9% to 4.25%, and that on multi-crops from 3.7% to 3.45%."
+  },
+  {
+    "paperId": "f6e0856b4a9199fa968ac00da612a9407b5cb85c",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XieGDTH17",
+      "MAG": "2953328958",
+      "ArXiv": "1611.05431",
+      "DOI": "10.1109/CVPR.2017.634",
+      "CorpusId": 8485068
+    },
+    "title": "Aggregated Residual Transformations for Deep Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 11565,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1611.05431",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.05431, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "144035504",
+        "name": "Z. Tu"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      }
+    ],
+    "abstract": "We present a simple, highly modularized network architecture for image classification. Our network is constructed by repeating a building block that aggregates a set of transformations with the same topology. Our simple design results in a homogeneous, multi-branch architecture that has only a few hyper-parameters to set. This strategy exposes a new dimension, which we call cardinality (the size of the set of transformations), as an essential factor in addition to the dimensions of depth and width. On the ImageNet-1K dataset, we empirically show that even under the restricted condition of maintaining complexity, increasing cardinality is able to improve classification accuracy. Moreover, increasing cardinality is more effective than going deeper or wider when we increase the capacity. Our models, named ResNeXt, are the foundations of our entry to the ILSVRC 2016 classification task in which we secured 2nd place. We further investigate ResNeXt on an ImageNet-5K set and the COCO detection set, also showing better results than its ResNet counterpart. The code and models are publicly available online."
+  },
+  {
+    "paperId": "67d968c7450878190e45ac7886746de867bf673d",
+    "externalIds": {
+      "MAG": "2952431534",
+      "ArXiv": "1611.01578",
+      "DBLP": "journals/corr/ZophL16",
+      "CorpusId": 12713052
+    },
+    "title": "Neural Architecture Search with Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 5863,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.01578, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Neural networks are powerful and flexible models that work well for many difficult learning tasks in image, speech and natural language understanding. Despite their success, neural networks are still hard to design. In this paper, we use a recurrent network to generate the model descriptions of neural networks and train this RNN with reinforcement learning to maximize the expected accuracy of the generated architectures on a validation set. On the CIFAR-10 dataset, our method, starting from scratch, can design a novel network architecture that rivals the best human-invented architecture in terms of test set accuracy. Our CIFAR-10 model achieves a test error rate of 3.65, which is 0.09 percent better and 1.05x faster than the previous state-of-the-art model that used a similar architectural scheme. On the Penn Treebank dataset, our model can compose a novel recurrent cell that outperforms the widely-used LSTM cell, and other state-of-the-art baselines. Our cell achieves a test set perplexity of 62.4 on the Penn Treebank, which is 3.6 perplexity better than the previous state-of-the-art model. The cell can also be transferred to the character language modeling task on PTB and achieves a state-of-the-art perplexity of 1.214."
+  },
+  {
+    "paperId": "5b6ec746d309b165f9f9def873a2375b6fb40f3d",
+    "externalIds": {
+      "MAG": "2531409750",
+      "DBLP": "conf/cvpr/Chollet17",
+      "ArXiv": "1610.02357",
+      "DOI": "10.1109/CVPR.2017.195",
+      "CorpusId": 2375110
+    },
+    "title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 17471,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1610.02357",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.02357, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1565641737",
+        "name": "François Chollet"
+      }
+    ],
+    "abstract": "We present an interpretation of Inception modules in convolutional neural networks as being an intermediate step in-between regular convolution and the depthwise separable convolution operation (a depthwise convolution followed by a pointwise convolution). In this light, a depthwise separable convolution can be understood as an Inception module with a maximally large number of towers. This observation leads us to propose a novel deep convolutional neural network architecture inspired by Inception, where Inception modules have been replaced with depthwise separable convolutions. We show that this architecture, dubbed Xception, slightly outperforms Inception V3 on the ImageNet dataset (which Inception V3 was designed for), and significantly outperforms Inception V3 on a larger image classification dataset comprising 350 million images and 17,000 classes. Since the Xception architecture has the same number of parameters as Inception V3, the performance gains are not due to increased capacity but rather to a more efficient use of model parameters."
+  },
+  {
+    "paperId": "5694e46284460a648fe29117cbc55f6c9be3fa3c",
+    "externalIds": {
+      "MAG": "2963446712",
+      "ArXiv": "1608.06993",
+      "DBLP": "journals/corr/HuangLW16a",
+      "DOI": "10.1109/CVPR.2017.243",
+      "CorpusId": 9433631
+    },
+    "title": "Densely Connected Convolutional Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 42658,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1608.06993",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1608.06993, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143983679",
+        "name": "Gao Huang"
+      },
+      {
+        "authorId": "2109168016",
+        "name": "Zhuang Liu"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      }
+    ],
+    "abstract": "Recent work has shown that convolutional networks can be substantially deeper, more accurate, and efficient to train if they contain shorter connections between layers close to the input and those close to the output. In this paper, we embrace this observation and introduce the Dense Convolutional Network (DenseNet), which connects each layer to every other layer in a feed-forward fashion. Whereas traditional convolutional networks with L layers have L connections&#x2014;one between each layer and its subsequent layer&#x2014;our network has L(L+1)/2 direct connections. For each layer, the feature-maps of all preceding layers are used as inputs, and its own feature-maps are used as inputs into all subsequent layers. DenseNets have several compelling advantages: they alleviate the vanishing-gradient problem, strengthen feature propagation, encourage feature reuse, and substantially reduce the number of parameters. We evaluate our proposed architecture on four highly competitive object recognition benchmark tasks (CIFAR-10, CIFAR-100, SVHN, and ImageNet). DenseNets obtain significant improvements over the state-of-the-art on most of them, whilst requiring less memory and computation to achieve high performance. Code and pre-trained models are available at https://github.com/liuzhuang13/DenseNet."
+  },
+  {
+    "paperId": "de5e7320729f5d3cbb6709eb6329ec41ace8c95d",
+    "externalIds": {
+      "ArXiv": "1606.08415",
+      "MAG": "2899663614",
+      "CorpusId": 125617073
+    },
+    "title": "Gaussian Error Linear Units (GELUs)",
+    "venue": "",
+    "year": 2016,
+    "citationCount": 6645,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.08415, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "1700980",
+        "name": "Kevin Gimpel"
+      }
+    ],
+    "abstract": "We propose the Gaussian Error Linear Unit (GELU), a high-performing neural network activation function. The GELU activation function is $x\\Phi(x)$, where $\\Phi(x)$ the standard Gaussian cumulative distribution function. The GELU nonlinearity weights inputs by their value, rather than gates inputs by their sign as in ReLUs ($x\\mathbf{1}_{x>0}$). We perform an empirical evaluation of the GELU nonlinearity against the ReLU and ELU activations and find performance improvements across all considered computer vision, natural language processing, and speech tasks."
+  },
+  {
+    "paperId": "03e04983f7ce6a9c2b42948840b3312aea33f9f3",
+    "externalIds": {
+      "DBLP": "conf/icml/RaghuPKGS17",
+      "ArXiv": "1606.05336",
+      "MAG": "2433379750",
+      "CorpusId": 2838204
+    },
+    "title": "On the Expressive Power of Deep Neural Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2016,
+    "citationCount": 873,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.05336, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40297238",
+        "name": "M. Raghu"
+      },
+      {
+        "authorId": "16443937",
+        "name": "Ben Poole"
+      },
+      {
+        "authorId": "3371403",
+        "name": "J. Kleinberg"
+      },
+      {
+        "authorId": "25769960",
+        "name": "S. Ganguli"
+      },
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      }
+    ],
+    "abstract": "We propose a new approach to the problem of neural network expressivity, which seeks to characterize how structural properties of a neural network family affect the functions it is able to compute. Our approach is based on an interrelated set of measures of expressivity, unified by the novel notion of trajectory length, which measures how the output of a network changes as the input sweeps along a one-dimensional path. Our findings can be summarized as follows: \n(1) The complexity of the computed function grows exponentially with depth. \n(2) All weights are not equal: trained networks are more sensitive to their lower (initial) layer weights. \n(3) Regularizing on trajectory length (trajectory regularization) is a simpler alternative to batch normalization, with the same performance."
+  },
+  {
+    "paperId": "1c4e9156ca07705531e45960b7a919dc473abb51",
+    "externalIds": {
+      "MAG": "2964137095",
+      "DBLP": "conf/bmvc/ZagoruykoK16",
+      "ArXiv": "1605.07146",
+      "DOI": "10.5244/C.30.87",
+      "CorpusId": 15276198
+    },
+    "title": "Wide Residual Networks",
+    "venue": "British Machine Vision Conference",
+    "year": 2016,
+    "citationCount": 8802,
+    "openAccessPdf": {
+      "url": "http://www.bmva.org/bmvc/2016/papers/paper087/abstract087.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.07146, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2134433",
+        "name": "Sergey Zagoruyko"
+      },
+      {
+        "authorId": "2505902",
+        "name": "N. Komodakis"
+      }
+    ],
+    "abstract": "Deep residual networks were shown to be able to scale up to thousands of layers and still have improving performance. However, each fraction of a percent of improved accuracy costs nearly doubling the number of layers, and so training very deep residual networks has a problem of diminishing feature reuse, which makes these networks very slow to train. To tackle these problems, in this paper we conduct a detailed experimental study on the architecture of ResNet blocks, based on which we propose a novel architecture where we decrease depth and increase width of residual networks. We call the resulting network structures wide residual networks (WRNs) and show that these are far superior over their commonly used thin and very deep counterparts. For example, we demonstrate that even a simple 16-layer-deep wide residual network outperforms in accuracy and efficiency all previous deep residual networks, including thousand-layer-deep networks, achieving new state-of-the-art results on CIFAR, SVHN, COCO, and significant improvements on ImageNet. Our code and models are available at this https URL"
+  },
+  {
+    "paperId": "51db1f3c8dfc7d4077da39c96bb90a6358128111",
+    "externalIds": {
+      "ArXiv": "1603.09382",
+      "DBLP": "conf/eccv/HuangSLSW16",
+      "MAG": "2949892913",
+      "DOI": "10.1007/978-3-319-46493-0_39",
+      "CorpusId": 6773885
+    },
+    "title": "Deep Networks with Stochastic Depth",
+    "venue": "European Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 2631,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1603.09382, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143983679",
+        "name": "Gao Huang"
+      },
+      {
+        "authorId": "2117103358",
+        "name": "Yu Sun"
+      },
+      {
+        "authorId": "2109168016",
+        "name": "Zhuang Liu"
+      },
+      {
+        "authorId": "3371029",
+        "name": "Daniel Sedra"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      }
+    ],
+    "abstract": "Very deep convolutional networks with hundreds of layers have led to significant reductions in error on competitive benchmarks. Although the unmatched expressiveness of the many layers can be highly desirable at test time, training very deep networks comes with its own set of challenges. The gradients can vanish, the forward flow often diminishes, and the training time can be painfully slow. To address these problems, we propose stochastic depth, a training procedure that enables the seemingly contradictory setup to train short networks and use deep networks at test time. We start with very deep networks but during training, for each mini-batch, randomly drop a subset of layers and bypass them with the identity function. This simple approach complements the recent success of residual networks. It reduces training time substantially and improves the test error significantly on almost all data sets that we used for evaluation. With stochastic depth we can increase the depth of residual networks even beyond 1200 layers and still yield meaningful improvements in test error (4.91 % on CIFAR-10)."
+  },
+  {
+    "paperId": "592d2e65489f23ebd993dbdc0c84eda9ac8aadbe",
+    "externalIds": {
+      "ArXiv": "1602.07360",
+      "DBLP": "journals/corr/IandolaMAHDK16",
+      "MAG": "2279098554",
+      "CorpusId": 14136028
+    },
+    "title": "SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and <1MB model size",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 8317,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.07360, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3346186",
+        "name": "F. Iandola"
+      },
+      {
+        "authorId": "2318023",
+        "name": "Matthew W. Moskewicz"
+      },
+      {
+        "authorId": "2059241",
+        "name": "Khalid Ashraf"
+      },
+      {
+        "authorId": "143840275",
+        "name": "Song Han"
+      },
+      {
+        "authorId": "80724002",
+        "name": "W. Dally"
+      },
+      {
+        "authorId": "1732330",
+        "name": "K. Keutzer"
+      }
+    ],
+    "abstract": "Recent research on deep neural networks has focused primarily on improving accuracy. For a given accuracy level, it is typically possible to identify multiple DNN architectures that achieve that accuracy level. With equivalent accuracy, smaller DNN architectures offer at least three advantages: (1) Smaller DNNs require less communication across servers during distributed training. (2) Smaller DNNs require less bandwidth to export a new model from the cloud to an autonomous car. (3) Smaller DNNs are more feasible to deploy on FPGAs and other hardware with limited memory. To provide all of these advantages, we propose a small DNN architecture called SqueezeNet. SqueezeNet achieves AlexNet-level accuracy on ImageNet with 50x fewer parameters. Additionally, with model compression techniques we are able to compress SqueezeNet to less than 0.5MB (510x smaller than AlexNet). \nThe SqueezeNet architecture is available for download here: this https URL"
+  },
+  {
+    "paperId": "b5c26ab8767d046cb6e32d959fdf726aee89bb62",
+    "externalIds": {
+      "DBLP": "conf/aaai/SzegedyIVA17",
+      "MAG": "2952505871",
+      "ArXiv": "1602.07261",
+      "DOI": "10.1609/aaai.v31i1.11231",
+      "CorpusId": 1023605
+    },
+    "title": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2016,
+    "citationCount": 15426,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/11231/11090",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.07261, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "122113652",
+        "name": "Alexander A. Alemi"
+      }
+    ],
+    "abstract": "\n \n Very deep convolutional networks have been central to the largest advances in image recognition performance in recent years. One example is the Inception architecture that has been shown to achieve very good performance at relatively low computational cost. Recently, the introduction of residual connections in conjunction with a more traditional architecture has yielded state-of-the-art performance in the 2015 ILSVRC challenge; its performance was similar to the latest generation Inception-v3 network. This raises the question: Are there any benefits to combining Inception architectures with residual connections? Here we give clear empirical evidence that training with residual connections accelerates the training of Inception networks significantly. There is also some evidence of residual Inception networks outperforming similarly expensive Inception networks without residual connections by a thin margin. We also present several new streamlined architectures for both residual and non-residual Inception networks. These variations improve the single-frame recognition performance on the ILSVRC 2012 classification task significantly. We further demonstrate how proper activation scaling stabilizes the training of very wide residual Inception networks. With an ensemble of three residual and one Inception-v4 networks, we achieve 3.08% top-5 error on the test set of the ImageNet classification (CLS) challenge.\n \n"
+  },
+  {
+    "paperId": "31f9eb39d840821979e5df9f34a6e92dd9c879f2",
+    "externalIds": {
+      "ArXiv": "1512.04150",
+      "MAG": "2295107390",
+      "DBLP": "journals/corr/ZhouKLOT15",
+      "DOI": "10.1109/CVPR.2016.319",
+      "CorpusId": 6789015
+    },
+    "title": "Learning Deep Features for Discriminative Localization",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 10480,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1512.04150",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.04150, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "2556428",
+        "name": "A. Khosla"
+      },
+      {
+        "authorId": "2677488",
+        "name": "Àgata Lapedriza"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "In this work, we revisit the global average pooling layer proposed in [13], and shed light on how it explicitly enables the convolutional neural network (CNN) to have remarkable localization ability despite being trained on imagelevel labels. While this technique was previously proposed as a means for regularizing training, we find that it actually builds a generic localizable deep representation that exposes the implicit attention of CNNs on an image. Despite the apparent simplicity of global average pooling, we are able to achieve 37.1% top-5 error for object localization on ILSVRC 2014 without training on any bounding box annotation. We demonstrate in a variety of experiments that our network is able to localize the discriminative image regions despite just being trained for solving classification task1."
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226101,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation."
+  },
+  {
+    "paperId": "23ffaa0fe06eae05817f527a47ac3291077f9e58",
+    "externalIds": {
+      "MAG": "2183341477",
+      "DBLP": "conf/cvpr/SzegedyVISW16",
+      "ArXiv": "1512.00567",
+      "DOI": "10.1109/CVPR.2016.308",
+      "CorpusId": 206593880
+    },
+    "title": "Rethinking the Inception Architecture for Computer Vision",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 30685,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1512.00567",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.00567, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "3282833",
+        "name": "Z. Wojna"
+      }
+    ],
+    "abstract": "Convolutional networks are at the core of most state of-the-art computer vision solutions for a wide variety of tasks. Since 2014 very deep convolutional networks started to become mainstream, yielding substantial gains in various benchmarks. Although increased model size and computational cost tend to translate to immediate quality gains for most tasks (as long as enough labeled data is provided for training), computational efficiency and low parameter count are still enabling factors for various use cases such as mobile vision and big-data scenarios. Here we are exploring ways to scale up networks in ways that aim at utilizing the added computation as efficiently as possible by suitably factorized convolutions and aggressive regularization. We benchmark our methods on the ILSVRC 2012 classification challenge validation set demonstrate substantial gains over the state of the art: 21:2% top-1 and 5:6% top-5 error for single frame evaluation using a network with a computational cost of 5 billion multiply-adds per inference and with using less than 25 million parameters. With an ensemble of 4 models and multi-crop evaluation, we report 3:5% top-5 error and 17:3% top-1 error on the validation set and 3:6% top-5 error on the official test set."
+  },
+  {
+    "paperId": "642d0f49b7826adcf986616f4af77e736229990f",
+    "externalIds": {
+      "MAG": "2119144962",
+      "DBLP": "journals/corr/HanMD15",
+      "ArXiv": "1510.00149",
+      "CorpusId": 2134321
+    },
+    "title": "Deep Compression: Compressing Deep Neural Network with Pruning, Trained Quantization and Huffman Coding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 9899,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1510.00149, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143840275",
+        "name": "Song Han"
+      },
+      {
+        "authorId": "3123774",
+        "name": "Huizi Mao"
+      },
+      {
+        "authorId": "80724002",
+        "name": "W. Dally"
+      }
+    ],
+    "abstract": "Neural networks are both computationally intensive and memory intensive, making them difficult to deploy on embedded systems with limited hardware resources. To address this limitation, we introduce \"deep compression\", a three stage pipeline: pruning, trained quantization and Huffman coding, that work together to reduce the storage requirement of neural networks by 35x to 49x without affecting their accuracy. Our method first prunes the network by learning only the important connections. Next, we quantize the weights to enforce weight sharing, finally, we apply Huffman coding. After the first two steps we retrain the network to fine tune the remaining connections and the quantized centroids. Pruning, reduces the number of connections by 9x to 13x; Quantization then reduces the number of bits that represent each connection from 32 to 5. On the ImageNet dataset, our method reduced the storage required by AlexNet by 35x, from 240MB to 6.9MB, without loss of accuracy. Our method reduced the size of VGG-16 by 49x from 552MB to 11.3MB, again with no loss of accuracy. This allows fitting the model into on-chip SRAM cache rather than off-chip DRAM memory. Our compression method also facilitates the use of complex neural networks in mobile applications where application size and download bandwidth are constrained. Benchmarked on CPU, GPU and mobile GPU, compressed network has 3x to 4x layerwise speedup and 3x to 7x better energy efficiency."
+  },
+  {
+    "paperId": "995c5f5e62614fcb4d2796ad2faab969da51713e",
+    "externalIds": {
+      "MAG": "1836465849",
+      "ArXiv": "1502.03167",
+      "DBLP": "conf/icml/IoffeS15",
+      "CorpusId": 5808102
+    },
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 46486,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03167, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      }
+    ],
+    "abstract": "Training Deep Neural Networks is complicated by the fact that the distribution of each layer's inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities. We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs. Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization, and in some cases eliminates the need for Dropout. Applied to a state-of-the-art image classification model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a significant margin. Using an ensemble of batch-normalized networks, we improve upon the best published result on ImageNet classification: reaching 4.82% top-5 test error, exceeding the accuracy of human raters."
+  },
+  {
+    "paperId": "e15cf50aa89fee8535703b9f9512fca5bfc43327",
+    "externalIds": {
+      "DBLP": "journals/corr/SzegedyLJSRAEVR14",
+      "MAG": "2097117768",
+      "ArXiv": "1409.4842",
+      "DOI": "10.1109/CVPR.2015.7298594",
+      "CorpusId": 206592484
+    },
+    "title": "Going deeper with convolutions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 47004,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1409.4842",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.4842, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2157222093",
+        "name": "Wei Liu"
+      },
+      {
+        "authorId": "39978391",
+        "name": "Yangqing Jia"
+      },
+      {
+        "authorId": "3142556",
+        "name": "P. Sermanet"
+      },
+      {
+        "authorId": "144828948",
+        "name": "Scott E. Reed"
+      },
+      {
+        "authorId": "1838674",
+        "name": "Dragomir Anguelov"
+      },
+      {
+        "authorId": "1761978",
+        "name": "D. Erhan"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "39863668",
+        "name": "A. Rabinovich"
+      }
+    ],
+    "abstract": "We propose a deep convolutional neural network architecture codenamed Inception that achieves the new state of the art for classification and detection in the ImageNet Large-Scale Visual Recognition Challenge 2014 (ILSVRC14). The main hallmark of this architecture is the improved utilization of the computing resources inside the network. By a carefully crafted design, we increased the depth and width of the network while keeping the computational budget constant. To optimize quality, the architectural decisions were based on the Hebbian principle and the intuition of multi-scale processing. One particular incarnation used in our submission for ILSVRC14 is called GoogLeNet, a 22 layers deep network, the quality of which is assessed in the context of classification and detection."
+  },
+  {
+    "paperId": "8e3f12804882b60ad5f59aad92755c5edb34860e",
+    "externalIds": {
+      "MAG": "12634471",
+      "DBLP": "conf/eccv/BossardGG14",
+      "DOI": "10.1007/978-3-319-10599-4_29",
+      "CorpusId": 12726540
+    },
+    "title": "Food-101 - Mining Discriminative Components with Random Forests",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 3218,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/978-3-319-10599-4_29.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-319-10599-4_29?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-319-10599-4_29, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1696393",
+        "name": "Lukas Bossard"
+      },
+      {
+        "authorId": "2737253",
+        "name": "M. Guillaumin"
+      },
+      {
+        "authorId": "1681236",
+        "name": "L. Gool"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "e74f9b7f8eec6ba4704c206b93bc8079af3da4bd",
+    "externalIds": {
+      "ArXiv": "1409.0575",
+      "DBLP": "journals/corr/RussakovskyDSKSMHKKBBF14",
+      "MAG": "2546241758",
+      "DOI": "10.1007/s11263-015-0816-y",
+      "CorpusId": 2930547
+    },
+    "title": "ImageNet Large Scale Visual Recognition Challenge",
+    "venue": "International Journal of Computer Vision",
+    "year": 2014,
+    "citationCount": 42391,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.0575, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2314850892",
+        "name": "Olga Russakovsky"
+      },
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144914140",
+        "name": "Hao Su"
+      },
+      {
+        "authorId": "2285165",
+        "name": "J. Krause"
+      },
+      {
+        "authorId": "145031342",
+        "name": "S. Satheesh"
+      },
+      {
+        "authorId": "2261887230",
+        "name": "Sean Ma"
+      },
+      {
+        "authorId": "3109481",
+        "name": "Zhiheng Huang"
+      },
+      {
+        "authorId": "2354728",
+        "name": "A. Karpathy"
+      },
+      {
+        "authorId": "2556428",
+        "name": "A. Khosla"
+      },
+      {
+        "authorId": "145879842",
+        "name": "Michael S. Bernstein"
+      },
+      {
+        "authorId": "39668247",
+        "name": "A. Berg"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": "The ImageNet Large Scale Visual Recognition Challenge is a benchmark in object category classification and detection on hundreds of object categories and millions of images. The challenge has been run annually from 2010 to present, attracting participation from more than fifty institutions. This paper describes the creation of this benchmark dataset and the advances in object recognition that have been possible as a result. We discuss the challenges of collecting large-scale ground truth annotation, highlight key breakthroughs in categorical object recognition, provide a detailed analysis of the current state of the field of large-scale image classification and object detection, and compare the state-of-the-art computer vision accuracy with human accuracy. We conclude with lessons learned in the 5 years of the challenge, and propose future directions and improvements."
+  },
+  {
+    "paperId": "4965eec4d6fd69e9bff12dce7d9d84897433cc2a",
+    "externalIds": {
+      "MAG": "1993309459",
+      "DBLP": "conf/cvpr/BergLLAJB14",
+      "DOI": "10.1109/CVPR.2014.259",
+      "CorpusId": 10860374
+    },
+    "title": "Birdsnap: Large-Scale Fine-Grained Visual Categorization of Birds",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 409,
+    "openAccessPdf": {
+      "url": "http://www.cs.columbia.edu/~tberg/papers/birdsnap-cvpr14.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.259?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.259, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2053402806",
+        "name": "Thomas Berg"
+      },
+      {
+        "authorId": "2454675",
+        "name": "Jiongxin Liu"
+      },
+      {
+        "authorId": "2108211121",
+        "name": "Seung Woo Lee"
+      },
+      {
+        "authorId": "47099879",
+        "name": "Michelle L. Alexander"
+      },
+      {
+        "authorId": "34734622",
+        "name": "D. Jacobs"
+      },
+      {
+        "authorId": "1767767",
+        "name": "P. Belhumeur"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "522d65a3db7431015aeaa201a7fc4450a57e40c3",
+    "externalIds": {
+      "ArXiv": "1306.5151",
+      "DBLP": "journals/corr/MajiRKBV13",
+      "MAG": "1846799578",
+      "CorpusId": 2118703
+    },
+    "title": "Fine-Grained Visual Classification of Aircraft",
+    "venue": "arXiv.org",
+    "year": 2013,
+    "citationCount": 2877,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1306.5151, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35208858",
+        "name": "Subhransu Maji"
+      },
+      {
+        "authorId": "2827962",
+        "name": "Esa Rahtu"
+      },
+      {
+        "authorId": "1776374",
+        "name": "Juho Kannala"
+      },
+      {
+        "authorId": "1758219",
+        "name": "Matthew B. Blaschko"
+      },
+      {
+        "authorId": "1687524",
+        "name": "A. Vedaldi"
+      }
+    ],
+    "abstract": "This paper introduces FGVC-Aircraft, a new dataset containing 10,000 images of aircraft spanning 100 aircraft models, organised in a three-level hierarchy. At the finer level, differences between models are often subtle but always visually measurable, making visual recognition challenging but possible. A benchmark is obtained by defining corresponding classification tasks and evaluation protocols, and baseline results are presented. The construction of this dataset was made possible by the work of aircraft enthusiasts, a strategy that can extend to the study of number of other object classes. Compared to the domains usually considered in fine-grained visual classification (FGVC), for example animals, aircraft are rigid and hence less deformable. They, however, present other interesting modes of variation, including purpose, size, designation, structure, historical style, and branding."
+  },
+  {
+    "paperId": "abd1c342495432171beb7ca8fd9551ef13cbd0ff",
+    "externalIds": {
+      "DBLP": "conf/nips/KrizhevskySH12",
+      "MAG": "2618530766",
+      "DOI": "10.1145/3065386",
+      "CorpusId": 195908774
+    },
+    "title": "ImageNet classification with deep convolutional neural networks",
+    "venue": "Communications of the ACM",
+    "year": 2012,
+    "citationCount": 128378,
+    "openAccessPdf": {
+      "url": "http://dl.acm.org/ft_gateway.cfm?id=3065386&type=pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3065386?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3065386, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "02b28f3b71138a06e40dbd614abf8568420ae183",
+    "externalIds": {
+      "DBLP": "conf/icvgip/NilsbackZ08",
+      "MAG": "2533598788",
+      "DOI": "10.1109/ICVGIP.2008.47",
+      "CorpusId": 15193013
+    },
+    "title": "Automated Flower Classification over a Large Number of Classes",
+    "venue": "2008 Sixth Indian Conference on Computer Vision, Graphics & Image Processing",
+    "year": 2008,
+    "citationCount": 4787,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICVGIP.2008.47?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICVGIP.2008.47, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2646632",
+        "name": "M. Nilsback"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "db95b0785118db34b553e6b5f137ea2bee5a0639",
+    "externalIds": {
+      "MAG": "2079148163",
+      "DOI": "10.1136/bmj.4.5674.53-c",
+      "CorpusId": 383200
+    },
+    "title": "Care of aged doctors",
+    "venue": "",
+    "year": 1969,
+    "citationCount": 1898,
+    "openAccessPdf": {
+      "url": "https://europepmc.org/articles/pmc1629632?pdf=render",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1136/bmj.4.5674.53-c?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1136/bmj.4.5674.53-c, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3188342",
+        "name": "Omkar M. Parkhi"
+      },
+      {
+        "authorId": "1687524",
+        "name": "A. Vedaldi"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      },
+      {
+        "authorId": "1694502",
+        "name": "C. V. Jawahar"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c8c4ab59ac29973a00df4e5c8df3773a3c59995a",
+    "externalIds": {
+      "MAG": "2962972936",
+      "DBLP": "conf/iclr/RamachandranZL18",
+      "CorpusId": 10919244
+    },
+    "title": "Searching for Activation Functions",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 3736,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3377142",
+        "name": "Prajit Ramachandran"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "34f25a8704614163c4095b3ee2fc969b60de4698",
+    "externalIds": {
+      "DBLP": "journals/jmlr/SrivastavaHKSS14",
+      "MAG": "2095705004",
+      "DOI": "10.5555/2627435.2670313",
+      "CorpusId": 6844431
+    },
+    "title": "Dropout: a simple way to prevent neural networks from overfitting",
+    "venue": "Journal of machine learning research",
+    "year": 2014,
+    "citationCount": 42927,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.5555/2627435.2670313?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5555/2627435.2670313, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2897313",
+        "name": "Nitish Srivastava"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "eae500ce89f7cc5cd48a58c4ba7edb2f02826b85",
+    "externalIds": {
+      "MAG": "780950768",
+      "CorpusId": 16632981
+    },
+    "title": "Collecting a Large-scale Dataset of Fine-grained Cars",
+    "venue": "",
+    "year": 2013,
+    "citationCount": 237,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2285165",
+        "name": "J. Krause"
+      },
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144421225",
+        "name": "Michael Stark"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5d90f06bb70a0a3dced62413346235c02b1aa086",
+    "externalIds": {
+      "MAG": "2945315962",
+      "CorpusId": 18268744
+    },
+    "title": "Learning Multiple Layers of Features from Tiny Images",
+    "venue": "",
+    "year": 2009,
+    "citationCount": 41718,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      }
+    ],
+    "abstract": null
+  }
+]
