@@ -578,10 +578,34 @@ function layoutChronological(nodes) {
   return { positioned, yearLabels, totalW, totalH };
 }
 
+// #83: rank nodes by total degree (in + out) and tag the top decile
+// as "hubs" so the viewer can mark them with a 👑 badge + thick border.
+// Returns a Set of node ids whose degree clears the 90th percentile.
+function computeHubSet(nodes, edges) {
+  const degree = new Map();
+  for (const n of nodes) degree.set(n.id, 0);
+  for (const e of edges) {
+    if (degree.has(e.src)) degree.set(e.src, degree.get(e.src) + 1);
+    if (degree.has(e.dst)) degree.set(e.dst, degree.get(e.dst) + 1);
+  }
+  const values = [...degree.values()].filter((d) => d > 0).sort((a, b) => a - b);
+  if (values.length === 0) return new Set();
+  // 90th percentile + a floor (≥ 4 connections) so trees with few
+  // edges don't gild every node.
+  const idx = Math.floor(values.length * 0.9);
+  const threshold = Math.max(values[idx], 4);
+  const hubs = new Set();
+  for (const [id, d] of degree) if (d >= threshold) hubs.add(id);
+  return hubs;
+}
+
 function render() {
   const { nodes, edges } = state.data;
   const visibleEdges = (edges || []).filter((e) => state.visibleRelations.has(e.rel));
   const layout = layoutChronological(nodes);
+  // #83: hub set computed against ALL edges (not just visible) so toggling
+  // relation filters doesn't reshuffle which papers feel "important".
+  state.hubSet = computeHubSet(nodes, edges || []);
   // #61 / #62: combine search and year filters into a single match set
   // so drawSvg only needs one predicate. Filters are applied to nodes
   // (not the layout itself) so the chronological grid stays stable as
@@ -775,9 +799,18 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     const trendingHtml = p.is_trending
       ? `<span class="node-card__trending" title="citation velocity: trending">📈</span>`
       : "";
+    // #83: hub badge for papers whose in+out degree clears the 90th
+    // percentile across the theme. Strong cross-tree connectors —
+    // worth a glance whether or not citation_count is high.
+    const isHub = state.hubSet?.has(p.id);
+    if (isHub) card.classList.add("node-card--hub");
+    const hubHtml = isHub
+      ? `<span class="node-card__hub" title="hub paper: high connectivity">👑</span>`
+      : "";
     card.innerHTML = `
       <div class="node-card__venue">
         <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
+        ${hubHtml}
         ${trendingHtml}
       </div>
       <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
