@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 from types import SimpleNamespace
 from unittest.mock import patch
+
+import pytest
 
 from paperpilot.utils.keyword_expand import expand_keywords
 
@@ -83,6 +86,85 @@ def test_expand_keywords_provider_returns_invalid_json():
 
 def test_expand_keywords_empty_input():
     assert expand_keywords([], provider=None, max_expansions=5) == []
+
+
+# ---- Silent-fallback detection (issue #45) -----------------------------------
+
+
+@pytest.fixture()
+def caplog_warning(caplog: pytest.LogCaptureFixture) -> pytest.LogCaptureFixture:
+    """Capture warnings from the keyword_expand logger only."""
+    caplog.set_level(logging.WARNING, logger="paperpilot.utils.keyword_expand")
+    return caplog
+
+
+def test_expand_keywords_warns_when_provider_unavailable(
+    caplog_warning: pytest.LogCaptureFixture,
+) -> None:
+    """When provider is disabled, log a warning so silent fallback is visible."""
+    expand_keywords(
+        keywords=["rag"],
+        provider=None,
+        max_expansions=5,
+    )
+    msgs = [r.getMessage() for r in caplog_warning.records if r.levelno >= logging.WARNING]
+    assert any("provider unavailable" in m or "fallback" in m.lower() for m in msgs), (
+        f"expected fallback warning, got: {msgs}"
+    )
+
+
+def test_expand_keywords_warns_when_provider_returns_empty(
+    caplog_warning: pytest.LogCaptureFixture,
+) -> None:
+    """LLM returning None / empty triggers a warning (silent fallback)."""
+    with patch("paperpilot.utils.keyword_expand._call_provider", return_value=None):
+        expand_keywords(
+            keywords=["rag"],
+            provider=SimpleNamespace(name="fake", enabled=True),
+            max_expansions=5,
+        )
+    msgs = [r.getMessage() for r in caplog_warning.records if r.levelno >= logging.WARNING]
+    assert any("empty" in m.lower() or "fallback" in m.lower() for m in msgs), (
+        f"expected empty/fallback warning, got: {msgs}"
+    )
+
+
+def test_expand_keywords_no_warning_on_successful_expansion(
+    caplog_warning: pytest.LogCaptureFixture,
+) -> None:
+    """Successful expansion (added > 0) must NOT emit a fallback warning."""
+    with patch(
+        "paperpilot.utils.keyword_expand._call_provider",
+        return_value='["retrieval", "dense retrieval"]',
+    ):
+        expand_keywords(
+            keywords=["rag"],
+            provider=SimpleNamespace(name="fake", enabled=True),
+            max_expansions=5,
+        )
+    msgs = [r.getMessage() for r in caplog_warning.records if r.levelno >= logging.WARNING]
+    fallback_msgs = [m for m in msgs if "fallback" in m.lower() or "unavailable" in m.lower()]
+    assert fallback_msgs == [], f"unexpected fallback warning on success: {fallback_msgs}"
+
+
+def test_expand_keywords_warns_when_no_new_keywords_added(
+    caplog_warning: pytest.LogCaptureFixture,
+) -> None:
+    """LLM returning only duplicates of input → warn (effectively no expansion)."""
+    with patch(
+        "paperpilot.utils.keyword_expand._call_provider",
+        return_value='["RAG", "rag"]',
+    ):
+        out = expand_keywords(
+            keywords=["rag"],
+            provider=SimpleNamespace(name="fake", enabled=True),
+            max_expansions=5,
+        )
+    assert out == ["rag"]
+    msgs = [r.getMessage() for r in caplog_warning.records if r.levelno >= logging.WARNING]
+    assert any("no new keywords" in m.lower() or "fallback" in m.lower() for m in msgs), (
+        f"expected no-expansion warning, got: {msgs}"
+    )
 
 
 # --------------------------- Error / edge paths ----------------------------
