@@ -593,6 +593,57 @@ def test_fetch_related_citations_also_carries_flag(tmp_path, monkeypatch):
     assert items[0]["_is_influential"] is True
 
 
+# ---- intents propagation (#53) ----
+
+
+def test_fetch_related_requests_intents_field(tmp_path, monkeypatch):
+    """The references query must include `intents` so we can derive the
+    relation type without an LLM call (issue #53)."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    captured: dict = {}
+
+    def _capture(url):
+        captured["url"] = url
+        return {"data": []}
+
+    with patch.object(build_lineage, "_s2_get", side_effect=_capture):
+        build_lineage.fetch_related("paperX", "references", 5)
+    assert "intents" in captured["url"], (
+        f"fields query missing intents: {captured['url']}"
+    )
+
+
+def test_fetch_related_propagates_intents(tmp_path, monkeypatch):
+    """intents is an entry-level array — lift onto the inner paper dict
+    as `_intents` so BFS callers can derive the relation."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    fake_data = {
+        "data": [
+            {
+                "isInfluential": True,
+                "intents": ["methodology"],
+                "citedPaper": {"paperId": "P1", "title": "Method ref"},
+            },
+            {
+                "isInfluential": True,
+                "intents": ["background", "result"],
+                "citedPaper": {"paperId": "P2", "title": "Multi-intent"},
+            },
+            {
+                # Some entries omit intents entirely → treat as None
+                "isInfluential": True,
+                "citedPaper": {"paperId": "P3", "title": "No intents"},
+            },
+        ]
+    }
+    with patch.object(build_lineage, "_s2_get", return_value=fake_data):
+        items = build_lineage.fetch_related("paperX", "references", 5)
+    by_id = {it["paperId"]: it for it in items}
+    assert by_id["P1"]["_intents"] == ["methodology"]
+    assert by_id["P2"]["_intents"] == ["background", "result"]
+    assert by_id["P3"]["_intents"] is None  # missing ≠ empty list
+
+
 # ---- conference parameterization (#21) ----
 
 
