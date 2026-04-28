@@ -281,10 +281,22 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
 
 
 def select_top(items: list[dict], n: int) -> list[dict]:
-    """Sort by citationCount descending, take top n. Filter out items with no abstract."""
+    """Pick top n abstract-bearing refs, prioritising S2-influential ones.
+
+    Issue #50: foundational papers (ResNet, Transformer, etc.) accumulate
+    huge citation counts and would dominate a pure citation-desc top-N,
+    crowding out the actually-influential niche refs the citing paper
+    built upon. Partition first so influential refs claim the LLM-classify
+    budget; fall back to high-citation candidates only if there is room
+    left. Refs without the field (older cache) count as "not False" so
+    existing themes don't regress.
+    """
     scored = [it for it in items if it.get("abstract")]
-    scored.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
-    return scored[:n]
+    influential = [it for it in scored if it.get("_is_influential") is not False]
+    non_influential = [it for it in scored if it.get("_is_influential") is False]
+    influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
+    non_influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
+    return (influential + non_influential)[:n]
 
 
 # ---------- Build pipeline ----------
