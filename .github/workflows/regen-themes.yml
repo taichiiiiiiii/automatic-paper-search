@@ -1,0 +1,93 @@
+name: regen-themes
+# Issue #84: weekly auto-regeneration of theme family-tree JSONs.
+# Runs every Sunday 09:00 JST (00:00 UTC). Pushes the updated docs/themes/
+# JSONs straight to develop; Cloudflare Pages picks them up and serves
+# the fresh viewer within minutes.
+
+on:
+  schedule:
+    # Sunday 00:00 UTC = Sunday 09:00 JST
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    inputs:
+      themes:
+        description: 'Comma-separated themes to regen (default: all)'
+        required: false
+        default: ''
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          # Use a token that can push back to develop. PAT with "Contents: RW"
+          # so the auto-commit triggers Cloudflare's git-watch deploy.
+          token: ${{ secrets.GH_PAT || github.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: uv sync
+        run: uv sync
+
+      - name: Regenerate themes
+        env:
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
+        run: |
+          set -e
+          # Default theme list — keep aligned with the published manifest.
+          DEFAULT_THEMES=(
+            "Mixture of Experts"
+            "Direct Preference Optimization"
+            "Diffusion Models"
+            "Retrieval-Augmented Generation"
+            "Reinforcement Learning from Human Feedback"
+            "Semantic Segmentation"
+          )
+          # Allow workflow_dispatch to override.
+          if [ -n "${{ github.event.inputs.themes }}" ]; then
+            IFS=',' read -ra THEMES <<< "${{ github.event.inputs.themes }}"
+          else
+            THEMES=("${DEFAULT_THEMES[@]}")
+          fi
+          for theme in "${THEMES[@]}"; do
+            echo "::group::regen $theme"
+            # Don't fail the whole job if one theme hits an S2/Groq throttle —
+            # the existing JSON stays in place and the operator can re-run via
+            # workflow_dispatch.
+            uv run python -m paperpilot.scripts.build_theme_lineage \
+              --theme "$theme" \
+              --depth 1 --seeds 5 --width 8 --since-year 2018 \
+              || echo "::warning::regen failed for $theme — keeping previous build"
+            # Cool-off between themes so S2's per-IP rate limit recovers.
+            sleep 60
+            echo "::endgroup::"
+          done
+
+      - name: Refresh manifest
+        run: |
+          uv run python -m paperpilot.scripts.generate_themes_manifest \
+            --themes-dir docs/themes
+
+      - name: Commit + push if changed
+        run: |
+          git config user.email "actions@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add docs/themes/ paperpilot/data/lineage-cache/ || true
+          if git diff --cached --quiet; then
+            echo "nothing changed — skipping commit"
+            exit 0
+          fi
+          git commit -m "data(themes): weekly auto-regen ($(date -u +%Y-%m-%d))"
+          git push origin develop
