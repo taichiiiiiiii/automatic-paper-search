@@ -346,10 +346,14 @@ def test_build_writes_output_under_themes_dir(tmp_path: Path, monkeypatch):
     docs_root = tmp_path / "docs"
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", docs_root)
 
-    provider = _stub_external_calls(monkeypatch)
+    _stub_external_calls(monkeypatch)
 
     seed = _mk_s2_paper("seed1", title="Original MoE", year=2017)
-    parent = _mk_s2_paper("p_parent", year=2014)
+    parent = {
+        **_mk_s2_paper("p_parent", year=2014),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
 
     def fake_rwr(method, url, **kw):
         if "/paper/search" in url:
@@ -378,11 +382,10 @@ def test_build_writes_output_under_themes_dir(tmp_path: Path, monkeypatch):
     payload = json.loads(expected.read_text())
     assert payload["meta"]["slug"] == "mixture-of-experts"
     assert payload["meta"]["theme"] == "Mixture of Experts"
-    # Lenient classifier calls _chat (not classify_relation). Both are on the
-    # provider — §11 (LLM via AbstractLLMProvider) is satisfied either way.
-    # Two _chat calls expected: one for keyword expansion, one for the
-    # parent → seed classification.
-    assert len(provider.chat_calls) >= 2, "_chat must be called for classify"
+    # Issue #53: relation derivation is LLM-free. The edge is produced by
+    # derive_relation() from the parent's _intents=["methodology"] →
+    # relation=extends, with a templated rationale.
+    assert any(e["rel"] == "extends" for e in payload["edges"])
 
 
 def test_build_uses_slug_for_path_not_raw_theme(tmp_path: Path, monkeypatch):
@@ -423,23 +426,17 @@ def test_build_uses_slug_for_path_not_raw_theme(tmp_path: Path, monkeypatch):
     assert "etc" not in parts  # collapsed into "etc-passwd" — not a separate dir
 
 
-def test_build_drops_edges_with_unrelated_relation(tmp_path: Path, monkeypatch):
-    """Even via the lenient classifier, ``relation == "unrelated"`` must
-    suppress the edge — the viewer treats unrelated as noise and would
-    clutter the tree if shown."""
+def test_build_drops_edges_for_non_influential_parents(tmp_path: Path, monkeypatch):
+    """Issue #53: derive_relation returns None when isInfluential=False, so
+    such parents produce no edge — replaces the legacy LLM "unrelated" path."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
-    _stub_external_calls(
-        monkeypatch,
-        chat_text=(
-            '{"relation": "unrelated", "confidence": 0.4, "rationale": "関係なし"}'
-        ),
-    )
+    _stub_external_calls(monkeypatch)
 
     seed = _mk_s2_paper("seed", year=2020)
-    parent = _mk_s2_paper("parent", year=2018)
+    parent = {**_mk_s2_paper("parent", year=2018), "_is_influential": False}
     with (
         patch.object(
             build_theme_lineage,
@@ -455,25 +452,19 @@ def test_build_drops_edges_with_unrelated_relation(tmp_path: Path, monkeypatch):
     assert payload["edges"] == []
 
 
-def test_build_uses_template_fallback_for_empty_rationale(
-    tmp_path: Path, monkeypatch
-):
-    """The lenient classifier (build_deep_lineage._classify_cached_lenient)
-    deliberately substitutes a templated rationale when the LLM returns a
-    non-unrelated relation with an empty rationale — better than silently
-    dropping a weak-but-real edge. Theme builds use this lenient path; the
-    edge must survive."""
+def test_build_emits_templated_rationale(tmp_path: Path, monkeypatch):
+    """Issue #53: derive_relation always emits a non-empty templated
+    rationale (the stage-4 'drop empty rationale' filter would otherwise
+    silently kill every derived edge)."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
-    _stub_external_calls(
-        monkeypatch,
-        chat_text='{"relation": "extends", "confidence": 0.8, "rationale": ""}',
-    )
+    _stub_external_calls(monkeypatch)
 
     seed = _mk_s2_paper("seed", year=2020)
-    parent = _mk_s2_paper("parent", year=2018)
+    # No _intents → derive_relation falls back to extends with default template.
+    parent = {**_mk_s2_paper("parent", year=2018), "_is_influential": True}
     with (
         patch.object(
             build_theme_lineage,
@@ -489,11 +480,8 @@ def test_build_uses_template_fallback_for_empty_rationale(
     assert len(payload["edges"]) == 1
     edge = payload["edges"][0]
     assert edge["rel"] == "extends"
-    # Template fallback must be a non-empty Japanese sentence.
-    assert edge["rationale"], "fallback rationale must not be empty"
-    assert "論文" in edge["rationale"], (
-        f"fallback rationale should be templated Japanese: {edge['rationale']!r}"
-    )
+    assert edge["rationale"], "templated rationale must not be empty"
+    assert "論文" in edge["rationale"]
 
 
 def test_build_emits_required_meta_fields(tmp_path: Path, monkeypatch):
@@ -598,18 +586,20 @@ def test_build_node_schema_matches_lineage_format(tmp_path: Path, monkeypatch):
         assert field in n, f"node missing field: {field}"
 
 
-def test_build_classify_goes_through_provider(tmp_path: Path, monkeypatch):
-    """Absolute rule §11: LLM access must go through AbstractLLMProvider,
-    never urllib / requests directly. The lenient classifier path uses
-    `provider._chat` rather than `classify_relation`, but both are
-    methods on the abstract provider so §11 is still satisfied."""
+def test_build_does_not_invoke_llm(tmp_path: Path, monkeypatch):
+    """Issue #53 acceptance: theme builds must not touch the LLM at all —
+    relations come from S2 intents via derive_relation()."""
     _patch_env(monkeypatch)
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
     provider = _stub_external_calls(monkeypatch)
     seed = _mk_s2_paper("seed", year=2020)
-    parent = _mk_s2_paper("parent", year=2018)
+    parent = {
+        **_mk_s2_paper("parent", year=2018),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
     with (
         patch.object(
             build_theme_lineage,
@@ -621,9 +611,11 @@ def test_build_classify_goes_through_provider(tmp_path: Path, monkeypatch):
         build_theme_lineage.build_theme_lineage(
             theme="X", depth=1, seeds_count=1, width=4, since_year=None
         )
-    # Expect ≥2 _chat invocations: keyword expansion + parent→seed classify.
-    assert len(provider.chat_calls) >= 2, (
-        f"expected _chat to fire (got {len(provider.chat_calls)} calls)"
+    assert provider.chat_calls == [], (
+        f"unexpected LLM _chat invocation: {[c[1][:60] for c in provider.chat_calls]}"
+    )
+    assert provider.classify_calls == [], (
+        f"unexpected classify_relation invocation: {len(provider.classify_calls)}"
     )
 
 
@@ -711,16 +703,16 @@ def test_main_rejects_empty_theme(monkeypatch, capsys):
 
 
 def _force_classify_failures(monkeypatch, *, every: bool = True):
-    """Make every LLM classification call fail (None) to simulate quota.
+    """Force every relation derivation to return None.
 
-    The lenient classifier path is the one used by build_theme_lineage,
-    so we patch it directly to return None — this short-circuits before
-    any cache write, mirroring the real bulk-run failure mode where
-    Groq's daily quota silently drops calls.
+    Issue #53 made the classifier LLM-free by replacing _classify_cached
+    with derive_relation. Patching the new path keeps the legacy 0-edges
+    / high-failure-rate / exit-3 tests valid as integration coverage of
+    the warning-and-exit signalling rather than the LLM-quota path.
     """
     monkeypatch.setattr(
         build_theme_lineage,
-        "_classify_cached",
+        "derive_relation",
         lambda *a, **kw: None,
     )
 
@@ -827,7 +819,7 @@ def test_build_prioritises_influential_parents_over_citation_count(
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
-    provider = _stub_external_calls(monkeypatch)
+    _stub_external_calls(monkeypatch)
     seed = _mk_s2_paper("seed", year=2023)
     # Mix: influential ref with low citations + non-influential foundational
     # papers with very high citations. Width=2 — without the fix, the two
@@ -863,13 +855,10 @@ def test_build_prioritises_influential_parents_over_citation_count(
     payload = json.loads(out_path.read_text())
     edge_srcs = {e["src"] for e in payload["edges"]}
     # The niche influential parent must produce an edge — without the fix
-    # it would have been filtered out by the width=2 cap before classify.
+    # it would have been filtered out by the width=2 cap before derive_relation.
     assert "niche" in edge_srcs, (
         f"expected niche influential ref to win the budget, got edges: {payload['edges']}"
     )
-    # And the LLM was actually called for it (not just listed as a node)
-    classify_chats = [c for c in provider.chat_calls if "Niche INFLUENTIAL" in c[1]]
-    assert len(classify_chats) == 1, "niche ref should be classified"
 
 
 def test_build_skips_classify_for_non_influential_parents(
@@ -882,7 +871,7 @@ def test_build_skips_classify_for_non_influential_parents(
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
-    provider = _stub_external_calls(monkeypatch)
+    _stub_external_calls(monkeypatch)
     seed = _mk_s2_paper("seed", year=2023)
     parent_yes = {
         **_mk_s2_paper("p_yes", title="INFL parent", year=2018),
@@ -914,25 +903,24 @@ def test_build_skips_classify_for_non_influential_parents(
         )
     payload = json.loads(out_path.read_text())
 
-    # All three parents should appear as nodes (skipped only the LLM call,
-    # not the node — keeping the node preserves the chronological viewer).
+    # All three parents should appear as nodes (skipped only the relation
+    # derivation, not the node — keeping the node preserves the
+    # chronological viewer).
     node_ids = {n["id"] for n in payload["nodes"]}
     assert {"seed", "p_yes", "p_no", "p_unk"} <= node_ids
 
-    # The classify prompt body embeds the parent title — use it as a probe
-    # for which parents were sent to the LLM.
-    def chats_with(needle: str) -> list:
-        return [c for c in provider.chat_calls if needle in c[1]]
-
-    assert chats_with("BACKGROUND only") == [], (
-        "non-influential parent must skip the LLM classify call"
+    # Issue #53: derive_relation skips non-influential parents → no edge
+    # for "p_no", but emits edges for the True / None branches.
+    edge_srcs = {e["src"] for e in payload["edges"]}
+    assert "p_no" not in edge_srcs, (
+        "non-influential parent must NOT produce an edge"
     )
-    assert len(chats_with("INFL parent")) == 1, (
-        "influential parent should still be classified"
+    assert "p_yes" in edge_srcs, (
+        "influential parent should produce an edge"
     )
-    assert len(chats_with("UNKNOWN flag")) == 1, (
+    assert "p_unk" in edge_srcs, (
         "missing flag (older cache) must NOT be treated as a hard reject — "
-        "fall back to classifying so we don't regress on existing themes"
+        "fall back to extends so we don't regress on existing themes"
     )
 
 
@@ -961,3 +949,110 @@ def test_main_returns_0_on_normal_build(tmp_path: Path, monkeypatch):
             "--output", str(tmp_path / "out.json"),
         ])
     assert rc == 0, f"expected exit 0 on healthy build, got {rc}"
+
+
+# ---- LLM-zero relation derivation (#53) -------------------------------------
+
+
+def test_derive_relation_methodology_intent_to_extends():
+    """S2 intent=methodology means citing paper used the cited paper's
+    method → relation = extends."""
+    parent = {"_is_influential": True, "_intents": ["methodology"]}
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None and rel["relation"] == "extends"
+
+
+def test_derive_relation_result_intent_to_successor():
+    parent = {"_is_influential": True, "_intents": ["result"]}
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None and rel["relation"] == "successor"
+
+
+def test_derive_relation_background_intent_to_baseline_only():
+    parent = {"_is_influential": True, "_intents": ["background"]}
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None and rel["relation"] == "baseline_only"
+
+
+def test_derive_relation_methodology_takes_precedence_over_background():
+    """Multi-intent: methodology > result > background."""
+    parent = {"_is_influential": True, "_intents": ["background", "methodology"]}
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None and rel["relation"] == "extends"
+
+
+def test_derive_relation_no_intents_falls_back_to_extends():
+    """Missing intents (older cache or S2 omission) — assume extends as a
+    safe default since the parent IS influential."""
+    parent = {"_is_influential": True, "_intents": None}
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None and rel["relation"] == "extends"
+
+
+def test_derive_relation_non_influential_returns_none():
+    """isInfluential=False → drop the edge entirely."""
+    parent = {"_is_influential": False, "_intents": ["methodology"]}
+    assert build_theme_lineage.derive_relation(parent) is None
+
+
+def test_derive_relation_attaches_rationale():
+    """Result must include a non-empty rationale (so the edge survives the
+    stage-4 'drop empty rationale' filter)."""
+    parent = {"_is_influential": True, "_intents": ["methodology"]}
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None
+    assert isinstance(rel.get("rationale"), str)
+    assert len(rel["rationale"].strip()) > 0
+    assert isinstance(rel.get("confidence"), float)
+    assert 0.0 <= rel["confidence"] <= 1.0
+
+
+def test_build_theme_lineage_makes_zero_classify_calls(tmp_path, monkeypatch):
+    """End-to-end: intent-based derivation produces edges without invoking
+    provider.classify_relation or provider._chat (issue #53 acceptance)."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    provider = _stub_external_calls(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2023)
+    p1 = {
+        **_mk_s2_paper("p1", title="Method ref", year=2018),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+    p2 = {
+        **_mk_s2_paper("p2", title="Background ref", year=2017),
+        "_is_influential": True,
+        "_intents": ["background"],
+    }
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            return_value=[p1, p2],
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=1, width=8, since_year=None
+        )
+
+    payload = json.loads(out_path.read_text())
+    rels = sorted(e["rel"] for e in payload["edges"])
+    assert rels == ["baseline_only", "extends"], (
+        f"expected intent-derived edges, got: {payload['edges']}"
+    )
+    # The acceptance criteria: NO LLM calls fired during the build.
+    assert provider.chat_calls == [], (
+        f"expected zero _chat calls (LLM-free), got {len(provider.chat_calls)}: "
+        f"{[c[1][:60] for c in provider.chat_calls]}"
+    )
+    assert provider.classify_calls == [], (
+        f"expected zero classify_relation calls, got {len(provider.classify_calls)}"
+    )

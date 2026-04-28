@@ -194,12 +194,13 @@ _S2_FIELDS_PAPER = (
 )
 _S2_FIELDS_REL = (
     "paperId,title,year,venue,citationCount,authors,abstract,externalIds,"
-    # isInfluential is an entry-level flag (alongside citedPaper / citingPaper)
-    # that S2 derives from a citation-classification model; it identifies
-    # references the citing paper actually built upon (vs. background-only
-    # mentions). build_theme_lineage uses it to skip LLM classification on
-    # non-influential parents — see #50 for the cost-reduction rationale.
-    "isInfluential"
+    # isInfluential + intents are entry-level fields S2 derives from a
+    # citation-classification model. isInfluential separates real
+    # influence from background name-drops (#50). intents categorises
+    # the citation into methodology / result / background, which lets
+    # build_theme_lineage derive the relation type WITHOUT an LLM call
+    # (#53). Both are lifted onto the inner paper dict by fetch_related.
+    "isInfluential,intents"
 )
 
 
@@ -273,6 +274,15 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
             enriched = dict(p)
             enriched["_is_influential"] = (
                 bool(entry["isInfluential"]) if "isInfluential" in entry else None
+            )
+            # intents lives at the entry level too; carry the array through
+            # so build_theme_lineage can derive relations without an LLM
+            # call. Treat missing as None (older cache compat) so callers
+            # can fall back to the existing classify path when desired.
+            raw_intents = entry.get("intents")
+            enriched["_intents"] = (
+                [str(i) for i in raw_intents]
+                if isinstance(raw_intents, list) else None
             )
             items.append(enriched)
     cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))

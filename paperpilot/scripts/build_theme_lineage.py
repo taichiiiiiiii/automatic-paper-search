@@ -42,21 +42,13 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from paperpilot.scripts._common import theme_slug  # noqa: E402
-from paperpilot.scripts.build_deep_lineage import _classify_cached_lenient  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
     build_provider,
     fetch_related,
     to_node,
 )
-
-# Theme trees are like deep trees: BFS over weakly-related references where
-# Groq frequently returns a non-unrelated relation with an empty rationale.
-# Strict mode would drop ~all edges (observed during initial bulk gen). Use
-# the lenient variant (template fallback rationale) to keep weak edges visible.
-_classify_cached = _classify_cached_lenient
 from paperpilot.utils.http import request_with_retry  # noqa: E402
-from paperpilot.utils.keyword_expand import expand_keywords  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 
 logger = get_logger(__name__)
@@ -71,6 +63,56 @@ _S2_SEARCH_LIMIT = 50
 
 _THEME_MAX_LEN = 500
 _KEYWORD_EXPANSIONS = 8
+
+
+# Issue #53: heuristic templates that mirror build_deep_lineage's lenient
+# fallback rationales. derive_relation() picks one based on S2's intent
+# array so we get a non-empty rationale for free (the stage-4 'drop empty
+# rationale' filter would otherwise silently kill every derived edge).
+_INTENT_RELATION_MAP: list[tuple[str, str, str]] = [
+    # (intent name, relation enum, rationale template) — order matters:
+    # methodology > result > background when an entry has multiple
+    # intents, since methodology implies the citing paper actually built
+    # on top of the referenced work.
+    ("methodology", "extends",
+     "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"),
+    ("result", "successor",
+     "論文 B は論文 A の研究ラインを継承し自然に発展させている。"),
+    ("background", "baseline_only",
+     "論文 B は論文 A をベースライン比較にのみ用いている。"),
+]
+_DEFAULT_DERIVED = (
+    "extends",
+    "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
+)
+_DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
+
+
+def derive_relation(parent: dict) -> dict | None:
+    """Heuristic relation classifier — replaces the LLM classify call.
+
+    Returns ``None`` when the parent should be skipped entirely (S2
+    flagged it as not influential to the citing paper). Otherwise picks
+    a relation enum based on the S2 ``intents`` array, falling back to
+    ``extends`` when intents are missing or empty.
+    """
+    if parent.get("_is_influential") is False:
+        return None
+    intents = parent.get("_intents") or []
+    intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
+    for keyword, relation, rationale in _INTENT_RELATION_MAP:
+        if keyword in intents_set:
+            return {
+                "relation": relation,
+                "confidence": _DERIVED_CONFIDENCE,
+                "rationale": rationale,
+            }
+    relation, rationale = _DEFAULT_DERIVED
+    return {
+        "relation": relation,
+        "confidence": _DERIVED_CONFIDENCE,
+        "rationale": rationale,
+    }
 
 
 # ---------- Theme input ----------
@@ -205,14 +247,24 @@ def build_theme_lineage(
     sanitised = sanitize_theme(theme)
     slug = theme_slug(sanitised)
 
-    provider, rate_delay = build_provider()
-    logger.info("theme=%r slug=%r provider=%s", sanitised, slug, provider.name)
+    # Issue #53: relation classification is now LLM-free (derive_relation),
+    # but build_provider is still used downstream by other scripts; here
+    # we no longer need it for the theme pipeline. Keep the call so the
+    # provider is constructed (logs config errors etc.) but we won't ever
+    # invoke .classify_relation / ._chat from this script.
+    provider, _ = build_provider()
+    logger.info("theme=%r slug=%r provider=%s (LLM-free path)",
+                sanitised, slug, provider.name)
 
-    # Stage 1: keyword expansion (returns originals if provider unavailable).
-    keywords = expand_keywords(
-        [sanitised], provider, max_expansions=_KEYWORD_EXPANSIONS
-    )
-    logger.info("expanded to %d keywords: %s", len(keywords), keywords)
+    # Stage 1: keyword expansion is skipped — the LLM call here was the
+    # last reason this script needed a working provider. Use the raw
+    # theme as the single search keyword. Multi-keyword expansion was
+    # nice for seed diversity but is no longer worth a TPM-burdened
+    # round-trip; the theme name itself is usually the strongest signal
+    # (per the DPO experience where 1-keyword fallback still produced
+    # good seeds when paired with citation-desc ranking).
+    keywords = [sanitised]
+    logger.info("using raw theme as single keyword: %r", keywords[0])
 
     # Stage 2: discover seeds.
     seeds = discover_seeds(
@@ -227,12 +279,6 @@ def build_theme_lineage(
     # Stage 3: BFS ancestors via fetch_related (build_lineage's cache reused).
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
-    classification_cache_path = CACHE_DIR / "classifications.json"
-    classifications: dict[str, dict] = (
-        json.loads(classification_cache_path.read_text())
-        if classification_cache_path.exists()
-        else {}
-    )
 
     seed_ids: list[str] = []
     frontier: list[tuple[dict, int]] = []
@@ -282,26 +328,15 @@ def build_theme_lineage(
                 continue
             if pid not in nodes:
                 nodes[pid] = to_node(parent)
-            # Issue #50: skip the LLM call for parents S2 has flagged as
-            # *not* influential to the citing paper — those are typically
-            # background-section name-drops and would map to `unrelated`
-            # anyway. Bool() check keeps `None` (older cache without the
-            # field) on the classify path so existing themes don't regress.
-            if parent.get("_is_influential") is False:
-                continue
+            # Issue #53: derive the relation from S2 intents instead of
+            # firing an LLM classify call. derive_relation() returns None
+            # when S2 says the parent is non-influential (we drop the
+            # edge), and otherwise picks a relation enum + rationale by
+            # mapping the intents array via _INTENT_RELATION_MAP.
             classify_attempted += 1
-            cls = _classify_cached(
-                provider,
-                parent,
-                current,
-                cache_key=f"{pid}->{current['paperId']}",
-                classifications=classifications,
-                cache_path=classification_cache_path,
-                rate_delay=rate_delay,
-            )
+            cls = derive_relation(parent)
             if cls is not None:
                 classify_succeeded += 1
-            if cls and cls["relation"] != "unrelated":
                 edges.append(
                     {
                         "src": pid,
