@@ -526,6 +526,73 @@ def test_s2_get_returns_none_when_retry_helper_gives_up():
         assert build_lineage._s2_get("https://x") is None
 
 
+# ---- fetch_related propagates isInfluential (#50) ----
+
+
+def test_fetch_related_requests_is_influential_field(tmp_path, monkeypatch):
+    """The S2 references endpoint must be queried with isInfluential in fields,
+    so the entry-level flag actually arrives in the response."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    captured: dict = {}
+
+    def _capture(url):
+        captured["url"] = url
+        return {"data": []}
+
+    with patch.object(build_lineage, "_s2_get", side_effect=_capture):
+        build_lineage.fetch_related("paperX", "references", 5)
+    assert "isInfluential" in captured["url"], (
+        f"fields query missing isInfluential: {captured['url']}"
+    )
+
+
+def test_fetch_related_propagates_is_influential_flag(tmp_path, monkeypatch):
+    """isInfluential lives at the entry level (alongside citedPaper) — the
+    helper must lift it onto the inner paper dict so BFS callers can pre-
+    filter without reaching back to the raw S2 envelope."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    fake_data = {
+        "data": [
+            {
+                "isInfluential": True,
+                "citedPaper": {"paperId": "P1", "title": "Influential one"},
+            },
+            {
+                "isInfluential": False,
+                "citedPaper": {"paperId": "P2", "title": "Background only"},
+            },
+            {
+                # Some entries omit the flag entirely — treat as unknown
+                # (carry None) so callers can keep them for compatibility.
+                "citedPaper": {"paperId": "P3", "title": "Unknown"},
+            },
+        ]
+    }
+    with patch.object(build_lineage, "_s2_get", return_value=fake_data):
+        items = build_lineage.fetch_related("paperX", "references", 5)
+    by_id = {it["paperId"]: it for it in items}
+    assert by_id["P1"]["_is_influential"] is True
+    assert by_id["P2"]["_is_influential"] is False
+    assert by_id["P3"]["_is_influential"] is None  # unknown ≠ False
+
+
+def test_fetch_related_citations_also_carries_flag(tmp_path, monkeypatch):
+    """citations endpoint uses citingPaper as the inner key — flag must
+    propagate symmetrically."""
+    monkeypatch.setattr(build_lineage, "CACHE_DIR", tmp_path)
+    fake_data = {
+        "data": [
+            {
+                "isInfluential": True,
+                "citingPaper": {"paperId": "C1", "title": "Cites us"},
+            }
+        ]
+    }
+    with patch.object(build_lineage, "_s2_get", return_value=fake_data):
+        items = build_lineage.fetch_related("paperX", "citations", 5)
+    assert items[0]["_is_influential"] is True
+
+
 # ---- conference parameterization (#21) ----
 
 

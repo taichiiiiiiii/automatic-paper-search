@@ -192,7 +192,15 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
 _S2_FIELDS_PAPER = (
     "paperId,title,year,venue,citationCount,referenceCount,authors,abstract,externalIds"
 )
-_S2_FIELDS_REL = "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
+_S2_FIELDS_REL = (
+    "paperId,title,year,venue,citationCount,authors,abstract,externalIds,"
+    # isInfluential is an entry-level flag (alongside citedPaper / citingPaper)
+    # that S2 derives from a citation-classification model; it identifies
+    # references the citing paper actually built upon (vs. background-only
+    # mentions). build_theme_lineage uses it to skip LLM classification on
+    # non-influential parents — see #50 for the cost-reduction rationale.
+    "isInfluential"
+)
 
 
 def _s2_get(url: str) -> dict[str, Any] | None:
@@ -256,7 +264,17 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
     for entry in data.get("data") or []:
         p = entry.get(inner_key)
         if p and p.get("paperId") and p.get("title"):
-            items.append(p)
+            # Lift the entry-level isInfluential flag onto a *copy* of the
+            # inner paper dict so BFS callers can pre-filter without
+            # re-reading the raw S2 envelope. Copy avoids mutating the
+            # parsed JSON object in case it's reused (e.g. future caching).
+            # Distinguish "false" from "missing" — old cache entries lack
+            # the field, so callers must not treat missing as a hard reject.
+            enriched = dict(p)
+            enriched["_is_influential"] = (
+                bool(entry["isInfluential"]) if "isInfluential" in entry else None
+            )
+            items.append(enriched)
     cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
     time.sleep(S2_RATE_DELAY)
     return items
@@ -464,6 +482,11 @@ def build(
             pid = parent["paperId"]
             if pid not in nodes:
                 nodes[pid] = to_node(parent)
+            # Issue #50: skip non-influential refs — same rationale as
+            # build_theme_lineage. Missing flag (None) keeps the classify
+            # path so existing caches don't regress.
+            if parent.get("_is_influential") is False:
+                continue
             cls = _classify_cached(
                 provider, parent, focus_paper,
                 cache_key=f"{pid}->{focus_id}",
@@ -483,6 +506,8 @@ def build(
             cid = child["paperId"]
             if cid not in nodes:
                 nodes[cid] = to_node(child)
+            if child.get("_is_influential") is False:
+                continue
             cls = _classify_cached(
                 provider, focus_paper, child,
                 cache_key=f"{focus_id}->{cid}",

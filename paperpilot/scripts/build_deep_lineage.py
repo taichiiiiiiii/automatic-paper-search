@@ -182,6 +182,11 @@ def build_deep(
         out: list[tuple[dict, dict]] = []
         for rel in related:
             rel_id = rel["paperId"]
+            # Issue #50: skip non-influential refs — same rationale as
+            # build_theme_lineage. Missing flag (None) keeps the classify
+            # path so existing caches don't regress.
+            if rel.get("_is_influential") is False:
+                continue
             if direction == "up":
                 a, b = rel, src_paper       # parent → child
                 edge_src, edge_dst = rel_id, s2_id
