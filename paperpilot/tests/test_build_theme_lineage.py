@@ -816,6 +816,62 @@ def test_main_returns_3_when_zero_edges(tmp_path: Path, monkeypatch):
     assert rc == 3, f"expected exit 3 on 0 edges, got {rc}"
 
 
+def test_build_prioritises_influential_parents_over_citation_count(
+    tmp_path: Path, monkeypatch
+):
+    """Issue #50 followup: the previous logic sorted by citationCount then
+    filtered, so foundational papers (ResNet etc.) flagged isInfluential=
+    false dominated the top-N and pushed real influential refs out of the
+    width. Partition first → niche influential refs win the budget."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    provider = _stub_external_calls(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2023)
+    # Mix: influential ref with low citations + non-influential foundational
+    # papers with very high citations. Width=2 — without the fix, the two
+    # foundationals win the budget and the influential one is dropped.
+    foundational1 = {
+        **_mk_s2_paper("found1", title="Foundational A", year=2015, cites=200_000),
+        "_is_influential": False,
+    }
+    foundational2 = {
+        **_mk_s2_paper("found2", title="Foundational B", year=2017, cites=150_000),
+        "_is_influential": False,
+    }
+    niche_influential = {
+        **_mk_s2_paper("niche", title="Niche INFLUENTIAL", year=2022, cites=300),
+        "_is_influential": True,
+    }
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            return_value=[foundational1, foundational2, niche_influential],
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=1, width=2, since_year=None
+        )
+    payload = json.loads(out_path.read_text())
+    edge_srcs = {e["src"] for e in payload["edges"]}
+    # The niche influential parent must produce an edge — without the fix
+    # it would have been filtered out by the width=2 cap before classify.
+    assert "niche" in edge_srcs, (
+        f"expected niche influential ref to win the budget, got edges: {payload['edges']}"
+    )
+    # And the LLM was actually called for it (not just listed as a node)
+    classify_chats = [c for c in provider.chat_calls if "Niche INFLUENTIAL" in c[1]]
+    assert len(classify_chats) == 1, "niche ref should be classified"
+
+
 def test_build_skips_classify_for_non_influential_parents(
     tmp_path: Path, monkeypatch
 ):

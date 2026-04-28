@@ -254,12 +254,27 @@ def build_theme_lineage(
         if current_depth >= depth:
             continue
 
-        # Pull a wide pool, then narrow by citation count — same heuristic
-        # build_deep_lineage uses to keep BFS cost bounded.
-        parents = fetch_related(current["paperId"], "references", width * 4)
-        parents = [p for p in parents if p.get("abstract")]
-        parents.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
-        parents = parents[:width]
+        # Pull a wide pool, prioritise influential refs, then fall back to
+        # citation-count desc — same heuristic build_deep_lineage uses to
+        # keep BFS cost bounded.
+        all_parents = fetch_related(current["paperId"], "references", width * 4)
+        all_parents = [p for p in all_parents if p.get("abstract")]
+
+        # Issue #50 (followup): the previous order — sort all by citationCount
+        # then filter by isInfluential — let foundational papers (ResNet,
+        # Transformer, etc.) dominate the top-N and crowd out the actually-
+        # influential niche refs. Partition first so the LLM budget hits the
+        # specific refs the citing paper built upon, then top-up with high-
+        # citation candidates if there's room left.
+        influential = [
+            p for p in all_parents if p.get("_is_influential") is not False
+        ]
+        non_influential = [
+            p for p in all_parents if p.get("_is_influential") is False
+        ]
+        influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
+        non_influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
+        parents = (influential + non_influential)[:width]
 
         for parent in parents:
             pid = parent.get("paperId")
