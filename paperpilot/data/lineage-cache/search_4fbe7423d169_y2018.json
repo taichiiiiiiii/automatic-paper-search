@@ -1,0 +1,2161 @@
+[
+  {
+    "paperId": "e3d7778a47c6cab4ea1ef3ee9d19ec1510c15c60",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-15203",
+      "ArXiv": "2105.15203",
+      "CorpusId": 235254713
+    },
+    "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 7942,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.15203, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "41020000",
+        "name": "Enze Xie"
+      },
+      {
+        "authorId": "71074736",
+        "name": "Wenhai Wang"
+      },
+      {
+        "authorId": "1751019",
+        "name": "Zhiding Yu"
+      },
+      {
+        "authorId": "2047844",
+        "name": "Anima Anandkumar"
+      },
+      {
+        "authorId": "2974008",
+        "name": "J. Álvarez"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      }
+    ],
+    "abstract": "We present SegFormer, a simple, efficient yet powerful semantic segmentation framework which unifies Transformers with lightweight multilayer perception (MLP) decoders. SegFormer has two appealing features: 1) SegFormer comprises a novel hierarchically structured Transformer encoder which outputs multiscale features. It does not need positional encoding, thereby avoiding the interpolation of positional codes which leads to decreased performance when the testing resolution differs from training. 2) SegFormer avoids complex decoders. The proposed MLP decoder aggregates information from different layers, and thus combining both local attention and global attention to render powerful representations. We show that this simple and lightweight design is the key to efficient segmentation on Transformers. We scale our approach up to obtain a series of models from SegFormer-B0 to SegFormer-B5, reaching significantly better performance and efficiency than previous counterparts. For example, SegFormer-B4 achieves 50.3% mIoU on ADE20K with 64M parameters, being 5x smaller and 2.2% better than the previous best method. Our best model, SegFormer-B5, achieves 84.0% mIoU on Cityscapes validation set and shows excellent zero-shot robustness on Cityscapes-C. Code will be released at: github.com/NVlabs/SegFormer."
+  },
+  {
+    "paperId": "6fc6803df5f9ae505cae5b2f178ade4062c768d0",
+    "externalIds": {
+      "DBLP": "journals/corr/ShelhamerLD16",
+      "MAG": "2952632681",
+      "ArXiv": "1411.4038",
+      "DOI": "10.1109/CVPR.2015.7298965",
+      "CorpusId": 1629541
+    },
+    "title": "Fully convolutional networks for semantic segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 41592,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1411.4038",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.4038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1782282",
+        "name": "Evan Shelhamer"
+      },
+      {
+        "authorId": "2117314646",
+        "name": "Jonathan Long"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "Convolutional networks are powerful visual models that yield hierarchies of features. We show that convolutional networks by themselves, trained end-to-end, pixels-to-pixels, exceed the state-of-the-art in semantic segmentation. Our key insight is to build “fully convolutional” networks that take input of arbitrary size and produce correspondingly-sized output with efficient inference and learning. We define and detail the space of fully convolutional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models. We adapt contemporary classification networks (AlexNet [20], the VGG net [31], and GoogLeNet [32]) into fully convolutional networks and transfer their learned representations by fine-tuning [3] to the segmentation task. We then define a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed segmentations. Our fully convolutional network achieves state-of-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one fifth of a second for a typical image."
+  },
+  {
+    "paperId": "9217e28b2273eb3b26e4e9b7b498b4661e6e09f5",
+    "externalIds": {
+      "ArXiv": "1802.02611",
+      "MAG": "2787091153",
+      "DBLP": "journals/corr/abs-1802-02611",
+      "DOI": "10.1007/978-3-030-01234-2_49",
+      "CorpusId": 3638670
+    },
+    "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 16313,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.02611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "1844940337",
+        "name": "Yukun Zhu"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "3302320",
+        "name": "Florian Schroff"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "Spatial pyramid pooling module or encode-decoder structure are used in deep neural networks for semantic segmentation task. The former networks are able to encode multi-scale contextual information by probing the incoming features with filters or pooling operations at multiple rates and multiple effective fields-of-view, while the latter networks can capture sharper object boundaries by gradually recovering the spatial information. In this work, we propose to combine the advantages from both methods. Specifically, our proposed model, DeepLabv3+, extends DeepLabv3 by adding a simple yet effective decoder module to refine the segmentation results especially along object boundaries. We further explore the Xception model and apply the depthwise separable convolution to both Atrous Spatial Pyramid Pooling and decoder modules, resulting in a faster and stronger encoder-decoder network. We demonstrate the effectiveness of the proposed model on PASCAL VOC 2012 and Cityscapes datasets, achieving the test set performance of 89.0\\% and 82.1\\% without any post-processing. Our paper is accompanied with a publicly available reference implementation of the proposed models in Tensorflow at \\url{this https URL}."
+  },
+  {
+    "paperId": "d29430adccb805ab57b349afa8553954347b3197",
+    "externalIds": {
+      "ArXiv": "2012.15840",
+      "DBLP": "conf/cvpr/ZhengLZZLWFFXT021",
+      "DOI": "10.1109/CVPR46437.2021.00681",
+      "CorpusId": 229924195
+    },
+    "title": "Rethinking Semantic Segmentation from a Sequence-to-Sequence Perspective with Transformers",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 3587,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2012.15840",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.15840, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40895011",
+        "name": "Sixiao Zheng"
+      },
+      {
+        "authorId": "31727033",
+        "name": "Jiachen Lu"
+      },
+      {
+        "authorId": "3459894",
+        "name": "Hengshuang Zhao"
+      },
+      {
+        "authorId": "2171228",
+        "name": "Xiatian Zhu"
+      },
+      {
+        "authorId": "79454234",
+        "name": "Zekun Luo"
+      },
+      {
+        "authorId": "2628601",
+        "name": "Yabiao Wang"
+      },
+      {
+        "authorId": "35782003",
+        "name": "Yanwei Fu"
+      },
+      {
+        "authorId": "1384556269",
+        "name": "Jianfeng Feng"
+      },
+      {
+        "authorId": "145406421",
+        "name": "T. Xiang"
+      },
+      {
+        "authorId": "143635540",
+        "name": "Philip H. S. Torr"
+      },
+      {
+        "authorId": "48459110",
+        "name": "Li Zhang"
+      }
+    ],
+    "abstract": "Most recent semantic segmentation methods adopt a fully-convolutional network (FCN) with an encoder-decoder architecture. The encoder progressively reduces the spatial resolution and learns more abstract/semantic visual concepts with larger receptive fields. Since context modeling is critical for segmentation, the latest efforts have been focused on increasing the receptive field, through either dilated/atrous convolutions or inserting attention modules. However, the encoder-decoder based FCN architecture remains unchanged. In this paper, we aim to provide an alternative perspective by treating semantic segmentation as a sequence-to-sequence prediction task. Specifically, we deploy a pure transformer (i.e., without convolution and resolution reduction) to encode an image as a sequence of patches. With the global context modeled in every layer of the transformer, this encoder can be combined with a simple decoder to provide a powerful segmentation model, termed SEgmentation TRansformer (SETR). Extensive experiments show that SETR achieves new state of the art on ADE20K (50.28% mIoU), Pascal Context (55.83% mIoU) and competitive results on Cityscapes. Particularly, we achieve the first position in the highly competitive ADE20K test server leaderboard on the day of submission."
+  },
+  {
+    "paperId": "ee4a012a4b12d11d7ab8c0e79c61e807927a163c",
+    "externalIds": {
+      "ArXiv": "1706.05587",
+      "DBLP": "journals/corr/ChenPSA17",
+      "MAG": "2630837129",
+      "CorpusId": 22655199
+    },
+    "title": "Rethinking Atrous Convolution for Semantic Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 9785,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.05587, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "3302320",
+        "name": "Florian Schroff"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "In this work, we revisit atrous convolution, a powerful tool to explicitly adjust filter's field-of-view as well as control the resolution of feature responses computed by Deep Convolutional Neural Networks, in the application of semantic image segmentation. To handle the problem of segmenting objects at multiple scales, we design modules which employ atrous convolution in cascade or in parallel to capture multi-scale context by adopting multiple atrous rates. Furthermore, we propose to augment our previously proposed Atrous Spatial Pyramid Pooling module, which probes convolutional features at multiple scales, with image-level features encoding global context and further boost performance. We also elaborate on implementation details and share our experience on training our system. The proposed `DeepLabv3' system significantly improves over our previous DeepLab versions without DenseCRF post-processing and attains comparable performance with other state-of-art models on the PASCAL VOC 2012 semantic image segmentation benchmark."
+  },
+  {
+    "paperId": "f7410f535bda5b5a9888512fb954193245c1d0b2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2201-01266",
+      "ArXiv": "2201.01266",
+      "DOI": "10.1007/978-3-031-08999-2_22",
+      "CorpusId": 245668780
+    },
+    "title": "Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images",
+    "venue": "BrainLes@MICCAI",
+    "year": 2022,
+    "citationCount": 2068,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.01266, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1856024",
+        "name": "Ali Hatamizadeh"
+      },
+      {
+        "authorId": "10751841",
+        "name": "V. Nath"
+      },
+      {
+        "authorId": "46556781",
+        "name": "Yucheng Tang"
+      },
+      {
+        "authorId": "144041873",
+        "name": "Dong Yang"
+      },
+      {
+        "authorId": "144531567",
+        "name": "H. Roth"
+      },
+      {
+        "authorId": "3262394",
+        "name": "Daguang Xu"
+      }
+    ],
+    "abstract": "Semantic segmentation of brain tumors is a fundamental medical image analysis task involving multiple MRI imaging modalities that can assist clinicians in diagnosing the patient and successively studying the progression of the malignant entity. In recent years, Fully Convolutional Neural Networks (FCNNs) approaches have become the de facto standard for 3D medical image segmentation. The popular\"U-shaped\"network architecture has achieved state-of-the-art performance benchmarks on different 2D and 3D semantic segmentation tasks and across various imaging modalities. However, due to the limited kernel size of convolution layers in FCNNs, their performance of modeling long-range information is sub-optimal, and this can lead to deficiencies in the segmentation of tumors with variable sizes. On the other hand, transformer models have demonstrated excellent capabilities in capturing such long-range information in multiple domains, including natural language processing and computer vision. Inspired by the success of vision transformers and their variants, we propose a novel segmentation model termed Swin UNEt TRansformers (Swin UNETR). Specifically, the task of 3D brain tumor semantic segmentation is reformulated as a sequence to sequence prediction problem wherein multi-modal input data is projected into a 1D sequence of embedding and used as an input to a hierarchical Swin transformer as the encoder. The swin transformer encoder extracts features at five different resolutions by utilizing shifted windows for computing self-attention and is connected to an FCNN-based decoder at each resolution via skip connections. We have participated in BraTS 2021 segmentation challenge, and our proposed model ranks among the top-performing approaches in the validation phase. Code: https://monai.io/research/swin-unetr"
+  },
+  {
+    "paperId": "cf986bfe13a24d4739f95df3a856a3c6e4ed4c1c",
+    "externalIds": {
+      "MAG": "2952637581",
+      "DBLP": "conf/iccv/NohHH15",
+      "ArXiv": "1505.04366",
+      "DOI": "10.1109/ICCV.2015.178",
+      "CorpusId": 623137
+    },
+    "title": "Learning Deconvolution Network for Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 4337,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1505.04366",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.04366, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2018393",
+        "name": "Hyeonwoo Noh"
+      },
+      {
+        "authorId": "2241528",
+        "name": "Seunghoon Hong"
+      },
+      {
+        "authorId": "40030651",
+        "name": "Bohyung Han"
+      }
+    ],
+    "abstract": "We propose a novel semantic segmentation algorithm by learning a deep deconvolution network. We learn the network on top of the convolutional layers adopted from VGG 16-layer net. The deconvolution network is composed of deconvolution and unpooling layers, which identify pixelwise class labels and predict segmentation masks. We apply the trained network to each proposal in an input image, and construct the final semantic segmentation map by combining the results from all proposals in a simple manner. The proposed algorithm mitigates the limitations of the existing methods based on fully convolutional networks by integrating deep deconvolution network and proposal-wise prediction, our segmentation method typically identifies detailed structures and handles objects in multiple scales naturally. Our network demonstrates outstanding performance in PASCAL VOC 2012 dataset, and we achieve the best accuracy (72.5%) among the methods trained without using Microsoft COCO dataset through ensemble with the fully convolutional network."
+  },
+  {
+    "paperId": "2f4df08d9072fc2ac181b7fced6a245315ce05c8",
+    "externalIds": {
+      "DBLP": "journals/corr/GirshickDDM13",
+      "MAG": "2951638509",
+      "ArXiv": "1311.2524",
+      "DOI": "10.1109/CVPR.2014.81",
+      "CorpusId": 215827080
+    },
+    "title": "Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2013,
+    "citationCount": 28779,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1311.2524",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1311.2524, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "7408951",
+        "name": "Jeff Donahue"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "153652147",
+        "name": "J. Malik"
+      }
+    ],
+    "abstract": "Object detection performance, as measured on the canonical PASCAL VOC dataset, has plateaued in the last few years. The best-performing methods are complex ensemble systems that typically combine multiple low-level image features with high-level context. In this paper, we propose a simple and scalable detection algorithm that improves mean average precision (mAP) by more than 30% relative to the previous best result on VOC 2012 -- achieving a mAP of 53.3%. Our approach combines two key insights: (1) one can apply high-capacity convolutional neural networks (CNNs) to bottom-up region proposals in order to localize and segment objects and (2) when labeled training data is scarce, supervised pre-training for an auxiliary task, followed by domain-specific fine-tuning, yields a significant performance boost. Since we combine region proposals with CNNs, we call our method R-CNN: Regions with CNN features. We also present experiments that provide insight into what the network learns, revealing a rich hierarchy of image features. Source code for the complete system is available at http://www.cs.berkeley.edu/~rbg/rcnn."
+  },
+  {
+    "paperId": "260ad39a1dac4b451019e2bf17925f4df8e3b69a",
+    "externalIds": {
+      "DBLP": "conf/nips/ChengSK21",
+      "ArXiv": "2107.06278",
+      "CorpusId": 235829267
+    },
+    "title": "Per-Pixel Classification is Not All You Need for Semantic Segmentation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1993,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.06278, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50563570",
+        "name": "Bowen Cheng"
+      },
+      {
+        "authorId": "2068227",
+        "name": "A. Schwing"
+      },
+      {
+        "authorId": "144843400",
+        "name": "Alexander Kirillov"
+      }
+    ],
+    "abstract": "Modern approaches typically formulate semantic segmentation as a per-pixel classification task, while instance-level segmentation is handled with an alternative mask classification. Our key insight: mask classification is sufficiently general to solve both semantic- and instance-level segmentation tasks in a unified manner using the exact same model, loss, and training procedure. Following this observation, we propose MaskFormer, a simple mask classification model which predicts a set of binary masks, each associated with a single global class label prediction. Overall, the proposed mask classification-based method simplifies the landscape of effective approaches to semantic and panoptic segmentation tasks and shows excellent empirical results. In particular, we observe that MaskFormer outperforms per-pixel classification baselines when the number of classes is large. Our mask classification-based method outperforms both current state-of-the-art semantic (55.6 mIoU on ADE20K) and panoptic segmentation (52.7 PQ on COCO) models."
+  },
+  {
+    "paperId": "cab372bc3824780cce20d9dd1c22d4df39ed081a",
+    "externalIds": {
+      "ArXiv": "1606.00915",
+      "MAG": "2952865063",
+      "DBLP": "journals/pami/ChenPKMY18",
+      "DOI": "10.1109/TPAMI.2017.2699184",
+      "CorpusId": 3429309,
+      "PubMed": "28463186"
+    },
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 20749,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1606.00915",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.00915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7 percent mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online."
+  },
+  {
+    "paperId": "5132500b23d2da47129b3f4f68dd30947a29e502",
+    "externalIds": {
+      "ArXiv": "1811.11721",
+      "MAG": "2981689412",
+      "DBLP": "conf/iccv/HuangWHHW019",
+      "DOI": "10.1109/ICCV.2019.00069",
+      "CorpusId": 53846561
+    },
+    "title": "CCNet: Criss-Cross Attention for Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 2959,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1811.11721",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.11721, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3462332",
+        "name": "Zilong Huang"
+      },
+      {
+        "authorId": "2443233",
+        "name": "Xinggang Wang"
+      },
+      {
+        "authorId": "47033130",
+        "name": "Lichao Huang"
+      },
+      {
+        "authorId": "48908475",
+        "name": "Chang Huang"
+      },
+      {
+        "authorId": "49020088",
+        "name": "Yunchao Wei"
+      },
+      {
+        "authorId": "48667025",
+        "name": "Humphrey Shi"
+      },
+      {
+        "authorId": null,
+        "name": "Wenyu Liu"
+      }
+    ],
+    "abstract": "Full-image dependencies provide useful contextual information to benefit visual understanding problems. In this work, we propose a Criss-Cross Network (CCNet) for obtaining such contextual information in a more effective and efficient way. Concretely, for each pixel, a novel criss-cross attention module in CCNet harvests the contextual information of all the pixels on its criss-cross path. By taking a further recurrent operation, each pixel can finally capture the full-image dependencies from all pixels. Overall, CCNet is with the following merits: 1) GPU memory friendly. Compared with the non-local block, the proposed recurrent criss-cross attention module requires 11x less GPU memory usage. 2) High computational efficiency. The recurrent criss-cross attention significantly reduces FLOPs by about 85% of the non-local block in computing full-image dependencies. 3) The state-of-the-art performance. We conduct extensive experiments on popular semantic segmentation benchmarks including Cityscapes, ADE20K, and instance segmentation benchmark COCO. In particular, our CCNet achieves the mIoU score of 81.4 and 45.22 on Cityscapes test set and ADE20K validation set, respectively, which are the new state-of-the-art results. The source code is available at https://github.com/speedinghzl/CCNet."
+  },
+  {
+    "paperId": "7a39a3ca168dfebb2e2d55b3fca0f750b32896da",
+    "externalIds": {
+      "MAG": "2886934227",
+      "DBLP": "journals/corr/abs-1808-00897",
+      "ArXiv": "1808.00897",
+      "DOI": "10.1007/978-3-030-01261-8_20",
+      "CorpusId": 51906325
+    },
+    "title": "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 2624,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1808.00897",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.00897, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3712271",
+        "name": "Changqian Yu"
+      },
+      {
+        "authorId": "2115722333",
+        "name": "Jingbo Wang"
+      },
+      {
+        "authorId": "2113567716",
+        "name": "Chao Peng"
+      },
+      {
+        "authorId": "40115662",
+        "name": "Changxin Gao"
+      },
+      {
+        "authorId": "2116565951",
+        "name": "Gang Yu"
+      },
+      {
+        "authorId": "1707161",
+        "name": "N. Sang"
+      }
+    ],
+    "abstract": "Semantic segmentation requires both rich spatial information and sizeable receptive field. However, modern approaches usually compromise spatial resolution to achieve real-time inference speed, which leads to poor performance. In this paper, we address this dilemma with a novel Bilateral Segmentation Network (BiSeNet). We first design a Spatial Path with a small stride to preserve the spatial information and generate high-resolution features. Meanwhile, a Context Path with a fast downsampling strategy is employed to obtain sufficient receptive field. On top of the two paths, we introduce a new Feature Fusion Module to combine features efficiently. The proposed architecture makes a right balance between the speed and segmentation performance on Cityscapes, CamVid, and COCO-Stuff datasets. Specifically, for a 2048 \\(\\times \\) 1024 input, we achieve 68.4% Mean IOU on the Cityscapes test dataset with speed of 105 FPS on one NVIDIA Titan XP card, which is significantly faster than the existing methods with comparable performance."
+  },
+  {
+    "paperId": "68f080e0ac836ea230cb5316fbed273c70422d75",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-05633",
+      "ArXiv": "2105.05633",
+      "DOI": "10.1109/ICCV48922.2021.00717",
+      "CorpusId": 234470051
+    },
+    "title": "Segmenter: Transformer for Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 1884,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2105.05633",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.05633, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "86898863",
+        "name": "Robin Strudel"
+      },
+      {
+        "authorId": "2133420734",
+        "name": "Ricardo Garcia Pinel"
+      },
+      {
+        "authorId": "143991676",
+        "name": "I. Laptev"
+      },
+      {
+        "authorId": "2462253",
+        "name": "C. Schmid"
+      }
+    ],
+    "abstract": "Image segmentation is often ambiguous at the level of individual image patches and requires contextual information to reach label consensus. In this paper we introduce Segmenter, a transformer model for semantic segmentation. In contrast to convolution-based methods, our approach allows to model global context already at the first layer and throughout the network. We build on the recent Vision Transformer (ViT) and extend it to semantic segmentation. To do so, we rely on the output embeddings corresponding to image patches and obtain class labels from these embed-dings with a point-wise linear decoder or a mask trans-former decoder. We leverage models pre-trained for image classification and show that we can fine-tune them on moderate sized datasets available for semantic segmentation. The linear decoder allows to obtain excellent results already, but the performance can be further improved by a mask transformer generating class masks. We conduct an extensive ablation study to show the impact of the different parameters, in particular the performance is better for large models and small patch sizes. Segmenter attains excellent results for semantic segmentation. It outperforms the state of the art on both ADE20K and Pascal Context datasets and is competitive on Cityscapes."
+  },
+  {
+    "paperId": "cc9826c222ac1e81b4b374dd9e0df130f298b1e8",
+    "externalIds": {
+      "ArXiv": "2201.03546",
+      "DBLP": "journals/corr/abs-2201-03546",
+      "CorpusId": 245836975
+    },
+    "title": "Language-driven Semantic Segmentation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 877,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.03546, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2132473300",
+        "name": "Boyi Li"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      },
+      {
+        "authorId": "2067789287",
+        "name": "Serge J. Belongie"
+      },
+      {
+        "authorId": "145231047",
+        "name": "V. Koltun"
+      },
+      {
+        "authorId": "2774325",
+        "name": "René Ranftl"
+      }
+    ],
+    "abstract": "We present LSeg, a novel model for language-driven semantic image segmentation. LSeg uses a text encoder to compute embeddings of descriptive input labels (e.g.,\"grass\"or\"building\") together with a transformer-based image encoder that computes dense per-pixel embeddings of the input image. The image encoder is trained with a contrastive objective to align pixel embeddings to the text embedding of the corresponding semantic class. The text embeddings provide a flexible label representation in which semantically similar labels map to similar regions in the embedding space (e.g.,\"cat\"and\"furry\"). This allows LSeg to generalize to previously unseen categories at test time, without retraining or even requiring a single additional training sample. We demonstrate that our approach achieves highly competitive zero-shot performance compared to existing zero- and few-shot semantic segmentation methods, and even matches the accuracy of traditional segmentation algorithms when a fixed label set is provided. Code and demo are available at https://github.com/isl-org/lang-seg."
+  },
+  {
+    "paperId": "3b2c63b63478d192543bdfb7df7d9a4e1b8d3950",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2209-08575",
+      "ArXiv": "2209.08575",
+      "DOI": "10.48550/arXiv.2209.08575",
+      "CorpusId": 252367800
+    },
+    "title": "SegNeXt: Rethinking Convolutional Attention Design for Semantic Segmentation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 1122,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.08575",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.08575, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2088775481",
+        "name": "Meng-Hao Guo"
+      },
+      {
+        "authorId": "2155144970",
+        "name": "Chenggang Lu"
+      },
+      {
+        "authorId": "3298532",
+        "name": "Qibin Hou"
+      },
+      {
+        "authorId": "2145977100",
+        "name": "Zheng Liu"
+      },
+      {
+        "authorId": "2149615771",
+        "name": "Ming-Ming Cheng"
+      },
+      {
+        "authorId": "51265060",
+        "name": "Shiyong Hu"
+      }
+    ],
+    "abstract": "We present SegNeXt, a simple convolutional network architecture for semantic segmentation. Recent transformer-based models have dominated the field of semantic segmentation due to the efficiency of self-attention in encoding spatial information. In this paper, we show that convolutional attention is a more efficient and effective way to encode contextual information than the self-attention mechanism in transformers. By re-examining the characteristics owned by successful segmentation models, we discover several key components leading to the performance improvement of segmentation models. This motivates us to design a novel convolutional attention network that uses cheap convolutional operations. Without bells and whistles, our SegNeXt significantly improves the performance of previous state-of-the-art methods on popular benchmarks, including ADE20K, Cityscapes, COCO-Stuff, Pascal VOC, Pascal Context, and iSAID. Notably, SegNeXt outperforms EfficientNet-L2 w/ NAS-FPN and achieves 90.6% mIoU on the Pascal VOC 2012 test leaderboard using only 1/10 parameters of it. On average, SegNeXt achieves about 2.0% mIoU improvements compared to the state-of-the-art methods on the ADE20K datasets with the same or fewer computations. Code is available at https://github.com/uyzhang/JSeg (Jittor) and https://github.com/Visual-Attention-Network/SegNeXt (Pytorch)."
+  },
+  {
+    "paperId": "07fdff9dae9ea9ba32c251669b3b7a66269930f9",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ChenYZ021",
+      "ArXiv": "2106.01226",
+      "DOI": "10.1109/CVPR46437.2021.00264",
+      "CorpusId": 235293837
+    },
+    "title": "Semi-Supervised Semantic Segmentation with Cross Pseudo Supervision",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 1094,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2106.01226",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.01226, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2350137280",
+        "name": "Xiaokang Chen"
+      },
+      {
+        "authorId": "49521390",
+        "name": "Yuhui Yuan"
+      },
+      {
+        "authorId": "1471609826",
+        "name": "Gang Zeng"
+      },
+      {
+        "authorId": "2109534192",
+        "name": "Jingdong Wang"
+      }
+    ],
+    "abstract": "In this paper, we study the semi-supervised semantic segmentation problem via exploring both labeled data and extra unlabeled data. We propose a novel consistency regularization approach, called cross pseudo supervision (CPS). Our approach imposes the consistency on two segmentation networks perturbed with different initialization for the same input image. The pseudo one-hot label map, output from one perturbed segmentation network, is used to supervise the other segmentation network with the standard cross-entropy loss, and vice versa. The CPS consistency has two roles: encourage high similarity between the predictions of two perturbed networks for the same input image, and expand training data by using the unlabeled data with pseudo labels. Experiment results show that our approach achieves the state-of-the-art semi-supervised segmentation performance on Cityscapes and PASCAL VOC 2012."
+  },
+  {
+    "paperId": "587110558b1744b912108dd0b74970f131317e0d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1911-11236",
+      "MAG": "2991443709",
+      "ArXiv": "1911.11236",
+      "DOI": "10.1109/CVPR42600.2020.01112",
+      "CorpusId": 208290898
+    },
+    "title": "RandLA-Net: Efficient Semantic Segmentation of Large-Scale Point Clouds",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 1933,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1911.11236",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.11236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8163866",
+        "name": "Qingyong Hu"
+      },
+      {
+        "authorId": "2119658026",
+        "name": "Bo Yang"
+      },
+      {
+        "authorId": "11246861",
+        "name": "Linhai Xie"
+      },
+      {
+        "authorId": "145895122",
+        "name": "Stefano Rosa"
+      },
+      {
+        "authorId": "2366316759",
+        "name": "Yulan Guo"
+      },
+      {
+        "authorId": "2108346706",
+        "name": "Zhihua Wang"
+      },
+      {
+        "authorId": "3641238",
+        "name": "A. Trigoni"
+      },
+      {
+        "authorId": "34401562",
+        "name": "A. Markham"
+      }
+    ],
+    "abstract": "We study the problem of efficient semantic segmentation for large-scale 3D point clouds. By relying on expensive sampling techniques or computationally heavy pre/post-processing steps, most existing approaches are only able to be trained and operate over small-scale point clouds. In this paper, we introduce RandLA-Net, an efficient and lightweight neural architecture to directly infer per-point semantics for large-scale point clouds. The key to our approach is to use random point sampling instead of more complex point selection approaches. Although remarkably computation and memory efficient, random sampling can discard key features by chance. To overcome this, we introduce a novel local feature aggregation module to progressively increase the receptive field for each 3D point, thereby effectively preserving geometric details. Extensive experiments show that our RandLA-Net can process 1 million points in a single pass with up to 200x faster than existing approaches. Moreover, our RandLA-Net clearly surpasses state-of-the-art approaches for semantic segmentation on two large-scale benchmarks Semantic3D and SemanticKITTI."
+  },
+  {
+    "paperId": "9358d2ae944cfbdcb4b48e2e0c5f7ad97118b74e",
+    "externalIds": {
+      "MAG": "2431874326",
+      "DBLP": "conf/cvpr/RosSMVL16",
+      "DOI": "10.1109/CVPR.2016.352",
+      "CorpusId": 206594095
+    },
+    "title": "The SYNTHIA Dataset: A Large Collection of Synthetic Images for Semantic Segmentation of Urban Scenes",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 2418,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2016.352?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2016.352, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51007566",
+        "name": "Germán Ros"
+      },
+      {
+        "authorId": "7421202",
+        "name": "Laura Sellart"
+      },
+      {
+        "authorId": "2273472080",
+        "name": "Joanna Materzynska"
+      },
+      {
+        "authorId": "146560965",
+        "name": "David Vázquez"
+      },
+      {
+        "authorId": "144187725",
+        "name": "Antonio M. López"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "cd773d9b82f8331f5b2910ec2f52388aafb6dbfd",
+    "externalIds": {
+      "DOI": "10.18127/j00338486-202109-11",
+      "CorpusId": 239533166
+    },
+    "title": "Rich feature hierarchies for accurate object detection and semantic segmentation",
+    "venue": "Radioengineering",
+    "year": 2021,
+    "citationCount": 1318,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.18127/j00338486-202109-11?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.18127/j00338486-202109-11, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2134740727",
+        "name": "A.Y. Virasova"
+      },
+      {
+        "authorId": "145367596",
+        "name": "D. Klimov"
+      },
+      {
+        "authorId": "2134739304",
+        "name": "O.E. Khromov"
+      },
+      {
+        "authorId": "1577489381",
+        "name": "I. R. Gubaidullin"
+      },
+      {
+        "authorId": "98367724",
+        "name": "V. V. Oreshko"
+      }
+    ],
+    "abstract": "Formulation of the problem. Over the past few years, there has been little progress in object detection techniques. The most efficient are complex computational ensemble methods, which usually combine several low-level image properties with high-level properties. However, every day interest in artificial intelligence is growing, and the idea of using neural networks on board a spacecraft, with the possibility of making decisions and issuing one-time commands, is very promising, since it makes it possible to analyze a large data stream in real time without resorting to ground station, thereby not losing information when transmitting a packet. The purpose of the work is to conduct research on the possibility of effective use of modern models of neural networks, to develop a methodology for their use in the problem of object detection and analysis of the element base for hardware implementation with the possibility of using convolutional neural networks for thermovideotelemetry on board a spacecraft. Results of work. An approach has been formulated that combines two key ideas: 1) application of high-throughput convolutional neural networks for downward processing of image regions in order to localize and segment objects; 2) preliminary training for the auxiliary task, followed by fine tuning of the domain, which gives a significant increase in performance in the case when the training data is insufficient. The analysis of the element base for the possibility of hardware implementation of neural networks on board a spacecraft using electrical radio products of domestic and foreign production is carried out. Practical significance. The efficiency of preliminary network training for an auxiliary task is shown, followed by fine tuning of the subject area. A technique is described that makes it possible to increase the average accuracy of detecting objects in an image by more than 30%. The analysis of the existing element base, the possibility of hardware implementation of neural networks on board the spacecraft using electrical radio products of domestic and foreign production, as well as the criteria for selecting key elements."
+  },
+  {
+    "paperId": "daf74c34f7da0695b154f645c8b78a7397a98f16",
+    "externalIds": {
+      "DBLP": "journals/corr/PaszkeCKC16",
+      "ArXiv": "1606.02147",
+      "MAG": "2419448466",
+      "CorpusId": 16231053
+    },
+    "title": "ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 2318,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.02147, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3407277",
+        "name": "Adam Paszke"
+      },
+      {
+        "authorId": "3422735",
+        "name": "Abhishek Chaurasia"
+      },
+      {
+        "authorId": "2142668751",
+        "name": "Sangpil Kim"
+      },
+      {
+        "authorId": "2889774",
+        "name": "E. Culurciello"
+      }
+    ],
+    "abstract": "The ability to perform pixel-wise semantic segmentation in real-time is of paramount importance in mobile applications. Recent deep neural networks aimed at this task have the disadvantage of requiring a large number of floating point operations and have long run-times that hinder their usability. In this paper, we propose a novel deep neural network architecture named ENet (efficient neural network), created specifically for tasks requiring low latency operation. ENet is up to 18$\\times$ faster, requires 75$\\times$ less FLOPs, has 79$\\times$ less parameters, and provides similar or better accuracy to existing models. We have tested it on CamVid, Cityscapes and SUN datasets and report on comparisons with existing state-of-the-art methods, and the trade-offs between accuracy and processing time of a network. We present performance measurements of the proposed architecture on embedded systems and suggest possible software improvements that could make ENet even faster."
+  },
+  {
+    "paperId": "de4ee92cfad3734ca820d004bc9ee75fc9dcfbf4",
+    "externalIds": {
+      "DBLP": "conf/cvpr/LinMSR17",
+      "MAG": "2951402970",
+      "ArXiv": "1611.06612",
+      "DOI": "10.1109/CVPR.2017.549",
+      "CorpusId": 5696978
+    },
+    "title": "RefineNet: Multi-path Refinement Networks for High-Resolution Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 3081,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.06612",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.06612, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2604251",
+        "name": "Guosheng Lin"
+      },
+      {
+        "authorId": "34761498",
+        "name": "Anton Milan"
+      },
+      {
+        "authorId": "1780381",
+        "name": "Chunhua Shen"
+      },
+      {
+        "authorId": "145950884",
+        "name": "I. Reid"
+      }
+    ],
+    "abstract": "Recently, very deep convolutional neural networks (CNNs) have shown outstanding performance in object recognition and have also been the first choice for dense classification problems such as semantic segmentation. However, repeated subsampling operations like pooling or convolution striding in deep CNNs lead to a significant decrease in the initial image resolution. Here, we present RefineNet, a generic multi-path refinement network that explicitly exploits all the information available along the down-sampling process to enable high-resolution prediction using long-range residual connections. In this way, the deeper layers that capture high-level semantic features can be directly refined using fine-grained features from earlier convolutions. The individual components of RefineNet employ residual connections following the identity mapping mindset, which allows for effective end-to-end training. Further, we introduce chained residual pooling, which captures rich background context in an efficient manner. We carry out comprehensive experiments and set new state-of-the-art results on seven public datasets. In particular, we achieve an intersection-over-union score of 83.4 on the challenging PASCAL VOC 2012 dataset, which is the best reported result to date."
+  },
+  {
+    "paperId": "193b518bc3025804c6d587c74cbc154d91478417",
+    "externalIds": {
+      "MAG": "2963107255",
+      "DBLP": "journals/corr/abs-1802-10349",
+      "ArXiv": "1802.10349",
+      "DOI": "10.1109/CVPR.2018.00780",
+      "CorpusId": 3556146
+    },
+    "title": "Learning to Adapt Structured Output Space for Semantic Segmentation",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1708,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1802.10349",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.10349, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2580349",
+        "name": "Yi-Hsuan Tsai"
+      },
+      {
+        "authorId": "1761842",
+        "name": "Wei-Chih Hung"
+      },
+      {
+        "authorId": "1790643",
+        "name": "S. Schulter"
+      },
+      {
+        "authorId": "1729571",
+        "name": "Kihyuk Sohn"
+      },
+      {
+        "authorId": "1715634",
+        "name": "Ming-Hsuan Yang"
+      },
+      {
+        "authorId": "2099305",
+        "name": "Manmohan Chandraker"
+      }
+    ],
+    "abstract": "Convolutional neural network-based approaches for semantic segmentation rely on supervision with pixel-level ground truth, but may not generalize well to unseen image domains. As the labeling process is tedious and labor intensive, developing algorithms that can adapt source ground truth labels to the target domain is of great interest. In this paper, we propose an adversarial learning method for domain adaptation in the context of semantic segmentation. Considering semantic segmentations as structured outputs that contain spatial similarities between the source and target domains, we adopt adversarial learning in the output space. To further enhance the adapted model, we construct a multi-level adversarial network to effectively perform output space domain adaptation at different feature levels. Extensive experiments and ablation study are conducted under various domain adaptation settings, including synthetic-to-real and cross-city scenarios. We show that the proposed method performs favorably against the state-of-the-art methods in terms of accuracy and visual quality."
+  },
+  {
+    "paperId": "6142526105340bfbe17107032543bebcf93bf3ae",
+    "externalIds": {
+      "MAG": "3014795891",
+      "ArXiv": "2004.02147",
+      "DBLP": "journals/ijcv/YuGWYSS21",
+      "DOI": "10.1007/s11263-021-01515-2",
+      "CorpusId": 214802217
+    },
+    "title": "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-Time Semantic Segmentation",
+    "venue": "International Journal of Computer Vision",
+    "year": 2020,
+    "citationCount": 1557,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.02147, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3712271",
+        "name": "Changqian Yu"
+      },
+      {
+        "authorId": "40115662",
+        "name": "Changxin Gao"
+      },
+      {
+        "authorId": "2115722333",
+        "name": "Jingbo Wang"
+      },
+      {
+        "authorId": "2116565951",
+        "name": "Gang Yu"
+      },
+      {
+        "authorId": "12459603",
+        "name": "Chunhua Shen"
+      },
+      {
+        "authorId": "1707161",
+        "name": "N. Sang"
+      }
+    ],
+    "abstract": "Low-level details and high-level semantics are both essential to the semantic segmentation task. However, to speed up the model inference, current approaches almost always sacrifice the low-level details, leading to a considerable decrease in accuracy. We propose to treat these spatial details and categorical semantics separately to achieve high accuracy and high efficiency for real-time semantic segmentation. For this purpose, we propose an efficient and effective architecture with a good trade-off between speed and accuracy, termed Bilateral Segmentation Network (BiSeNet V2). This architecture involves the following: (i) A detail branch, with wide channels and shallow layers to capture low-level details and generate high-resolution feature representation; (ii) A semantics branch, with narrow channels and deep layers to obtain high-level semantic context. The detail branch has wide channel dimensions and shallow layers, while the semantics branch has narrow channel dimensions and deep layers. Due to the reduction in the channel capacity and the use of a fast-downsampling strategy, the semantics branch is lightweight and can be implemented by any efficient model. We design a guided aggregation layer to enhance mutual connections and fuse both types of feature representation. Moreover, a booster training strategy is designed to improve the segmentation performance without any extra inference cost. Extensive quantitative and qualitative evaluations demonstrate that the proposed architecture shows favorable performance compared to several state-of-the-art real-time semantic segmentation approaches. Specifically, for a 2048×1024\\documentclass[12pt]{minimal} \\usepackage{amsmath} \\usepackage{wasysym} \\usepackage{amsfonts} \\usepackage{amssymb} \\usepackage{amsbsy} \\usepackage{mathrsfs} \\usepackage{upgreek} \\setlength{\\oddsidemargin}{-69pt} \\begin{document}$$2048\\times 1024$$\\end{document} input, we achieve 72.6% Mean IoU on the Cityscapes test set with a speed of 156 FPS on one NVIDIA GeForce GTX 1080 Ti card, which is significantly faster than existing methods, yet we achieve better segmentation accuracy. The code and trained models are available online at https://git.io/BiSeNet."
+  },
+  {
+    "paperId": "39ad6c911f3351a3b390130a6e4265355b4d593b",
+    "externalIds": {
+      "MAG": "1923697677",
+      "DBLP": "journals/corr/ChenPKMY14",
+      "ArXiv": "1412.7062",
+      "CorpusId": 1996665
+    },
+    "title": "Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 5217,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.7062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "Deep Convolutional Neural Networks (DCNNs) have recently shown state of the art performance in high level vision tasks, such as image classification and object detection. This work brings together methods from DCNNs and probabilistic graphical models for addressing the task of pixel-level classification (also called \"semantic image segmentation\"). We show that responses at the final layer of DCNNs are not sufficiently localized for accurate object segmentation. This is due to the very invariance properties that make DCNNs good for high level tasks. We overcome this poor localization property of deep networks by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF). Qualitatively, our \"DeepLab\" system is able to localize segment boundaries at a level of accuracy which is beyond previous methods. Quantitatively, our method sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 71.6% IOU accuracy in the test set. We show how these results can be obtained efficiently: Careful network re-purposing and a novel application of the 'hole' algorithm from the wavelet community allow dense computation of neural net responses at 8 frames per second on a modern GPU."
+  },
+  {
+    "paperId": "29c2d3d77b6d6f24f4356d5ba20c1a6ab4229c76",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-04150",
+      "ArXiv": "2210.04150",
+      "DOI": "10.1109/CVPR52729.2023.00682",
+      "CorpusId": 252780581
+    },
+    "title": "Open-Vocabulary Semantic Segmentation with Mask-adapted CLIP",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 703,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2210.04150",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.04150, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2053834046",
+        "name": "Feng Liang"
+      },
+      {
+        "authorId": "3130257",
+        "name": "Bichen Wu"
+      },
+      {
+        "authorId": "4527324",
+        "name": "Xiaoliang Dai"
+      },
+      {
+        "authorId": "49243413",
+        "name": "Kunpeng Li"
+      },
+      {
+        "authorId": "31812669",
+        "name": "Yinan Zhao"
+      },
+      {
+        "authorId": "2119077209",
+        "name": "Hang Zhang"
+      },
+      {
+        "authorId": "2918780",
+        "name": "Peizhao Zhang"
+      },
+      {
+        "authorId": "48682997",
+        "name": "Péter Vajda"
+      },
+      {
+        "authorId": "92419662",
+        "name": "D. Marculescu"
+      }
+    ],
+    "abstract": "Open-vocabulary semantic segmentation aims to segment an image into semantic regions according to text descriptions, which may not have been seen during training. Recent two-stage methods first generate class-agnostic mask proposals and then leverage pre-trained vision-language models, e.g., CLIP, to classify masked regions. We identify the performance bottleneck of this paradigm to be the pre-trained CLIP model, since it does not perform well on masked images. To address this, we propose to finetune CLIP on a collection of masked image regions and their corresponding text descriptions. We collect training data by mining an existing image-caption dataset (e.g., COCO Captions), using CLIP to match masked image regions to nouns in the image captions. Compared with the more precise and manually annotated segmentation labels with fixed classes (e.g., COCO-Stuff), we find our noisy but diverse dataset can better retain CLIP's generalization ability. Along with finetuning the entire model, we utilize the “blank” areas in masked images using a method we dub mask prompt tuning. Experiments demonstrate mask prompt tuning brings significant improvement without modifying any weights of CLIP, and it can further improve a fully finetuned model. In particular, when trained on COCO and evaluated on ADE20K-150, our best model achieves 29.6% mIoU, which is +8.5% higher than the previous state-of-the-art. For the first time, open-vocabulary generalist models match the performance of supervised specialist models in 2017 without dataset specific adaptations."
+  },
+  {
+    "paperId": "641d7866db6691e22aa36de5c8ba05804233c016",
+    "externalIds": {
+      "ArXiv": "2302.12242",
+      "DBLP": "conf/cvpr/XuZWHB23",
+      "DOI": "10.1109/CVPR52729.2023.00288",
+      "CorpusId": 257102616
+    },
+    "title": "Side Adapter Network for Open-Vocabulary Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 421,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2302.12242",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.12242, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153140227",
+        "name": "Mengde Xu"
+      },
+      {
+        "authorId": "1852415",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "2480483",
+        "name": "Fangyun Wei"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2117845424",
+        "name": "Xiang Bai"
+      }
+    ],
+    "abstract": "This paper presents a new framework for open-vocabulary semantic segmentation with the pre-trained vision-language model, named Side Adapter Network (SAN). Our approach models the semantic segmentation task as a region recognition problem. A side network is attached to a frozen CLIP model with two branches: one for predicting mask proposals, and the other for predicting attention bias which is applied in the CLIP model to recognize the class of masks. This decoupled design has the benefit CLIP in recognizing the class of mask proposals. Since the attached side network can reuse CLIP features, it can be very light. In addition, the entire network can be trained end-to-end, allowing the side network to be adapted to the frozen CLIP model, which makes the predicted mask proposals CLIP-aware. Our approach is fast, accurate, and only adds a few additional trainable parameters. We evaluate our approach on multiple semantic segmentation benchmarks. Our method significantly outperforms other counterparts, with up to 18 times fewer trainable parameters and 19 times faster inference speed. Fig. 1 shows some visualization results on ImageNet. We hope our approach will serve as a solid baseline and help ease future research in open-vocabulary semantic segmentation."
+  },
+  {
+    "paperId": "44e481c9645c057ea9273023aa7e23572226cee7",
+    "externalIds": {
+      "ArXiv": "2109.08937",
+      "DOI": "10.1016/j.isprsjprs.2022.06.008",
+      "CorpusId": 248157640
+    },
+    "title": "UNetFormer: A UNet-like transformer for efficient semantic segmentation of remote sensing urban scene imagery",
+    "venue": "Isprs Journal of Photogrammetry and Remote Sensing",
+    "year": 2021,
+    "citationCount": 1133,
+    "openAccessPdf": {
+      "url": "https://wrap.warwick.ac.uk/167806/3/WRAP-UNetFormer-A-UNet-like-transformer-efficient-semantic-segmentation-remote-sensing-2022.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.08937, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108532518",
+        "name": "Libo Wang"
+      },
+      {
+        "authorId": "2047504528",
+        "name": "Rui Li"
+      },
+      {
+        "authorId": "2048336450",
+        "name": "Ce Zhang"
+      },
+      {
+        "authorId": "3238151",
+        "name": "Shenghui Fang"
+      },
+      {
+        "authorId": "5749657",
+        "name": "Chenxi Duan"
+      },
+      {
+        "authorId": "2150590662",
+        "name": "Xiaoliang Meng"
+      },
+      {
+        "authorId": "2139380",
+        "name": "P. Atkinson"
+      }
+    ],
+    "abstract": "Semantic segmentation of remotely sensed urban scene images is required in a wide range of practical applications, such as land cover mapping, urban change detection, environmental protection, and economic assessment.Driven by rapid developments in deep learning technologies, the convolutional neural network (CNN) has dominated semantic segmentation for many years. CNN adopts hierarchical feature representation, demonstrating strong capabilities for local information extraction. However, the local property of the convolution layer limits the network from capturing the global context. Recently, as a hot topic in the domain of computer vision, Transformer has demonstrated its great potential in global information modelling, boosting many vision-related tasks such as image classification, object detection, and particularly semantic segmentation. In this paper, we propose a Transformer-based decoder and construct a UNet-like Transformer (UNetFormer) for real-time urban scene segmentation. For efficient segmentation, the UNetFormer selects the lightweight ResNet18 as the encoder and develops an efficient global-local attention mechanism to model both global and local information in the decoder. Extensive experiments reveal that our method not only runs faster but also produces higher accuracy compared with state-of-the-art lightweight models. Specifically, the proposed UNetFormer achieved 67.8% and 52.4% mIoU on the UAVid and LoveDA datasets, respectively, while the inference speed can achieve up to 322.4 FPS with a 512x512 input on a single NVIDIA GTX 3090 GPU. In further exploration, the proposed Transformer-based decoder combined with a Swin Transformer encoder also achieves the state-of-the-art result (91.3% F1 and 84.1% mIoU) on the Vaihingen dataset. The source code will be freely available at https://github.com/WangLibo1995/GeoSeg."
+  },
+  {
+    "paperId": "0b5f27a5766c5d1394a6282ad94fec21d620bd6b",
+    "externalIds": {
+      "ArXiv": "2202.11094",
+      "DBLP": "conf/cvpr/XuMLBBKW22",
+      "DOI": "10.1109/CVPR52688.2022.01760",
+      "CorpusId": 247026092
+    },
+    "title": "GroupViT: Semantic Segmentation Emerges from Text Supervision",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 690,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2202.11094",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.11094, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1690418794",
+        "name": "Jiarui Xu"
+      },
+      {
+        "authorId": "24817039",
+        "name": "Shalini De Mello"
+      },
+      {
+        "authorId": "2391885",
+        "name": "Sifei Liu"
+      },
+      {
+        "authorId": "145965455",
+        "name": "Wonmin Byeon"
+      },
+      {
+        "authorId": "6555176",
+        "name": "Thomas Breuel"
+      },
+      {
+        "authorId": "1690538",
+        "name": "Jan Kautz"
+      },
+      {
+        "authorId": "39849136",
+        "name": "X. Wang"
+      }
+    ],
+    "abstract": "Grouping and recognition are important components of visual scene understanding, e.g., for object detection and semantic segmentation. With end-to-end deep learning systems, grouping of image regions usually happens implicitly via top-down supervision from pixel-level recognition labels. Instead, in this paper, we propose to bring back the grouping mechanism into deep networks, which allows semantic segments to emerge automatically with only text supervision. We propose a hierarchical Grouping Vision Transformer (GroupViT), which goes beyond the regular grid structure representation and learns to group image regions into progressively larger arbitrary-shaped segments. We train GroupViT jointly with a text encoder on a large-scale image-text dataset via contrastive losses. With only text supervision and without any pixel-level annotations, GroupViT learns to group together semantic regions and successfully transfers to the task of semantic segmentation in a zero-shot manner, i.e., without any further fine-tuning. It achieves a zero-shot accuracy of 52.3% mIoU on the PASCAL VOC 2012 and 22.4% mIoU on PASCAL Context datasets, and performs competitively to state-of-the-art transfer-learning methods requiring greater levels of supervision. We open-source our code at https://github.com/NVlabs/GroupViT."
+  },
+  {
+    "paperId": "346f813f3aee101cc288da86c2cf9aad024bb32a",
+    "externalIds": {
+      "MAG": "2969082793",
+      "DBLP": "conf/iccv/WangLZZF19",
+      "ArXiv": "1908.06391",
+      "DOI": "10.1109/ICCV.2019.00929",
+      "CorpusId": 201070109
+    },
+    "title": "PANet: Few-Shot Image Semantic Segmentation With Prototype Alignment",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 1400,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1908.06391",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.06391, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2393792699",
+        "name": "Kaixin Wang"
+      },
+      {
+        "authorId": "123200208",
+        "name": "J. Liew"
+      },
+      {
+        "authorId": "50817744",
+        "name": "Yingtian Zou"
+      },
+      {
+        "authorId": "18119920",
+        "name": "Daquan Zhou"
+      },
+      {
+        "authorId": "33221685",
+        "name": "Jiashi Feng"
+      }
+    ],
+    "abstract": "Despite the great progress made by deep CNNs in image semantic segmentation, they typically require a large number of densely-annotated images for training and are difficult to generalize to unseen object categories. Few-shot segmentation has thus been developed to learn to perform segmentation from only a few annotated examples. In this paper, we tackle the challenging few-shot segmentation problem from a metric learning perspective and present PANet, a novel prototype alignment network to better utilize the information of the support set. Our PANet learns class-specific prototype representations from a few support images within an embedding space and then performs segmentation over the query images through matching each pixel to the learned prototypes. With non-parametric metric learning, PANet offers high-quality prototypes that are representative for each semantic class and meanwhile discriminative for different classes. Moreover, PANet introduces a prototype alignment regularization between support and query. With this, PANet fully exploits knowledge from the support and provides better generalization on few-shot segmentation. Significantly, our model achieves the mIoU score of 48.1% and 55.7% on PASCAL-5i for 1-shot and 5-shot settings respectively, surpassing the state-of-the-art method by 1.8% and 8.6%."
+  },
+  {
+    "paperId": "a88c914f5a738d38f02790bb5de41453bf17bde1",
+    "externalIds": {
+      "MAG": "2976122994",
+      "DBLP": "conf/eccv/YuanCW20",
+      "ArXiv": "1909.11065",
+      "DOI": "10.1007/978-3-030-58539-6_11",
+      "CorpusId": 202734362
+    },
+    "title": "Object-Contextual Representations for Semantic Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 1655,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.11065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49521390",
+        "name": "Yuhui Yuan"
+      },
+      {
+        "authorId": "46772547",
+        "name": "Xilin Chen"
+      },
+      {
+        "authorId": "2109534192",
+        "name": "Jingdong Wang"
+      }
+    ],
+    "abstract": "In this paper, we address the semantic segmentation problem with a focus on the context aggregation strategy. Our motivation is that the label of a pixel is the category of the object that the pixel belongs to. We present a simple yet effective approach, object-contextual representations, characterizing a pixel by exploiting the representation of the corresponding object class. First, we learn object regions under the supervision of the ground-truth segmentation. Second, we compute the object region representation by aggregating the representations of the pixels lying in the object region. Last, % the representation similarity we compute the relation between each pixel and each object region, and augment the representation of each pixel with the object-contextual representation which is a weighted aggregation of all the object region representations according to their relations with the pixel. We empirically demonstrate that the proposed approach achieves competitive performance on various challenging semantic segmentation benchmarks: Cityscapes, ADE20K, LIP, PASCAL-Context, and COCO-Stuff. Cityscapes, ADE20K, LIP, PASCAL-Context and COCO-Stuff. Our submission \"HRNet + OCR + SegFix\" achieves the 1-st place on the Cityscapes leaderboard by the time of submission. Code is available at: this https URL and this https URL."
+  },
+  {
+    "paperId": "804fc51343267224a0c654bbf8bec67a96062fad",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ChoSHASK24",
+      "ArXiv": "2303.11797",
+      "DOI": "10.1109/CVPR52733.2024.00394",
+      "CorpusId": 257636688
+    },
+    "title": "CAT-Seg: Cost Aggregation for Open-Vocabulary Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 234,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.11797",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.11797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109470172",
+        "name": "Seokju Cho"
+      },
+      {
+        "authorId": "49881042",
+        "name": "Heeseong Shin"
+      },
+      {
+        "authorId": "2153119782",
+        "name": "Sung‐Jin Hong"
+      },
+      {
+        "authorId": "2192832507",
+        "name": "Seungjun An"
+      },
+      {
+        "authorId": "2116979264",
+        "name": "Seungjun Lee"
+      },
+      {
+        "authorId": "2348740098",
+        "name": "Anurag Arnab"
+      },
+      {
+        "authorId": "14454974",
+        "name": "P. H. Seo"
+      },
+      {
+        "authorId": "2596437",
+        "name": "Seung Wook Kim"
+      }
+    ],
+    "abstract": "Open-vocabulary semantic segmentation presents the challenge of labeling each pixel within an image based on a wide range of text descriptions. In this work, we introduce a novel cost-based approach to adapt vision-language foundation models, notably CLIP, for the intricate task of semantic segmentation. Through aggregating the cosine similarity score, i. e., the cost volume between image and text embeddings, our method potently adapts CLIP for segmenting seen and unseen classes by fine-tuning its encoders, addressing the challenges faced by existing methods in handling unseen classes. Building upon this, we explore methods to effectively aggregate the cost volume considering its multi-modal nature of being established between image and text embeddings. Furthermore, we examine various methods for efficiently fine-tuning CLIP."
+  },
+  {
+    "paperId": "674e20703f5af48834004bcde30b3bbbbdb17397",
+    "externalIds": {
+      "DBLP": "journals/tits/ZhangLYHLS23",
+      "ArXiv": "2203.04838",
+      "DOI": "10.1109/TITS.2023.3300537",
+      "CorpusId": 247318790
+    },
+    "title": "CMX: Cross-Modal Fusion for RGB-X Semantic Segmentation With Transformers",
+    "venue": "IEEE transactions on intelligent transportation systems (Print)",
+    "year": 2022,
+    "citationCount": 589,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.04838",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.04838, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2145489013",
+        "name": "Huayao Liu"
+      },
+      {
+        "authorId": "2116060122",
+        "name": "Jiaming Zhang"
+      },
+      {
+        "authorId": "8689702",
+        "name": "Kailun Yang"
+      },
+      {
+        "authorId": "153004056",
+        "name": "Xinxin Hu"
+      },
+      {
+        "authorId": "1742325",
+        "name": "R. Stiefelhagen"
+      }
+    ],
+    "abstract": "Scene understanding based on image segmentation is a crucial component of autonomous vehicles. Pixel-wise semantic segmentation of RGB images can be advanced by exploiting complementary features from the supplementary modality ( ${X}$ -modality). However, covering a wide variety of sensors with a modality-agnostic model remains an unresolved problem due to variations in sensor characteristics among different modalities. Unlike previous modality-specific methods, in this work, we propose a unified fusion framework, CMX, for RGB-X semantic segmentation. To generalize well across different modalities, that often include supplements as well as uncertainties, a unified cross-modal interaction is crucial for modality fusion. Specifically, we design a Cross-Modal Feature Rectification Module (CM-FRM) to calibrate bi-modal features by leveraging the features from one modality to rectify the features of the other modality. With rectified feature pairs, we deploy a Feature Fusion Module (FFM) to perform sufficient exchange of long-range contexts before mixing. To verify CMX, for the first time, we unify five modalities complementary to RGB, i.e., depth, thermal, polarization, event, and LiDAR. Extensive experiments show that CMX generalizes well to diverse multi-modal fusion, achieving state-of-the-art performances on five RGB-Depth benchmarks, as well as RGB-Thermal, RGB-Polarization, and RGB-LiDAR datasets. Besides, to investigate the generalizability to dense-sparse data fusion, we establish an RGB-Event semantic segmentation benchmark based on the EventScape dataset, on which CMX sets the new state-of-the-art. The source code of CMX is publicly available at https://github.com/huaaaliu/RGBX_Semantic_ Segmentation."
+  },
+  {
+    "paperId": "f28e387d4229c5f690ce4570a391c0f47e7155c7",
+    "externalIds": {
+      "MAG": "3112701542",
+      "DOI": "10.1038/s41592-020-01008-z",
+      "CorpusId": 227947847,
+      "PubMed": "33288961"
+    },
+    "title": "nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation",
+    "venue": "Nature Methods",
+    "year": 2020,
+    "citationCount": 8393,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.08128",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/s41592-020-01008-z?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/s41592-020-01008-z, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7886986",
+        "name": "Fabian Isensee"
+      },
+      {
+        "authorId": "51433108",
+        "name": "P. Jaeger"
+      },
+      {
+        "authorId": "51011129",
+        "name": "Simon A. A. Kohl"
+      },
+      {
+        "authorId": "152800798",
+        "name": "Jens Petersen"
+      },
+      {
+        "authorId": "1397951928",
+        "name": "Klaus Hermann Maier-Hein"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "9f01c919215565217a2e58cbcd66e3e8ee16f0a3",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-03884",
+      "ArXiv": "2203.03884",
+      "DOI": "10.1109/CVPR52688.2022.00421",
+      "CorpusId": 247315180
+    },
+    "title": "Semi-Supervised Semantic Segmentation Using Unreliable Pseudo-Labels",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 484,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2203.03884",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.03884, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108899036",
+        "name": "Yuchao Wang"
+      },
+      {
+        "authorId": "2256769704",
+        "name": "Haochen Wang"
+      },
+      {
+        "authorId": "2117687899",
+        "name": "Yujun Shen"
+      },
+      {
+        "authorId": "2544305",
+        "name": "Jingjing Fei"
+      },
+      {
+        "authorId": "48625175",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "2158121382",
+        "name": "Guoqiang Jin"
+      },
+      {
+        "authorId": "49279300",
+        "name": "Liwei Wu"
+      },
+      {
+        "authorId": "2153291683",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "2052967041",
+        "name": "Xinyi Le"
+      }
+    ],
+    "abstract": "The crux of semi-supervised semantic segmentation is to assign adequate pseudo-labels to the pixels of unlabeled images. A common practice is to select the highly confident predictions as the pseudo ground-truth, but it leads to a problem that most pixels may be left unused due to their unreliability. We argue that every pixel matters to the model training, even its prediction is ambiguous. Intuitively, an unreliable prediction may get confused among the top classes (i.e., those with the highest probabilities), however, it should be confident about the pixel not belonging to the remaining classes. Hence, such a pixel can be convincingly treated as a negative sample to those most unlikely categories. Based on this insight, we develop an effective pipeline to make sufficient use of unlabeled data. Concretely, we separate reliable and unreliable pixels via the entropy of predictions, push each unreliable pixel to a category-wise queue that consists of negative samples, and manage to train the model with all candidate pixels. Considering the training evolution, where the prediction becomes more and more accurate, we adaptively adjust the threshold for the reliable-unreliable partition. Experimental results on various benchmarks and training settings demonstrate the superiority of our approach over the state-of-the-art alternatives. 11Project: https://haochen-wang409.github.io/U2PL."
+  },
+  {
+    "paperId": "7ed92c492f74f2c297d7bfb20072d5765ac9b0c8",
+    "externalIds": {
+      "DBLP": "journals/tgrs/MaZPL24",
+      "DOI": "10.1109/TGRS.2024.3373033",
+      "CorpusId": 268346921
+    },
+    "title": "A Multilevel Multimodal Fusion Transformer for Remote Sensing Semantic Segmentation",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 250,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2024.3373033?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2024.3373033, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149145512",
+        "name": "Xianping Ma"
+      },
+      {
+        "authorId": "2023943340",
+        "name": "Xiaokang Zhang"
+      },
+      {
+        "authorId": "144305489",
+        "name": "M. Pun"
+      },
+      {
+        "authorId": "2260820638",
+        "name": "Ming Liu"
+      }
+    ],
+    "abstract": "Accurate semantic segmentation of remote sensing data plays a crucial role in the success of geoscience research and applications. Recently, multimodal fusion-based segmentation models have attracted much attention due to their outstanding performance as compared to conventional single-modal techniques. However, most of these models perform their fusion operation using convolutional neural networks (CNNs) or the vision transformer (Vit), resulting in insufficient local–global contextual modeling and representative capabilities. In this work, a multilevel multimodal fusion scheme called FTransUNet is proposed to provide a robust and effective multimodal fusion backbone for semantic segmentation by integrating both CNN and Vit into one unified fusion framework. First, the shallow-level features are first extracted and fused through convolutional layers and shallow-level feature fusion (SFF) modules. After that, deep-level features characterizing semantic information and spatial relationships are extracted and fused by a well-designed fusion Vit (FVit). It applies adaptively mutually boosted attention (Ada-MBA) layers and self-attention (SA) layers alternately in a three-stage scheme to learn cross-modality representations of high interclass separability and low intraclass variations. Specifically, the proposed Ada-MBA computes SA and cross-attention (CA) in parallel to enhance intra- and cross-modality contextual information simultaneously while steering attention distribution toward semantic-aware regions. As a result, FTransUNet can fuse shallow-level and deep-level features in a multilevel manner, taking full advantage of CNN and transformer to accurately characterize local details and global semantics, respectively. Extensive experiments confirm the superior performance of the proposed FTransUNet compared with other multimodal fusion approaches on two fine-resolution remote sensing datasets, namely ISPRS Vaihingen and Potsdam. The source code in this work is available at https://github.com/sstary/SSRS."
+  },
+  {
+    "paperId": "8bcf60e213831d70a67de7cc033f984e5a908ca6",
+    "externalIds": {
+      "ArXiv": "2206.02066",
+      "DBLP": "conf/cvpr/XuXB23",
+      "DOI": "10.1109/CVPR52729.2023.01871",
+      "CorpusId": 258041173
+    },
+    "title": "PIDNet: A Real-time Semantic Segmentation Network Inspired by PID Controllers",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 525,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.02066",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.02066, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2237956770",
+        "name": "Jiacong Xu"
+      },
+      {
+        "authorId": "2061495299",
+        "name": "Zixiang Xiong"
+      },
+      {
+        "authorId": "4766090",
+        "name": "S. Bhattacharyya"
+      }
+    ],
+    "abstract": "Two-branch network architecture has shown its efficiency and effectiveness in real-time semantic segmentation tasks. However, direct fusion of high-resolution details and low-frequency context has the drawback of detailed features being easily overwhelmed by surrounding contextual information. This overshoot phenomenon limits the improvement of the segmentation accuracy of existing two-branch models. In this paper, we make a connection between Convolutional Neural Networks (CNN) and Proportional-Integral-Derivative (PID) controllers and reveal that a two-branch network is equivalent to a Proportional-Integral (PI) controller, which inherently suffers from similar overshoot issues. To alleviate this problem, we propose a novel three-branch network architecture: PIDNet, which contains three branches to parse detailed, context and boundary information, respectively, and employs boundary attention to guide the fusion of detailed and context branches. Our family of PIDNets achieve the best trade-off between inference speed and accuracy and their accuracy surpasses all the existing models with similar inference speed on the Cityscapes and CamVid datasets. Specifically, PIDNet-S achieves 78.6% mIOU with inference speed of 93.2 FPS on Cityscapes and 80.1% mIOU with speed of 153.7 FPS on CamVid."
+  },
+  {
+    "paperId": "90f390777d1a23a2c8a4b9b94e29afbf8b76cbd6",
+    "externalIds": {
+      "DBLP": "conf/eccv/HoyerDG22",
+      "ArXiv": "2204.13132",
+      "DOI": "10.48550/arXiv.2204.13132",
+      "CorpusId": 248427223
+    },
+    "title": "HRDA: Context-Aware High-Resolution Domain-Adaptive Semantic Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 311,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.13132",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.13132, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "83246531",
+        "name": "Lukas Hoyer"
+      },
+      {
+        "authorId": "1778526",
+        "name": "Dengxin Dai"
+      },
+      {
+        "authorId": "1681236",
+        "name": "L. Gool"
+      }
+    ],
+    "abstract": "Unsupervised domain adaptation (UDA) aims to adapt a model trained on the source domain (e.g. synthetic data) to the target domain (e.g. real-world data) without requiring further annotations on the target domain. This work focuses on UDA for semantic segmentation as real-world pixel-wise annotations are particularly expensive to acquire. As UDA methods for semantic segmentation are usually GPU memory intensive, most previous methods operate only on downscaled images. We question this design as low-resolution predictions often fail to preserve fine details. The alternative of training with random crops of high-resolution images alleviates this problem but falls short in capturing long-range, domain-robust context information. Therefore, we propose HRDA, a multi-resolution training approach for UDA, that combines the strengths of small high-resolution crops to preserve fine segmentation details and large low-resolution crops to capture long-range context dependencies with a learned scale attention, while maintaining a manageable GPU memory footprint. HRDA enables adapting small objects and preserving fine segmentation details. It significantly improves the state-of-the-art performance by 5.5 mIoU for GTA-to-Cityscapes and 4.9 mIoU for Synthia-to-Cityscapes, resulting in unprecedented 73.8 and 65.8 mIoU, respectively. The implementation is available at https://github.com/lhoyer/HRDA."
+  },
+  {
+    "paperId": "918646809c7e22c94994fe80c3a2840b4c951a3c",
+    "externalIds": {
+      "ArXiv": "2203.08414",
+      "DBLP": "journals/corr/abs-2203-08414",
+      "DOI": "10.48550/arXiv.2203.08414",
+      "CorpusId": 247476291
+    },
+    "title": "Unsupervised Semantic Segmentation by Distilling Feature Correspondences",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 317,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.08414",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.08414, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47359380",
+        "name": "Mark Hamilton"
+      },
+      {
+        "authorId": "2717546",
+        "name": "Zhoutong Zhang"
+      },
+      {
+        "authorId": "1790580",
+        "name": "Bharath Hariharan"
+      },
+      {
+        "authorId": "1830653",
+        "name": "Noah Snavely"
+      },
+      {
+        "authorId": "1768236",
+        "name": "W. Freeman"
+      }
+    ],
+    "abstract": "Unsupervised semantic segmentation aims to discover and localize semantically meaningful categories within image corpora without any form of annotation. To solve this task, algorithms must produce features for every pixel that are both semantically meaningful and compact enough to form distinct clusters. Unlike previous works which achieve this with a single end-to-end framework, we propose to separate feature learning from cluster compactification. Empirically, we show that current unsupervised feature learning frameworks already generate dense features whose correlations are semantically consistent. This observation motivates us to design STEGO ($\\textbf{S}$elf-supervised $\\textbf{T}$ransformer with $\\textbf{E}$nergy-based $\\textbf{G}$raph $\\textbf{O}$ptimization), a novel framework that distills unsupervised features into high-quality discrete semantic labels. At the core of STEGO is a novel contrastive loss function that encourages features to form compact clusters while preserving their relationships across the corpora. STEGO yields a significant improvement over the prior state of the art, on both the CocoStuff ($\\textbf{+14 mIoU}$) and Cityscapes ($\\textbf{+9 mIoU}$) semantic segmentation challenges."
+  },
+  {
+    "paperId": "56e37466914419b2b93cf0dbe9343c49e968c066",
+    "externalIds": {
+      "ArXiv": "2207.02202",
+      "DBLP": "conf/corl/XuTXSZM22",
+      "DOI": "10.48550/arXiv.2207.02202",
+      "CorpusId": 250279978
+    },
+    "title": "CoBEVT: Cooperative Bird's Eye View Semantic Segmentation with Sparse Transformers",
+    "venue": "Conference on Robot Learning",
+    "year": 2022,
+    "citationCount": 355,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.02202",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.02202, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47462785",
+        "name": "Runsheng Xu"
+      },
+      {
+        "authorId": "40992714",
+        "name": "Zhengzhong Tu"
+      },
+      {
+        "authorId": "2119233630",
+        "name": "Hao Xiang"
+      },
+      {
+        "authorId": "2055088838",
+        "name": "Wei Shao"
+      },
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "2146393082",
+        "name": "Jiaqi Ma"
+      }
+    ],
+    "abstract": "Bird's eye view (BEV) semantic segmentation plays a crucial role in spatial sensing for autonomous driving. Although recent literature has made significant progress on BEV map understanding, they are all based on single-agent camera-based systems. These solutions sometimes have difficulty handling occlusions or detecting distant objects in complex traffic scenes. Vehicle-to-Vehicle (V2V) communication technologies have enabled autonomous vehicles to share sensing information, dramatically improving the perception performance and range compared to single-agent systems. In this paper, we propose CoBEVT, the first generic multi-agent multi-camera perception framework that can cooperatively generate BEV map predictions. To efficiently fuse camera features from multi-view and multi-agent data in an underlying Transformer architecture, we design a fused axial attention module (FAX), which captures sparsely local and global spatial interactions across views and agents. The extensive experiments on the V2V perception dataset, OPV2V, demonstrate that CoBEVT achieves state-of-the-art performance for cooperative BEV semantic segmentation. Moreover, CoBEVT is shown to be generalizable to other tasks, including 1) BEV segmentation with single-agent multi-camera and 2) 3D object detection with multi-agent LiDAR systems, achieving state-of-the-art performance with real-time inference speed. The code is available at https://github.com/DerrickXuNu/CoBEVT."
+  },
+  {
+    "paperId": "b3dd7c78ae3960474541f01d9a9ce7b5de65c110",
+    "externalIds": {
+      "DBLP": "conf/eccv/RozenberszkiLD22",
+      "ArXiv": "2204.07761",
+      "DOI": "10.48550/arXiv.2204.07761",
+      "CorpusId": 248227627
+    },
+    "title": "Language-Grounded Indoor 3D Semantic Segmentation in the Wild",
+    "venue": "European Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 286,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.07761",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.07761, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1792060998",
+        "name": "Dávid Rozenberszki"
+      },
+      {
+        "authorId": "2528439",
+        "name": "O. Litany"
+      },
+      {
+        "authorId": "2208531",
+        "name": "Angela Dai"
+      }
+    ],
+    "abstract": "Recent advances in 3D semantic segmentation with deep neural networks have shown remarkable success, with rapid performance increase on available datasets. However, current 3D semantic segmentation benchmarks contain only a small number of categories -- less than 30 for ScanNet and SemanticKITTI, for instance, which are not enough to reflect the diversity of real environments (e.g., semantic image understanding covers hundreds to thousands of classes). Thus, we propose to study a larger vocabulary for 3D semantic segmentation with a new extended benchmark on ScanNet data with 200 class categories, an order of magnitude more than previously studied. This large number of class categories also induces a large natural class imbalance, both of which are challenging for existing 3D semantic segmentation methods. To learn more robust 3D features in this context, we propose a language-driven pre-training method to encourage learned 3D features that might have limited training examples to lie close to their pre-trained text embeddings. Extensive experiments show that our approach consistently outperforms state-of-the-art 3D pre-training for 3D semantic segmentation on our proposed benchmark (+9% relative mIoU), including limited-data scenarios with +25% relative mIoU using only 5% annotations."
+  },
+  {
+    "paperId": "772f9f21511de7bc1077b877a0ea0bd6e50f4e76",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XuOBB022",
+      "ArXiv": "2203.02891",
+      "DOI": "10.1109/CVPR52688.2022.00427",
+      "CorpusId": 247291915
+    },
+    "title": "Multi-class Token Transformer for Weakly Supervised Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 288,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.02891",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02891, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46265547",
+        "name": "Lian Xu"
+      },
+      {
+        "authorId": "3001348",
+        "name": "Wanli Ouyang"
+      },
+      {
+        "authorId": "1698675",
+        "name": "Bennamoun"
+      },
+      {
+        "authorId": "3417987",
+        "name": "F. Boussaid"
+      },
+      {
+        "authorId": "144742695",
+        "name": "Dan Xu"
+      }
+    ],
+    "abstract": "This paper proposes a new transformer-based framework to learn class-specific object localization maps as pseudo labels for weakly supervised semantic segmentation (WSSS). Inspired by the fact that the attended regions of the one-class token in the standard vision transformer can be leveraged to form a class-agnostic localization map, we investigate if the transformer model can also effectively capture class-specific attention for more discriminative object localization by learning multiple class tokens within the transformer. To this end, we propose a Multi-class Token Transformer, termed as MCTformer, which uses multiple class tokens to learn interactions between the class tokens and the patch tokens. The proposed MCTformer can successfully produce class-discriminative object localization maps from the class-to-patch attentions corresponding to different class tokens. We also propose to use a patch-level pairwise affinity, which is extracted from the patch-to-patch transformer attention, to further refine the localization maps. Moreover, the proposed framework is shown to fully complement the Class Activation Mapping (CAM) method, leading to remarkably superior WSSS results on the PASCAL VOC and MS COCO datasets. These results underline the importance of the class token for WSSS. 11https://github.com/xulianuwa/MCTformer"
+  },
+  {
+    "paperId": "ed228d3ad968eb1aa38baea5471bcb1d698f196a",
+    "externalIds": {
+      "ArXiv": "2404.01705",
+      "PubMedCentral": "11466675",
+      "DBLP": "journals/corr/abs-2404-01705",
+      "DOI": "10.1016/j.heliyon.2024.e38495",
+      "CorpusId": 268856763,
+      "PubMed": "39398081"
+    },
+    "title": "Samba: Semantic segmentation of remotely sensed images with state space model",
+    "venue": "Heliyon",
+    "year": 2024,
+    "citationCount": 151,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.heliyon.2024.e38495",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.01705, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2294674435",
+        "name": "Qinfeng Zhu"
+      },
+      {
+        "authorId": "2111259961",
+        "name": "Yuanzhi Cai"
+      },
+      {
+        "authorId": "2294560306",
+        "name": "Yuan Fang"
+      },
+      {
+        "authorId": "2218861589",
+        "name": "Yihan Yang"
+      },
+      {
+        "authorId": "2239158036",
+        "name": "Cheng Chen"
+      },
+      {
+        "authorId": "2273066481",
+        "name": "Lei Fan"
+      },
+      {
+        "authorId": "2333063213",
+        "name": "A. Nguyen"
+      }
+    ],
+    "abstract": "High-resolution remotely sensed images pose challenges to traditional semantic segmentation networks, such as Convolutional Neural Networks (CNNs) and Vision Transformers (ViTs). CNN-based methods struggle to handle high-resolution images due to their limited receptive field, while ViT-based methods, despite having a global receptive field, face challenges when processing long sequences. Inspired by the Mamba network, which is based on a state space model (SSM) to efficiently capture global semantic information, we propose a semantic segmentation framework for high-resolution remotely sensed imagery, named Samba. Samba utilizes an encoder-decoder architecture, with multiple Samba blocks serving as the encoder to efficiently extract multi-level semantic information, and UperNet functioning as the decoder. We evaluate Samba on the LoveDA, ISPRS Vaihingen, and ISPRS Potsdam datasets using the mIoU and mF1 metrics, and compare it with top-performing CNN-based and ViT-based methods. The results demonstrate that Samba achieves unparalleled performance on commonly used remotely sensed datasets for semantic segmentation. Samba is the first to demonstrate the effectiveness of SSM in segmenting remotely sensed imagery, setting a new performance benchmark for Mamba-based techniques in this domain of semantic segmentation. The source code and baseline implementations are available at https://github.com/zhuqinfeng1999/Samba."
+  },
+  {
+    "paperId": "c5e6f0c52c1f91086879f46120efa79e96158eba",
+    "externalIds": {
+      "ArXiv": "2205.02833",
+      "DBLP": "journals/corr/abs-2205-02833",
+      "DOI": "10.1109/CVPR52688.2022.01339",
+      "CorpusId": 248525044
+    },
+    "title": "Cross-view Transformers for real-time Map-view Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 362,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.02833",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.02833, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144576462",
+        "name": "Brady Zhou"
+      },
+      {
+        "authorId": "2305682524",
+        "name": "Philipp Krahenbuhl"
+      }
+    ],
+    "abstract": "We present cross-view transformers, an efficient attention-based model for map-view semantic segmentation from multiple cameras. Our architecture implicitly learns a mapping from individual camera views into a canonical map-view representation using a camera-aware cross-view attention mechanism. Each camera uses positional embeddings that depend on its intrinsic and extrinsic calibration. These embeddings allow a transformer to learn the mapping across different views without ever explicitly modeling it geometrically. The architecture consists of a convolutional image encoder for each view and cross-view transformer layers to infer a map-view semantic segmentation. Our model is simple, easily parallelizable, and runs in realtime. The presented architecture performs at state-of-the-art on the nuScenes dataset, with 4x faster inference speeds. Code is available at https://github.com/bradyz/cross_view_transformers."
+  },
+  {
+    "paperId": "f6282d4bbd942f7f08ceb549cb4ee647a22aaa50",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2111-14887",
+      "ArXiv": "2111.14887",
+      "DOI": "10.1109/CVPR52688.2022.00969",
+      "CorpusId": 244729413
+    },
+    "title": "DAFormer: Improving Network Architectures and Training Strategies for Domain-Adaptive Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 595,
+    "openAccessPdf": {
+      "url": "https://lirias.kuleuven.be/bitstream/20.500.12942/728680/2/Hoyer_DAFormer_Improving_Network_Architectures_and_Training_Strategies_for_Domain-Adaptive_Semantic_CVPR_2022_paper.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCSA",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.14887, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "83246531",
+        "name": "Lukas Hoyer"
+      },
+      {
+        "authorId": "1778526",
+        "name": "Dengxin Dai"
+      },
+      {
+        "authorId": "1681236",
+        "name": "L. Gool"
+      }
+    ],
+    "abstract": "As acquiring pixel-wise annotations of real-world images for semantic segmentation is a costly process, a model can instead be trained with more accessible synthetic data and adapted to real images without requiring their annotations. This process is studied in unsupervised domain adaptation (UDA). Even though a large number of methods propose new adaptation strategies, they are mostly based on outdated network architectures. As the influence of recent network architectures has not been systematically studied, we first benchmark different network architectures for UDA and newly reveal the potential of Transformers for UDA semantic segmentation. Based on the findings, we propose a novel UDA method, DAFormer. The network architecture of DAFormer consists of a Transformer encoder and a multi-level context-aware feature fusion decoder. It is enabled by three simple but crucial training strategies to stabilize the training and to avoid overfitting to the source domain: While (1) Rare Class Sampling on the source domain improves the quality of the pseudo-labels by mitigating the confirmation bias of self-training toward common classes, (2) a Thing-Class ImageNet Feature Distance and (3) a learning rate warmup promote feature transfer from ImageNet pretraining. DAFormer represents a major advance in UDA. It improves the state of the art by 10.8 mIoU for GTA→Cityscapes and 5.4 mIoU for Syruhia→Cityscapes and enables learning even difficult classes such as train, bus, and truck well. The implementation is available at https://github.com/lhoyer/DAFormer."
+  },
+  {
+    "paperId": "d5ab24beec066610a0af109e25913dba3e42a978",
+    "externalIds": {
+      "DBLP": "conf/cvpr/0001LS0RPFWS23",
+      "ArXiv": "2303.01480",
+      "DOI": "10.1109/CVPR52729.2023.00116",
+      "CorpusId": 257280339
+    },
+    "title": "Delivering Arbitrary-Modal Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 178,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.01480",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.01480, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116060122",
+        "name": "Jiaming Zhang"
+      },
+      {
+        "authorId": "144207288",
+        "name": "R. Liu"
+      },
+      {
+        "authorId": "2034192426",
+        "name": "Haowen Shi"
+      },
+      {
+        "authorId": "8689702",
+        "name": "Kailun Yang"
+      },
+      {
+        "authorId": "1845905584",
+        "name": "Simon Reiß"
+      },
+      {
+        "authorId": "91549683",
+        "name": "Kunyu Peng"
+      },
+      {
+        "authorId": "2179110686",
+        "name": "Haodong Fu"
+      },
+      {
+        "authorId": "7200505",
+        "name": "Kaiwei Wang"
+      },
+      {
+        "authorId": "1742325",
+        "name": "R. Stiefelhagen"
+      }
+    ],
+    "abstract": "Multimodal fusion can make semantic segmentation more robust. However, fusing an arbitrary number of modalities remains underexplored. To delve into this problem, we create the Deliver arbitrary-modal segmentation benchmark, covering Depth, LiDAR, multiple Views, Events, and RGB. Aside from this, we provide this dataset in four severe weather conditions as well as five sensor failure cases to exploit modal complementarity and resolve partial outages. To make this possible, we present the arbitrary cross-modal segmentation model CMNEXT. It encompasses a Self-Query Hub (SQ-Hub) designed to extract effective information from any modality for subsequent fusion with the RGB representation and adds only negligible amounts of parameters ~0.1M) per additional modality. On top, to efficiently and flexibly harvest discriminative cues from the auxiliary modalities, we introduce the simple Parallel Pooling Mixer (PPX). With extensive experiments on a total of six benchmarks, our CMNEXT achieves state-of-the-art performance on the Deliver, Kitti-360, MFNet, NYU Depth V2, UrbanLF, and MCubeS datasets, allowing to scale from 1 to 81 modalities. On the freshly collected Deliver, the quad-modal CMNEXT reaches up to 66.30% in mIoU with a +9.10% gain as compared to the mono-modal baseline.11The Deliver dataset and our code will be made publicly available at https://jamycheung.github.io/DELIVER.html."
+  },
+  {
+    "paperId": "98cdd14faacf54161f4d73ab65ff2aac85161f89",
+    "externalIds": {
+      "ArXiv": "2208.09910",
+      "DBLP": "journals/corr/abs-2208-09910",
+      "DOI": "10.1109/CVPR52729.2023.00699",
+      "CorpusId": 251719486
+    },
+    "title": "Revisiting Weak-to-Strong Consistency in Semi-Supervised Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 441,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2208.09910",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2208.09910, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108637046",
+        "name": "Lihe Yang"
+      },
+      {
+        "authorId": "1785352346",
+        "name": "Lei Qi"
+      },
+      {
+        "authorId": "2205018430",
+        "name": "Litong Feng"
+      },
+      {
+        "authorId": "1726357",
+        "name": "Wayne Zhang"
+      },
+      {
+        "authorId": "2475959",
+        "name": "Yinghuan Shi"
+      }
+    ],
+    "abstract": "In this work, we revisit the weak-to-strong consistency framework, popularized by FixMatch from semi-supervised classification, where the prediction of a weakly perturbed image serves as supervision for its strongly perturbed version. Intriguingly, we observe that such a simple pipeline already achieves competitive results against recent advanced works, when transferred to our segmentation scenario. Its success heavily relies on the manual design of strong data augmentations, however, which may be limited and inadequate to explore a broader perturbation space. Motivated by this, we propose an auxiliary feature perturbation stream as a supplement, leading to an expanded perturbation space. On the other, to sufficiently probe original image-level augmentations, we present a dual-stream perturbation technique, enabling two strong views to be simultaneously guided by a common weak view. Consequently, our overall Unified Dual-Stream Perturbations approach (UniMatch) surpasses all existing methods significantly across all evaluation protocols on the Pascal, Cityscapes, and COCO benchmarks. Its superiority is also demonstrated in remote sensing interpretation and medical image analysis. We hope our reproduced FixMatch and our results can inspire more future works."
+  },
+  {
+    "paperId": "1365b4a286e607a4902ef11c84a1f309719d946c",
+    "externalIds": {
+      "ArXiv": "1811.12833",
+      "DBLP": "journals/corr/abs-1811-12833",
+      "MAG": "2955959307",
+      "DOI": "10.1109/CVPR.2019.00262",
+      "CorpusId": 54216961
+    },
+    "title": "ADVENT: Adversarial Entropy Minimization for Domain Adaptation in Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1488,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.12833, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2142754750",
+        "name": "Tuan-Hung Vu"
+      },
+      {
+        "authorId": "3451474",
+        "name": "Himalaya Jain"
+      },
+      {
+        "authorId": "48326034",
+        "name": "Max Bucher"
+      },
+      {
+        "authorId": "51021910",
+        "name": "M. Cord"
+      },
+      {
+        "authorId": "144565371",
+        "name": "P. Pérez"
+      }
+    ],
+    "abstract": "Semantic segmentation is a key problem for many computer vision tasks. While approaches based on convolutional neural networks constantly break new records on different benchmarks, generalizing well to diverse testing environments remains a major challenge. In numerous real-world applications, there is indeed a large gap between data distributions in train and test domains, which results in severe performance loss at run-time. In this work, we address the task of unsupervised domain adaptation in semantic segmentation with losses based on the entropy of the pixel-wise predictions. To this end, we propose two novel, complementary methods using (i) entropy loss and (ii) adversarial loss respectively. We demonstrate state-of-the-art performance in semantic segmentation on two challenging “synthetic-2-real” set-ups and show that the approach can also be used for detection."
+  },
+  {
+    "paperId": "1d6a5d0299ed8458191e4e0407d4d513e6a7dd7e",
+    "externalIds": {
+      "MAG": "2769297824",
+      "DBLP": "journals/corr/abs-1711-10275",
+      "ArXiv": "1711.10275",
+      "DOI": "10.1109/CVPR.2018.00961",
+      "CorpusId": 10154243
+    },
+    "title": "3D Semantic Segmentation with Submanifold Sparse Convolutional Networks",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 1780,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1711.10275",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.10275, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143853801",
+        "name": "Benjamin Graham"
+      },
+      {
+        "authorId": "3468172",
+        "name": "Martin Engelcke"
+      },
+      {
+        "authorId": "1803520",
+        "name": "L. Maaten"
+      }
+    ],
+    "abstract": "Convolutional networks are the de-facto standard for analyzing spatio-temporal data such as images, videos, and 3D shapes. Whilst some of this data is naturally dense (e.g., photos), many other data sources are inherently sparse. Examples include 3D point clouds that were obtained using a LiDAR scanner or RGB-D camera. Standard \"dense\" implementations of convolutional networks are very inefficient when applied on such sparse data. We introduce new sparse convolutional operations that are designed to process spatially-sparse data more efficiently, and use them to develop spatially-sparse convolutional networks. We demonstrate the strong performance of the resulting models, called submanifold sparse convolutional networks (SS-CNs), on two tasks involving semantic segmentation of 3D point clouds. In particular, our models outperform all prior state-of-the-art on the test set of a recent semantic segmentation competition."
+  },
+  {
+    "paperId": "1da81334febeff16d13f618b02c855a51fd751a7",
+    "externalIds": {
+      "DBLP": "conf/cvpr/RuZY022",
+      "ArXiv": "2203.02664",
+      "DOI": "10.1109/CVPR52688.2022.01634",
+      "CorpusId": 247292515
+    },
+    "title": "Learning Affinity from Attention: End-to-End Weakly-Supervised Semantic Segmentation with Transformers",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 262,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.02664",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.02664, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "52133336",
+        "name": "Lixiang Ru"
+      },
+      {
+        "authorId": "1895813",
+        "name": "Yibing Zhan"
+      },
+      {
+        "authorId": "2110431812",
+        "name": "Baosheng Yu"
+      },
+      {
+        "authorId": "2142452296",
+        "name": "Bo Du"
+      }
+    ],
+    "abstract": "Weakly-supervised semantic segmentation (WSSS) with image-level labels is an important and challenging task. Due to the high training efficiency, end-to-end solutions for WSSS have received increasing attention from the community. However, current methods are mainly based on convolutional neural networks and fail to explore the global information properly, thus usually resulting in incomplete object regions. In this paper, to address the aforementioned problem, we introduce Transformers, which naturally integrate global information, to generate more integral initial pseudo labels for end-to-end WSSS. Motivated by the inherent consistency between the self-attention in Transformers and the semantic affinity, we propose an Affinity from Attention (AFA) module to learn semantic affinity from the multi-head self-attention (MHSA) in Transformers. The learned affinity is then leveraged to refine the initial pseudo labels for segmentation. In addition, to efficiently derive reliable affinity labels for supervising AFA and ensure the local consistency of pseudo labels, we devise a Pixel-Adaptive Refinement module that incorporates low-level image appearance information to refine the pseudo labels. We perform extensive experiments and our method achieves 66.0% and 38.9% mIoU on the PASCAL VOC 2012 and MS COCO 2014 datasets, respectively, significantly outperforming recent end-to-end methods and several multi-stage competitors. Code is available at https://github.com/rulixiang/afa."
+  },
+  {
+    "paperId": "a06ad946578d92baac73735726a00b5f7f446c98",
+    "externalIds": {
+      "DBLP": "conf/wacv/WanZWYSSX25",
+      "ArXiv": "2404.04256",
+      "DOI": "10.1109/WACV61041.2025.00176",
+      "CorpusId": 268987521
+    },
+    "title": "Sigma: Siamese Mamba Network for Multi-Modal Semantic Segmentation",
+    "venue": "IEEE Workshop/Winter Conference on Applications of Computer Vision",
+    "year": 2024,
+    "citationCount": 118,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.04256, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2186826514",
+        "name": "Zifu Wan"
+      },
+      {
+        "authorId": "2274966413",
+        "name": "Yuhao Wang"
+      },
+      {
+        "authorId": "2295511052",
+        "name": "Silong Yong"
+      },
+      {
+        "authorId": "2295585237",
+        "name": "Pingping Zhang"
+      },
+      {
+        "authorId": "8083127",
+        "name": "Simon Stepputtis"
+      },
+      {
+        "authorId": "2239104696",
+        "name": "Katia P. Sycara"
+      },
+      {
+        "authorId": "2266307378",
+        "name": "Yaqi Xie"
+      }
+    ],
+    "abstract": "Multi-modal semantic segmentation significantly enhances AI agents' perception and scene understanding, especially under adverse conditions like low-light or overexposed environments. Leveraging additional modalities (X-modality) like thermal and depth alongside traditional RGB provides complementary information, enabling more robust and reliable prediction. In this work, we introduce Sigma, a Siamese Mamba network for multi-modal semantic segmentation utilizing the advanced Mamba. Unlike conventional methods that rely on CNNs, with their limited local receptive fields, or Vision Transformers (ViTs), which offer global receptive fields at the cost of quadratic complexity, our model achieves global receptive fields with linear complexity. By employing a Siamese encoder and innovating a Mamba-based fusion mechanism, we effectively select essential information from different modalities. A decoder is then developed to enhance the channel-wise modeling ability of the model. Our proposed method is rigorously evaluated on both RGB-Thermal and RGB-Depth semantic segmentation tasks, demonstrating its superiority and marking the first successful application of State Space Models (SSMs) in multi-modal perception tasks. Code is available at https://github.com/zifuwan/Sigma."
+  }
+]

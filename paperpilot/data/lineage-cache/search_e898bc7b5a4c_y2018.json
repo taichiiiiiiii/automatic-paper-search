@@ -1,0 +1,2009 @@
+[
+  {
+    "paperId": "4f2eda8077dc7a69bb2b4e0a1a086cf054adb3f9",
+    "externalIds": {
+      "DBLP": "conf/icml/TanL19",
+      "MAG": "2946948417",
+      "ArXiv": "1905.11946",
+      "CorpusId": 167217261
+    },
+    "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2019,
+    "citationCount": 23438,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.11946, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "120805419",
+        "name": "Mingxing Tan"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (ConvNets) are commonly developed at a fixed resource budget, and then scaled up for better accuracy if more resources are available. In this paper, we systematically study model scaling and identify that carefully balancing network depth, width, and resolution can lead to better performance. Based on this observation, we propose a new scaling method that uniformly scales all dimensions of depth/width/resolution using a simple yet highly effective compound coefficient. We demonstrate the effectiveness of this method on scaling up MobileNets and ResNet. \nTo go even further, we use neural architecture search to design a new baseline network and scale it up to obtain a family of models, called EfficientNets, which achieve much better accuracy and efficiency than previous ConvNets. In particular, our EfficientNet-B7 achieves state-of-the-art 84.4% top-1 / 97.1% top-5 accuracy on ImageNet, while being 8.4x smaller and 6.1x faster on inference than the best existing ConvNet. Our EfficientNets also transfer well and achieve state-of-the-art accuracy on CIFAR-100 (91.7%), Flowers (98.8%), and 3 other transfer learning datasets, with an order of magnitude fewer parameters. Source code is at this https URL."
+  },
+  {
+    "paperId": "8cb34cbdcf65c23ef98430441b14a648c4e8d992",
+    "externalIds": {
+      "ArXiv": "1910.03151",
+      "MAG": "2979983945",
+      "DBLP": "journals/corr/abs-1910-03151",
+      "DOI": "10.1109/CVPR42600.2020.01155",
+      "CorpusId": 203902337
+    },
+    "title": "ECA-Net: Efficient Channel Attention for Deep Convolutional Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 5723,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1910.03151",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.03151, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49110790",
+        "name": "Qilong Wang"
+      },
+      {
+        "authorId": "1387668229",
+        "name": "Banggu Wu"
+      },
+      {
+        "authorId": "2055691681",
+        "name": "Peng Fei Zhu"
+      },
+      {
+        "authorId": "40426020",
+        "name": "P. Li"
+      },
+      {
+        "authorId": "1724520",
+        "name": "W. Zuo"
+      },
+      {
+        "authorId": "144281199",
+        "name": "Q. Hu"
+      }
+    ],
+    "abstract": "Recently, channel attention mechanism has demonstrated to offer great potential in improving the performance of deep convolutional neural networks (CNNs). However, most existing methods dedicate to developing more sophisticated attention modules for achieving better performance, which inevitably increase model complexity. To overcome the paradox of performance and complexity trade-off, this paper proposes an Efficient Channel Attention (ECA) module, which only involves a handful of parameters while bringing clear performance gain. By dissecting the channel attention module in SENet, we empirically show avoiding dimensionality reduction is important for learning channel attention, and appropriate cross-channel interaction can preserve performance while significantly decreasing model complexity. Therefore, we propose a local cross-channel interaction strategy without dimensionality reduction, which can be efficiently implemented via 1D convolution. Furthermore, we develop a method to adaptively select kernel size of 1D convolution, determining coverage of local cross-channel interaction. The proposed ECA module is both efficient and effective, e.g., the parameters and computations of our modules against backbone of ResNet50 are 80 vs. 24.37M and 4.7e-4 GFlops vs. 3.86 GFlops, respectively, and the performance boost is more than 2% in terms of Top-1 accuracy. We extensively evaluate our ECA module on image classification, object detection and instance segmentation with backbones of ResNets and MobileNetV2. The experimental results show our module is more efficient while performing favorably against its counterparts."
+  },
+  {
+    "paperId": "eb35fdc11a325f21a8ce0ca65058f7480a2fc91f",
+    "externalIds": {
+      "MAG": "2746314669",
+      "ArXiv": "1708.04552",
+      "DBLP": "journals/corr/abs-1708-04552",
+      "CorpusId": 23714201
+    },
+    "title": "Improved Regularization of Convolutional Neural Networks with Cutout",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 4240,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1708.04552, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32097919",
+        "name": "Terrance Devries"
+      },
+      {
+        "authorId": "144639556",
+        "name": "Graham W. Taylor"
+      }
+    ],
+    "abstract": "Convolutional neural networks are capable of learning powerful representational spaces, which are necessary for tackling complex learning tasks. However, due to the model capacity required to capture such representations, they are often susceptible to overfitting and therefore require proper regularization in order to generalize well. In this paper, we show that the simple regularization technique of randomly masking out square regions of input during training, which we call cutout, can be used to improve the robustness and overall performance of convolutional neural networks. Not only is this method extremely easy to implement, but we also demonstrate that it can be used in conjunction with existing forms of data augmentation and other regularizers to further improve model performance. We evaluate this method by applying it to current state-of-the-art architectures on the CIFAR-10, CIFAR-100, and SVHN datasets, yielding new state-of-the-art results of 2.56%, 15.20%, and 1.30% test error respectively. Code is available at this https URL"
+  },
+  {
+    "paperId": "50004c086ffd6a201a4b782281aaa930fbfe6ecf",
+    "externalIds": {
+      "MAG": "2432481613",
+      "ArXiv": "1606.04797",
+      "DBLP": "conf/3dim/MilletariNA16",
+      "DOI": "10.1109/3DV.2016.79",
+      "CorpusId": 206429151
+    },
+    "title": "V-Net: Fully Convolutional Neural Networks for Volumetric Medical Image Segmentation",
+    "venue": "International Conference on 3D Vision",
+    "year": 2016,
+    "citationCount": 10517,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1606.04797",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.04797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1877512",
+        "name": "Fausto Milletarì"
+      },
+      {
+        "authorId": "145587209",
+        "name": "N. Navab"
+      },
+      {
+        "authorId": "145774206",
+        "name": "Seyed-Ahmad Ahmadi"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) have been recently employed to solve problems from both the computer vision and medical image analysis fields. Despite their popularity, most approaches are only able to process 2D images while most medical data used in clinical practice consists of 3D volumes. In this work we propose an approach to 3D image segmentation based on a volumetric, fully convolutional, neural network. Our CNN is trained end-to-end on MRI volumes depicting prostate, and learns to predict segmentation for the whole volume at once. We introduce a novel objective function, that we optimise during training, based on Dice coefficient. In this way we can deal with situations where there is a strong imbalance between the number of foreground and background voxels. To cope with the limited number of annotated volumes available for training, we augment the data applying random non-linear transformations and histogram matching. We show in our experimental evaluation that our approach achieves good performances on challenging test data while requiring only a fraction of the processing time needed by other previous methods."
+  },
+  {
+    "paperId": "c41eb895616e453dcba1a70c9b942c5063cc656c",
+    "externalIds": {
+      "MAG": "2468907370",
+      "DBLP": "journals/corr/DefferrardBV16",
+      "ArXiv": "1606.09375",
+      "CorpusId": 3016223
+    },
+    "title": "Convolutional Neural Networks on Graphs with Fast Localized Spectral Filtering",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 8485,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.09375, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422350",
+        "name": "Michaël Defferrard"
+      },
+      {
+        "authorId": "2549032",
+        "name": "X. Bresson"
+      },
+      {
+        "authorId": "1697397",
+        "name": "P. Vandergheynst"
+      }
+    ],
+    "abstract": "In this work, we are interested in generalizing convolutional neural networks (CNNs) from low-dimensional regular grids, where image, video and speech are represented, to high-dimensional irregular domains, such as social networks, brain connectomes or words' embedding, represented by graphs. We present a formulation of CNNs in the context of spectral graph theory, which provides the necessary mathematical background and efficient numerical schemes to design fast localized convolutional filters on graphs. Importantly, the proposed technique offers the same linear computational complexity and constant learning complexity as classical CNNs, while being universal to any graph structure. Experiments on MNIST and 20NEWS demonstrate the ability of this novel deep learning system to learn local, stationary, and compositional features on graphs."
+  },
+  {
+    "paperId": "3647d6d0f151dc05626449ee09cc7bce55be497e",
+    "externalIds": {
+      "DBLP": "journals/corr/HowardZCKWWAA17",
+      "ArXiv": "1704.04861",
+      "MAG": "2612445135",
+      "CorpusId": 12670695
+    },
+    "title": "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 24605,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.04861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144727050",
+        "name": "Andrew G. Howard"
+      },
+      {
+        "authorId": "2717876",
+        "name": "Menglong Zhu"
+      },
+      {
+        "authorId": null,
+        "name": "Bo Chen"
+      },
+      {
+        "authorId": "2741985",
+        "name": "Dmitry Kalenichenko"
+      },
+      {
+        "authorId": "2108301072",
+        "name": "Weijun Wang"
+      },
+      {
+        "authorId": "47447630",
+        "name": "Tobias Weyand"
+      },
+      {
+        "authorId": "2612392",
+        "name": "M. Andreetto"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "We present a class of efficient models called MobileNets for mobile and embedded vision applications. MobileNets are based on a streamlined architecture that uses depth-wise separable convolutions to build light weight deep neural networks. We introduce two simple global hyper-parameters that efficiently trade off between latency and accuracy. These hyper-parameters allow the model builder to choose the right sized model for their application based on the constraints of the problem. We present extensive experiments on resource and accuracy tradeoffs and show strong performance compared to other popular models on ImageNet classification. We then demonstrate the effectiveness of MobileNets across a wide range of applications and use cases including object detection, finegrain classification, face attributes and large scale geo-localization."
+  },
+  {
+    "paperId": "b649a98ce77ece8cd7638bb74ab77d22d9be77e7",
+    "externalIds": {
+      "MAG": "2528650362",
+      "ArXiv": "1603.05279",
+      "DBLP": "journals/corr/RastegariORF16",
+      "DOI": "10.1007/978-3-319-46493-0_32",
+      "CorpusId": 14925907
+    },
+    "title": "XNOR-Net: ImageNet Classification Using Binary Convolutional Neural Networks",
+    "venue": "European Conference on Computer Vision",
+    "year": 2016,
+    "citationCount": 4681,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1603.05279, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143887493",
+        "name": "Mohammad Rastegari"
+      },
+      {
+        "authorId": "2004053",
+        "name": "Vicente Ordonez"
+      },
+      {
+        "authorId": "40497777",
+        "name": "J. Redmon"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      }
+    ],
+    "abstract": "We propose two efficient approximations to standard convolutional neural networks: Binary-Weight-Networks and XNOR-Networks. In Binary-Weight-Networks, the filters are approximated with binary values resulting in 32\\(\\times \\) memory saving. In XNOR-Networks, both the filters and the input to convolutional layers are binary. XNOR-Networks approximate convolutions using primarily binary operations. This results in 58\\(\\times \\) faster convolutional operations (in terms of number of the high precision operations) and 32\\(\\times \\) memory savings. XNOR-Nets offer the possibility of running state-of-the-art networks on CPUs (rather than GPUs) in real-time. Our binary networks are simple, accurate, efficient, and work on challenging visual tasks. We evaluate our approach on the ImageNet classification task. The classification accuracy with a Binary-Weight-Network version of AlexNet is the same as the full-precision AlexNet. We compare our method with recent network binarization methods, BinaryConnect and BinaryNets, and outperform these methods by large margins on ImageNet, more than \\(16\\,\\%\\) in top-1 accuracy. Our code is available at: http://allenai.org/plato/xnornet."
+  },
+  {
+    "paperId": "7568d13a82f7afa4be79f09c295940e48ec6db89",
+    "externalIds": {
+      "MAG": "2475287302",
+      "DBLP": "conf/cvpr/GatysEB16",
+      "DOI": "10.1109/CVPR.2016.265",
+      "CorpusId": 206593710
+    },
+    "title": "Image Style Transfer Using Convolutional Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 5669,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2016.265?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2016.265, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1891828",
+        "name": "Leon A. Gatys"
+      },
+      {
+        "authorId": "1746183",
+        "name": "Alexander S. Ecker"
+      },
+      {
+        "authorId": "1731199",
+        "name": "M. Bethge"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "6c96c2d4a3fbd572fef2d59cb856521ee1746789",
+    "externalIds": {
+      "MAG": "3100848837",
+      "DBLP": "conf/kdd/YingHCEHL18",
+      "ArXiv": "1806.01973",
+      "DOI": "10.1145/3219819.3219890",
+      "CorpusId": 46949657
+    },
+    "title": "Graph Convolutional Neural Networks for Web-Scale Recommender Systems",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2018,
+    "citationCount": 4093,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1806.01973",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1806.01973, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "83539859",
+        "name": "Rex Ying"
+      },
+      {
+        "authorId": "2933399",
+        "name": "Ruining He"
+      },
+      {
+        "authorId": "2118439896",
+        "name": "Kaifeng Chen"
+      },
+      {
+        "authorId": "50988143",
+        "name": "Pong Eksombatchai"
+      },
+      {
+        "authorId": "49437682",
+        "name": "William L. Hamilton"
+      },
+      {
+        "authorId": "1702139",
+        "name": "J. Leskovec"
+      }
+    ],
+    "abstract": "Recent advancements in deep neural networks for graph-structured data have led to state-of-the-art performance on recommender system benchmarks. However, making these methods practical and scalable to web-scale recommendation tasks with billions of items and hundreds of millions of users remains an unsolved challenge. Here we describe a large-scale deep recommendation engine that we developed and deployed at Pinterest. We develop a data-efficient Graph Convolutional Network (GCN) algorithm, which combines efficient random walks and graph convolutions to generate embeddings of nodes (i.e., items) that incorporate both graph structure as well as node feature information. Compared to prior GCN approaches, we develop a novel method based on highly efficient random walks to structure the convolutions and design a novel training strategy that relies on harder-and-harder training examples to improve robustness and convergence of the model. We also develop an efficient MapReduce model inference algorithm to generate embeddings using a trained model. Overall, we can train on and embed graphs that are four orders of magnitude larger than typical GCN implementations. We show how GCN embeddings can be used to make high-quality recommendations in various settings at Pinterest, which has a massive underlying graph with 3 billion nodes representing pins and boards, and 17 billion edges. According to offline metrics, user studies, as well as A/B tests, our approach generates higher-quality recommendations than comparable deep learning based systems. To our knowledge, this is by far the largest application of deep graph embeddings to date and paves the way for a new generation of web-scale recommender systems based on graph convolutional architectures."
+  },
+  {
+    "paperId": "1f6ba0782862ec12a5ec6d7fb608523d55b0c6ba",
+    "externalIds": {
+      "DBLP": "journals/corr/Kim14f",
+      "MAG": "1832693441",
+      "ACL": "D14-1181",
+      "ArXiv": "1408.5882",
+      "DOI": "10.3115/v1/D14-1181",
+      "CorpusId": 9672033
+    },
+    "title": "Convolutional Neural Networks for Sentence Classification",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2014,
+    "citationCount": 14140,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/D14-1181.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1408.5882, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38367242",
+        "name": "Yoon Kim"
+      }
+    ],
+    "abstract": "We report on a series of experiments with convolutional neural networks (CNN) trained on top of pre-trained word vectors for sentence-level classification tasks. We show that a simple CNN with little hyperparameter tuning and static vectors achieves excellent results on multiple benchmarks. Learning task-specific vectors through fine-tuning offers further gains in performance. We additionally propose a simple modification to the architecture to allow for the use of both task-specific and static vectors. The CNN models discussed herein improve upon the state of the art on 4 out of 7 tasks, which include sentiment analysis and question classification."
+  },
+  {
+    "paperId": "1de68f12db136526116c6ac7064fd13965f2c966",
+    "externalIds": {
+      "DBLP": "journals/tnn/LiLYPZ22",
+      "MAG": "3014140399",
+      "ArXiv": "2004.02806",
+      "DOI": "10.1109/TNNLS.2021.3084827",
+      "CorpusId": 214803074,
+      "PubMed": "34111009"
+    },
+    "title": "A Survey of Convolutional Neural Networks: Analysis, Applications, and Prospects",
+    "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": 2020,
+    "citationCount": 4071,
+    "openAccessPdf": {
+      "url": "https://research-repository.griffith.edu.au/bitstreams/b17b55ad-283a-4b00-9c07-8688d8690e1b/download",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.02806, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109963918",
+        "name": "Zewen Li"
+      },
+      {
+        "authorId": "153035664",
+        "name": "Fan Liu"
+      },
+      {
+        "authorId": "2124888052",
+        "name": "Wenjie Yang"
+      },
+      {
+        "authorId": "1612537626",
+        "name": "Shouheng Peng"
+      },
+      {
+        "authorId": "2151548704",
+        "name": "Jun Zhou"
+      }
+    ],
+    "abstract": "A convolutional neural network (CNN) is one of the most significant networks in the deep learning field. Since CNN made impressive achievements in many areas, including but not limited to computer vision and natural language processing, it attracted much attention from both industry and academia in the past few years. The existing reviews mainly focus on CNN’s applications in different scenarios without considering CNN from a general perspective, and some novel ideas proposed recently are not covered. In this review, we aim to provide some novel ideas and prospects in this fast-growing field. Besides, not only 2-D convolution but also 1-D and multidimensional ones are involved. First, this review introduces the history of CNN. Second, we provide an overview of various convolutions. Third, some classic and advanced CNN models are introduced; especially those key points making them reach state-of-the-art results. Fourth, through experimental analysis, we draw some conclusions and provide several rules of thumb for functions and hyperparameter selection. Fifth, the applications of 1-D, 2-D, and multidimensional convolution are covered. Finally, some open issues and promising directions for CNN are discussed as guidelines for future work."
+  },
+  {
+    "paperId": "abd1c342495432171beb7ca8fd9551ef13cbd0ff",
+    "externalIds": {
+      "DBLP": "conf/nips/KrizhevskySH12",
+      "MAG": "2618530766",
+      "DOI": "10.1145/3065386",
+      "CorpusId": 195908774
+    },
+    "title": "ImageNet classification with deep convolutional neural networks",
+    "venue": "Communications of the ACM",
+    "year": 2012,
+    "citationCount": 128378,
+    "openAccessPdf": {
+      "url": "http://dl.acm.org/ft_gateway.cfm?id=3065386&type=pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3065386?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3065386, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "7580c72df96488927c59a5f31a4b10784adfc749",
+    "externalIds": {
+      "MAG": "2809254203",
+      "PubMedCentral": "6108980",
+      "DOI": "10.1007/s13244-018-0639-9",
+      "CorpusId": 49389393,
+      "PubMed": "29934920"
+    },
+    "title": "Convolutional neural networks: an overview and application in radiology",
+    "venue": "Insights into Imaging",
+    "year": 2018,
+    "citationCount": 3933,
+    "openAccessPdf": {
+      "url": "https://insightsimaging.springeropen.com/track/pdf/10.1007/s13244-018-0639-9",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC6108980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2554362",
+        "name": "R. Yamashita"
+      },
+      {
+        "authorId": "3421183",
+        "name": "M. Nishio"
+      },
+      {
+        "authorId": "152271968",
+        "name": "R. Do"
+      },
+      {
+        "authorId": "2459558",
+        "name": "K. Togashi"
+      }
+    ],
+    "abstract": "Convolutional neural network (CNN), a class of artificial neural networks that has become dominant in various computer vision tasks, is attracting interest across a variety of domains, including radiology. CNN is designed to automatically and adaptively learn spatial hierarchies of features through backpropagation by using multiple building blocks, such as convolution layers, pooling layers, and fully connected layers. This review article offers a perspective on the basic concepts of CNN and its application to various radiological tasks, and discusses its challenges and future directions in the field of radiology. Two challenges in applying CNN to radiological tasks, small dataset and overfitting, will also be covered in this article, as well as techniques to minimize them. Being familiar with the concepts and advantages, as well as limitations, of CNN is essential to leverage its potential in diagnostic radiology, with the goal of augmenting the performance of radiologists and improving patient care.Key Points• Convolutional neural network is a class of deep learning methods which has become dominant in various computer vision tasks and is attracting interest across a variety of domains, including radiology.• Convolutional neural network is composed of multiple building blocks, such as convolution layers, pooling layers, and fully connected layers, and is designed to automatically and adaptively learn spatial hierarchies of features through a backpropagation algorithm.• Familiarity with the concepts and advantages, as well as limitations, of convolutional neural network is essential to leverage its potential to improve radiologist performance and, eventually, patient care."
+  },
+  {
+    "paperId": "a29b7a000e6e1a2907ce6ae24a03aba5d9ef873f",
+    "externalIds": {
+      "MAG": "2253429366",
+      "DBLP": "journals/corr/ShinRGLXNYMS16",
+      "PubMedCentral": "4890616",
+      "ArXiv": "1602.03409",
+      "DOI": "10.1109/TMI.2016.2528162",
+      "CorpusId": 3333267,
+      "PubMed": "26886976"
+    },
+    "title": "Deep Convolutional Neural Networks for Computer-Aided Detection: CNN Architectures, Dataset Characteristics and Transfer Learning",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2016,
+    "citationCount": 5000,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4890616",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.03409, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1797022",
+        "name": "Hoo-Chang Shin"
+      },
+      {
+        "authorId": "144531567",
+        "name": "H. Roth"
+      },
+      {
+        "authorId": "39703662",
+        "name": "Mingchen Gao"
+      },
+      {
+        "authorId": "50706692",
+        "name": "Le Lu"
+      },
+      {
+        "authorId": "1742135",
+        "name": "Ziyue Xu"
+      },
+      {
+        "authorId": "37754137",
+        "name": "Isabella Nogues"
+      },
+      {
+        "authorId": "1722252",
+        "name": "Jianhua Yao"
+      },
+      {
+        "authorId": "1691549",
+        "name": "D. Mollura"
+      },
+      {
+        "authorId": "2388128104",
+        "name": "R. Summers"
+      }
+    ],
+    "abstract": "Remarkable progress has been made in image recognition, primarily due to the availability of large-scale annotated datasets and deep convolutional neural networks (CNNs). CNNs enable learning data-driven, highly representative, hierarchical image features from sufficient training data. However, obtaining datasets as comprehensively annotated as ImageNet in the medical imaging domain remains a challenge. There are currently three major techniques that successfully employ CNNs to medical image classification: training the CNN from scratch, using off-the-shelf pre-trained CNN features, and conducting unsupervised CNN pre-training with supervised fine-tuning. Another effective method is transfer learning, i.e., fine-tuning CNN models pre-trained from natural image dataset to medical image tasks. In this paper, we exploit three important, but previously understudied factors of employing deep convolutional neural networks to computer-aided detection problems. We first explore and evaluate different CNN architectures. The studied models contain 5 thousand to 160 million parameters, and vary in numbers of layers. We then evaluate the influence of dataset scale and spatial image context on performance. Finally, we examine when and why transfer learning from pre-trained ImageNet (via fine-tuning) can be useful. We study two specific computer-aided detection (CADe) problems, namely thoraco-abdominal lymph node (LN) detection and interstitial lung disease (ILD) classification. We achieve the state-of-the-art performance on the mediastinal LN detection, and report the first five-fold cross-validation classification results on predicting axial CT slices with ILD categories. Our extensive empirical evaluation, CNN model analysis and valuable insights can be extended to the design of high performance CAD systems for other medical imaging tasks."
+  },
+  {
+    "paperId": "6d4c9c923e9f145d1c01a2de2afc38ec23c44253",
+    "externalIds": {
+      "MAG": "2308045930",
+      "DBLP": "conf/cvpr/KarpathyTSLSF14",
+      "DOI": "10.1109/CVPR.2014.223",
+      "CorpusId": 206592218
+    },
+    "title": "Large-Scale Video Classification with Convolutional Neural Networks",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 6660,
+    "openAccessPdf": {
+      "url": "http://www.cs.cmu.edu/~rahuls/pub/cvpr2014-deepvideo-rahuls.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.223?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.223, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2354728",
+        "name": "A. Karpathy"
+      },
+      {
+        "authorId": "1805076",
+        "name": "G. Toderici"
+      },
+      {
+        "authorId": "152821938",
+        "name": "Sanketh Shetty"
+      },
+      {
+        "authorId": "152456068",
+        "name": "Thomas Leung"
+      },
+      {
+        "authorId": "1694199",
+        "name": "R. Sukthankar"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "1193317829bfcc9b9dffa5ae85a2e2114254b37e",
+    "externalIds": {
+      "ArXiv": "1512.07108",
+      "DBLP": "journals/pr/GuWKMSSLWWCC18",
+      "MAG": "2200374509",
+      "DOI": "10.1016/J.PATCOG.2017.10.013",
+      "CorpusId": 3879949
+    },
+    "title": "Recent advances in convolutional neural networks",
+    "venue": "Pattern Recognition",
+    "year": 2015,
+    "citationCount": 5879,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1512.07108",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.07108, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2174964",
+        "name": "Jiuxiang Gu"
+      },
+      {
+        "authorId": "2108329894",
+        "name": "Zhenhua Wang"
+      },
+      {
+        "authorId": "2391723497",
+        "name": "Jason Kuen"
+      },
+      {
+        "authorId": "2139431",
+        "name": "Lianyang Ma"
+      },
+      {
+        "authorId": "3000984",
+        "name": "Amir Shahroudy"
+      },
+      {
+        "authorId": "2521776",
+        "name": "Bing Shuai"
+      },
+      {
+        "authorId": "2115433449",
+        "name": "Ting Liu"
+      },
+      {
+        "authorId": "2144802333",
+        "name": "Xingxing Wang"
+      },
+      {
+        "authorId": "2117909575",
+        "name": "Gang Wang"
+      },
+      {
+        "authorId": "1688642",
+        "name": "Jianfei Cai"
+      },
+      {
+        "authorId": "40894914",
+        "name": "Tsuhan Chen"
+      }
+    ],
+    "abstract": "In the last few years, deep learning has led to very good performance on a variety of problems, such as visual recognition, speech recognition and natural language processing. Among different types of deep neural networks, convolutional neural networks have been most extensively studied. Leveraging on the rapid growth in the amount of the annotated data and the great improvements in the strengths of graphics processor units, the research on convolutional neural networks has been emerged swiftly and achieved state-of-the-art results on various tasks. In this paper, we provide a broad survey of the recent advances in convolutional neural networks. We detailize the improvements of CNN on different aspects, including layer design, activation function, loss function, regularization, optimization and fast computation. Besides, we also introduce various applications of convolutional neural networks in computer vision, speech and natural language processing."
+  },
+  {
+    "paperId": "f46714d200d69eb9cb5cce176297b89a3f5e3a2c",
+    "externalIds": {
+      "MAG": "2273396394",
+      "ArXiv": "1511.08458",
+      "DBLP": "journals/corr/OSheaN15",
+      "CorpusId": 9398408
+    },
+    "title": "An Introduction to Convolutional Neural Networks",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 3981,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.08458, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1399833554",
+        "name": "K. O’Shea"
+      },
+      {
+        "authorId": "145392524",
+        "name": "Ryan Nash"
+      }
+    ],
+    "abstract": "The field of machine learning has taken a dramatic twist in recent times, with the rise of the Artificial Neural Network (ANN). These biologically inspired computational models are able to far exceed the performance of previous forms of artificial intelligence in common machine learning tasks. One of the most impressive forms of ANN architecture is that of the Convolutional Neural Network (CNN). CNNs are primarily used to solve difficult image-driven pattern recognition tasks and with their precise yet simple architecture, offers a simplified method of getting started with ANNs. \nThis document provides a brief introduction to CNNs, discussing recently published papers and newly formed techniques in developing these brilliantly fantastic image recognition models. This introduction assumes you are familiar with the fundamentals of ANNs and machine learning."
+  },
+  {
+    "paperId": "c342c71cb23199f112d0bc644fcce56a7306bf94",
+    "externalIds": {
+      "MAG": "2774918944",
+      "DBLP": "conf/iclr/SenerS18",
+      "CorpusId": 3383786
+    },
+    "title": "Active Learning for Convolutional Neural Networks: A Core-Set Approach",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 2455,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://export.arxiv.org/pdf/1708.00489, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3114252",
+        "name": "Ozan Sener"
+      },
+      {
+        "authorId": "1702137",
+        "name": "S. Savarese"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "8452941a175c899628c679523da952b18f63e335",
+    "externalIds": {
+      "MAG": "3017875291",
+      "ArXiv": "1901.06032",
+      "DBLP": "journals/air/KhanSZQ20",
+      "DOI": "10.1007/s10462-020-09825-6",
+      "CorpusId": 58028794
+    },
+    "title": "A survey of the recent architectures of deep convolutional neural networks",
+    "venue": "Artificial Intelligence Review",
+    "year": 2019,
+    "citationCount": 2642,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s10462-020-09825-6.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.06032, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108486220",
+        "name": "Asifullah Khan"
+      },
+      {
+        "authorId": "23690960",
+        "name": "A. Sohail"
+      },
+      {
+        "authorId": "66666770",
+        "name": "Umme Zahoora"
+      },
+      {
+        "authorId": "8852220",
+        "name": "Aqsa Saeed Qureshi"
+      }
+    ],
+    "abstract": "Deep Convolutional Neural Network (CNN) is a special type of Neural Networks, which has shown exemplary performance on several competitions related to Computer Vision and Image Processing. Some of the exciting application areas of CNN include Image Classification and Segmentation, Object Detection, Video Processing, Natural Language Processing, and Speech Recognition. The powerful learning ability of deep CNN is primarily due to the use of multiple feature extraction stages that can automatically learn representations from the data. The availability of a large amount of data and improvement in the hardware technology has accelerated the research in CNNs, and recently interesting deep CNN architectures have been reported. Several inspiring ideas to bring advancements in CNNs have been explored, such as the use of different activation and loss functions, parameter optimization, regularization, and architectural innovations. However, the significant improvement in the representational capacity of the deep CNN is achieved through architectural innovations. Notably, the ideas of exploiting spatial and channel information, depth and width of architecture, and multi-path information processing have gained substantial attention. Similarly, the idea of using a block of layers as a structural unit is also gaining popularity. This survey thus focuses on the intrinsic taxonomy present in the recently reported deep CNN architectures and, consequently, classifies the recent innovations in CNN architectures into seven different categories. These seven categories are based on spatial exploitation, depth, multi-path, width, feature-map exploitation, channel boosting, and attention. Additionally, the elementary understanding of CNN components, current challenges, and applications of CNN are also provided."
+  },
+  {
+    "paperId": "1954a5ef37030002574f1b000cc1192f3bd4cad1",
+    "externalIds": {
+      "MAG": "2956106701",
+      "ArXiv": "1904.08755",
+      "DBLP": "conf/cvpr/ChoyGS19",
+      "DOI": "10.1109/CVPR.2019.00319",
+      "CorpusId": 121123422
+    },
+    "title": "4D Spatio-Temporal ConvNets: Minkowski Convolutional Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 2288,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.08755",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.08755, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144103",
+        "name": "C. Choy"
+      },
+      {
+        "authorId": "39813007",
+        "name": "JunYoung Gwak"
+      },
+      {
+        "authorId": "1702137",
+        "name": "S. Savarese"
+      }
+    ],
+    "abstract": "In many robotics and VR/AR applications, 3D-videos are readily-available input sources (a sequence of depth images, or LIDAR scans). However, in many cases, the 3D-videos are processed frame-by-frame either through 2D convnets or 3D perception algorithms. In this work, we propose 4-dimensional convolutional neural networks for spatio-temporal perception that can directly process such 3D-videos using high-dimensional convolutions. For this, we adopt sparse tensors and propose generalized sparse convolutions that encompass all discrete convolutions. To implement the generalized sparse convolution, we create an open-source auto-differentiation library for sparse tensors that provides extensive functions for high-dimensional convolutional neural networks. We create 4D spatio-temporal convolutional neural networks using the library and validate them on various 3D semantic segmentation benchmarks and proposed 4D datasets for 3D-video perception. To overcome challenges in 4D space, we propose the hybrid kernel, a special case of the generalized sparse convolution, and trilateral-stationary conditional random fields that enforce spatio-temporal consistency in the 7D space-time-chroma space. Experimentally, we show that a convolutional neural network with only generalized 3D sparse convolutions can outperform 2D or 2D-3D hybrid methods by a large margin. Also, we show that on 3D-videos, 4D spatio-temporal convolutional neural networks are robust to noise and outperform the 3D convolutional neural network."
+  },
+  {
+    "paperId": "62ed9bf1d83c8db1f9cbf92ea2f57ea90ef683d9",
+    "externalIds": {
+      "MAG": "2950468517",
+      "ArXiv": "1810.00826",
+      "DBLP": "journals/corr/abs-1810-00826",
+      "CorpusId": 52895589
+    },
+    "title": "How Powerful are Graph Neural Networks?",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 9584,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.00826, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3360632",
+        "name": "Keyulu Xu"
+      },
+      {
+        "authorId": "48594758",
+        "name": "Weihua Hu"
+      },
+      {
+        "authorId": "1702139",
+        "name": "J. Leskovec"
+      },
+      {
+        "authorId": "2594093",
+        "name": "S. Jegelka"
+      }
+    ],
+    "abstract": "Graph Neural Networks (GNNs) are an effective framework for representation learning of graphs. GNNs follow a neighborhood aggregation scheme, where the representation vector of a node is computed by recursively aggregating and transforming representation vectors of its neighboring nodes. Many GNN variants have been proposed and have achieved state-of-the-art results on both node and graph classification tasks. However, despite GNNs revolutionizing graph representation learning, there is limited understanding of their representational properties and limitations. Here, we present a theoretical framework for analyzing the expressive power of GNNs to capture different graph structures. Our results characterize the discriminative power of popular GNN variants, such as Graph Convolutional Networks and GraphSAGE, and show that they cannot learn to distinguish certain simple graph structures. We then develop a simple architecture that is provably the most expressive among the class of GNNs and is as powerful as the Weisfeiler-Lehman graph isomorphism test. We empirically validate our theoretical findings on a number of graph classification benchmarks, and demonstrate that our model achieves state-of-the-art performance."
+  },
+  {
+    "paperId": "9757ef31095227cb289af22b0a4010eda754d100",
+    "externalIds": {
+      "DBLP": "journals/nn/BudaMM18",
+      "ArXiv": "1710.05381",
+      "MAG": "2767106145",
+      "DOI": "10.1016/j.neunet.2018.07.011",
+      "CorpusId": 25040300,
+      "PubMed": "30092410"
+    },
+    "title": "A systematic study of the class imbalance problem in convolutional neural networks",
+    "venue": "Neural Networks",
+    "year": 2017,
+    "citationCount": 2885,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1710.05381",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.05381, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32749516",
+        "name": "M. Buda"
+      },
+      {
+        "authorId": "1801052",
+        "name": "A. Maki"
+      },
+      {
+        "authorId": "1786177",
+        "name": "M. Mazurowski"
+      }
+    ],
+    "abstract": "In this study, we systematically investigate the impact of class imbalance on classification performance of convolutional neural networks (CNNs) and compare frequently used methods to address the issue. Class imbalance is a common problem that has been comprehensively studied in classical machine learning, yet very limited systematic research is available in the context of deep learning. In our study, we use three benchmark datasets of increasing complexity, MNIST, CIFAR-10 and ImageNet, to investigate the effects of imbalance on classification and perform an extensive comparison of several methods to address the issue: oversampling, undersampling, two-phase training, and thresholding that compensates for prior class probabilities. Our main evaluation metric is area under the receiver operating characteristic curve (ROC AUC) adjusted to multi-class tasks since overall accuracy metric is associated with notable difficulties in the context of imbalanced data. Based on results from our experiments we conclude that (i) the effect of class imbalance on classification performance is detrimental; (ii) the method of addressing class imbalance that emerged as dominant in almost all analyzed scenarios was oversampling; (iii) oversampling should be applied to the level that completely eliminates the imbalance, whereas the optimal undersampling ratio depends on the extent of imbalance; (iv) as opposed to some classical machine learning models, oversampling does not cause overfitting of CNNs; (v) thresholding should be applied to compensate for prior class probabilities when overall number of properly classified cases is of interest."
+  },
+  {
+    "paperId": "f7b032a4df721d4ed2bab97f6acd33d62477b7a5",
+    "externalIds": {
+      "DBLP": "journals/corr/ZagoruykoK16a",
+      "MAG": "2561238782",
+      "ArXiv": "1612.03928",
+      "CorpusId": 829159
+    },
+    "title": "Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 3028,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03928, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2134433",
+        "name": "Sergey Zagoruyko"
+      },
+      {
+        "authorId": "2505902",
+        "name": "N. Komodakis"
+      }
+    ],
+    "abstract": "Attention plays a critical role in human visual experience. Furthermore, it has recently been demonstrated that attention can also play an important role in the context of applying artificial neural networks to a variety of tasks from fields such as computer vision and NLP. In this work we show that, by properly defining attention for convolutional neural networks, we can actually use this type of information in order to significantly improve the performance of a student CNN network by forcing it to mimic the attention maps of a powerful teacher network. To that end, we propose several novel methods of transferring attention, showing consistent improvement across a variety of datasets and convolutional neural network architectures. Code and models for our experiments are available at this https URL"
+  },
+  {
+    "paperId": "81a4fd3004df0eb05d6c1cef96ad33d5407820df",
+    "externalIds": {
+      "DBLP": "journals/tnn/WuPCLZY21",
+      "MAG": "2907492528",
+      "ArXiv": "1901.00596",
+      "DOI": "10.1109/TNNLS.2020.2978386",
+      "CorpusId": 57375753,
+      "PubMed": "32217482"
+    },
+    "title": "A Comprehensive Survey on Graph Neural Networks",
+    "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": 2019,
+    "citationCount": 10934,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/tnnls.2020.2978386",
+      "status": "HYBRID",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.00596, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109557884",
+        "name": "Zonghan Wu"
+      },
+      {
+        "authorId": "2585415",
+        "name": "Shirui Pan"
+      },
+      {
+        "authorId": "31370754",
+        "name": "Fengwen Chen"
+      },
+      {
+        "authorId": "2062835",
+        "name": "Guodong Long"
+      },
+      {
+        "authorId": "48934799",
+        "name": "Chengqi Zhang"
+      },
+      {
+        "authorId": "144019071",
+        "name": "Philip S. Yu"
+      }
+    ],
+    "abstract": "Deep learning has revolutionized many machine learning tasks in recent years, ranging from image classification and video processing to speech recognition and natural language understanding. The data in these tasks are typically represented in the Euclidean space. However, there is an increasing number of applications, where data are generated from non-Euclidean domains and are represented as graphs with complex relationships and interdependency between objects. The complexity of graph data has imposed significant challenges on the existing machine learning algorithms. Recently, many studies on extending deep learning approaches for graph data have emerged. In this article, we provide a comprehensive overview of graph neural networks (GNNs) in data mining and machine learning fields. We propose a new taxonomy to divide the state-of-the-art GNNs into four categories, namely, recurrent GNNs, convolutional GNNs, graph autoencoders, and spatial–temporal GNNs. We further discuss the applications of GNNs across various domains and summarize the open-source codes, benchmark data sets, and model evaluation of GNNs. Finally, we propose potential research directions in this rapidly growing field."
+  },
+  {
+    "paperId": "ffdaa12ef011de9dbf43be46d45a3abcc8288965",
+    "externalIds": {
+      "MAG": "2289252105",
+      "DBLP": "journals/jssc/ChenKES17",
+      "DOI": "10.1109/JSSC.2016.2616357",
+      "CorpusId": 207882941
+    },
+    "title": "Eyeriss: An Energy-Efficient Reconfigurable Accelerator for Deep Convolutional Neural Networks",
+    "venue": "IEEE Journal of Solid-State Circuits",
+    "year": 2016,
+    "citationCount": 2731,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/JSSC.2016.2616357?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/JSSC.2016.2616357, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50579876",
+        "name": "Yu-hsin Chen"
+      },
+      {
+        "authorId": "145984583",
+        "name": "T. Krishna"
+      },
+      {
+        "authorId": "1775477",
+        "name": "J. Emer"
+      },
+      {
+        "authorId": "1691305",
+        "name": "V. Sze"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "305b2cf37e5dece81e95c92883d5a6e28ac93b22",
+    "externalIds": {
+      "DBLP": "conf/emnlp/NarayanCL18",
+      "MAG": "2888482885",
+      "ArXiv": "1808.08745",
+      "ACL": "D18-1206",
+      "DOI": "10.18653/v1/D18-1206",
+      "CorpusId": 215768182
+    },
+    "title": "Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 2008,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1206.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.08745, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143790499",
+        "name": "Shashi Narayan"
+      },
+      {
+        "authorId": "40146204",
+        "name": "Shay B. Cohen"
+      },
+      {
+        "authorId": "1747893",
+        "name": "Mirella Lapata"
+      }
+    ],
+    "abstract": "We introduce “extreme summarization”, a new single-document summarization task which does not favor extractive strategies and calls for an abstractive modeling approach. The idea is to create a short, one-sentence news summary answering the question “What is the article about?”. We collect a real-world, large-scale dataset for this task by harvesting online articles from the British Broadcasting Corporation (BBC). We propose a novel abstractive model which is conditioned on the article’s topics and based entirely on convolutional neural networks. We demonstrate experimentally that this architecture captures long-range dependencies in a document and recognizes pertinent content, outperforming an oracle extractive system and state-of-the-art abstractive approaches when evaluated automatically and by humans."
+  },
+  {
+    "paperId": "3fea7ba9490c306484a8fdfe94323ff4e009e1c7",
+    "externalIds": {
+      "CorpusId": 1348207
+    },
+    "title": "Supplementary for: Deep learning with convolutional neural networks for EEG decoding and visualization",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 3183,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "9948572",
+        "name": "R. Schirrmeister"
+      },
+      {
+        "authorId": "2060551",
+        "name": "Jost Tobias Springenberg"
+      },
+      {
+        "authorId": "1704186",
+        "name": "L. Fiederer"
+      },
+      {
+        "authorId": "9936842",
+        "name": "Martin Glasstetter"
+      },
+      {
+        "authorId": "2607675",
+        "name": "Katharina Eggensperger"
+      },
+      {
+        "authorId": "2345823",
+        "name": "M. Tangermann"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      },
+      {
+        "authorId": "2106871731",
+        "name": "Wolfram Burgard"
+      },
+      {
+        "authorId": "145928182",
+        "name": "T. Ball"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c1f05b723e53ac4eb1133249b445c0011d42ca79",
+    "externalIds": {
+      "DBLP": "journals/neco/RawatW17",
+      "MAG": "2622826443",
+      "DOI": "10.1162/neco_a_00990",
+      "CorpusId": 3290651,
+      "PubMed": "28599112"
+    },
+    "title": "Deep Convolutional Neural Networks for Image Classification: A Comprehensive Review",
+    "venue": "Neural Computation",
+    "year": 2017,
+    "citationCount": 3162,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco_a_00990?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco_a_00990, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "25168273",
+        "name": "Waseem Rawat"
+      },
+      {
+        "authorId": "47197274",
+        "name": "Zenghui Wang"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "c08f5fa876181fc040d76c75fe2433eee3c9b001",
+    "externalIds": {
+      "MAG": "2161381512",
+      "DBLP": "conf/cvpr/OquabBLS14",
+      "DOI": "10.1109/CVPR.2014.222",
+      "CorpusId": 206592191
+    },
+    "title": "Learning and Transferring Mid-level Image Representations Using Convolutional Neural Networks",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 3285,
+    "openAccessPdf": {
+      "url": "http://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Oquab_Learning_and_Transferring_2014_CVPR_paper.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.222?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.222, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2093491",
+        "name": "M. Oquab"
+      },
+      {
+        "authorId": "52184096",
+        "name": "L. Bottou"
+      },
+      {
+        "authorId": "143991676",
+        "name": "I. Laptev"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "8b053389eb8c18c61b84d7e59a95cb7e13f205b7",
+    "externalIds": {
+      "MAG": "2469490737",
+      "ArXiv": "1606.06160",
+      "DBLP": "journals/corr/ZhouNZWWZ16",
+      "CorpusId": 14395129
+    },
+    "title": "DoReFa-Net: Training Low Bitwidth Convolutional Neural Networks with Low Bitwidth Gradients",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 2243,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.06160, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35132667",
+        "name": "Shuchang Zhou"
+      },
+      {
+        "authorId": "39191613",
+        "name": "Zekun Ni"
+      },
+      {
+        "authorId": "2148927556",
+        "name": "Xinyu Zhou"
+      },
+      {
+        "authorId": "2075348632",
+        "name": "He Wen"
+      },
+      {
+        "authorId": "98264506",
+        "name": "Yuxin Wu"
+      },
+      {
+        "authorId": "3423010",
+        "name": "Yuheng Zou"
+      }
+    ],
+    "abstract": "We propose DoReFa-Net, a method to train convolutional neural networks that have low bitwidth weights and activations using low bitwidth parameter gradients. In particular, during backward pass, parameter gradients are stochastically quantized to low bitwidth numbers before being propagated to convolutional layers. As convolutions during forward/backward passes can now operate on low bitwidth weights and activations/gradients respectively, DoReFa-Net can use bit convolution kernels to accelerate both training and inference. Moreover, as bit convolutions can be efficiently implemented on CPU, FPGA, ASIC and GPU, DoReFa-Net opens the way to accelerate training of low bitwidth neural network on these hardware. Our experiments on SVHN and ImageNet datasets prove that DoReFa-Net can achieve comparable prediction accuracy as 32-bit counterparts. For example, a DoReFa-Net derived from AlexNet that has 1-bit weights, 2-bit activations, can be trained from scratch using 6-bit gradients to get 46.1\\% top-1 accuracy on ImageNet validation set. The DoReFa-Net AlexNet model is released publicly."
+  },
+  {
+    "paperId": "a8420e6a3a196a4c34566b5b8717318743eb6e4b",
+    "externalIds": {
+      "MAG": "3100777112",
+      "ArXiv": "1905.03554",
+      "DBLP": "journals/corr/abs-1905-03554",
+      "DOI": "10.1016/j.ymssp.2020.107398",
+      "CorpusId": 148571890
+    },
+    "title": "1D Convolutional Neural Networks and Applications: A Survey",
+    "venue": "Mechanical systems and signal processing",
+    "year": 2019,
+    "citationCount": 2476,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.ymssp.2020.107398",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.03554, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1741196",
+        "name": "S. Kiranyaz"
+      },
+      {
+        "authorId": "18113195",
+        "name": "Onur Avcı"
+      },
+      {
+        "authorId": "22214231",
+        "name": "Osama Abdeljaber"
+      },
+      {
+        "authorId": "73777322",
+        "name": "T. Ince"
+      },
+      {
+        "authorId": "1715200",
+        "name": "M. Gabbouj"
+      },
+      {
+        "authorId": "144878341",
+        "name": "D. Inman"
+      }
+    ],
+    "abstract": "During the last decade, Convolutional Neural Networks (CNNs) have become the de facto standard for various Computer Vision and Machine Learning operations. CNNs are feed-forward Artificial Neural Networks (ANNs) with alternating convolutional and subsampling layers. Deep 2D CNNs with many hidden layers and millions of parameters have the ability to learn complex objects and patterns providing that they can be trained on a massive size visual database with ground-truth labels. With a proper training, this unique ability makes them the primary tool for various engineering applications for 2D signals such as images and video frames. Yet, this may not be a viable option in numerous applications over 1D signals especially when the training data is scarce or application-specific. To address this issue, 1D CNNs have recently been proposed and immediately achieved the state-of-the-art performance levels in several applications such as personalized biomedical data classification and early diagnosis, structural health monitoring, anomaly detection and identification in power electronics and motor-fault detection. Another major advantage is that a real-time and low-cost hardware implementation is feasible due to the simple and compact configuration of 1D CNNs that perform only 1D convolutions (scalar multiplications and additions). This paper presents a comprehensive review of the general architecture and principals of 1D CNNs along with their major engineering applications, especially focused on the recent progress in this field. Their state-of-the-art performance is highlighted concluding with their unique properties. The benchmark datasets and the principal 1D CNN software used in those applications are also publically shared in a dedicated website."
+  },
+  {
+    "paperId": "1ba8376f416e90fe434977ae9f300997667498d2",
+    "externalIds": {
+      "MAG": "1644641054",
+      "DBLP": "conf/iccv/SuMKL15",
+      "ArXiv": "1505.00880",
+      "DOI": "10.1109/ICCV.2015.114",
+      "CorpusId": 2407217
+    },
+    "title": "Multi-view Convolutional Neural Networks for 3D Shape Recognition",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 3565,
+    "openAccessPdf": {
+      "url": "https://people.cs.umass.edu/%7Eelm/papers/HangSu_3D_arXiv.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.00880, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144904233",
+        "name": "Hang Su"
+      },
+      {
+        "authorId": "35208858",
+        "name": "Subhransu Maji"
+      },
+      {
+        "authorId": "2808670",
+        "name": "E. Kalogerakis"
+      },
+      {
+        "authorId": "1389846455",
+        "name": "E. Learned-Miller"
+      }
+    ],
+    "abstract": "A longstanding question in computer vision concerns the representation of 3D shapes for recognition: should 3D shapes be represented with descriptors operating on their native 3D formats, such as voxel grid or polygon mesh, or can they be effectively represented with view-based descriptors? We address this question in the context of learning to recognize 3D shapes from a collection of their rendered views on 2D images. We first present a standard CNN architecture trained to recognize the shapes' rendered views independently of each other, and show that a 3D shape can be recognized even from a single view at an accuracy far higher than using state-of-the-art 3D shape descriptors. Recognition rates further increase when multiple views of the shapes are provided. In addition, we present a novel CNN architecture that combines information from multiple views of a 3D shape into a single and compact shape descriptor offering even better recognition performance. The same architecture can be applied to accurately recognize human hand-drawn sketches of shapes. We conclude that a collection of 2D views can be highly informative for 3D shape recognition and is amenable to emerging CNN architectures and their derivatives."
+  },
+  {
+    "paperId": "2ce63d77eecc35faef85a3b752a314c93a077ac9",
+    "externalIds": {
+      "ArXiv": "1510.07945",
+      "DBLP": "conf/cvpr/NamH16",
+      "MAG": "2950410377",
+      "DOI": "10.1109/CVPR.2016.465",
+      "CorpusId": 973101
+    },
+    "title": "Learning Multi-domain Convolutional Neural Networks for Visual Tracking",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 2600,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1510.07945",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1510.07945, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34758272",
+        "name": "Hyeonseob Nam"
+      },
+      {
+        "authorId": "40030651",
+        "name": "Bohyung Han"
+      }
+    ],
+    "abstract": "We propose a novel visual tracking algorithm based on the representations from a discriminatively trained Convolutional Neural Network (CNN). Our algorithm pretrains a CNN using a large set of videos with tracking ground-truths to obtain a generic target representation. Our network is composed of shared layers and multiple branches of domain-specific layers, where domains correspond to individual training sequences and each branch is responsible for binary classification to identify target in each domain. We train each domain in the network iteratively to obtain generic target representations in the shared layers. When tracking a target in a new sequence, we construct a new network by combining the shared layers in the pretrained CNN with a new binary classification layer, which is updated online. Online tracking is performed by evaluating the candidate windows randomly sampled around the previous target state. The proposed algorithm illustrates outstanding performance in existing tracking benchmarks."
+  },
+  {
+    "paperId": "4a73a1840945e87583d89ca0216a2c449d50a4a3",
+    "externalIds": {
+      "ArXiv": "1703.06211",
+      "DBLP": "conf/iccv/DaiQXLZHW17",
+      "MAG": "2950477723",
+      "DOI": "10.1109/ICCV.2017.89",
+      "CorpusId": 4028864
+    },
+    "title": "Deformable Convolutional Networks",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 6420,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1703.06211",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.06211, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3304536",
+        "name": "Jifeng Dai"
+      },
+      {
+        "authorId": "7217794",
+        "name": "Haozhi Qi"
+      },
+      {
+        "authorId": "3372084",
+        "name": "Yuwen Xiong"
+      },
+      {
+        "authorId": "2153682629",
+        "name": "Yi Li"
+      },
+      {
+        "authorId": "46266081",
+        "name": "Guodong Zhang"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "1732264",
+        "name": "Yichen Wei"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) are inherently limited to model geometric transformations due to the fixed geometric structures in their building modules. In this work, we introduce two new modules to enhance the transformation modeling capability of CNNs, namely, deformable convolution and deformable RoI pooling. Both are based on the idea of augmenting the spatial sampling locations in the modules with additional offsets and learning the offsets from the target tasks, without additional supervision. The new modules can readily replace their plain counterparts in existing CNNs and can be easily trained end-to-end by standard back-propagation, giving rise to deformable convolutional networks. Extensive experiments validate the performance of our approach. For the first time, we show that learning dense spatial transformation in deep CNNs is effective for sophisticated vision tasks such as object detection and semantic segmentation. The code is released at https://github.com/msracver/Deformable-ConvNets."
+  },
+  {
+    "paperId": "0bde8d9367d1004c7396dd69cb27ed97dc2f8d77",
+    "externalIds": {
+      "DBLP": "journals/corr/VedaldiL14",
+      "MAG": "2953066166",
+      "ArXiv": "1412.4564",
+      "DOI": "10.1145/2733373.2807412",
+      "CorpusId": 207224096
+    },
+    "title": "MatConvNet: Convolutional Neural Networks for MATLAB",
+    "venue": "ACM Multimedia",
+    "year": 2014,
+    "citationCount": 2975,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.4564, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1687524",
+        "name": "A. Vedaldi"
+      },
+      {
+        "authorId": "3257286",
+        "name": "Karel Lenc"
+      }
+    ],
+    "abstract": "MatConvNet is an open source implementation of Convolutional Neural Networks (CNNs) with a deep integration in the MATLAB environment. The toolbox is designed with an emphasis on simplicity and flexibility. It exposes the building blocks of CNNs as easy-to-use MATLAB functions, providing routines for computing convolutions with filter banks, feature pooling, normalisation, and much more. MatConvNet can be easily extended, often using only MATLAB code, allowing fast prototyping of new CNN architectures. At the same time, it supports efficient computation on CPU and GPU, allowing to train complex models on large datasets such as ImageNet ILSVRC containing millions of training examples"
+  },
+  {
+    "paperId": "1a964f13abb3cdc5675dbfd612fa0409608e28c7",
+    "externalIds": {
+      "MAG": "2788040570",
+      "DBLP": "conf/cvpr/LiZC18",
+      "ArXiv": "1802.10062",
+      "DOI": "10.1109/CVPR.2018.00120",
+      "CorpusId": 3645757
+    },
+    "title": "CSRNet: Dilated Convolutional Neural Networks for Understanding the Highly Congested Scenes",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1566,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1802.10062",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.10062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118293093",
+        "name": "Yuhong Li"
+      },
+      {
+        "authorId": "144862004",
+        "name": "Xiaofan Zhang"
+      },
+      {
+        "authorId": "1713644",
+        "name": "Deming Chen"
+      }
+    ],
+    "abstract": "We propose a network for Congested Scene Recognition called CSRNet to provide a data-driven and deep learning method that can understand highly congested scenes and perform accurate count estimation as well as present high-quality density maps. The proposed CSRNet is composed of two major components: a convolutional neural network (CNN) as the front-end for 2D feature extraction and a dilated CNN for the back-end, which uses dilated kernels to deliver larger reception fields and to replace pooling operations. CSRNet is an easy-trained model because of its pure convolutional structure. We demonstrate CSRNet on four datasets (ShanghaiTech dataset, the UCF_CC_50 dataset, the WorldEXPO'10 dataset, and the UCSD dataset) and we deliver the state-of-the-art performance. In the ShanghaiTech Part_B dataset, CSRNet achieves 47.3% lower Mean Absolute Error (MAE) than the previous state-of-the-art method. We extend the targeted applications for counting other objects, such as the vehicle in TRANCOS dataset. Results show that CSRNet significantly improves the output quality with 15.4% lower MAE than the previous state-of-the-art approach."
+  },
+  {
+    "paperId": "cd8a9914d50b0ac63315872530274d158d6aff09",
+    "externalIds": {
+      "MAG": "2604314403",
+      "DBLP": "journals/corr/SchlichtkrullKB17",
+      "ArXiv": "1703.06103",
+      "DOI": "10.1007/978-3-319-93417-4_38",
+      "CorpusId": 5458500
+    },
+    "title": "Modeling Relational Data with Graph Convolutional Networks",
+    "venue": "Extended Semantic Web Conference",
+    "year": 2017,
+    "citationCount": 5863,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.06103, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8804828",
+        "name": "M. Schlichtkrull"
+      },
+      {
+        "authorId": "41016725",
+        "name": "Thomas Kipf"
+      },
+      {
+        "authorId": "2789097",
+        "name": "Peter Bloem"
+      },
+      {
+        "authorId": "9965217",
+        "name": "Rianne van den Berg"
+      },
+      {
+        "authorId": "144889265",
+        "name": "Ivan Titov"
+      },
+      {
+        "authorId": "1678311",
+        "name": "M. Welling"
+      }
+    ],
+    "abstract": "Knowledge graphs enable a wide variety of applications, including question answering and information retrieval. Despite the great effort invested in their creation and maintenance, even the largest (e.g., Yago, DBPedia or Wikidata) remain incomplete. We introduce Relational Graph Convolutional Networks (R-GCNs) and apply them to two standard knowledge base completion tasks: Link prediction (recovery of missing facts, i.e. subject-predicate-object triples) and entity classification (recovery of missing entity attributes). R-GCNs are related to a recent class of neural networks operating on graphs, and are developed specifically to handle the highly multi-relational data characteristic of realistic knowledge bases. We demonstrate the effectiveness of R-GCNs as a stand-alone model for entity classification. We further show that factorization models for link prediction such as DistMult can be significantly improved through the use of an R-GCN encoder model to accumulate evidence over multiple inference steps in the graph, demonstrating a large improvement of 29.8% on FB15k-237 over a decoder-only baseline."
+  },
+  {
+    "paperId": "39b492db00faead70bc3f4fb4b0364d94398ffdb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-08810",
+      "ArXiv": "2108.08810",
+      "CorpusId": 237213700
+    },
+    "title": "Do Vision Transformers See Like Convolutional Neural Networks?",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1327,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.08810, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40297238",
+        "name": "M. Raghu"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "2145179541",
+        "name": "Chiyuan Zhang"
+      },
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) have so far been the de-facto model for visual data. Recent work has shown that (Vision) Transformer models (ViT) can achieve comparable or even superior performance on image classification tasks. This raises a central question: how are Vision Transformers solving these tasks? Are they acting like convolutional networks, or learning entirely different visual representations? Analyzing the internal representation structure of ViTs and CNNs on image classification benchmarks, we find striking differences between the two architectures, such as ViT having more uniform representations across all layers. We explore how these differences arise, finding crucial roles played by self-attention, which enables early aggregation of global information, and ViT residual connections, which strongly propagate features from lower to higher layers. We study the ramifications for spatial localization, demonstrating ViTs successfully preserve input spatial information, with noticeable effects from different classification methods. Finally, we study the effect of (pretraining) dataset scale on intermediate features and transfer learning, and conclude with a discussion on connections to new architectures such as the MLP-Mixer."
+  },
+  {
+    "paperId": "2941488b503121f9e8e5b09b7bdf28568b6e39e0",
+    "externalIds": {
+      "DBLP": "journals/cacie/ChaCB17",
+      "MAG": "2598457882",
+      "DOI": "10.1111/mice.12263",
+      "CorpusId": 206190760
+    },
+    "title": "Deep Learning‐Based Crack Damage Detection Using Convolutional Neural Networks",
+    "venue": "Comput. Aided Civ. Infrastructure Eng.",
+    "year": 2017,
+    "citationCount": 2851,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1111/mice.12263?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1111/mice.12263, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2845896",
+        "name": "Y. Cha"
+      },
+      {
+        "authorId": "10368766",
+        "name": "Wooram Choi"
+      },
+      {
+        "authorId": "3469877",
+        "name": "O. Büyüköztürk"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "9ba0186ed40656329c421f55ada7313293e13f17",
+    "externalIds": {
+      "MAG": "2963358464",
+      "DBLP": "conf/iclr/LiYS018",
+      "CorpusId": 3508727
+    },
+    "title": "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 4081,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://openreview.net/forum?id=SJiHXGWAZ, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1720837956",
+        "name": "Yaguang Li"
+      },
+      {
+        "authorId": "2023052",
+        "name": "Rose Yu"
+      },
+      {
+        "authorId": "1773086",
+        "name": "C. Shahabi"
+      },
+      {
+        "authorId": "47909587",
+        "name": "Yan Liu"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "e1ec11a1cb3d9745fb18d3bf74247f95a6663d08",
+    "externalIds": {
+      "DBLP": "journals/nature/EstevaKNKSBT17",
+      "MAG": "2581082771",
+      "DOI": "10.1038/nature21056",
+      "CorpusId": 3767412,
+      "PubMed": "28117445"
+    },
+    "title": "Dermatologist-level classification of skin cancer with deep neural networks",
+    "venue": "Nature",
+    "year": 2017,
+    "citationCount": 12219,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8382232",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/nature21056?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/nature21056, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1811529",
+        "name": "A. Esteva"
+      },
+      {
+        "authorId": "7999018",
+        "name": "Brett Kuprel"
+      },
+      {
+        "authorId": "5347246",
+        "name": "R. Novoa"
+      },
+      {
+        "authorId": "37397407",
+        "name": "J. Ko"
+      },
+      {
+        "authorId": "4648200",
+        "name": "S. Swetter"
+      },
+      {
+        "authorId": "3213968",
+        "name": "H. Blau"
+      },
+      {
+        "authorId": "144867807",
+        "name": "S. Thrun"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "3a173a2042b3d18d21f59187f1e5d7d83e791635",
+    "externalIds": {
+      "DBLP": "conf/icml/YangZLX21",
+      "CorpusId": 235825945
+    },
+    "title": "SimAM: A Simple, Parameter-Free Attention Module for Convolutional Neural Networks",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 1576,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://ruyuanzhang.github.io/files/2107_ICML.pdf, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49576171",
+        "name": "Lingxiao Yang"
+      },
+      {
+        "authorId": "2238393356",
+        "name": "Ru-Yuan Zhang"
+      },
+      {
+        "authorId": "2107914265",
+        "name": "Lida Li"
+      },
+      {
+        "authorId": "46397019",
+        "name": "Xiaohua Xie"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "ad06c8a5fd292af518f878c7ced132b61739cdd8",
+    "externalIds": {
+      "DBLP": "journals/air/ZhaoWZHDP24",
+      "DOI": "10.1007/s10462-024-10721-6",
+      "CorpusId": 268673911
+    },
+    "title": "A review of convolutional neural networks in computer vision",
+    "venue": "Artificial Intelligence Review",
+    "year": 2024,
+    "citationCount": 846,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s10462-024-10721-6.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10462-024-10721-6?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10462-024-10721-6, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2142209822",
+        "name": "Xia Zhao"
+      },
+      {
+        "authorId": "2109120601",
+        "name": "Limin Wang"
+      },
+      {
+        "authorId": "2119103829",
+        "name": "Yufei Zhang"
+      },
+      {
+        "authorId": "2240291356",
+        "name": "Xuming Han"
+      },
+      {
+        "authorId": "2293234507",
+        "name": "Muhammet Deveci"
+      },
+      {
+        "authorId": "3440385",
+        "name": "M. Parmar"
+      }
+    ],
+    "abstract": "In computer vision, a series of exemplary advances have been made in several areas involving image classification, semantic segmentation, object detection, and image super-resolution reconstruction with the rapid development of deep convolutional neural network (CNN). The CNN has superior features for autonomous learning and expression, and feature extraction from original input data can be realized by means of training CNN models that match practical applications. Due to the rapid progress in deep learning technology, the structure of CNN is becoming more and more complex and diverse. Consequently, it gradually replaces the traditional machine learning methods. This paper presents an elementary understanding of CNN components and their functions, including input layers, convolution layers, pooling layers, activation functions, batch normalization, dropout, fully connected layers, and output layers. On this basis, this paper gives a comprehensive overview of the past and current research status of the applications of CNN models in computer vision fields, e.g., image classification, object detection, and video prediction. In addition, we summarize the challenges and solutions of the deep CNN, and future research directions are also discussed."
+  },
+  {
+    "paperId": "64a2261b178f09e19a4dbbe5296f9f15cee053e3",
+    "externalIds": {
+      "MAG": "2559463885",
+      "ArXiv": "1611.08024",
+      "DBLP": "journals/corr/LawhernSWGHL16",
+      "DOI": "10.1088/1741-2552/aace8c",
+      "CorpusId": 3849381,
+      "PubMed": "29932424"
+    },
+    "title": "EEGNet: a compact convolutional neural network for EEG-based brain–computer interfaces",
+    "venue": "Journal of Neural Engineering",
+    "year": 2016,
+    "citationCount": 4103,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.08024",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.08024, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2194602",
+        "name": "Vernon J. Lawhern"
+      },
+      {
+        "authorId": "7221783",
+        "name": "Amelia J. Solon"
+      },
+      {
+        "authorId": "3436871",
+        "name": "Nicholas R. Waytowich"
+      },
+      {
+        "authorId": "2251839572",
+        "name": "S. Gordon"
+      },
+      {
+        "authorId": "1971623",
+        "name": "C. Hung"
+      },
+      {
+        "authorId": "145417478",
+        "name": "Brent Lance"
+      }
+    ],
+    "abstract": "Objective. Brain–computer interfaces (BCI) enable direct communication with a computer, using neural activity as the control signal. This neural signal is generally chosen from a variety of well-studied electroencephalogram (EEG) signals. For a given BCI paradigm, feature extractors and classifiers are tailored to the distinct characteristics of its expected EEG control signal, limiting its application to that specific signal. Convolutional neural networks (CNNs), which have been used in computer vision and speech recognition to perform automatic feature extraction and classification, have successfully been applied to EEG-based BCIs; however, they have mainly been applied to single BCI paradigms and thus it remains unclear how these architectures generalize to other paradigms. Here, we ask if we can design a single CNN architecture to accurately classify EEG signals from different BCI paradigms, while simultaneously being as compact as possible. Approach. In this work we introduce EEGNet, a compact convolutional neural network for EEG-based BCIs. We introduce the use of depthwise and separable convolutions to construct an EEG-specific model which encapsulates well-known EEG feature extraction concepts for BCI. We compare EEGNet, both for within-subject and cross-subject classification, to current state-of-the-art approaches across four BCI paradigms: P300 visual-evoked potentials, error-related negativity responses (ERN), movement-related cortical potentials (MRCP), and sensory motor rhythms (SMR). Main results. We show that EEGNet generalizes across paradigms better than, and achieves comparably high performance to, the reference algorithms when only limited training data is available across all tested paradigms. In addition, we demonstrate three different approaches to visualize the contents of a trained EEGNet model to enable interpretation of the learned features. Significance. Our results suggest that EEGNet is robust enough to learn a wide variety of interpretable features over a range of BCI tasks. Our models can be found at: https://github.com/vlawhern/arl-eegmodels."
+  },
+  {
+    "paperId": "2e257b5f0a0148076e9161202880b022e521ac59",
+    "externalIds": {
+      "MAG": "3035253074",
+      "ArXiv": "1910.01279",
+      "DBLP": "conf/cvpr/WangWDYZDMH20",
+      "DOI": "10.1109/CVPRW50498.2020.00020",
+      "CorpusId": 215745726
+    },
+    "title": "Score-CAM: Score-Weighted Visual Explanations for Convolutional Neural Networks",
+    "venue": "2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2019,
+    "citationCount": 1402,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1910.01279",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1910.01279, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109413127",
+        "name": "Haofan Wang"
+      },
+      {
+        "authorId": "50219096",
+        "name": "Zifan Wang"
+      },
+      {
+        "authorId": "3432460",
+        "name": "Mengnan Du"
+      },
+      {
+        "authorId": "47829900",
+        "name": "Fan Yang"
+      },
+      {
+        "authorId": "2116459561",
+        "name": "Zijian Zhang"
+      },
+      {
+        "authorId": "153112833",
+        "name": "Sirui Ding"
+      },
+      {
+        "authorId": "3251561",
+        "name": "Piotr (Peter) Mardziel"
+      },
+      {
+        "authorId": "2375858620",
+        "name": "Xia Hu"
+      }
+    ],
+    "abstract": "Recently, increasing attention has been drawn to the internal mechanisms of convolutional neural networks, and the reason why the network makes specific decisions. In this paper, we develop a novel post-hoc visual explanation method called Score-CAM based on class activation mapping. Unlike previous class activation mapping based approaches, Score-CAM gets rid of the dependence on gradients by obtaining the weight of each activation map through its forward passing score on target class, the final result is obtained by a linear combination of weights and activation maps. We demonstrate that Score-CAM achieves better visual performance and fairness for interpreting the decision making process. Our approach outperforms previous methods on both recognition and localization tasks, it also passes the sanity check. We also indicate its application as debugging tools. The implementation is available1."
+  },
+  {
+    "paperId": "c8599a64beec9ec141a97c8117aa5b1726c13223",
+    "externalIds": {
+      "DBLP": "journals/sensors/MoralesR16",
+      "MAG": "2270470215",
+      "PubMedCentral": "4732148",
+      "DOI": "10.3390/s16010115",
+      "CorpusId": 6377626,
+      "PubMed": "26797612"
+    },
+    "title": "Deep Convolutional and LSTM Recurrent Neural Networks for Multimodal Wearable Activity Recognition",
+    "venue": "Italian National Conference on Sensors",
+    "year": 2016,
+    "citationCount": 2502,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/1424-8220/16/1/115/pdf?version=1453111475",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC4732148, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50721828",
+        "name": "Francisco Javier Ordonez"
+      },
+      {
+        "authorId": "1703539",
+        "name": "D. Roggen"
+      }
+    ],
+    "abstract": "Human activity recognition (HAR) tasks have traditionally been solved using engineered features obtained by heuristic processes. Current research suggests that deep convolutional neural networks are suited to automate feature extraction from raw sensor inputs. However, human activities are made of complex sequences of motor movements, and capturing this temporal dynamics is fundamental for successful HAR. Based on the recent success of recurrent neural networks for time series domains, we propose a generic deep framework for activity recognition based on convolutional and LSTM recurrent units, which: (i) is suitable for multimodal wearable sensors; (ii) can perform sensor fusion naturally; (iii) does not require expert knowledge in designing features; and (iv) explicitly models the temporal dynamics of feature activations. We evaluate our framework on two datasets, one of which has been used in a public activity recognition challenge. Our results show that our framework outperforms competing deep non-recurrent networks on the challenge dataset by 4% on average; outperforming some of the previous reported results by up to 9%. Our results show that the framework can be applied to homogeneous sensor modalities, but can also fuse multimodal sensors to improve performance. We characterise key architectural hyperparameters’ influence on performance to provide insights about their optimisation."
+  },
+  {
+    "paperId": "7c6de5a9e02a779e24504619050c6118f4eac181",
+    "externalIds": {
+      "MAG": "2951153836",
+      "DBLP": "journals/corr/NiepertAK16",
+      "ArXiv": "1605.05273",
+      "CorpusId": 1430801
+    },
+    "title": "Learning Convolutional Neural Networks for Graphs",
+    "venue": "International Conference on Machine Learning",
+    "year": 2016,
+    "citationCount": 2270,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1605.05273, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2780262",
+        "name": "Mathias Niepert"
+      },
+      {
+        "authorId": "24931083",
+        "name": "Mohamed Ahmed"
+      },
+      {
+        "authorId": "1712289",
+        "name": "Konstantin Kutzkov"
+      }
+    ],
+    "abstract": "Numerous important problems can be framed as learning from graph data. We propose a framework for learning convolutional neural networks for arbitrary graphs. These graphs may be undirected, directed, and with both discrete and continuous node and edge attributes. Analogous to image-based convolutional networks that operate on locally connected regions of the input, we present a general approach to extracting locally connected regions from graphs. Using established benchmark data sets, we demonstrate that the learned feature representations are competitive with state of the art graph kernels and that their computation is highly efficient."
+  },
+  {
+    "paperId": "33780d6c82a0c060a9a35fd07effbd2fbb3e5b82",
+    "externalIds": {
+      "DBLP": "journals/taffco/SongZSC20",
+      "MAG": "2790404832",
+      "DOI": "10.1109/TAFFC.2018.2817622",
+      "CorpusId": 149023718
+    },
+    "title": "EEG Emotion Recognition Using Dynamical Graph Convolutional Neural Networks",
+    "venue": "IEEE Transactions on Affective Computing",
+    "year": 2020,
+    "citationCount": 1309,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TAFFC.2018.2817622?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TAFFC.2018.2817622, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143770005",
+        "name": "Tengfei Song"
+      },
+      {
+        "authorId": "40608983",
+        "name": "Wenming Zheng"
+      },
+      {
+        "authorId": "144840482",
+        "name": "Peng Song"
+      },
+      {
+        "authorId": "144801562",
+        "name": "Zhen Cui"
+      }
+    ],
+    "abstract": "In this paper, a multichannel EEG emotion recognition method based on a novel dynamical graph convolutional neural networks (DGCNN) is proposed. The basic idea of the proposed EEG emotion recognition method is to use a graph to model the multichannel EEG features and then perform EEG emotion classification based on this model. Different from the traditional graph convolutional neural networks (GCNN) methods, the proposed DGCNN method can dynamically learn the intrinsic relationship between different electroencephalogram (EEG) channels, represented by an adjacency matrix, via training a neural network so as to benefit for more discriminative EEG feature extraction. Then, the learned adjacency matrix is used to learn more discriminative features for improving the EEG emotion recognition. We conduct extensive experiments on the SJTU emotion EEG dataset (SEED) and DREAMER dataset. The experimental results demonstrate that the proposed method achieves better recognition performance than the state-of-the-art methods, in which the average recognition accuracy of 90.4 percent is achieved for subject dependent experiment while 79.95 percent for subject independent cross-validation one on the SEED database, and the average accuracies of 86.23, 84.54 and 85.02 percent are respectively obtained for valence, arousal and dominance classifications on the DREAMER database."
+  },
+  {
+    "paperId": "3db8730c203f88d7f08a6a99e8c02a077dc9b011",
+    "externalIds": {
+      "DBLP": "conf/iclr/MolchanovTKAK17",
+      "MAG": "2707890836",
+      "CorpusId": 17240902
+    },
+    "title": "Pruning Convolutional Neural Networks for Resource Efficient Inference",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 2228,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://openreview.net/forum?id=SJGCiw5gl, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2824500",
+        "name": "Pavlo Molchanov"
+      },
+      {
+        "authorId": "2342481",
+        "name": "Stephen Tyree"
+      },
+      {
+        "authorId": "2976930",
+        "name": "Tero Karras"
+      },
+      {
+        "authorId": "1761103",
+        "name": "Timo Aila"
+      },
+      {
+        "authorId": "2273651410",
+        "name": "Jan Kautz"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5aadc8c5638bc86516dadd66d841e5b8ac3b4f03",
+    "externalIds": {
+      "MAG": "3124539583",
+      "DOI": "10.1016/J.ISPRSJPRS.2020.12.010",
+      "CorpusId": 233788057
+    },
+    "title": "Review on Convolutional Neural Networks (CNN) in vegetation remote sensing",
+    "venue": "Isprs Journal of Photogrammetry and Remote Sensing",
+    "year": 2021,
+    "citationCount": 1509,
+    "openAccessPdf": {
+      "url": "https://publikationen.bibliothek.kit.edu/1000128705/99843899",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/J.ISPRSJPRS.2020.12.010?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/J.ISPRSJPRS.2020.12.010, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2617037",
+        "name": "Teja Kattenborn"
+      },
+      {
+        "authorId": "50143313",
+        "name": "J. Leitloff"
+      },
+      {
+        "authorId": "114155539",
+        "name": "Felix Schiefer"
+      },
+      {
+        "authorId": "1786581",
+        "name": "S. Hinz"
+      }
+    ],
+    "abstract": "Abstract Identifying and characterizing vascular plants in time and space is required in various disciplines, e.g. in forestry, conservation and agriculture. Remote sensing emerged as a key technology revealing both spatial and temporal vegetation patterns. Harnessing the ever growing streams of remote sensing data for the increasing demands on vegetation assessments and monitoring requires efficient, accurate and flexible methods for data analysis. In this respect, the use of deep learning methods is trend-setting, enabling high predictive accuracy, while learning the relevant data features independently in an end-to-end fashion. Very recently, a series of studies have demonstrated that the deep learning method of Convolutional Neural Networks (CNN) is very effective to represent spatial patterns enabling to extract a wide array of vegetation properties from remote sensing imagery. This review introduces the principles of CNN and distils why they are particularly suitable for vegetation remote sensing. The main part synthesizes current trends and developments, including considerations about spectral resolution, spatial grain, different sensors types, modes of reference data generation, sources of existing reference data, as well as CNN approaches and architectures. The literature review showed that CNN can be applied to various problems, including the detection of individual plants or the pixel-wise segmentation of vegetation classes, while numerous studies have evinced that CNN outperform shallow machine learning methods. Several studies suggest that the ability of CNN to exploit spatial patterns particularly facilitates the value of very high spatial resolution data. The modularity in the common deep learning frameworks allows a high flexibility for the adaptation of architectures, whereby especially multi-modal or multi-temporal applications can benefit. An increasing availability of techniques for visualizing features learned by CNNs will not only contribute to interpret but to learn from such models and improve our understanding of remotely sensed signals of vegetation. Although CNN has not been around for long, it seems obvious that they will usher in a new era of vegetation remote sensing."
+  }
+]
