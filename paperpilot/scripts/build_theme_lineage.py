@@ -435,17 +435,23 @@ def build_theme_lineage(
     # seed's top-N citing papers, add them as nodes, and emit seed → child
     # edges. derive_relation() handles the relation type from intents.
     desc_added = 0
+    # Descendants intentionally use a tighter cap than parents (#56): a
+    # popular seed paper has hundreds of citers and the chronological
+    # viewer rendered them as a 26-paper-wide row. Keep the budget to
+    # half the BFS width so the recent-year side of the tree stays
+    # readable. Halve the parent width but keep at least 4.
+    desc_width = max(width // 2, 4)
     for seed in seeds:
         sid = seed["paperId"]
         # Wide pool then influential-first, citation-count desc — mirrors
         # the parent partition above so descendants stay quality-anchored.
-        all_children = fetch_related(sid, "citations", width * 4)
+        all_children = fetch_related(sid, "citations", desc_width * 4)
         all_children = [c for c in all_children if c.get("abstract")]
         influential = [c for c in all_children if c.get("_is_influential") is not False]
         non_influential = [c for c in all_children if c.get("_is_influential") is False]
         influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
         non_influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
-        children = (influential + non_influential)[:width]
+        children = (influential + non_influential)[:desc_width]
 
         for child in children:
             cid = child.get("paperId")

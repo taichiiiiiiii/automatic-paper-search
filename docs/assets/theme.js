@@ -295,10 +295,13 @@ function layoutChronological(nodes) {
   const positioned = [];
   const yearLabels = [];
 
+  // Left-align rows (was center-aligned): with a wide max row, sparse
+  // years drift to the middle of a 6000+ px grid and disappear off
+  // typical viewports. Anchoring everything to the same left x keeps
+  // older years in view without a horizontal scroll.
   years.forEach((year, rowIdx) => {
     const row = byYear.get(year);
-    const rowWidth = row.length * (NODE_W + SIBLING_GAP) - SIBLING_GAP;
-    const xStart = YEAR_LABEL_W + (rowSpanW - rowWidth) / 2;
+    const xStart = YEAR_LABEL_W + PADDING / 2;
     const y = PADDING + rowIdx * (NODE_H + ROW_GAP);
     yearLabels.push({
       label: year === UNKNOWN_YEAR ? "Unknown" : String(year),
