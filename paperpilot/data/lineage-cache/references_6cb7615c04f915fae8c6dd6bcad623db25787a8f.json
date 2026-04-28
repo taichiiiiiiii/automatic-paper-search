@@ -1,0 +1,1002 @@
+[
+  {
+    "paperId": "02d3afd9c306ce0a0d39e211d60468732c591f8f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-09516",
+      "ArXiv": "2404.09516",
+      "DOI": "10.48550/arXiv.2404.09516",
+      "CorpusId": 269148958
+    },
+    "title": "State Space Model for New-Generation Network Alternative to Transformers: A Survey",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 92,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.09516, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276121019",
+        "name": "Xiao Wang"
+      },
+      {
+        "authorId": "2248204640",
+        "name": "Shiao Wang"
+      },
+      {
+        "authorId": "1643675519",
+        "name": "Yuhe Ding"
+      },
+      {
+        "authorId": "2296752163",
+        "name": "Yuehang Li"
+      },
+      {
+        "authorId": "2275783706",
+        "name": "Wentao Wu"
+      },
+      {
+        "authorId": "2227981104",
+        "name": "Yao Rong"
+      },
+      {
+        "authorId": "2296718593",
+        "name": "Weizhe Kong"
+      },
+      {
+        "authorId": "2291127786",
+        "name": "Ju Huang"
+      },
+      {
+        "authorId": "2297143796",
+        "name": "Shihao Li"
+      },
+      {
+        "authorId": "2280288000",
+        "name": "Haoxiang Yang"
+      },
+      {
+        "authorId": "2296727572",
+        "name": "Ziwen Wang"
+      },
+      {
+        "authorId": "2114189483",
+        "name": "Bowei Jiang"
+      },
+      {
+        "authorId": "2275767046",
+        "name": "Chenglong Li"
+      },
+      {
+        "authorId": "5765799",
+        "name": "Yaowei Wang"
+      },
+      {
+        "authorId": "2275270705",
+        "name": "Yonghong Tian"
+      },
+      {
+        "authorId": "2229726456",
+        "name": "Jin Tang"
+      }
+    ],
+    "abstract": "In the post-deep learning era, the Transformer architecture has demonstrated its powerful performance across pre-trained big models and various downstream tasks. However, the enormous computational demands of this architecture have deterred many researchers. To further reduce the complexity of attention models, numerous efforts have been made to design more efficient methods. Among them, the State Space Model (SSM), as a possible replacement for the self-attention based Transformer model, has drawn more and more attention in recent years. In this paper, we give the first comprehensive review of these works and also provide experimental comparisons and analysis to better demonstrate the features and advantages of SSM. Specifically, we first give a detailed description of principles to help the readers quickly capture the key ideas of SSM. After that, we dive into the reviews of existing SSMs and their various applications, including natural language processing, computer vision, graph, multi-modal and multi-media, point cloud/event stream, time series data, and other domains. In addition, we give statistical comparisons and analysis of these models and hope it helps the readers to understand the effectiveness of different structures on various tasks. Then, we propose possible research points in this direction to better promote the development of the theoretical model and application of SSM. More related works will be continuously updated on the following GitHub: https://github.com/Event-AHU/Mamba_State_Space_Model_Paper_List.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2833716cabbd7c709f4b266832b8b3fa3e37d2c6",
+    "externalIds": {
+      "DBLP": "journals/tgrs/ZhaoCZXBO24",
+      "ArXiv": "2404.02668",
+      "DOI": "10.1109/TGRS.2024.3425540",
+      "CorpusId": 268875757
+    },
+    "title": "RS-Mamba for Large Remote Sensing Image Dense Prediction",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 300,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.02668",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.02668, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262009613",
+        "name": "Sijie Zhao"
+      },
+      {
+        "authorId": "2282496760",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "49470313",
+        "name": "Xue-liang Zhang"
+      },
+      {
+        "authorId": "2976074",
+        "name": "P. Xiao"
+      },
+      {
+        "authorId": "2253472588",
+        "name": "Lei Bai"
+      },
+      {
+        "authorId": "2253464521",
+        "name": "Wanli Ouyang"
+      }
+    ],
+    "abstract": "Context modeling is critical for remote sensing image dense prediction tasks. Nowadays, the growing size of very-high-resolution (VHR) remote sensing images poses challenges in effectively modeling context. While transformer-based models possess global modeling capabilities, they encounter computational challenges when applied to large VHR images due to their quadratic complexity. The conventional practice of cropping large images into smaller patches results in a notable loss of contextual information. To address these issues, we propose the remote sensing Mamba (RSM) for dense prediction tasks in large VHR remote sensing images. RSM is specifically designed to capture the global context of remote sensing images with linear complexity, facilitating the effective processing of large VHR images. Considering that the land covers in remote sensing images are distributed in arbitrary spatial directions due to characteristics of remote sensing over-head imaging, the RSM incorporates an omnidirectional selective scan module (OSSM) to globally model the context of images in multiple directions, capturing large spatial features from various directions. We designed simple yet effective models based on RSM, achieving state-of-the-art performance on dense prediction tasks in VHR remote sensing images without fancy training strategies. Extensive experiments on semantic segmentation (SS) and change detection (CD) tasks across various land covers demonstrate the effectiveness of the proposed RSM. Leveraging the linear complexity and global modeling capabilities, RSM achieves better efficiency and accuracy than transformer-based models on large remote sensing images. Interestingly, we also demonstrated that our model generally performs better with a larger image size on dense prediction tasks.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ed228d3ad968eb1aa38baea5471bcb1d698f196a",
+    "externalIds": {
+      "ArXiv": "2404.01705",
+      "PubMedCentral": "11466675",
+      "DBLP": "journals/corr/abs-2404-01705",
+      "DOI": "10.1016/j.heliyon.2024.e38495",
+      "CorpusId": 268856763,
+      "PubMed": "39398081"
+    },
+    "title": "Samba: Semantic segmentation of remotely sensed images with state space model",
+    "venue": "Heliyon",
+    "year": 2024,
+    "citationCount": 151,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.heliyon.2024.e38495",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.01705, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2294674435",
+        "name": "Qinfeng Zhu"
+      },
+      {
+        "authorId": "2111259961",
+        "name": "Yuanzhi Cai"
+      },
+      {
+        "authorId": "2294560306",
+        "name": "Yuan Fang"
+      },
+      {
+        "authorId": "2218861589",
+        "name": "Yihan Yang"
+      },
+      {
+        "authorId": "2239158036",
+        "name": "Cheng Chen"
+      },
+      {
+        "authorId": "2273066481",
+        "name": "Lei Fan"
+      },
+      {
+        "authorId": "2333063213",
+        "name": "A. Nguyen"
+      }
+    ],
+    "abstract": "High-resolution remotely sensed images pose challenges to traditional semantic segmentation networks, such as Convolutional Neural Networks (CNNs) and Vision Transformers (ViTs). CNN-based methods struggle to handle high-resolution images due to their limited receptive field, while ViT-based methods, despite having a global receptive field, face challenges when processing long sequences. Inspired by the Mamba network, which is based on a state space model (SSM) to efficiently capture global semantic information, we propose a semantic segmentation framework for high-resolution remotely sensed imagery, named Samba. Samba utilizes an encoder-decoder architecture, with multiple Samba blocks serving as the encoder to efficiently extract multi-level semantic information, and UperNet functioning as the decoder. We evaluate Samba on the LoveDA, ISPRS Vaihingen, and ISPRS Potsdam datasets using the mIoU and mF1 metrics, and compare it with top-performing CNN-based and ViT-based methods. The results demonstrate that Samba achieves unparalleled performance on commonly used remotely sensed datasets for semantic segmentation. Samba is the first to demonstrate the effectiveness of SSM in segmenting remotely sensed imagery, setting a new performance benchmark for Mamba-based techniques in this domain of semantic segmentation. The source code and baseline implementations are available at https://github.com/zhuqinfeng1999/Samba.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "609b7d5bf1ad35b20073152245da65855aa25942",
+    "externalIds": {
+      "ArXiv": "2404.01065",
+      "DOI": "10.1109/tmm.2026.3668475",
+      "CorpusId": 268819833
+    },
+    "title": "T-Mamba: A Unified Framework with Long-Range Dependency in Dual-Domain for 2D & 3D Tooth Segmentation",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2024,
+    "citationCount": 21,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.01065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281898864",
+        "name": "Jing Hao"
+      },
+      {
+        "authorId": "2386613529",
+        "name": "Yong Zhu"
+      },
+      {
+        "authorId": "2253921717",
+        "name": "Lei He"
+      },
+      {
+        "authorId": "2281792040",
+        "name": "Moyun Liu"
+      },
+      {
+        "authorId": "3303782",
+        "name": "J. Tsoi"
+      },
+      {
+        "authorId": "2281745621",
+        "name": "Kuo Feng Hung"
+      }
+    ],
+    "abstract": "Tooth segmentation is a pivotal step in modern digital dentistry, essential for applications across orthodontic diagnosis and treatment planning. Despite its importance, this process is fraught with challenges due to the high noise and low contrast inherent in 2D and 3D tooth data. Both Convolutional Neural Networks (CNNs) and Transformers has shown promise in medical image segmentation, yet each method has limitations in handling long-range dependencies and computational complexity. To address this issue, this paper introduces T-Mamba, integrating frequency-based features and shared bi-positional encoding into vision mamba to address limitations in efficient global feature modeling. Besides, we design a gate selection unit to integrate two features in spatial domain and one feature in frequency domain adaptively. T-Mamba is the first work to introduce frequency-based features into vision mamba, and its flexibility allows it to process both 2D and 3D tooth data without the need for separate modules. Also, the TED3, a large-scale public tooth 2D dental X-ray dataset, has been presented in this paper. Extensive experiments demonstrate that T-Mamba achieves new SOTA results on a public tooth CBCT dataset and outperforms previous SOTA methods on TED3 dataset. The code and models are publicly available at: https://github.com/isbrycee/T-Mamba.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5f07ef98b64b2ab47105018cbda158527f903b28",
+    "externalIds": {
+      "DBLP": "journals/lgrs/ChenCLLZS24",
+      "ArXiv": "2403.19654",
+      "DOI": "10.1109/LGRS.2024.3407111",
+      "CorpusId": 268733376
+    },
+    "title": "RSMamba: Remote Sensing Image Classification With State Space Model",
+    "venue": "IEEE Geoscience and Remote Sensing Letters",
+    "year": 2024,
+    "citationCount": 315,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2403.19654",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.19654, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152567984",
+        "name": "Keyan Chen"
+      },
+      {
+        "authorId": "2152692813",
+        "name": "Bo-Ying Chen"
+      },
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2276742802",
+        "name": "Wenyuan Li"
+      },
+      {
+        "authorId": "2430445",
+        "name": "Zhengxia Zou"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Remote sensing image classification forms the foundation of various understanding tasks, serving a crucial function in remote sensing image interpretation. The recent advancements of convolutional neural networks (CNNs) and transformers have markedly enhanced classification accuracy. Nonetheless, remote sensing scene classification remains a significant challenge, especially given the complexity and diversity of remote sensing scenarios and the variability of spatiotemporal resolutions. The capacity for whole-image understanding can provide more precise semantic cues for scene discrimination. In this letter, we introduce RSMamba, a novel architecture for remote sensing image classification. RSMamba is based on the state space model (SSM) and incorporates an efficient, hardware-aware design known as the Mamba. It integrates the advantages of both a global receptive field and linear modeling complexity. To overcome the limitation of the vanilla Mamba, which can only model causal sequences and is not adaptable to 2-D image data, we propose a dynamic multipath activation mechanism to augment Mamba’s capacity to model noncausal data. Notably, RSMamba maintains the inherent modeling mechanism of the vanilla Mamba, yet exhibits superior performance across multiple remote sensing image classification datasets, e.g., F1 scores of 95.25, 92.63, and 95.18 on the UC Merced, AID, and RESISC45 classification datasets, respectively, exceeding those of concurrent Vim and VMamba. This indicates that RSMamba holds significant potential to function as the backbone of future visual foundation models. The code is available at https://github.com/KyanChen/RSMamba.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a486b02029635ce960ed011cc34cbe5553df97f8",
+    "externalIds": {
+      "DBLP": "journals/remotesensing/WangZGS24",
+      "DOI": "10.3390/rs16050804",
+      "CorpusId": 268195605
+    },
+    "title": "Advances and Challenges in Deep Learning-Based Change Detection for Remote Sensing Images: A Review through Various Learning Paradigms",
+    "venue": "Remote Sensing",
+    "year": 2024,
+    "citationCount": 60,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2072-4292/16/5/804/pdf?version=1708853587",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/rs16050804?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/rs16050804, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153519027",
+        "name": "Lukang Wang"
+      },
+      {
+        "authorId": "2156053359",
+        "name": "Min Zhang"
+      },
+      {
+        "authorId": "2289329001",
+        "name": "Xu Gao"
+      },
+      {
+        "authorId": "2237100882",
+        "name": "Wenzhong Shi"
+      }
+    ],
+    "abstract": "Change detection (CD) in remote sensing (RS) imagery is a pivotal method for detecting changes in the Earth’s surface, finding wide applications in urban planning, disaster management, and national security. Recently, deep learning (DL) has experienced explosive growth and, with its superior capabilities in feature learning and pattern recognition, it has introduced innovative approaches to CD. This review explores the latest techniques, applications, and challenges in DL-based CD, examining them through the lens of various learning paradigms, including fully supervised, semi-supervised, weakly supervised, and unsupervised. Initially, the review introduces the basic network architectures for CD methods using DL. Then, it provides a comprehensive analysis of CD methods under different learning paradigms, summarizing commonly used frameworks. Additionally, an overview of publicly available datasets for CD is offered. Finally, the review addresses the opportunities and challenges in the field, including: (a) incomplete supervised CD, encompassing semi-supervised and weakly supervised methods, which is still in its infancy and requires further in-depth investigation; (b) the potential of self-supervised learning, offering significant opportunities for Few-shot and One-shot Learning of CD; (c) the development of Foundation Models, with their multi-task adaptability, providing new perspectives and tools for CD; and (d) the expansion of data sources, presenting both opportunities and challenges for multimodal CD. These areas suggest promising directions for future research in CD. In conclusion, this review aims to assist researchers in gaining a comprehensive understanding of the CD field.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "efb7af4ae6943f298449416529c288e9559c991b",
+    "externalIds": {
+      "ArXiv": "2402.12192",
+      "DBLP": "journals/corr/abs-2402-12192",
+      "DOI": "10.48550/arXiv.2402.12192",
+      "CorpusId": 267751105
+    },
+    "title": "Pan-Mamba: Effective pan-sharpening with State Space Model",
+    "venue": "Information Fusion",
+    "year": 2024,
+    "citationCount": 187,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.12192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2216499293",
+        "name": "Xuanhua He"
+      },
+      {
+        "authorId": "2284688725",
+        "name": "Ke Cao"
+      },
+      {
+        "authorId": "2143931227",
+        "name": "K. Yan"
+      },
+      {
+        "authorId": "2277839666",
+        "name": "Rui Li"
+      },
+      {
+        "authorId": "2269941210",
+        "name": "Chengjun Xie"
+      },
+      {
+        "authorId": "2277846007",
+        "name": "Jie Zhang"
+      },
+      {
+        "authorId": "2109169947",
+        "name": "Man Zhou"
+      }
+    ],
+    "abstract": "Pan-sharpening involves integrating information from low-resolution multi-spectral and high-resolution panchromatic images to generate high-resolution multi-spectral counterparts. While recent advancements in the state space model, particularly the efficient long-range dependency modeling achieved by Mamba, have revolutionized computer vision community, its untapped potential in pan-sharpening motivates our exploration. Our contribution, Pan-Mamba, represents a novel pan-sharpening network that leverages the efficiency of the Mamba model in global information modeling. In Pan-Mamba, we customize two core components: channel swapping Mamba and cross-modal Mamba, strategically designed for efficient cross-modal information exchange and fusion. The former initiates a lightweight cross-modal interaction through the exchange of partial panchromatic and multi-spectral channels, while the latter facilities the information representation capability by exploiting inherent cross-modal relationships. Through extensive experiments across diverse datasets, our proposed approach surpasses state-of-the-art methods, showcasing superior fusion results in pan-sharpening. To the best of our knowledge, this work is the first attempt in exploring the potential of the Mamba model and establishes a new frontier in the pan-sharpening techniques. The source code is available at \\url{https://github.com/alexhe101/Pan-Mamba}.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "38c48a1cd296d16dc9c56717495d6e44cc354444",
+    "externalIds": {
+      "DBLP": "conf/icml/ZhuL0W0W24",
+      "ArXiv": "2401.09417",
+      "DOI": "10.48550/arXiv.2401.09417",
+      "CorpusId": 267028142
+    },
+    "title": "Vision Mamba: Efficient Visual Representation Learning with Bidirectional State Space Model",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 1696,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.09417, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261901203",
+        "name": "Lianghui Zhu"
+      },
+      {
+        "authorId": "2060439659",
+        "name": "Bencheng Liao"
+      },
+      {
+        "authorId": "2261816376",
+        "name": "Qian Zhang"
+      },
+      {
+        "authorId": "2261792454",
+        "name": "Xinlong Wang"
+      },
+      {
+        "authorId": "2257432695",
+        "name": "Wenyu Liu"
+      },
+      {
+        "authorId": "2261738789",
+        "name": "Xinggang Wang"
+      }
+    ],
+    "abstract": "Recently the state space models (SSMs) with efficient hardware-aware designs, i.e., the Mamba deep learning model, have shown great potential for long sequence modeling. Meanwhile building efficient and generic vision backbones purely upon SSMs is an appealing direction. However, representing visual data is challenging for SSMs due to the position-sensitivity of visual data and the requirement of global context for visual understanding. In this paper, we show that the reliance on self-attention for visual representation learning is not necessary and propose a new generic vision backbone with bidirectional Mamba blocks (Vim), which marks the image sequences with position embeddings and compresses the visual representation with bidirectional state space models. On ImageNet classification, COCO object detection, and ADE20k semantic segmentation tasks, Vim achieves higher performance compared to well-established vision transformers like DeiT, while also demonstrating significantly improved computation&memory efficiency. For example, Vim is 2.8$\\times$ faster than DeiT and saves 86.8% GPU memory when performing batch inference to extract features on images with a resolution of 1248$\\times$1248. The results demonstrate that Vim is capable of overcoming the computation&memory constraints on performing Transformer-style understanding for high-resolution images and it has great potential to be the next-generation backbone for vision foundation models. Code is available at https://github.com/hustvl/Vim.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "0de9233b1d32cef4bafb6be6dee0cf33be981635",
+    "externalIds": {
+      "DBLP": "journals/remotesensing/CaiWY23",
+      "DOI": "10.3390/rs15235611",
+      "CorpusId": 265657292
+    },
+    "title": "Interactive Change-Aware Transformer Network for Remote Sensing Image Change Captioning",
+    "venue": "Remote Sensing",
+    "year": 2023,
+    "citationCount": 38,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2072-4292/15/23/5611/pdf?version=1701595244",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/rs15235611?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/rs15235611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2189950948",
+        "name": "Chen Cai"
+      },
+      {
+        "authorId": "2269755758",
+        "name": "Yi Wang"
+      },
+      {
+        "authorId": "2243170542",
+        "name": "Kim-hui Yap"
+      }
+    ],
+    "abstract": "Remote sensing image change captioning (RSICC) aims to automatically generate sentences describing the difference in content in remote sensing bitemporal images. Recent works extract the changes between bitemporal features and employ a hierarchical approach to fuse multiple changes of interest, yielding change captions. However, these methods directly aggregate all features, potentially incorporating non-change-focused information from each encoder layer into the change caption decoder, adversely affecting the performance of change captioning. To address this problem, we proposed an Interactive Change-Aware Transformer Network (ICT-Net). ICT-Net is able to extract and incorporate the most critical changes of interest in each encoder layer to improve change description generation. It initially extracts bitemporal visual features from the CNN backbone and employs an Interactive Change-Aware Encoder (ICE) to capture the crucial difference between these features. Specifically, the ICE captures the most change-aware discriminative information between the paired bitemporal features interactively through difference and content attention encoding. A Multi-Layer Adaptive Fusion (MAF) module is proposed to adaptively aggregate the relevant change-aware features in the ICE layers while minimizing the impact of irrelevant visual features. Moreover, we extend the ICE to extract multi-scale changes and introduce a novel Cross Gated-Attention (CGA) module into the change caption decoder to select essential discriminative multi-scale features to improve the change captioning performance. We evaluate our method on two RSICC datasets (e.g., LEVIR-CC and LEVIRCCD), and the experimental results demonstrate that our method achieves a state-of-the-art performance.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7bbc7595196a0606a07506c4fb1473e5e87f6082",
+    "externalIds": {
+      "ArXiv": "2312.00752",
+      "DBLP": "journals/corr/abs-2312-00752",
+      "CorpusId": 265551773
+    },
+    "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 6671,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.00752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269161650",
+        "name": "Albert Gu"
+      },
+      {
+        "authorId": "2269146652",
+        "name": "Tri Dao"
+      }
+    ],
+    "abstract": "Foundation models, now powering most of the exciting applications in deep learning, are almost universally based on the Transformer architecture and its core attention module. Many subquadratic-time architectures such as linear attention, gated convolution and recurrent models, and structured state space models (SSMs) have been developed to address Transformers' computational inefficiency on long sequences, but they have not performed as well as attention on important modalities such as language. We identify that a key weakness of such models is their inability to perform content-based reasoning, and make several improvements. First, simply letting the SSM parameters be functions of the input addresses their weakness with discrete modalities, allowing the model to selectively propagate or forget information along the sequence length dimension depending on the current token. Second, even though this change prevents the use of efficient convolutions, we design a hardware-aware parallel algorithm in recurrent mode. We integrate these selective SSMs into a simplified end-to-end neural network architecture without attention or even MLP blocks (Mamba). Mamba enjoys fast inference (5$\\times$ higher throughput than Transformers) and linear scaling in sequence length, and its performance improves on real data up to million-length sequences. As a general sequence model backbone, Mamba achieves state-of-the-art performance across several modalities such as language, audio, and genomics. On language modeling, our Mamba-3B model outperforms Transformers of the same size and matches Transformers twice its size, both in pretraining and downstream evaluation.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "37defa9aa690c033f9c4d1510df32ae5e996f716",
+    "externalIds": {
+      "DBLP": "journals/tgrs/ChenLCZLZS24",
+      "ArXiv": "2306.16269",
+      "DOI": "10.1109/TGRS.2024.3356074",
+      "CorpusId": 259274887
+    },
+    "title": "RSPrompter: Learning to Prompt for Remote Sensing Instance Segmentation Based on Visual Foundation Model",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2023,
+    "citationCount": 422,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/36/4358825/10409216.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.16269, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152567984",
+        "name": "Keyan Chen"
+      },
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2149052056",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "2276656129",
+        "name": "Haotian Zhang"
+      },
+      {
+        "authorId": "2108694763",
+        "name": "Wenyuan Li"
+      },
+      {
+        "authorId": "2430445",
+        "name": "Zhengxia Zou"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Leveraging the extensive training data from SA-1B, the segment anything model (SAM) demonstrates remarkable generalization and zero-shot capabilities. However, as a category-agnostic instance segmentation method, SAM heavily relies on prior manual guidance, including points, boxes, and coarse-grained masks. Furthermore, its performance in remote sensing image segmentation tasks remains largely unexplored and unproven. In this article, we aim to develop an automated instance segmentation approach for remote sensing images based on the foundational SAM model and incorporating semantic category information. Drawing inspiration from prompt learning, we propose a method to learn the generation of appropriate prompts for SAM. This enables SAM to produce semantically discernible segmentation results for remote sensing images, a concept that we have termed RSPrompter. We also propose several ongoing derivatives for instance segmentation tasks, drawing on recent advancements within the SAM community, and compare their performance with RSPrompter. Extensive experimental results, derived from the WHU building dataset, the NWPU VHR-10 dataset, and the SAR Ship Detection Dataset (SSDD) dataset, validate the effectiveness of our proposed method. The code for our method is publicly available at https://kychen.me/RSPrompter.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "83daad52d4cc7706b0aa08bf9b90dfa2efe97876",
+    "externalIds": {
+      "ArXiv": "2304.01091",
+      "DBLP": "journals/tip/ChangG23",
+      "DOI": "10.1109/TIP.2023.3328224",
+      "CorpusId": 257913411,
+      "PubMed": "37917517"
+    },
+    "title": "Changes to Captions: An Attentive Network for Remote Sensing Change Captioning",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2023,
+    "citationCount": 102,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.01091",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.01091, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "30947218",
+        "name": "Shizhen Chang"
+      },
+      {
+        "authorId": "2370080",
+        "name": "Pedram Ghamisi"
+      }
+    ],
+    "abstract": "In recent years, advanced research has focused on the direct learning and analysis of remote-sensing images using natural language processing (NLP) techniques. The ability to accurately describe changes occurring in multi-temporal remote sensing images is becoming increasingly important for geospatial understanding and land planning. Unlike natural image change captioning tasks, remote sensing change captioning aims to capture the most significant changes, irrespective of various influential factors such as illumination, seasonal effects, and complex land covers. In this study, we highlight the significance of accurately describing changes in remote sensing images and present a comparison of the change captioning task for natural and synthetic images and remote sensing images. To address the challenge of generating accurate captions, we propose an attentive changes-to-captions network, called Chg2Cap for short, for bi-temporal remote sensing images. The network comprises three main components: 1) a Siamese CNN-based feature extractor to collect high-level representations for each image pair; 2) an attentive encoder that includes a hierarchical self-attention block to locate change-related features and a residual block to generate the image embedding; and 3) a transformer-based caption generator to decode the relationship between the image embedding and the word embedding into a description. The proposed Chg2Cap network is evaluated on two representative remote sensing datasets, and a comprehensive experimental analysis is provided. The code and pre-trained models will be available online at https://github.com/ShizhenChang/Chg2Cap.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6fb8aae7b253d4a656a0d627d3b73d901456780d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2303-00355",
+      "ArXiv": "2303.00355",
+      "DOI": "10.1109/IGARSS52108.2023.10283451",
+      "CorpusId": 257255234
+    },
+    "title": "Progressive Scale-Aware Network for Remote Sensing Image Change Captioning",
+    "venue": "IEEE International Geoscience and Remote Sensing Symposium",
+    "year": 2023,
+    "citationCount": 54,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.00355",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.00355, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2317713019",
+        "name": "Jiajun Yang"
+      },
+      {
+        "authorId": "2072539630",
+        "name": "Zipeng Qi"
+      },
+      {
+        "authorId": "2430445",
+        "name": "Zhengxia Zou"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Remote sensing (RS) images contain numerous objects of different scales, which poses significant challenges for the RS image change captioning (RSICC) task to identify visual changes of interest in complex scenes and describe them via language. However, current methods still have some weaknesses in sufficiently extracting and utilizing multi-scale information. In this paper, we propose a progressive scale-aware network (PSNet) to address the problem. PSNet is a pure Transformer-based model. To sufficiently extract multi-scale visual features, multiple progressive difference perception (PDP) layers are stacked to progressively exploit the differencing features of bitemporal features. To sufficiently utilize the extracted multi-scale features for captioning, we propose a scale-aware reinforcement (SR) module and combine it with the Transformer decoding layer to progressively utilize the features from different PDP layers. Experiments show that the PDP layer and SR module are effective and our PSNet outperforms previous methods.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "ac2618b2ce5cdcf86f9371bcca98bc5e37e46f51",
+    "externalIds": {
+      "DBLP": "conf/iclr/GuGR22",
+      "ArXiv": "2111.00396",
+      "CorpusId": 240354066
+    },
+    "title": "Efficiently Modeling Long Sequences with Structured State Spaces",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 3413,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.00396, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39499001",
+        "name": "Albert Gu"
+      },
+      {
+        "authorId": "1822288",
+        "name": "Karan Goel"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "A central goal of sequence modeling is designing a single principled model that can address sequence data across a range of modalities and tasks, particularly on long-range dependencies. Although conventional models including RNNs, CNNs, and Transformers have specialized variants for capturing long dependencies, they still struggle to scale to very long sequences of $10000$ or more steps. A promising recent approach proposed modeling sequences by simulating the fundamental state space model (SSM) \\( x'(t) = Ax(t) + Bu(t), y(t) = Cx(t) + Du(t) \\), and showed that for appropriate choices of the state matrix \\( A \\), this system could handle long-range dependencies mathematically and empirically. However, this method has prohibitive computation and memory requirements, rendering it infeasible as a general sequence modeling solution. We propose the Structured State Space sequence model (S4) based on a new parameterization for the SSM, and show that it can be computed much more efficiently than prior approaches while preserving their theoretical strengths. Our technique involves conditioning \\( A \\) with a low-rank correction, allowing it to be diagonalized stably and reducing the SSM to the well-studied computation of a Cauchy kernel. S4 achieves strong empirical results across a diverse range of established benchmarks, including (i) 91\\% accuracy on sequential CIFAR-10 with no data augmentation or auxiliary losses, on par with a larger 2-D ResNet, (ii) substantially closing the gap to Transformers on image and language modeling tasks, while performing generation $60\\times$ faster (iii) SoTA on every task from the Long Range Arena benchmark, including solving the challenging Path-X task of length 16k that all prior work fails on, while being as efficient as all competitors.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5f59ee3108b760aa6c08b296a3057b735cfb30f3",
+    "externalIds": {
+      "ArXiv": "2103.14146",
+      "DBLP": "conf/iccv/QiuYN0IKS21",
+      "DOI": "10.1109/ICCV48922.2021.00198",
+      "CorpusId": 232380403
+    },
+    "title": "Describing and Localizing Multiple Changes with Transformers",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 106,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2103.14146",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.14146, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2087352796",
+        "name": "Yue Qiu"
+      },
+      {
+        "authorId": "2110260752",
+        "name": "Shintaro Yamamoto"
+      },
+      {
+        "authorId": "1484094470",
+        "name": "Kodai Nakashima"
+      },
+      {
+        "authorId": "144410256",
+        "name": "Ryota Suzuki"
+      },
+      {
+        "authorId": "35206224",
+        "name": "K. Iwata"
+      },
+      {
+        "authorId": "1730200",
+        "name": "Hirokatsu Kataoka"
+      },
+      {
+        "authorId": "1732705",
+        "name": "Y. Satoh"
+      }
+    ],
+    "abstract": "Change captioning tasks aim to detect changes in image pairs observed before and after a scene change and generate a natural language description of the changes. Existing change captioning studies have mainly focused on a single change. However, detecting and describing multiple changed parts in image pairs is essential for enhancing adaptability to complex scenarios. We solve the above issues from three aspects: (i) We propose a simulation-based multi-change captioning dataset; (ii) We benchmark existing state-of-the-art methods of single change captioning on multi-change captioning; (iii) We further propose Multi-Change Captioning transformers (MCCFormers) that identify change regions by densely correlating different regions in image pairs and dynamically determines the related change regions with words in sentences. The proposed method obtained the highest scores on four conventional change captioning evaluation metrics for multi-change captioning. Additionally, our proposed method can separate attention maps for each change and performs well with respect to change localization. Moreover, the proposed framework outperformed the previous state-of-the-art methods on an existing change captioning benchmark, CLEVR-Change, by a large margin (+6.1 on BLEU-4 and +9.7 on CIDEr scores), indicating its general ability in change captioning tasks. The code and dataset are available at the project page 1.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "5abe916562fad8306e3f4e571f83015047f0be1d",
+    "externalIds": {
+      "MAG": "2938232066",
+      "DBLP": "conf/iccv/ParkDR19",
+      "DOI": "10.1109/ICCV.2019.00472",
+      "CorpusId": 119189647
+    },
+    "title": "Robust Change Captioning",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 216,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1901.02527",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2019.00472?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2019.00472, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422202",
+        "name": "Dong Huk Park"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "34721166",
+        "name": "Anna Rohrbach"
+      }
+    ],
+    "abstract": "Describing what has changed in a scene can be useful to a user, but only if generated text focuses on what is semantically relevant. It is thus important to distinguish distractors (e.g. a viewpoint change) from relevant changes (e.g. an object has moved). We present a novel Dual Dynamic Attention Model (DUDA) to perform robust Change Captioning. Our model learns to distinguish distractors from semantic changes, localize the changes via Dual Attention over “before” and “after” images, and accurately describe them in natural language via Dynamic Speaker, by adaptively focusing on the necessary visual inputs (e.g. “before” or “after” image). To study the problem in depth, we collect a CLEVR-Change dataset, built off the CLEVR engine, with 5 types of scene changes. We benchmark a number of baselines on our dataset, and systematically study different change types and robustness to distractors. We show the superiority of our DUDA model in terms of both change captioning and localization. We also show that our approach is general, obtaining state-of-the-art results on the recent realistic Spot-the-Diff dataset which has no distractors.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "c574d297514e7299d9dd8a3b9e09bd3c0dea3f7b",
+    "externalIds": {
+      "DBLP": "journals/tgrs/ZhangCZCLZS24",
+      "DOI": "10.1109/TGRS.2024.3376673",
+      "CorpusId": 268588317
+    },
+    "title": "BiFA: Remote Sensing Image Change Detection With Bitemporal Feature Alignment",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 101,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2024.3376673?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2024.3376673, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276656129",
+        "name": "Haotian Zhang"
+      },
+      {
+        "authorId": "2268166007",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "2218320886",
+        "name": "Chenyao Zhou"
+      },
+      {
+        "authorId": "152567984",
+        "name": "Keyan Chen"
+      },
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2430445",
+        "name": "Zhengxia Zou"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Despite the success of deep learning-based change detection (CD) methods, their existing insufficiency in temporal (channel and spatial) and multiscale alignment has rendered them insufficient capability in mitigating external factors (illumination changes and perspective differences) arising from different imaging conditions during CD. In this article, a bitemporal feature alignment (BiFA) model is proposed to produce a precise CD map in a lightweight manner by reducing the impact of irrelevant factors. Specifically, for the temporal alignment, the bitemporal interaction (BI) module is proposed to realize the alignment of the bitemporal image channel level. Our intuition is introducing the BI in the feature extraction stage may benefit suppressing the interference, such as illumination changes. Simultaneously, the alignment module based on differential flow field (ADFF) is proposed to explicitly estimate the offset of the bitemporal image and realize their spatial level alignment to mitigate the inadequate registration resulting from different perspectives. Furthermore, for the multiscale alignment, we introduce the implicit neural alignment decoder (IND) to produce more refined prediction maps achieving precise alignment of multiscale features by learning continuous image representations in coordinate space. Our BiFA outperforms other state-of-the-art methods on six datasets (such as the F1-score (F1)/intersection over union (IoU) scores are improved by 2.70%/3.91% and 2.01%/2.94% on Learning, VIsion, and Remote sensing (LEVIR)+-CD and Sun Yat-sen University (SYSU)-CD, respectively) and displays greater robustness in cross-resolution CD. Our code is available at https://github.com/zmoka-zht/BiFA.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fa3a9f31788a52ef1979060e98b60bdc3b9e066f",
+    "externalIds": {
+      "DBLP": "journals/tgrs/LiuZCQZS23",
+      "DOI": "10.1109/TGRS.2023.3321752",
+      "CorpusId": 263694527
+    },
+    "title": "A Decoupling Paradigm With Prompt Learning for Remote Sensing Image Change Captioning",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2023,
+    "citationCount": 82,
+    "openAccessPdf": {
+      "url": "https://www.techrxiv.org/doi/pdf/10.36227/techrxiv.23269310.v1",
+      "status": "GREEN",
+      "license": "CCBYNCSA",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2023.3321752?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2023.3321752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2248946985",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "2157795112",
+        "name": "Jianqi Chen"
+      },
+      {
+        "authorId": "2072539630",
+        "name": "Zipeng Qi"
+      },
+      {
+        "authorId": "2430445",
+        "name": "Zhengxia Zou"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Remote sensing image change captioning (RSICC) is a novel task that aims to describe the differences between bitemporal images by natural language. Previous methods ignore a significant specificity of the task: the difficulty of RSICC is different for unchanged and changed image pairs. They process the unchanged and changed image pairs in a coupled way, which usually causes confusion for change captioning. In this article, we decouple the task into two issues to ease it: whether and what changes have occurred. An image-level classifier performs binary classification to address the first issue. A feature-level encoder contributes to extracting discriminative features to help the caption generation module address the second issue. Besides, for caption generation, we utilize prompt learning to introduce pretrained large language models (LLMs) into the RSICC task. A multiprompt learning strategy is proposed to generate a set of unified prompts and a class-specific prompt conditioned on the image-level classifier’s results. The strategy can prompt a pretrained LLM to know whether changes exist and generate captions. Finally, the multiple prompts and the visual features of the feature-level encoder are fed into a frozen LLM for language generation. Compared with previous methods, our method can leverage the powerful abilities of the pretrained LLM in language to generate plausible captions, which is free of training. Extensive experiments show that our method is effective and achieves the state-of-the-art performance. Besides, an additional experiment demonstrates that our decoupling paradigm is more promising than the previous coupled paradigm for the RSICC task. We will make our codebase publicly available to facilitate future research at https://github.com/Chen-Yang-Liu/PromptCC.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "fbd22de006eeb4308b9be57f39fbd863ddadc876",
+    "externalIds": {
+      "DBLP": "journals/lgrs/LiuZS22",
+      "DOI": "10.1109/lgrs.2022.3150957",
+      "CorpusId": 246771897
+    },
+    "title": "Remote-Sensing Image Captioning Based on Multilayer Aggregated Transformer",
+    "venue": "IEEE Geoscience and Remote Sensing Letters",
+    "year": 2022,
+    "citationCount": 91,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/lgrs.2022.3150957?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/lgrs.2022.3150957, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2248946985",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Remote-sensing image (RSI) captioning aims to automatically generate sentences describing the content of RSIs. The multiscale information of RSIs contains attributes and complex relationships of objects of different sizes. However, current methods still have some weaknesses in efficiently utilizing multiscale information to generate accurate and detailed sentences. In this letter, we propose a new model based on the “encoder–decoder” framework to address the problem. In the encoder, we fuse the features of different layers in ResNet-50 to extract multiscale information. In the decoder, we propose multilayer aggregated transformer (MLAT) to utilize the extracted information to generate sentences sufficiently. Specially, as the transformer encoding layer goes deeper, the extracted features will be more similar. To sufficiently utilize the features from different transformer encoding layers, compress redundant information, and extract important information, long short-term memory (LSTM) in MLAT aggregates the features to obtain better feature representations. The self-attention mechanism and the aggregation strategy enable MLAT to utilize the features sufficiently. The experimental results show that MLAT as the decoder can help the model address the multiscale problem, significantly improve the model performance on sentence accuracy and diversity, and show that our proposed method performs better than other current methods. Our code is available at https://github.com/Chen-Yang-Liu/MLAT.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "fa53f329e1600f0d747d41a4595bf58123490aeb",
+    "externalIds": {
+      "DBLP": "journals/tgrs/LiuZCZS22",
+      "DOI": "10.1109/TGRS.2022.3218921",
+      "CorpusId": 253353490
+    },
+    "title": "Remote Sensing Image Change Captioning With Dual-Branch Transformers: A New Method and a Large Scale Dataset",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2022,
+    "citationCount": 180,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2022.3218921?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2022.3218921, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2248946985",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "2149052056",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "2430445",
+        "name": "Zhengxia Zou"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Analyzing land cover changes with multitemporal remote sensing (RS) images is crucial for environmental protection and land planning. In this article, we explore RS image change captioning (RSICC), a new task aiming at generating human-like language descriptions for the land cover changes in multitemporal RS images. We propose a novel Transformer-based RSICC (RSICCformer) model. It consists of three main components: 1) a CNN-based feature extractor to generate high-level features of RS image pairs; 2) a dual-branch Transformer encoder (DTE) to improve the feature discrimination capacity for the changes; and 3) a caption decoder to generate sentences describing the differences. The DTE consists of a hierarchy of processing stages to capture and recognize multiple changes of interest. Concretely, we use the bitemporal feature differences as keys to enhance image features (queries) from each temporal image in the dual-branch Transformer encoder (DTE). To explore the RSICC task, we build a large-scale dataset named LEVIR-CC, which contains 10077 pairs of bitemporal RS images and 50385 sentences describing the differences between images. We benchmark existing state-of-the-art synthetic image change captioning methods on the LEVIR Change Captioning dataset (LEVIR-CC dataset), and our RSICCformer outperforms previous methods with a significant margin (+4.98% on BLEU-4 and +9.86% on CIDEr-D). The attention visualization results also suggest that our model can focus on changes of interest and ignore irrelevant changes.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "ff4b1769a7c521ba106c1bcfe52bcd666b4d5560",
+    "externalIds": {
+      "DBLP": "journals/tgrs/HoxhaCMS22",
+      "DOI": "10.1109/tgrs.2022.3195692",
+      "CorpusId": 251296762
+    },
+    "title": "Change Captioning: A New Paradigm for Multitemporal Remote Sensing Image Analysis",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2022,
+    "citationCount": 89,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/tgrs.2022.3195692?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/tgrs.2022.3195692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1415134980",
+        "name": "G. Hoxha"
+      },
+      {
+        "authorId": "107745490",
+        "name": "Seloua Chouaf"
+      },
+      {
+        "authorId": "1774633",
+        "name": "F. Melgani"
+      },
+      {
+        "authorId": "2484154",
+        "name": "Y. Smara"
+      }
+    ],
+    "abstract": "Change detection (CD) is among the most important applications in remote sensing (RS) that allows identifying the changes that occurred in a given geographical area across different times. Even though CD systems have seen a lot of progress in RS, their output is either a binary map highlighting the changing area or a semantic change map that indicates the type of change for each pixel. The change maps are often difficult to interpret by end users, and they omit important information such as relationships and attributes of the changed areas. Motivated by the recent advancement of image captioning in the RS community, in this article, we propose to describe the changes over bitemporal images through change sentence descriptions. The aim of this article is to provide a user-friendly interpretation of the occurred changes. To this end, we propose two change captioning (CC) systems that take bitemporal images as input and generate coherent sentence descriptions of the occurred changes. Convolutional neural networks (CNNs) are used to extract discriminative features from the bitemporal images and recurrent neural networks (RNNs) or support vector machines (SVMs) are exploited to generate coherent change descriptions. Furthermore, in the absence of a CC dataset to test our systems, we propose two new datasets. One is based on very high-resolution RGB images, and the other one is based on multispectral RS images. The obtained experimental results show promising capabilities of the proposed systems to generate coherent change descriptions from the bitemporal images. The datasets are available at the following link: https://disi.unitn.it/~melgani/datasets.html.",
+    "_is_influential": false,
+    "_intents": []
+  }
+]

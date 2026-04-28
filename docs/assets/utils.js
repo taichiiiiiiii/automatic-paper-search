@@ -49,6 +49,21 @@
     [/trans\.?\s*mach\.?\s*learn\.?\s*res\.?/i, "TMLR"],
     [/international journal of computer vision/i, "IJCV"],
     [/proceedings of the national academy of sciences/i, "PNAS"],
+    // IEEE journals — order matters (most specific first)
+    [/ieee\/?\s*transactions on pattern analysis and machine intelligence/i, "TPAMI"],
+    [/ieee\/?\s*transactions on geoscience and remote sensing/i, "TGRS"],
+    [/ieee\/?\s*transactions on circuits and systems for video technology/i, "TCSVT"],
+    [/ieee\/?\s*transactions on image processing/i, "TIP"],
+    [/ieee\/?\s*transactions on multimedia/i, "TMM"],
+    [/ieee\/?\s*transactions on neural networks and learning systems/i, "TNNLS"],
+    [/ieee\/?\s*transactions on robotics/i, "T-RO"],
+    // IEEE conferences
+    [/ieee\/cvf conference on computer vision and pattern recognition/i, "CVPR"],
+    [/ieee\s*workshop\/winter conference on applications of computer vision/i, "WACV"],
+    [/winter conference on applications of computer vision/i, "WACV"],
+    // RSJ is correct, RJS appears as a S2 typo — accept either
+    [/ieee\/?(rsj|rjs)?\s*international conference on intelligent robots and systems/i, "IROS"],
+    [/international conference on intelligent transportation systems/i, "ITSC"],
     [/^arxiv(\.org)?$/i, "arXiv"],
     [/^biorxiv$/i, "bioRxiv"],
   ];

@@ -1,0 +1,2719 @@
+[
+  {
+    "paperId": "83389b2ddfeb11c9323eb6e05c4e54ba80ad27db",
+    "externalIds": {
+      "DBLP": "journals/tgrs/ZhangCLCZS25",
+      "ArXiv": "2406.04207",
+      "DOI": "10.1109/TGRS.2025.3545012",
+      "CorpusId": 270285961
+    },
+    "title": "CDMamba: Incorporating Local Clues Into Mamba for Remote Sensing Image Binary Change Detection",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.04207, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276656129",
+        "name": "Haotian Zhang"
+      },
+      {
+        "authorId": "152567984",
+        "name": "Keyan Chen"
+      },
+      {
+        "authorId": "2107899982",
+        "name": "Chenyang Liu"
+      },
+      {
+        "authorId": "2268166007",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "2430445",
+        "name": "Zhengxia Zou"
+      },
+      {
+        "authorId": "113515560",
+        "name": "Z. Shi"
+      }
+    ],
+    "abstract": "Recently, the Mamba architecture based on state-space models has demonstrated remarkable performance in a series of natural language processing tasks and has been rapidly applied to remote sensing change detection (CD) tasks. However, most methods enhance the global receptive field by directly modifying the scanning mode of Mamba, neglecting the crucial role that local information plays in dense prediction tasks (e.g., binary CD). In this article, we propose a model called CDMamba, which effectively combines global and local features for handling binary CD tasks. Specifically, the scaled residual ConvMamba (SRCM) block is proposed to utilize the ability of Mamba to extract global features and convolution to enhance the local details, to alleviate the issue that current Mamba-based methods lack detailed clues and are difficult to achieve fine detection in dense prediction tasks. Furthermore, considering the characteristics of bi-temporal feature interaction required for CD, the adaptive global–local guided fusion (AGLGF) block is proposed to dynamically facilitate the bi-temporal interaction guided by other temporal global/local features. Our intuition is that more discriminative change features can be acquired with the guidance of other temporal features. Extensive experiments on five datasets demonstrate that our proposed CDMamba is comparable to the current methods (such as the F1/intersection over union (IoU) scores are improved by 2.10%/3.00%, 2.44%/2.91%, on LEVIR+CD and CLCD, respectively). Our code is open-sourced at https://github.com/zmoka-zht/CDMamba.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a06ad946578d92baac73735726a00b5f7f446c98",
+    "externalIds": {
+      "DBLP": "conf/wacv/WanZWYSSX25",
+      "ArXiv": "2404.04256",
+      "DOI": "10.1109/WACV61041.2025.00176",
+      "CorpusId": 268987521
+    },
+    "title": "Sigma: Siamese Mamba Network for Multi-Modal Semantic Segmentation",
+    "venue": "IEEE Workshop/Winter Conference on Applications of Computer Vision",
+    "year": 2024,
+    "citationCount": 118,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.04256, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2186826514",
+        "name": "Zifu Wan"
+      },
+      {
+        "authorId": "2274966413",
+        "name": "Yuhao Wang"
+      },
+      {
+        "authorId": "2295511052",
+        "name": "Silong Yong"
+      },
+      {
+        "authorId": "2295585237",
+        "name": "Pingping Zhang"
+      },
+      {
+        "authorId": "8083127",
+        "name": "Simon Stepputtis"
+      },
+      {
+        "authorId": "2239104696",
+        "name": "Katia P. Sycara"
+      },
+      {
+        "authorId": "2266307378",
+        "name": "Yaqi Xie"
+      }
+    ],
+    "abstract": "Multi-modal semantic segmentation significantly enhances AI agents' perception and scene understanding, especially under adverse conditions like low-light or overexposed environments. Leveraging additional modalities (X-modality) like thermal and depth alongside traditional RGB provides complementary information, enabling more robust and reliable prediction. In this work, we introduce Sigma, a Siamese Mamba network for multi-modal semantic segmentation utilizing the advanced Mamba. Unlike conventional methods that rely on CNNs, with their limited local receptive fields, or Vision Transformers (ViTs), which offer global receptive fields at the cost of quadratic complexity, our model achieves global receptive fields with linear complexity. By employing a Siamese encoder and innovating a Mamba-based fusion mechanism, we effectively select essential information from different modalities. A decoder is then developed to enhance the channel-wise modeling ability of the model. Our proposed method is rigorously evaluated on both RGB-Thermal and RGB-Depth semantic segmentation tasks, demonstrating its superiority and marking the first successful application of State Space Models (SSMs) in multi-modal perception tasks. Code is available at https://github.com/zifuwan/Sigma.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "541bcf94bd09f17c25d8ed7cd10e69c8f91331d0",
+    "externalIds": {
+      "ArXiv": "2404.03425",
+      "DBLP": "journals/corr/abs-2404-03425",
+      "DOI": "10.1109/TGRS.2024.3417253",
+      "CorpusId": 268889712
+    },
+    "title": "ChangeMamba: Remote Sensing Change Detection With Spatiotemporal State Space Model",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 328,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.03425",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.03425, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151020613",
+        "name": "Hongruixuan Chen"
+      },
+      {
+        "authorId": "2238116234",
+        "name": "Jian Song"
+      },
+      {
+        "authorId": "2154406919",
+        "name": "Chengxi Han"
+      },
+      {
+        "authorId": "2239157968",
+        "name": "Junshi Xia"
+      },
+      {
+        "authorId": "2237802627",
+        "name": "Naoto Yokoya"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) and Transformers have made impressive progress in the field of remote sensing change detection (CD). However, both architectures have inherent shortcomings: CNN is constrained by a limited receptive field that may hinder their ability to capture broader spatial contexts, while Transformers are computationally intensive, making them costly to train and deploy on large datasets. Recently, the Mamba architecture, based on state space models (SSMs), has shown remarkable performance in a series of natural language processing tasks, which can effectively compensate for the shortcomings of the above two architectures. In this article, we explore for the first time the potential of the Mamba architecture for remote sensing CD tasks. We tailor the corresponding frameworks, called MambaBCD, MambaSCD, and MambaBDA, for binary CD (BCD), semantic CD (SCD), and building damage assessment (BDA), respectively. All three frameworks adopt the cutting-edge Visual Mamba architecture as the encoder, which allows full learning of global spatial contextual information from the input images. For the change decoder, which is available in all three architectures, we propose three spatiotemporal relationship modeling mechanisms, which can be naturally combined with the Mamba architecture and fully utilize its attribute to achieve spatiotemporal interaction of multitemporal features, thereby obtaining accurate change information. On five benchmark datasets, our proposed frameworks outperform current CNN- and Transformer-based approaches without using any complex training strategies or tricks, fully demonstrating the potential of the Mamba architecture in CD tasks. Further experiments show that our architecture is quite robust to degraded data. The source code is available at: https://github.com/ChenHongruixuan/MambaCD.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e730beb44042499763d36214c0498434e470dfd5",
+    "externalIds": {
+      "ArXiv": "2402.15648",
+      "DBLP": "journals/corr/abs-2402-15648",
+      "DOI": "10.48550/arXiv.2402.15648",
+      "CorpusId": 267938238
+    },
+    "title": "MambaIR: A Simple Baseline for Image Restoration with State-Space Model",
+    "venue": "European Conference on Computer Vision",
+    "year": 2024,
+    "citationCount": 663,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.15648, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2274202835",
+        "name": "Hang Guo"
+      },
+      {
+        "authorId": "2222355802",
+        "name": "Jinmin Li"
+      },
+      {
+        "authorId": "2268311556",
+        "name": "Tao Dai"
+      },
+      {
+        "authorId": "152317085",
+        "name": "Zhihao Ouyang"
+      },
+      {
+        "authorId": "2288429647",
+        "name": "Xudong Ren"
+      },
+      {
+        "authorId": "2286883105",
+        "name": "Shu-Tao Xia"
+      }
+    ],
+    "abstract": "Recent years have seen significant advancements in image restoration, largely attributed to the development of modern deep neural networks, such as CNNs and Transformers. However, existing restoration backbones often face the dilemma between global receptive fields and efficient computation, hindering their application in practice. Recently, the Selective Structured State Space Model, especially the improved version Mamba, has shown great potential for long-range dependency modeling with linear complexity, which offers a way to resolve the above dilemma. However, the standard Mamba still faces certain challenges in low-level vision such as local pixel forgetting and channel redundancy. In this work, we introduce a simple but effective baseline, named MambaIR, which introduces both local enhancement and channel attention to improve the vanilla Mamba. In this way, our MambaIR takes advantage of the local pixel similarity and reduces the channel redundancy. Extensive experiments demonstrate the superiority of our method, for example, MambaIR outperforms SwinIR by up to 0.45dB on image SR, using similar computational cost but with a global receptive field. Code is available at \\url{https://github.com/csguoh/MambaIR}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0682771fd5f611bce2a536bf83587532469a83df",
+    "externalIds": {
+      "ArXiv": "2402.10887",
+      "DBLP": "journals/corr/abs-2402-10887",
+      "DOI": "10.48550/arXiv.2402.10887",
+      "CorpusId": 267740717
+    },
+    "title": "Weak-Mamba-UNet: Visual Mamba Makes CNN and ViT Work Better for Scribble-based Medical Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.10887, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2240108214",
+        "name": "Ziyang Wang"
+      },
+      {
+        "authorId": "2283876882",
+        "name": "Chao Ma"
+      }
+    ],
+    "abstract": "Medical image segmentation is increasingly reliant on deep learning techniques, yet the promising performance often come with high annotation costs. This paper introduces Weak-Mamba-UNet, an innovative weakly-supervised learning (WSL) framework that leverages the capabilities of Convolutional Neural Network (CNN), Vision Transformer (ViT), and the cutting-edge Visual Mamba (VMamba) architecture for medical image segmentation, especially when dealing with scribble-based annotations. The proposed WSL strategy incorporates three distinct architecture but same symmetrical encoder-decoder networks: a CNN-based UNet for detailed local feature extraction, a Swin Transformer-based SwinUNet for comprehensive global context understanding, and a VMamba-based Mamba-UNet for efficient long-range dependency modeling. The key concept of this framework is a collaborative and cross-supervisory mechanism that employs pseudo labels to facilitate iterative learning and refinement across the networks. The effectiveness of Weak-Mamba-UNet is validated on a publicly available MRI cardiac segmentation dataset with processed scribble annotations, where it surpasses the performance of a similar WSL framework utilizing only UNet or SwinUNet. This highlights its potential in scenarios with sparse or imprecise annotations. The source code is made publicly accessible.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "21ddc4fc3551619b8a64db6ae124acc72aaae2c2",
+    "externalIds": {
+      "DBLP": "conf/nips/LiangZXZZYTB24",
+      "ArXiv": "2402.10739",
+      "DOI": "10.48550/arXiv.2402.10739",
+      "CorpusId": 267740688
+    },
+    "title": "PointMamba: A Simple State Space Model for Point Cloud Analysis",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 266,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.10739, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "94882716",
+        "name": "Dingkang Liang"
+      },
+      {
+        "authorId": "2238201928",
+        "name": "Xin Zhou"
+      },
+      {
+        "authorId": "2284804294",
+        "name": "Wei Xu"
+      },
+      {
+        "authorId": "2284636478",
+        "name": "Xingkui Zhu"
+      },
+      {
+        "authorId": "13380914",
+        "name": "Zhikang Zou"
+      },
+      {
+        "authorId": "2284698331",
+        "name": "Xiaoqing Ye"
+      },
+      {
+        "authorId": "2268209936",
+        "name": "Xiao Tan"
+      },
+      {
+        "authorId": "2238115894",
+        "name": "Xiang Bai"
+      }
+    ],
+    "abstract": "Transformers have become one of the foundational architectures in point cloud analysis tasks due to their excellent global modeling ability. However, the attention mechanism has quadratic complexity, making the design of a linear complexity method with global modeling appealing. In this paper, we propose PointMamba, transferring the success of Mamba, a recent representative state space model (SSM), from NLP to point cloud analysis tasks. Unlike traditional Transformers, PointMamba employs a linear complexity algorithm, presenting global modeling capacity while significantly reducing computational costs. Specifically, our method leverages space-filling curves for effective point tokenization and adopts an extremely simple, non-hierarchical Mamba encoder as the backbone. Comprehensive evaluations demonstrate that PointMamba achieves superior performance across multiple datasets while significantly reducing GPU memory usage and FLOPs. This work underscores the potential of SSMs in 3D vision-related tasks and presents a simple yet effective Mamba-based baseline for future research. The code will be made available at \\url{https://github.com/LMD0311/PointMamba}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "38c48a1cd296d16dc9c56717495d6e44cc354444",
+    "externalIds": {
+      "DBLP": "conf/icml/ZhuL0W0W24",
+      "ArXiv": "2401.09417",
+      "DOI": "10.48550/arXiv.2401.09417",
+      "CorpusId": 267028142
+    },
+    "title": "Vision Mamba: Efficient Visual Representation Learning with Bidirectional State Space Model",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 1696,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.09417, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261901203",
+        "name": "Lianghui Zhu"
+      },
+      {
+        "authorId": "2060439659",
+        "name": "Bencheng Liao"
+      },
+      {
+        "authorId": "2261816376",
+        "name": "Qian Zhang"
+      },
+      {
+        "authorId": "2261792454",
+        "name": "Xinlong Wang"
+      },
+      {
+        "authorId": "2257432695",
+        "name": "Wenyu Liu"
+      },
+      {
+        "authorId": "2261738789",
+        "name": "Xinggang Wang"
+      }
+    ],
+    "abstract": "Recently the state space models (SSMs) with efficient hardware-aware designs, i.e., the Mamba deep learning model, have shown great potential for long sequence modeling. Meanwhile building efficient and generic vision backbones purely upon SSMs is an appealing direction. However, representing visual data is challenging for SSMs due to the position-sensitivity of visual data and the requirement of global context for visual understanding. In this paper, we show that the reliance on self-attention for visual representation learning is not necessary and propose a new generic vision backbone with bidirectional Mamba blocks (Vim), which marks the image sequences with position embeddings and compresses the visual representation with bidirectional state space models. On ImageNet classification, COCO object detection, and ADE20k semantic segmentation tasks, Vim achieves higher performance compared to well-established vision transformers like DeiT, while also demonstrating significantly improved computation&memory efficiency. For example, Vim is 2.8$\\times$ faster than DeiT and saves 86.8% GPU memory when performing batch inference to extract features on images with a resolution of 1248$\\times$1248. The results demonstrate that Vim is capable of overcoming the computation&memory constraints on performing Transformer-style understanding for high-resolution images and it has great potential to be the next-generation backbone for vision foundation models. Code is available at https://github.com/hustvl/Vim.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c1a04730c83967d0bb904b02263b17893cb50bad",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-04722",
+      "ArXiv": "2401.04722",
+      "DOI": "10.48550/arXiv.2401.04722",
+      "CorpusId": 266899624
+    },
+    "title": "U-Mamba: Enhancing Long-range Dependency for Biomedical Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 763,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04722, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143854906",
+        "name": "Jun Ma"
+      },
+      {
+        "authorId": "2115375848",
+        "name": "Feifei Li"
+      },
+      {
+        "authorId": "2279039516",
+        "name": "Bo Wang"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) and Transformers have been the most popular architectures for biomedical image segmentation, but both of them have limited ability to handle long-range dependencies because of inherent locality or computational complexity. To address this challenge, we introduce U-Mamba, a general-purpose network for biomedical image segmentation. Inspired by the State Space Sequence Models (SSMs), a new family of deep sequence models known for their strong capability in handling long sequences, we design a hybrid CNN-SSM block that integrates the local feature extraction power of convolutional layers with the abilities of SSMs for capturing the long-range dependency. Moreover, U-Mamba enjoys a self-configuring mechanism, allowing it to automatically adapt to various datasets without manual intervention. We conduct extensive experiments on four diverse tasks, including the 3D abdominal organ segmentation in CT and MR images, instrument segmentation in endoscopy images, and cell segmentation in microscopy images. The results reveal that U-Mamba outperforms state-of-the-art CNN-based and Transformer-based segmentation networks across all tasks. This opens new avenues for efficient long-range dependency modeling in biomedical image analysis. The code, models, and data are publicly available at https://wanglab.ai/u-mamba.html.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7bbc7595196a0606a07506c4fb1473e5e87f6082",
+    "externalIds": {
+      "ArXiv": "2312.00752",
+      "DBLP": "journals/corr/abs-2312-00752",
+      "CorpusId": 265551773
+    },
+    "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 6672,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.00752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269161650",
+        "name": "Albert Gu"
+      },
+      {
+        "authorId": "2269146652",
+        "name": "Tri Dao"
+      }
+    ],
+    "abstract": "Foundation models, now powering most of the exciting applications in deep learning, are almost universally based on the Transformer architecture and its core attention module. Many subquadratic-time architectures such as linear attention, gated convolution and recurrent models, and structured state space models (SSMs) have been developed to address Transformers' computational inefficiency on long sequences, but they have not performed as well as attention on important modalities such as language. We identify that a key weakness of such models is their inability to perform content-based reasoning, and make several improvements. First, simply letting the SSM parameters be functions of the input addresses their weakness with discrete modalities, allowing the model to selectively propagate or forget information along the sequence length dimension depending on the current token. Second, even though this change prevents the use of efficient convolutions, we design a hardware-aware parallel algorithm in recurrent mode. We integrate these selective SSMs into a simplified end-to-end neural network architecture without attention or even MLP blocks (Mamba). Mamba enjoys fast inference (5$\\times$ higher throughput than Transformers) and linear scaling in sequence length, and its performance improves on real data up to million-length sequences. As a general sequence model backbone, Mamba achieves state-of-the-art performance across several modalities such as language, audio, and genomics. On language modeling, our Mamba-3B model outperforms Transformers of the same size and matches Transformers twice its size, both in pretraining and downstream evaluation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "2445397719e04dd1a4f6b1d8344f52769ba28959",
+    "externalIds": {
+      "DOI": "10.3390/quat6020028",
+      "CorpusId": 258265324
+    },
+    "title": "A Framework for Crop Yield Estimation and Change Detection Using Image Fusion of Microwave and Optical Satellite Dataset",
+    "venue": "Quaternary",
+    "year": 2023,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2571-550X/6/2/28/pdf?version=1681907235",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/quat6020028?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/quat6020028, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2188513782",
+        "name": "Ravneet Kaur"
+      },
+      {
+        "authorId": "153740899",
+        "name": "R. K. Tiwari"
+      },
+      {
+        "authorId": "2050722",
+        "name": "R. Maini"
+      },
+      {
+        "authorId": "2108310106",
+        "name": "Sartajvir Singh"
+      }
+    ],
+    "abstract": "Crop yield prediction is one of the crucial components of agriculture that plays an important role in the decision-making process for sustainable agriculture. Remote sensing provides the most efficient and cost-effective solution for the measurement of important agricultural parameters such as soil moisture level, but retrieval of the soil moisture contents from coarse resolution datasets, especially microwave datasets, remains a challenging task. In the present work, a machine learning-based framework is proposed to generate the enhanced resolution soil moisture products, i.e., classified maps and change maps, using an optical-based moderate resolution imaging spectroradiometer (MODIS) and microwave-based scatterometer satellite (SCATSAT-1) datasets. In the proposed framework, nearest-neighbor-based image fusion (NNIF), artificial neural networks (ANN), and post-classification-based change detection (PCCD) have been integrated to generate thematic and change maps. To confirm the effectiveness of the proposed framework, random forest post-classification-based change detection (RFPCD) has also been implemented, and it is concluded that the proposed framework achieved better results (88.67–91.80%) as compared to the RFPCD (86.80–87.80%) in the computation of change maps with σ°-HH. This study is important in terms of crop yield prediction analysis via the delivery of enhanced-resolution soil moisture products under all weather conditions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "983d8b87693e909eb8b2f2fe74a6244dd65b61ee",
+    "externalIds": {
+      "DBLP": "conf/cvpr/WangZWYLOH23",
+      "ArXiv": "2303.14526",
+      "DOI": "10.1109/CVPR52729.2023.00618",
+      "CorpusId": 257766807
+    },
+    "title": "Selective Structured State-Spaces for Long-Form Video Understanding",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 180,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.14526",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.14526, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144536737",
+        "name": "Jue Wang"
+      },
+      {
+        "authorId": "1471429910",
+        "name": "Wenjie Zhu"
+      },
+      {
+        "authorId": "8120382",
+        "name": "Pichao Wang"
+      },
+      {
+        "authorId": "38438821",
+        "name": "Xiang Yu"
+      },
+      {
+        "authorId": "2265584948",
+        "name": "Linda Liu"
+      },
+      {
+        "authorId": "2212716450",
+        "name": "Mohamed Omar"
+      },
+      {
+        "authorId": "143979267",
+        "name": "Raffay Hamid"
+      }
+    ],
+    "abstract": "Effective modeling of complex spatiotemporal dependencies in long-form videos remains an open problem. The recently proposed Structured State-Space Sequence ($S4$) model with its linear complexity offers a promising direction in this space. However, we demonstrate that treating all imagetokens equally as done by $S4$ model can adversely affect its efficiency and accuracy. To address this limitation, we present a novel Selective $S4$ (i.e., $S5)$ model that employs a lightweight mask generator to adaptively select informative image tokens resulting in more efficient and accurate modeling of long-term spatiotemporal dependencies in videos. Unlike previous mask-based token reduction methods used in transformers, our $S5$ model avoids the dense self-attention calculation by making use of the guidance of the momentum-updated $S4$ model. This enables our model to efficiently discard less informative tokens and adapt to various long-form video understanding tasks more effectively. However, as is the case for most token reduction methods, the informative image tokens could be dropped incorrectly. To improve the robustness and the temporal horizon of our model, we propose a novel long-short masked contrastive learning (LSMCL) approach that enables our model to predict longer temporal context using shorter input videos. We present extensive comparative results using three challenging long-form video understanding datasets (LVU, COIN and Breakfast), demonstrating that our approach consistently outperforms the previous state-of-the-art S4 model by up to 9.6% accuracy while reducing its memory footprint by 23%.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "825521878dd32ad852b145ca22c435f280f1911e",
+    "externalIds": {
+      "DBLP": "journals/aeog/HeZXZW23",
+      "DOI": "10.1016/j.jag.2023.103197",
+      "CorpusId": 256182502
+    },
+    "title": "Cross-modal change detection flood extraction based on convolutional neural network",
+    "venue": "International Journal of Applied Earth Observation and Geoinformation",
+    "year": 2023,
+    "citationCount": 84,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.jag.2023.103197",
+      "status": "GOLD",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.jag.2023.103197?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.jag.2023.103197, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2202529233",
+        "name": "Xiaoning He"
+      },
+      {
+        "authorId": "30703186",
+        "name": "Shuangcheng Zhang"
+      },
+      {
+        "authorId": "2782594",
+        "name": "Bowei Xue"
+      },
+      {
+        "authorId": "2114775600",
+        "name": "Tong Zhao"
+      },
+      {
+        "authorId": "51248329",
+        "name": "Tong Wu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bb6644a9f5920abfc1fa008f366a9ff48468e063",
+    "externalIds": {
+      "ArXiv": "2212.14427",
+      "DBLP": "journals/corr/abs-2212-14427",
+      "DOI": "10.1109/CVPR52729.2023.01798",
+      "CorpusId": 255340494
+    },
+    "title": "Efficient Movie Scene Detection using State-Space Transformers",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 76,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2212.14427",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2212.14427, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152993083",
+        "name": "Md. Mohaiminul Islam"
+      },
+      {
+        "authorId": "2152302063",
+        "name": "Mahmudul Hasan"
+      },
+      {
+        "authorId": "11137585",
+        "name": "Kishan Athrey"
+      },
+      {
+        "authorId": "3296222",
+        "name": "Tony Braskich"
+      },
+      {
+        "authorId": "3313330",
+        "name": "Gedas Bertasius"
+      }
+    ],
+    "abstract": "The ability to distinguish between different movie scenes is critical for understanding the storyline of a movie. However, accurately detecting movie scenes is often challenging as it requires the ability to reason over very long movie segments. This contrasts with most existing video recognition models, which are typically designed for short-range video analysis. This work proposes a State-Space Transformer model that can efficiently capture dependencies in long movie videos for accurate movie scene detection. Our model, called TranS4mer, is built using a novel S4A building block, combining the strengths of structured state-space sequence (S4) and self-attention (A) layers. Given a sequence of frames divided into movie shots (uninterrupted periods where the camera position does not change), the S4A block first applies self-attention to capture short-range intra-shot dependencies. Afterward, the state-space operation in the S4A block aggregates long-range inter-shot cues. The final TranS4mer model, which can be trained end-to-end, is obtained by stacking the S4A blocks one after the other multiple times. Our proposed TranS4mer outperforms all prior methods in three movie scene detection datasets, including MovieNet, BBC, and OVSD, while being 2× faster and requiring 3× less GPU memory than standard Transformer models. We will release our code and models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "67ec0f167302df251d1888e81a572d94346a520f",
+    "externalIds": {
+      "DOI": "10.1007/s40808-022-01636-8",
+      "CorpusId": 255290871
+    },
+    "title": "Detection and assessment of the spatio-temporal land use/cover change in the Thai Binh province of Vietnam’s Red River delta using remote sensing and GIS",
+    "venue": "Modeling Earth Systems and Environment",
+    "year": 2022,
+    "citationCount": 21,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s40808-022-01636-8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s40808-022-01636-8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2196320767",
+        "name": "B. Thien"
+      },
+      {
+        "authorId": "2264859005",
+        "name": "V. Phuong"
+      },
+      {
+        "authorId": "2141277264",
+        "name": "D. T. Huong"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d6960faf994efb0416251d85b7567e91694ac159",
+    "externalIds": {
+      "DBLP": "conf/geoinformatics/WuLLGL22",
+      "DOI": "10.1109/Geoinformatics57846.2022.9963885",
+      "CorpusId": 254153907
+    },
+    "title": "Landslide Detection Methods Based on Deep Learning in Remote Sensing Images",
+    "venue": "GEOINFORMATICS",
+    "year": 2022,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/Geoinformatics57846.2022.9963885?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/Geoinformatics57846.2022.9963885, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Lei Wu"
+      },
+      {
+        "authorId": "144207288",
+        "name": "R. Liu"
+      },
+      {
+        "authorId": "113475782",
+        "name": "Gulin Li"
+      },
+      {
+        "authorId": "2193067526",
+        "name": "Jingsong Gou"
+      },
+      {
+        "authorId": "2193098725",
+        "name": "Yuzhu Lei"
+      }
+    ],
+    "abstract": "Remote sensing image target detection algorithm based on deep learning has developed rapidly in recent years. Landslide detection and recognition in remote sensing images is an effective means to quickly identify and locate the landslides after disasters, but so far target detection based on deep learning is rarely applied to landslide. In this paper, representative algorithms (Faster R-CNN” YOLOv3, SSD) were selected to process a landslide remote sensing image data set of 2000 orders of magnitude we produced in Pascal VOC 2007 format. The technical advantages and functional characteristics of three different target detection algorithms were discussed and compared. It is experimentally verified that the Faster R-CNN algorithm based on candidate regions has higher detection accuracy, and the two regression-based methods, YOLOv3 and SSD, with faster detection speeds, are more suitable for real-time monitoring and practical production applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "580e16804367b2297d931507667fdd388344f907",
+    "externalIds": {
+      "DBLP": "journals/gsis/BaiWYSCLL23",
+      "DOI": "10.1080/10095020.2022.2085633",
+      "CorpusId": 250238181
+    },
+    "title": "Deep learning for change detection in remote sensing: a review",
+    "venue": "Geo-Spatial Information Science",
+    "year": 2022,
+    "citationCount": 290,
+    "openAccessPdf": {
+      "url": "https://www.tandfonline.com/doi/pdf/10.1080/10095020.2022.2085633?needAccess=true",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1080/10095020.2022.2085633?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/10095020.2022.2085633, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2048701539",
+        "name": "Ting Bai"
+      },
+      {
+        "authorId": "2144668739",
+        "name": "Le Wang"
+      },
+      {
+        "authorId": "31066726",
+        "name": "Dameng Yin"
+      },
+      {
+        "authorId": "3132803",
+        "name": "Kaimin Sun"
+      },
+      {
+        "authorId": "2938103",
+        "name": "Yepei Chen"
+      },
+      {
+        "authorId": "2595527",
+        "name": "Wenzhuo Li"
+      },
+      {
+        "authorId": "2151284925",
+        "name": "D. Li"
+      }
+    ],
+    "abstract": "ABSTRACT A large number of publications have incorporated deep learning in the process of remote sensing change detection. In these Deep Learning Change Detection (DLCD) publications, deep learning methods have demonstrated their superiority over conventional change detection methods. However, the theoretical underpinnings of why deep learning improves the performance of change detection remain unresolved. As of today, few in-depth reviews have investigated the mechanisms of DLCD. Without such a review, five critical questions remain unclear. Does DLCD provide improved information representation for change detection? If so, how? How to select an appropriate DLCD method and why? How much does each type of change benefits from DLCD in terms of its performance? What are the major limitations of existing DLCD methods and what are the prospects for DLCD? To address these five questions, we reviewed according to the following strategies. We grouped the DLCD information assemblages into the four unique dimensions of remote sensing: spectral, spatial, temporal, and multi-sensor. For the extraction of information in each dimension, the difference between DLCD and conventional change detection methods was compared. We proposed a taxonomy of existing DLCD methods by dividing them into two distinctive pools: separate and coupled models. Their advantages, limitations, applicability, and performance were thoroughly investigated and explicitly presented. We examined the variations in performance between DLCD and conventional change detection. We depicted two limitations of DLCD, i.e. training sample and hardware and software dilemmas. Based on these analyses, we identified directions for future developments. As a result of our review, we found that DLCD’s advantages over conventional change detection can be attributed to three factors: improved information representation; improved change detection methods; and performance enhancements. DLCD has to surpass the limitations with regard to training samples and computing infrastructure. We envision this review can boost developments of deep learning in change detection applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f278eaffb6ee792858ecdcb7209986542d018269",
+    "externalIds": {
+      "ArXiv": "2206.11892",
+      "CorpusId": 277643946
+    },
+    "title": "DDPM-CD: Denoising Diffusion Probabilistic Models as Feature Extractors for Change Detection",
+    "venue": "",
+    "year": 2022,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.11892, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151389742",
+        "name": "W. G. C. Bandara"
+      },
+      {
+        "authorId": "2132076159",
+        "name": "Nithin Gopalakrishnan Nair"
+      },
+      {
+        "authorId": "2282191115",
+        "name": "Vishal M. Patel"
+      }
+    ],
+    "abstract": "Remote sensing change detection is crucial for understanding the dynamics of our planet's surface, facilitating the monitoring of environmental changes, evaluating human impact, predicting future trends, and supporting decision-making. In this work, we introduce a novel approach for change detection that can leverage off-the-shelf, unlabeled remote sensing images in the training process by pre-training a Denoising Diffusion Probabilistic Model (DDPM) - a class of generative models used in image synthesis. DDPMs learn the training data distribution by gradually converting training images into a Gaussian distribution using a Markov chain. During inference (i.e., sampling), they can generate a diverse set of samples closer to the training distribution, starting from Gaussian noise, achieving state-of-the-art image synthesis results. However, in this work, our focus is not on image synthesis but on utilizing it as a pre-trained feature extractor for the downstream application of change detection. Specifically, we fine-tune a lightweight change classifier utilizing the feature representations produced by the pre-trained DDPM alongside change labels. Experiments conducted on the LEVIR-CD, WHU-CD, DSIFN-CD, and CDD datasets demonstrate that the proposed DDPM-CD method significantly outperforms the existing state-of-the-art change detection methods in terms of F1 score, IoU, and overall accuracy, highlighting the pivotal role of pre-trained DDPM as a feature extractor for downstream applications. We have made both the code and pre-trained models available at https://github.com/wgcban/ddpm-cd",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "3eec8cb3c4db5932741ce0df8ae34412987f11cd",
+    "externalIds": {
+      "ArXiv": "2205.13769",
+      "DBLP": "journals/corr/abs-2205-13769",
+      "DOI": "10.1109/TGRS.2022.3203769",
+      "CorpusId": 249151913
+    },
+    "title": "Semantic-Aware Dense Representation Learning for Remote Sensing Image Change Detection",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2022,
+    "citationCount": 50,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.13769",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.13769, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "2108694763",
+        "name": "Wenyuan Li"
+      },
+      {
+        "authorId": "2154733396",
+        "name": "Songhang Chen"
+      },
+      {
+        "authorId": "1741174",
+        "name": "Zhenwei Shi"
+      }
+    ],
+    "abstract": "Supervised deep learning models depend on massive labeled data. Unfortunately, it is time-consuming and labor-intensive to collect and annotate bitemporal samples containing desired changes. Transfer learning from pretrained models is effective to alleviate label insufficiency in remote sensing (RS) change detection (CD). We explore the use of semantic information during pretraining. Different from traditional supervised pretraining that learns the mapping from image to label, we incorporate semantic supervision into the self-supervised learning (SSL) framework. Typically, multiple objects of interest (e.g., buildings) are distributed in various locations in an uncurated RS image. Instead of manipulating image-level representations via global pooling, we introduce point-level supervision on per-pixel embeddings to learn spatially sensitive features, thus benefiting downstream dense CD. To achieve this, we obtain multiple points via class-balanced sampling on the overlapped area between views using the semantic mask. We learn an embedding space where background and foreground points are pushed apart, and spatially aligned points across views are pulled together. Our intuition is the resulting semantically discriminative representations invariant to irrelevant changes (illumination and unconcerned land covers) may help change recognition. We collect large-scale image-mask pairs freely available in the RS community for pretraining. Extensive experiments on three CD datasets verify the effectiveness of our method. Ours significantly outperforms ImageNet pretraining, in-domain supervision, and several SSL methods. Empirical results indicate our pretraining improves the generalization and data efficiency of the CD model. Notably, we achieve competitive results using 20% training data than baseline (random initialization) using 100% data. Our code is available at https://github.com/justchenhao/SaDL_CD.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "073c170455222c052d20609f4b6d9b9c37bd0444",
+    "externalIds": {
+      "DOI": "10.1080/02723646.2022.2026075",
+      "CorpusId": 245895202
+    },
+    "title": "Change detection of Jamuna River and its impact on the local settlements",
+    "venue": "Physical geography",
+    "year": 2022,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "https://www.tandfonline.com/doi/pdf/10.1080/02723646.2022.2026075?needAccess=true",
+      "status": "HYBRID",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1080/02723646.2022.2026075?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/02723646.2022.2026075, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "27144370",
+        "name": "Md Ariful Haque"
+      },
+      {
+        "authorId": "12250248",
+        "name": "Sharmin Shishir"
+      },
+      {
+        "authorId": "1403162854",
+        "name": "Anannya Mazumder"
+      },
+      {
+        "authorId": "118221116",
+        "name": "M. Iqbal"
+      }
+    ],
+    "abstract": "ABSTRACT Spatio-temporal change detection analysis of Jamuna River using low and medium-resolution satellite data between the years of 1972 and 2013 are dynamic to assess river spatio-temporal changes and their impacts on the local settlements over the specific time. This study employs remote sensing and geographic information system (GIS) proficiencies to identify the river bank shifting, erosion, and depositional features along with the population displacement. The satellite image of LANDSAT multispectral (MSS), thematic mapper (TM), and operational land imager (OLI) and thermal infrared sensor (TIRS) were used in this study. Supervised and unsupervised classification techniques have been used to identify land cover types and detect the changes using ArcGIS Pro 2.3.2. Supervised classifications performed well by validating ≥90% overall accuracy. The result shows total erosion was 3356 ha from 1972 to 2013, while the deposition was 5342 ha. Erosion and deposition cause the bank line shifting, river widening, and settlement displacement. Hundreds of displaced people suffered from loss of land, livelihood, increased poverty, food insecurity, lack of sanitation, and drinking water facilities. Thus, this study will be earnest in assisting the environmental management and associated planning including necessary measures.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ef3b15260a610473c95662f5df2c195ac19f64d6",
+    "externalIds": {
+      "ArXiv": "2201.01293",
+      "DBLP": "journals/corr/abs-2201-01293",
+      "DOI": "10.1109/IGARSS46834.2022.9883686",
+      "CorpusId": 245668909
+    },
+    "title": "A Transformer-Based Siamese Network for Change Detection",
+    "venue": "IEEE International Geoscience and Remote Sensing Symposium",
+    "year": 2022,
+    "citationCount": 929,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2201.01293",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.01293, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "151389742",
+        "name": "W. G. C. Bandara"
+      },
+      {
+        "authorId": "1741177",
+        "name": "Vishal M. Patel"
+      }
+    ],
+    "abstract": "This paper presents a transformer-based Siamese network architecture (abbreviated by ChangeFormer) for Change Detection (CD) from a pair of co-registered remote sensing images. Different from recent CD frameworks, which are based on fully convolutional networks (ConvNets), the proposed method unifies hierarchically structured transformer encoder with Multi-Layer Perception (MLP) decoder in a Siamese network architecture to efficiently render multi-scale long-range details required for accurate CD. Experiments on two CD datasets show that the proposed end-to-end trainable ChangeFormer architecture achieves better CD performance than previous counterparts. Our code and pre-trained models are available at github.com/wgcban/ChangeFormer.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "ac2618b2ce5cdcf86f9371bcca98bc5e37e46f51",
+    "externalIds": {
+      "DBLP": "conf/iclr/GuGR22",
+      "ArXiv": "2111.00396",
+      "CorpusId": 240354066
+    },
+    "title": "Efficiently Modeling Long Sequences with Structured State Spaces",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 3413,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.00396, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39499001",
+        "name": "Albert Gu"
+      },
+      {
+        "authorId": "1822288",
+        "name": "Karan Goel"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "A central goal of sequence modeling is designing a single principled model that can address sequence data across a range of modalities and tasks, particularly on long-range dependencies. Although conventional models including RNNs, CNNs, and Transformers have specialized variants for capturing long dependencies, they still struggle to scale to very long sequences of $10000$ or more steps. A promising recent approach proposed modeling sequences by simulating the fundamental state space model (SSM) \\( x'(t) = Ax(t) + Bu(t), y(t) = Cx(t) + Du(t) \\), and showed that for appropriate choices of the state matrix \\( A \\), this system could handle long-range dependencies mathematically and empirically. However, this method has prohibitive computation and memory requirements, rendering it infeasible as a general sequence modeling solution. We propose the Structured State Space sequence model (S4) based on a new parameterization for the SSM, and show that it can be computed much more efficiently than prior approaches while preserving their theoretical strengths. Our technique involves conditioning \\( A \\) with a low-rank correction, allowing it to be diagonalized stably and reducing the SSM to the well-studied computation of a Cauchy kernel. S4 achieves strong empirical results across a diverse range of established benchmarks, including (i) 91\\% accuracy on sequential CIFAR-10 with no data augmentation or auxiliary losses, on par with a larger 2-D ResNet, (ii) substantially closing the gap to Transformers on image and language modeling tasks, while performing generation $60\\times$ faster (iii) SoTA on every task from the Long Range Arena benchmark, including solving the challenging Path-X task of length 16k that all prior work fails on, while being as efficient as all competitors.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ca9047c78d48b606c4e4f0c456b1dda550de28b2",
+    "externalIds": {
+      "DBLP": "conf/nips/GuJGSDRR21",
+      "ArXiv": "2110.13985",
+      "CorpusId": 239998472
+    },
+    "title": "Combining Recurrent, Convolutional, and Continuous-time Models with Linear State-Space Layers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1091,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.13985, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39499001",
+        "name": "Albert Gu"
+      },
+      {
+        "authorId": "2135397895",
+        "name": "Isys Johnson"
+      },
+      {
+        "authorId": "1822288",
+        "name": "Karan Goel"
+      },
+      {
+        "authorId": "145345923",
+        "name": "Khaled Kamal Saab"
+      },
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      },
+      {
+        "authorId": "1755572",
+        "name": "A. Rudra"
+      },
+      {
+        "authorId": "2061444681",
+        "name": "Christopher R'e"
+      }
+    ],
+    "abstract": "Recurrent neural networks (RNNs), temporal convolutions, and neural differential equations (NDEs) are popular families of deep learning models for time-series data, each with unique strengths and tradeoffs in modeling power and computational efficiency. We introduce a simple sequence model inspired by control systems that generalizes these approaches while addressing their shortcomings. The Linear State-Space Layer (LSSL) maps a sequence $u \\mapsto y$ by simply simulating a linear continuous-time state-space representation $\\dot{x} = Ax + Bu, y = Cx + Du$. Theoretically, we show that LSSL models are closely related to the three aforementioned families of models and inherit their strengths. For example, they generalize convolutions to continuous-time, explain common RNN heuristics, and share features of NDEs such as time-scale adaptation. We then incorporate and generalize recent theory on continuous-time memorization to introduce a trainable subset of structured matrices $A$ that endow LSSLs with long-range memory. Empirically, stacking LSSL layers into a simple deep neural network obtains state-of-the-art results across time series benchmarks for long dependencies in sequential image classification, real-world healthcare regression tasks, and speech. On a difficult speech classification task with length-16000 sequences, LSSL outperforms prior approaches by 24 accuracy points, and even outperforms baselines that use hand-crafted features on 100x shorter sequences.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a7e46195cede1fe9720ad80fc493accbe3bf1d83",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-00120",
+      "ArXiv": "2109.00120",
+      "DOI": "10.1109/LGRS.2021.3109345",
+      "CorpusId": 237374328
+    },
+    "title": "Contrastive Multiview Coding With Electro-Optics for SAR Semantic Segmentation",
+    "venue": "IEEE Geoscience and Remote Sensing Letters",
+    "year": 2021,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2109.00120",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.00120, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "32665890",
+        "name": "Keumgang Cha"
+      },
+      {
+        "authorId": "11027268",
+        "name": "Junghoon Seo"
+      },
+      {
+        "authorId": "2111165172",
+        "name": "Yeji Choi"
+      }
+    ],
+    "abstract": "In the training of deep learning models, how the model parameters are initialized greatly affects the model performance, sample efficiency, and convergence speed. Recently, representation learning for model initialization has been actively studied in the remote sensing field. In particular, the appearance characteristics of the imagery obtained using the synthetic aperture radar (SAR) sensor are quite different from those of general electro-optical (EO) images, and thus, representation learning is even more important in remote sensing domain. Motivated from contrastive multiview coding, we propose multimodal representation learning for SAR semantic segmentation. Unlike previous studies, our method jointly uses EO imagery, SAR imagery, and a label mask. Several experiments show that our approach is superior to the existing methods in model performance, sample efficiency, and convergence speed.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "631164d699078895e6b2c20ea51e7521fb695471",
+    "externalIds": {
+      "ArXiv": "2103.16607",
+      "DBLP": "journals/corr/abs-2103-16607",
+      "DOI": "10.1109/ICCV48922.2021.00928",
+      "CorpusId": 232428323
+    },
+    "title": "Seasonal Contrast: Unsupervised Pre-Training from Uncurated Remote Sensing Data",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 357,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.16607",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.16607, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1796269096",
+        "name": "Oscar Mañas"
+      },
+      {
+        "authorId": "8651990",
+        "name": "Alexandre Lacoste"
+      },
+      {
+        "authorId": "1398090762",
+        "name": "Xavier Giró-i-Nieto"
+      },
+      {
+        "authorId": "2064388326",
+        "name": "David Vázquez"
+      },
+      {
+        "authorId": "117849477",
+        "name": "Pau Rodríguez López"
+      }
+    ],
+    "abstract": "Remote sensing and automatic earth monitoring are key to solve global-scale challenges such as disaster prevention, land use monitoring, or tackling climate change. Although there exist vast amounts of remote sensing data, most of it remains unlabeled and thus inaccessible for supervised learning algorithms. Transfer learning approaches can reduce the data requirements of deep learning algorithms. However, most of these methods are pre-trained on ImageNet and their generalization to remote sensing imagery is not guaranteed due to the domain gap. In this work, we propose Seasonal Contrast (SeCo), an effective pipeline to leverage unlabeled data for in-domain pre-training of remote sensing representations. The SeCo pipeline is composed of two parts. First, a principled procedure to gather large-scale, unlabeled and uncurated remote sensing datasets containing images from multiple Earth locations at different timestamps. Second, a self-supervised algorithm that takes advantage of time and position invariance to learn transferable representations for remote sensing applications. We empirically show that models trained with SeCo achieve better performance than their ImageNet pre-trained counterparts and state-of-the-art self-supervised learning methods on multiple downstream tasks. The datasets and models in SeCo will be made public to facilitate transfer learning and enable rapid progress in remote sensing applications.1",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "561377c8e51bb864a1a689d830fab2f0881ae78e",
+    "externalIds": {
+      "ArXiv": "2103.00208",
+      "DBLP": "journals/tgrs/ChenQS22",
+      "DOI": "10.1109/TGRS.2021.3095166",
+      "CorpusId": 235795300
+    },
+    "title": "Remote Sensing Image Change Detection With Transformers",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2021,
+    "citationCount": 1471,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.00208",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.00208, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "2072539630",
+        "name": "Zipeng Qi"
+      },
+      {
+        "authorId": "1741174",
+        "name": "Zhenwei Shi"
+      }
+    ],
+    "abstract": "Modern change detection (CD) has achieved remarkable success by the powerful discriminative ability of deep convolutions. However, high-resolution remote sensing CD remains challenging due to the complexity of objects in the scene. Objects with the same semantic concept may show distinct spectral characteristics at different times and spatial locations. Most recent CD pipelines using pure convolutions are still struggling to relate long-range concepts in space-time. Nonlocal self-attention approaches show promising performance via modeling dense relationships among pixels, yet are computationally inefficient. Here, we propose a bitemporal image transformer (BIT) to efficiently and effectively model contexts within the spatial-temporal domain. Our intuition is that the high-level concepts of the change of interest can be represented by a few visual words, that is, semantic tokens. To achieve this, we express the bitemporal image into a few tokens and use a transformer encoder to model contexts in the compact token-based space-time. The learned context-rich tokens are then fed back to the pixel-space for refining the original features via a transformer decoder. We incorporate BIT in a deep feature differencing-based CD framework. Extensive experiments on three CD datasets demonstrate the effectiveness and efficiency of the proposed method. Notably, our BIT-based model significantly outperforms the purely convolutional baseline using only three times lower computational costs and model parameters. Based on a naive backbone (ResNet18) without sophisticated structures (e.g., feature pyramid network (FPN) and UNet), our model surpasses several state-of-the-art CD methods, including better than four recent attention-based methods in terms of efficiency and accuracy. Our code is available at https://github.com/justchenhao/BIT_CD.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "de18baa4964804cf471d85a5a090498242d2e79f",
+    "externalIds": {
+      "ArXiv": "2102.09672",
+      "DBLP": "conf/icml/NicholD21",
+      "CorpusId": 231979499
+    },
+    "title": "Improved Denoising Diffusion Probabilistic Models",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 5195,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.09672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38967461",
+        "name": "Alex Nichol"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      }
+    ],
+    "abstract": "Denoising diffusion probabilistic models (DDPM) are a class of generative models which have recently been shown to produce excellent samples. We show that with a few simple modifications, DDPMs can also achieve competitive log-likelihoods while maintaining high sample quality. Additionally, we find that learning variances of the reverse diffusion process allows sampling with an order of magnitude fewer forward passes with a negligible difference in sample quality, which is important for the practical deployment of these models. We additionally use precision and recall to compare how well DDPMs and GANs cover the target distribution. Finally, we show that the sample quality and likelihood of these models scale smoothly with model capacity and training compute, making them easily scalable. We release our code at https://github.com/openai/improved-diffusion",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3db31580f60e7277988129cee3df16097f4d5d6b",
+    "externalIds": {
+      "MAG": "3130754787",
+      "DBLP": "journals/lgrs/FangLSL22",
+      "DOI": "10.1109/LGRS.2021.3056416",
+      "CorpusId": 233967703
+    },
+    "title": "SNUNet-CD: A Densely Connected Siamese Network for Change Detection of VHR Images",
+    "venue": "IEEE Geoscience and Remote Sensing Letters",
+    "year": 2021,
+    "citationCount": 1099,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/LGRS.2021.3056416?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/LGRS.2021.3056416, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1996483478",
+        "name": "Sheng Fang"
+      },
+      {
+        "authorId": "2158258846",
+        "name": "Kaiyu Li"
+      },
+      {
+        "authorId": "11865890",
+        "name": "J. Shao"
+      },
+      {
+        "authorId": "2109738070",
+        "name": "Zhe Li"
+      }
+    ],
+    "abstract": "Change detection is an important task in remote sensing (RS) image analysis. It is widely used in natural disaster monitoring and assessment, land resource planning, and other fields. As a pixel-to-pixel prediction task, change detection is sensitive about the utilization of the original position information. Recent change detection methods always focus on the extraction of deep change semantic feature, but ignore the importance of shallow-layer information containing high-resolution and fine-grained features, this often leads to the uncertainty of the pixels at the edge of the changed target and the determination miss of small targets. In this letter, we propose a densely connected siamese network for change detection, namely SNUNet-CD (the combination of Siamese network and NestedUNet). SNUNet-CD alleviates the loss of localization information in the deep layers of neural network through compact information transmission between encoder and decoder, and between decoder and decoder. In addition, Ensemble Channel Attention Module (ECAM) is proposed for deep supervision. Through ECAM, the most representative features of different semantic levels can be refined and used for the final classification. Experimental results show that our method improves greatly on many evaluation criteria and has a better tradeoff between accuracy and calculation amount than other state-of-the-art (SOTA) change detection methods.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "6f92dcefc5f6b4346f619ae7546a8bd2d6decade",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2011-09157",
+      "MAG": "3106528393",
+      "ArXiv": "2011.09157",
+      "DOI": "10.1109/CVPR46437.2021.00304",
+      "CorpusId": 227012687
+    },
+    "title": "Dense Contrastive Learning for Self-Supervised Visual Pre-Training",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 812,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2011.09157",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.09157, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1875266191",
+        "name": "Xinlong Wang"
+      },
+      {
+        "authorId": "1807746211",
+        "name": "Rufeng Zhang"
+      },
+      {
+        "authorId": "12459603",
+        "name": "Chunhua Shen"
+      },
+      {
+        "authorId": "145868988",
+        "name": "Tao Kong"
+      },
+      {
+        "authorId": "143900005",
+        "name": "Lei Li"
+      }
+    ],
+    "abstract": "To date, most existing self-supervised learning methods are designed and optimized for image classification. These pre-trained models can be sub-optimal for dense prediction tasks due to the discrepancy between image-level prediction and pixel-level prediction. To fill this gap, we aim to design an effective, dense self-supervised learning method that directly works at the level of pixels (or local features) by taking into account the correspondence between local features. We present dense contrastive learning (DenseCL), which implements self-supervised learning by optimizing a pairwise contrastive (dis)similarity loss at the pixel level between two views of input images.Compared to the baseline method MoCo-v2, our method introduces negligible computation overhead (only <1% slower), but demonstrates consistently superior performance when transferring to downstream dense prediction tasks including object detection, semantic segmentation and instance segmentation; and outperforms the state-of-the-art methods by a large margin. Specifically, over the strong MoCo-v2 baseline, our method achieves significant improvements of 2.0% AP on PASCAL VOC object detection, 1.1% AP on COCO object detection, 0.9% AP on COCO instance segmentation, 3.0% mIoU on PASCAL VOC semantic segmentation and 1.8% mIoU on Cityscapes semantic segmentation.Code and models are available at: https://git.io/DenseCL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+    "externalIds": {
+      "ArXiv": "2010.11929",
+      "MAG": "3119786062",
+      "DBLP": "conf/iclr/DosovitskiyB0WZ21",
+      "CorpusId": 225039882
+    },
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 61138,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841331",
+        "name": "Alexey Dosovitskiy"
+      },
+      {
+        "authorId": "39611591",
+        "name": "Lucas Beyer"
+      },
+      {
+        "authorId": "144629422",
+        "name": "Alexander Kolesnikov"
+      },
+      {
+        "authorId": "3319373",
+        "name": "Dirk Weissenborn"
+      },
+      {
+        "authorId": "2743563",
+        "name": "Xiaohua Zhai"
+      },
+      {
+        "authorId": "2465270",
+        "name": "Thomas Unterthiner"
+      },
+      {
+        "authorId": "2274215058",
+        "name": "Mostafa Dehghani"
+      },
+      {
+        "authorId": "46352821",
+        "name": "M. Minderer"
+      },
+      {
+        "authorId": "2280399",
+        "name": "G. Heigold"
+      },
+      {
+        "authorId": "1802148",
+        "name": "S. Gelly"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer vision remain limited. In vision, attention is either applied in conjunction with convolutional networks, or used to replace certain components of convolutional networks while keeping their overall structure in place. We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks. When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f4e61d31666087d850a9f45f187254366d0a6419",
+    "externalIds": {
+      "MAG": "3036453075",
+      "DOI": "10.1016/j.isprsjprs.2020.06.003",
+      "CorpusId": 225504855
+    },
+    "title": "A deeply supervised image fusion network for change detection in high resolution bi-temporal remote sensing images",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 1078,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.isprsjprs.2020.06.003?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.isprsjprs.2020.06.003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3037945",
+        "name": "Chenxiao Zhang"
+      },
+      {
+        "authorId": "49202884",
+        "name": "P. Yue"
+      },
+      {
+        "authorId": "2085598",
+        "name": "D. Tapete"
+      },
+      {
+        "authorId": "2978339",
+        "name": "Liangcun Jiang"
+      },
+      {
+        "authorId": "31352449",
+        "name": "Boyi Shangguan"
+      },
+      {
+        "authorId": "2143701455",
+        "name": "Li Huang"
+      },
+      {
+        "authorId": "2152757673",
+        "name": "Guangchao Liu"
+      }
+    ],
+    "abstract": "Abstract Change detection in high resolution remote sensing images is crucial to the understanding of land surface changes. As traditional change detection methods are not suitable for the task considering the challenges brought by the fine image details and complex texture features conveyed in high resolution images, a number of deep learning-based change detection methods have been proposed to improve the change detection performance. Although the state-of-the-art deep feature based methods outperform all the other deep learning-based change detection methods, networks in the existing deep feature based methods are mostly modified from architectures that are originally proposed for single-image semantic segmentation. Transferring these networks for change detection task still poses some key issues. In this paper, we propose a deeply supervised image fusion network (IFN) for change detection in high resolution bi-temporal remote sensing images. Specifically, highly representative deep features of bi-temporal images are firstly extracted through a fully convolutional two-stream architecture. Then, the extracted deep features are fed into a deeply supervised difference discrimination network (DDN) for change detection. To improve boundary completeness and internal compactness of objects in the output change maps, multi-level deep features of raw images are fused with image difference features by means of attention modules for change map reconstruction. DDN is further enhanced by directly introducing change map losses to intermediate layers in the network, and the whole network is trained in an end-to-end manner. IFN is applied to a publicly available dataset, as well as a challenging dataset consisting of multi-source bi-temporal images from Google Earth covering different cities in China. Both visual interpretation and quantitative assessment confirm that IFN outperforms four benchmark methods derived from the literature, by returning changed areas with complete boundaries and high internal compactness compared to the state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29723,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "65220c1f731aa091febdad76f378bba44a588530",
+    "externalIds": {
+      "DBLP": "journals/access/KhelifiM20",
+      "MAG": "3037640242",
+      "ArXiv": "2006.05612",
+      "DOI": "10.1109/ACCESS.2020.3008036",
+      "CorpusId": 219558666
+    },
+    "title": "Deep Learning for Change Detection in Remote Sensing Images: Comprehensive Review and Meta-Analysis",
+    "venue": "IEEE Access",
+    "year": 2020,
+    "citationCount": 335,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/6287639/8948470/09136674.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.05612, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7242095",
+        "name": "Lazhar Khelifi"
+      },
+      {
+        "authorId": "1996026",
+        "name": "M. Mignotte"
+      }
+    ],
+    "abstract": "Deep learning (DL) algorithms are considered as a methodology of choice for remote-sensing image analysis over the past few years. Due to its effective applications, deep learning has also been introduced for automatic change detection and achieved great success. The present study attempts to provide a comprehensive review and a meta-analysis of the recent progress in this subfield. Specifically, we first introduce the fundamentals of deep learning methods which are frequently adopted for change detection. Secondly, we present the details of the meta-analysis conducted to examine the status of change detection DL studies. Then, we focus on deep learning-based change detection methodologies for remote sensing images by giving a general overview of the existing methods. Specifically, these deep learning-based methods were classified into three groups; fully supervised learning-based methods, fully unsupervised learning-based methods and transfer learning-based techniques. As a result of these investigations, promising new directions were identified for future research. This study will contribute in several ways to our understanding of deep learning for change detection and will provide a basis for further research. Some source codes of the methods discussed in this paper are available from: https://github.com/lazharkhelifi/deeplearning_changedetection_remotesensing_review.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2778c4820d364ab8d0e28166de7a0045b1e8dc2f",
+    "externalIds": {
+      "MAG": "3027225766",
+      "DBLP": "journals/remotesensing/ChenS20",
+      "DOI": "10.3390/rs12101662",
+      "CorpusId": 219512939
+    },
+    "title": "A Spatial-Temporal Attention-Based Method and a New Dataset for Remote Sensing Image Change Detection",
+    "venue": "Remote Sensing",
+    "year": 2020,
+    "citationCount": 1720,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2072-4292/12/10/1662/pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/rs12101662?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/rs12101662, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "1741174",
+        "name": "Zhenwei Shi"
+      }
+    ],
+    "abstract": "Remote sensing image change detection (CD) is done to identify desired significant changes between bitemporal images. Given two co-registered images taken at different times, the illumination variations and misregistration errors overwhelm the real object changes. Exploring the relationships among different spatial–temporal pixels may improve the performances of CD methods. In our work, we propose a novel Siamese-based spatial–temporal attention neural network. In contrast to previous methods that separately encode the bitemporal images without referring to any useful spatial–temporal dependency, we design a CD self-attention mechanism to model the spatial–temporal relationships. We integrate a new CD self-attention module in the procedure of feature extraction. Our self-attention module calculates the attention weights between any two pixels at different times and positions and uses them to generate more discriminative features. Considering that the object may have different scales, we partition the image into multi-scale subregions and introduce the self-attention in each subregion. In this way, we could capture spatial–temporal dependencies at various scales, thereby generating better representations to accommodate objects of various sizes. We also introduce a CD dataset LEVIR-CD, which is two orders of magnitude larger than other public datasets of this field. LEVIR-CD consists of a large set of bitemporal Google Earth images, with 637 image pairs (1024 × 1024) and over 31 k independently labeled change instances. Our proposed attention module improves the F1-score of our baseline model from 83.9 to 87.3 with acceptable computational overhead. Experimental results on a public remote sensing image CD dataset show our method outperforms several other state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7af72a461ed7cda180e7eab878efd5f35d79bbf4",
+    "externalIds": {
+      "DBLP": "conf/icml/ChenK0H20",
+      "MAG": "3034978746",
+      "ArXiv": "2002.05709",
+      "CorpusId": 211096730
+    },
+    "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+    "venue": "International Conference on Machine Learning",
+    "year": 2020,
+    "citationCount": 23916,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2002.05709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145358498",
+        "name": "Ting Chen"
+      },
+      {
+        "authorId": "40464924",
+        "name": "Simon Kornblith"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": "This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed contrastive self-supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by SimCLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of-the-art, matching the performance of a supervised ResNet-50. When fine-tuned on only 1% of the labels, we achieve 85.8% top-5 accuracy, outperforming AlexNet with 100X fewer labels.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "651575dfbf03f27195c73d5a86bfad0d23e7cb8d",
+    "externalIds": {
+      "MAG": "3001269017",
+      "DOI": "10.1029/2019WR025812",
+      "CorpusId": 213679787
+    },
+    "title": "Consumption Change Detection for Urban Planning: Monitoring and Segmenting Water Customers During Drought",
+    "venue": "Water Resources Research",
+    "year": 2019,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1029/2019WR025812?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1029/2019WR025812, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40907096",
+        "name": "Jose Bolorinos"
+      },
+      {
+        "authorId": "5051966",
+        "name": "N. Ajami"
+      },
+      {
+        "authorId": "2515457",
+        "name": "R. Rajagopal"
+      }
+    ],
+    "abstract": "Demand management is a powerful way for water utilities to address the challenges of population growth and climate change. Although active conservation efforts have been studied extensively, recent evidence suggests households respond to many external events beyond a utility's control, including political responses to extreme climatic episodes and corresponding mass media coverage. Despite their importance, these external factors are difficult to analyze in a controlled setting, and few tools exist to evaluate their influence on customers. Here, we present a consumption change detection (CCD) method that offers new insights into how climate‐related mass media and policy events affect conservation by pinpointing the timing and magnitude of customer‐level water use shifts. We use CCD to monitor and segment the responses of residential water customers to policy and media events in Costa Mesa, California, during the severe 2012–2016 drought. Our results show consumption reductions among 75% of customers. Of these, 80% reduced water use before mandatory restrictions were imposed, coincident with intensifying state policy responses and spikes in media coverage that affected all customer types during 2014. Analysis of standardized drought consumption trajectories indicates that 16% of conserving customers increased consumption in 2015–2016. Conservation and rebound were both more likely among affluent and educated customers, suggesting that CCD can identify engaged and informed water savers who make suitable targets for water‐efficient retrofit incentive schemes. This study demonstrates CCD's potential as a novel demand analysis tool in an interconnected world where external social, political, and climatic stressors can exert an important influence on customer behavior.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e8b251a42bd5a542793adef1fd9071122c5d03ff",
+    "externalIds": {
+      "MAG": "2974281242",
+      "ArXiv": "1909.07726",
+      "DBLP": "journals/corr/abs-1909-07726",
+      "DOI": "10.1109/LGRS.2020.2988032",
+      "CorpusId": 202583748
+    },
+    "title": "Building Change Detection for Remote Sensing Images Using a Dual-Task Constrained Deep Siamese Convolutional Network Model",
+    "venue": "IEEE Geoscience and Remote Sensing Letters",
+    "year": 2019,
+    "citationCount": 593,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1909.07726",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.07726, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153630197",
+        "name": "Yi Liu"
+      },
+      {
+        "authorId": "2081381244",
+        "name": "Chao Pang"
+      },
+      {
+        "authorId": "9877905",
+        "name": "Z. Zhan"
+      },
+      {
+        "authorId": "1491631998",
+        "name": "Xiaomeng Zhang"
+      },
+      {
+        "authorId": "2145181018",
+        "name": "Xue Yang"
+      }
+    ],
+    "abstract": "In recent years, building change detection methods have made great progress by introducing deep learning, but they still suffer from the problem of the extracted features not being discriminative enough, resulting in incomplete regions and irregular boundaries. To tackle this problem, we propose a dual-task constrained deep Siamese convolutional network (DTCDSCN) model, which contains three subnetworks: a change detection network and two semantic segmentation networks. DTCDSCN can accomplish both change detection and semantic segmentation at the same time, which can help to learn more discriminative object-level features and obtain a complete change detection map. Furthermore, we introduce a dual attention module (DAM) to exploit the interdependencies between channels and spatial positions, which improves the feature representation. We also improve the focal loss function to suppress the sample imbalance problem. The experimental results obtained with the WHU building data set show that the proposed method is effective for building change detection and achieves state-of-the-art performance in terms of four metrics on the WHU building data set: precision, recall, F1-score, and intersection over union.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "1f705d94aca693be925bbd70f5a650e8f4912e3e",
+    "externalIds": {
+      "MAG": "2968065858",
+      "DBLP": "journals/corr/abs-1909-05948",
+      "ArXiv": "1909.05948",
+      "DOI": "10.1109/TGRS.2019.2930348",
+      "CorpusId": 202125403
+    },
+    "title": "Unsupervised Image Regression for Heterogeneous Change Detection",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2019,
+    "citationCount": 134,
+    "openAccessPdf": {
+      "url": "https://munin.uit.no/bitstream/10037/17764/4/article19.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.05948, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "114716339",
+        "name": "L. Luppino"
+      },
+      {
+        "authorId": "14553624",
+        "name": "F. Bianchi"
+      },
+      {
+        "authorId": "144634327",
+        "name": "G. Moser"
+      },
+      {
+        "authorId": "2749071",
+        "name": "S. N. Anfinsen"
+      }
+    ],
+    "abstract": "Change detection (CD) in heterogeneous multitemporal satellite images is an emerging and challenging topic in remote sensing. In particular, one of the main challenges is to tackle the problem in an unsupervised manner. In this paper, we propose an unsupervised framework for bitemporal heterogeneous CD based on the comparison of affinity matrices and image regression. First, our method quantifies the similarity of affinity matrices computed from colocated image patches in the two images. This is done to automatically identify pixels that are likely to be unchanged. With the identified pixels as pseudotraining data, we learn a transformation to map the first image to the domain of the other image and vice versa. Four regression methods are selected to carry out the transformation: Gaussian process regression, support vector regression, random forest regression (RFR), and a recently proposed kernel regression method called homogeneous pixel transformation. To evaluate the potentials and limitations of our framework and also the benefits and disadvantages of each regression method, we perform experiments on two real data sets. The results indicate that the comparison of the affinity matrices can already be considered a CD method by itself. However, image regression is shown to improve the results obtained by the previous step alone and produces accurate CD maps despite of the heterogeneity of the multitemporal input data. Notably, the RFR approach excels by achieving similar accuracy as the other methods, but with a significantly lower computational cost and with fast and robust tuning of hyperparameters.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2edbfa9d1625de60394acbabb52fadb77da47e29",
+    "externalIds": {
+      "DOI": "10.5749/j.ctv6hp332.5",
+      "CorpusId": 242254908
+    },
+    "title": "Sensing",
+    "venue": "Aspects of Truth",
+    "year": 2019,
+    "citationCount": 362,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5749/j.ctv6hp332.5?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5749/j.ctv6hp332.5, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "16224195",
+        "name": "Carrie R. Rich"
+      },
+      {
+        "authorId": "147626616",
+        "name": "Mark Vernooij"
+      },
+      {
+        "authorId": "116337573",
+        "name": "S. Wadhwa"
+      }
+    ],
+    "abstract": "The most interesting sensing mode represents the pressure resistive sensor. The sensor consists of two fabrics with an array of metallic conductive parallel stripes as electrodes and a third fabric as semi-conductive intermediate layer (see graphic). As the sensor area is pressed, the resistance decreases (see graphic). The resistance-pressure relationship is predictable and repeatable and resistance is insensitive to other physical variables. The fabric pressure sensor shows sensor function properties having by far the most sensitive structure in the response. DOWNLOADS",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5fed00d37177c86d5ca752465e249f9115c5e623",
+    "externalIds": {
+      "MAG": "2892059457",
+      "DBLP": "journals/tgrs/WanLLDY19",
+      "DOI": "10.1109/TGRS.2018.2865961",
+      "CorpusId": 67873257
+    },
+    "title": "An Illumination-Invariant Change Detection Method Based on Disparity Saliency Map for Multitemporal Optical Remotely Sensed Images",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2019,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2018.2865961?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2018.2865961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144908441",
+        "name": "Xue Wan"
+      },
+      {
+        "authorId": "2119611558",
+        "name": "Jianguo Liu"
+      },
+      {
+        "authorId": "30252428",
+        "name": "Shengyang Li"
+      },
+      {
+        "authorId": "2070443781",
+        "name": "J. Dawson"
+      },
+      {
+        "authorId": "34753671",
+        "name": "Hongshi Yan"
+      }
+    ],
+    "abstract": "Multitemporal airborne and satellite imagery data with frequent repeat coverage provide great capability for change detection (CD). When comparing two images taken at different times of day or in different seasons for CD, the variation of topographic shades and shadows caused by the change of sunlight angle can be so significant that it overwhelms the real object and environmental changes, making automatic detection unreliable. An effective CD algorithm, therefore, has to be robust to the illumination variation. In this paper, the robustness of phase correlation (PC) to shadow effects is proven via mathematical analysis, and then, an illumination-invariant change detection (IICD) metric is proposed based on pixel-wise dense PC matching. In the proposed IICD method, a graph-based visual saliency map is introduced for the initial CD followed by an active contour-based segmentation to precisely quantize the change region. Compared to the state-of-the-art CD algorithms, experiments using daily images of a landscape model and Landsat satellite images demonstrate that only the proposed method can effectively detect and precisely segment appearance changes under daily and seasonal sunlight changes.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ee5b593ff2186d75592d7b97a86de430892cf0cd",
+    "externalIds": {
+      "MAG": "2914055297",
+      "DOI": "10.1080/1206212X.2019.1578068",
+      "CorpusId": 86770212
+    },
+    "title": "Land use and land cover change detection by using principal component analysis and morphological operations in remote sensing applications",
+    "venue": "International Journal of Computer Applications",
+    "year": 2019,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1080/1206212X.2019.1578068?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/1206212X.2019.1578068, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2377118809",
+        "name": "M. Dharani"
+      },
+      {
+        "authorId": "48671611",
+        "name": "G. Sreenivasulu"
+      }
+    ],
+    "abstract": "In remote sensing, the land use and land cover (LULC) play a vital role in analyzing Earth information for human development. These objects of change detections are helpful for finding the increased or decreased areas due to limitations of Landsat panchromatic images (gray scale) are not appearing identification of land object areas. To overcome this problem, multispectral bands are applied to individual channels by using principal component analysis (PCA) and morphological operations. Classification can then be performed for the identification of objects. This study focused on separating forests, land, and the vegetation area, including areas under crops and urban development. Regions of localized change in a multitemporal data set were enhanced using dimensional reduction and edge sharp techniques on a simple data set. This technique is feasible for extracting LULC information through remote sensing applications. The performance of the proposed method is superior to that of conventional methods, such as PCA, the normalized difference vegetation index (NDVI) method, and the band combination method. The NDVI and normalized difference water index are used to monitor the changes in the vegetation and water level, respectively, over an interval of time. After image processing, the changes in the area under forests, agriculture land, urban development, and water were determined using unsupervised change detection. The accuracy of the proposed technique was calculated using k-means clustering. The calculated accuracy indicates that the proposed method provides superior results compared with standard methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "58139ebda484a3b857db2d08f94ad7e8f7cc7686",
+    "externalIds": {
+      "MAG": "2910587630",
+      "DBLP": "journals/tgrs/SahaBB19",
+      "DOI": "10.1109/TGRS.2018.2886643",
+      "CorpusId": 127039743
+    },
+    "title": "Unsupervised Deep Change Vector Analysis for Multiple-Change Detection in VHR Images",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2019,
+    "citationCount": 473,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2018.2886643?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2018.2886643, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2959887",
+        "name": "Sudipan Saha"
+      },
+      {
+        "authorId": "2963826",
+        "name": "F. Bovolo"
+      },
+      {
+        "authorId": "1698844",
+        "name": "L. Bruzzone"
+      }
+    ],
+    "abstract": "Change detection (CD) in multitemporal images is an important application of remote sensing. Recent technological evolution provided very high spatial resolution (VHR) multitemporal optical satellite images showing high spatial correlation among pixels and requiring an effective modeling of spatial context to accurately capture change information. Here, we propose a novel unsupervised context-sensitive framework—deep change vector analysis (DCVA)—for CD in multitemporal VHR images that exploit convolutional neural network (CNN) features. To have an unsupervised system, DCVA starts from a suboptimal pretrained multilayered CNN for obtaining deep features that can model spatial relationship among neighboring pixels and thus complex objects. An automatic feature selection strategy is employed layerwise to select features emphasizing both high and low prior probability change information. Selected features from multiple layers are combined into a deep feature hypervector providing a multiscale scene representation. The use of the same pretrained CNN for semantic segmentation of single images enables us to obtain coherent multitemporal deep feature hypervectors that can be compared pixelwise to obtain deep change vectors that also model spatial context information. Deep change vectors are analyzed based on their magnitude to identify changed pixels. Then, deep change vectors corresponding to identified changed pixels are binarized to obtain a compressed binary deep change vectors that preserve information about the direction (kind) of change. Changed pixels are analyzed for multiple CD based on the binary features, thus implicitly using the spatial information. Experimental results on multitemporal data sets of Worldview-2, Pleiades, and Quickbird images confirm the effectiveness of the proposed method.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "53edb3776cea0e6ee4de742d7bb906355fd8279b",
+    "externalIds": {
+      "MAG": "2908320224",
+      "DBLP": "journals/tgrs/JiWL19",
+      "DOI": "10.1109/TGRS.2018.2858817",
+      "CorpusId": 57190346
+    },
+    "title": "Fully Convolutional Networks for Multisource Building Extraction From an Open Aerial and Satellite Imagery Data Set",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2019,
+    "citationCount": 1721,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2018.2858817?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2018.2858817, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2862986",
+        "name": "Shunping Ji"
+      },
+      {
+        "authorId": "66227102",
+        "name": "Shiqing Wei"
+      },
+      {
+        "authorId": "2111220277",
+        "name": "Meng Lu"
+      }
+    ],
+    "abstract": "The application of the convolutional neural network has shown to greatly improve the accuracy of building extraction from remote sensing imagery. In this paper, we created and made open a high-quality multisource data set for building detection, evaluated the accuracy obtained in most recent studies on the data set, demonstrated the use of our data set, and proposed a Siamese fully convolutional network model that obtained better segmentation accuracy. The building data set that we created contains not only aerial images but also satellite images covering 1000 km2 with both raster labels and vector maps. The accuracy of applying the same methodology to our aerial data set outperformed several other open building data sets. On the aerial data set, we gave a thorough evaluation and comparison of most recent deep learning-based methods, and proposed a Siamese U-Net with shared weights in two branches, and original images and their down-sampled counterparts as inputs, which significantly improves the segmentation accuracy, especially for large buildings. For multisource building extraction, the generalization ability is further evaluated and extended by applying a radiometric augmentation strategy to transfer pretrained models on the aerial data set to the satellite data set. The designed experiments indicate our data set is accurate and can serve multiple purposes including building instance segmentation and change detection; our result shows the Siamese U-Net outperforms current building extraction methods and could provide valuable reference.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1d385debcb66dc259119093e9a390b0870e10037",
+    "externalIds": {
+      "ArXiv": "1810.08462",
+      "DBLP": "journals/corr/abs-1810-08462",
+      "MAG": "2891248708",
+      "DOI": "10.1109/ICIP.2018.8451652",
+      "CorpusId": 52189223
+    },
+    "title": "Fully Convolutional Siamese Networks for Change Detection",
+    "venue": "International Conference on Information Photonics",
+    "year": 2018,
+    "citationCount": 1565,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1810.08462",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.08462, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51262831",
+        "name": "R. C. Daudt"
+      },
+      {
+        "authorId": "1730023",
+        "name": "B. L. Saux"
+      },
+      {
+        "authorId": "2300845",
+        "name": "Alexandre Boulch"
+      }
+    ],
+    "abstract": "This paper presents three fully convolutional neural network architectures which perform change detection using a pair of coregistered images. Most notably, we propose two Siamese extensions of fully convolutional networks which use heuristics about the current problem to achieve the best results in our tests on two open change detection datasets, using both RGB and multispectral images. We show that our system is able to learn from scratch using annotated change detection images. Our architectures achieve better performance than previously proposed methods, while being at least 500 times faster than related systems. This work is a step towards efficient processing of data from large scale Earth observation systems such as Copernicus or Landsat.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a6876ea89e677a7cc42dd43f27165ff6fd414de5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1807-10165",
+      "MAG": "2952339589",
+      "ArXiv": "1807.10165",
+      "DOI": "10.1007/978-3-030-00889-5_1",
+      "CorpusId": 50786304,
+      "PubMed": "32613207"
+    },
+    "title": "UNet++: A Nested U-Net Architecture for Medical Image Segmentation",
+    "venue": "DLMIA/ML-CDS@MICCAI",
+    "year": 2018,
+    "citationCount": 8546,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7329239",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.10165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2198519",
+        "name": "Zongwei Zhou"
+      },
+      {
+        "authorId": "1988405",
+        "name": "M. R. Siddiquee"
+      },
+      {
+        "authorId": "1930128",
+        "name": "Nima Tajbakhsh"
+      },
+      {
+        "authorId": "2674518",
+        "name": "Jianming Liang"
+      }
+    ],
+    "abstract": "In this paper, we present UNet++, a new, more powerful architecture for medical image segmentation. Our architecture is essentially a deeply-supervised encoder-decoder network where the encoder and decoder sub-networks are connected through a series of nested, dense skip pathways. The re-designed skip pathways aim at reducing the semantic gap between the feature maps of the encoder and decoder sub-networks. We argue that the optimizer would deal with an easier learning task when the feature maps from the decoder and encoder networks are semantically similar. We have evaluated UNet++ in comparison with U-Net and wide U-Net architectures across multiple medical image segmentation tasks: nodule segmentation in the low-dose CT scans of chest, nuclei segmentation in the microscopy images, liver segmentation in abdominal CT scans, and polyp segmentation in colonoscopy videos. Our experiments demonstrate that UNet++ with deep supervision achieves an average IoU gain of 3.9 and 3.4 points over U-Net and wide U-Net, respectively.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "de95601d9e3b20ec51aa33e1f27b1880d2c44ef2",
+    "externalIds": {
+      "MAG": "2948744165",
+      "ArXiv": "1807.06521",
+      "DBLP": "conf/eccv/WooPLK18",
+      "DOI": "10.1007/978-3-030-01234-2_1",
+      "CorpusId": 49867180
+    },
+    "title": "CBAM: Convolutional Block Attention Module",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 22888,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.06521, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262209",
+        "name": "Sanghyun Woo"
+      },
+      {
+        "authorId": "2109216573",
+        "name": "Jongchan Park"
+      },
+      {
+        "authorId": "1926578",
+        "name": "Joon-Young Lee"
+      },
+      {
+        "authorId": "2398271",
+        "name": "In-So Kweon"
+      }
+    ],
+    "abstract": "We propose Convolutional Block Attention Module (CBAM), a simple yet effective attention module for feed-forward convolutional neural networks. Given an intermediate feature map, our module sequentially infers attention maps along two separate dimensions, channel and spatial, then the attention maps are multiplied to the input feature map for adaptive feature refinement. Because CBAM is a lightweight and general module, it can be integrated into any CNN architectures seamlessly with negligible overheads and is end-to-end trainable along with base CNNs. We validate our CBAM through extensive experiments on ImageNet-1K, MS COCO detection, and VOC 2007 detection datasets. Our experiments show consistent improvements in classification and detection performances with various models, demonstrating the wide applicability of CBAM. The code and models will be publicly available.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ae15e5ccccaaff44ab542003386349ef1d3b7511",
+    "externalIds": {
+      "MAG": "2805152403",
+      "DOI": "10.5194/ISPRS-ARCHIVES-XLII-2-565-2018",
+      "CorpusId": 57660599
+    },
+    "title": "CHANGE DETECTION IN REMOTE SENSING IMAGES USING CONDITIONAL ADVERSARIAL NETWORKS",
+    "venue": "The International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences",
+    "year": 2018,
+    "citationCount": 516,
+    "openAccessPdf": {
+      "url": "https://www.int-arch-photogramm-remote-sens-spatial-inf-sci.net/XLII-2/565/2018/isprs-archives-XLII-2-565-2018.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5194/ISPRS-ARCHIVES-XLII-2-565-2018?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5194/ISPRS-ARCHIVES-XLII-2-565-2018, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2074125158",
+        "name": "M. Lebedev"
+      },
+      {
+        "authorId": "32776991",
+        "name": "Y. Vizilter"
+      },
+      {
+        "authorId": "2136831",
+        "name": "O. Vygolov"
+      },
+      {
+        "authorId": "3419148",
+        "name": "V. Knyaz"
+      },
+      {
+        "authorId": "3564708",
+        "name": "A. Y. Rubis"
+      }
+    ],
+    "abstract": "Abstract. We present a method for change detection in images using Conditional Adversarial Network approach. The original network architecture based on pix2pix is proposed and evaluated for difference map creation. The paper address three types of experiments: change detection in synthetic images without objects relative shift, change detection in synthetic images with small relative shift of objects, and change detection in real season-varying remote sensing images.\n",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d07284a6811f1b2745d91bdb06b040b57f226882",
+    "externalIds": {
+      "MAG": "2950541952",
+      "DBLP": "conf/iclr/LoshchilovH19",
+      "CorpusId": 53592270
+    },
+    "title": "Decoupled Weight Decay Regularization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 33038,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5694e46284460a648fe29117cbc55f6c9be3fa3c",
+    "externalIds": {
+      "MAG": "2963446712",
+      "ArXiv": "1608.06993",
+      "DBLP": "journals/corr/HuangLW16a",
+      "DOI": "10.1109/CVPR.2017.243",
+      "CorpusId": 9433631
+    },
+    "title": "Densely Connected Convolutional Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 42658,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1608.06993",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1608.06993, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143983679",
+        "name": "Gao Huang"
+      },
+      {
+        "authorId": "2109168016",
+        "name": "Zhuang Liu"
+      },
+      {
+        "authorId": "7446832",
+        "name": "Kilian Q. Weinberger"
+      }
+    ],
+    "abstract": "Recent work has shown that convolutional networks can be substantially deeper, more accurate, and efficient to train if they contain shorter connections between layers close to the input and those close to the output. In this paper, we embrace this observation and introduce the Dense Convolutional Network (DenseNet), which connects each layer to every other layer in a feed-forward fashion. Whereas traditional convolutional networks with L layers have L connections&#x2014;one between each layer and its subsequent layer&#x2014;our network has L(L+1)/2 direct connections. For each layer, the feature-maps of all preceding layers are used as inputs, and its own feature-maps are used as inputs into all subsequent layers. DenseNets have several compelling advantages: they alleviate the vanishing-gradient problem, strengthen feature propagation, encourage feature reuse, and substantially reduce the number of parameters. We evaluate our proposed architecture on four highly competitive object recognition benchmark tasks (CIFAR-10, CIFAR-100, SVHN, and ImageNet). DenseNets obtain significant improvements over the state-of-the-art on most of them, whilst requiring less memory and computation to achieve high performance. Code and pre-trained models are available at https://github.com/liuzhuang13/DenseNet.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2cfd255b26101695cbd271d5551fce244b379015",
+    "externalIds": {
+      "MAG": "2292483788",
+      "DOI": "10.1155/2016/3536183",
+      "CorpusId": 55746755
+    },
+    "title": "A Review of the Detection Methods for Climate Regime Shifts",
+    "venue": "",
+    "year": 2016,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "https://downloads.hindawi.com/journals/ddns/2016/3536183.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1155/2016/3536183?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1155/2016/3536183, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2048859891",
+        "name": "Qunqun Liu"
+      },
+      {
+        "authorId": "102552413",
+        "name": "Shiquan Wan"
+      },
+      {
+        "authorId": "2052182107",
+        "name": "Bin Gu"
+      }
+    ],
+    "abstract": "An abrupt climate change means that the climate system shifts from a steady state to another steady state. Study on the phenomenon and theory of the abrupt climate change is a new research field of modern climatology, and it is of great significance for the prediction of future climate change. The climate regime shift is one of the most common forms of abrupt climate change, which mainly refers to the statistical significant changes on the variable of climate system at one time scale. These detection methods can be roughly divided into five categories based on different types of abrupt changes, namely, abrupt mean value change, abrupt variance change, abrupt frequency change, abrupt probability density change, and the multivariable analysis. The main research progress of abrupt climate change detection methods is reviewed. What is more, some actual applications of those methods in observational data are provided. With the development of nonlinear science, many new methods have been presented for detecting an abrupt dynamic change in recent years, which is useful supplement for the abrupt change detection methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226102,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6364fdaa0a0eccd823a779fcdd489173f938e91a",
+    "externalIds": {
+      "MAG": "1901129140",
+      "DBLP": "journals/corr/RonnebergerFB15",
+      "ArXiv": "1505.04597",
+      "DOI": "10.1007/978-3-319-24574-4_28",
+      "CorpusId": 3719281
+    },
+    "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2015,
+    "citationCount": 94117,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.04597, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1737326",
+        "name": "O. Ronneberger"
+      },
+      {
+        "authorId": "152702479",
+        "name": "P. Fischer"
+      },
+      {
+        "authorId": "1710872",
+        "name": "T. Brox"
+      }
+    ],
+    "abstract": "There is large consent that successful training of deep networks requires many thousand annotated training samples. In this paper, we present a network and training strategy that relies on the strong use of data augmentation to use the available annotated samples more efficiently. The architecture consists of a contracting path to capture context and a symmetric expanding path that enables precise localization. We show that such a network can be trained end-to-end from very few images and outperforms the prior best method (a sliding-window convolutional network) on the ISBI challenge for segmentation of neuronal structures in electron microscopic stacks. Using the same network trained on transmitted light microscopy images (phase contrast and DIC) we won the ISBI cell tracking challenge 2015 in these categories by a large margin. Moreover, the network is fast. Segmentation of a 512x512 image takes less than a second on a recent GPU. The full implementation (based on Caffe) and the trained networks are available at http://lmb.informatik.uni-freiburg.de/people/ronneber/u-net .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "eb42cf88027de515750f230b23b1a057dc782108",
+    "externalIds": {
+      "MAG": "2949429431",
+      "ArXiv": "1409.1556",
+      "DBLP": "journals/corr/SimonyanZ14a",
+      "CorpusId": 14124313
+    },
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 110767,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.1556, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "In this work we investigate the effect of the convolutional network depth on its accuracy in the large-scale image recognition setting. Our main contribution is a thorough evaluation of networks of increasing depth using an architecture with very small (3x3) convolution filters, which shows that a significant improvement on the prior-art configurations can be achieved by pushing the depth to 16-19 weight layers. These findings were the basis of our ImageNet Challenge 2014 submission, where our team secured the first and the second places in the localisation and classification tracks respectively. We also show that our representations generalise well to other datasets, where they achieve state-of-the-art results. We have made our two best-performing ConvNet models publicly available to facilitate further research on the use of deep visual representations in computer vision.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1bd86309ebd5c49cf3a4ebe895269e7292aa5cac",
+    "externalIds": {
+      "DBLP": "journals/remotesensing/LiuWCLSZL14",
+      "MAG": "2026334773",
+      "DOI": "10.3390/rs6021102",
+      "CorpusId": 16993816
+    },
+    "title": "Illumination and Contrast Balancing for Remote Sensing Images",
+    "venue": "Remote Sensing",
+    "year": 2014,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2072-4292/6/2/1102/pdf?version=1403135961",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/rs6021102?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/rs6021102, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9756930",
+        "name": "Jun Liu"
+      },
+      {
+        "authorId": "2144802412",
+        "name": "Xing Wang"
+      },
+      {
+        "authorId": "2145944414",
+        "name": "Min Chen"
+      },
+      {
+        "authorId": "2108002301",
+        "name": "Shuguang Liu"
+      },
+      {
+        "authorId": "1912531",
+        "name": "Z. Shao"
+      },
+      {
+        "authorId": "2342637298",
+        "name": "Xiran Zhou"
+      },
+      {
+        "authorId": "47478870",
+        "name": "Ping Liu"
+      }
+    ],
+    "abstract": "Building a mathematical model of uneven illumination and contrast is difficult, even impossible. This paper presents a novel image balancing method for a satellite image. The method adjusts the mean and standard deviation of a neighborhood at each pixel and consists of three steps, namely, elimination of coarse light background, image balancing, and max-mean-min radiation correction. First, the light background is roughly eliminated in the frequency domain. Then, two balancing factors and linear transformation are used to adaptively adjust the local mean and standard deviation of each pixel. The balanced image is obtained by using a color preserving factor after max-mean-min radiation correction. Experimental results from visual and objective aspects based on images with varying unevenness of illumination and contrast indicate that the proposed method can eliminate uneven illumination and contrast more effectively than traditional image enhancement methods, and provide high quality images with better visual performance. In addition, the proposed method not only restores color information, but also retains image details.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2443b03456237e411326783c00b0c442bbb5639c",
+    "externalIds": {
+      "DBLP": "journals/pieee/BenediktssonCM12",
+      "MAG": "2093679105",
+      "DOI": "10.1109/JPROC.2012.2190811",
+      "CorpusId": 2573049
+    },
+    "title": "Very High-Resolution Remote Sensing: Challenges and Opportunities [Point of View]",
+    "venue": "Proceedings of the IEEE",
+    "year": 2012,
+    "citationCount": 96,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/JPROC.2012.2190811?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/JPROC.2012.2190811, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1682001",
+        "name": "J. Benediktsson"
+      },
+      {
+        "authorId": "1744943",
+        "name": "J. Chanussot"
+      },
+      {
+        "authorId": "66734578",
+        "name": "W. Moon"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0f157e74c1d18ccda6ed11b1b8fa62cfa432a386",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1002-1148",
+      "MAG": "2160335689",
+      "ArXiv": "1002.1148",
+      "CorpusId": 6376896
+    },
+    "title": "A Comparative Study of Removal Noise from Remote Sensing Image",
+    "venue": "arXiv.org",
+    "year": 2010,
+    "citationCount": 140,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1002.1148, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "65822323",
+        "name": "Salem Saleh Al-amri"
+      },
+      {
+        "authorId": "1818430",
+        "name": "N. Kalyankar"
+      },
+      {
+        "authorId": "2414898",
+        "name": "S. Khamitkar"
+      }
+    ],
+    "abstract": "This paper attempts to undertake the study of three types of noise such as Salt and Pepper (SPN), Random variation Impulse Noise (RVIN), Speckle (SPKN). Different noise densities have been removed between 10% to 60% by using five types of filters as Mean Filter (MF), Adaptive Wiener Filter (AWF), Gaussian Filter (GF), Standard Median Filter (SMF) and Adaptive Median Filter (AMF). The same is applied to the Saturn remote sensing image and they are compared with one another. The comparative study is conducted with the help of Mean Square Errors (MSE) and PeakSignal to Noise Ratio (PSNR). So as to choose the base method for removal of noise from remote sensing image.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DengDSLL009",
+      "MAG": "2108598243",
+      "DOI": "10.1109/CVPR.2009.5206848",
+      "CorpusId": 57246310
+    },
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2009,
+    "citationCount": 72462,
+    "openAccessPdf": {
+      "url": "http://www.image-net.org/papers/imagenet_cvpr09.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2009.5206848?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2009.5206848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144847596",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "94451829",
+        "name": "K. Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "664a277e184f294dbba10f29dd14b5a1b20efd36",
+    "externalIds": {
+      "MAG": "1979061792",
+      "DOI": "10.1080/01431160801950162",
+      "CorpusId": 60545477
+    },
+    "title": "PCA‐based land‐use change detection and analysis using multitemporal and multisensor satellite data",
+    "venue": "",
+    "year": 2008,
+    "citationCount": 644,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1080/01431160801950162?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/01431160801950162, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2659317",
+        "name": "Jinsong Deng"
+      },
+      {
+        "authorId": "48884595",
+        "name": "Ke Wang"
+      },
+      {
+        "authorId": "145084385",
+        "name": "Yiming Deng"
+      },
+      {
+        "authorId": "40131442",
+        "name": "G. Qi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ec15ae9a4b26f07d0ba9e0c952daf58cae8b243e",
+    "externalIds": {
+      "MAG": "1998595580",
+      "DBLP": "journals/tip/Nielsen07",
+      "DOI": "10.1109/TIP.2006.888195",
+      "CorpusId": 12411878,
+      "PubMed": "17269639"
+    },
+    "title": "The Regularized Iteratively Reweighted MAD Method for Change Detection in Multi- and Hyperspectral Data",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2007,
+    "citationCount": 730,
+    "openAccessPdf": {
+      "url": "http://www2.imm.dtu.dk/pubdb/edoc/imm4695.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TIP.2006.888195?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TIP.2006.888195, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35157655",
+        "name": "A. Nielsen"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "612cad4ddd95debab7f6f134a5c18d4c552a5089",
+    "externalIds": {
+      "MAG": "2127396267",
+      "DBLP": "journals/tgrs/BentoutouTKR05",
+      "DOI": "10.1109/TGRS.2005.853187",
+      "CorpusId": 23446344
+    },
+    "title": "An automatic image registration for applications in remote sensing",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2005,
+    "citationCount": 313,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2005.853187?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2005.853187, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2988229",
+        "name": "Y. Bentoutou"
+      },
+      {
+        "authorId": "143970787",
+        "name": "N. Taleb"
+      },
+      {
+        "authorId": "1748777",
+        "name": "K. Kpalma"
+      },
+      {
+        "authorId": "1720063",
+        "name": "J. Ronsin"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d7bf4582bc8e83a3ba0c23b41e93f261d100a510",
+    "externalIds": {
+      "MAG": "2165577558",
+      "DOI": "10.1080/0143116031000139863",
+      "CorpusId": 7738974
+    },
+    "title": "Change detection techniques",
+    "venue": "",
+    "year": 2004,
+    "citationCount": 3253,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1080/0143116031000139863?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/0143116031000139863, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "95152880",
+        "name": "D. Lu"
+      },
+      {
+        "authorId": "52302984",
+        "name": "P. Mausel"
+      },
+      {
+        "authorId": "4128507",
+        "name": "Eduardo S Brondízio"
+      },
+      {
+        "authorId": "88218483",
+        "name": "E. Moran"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ae5cac548ec70b76c764bdc45fd125d4885e5ff9",
+    "externalIds": {
+      "MAG": "293977351",
+      "CorpusId": 127642524
+    },
+    "title": "Emerging and Contemporary Technologies in Remote Sensing for Ecosystem Assessment and Change Detection on Military Reservations.",
+    "venue": "",
+    "year": 1998,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2622631",
+        "name": "P. Tueller"
+      },
+      {
+        "authorId": "49216863",
+        "name": "R. D. Ramsey"
+      },
+      {
+        "authorId": "143741187",
+        "name": "T. D. Frank"
+      },
+      {
+        "authorId": "1397988502",
+        "name": "R. Washington-Allen"
+      },
+      {
+        "authorId": "152249299",
+        "name": "S. Tweddale"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c652a9c3e77465a4caea54ccbb63afadd885479e",
+    "externalIds": {
+      "MAG": "2006383776",
+      "DOI": "10.1016/S0034-4257(97)00162-4",
+      "CorpusId": 129853091
+    },
+    "title": "Multivariate Alteration Detection (MAD) and MAF Postprocessing in Multispectral, Bitemporal Image Data: New Approaches to Change Detection Studies",
+    "venue": "",
+    "year": 1998,
+    "citationCount": 696,
+    "openAccessPdf": {
+      "url": "http://www2.imm.dtu.dk/pubdb/edoc/imm1220.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/S0034-4257(97)00162-4?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/S0034-4257(97)00162-4, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35157655",
+        "name": "A. Nielsen"
+      },
+      {
+        "authorId": "1771021",
+        "name": "K. Conradsen"
+      },
+      {
+        "authorId": "3037888",
+        "name": "J. Simpson"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "61bdad25df366ae4388feb11718d92851ca40be1",
+    "externalIds": {
+      "MAG": "1965852574",
+      "DOI": "10.1016/S0034-4257(97)00112-0",
+      "CorpusId": 129007944
+    },
+    "title": "A Comparison of Four Algorithms for Change Detection in an Urban Environment",
+    "venue": "",
+    "year": 1998,
+    "citationCount": 657,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/S0034-4257(97)00112-0?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/S0034-4257(97)00112-0, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "70735147",
+        "name": "M. Ridd"
+      },
+      {
+        "authorId": "2136211636",
+        "name": "Jiajun Liu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "47b5537c40c4200e6517e74ab92fe897747377f5",
+    "externalIds": {
+      "MAG": "2107459025",
+      "DOI": "10.1109/TGRS.1986.289648",
+      "CorpusId": 25838231
+    },
+    "title": "Noise in Remote-Sensing Systems: The Effect on Classification Error",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 1986,
+    "citationCount": 66,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.1986.289648?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.1986.289648, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1773449",
+        "name": "D. Landgrebe"
+      },
+      {
+        "authorId": "34569586",
+        "name": "E. Malaret"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b883e7dbfbdec39982544af5c5b6588f4a4ef29d",
+    "externalIds": {
+      "DBLP": "journals/tgrs/HamidiPMMM23",
+      "DOI": "10.1109/TGRS.2023.3240097",
+      "CorpusId": 256288040
+    },
+    "title": "Fast Flood Extent Monitoring With SAR Change Detection Using Google Earth Engine",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2023,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2023.3240097?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2023.3240097, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2202962129",
+        "name": "Ebrahim Hamidi"
+      },
+      {
+        "authorId": "5086518",
+        "name": "Brad G. Peter"
+      },
+      {
+        "authorId": "40196777",
+        "name": "D. Muñoz"
+      },
+      {
+        "authorId": "23633095",
+        "name": "H. Moftakhari"
+      },
+      {
+        "authorId": "2859416",
+        "name": "H. Moradkhani"
+      }
+    ],
+    "abstract": "Flooding is one of the most frequent and disastrous natural hazards triggered by extreme precipitation, high river runoff, hurricane storm surges, and the compounding effects of various flood drivers. This study introduces a new multisource remote sensing approach that leverages both multispectral optical imagery and the weather- and illumination-independent characteristics of synthetic aperture radar (SAR) data to streamline, automate, and map geographically reliable flood inundation extents. Utilizing the near real-time and cloud computing capabilities of Google Earth Engine (GEE), this process facilitates data acquisition and enables large-scale flood monitoring in an expeditious manner. Two major hurricanes along the U.S. Gulf Coast were evaluated: 1) the 2021 Hurricane Ida to the south of New Orleans, LA, USA, and 2) the 2017 Hurricane Harvey to the east of Houston, TX, USA. We devised a change detection and thresholding framework using multitemporal SAR imagery and validated the results with flood extent maps derived from Landsat 8 and Sentinel-2 optical imagery. We demonstrate that constant threshold values for flood extraction from SAR change detection indices are not ubiquitously suitable for all geographies; thus, we outline a heuristic that can be used to select thresholds suitable for specific sites through a fully automated sensitivity analysis. The results indicated high agreement between the SAR and optical imagery (77%–80%), with SAR providing the benefit of under-cloud detection. Furthermore, our results contribute to scaling the SAR approach to produce rapid and accurate information for decision-makers and emergency responders during time-sensitive flood events.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cf0f8f585c8822e3c6bcd9527d546eefc8486aea",
+    "externalIds": {
+      "DBLP": "conf/nips/NguyenGGDSDBR22",
+      "CorpusId": 260443992
+    },
+    "title": "S4ND: Modeling Images and Videos as Multidimensional Signals with State Spaces",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 240,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2288276078",
+        "name": "Eric Nguyen"
+      },
+      {
+        "authorId": "1822288",
+        "name": "Karan Goel"
+      },
+      {
+        "authorId": "39499001",
+        "name": "Albert Gu"
+      },
+      {
+        "authorId": "12969614",
+        "name": "G. Downs"
+      },
+      {
+        "authorId": "72518772",
+        "name": "Preey Shah"
+      },
+      {
+        "authorId": "24593911",
+        "name": "Tri Dao"
+      },
+      {
+        "authorId": "3152203",
+        "name": "S. Baccus"
+      },
+      {
+        "authorId": "2061444885",
+        "name": "C. Ré"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1fdda8f9574db432a21215c382179fd5ca0a5d2b",
+    "externalIds": {
+      "DOI": "10.1093/forestry/cpac015",
+      "CorpusId": 247730843
+    },
+    "title": "OUP accepted manuscript",
+    "venue": "Forestry: An International Journal Of Forest Research",
+    "year": 2022,
+    "citationCount": 54,
+    "openAccessPdf": {
+      "url": "https://academic.oup.com/forestry/advance-article-pdf/doi/10.1093/forestry/cpac015/43542465/cpac015.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1093/forestry/cpac015?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1093/forestry/cpac015, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "98b8f54c0d77d8d6ee7221d8e877c725a1df9fae",
+    "externalIds": {
+      "MAG": "2110160730",
+      "DBLP": "journals/tgrs/IngladaMPF07",
+      "DOI": "10.1109/TGRS.2006.882262",
+      "CorpusId": 17734448
+    },
+    "title": "Analysis of Artifacts in Subpixel Remote Sensing Image Registration",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2007,
+    "citationCount": 106,
+    "openAccessPdf": {
+      "url": "https://hal.archives-ouvertes.fr/hal-00578144/file/artifacts.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TGRS.2006.882262?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TGRS.2006.882262, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1715581",
+        "name": "J. Inglada"
+      },
+      {
+        "authorId": "3135036",
+        "name": "Vincent Muron"
+      },
+      {
+        "authorId": "2082139937",
+        "name": "Damien Pichard"
+      },
+      {
+        "authorId": "2493342",
+        "name": "T. Feuvrier"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]
