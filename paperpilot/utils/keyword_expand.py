@@ -57,21 +57,32 @@ def expand_keywords(
         return []
 
     if provider is None or not getattr(provider, "enabled", False):
-        logger.info("keyword_expand: provider unavailable, returning originals")
+        # Issue #45: silent fallback masked Groq quota exhaustion during bulk
+        # theme generation. Surface this at WARNING so downstream pipelines
+        # (e.g. build_theme_lineage) can detect a degraded run.
+        logger.warning(
+            "keyword_expand: provider unavailable — using fallback (originals only)"
+        )
         return list(keywords)
 
     try:
         raw = _call_provider(provider, keywords, domain)
     except Exception as e:
-        logger.warning("keyword_expand: provider raised: %s", e)
+        logger.warning("keyword_expand: provider raised — using fallback: %s", e)
         return list(keywords)
 
     if not raw:
+        logger.warning(
+            "keyword_expand: LLM returned empty response — using fallback (originals only)"
+        )
         return list(keywords)
 
     parsed = parse_llm_response(raw)
     if not isinstance(parsed, list):
-        logger.warning("keyword_expand: LLM returned non-list (%s)", type(parsed).__name__)
+        logger.warning(
+            "keyword_expand: LLM returned non-list (%s) — using fallback",
+            type(parsed).__name__,
+        )
         return list(keywords)
 
     # Dedup case-insensitively, preserve first-seen casing.
@@ -99,6 +110,14 @@ def expand_keywords(
         merged.append(text)
         added += 1
 
+    if added == 0:
+        # Same length out as in: LLM returned only duplicates / nothing
+        # usable. Worth flagging — bulk theme runs lose seed diversity here.
+        logger.warning(
+            "keyword_expand: no new keywords added (%d returned, all duplicates) — "
+            "seed discovery quality may be degraded",
+            len(parsed),
+        )
     logger.info("keyword_expand: %d -> %d keywords", len(keywords), len(merged))
     return merged
 

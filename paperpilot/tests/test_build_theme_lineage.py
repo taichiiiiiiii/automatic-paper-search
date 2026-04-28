@@ -17,6 +17,7 @@ Key invariants:
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -34,7 +35,7 @@ def _patch_env(monkeypatch, **values):
     Mirrors the helper used in test_build_lineage so the two test
     suites share an isolation strategy.
     """
-    base = {
+    base: dict[str, object] = {
         "github_token": None,
         "s2_api_key": None,
         "openalex_email": None,
@@ -704,3 +705,139 @@ def test_main_rejects_theme_over_500_chars(tmp_path: Path, monkeypatch, capsys):
 def test_main_rejects_empty_theme(monkeypatch, capsys):
     rc = build_theme_lineage.main(["--theme", "   "])
     assert rc != 0
+
+
+# ---- Silent-fallback detection (issue #45) -----------------------------------
+
+
+def _force_classify_failures(monkeypatch, *, every: bool = True):
+    """Make every LLM classification call fail (None) to simulate quota.
+
+    The lenient classifier path is the one used by build_theme_lineage,
+    so we patch it directly to return None — this short-circuits before
+    any cache write, mirroring the real bulk-run failure mode where
+    Groq's daily quota silently drops calls.
+    """
+    monkeypatch.setattr(
+        build_theme_lineage,
+        "_classify_cached",
+        lambda *a, **kw: None,
+    )
+
+
+def test_build_zero_edges_emits_warning(tmp_path: Path, monkeypatch, caplog):
+    """Issue #45: 0 edges produced → must log a WARNING, not silent success."""
+    caplog.set_level(logging.WARNING, logger="paperpilot.scripts.build_theme_lineage")
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    _force_classify_failures(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2020)
+    parent = _mk_s2_paper("parent", year=2015)
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=1, width=4, since_year=None
+        )
+    payload = json.loads(out_path.read_text())
+    assert payload["edges"] == []
+    msgs = [r.getMessage() for r in caplog.records if r.levelno >= logging.WARNING]
+    assert any("0 edges" in m or "no edges" in m.lower() for m in msgs), (
+        f"expected 0-edges warning, got: {msgs}"
+    )
+
+
+def test_build_high_failure_rate_logs_summary(tmp_path: Path, monkeypatch, caplog):
+    """When classify fails for most attempts, a summary line should warn the user."""
+    # Summary is at INFO; failure-rate alarm is at WARNING. Capture both.
+    caplog.set_level(logging.INFO, logger="paperpilot.scripts.build_theme_lineage")
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    _force_classify_failures(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2020)
+    parents = [_mk_s2_paper(f"p{i}", year=2018) for i in range(5)]
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=parents),
+    ):
+        build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=1, width=8, since_year=None
+        )
+    msgs = [r.getMessage() for r in caplog.records]
+    assert any("classify summary" in m.lower() for m in msgs), (
+        f"expected classify summary log, got: {msgs}"
+    )
+    assert any(
+        "failure rate" in m.lower() or "llm failure" in m.lower()
+        for m in [r.getMessage() for r in caplog.records if r.levelno >= logging.WARNING]
+    ), "expected high-failure-rate WARNING"
+
+
+def test_main_returns_3_when_zero_edges(tmp_path: Path, monkeypatch):
+    """CI gate: main() exit code 3 (non-zero, non-error) on 0 edges."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    _force_classify_failures(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2020)
+    parent = _mk_s2_paper("parent", year=2015)
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
+    ):
+        rc = build_theme_lineage.main([
+            "--theme", "X",
+            "--depth", "1",
+            "--seeds", "1",
+            "--width", "4",
+            "--output", str(tmp_path / "out.json"),
+        ])
+    assert rc == 3, f"expected exit 3 on 0 edges, got {rc}"
+
+
+def test_main_returns_0_on_normal_build(tmp_path: Path, monkeypatch):
+    """Sanity: a healthy build (some edges) still returns 0."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2020)
+    parent = _mk_s2_paper("parent", year=2015)
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
+    ):
+        rc = build_theme_lineage.main([
+            "--theme", "X",
+            "--depth", "1",
+            "--seeds", "1",
+            "--width", "4",
+            "--output", str(tmp_path / "out.json"),
+        ])
+    assert rc == 0, f"expected exit 0 on healthy build, got {rc}"

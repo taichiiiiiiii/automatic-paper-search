@@ -242,6 +242,12 @@ def build_theme_lineage(
         seed_ids.append(sid)
         frontier.append((seed, 0))
 
+    # Issue #45: silent fallback masking (LLM quota / RPM throttling)
+    # produced 0-edges themes during bulk runs. Track classify outcomes
+    # so we can warn loudly at the end of the build.
+    classify_attempted = 0
+    classify_succeeded = 0
+
     visited: set[str] = set(seed_ids)
     while frontier:
         current, current_depth = frontier.pop(0)
@@ -261,6 +267,7 @@ def build_theme_lineage(
                 continue
             if pid not in nodes:
                 nodes[pid] = to_node(parent)
+            classify_attempted += 1
             cls = _classify_cached(
                 provider,
                 parent,
@@ -270,6 +277,8 @@ def build_theme_lineage(
                 cache_path=classification_cache_path,
                 rate_delay=rate_delay,
             )
+            if cls is not None:
+                classify_succeeded += 1
             if cls and cls["relation"] != "unrelated":
                 edges.append(
                     {
@@ -289,6 +298,29 @@ def build_theme_lineage(
     dropped = len(edges) - len(cleaned_edges)
     if dropped:
         logger.warning("dropped %d edges with empty rationale", dropped)
+
+    # Issue #45: surface LLM-failure rate so silent quota throttling
+    # doesn't hide as a successful "0 edges" build in CI logs.
+    classify_failed = classify_attempted - classify_succeeded
+    fail_rate = classify_failed / classify_attempted if classify_attempted else 0.0
+    logger.info(
+        "classify summary: attempted=%d, success=%d, failed=%d (%.1f%% failure)",
+        classify_attempted,
+        classify_succeeded,
+        classify_failed,
+        fail_rate * 100,
+    )
+    if classify_attempted and fail_rate > 0.30:
+        logger.warning(
+            "high LLM failure rate (%.1f%%) — likely Groq RPM/daily quota; "
+            "consider re-running after quota resets",
+            fail_rate * 100,
+        )
+    if not cleaned_edges:
+        logger.warning(
+            "produced 0 edges — data quality is degraded; the JSON is still "
+            "written but the viewer will show nodes only. See issue #45."
+        )
 
     # Stage 5: pick root = focus seed with most relations.
     root_id: str | None
@@ -331,10 +363,12 @@ def build_theme_lineage(
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
-    print(f"✓ Wrote {out_path}")
-    print(
-        f"  nodes: {len(sorted_nodes)}, edges: {len(cleaned_edges)}, "
-        f"root: {root_id}"
+    logger.info(
+        "wrote %s (nodes=%d edges=%d root=%s)",
+        out_path,
+        len(sorted_nodes),
+        len(cleaned_edges),
+        root_id,
     )
     return out_path
 
@@ -387,7 +421,7 @@ def main(argv: list[str] | None = None) -> int:
 
     output = Path(args.output) if args.output else None
     try:
-        build_theme_lineage(
+        out_path = build_theme_lineage(
             theme=args.theme,
             depth=args.depth,
             seeds_count=args.seeds_count,
@@ -398,6 +432,28 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+
+    # Issue #45: non-fatal exit code 3 distinguishes "ran cleanly but
+    # produced no edges" from a normal success. CI / bulk scripts can
+    # detect this and trigger an alert without having to grep logs.
+    try:
+        payload = json.loads(out_path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        # The file was just written by build_theme_lineage(); failing to
+        # read it back means a write race / disk error. Don't mask that
+        # as success — let CI see exit 2 and surface the cause.
+        print(
+            f"error: cannot re-read just-written {out_path}: {exc}",
+            file=sys.stderr,
+        )
+        return 2
+    if not payload.get("edges"):
+        print(
+            "warning: 0 edges produced — output written but viewer will show "
+            "nodes only. Re-run after LLM quota resets (see issue #45).",
+            file=sys.stderr,
+        )
+        return 3
     return 0
 
 
