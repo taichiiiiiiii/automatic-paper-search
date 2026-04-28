@@ -478,34 +478,19 @@ def build_theme_lineage(
             desc_added,
         )
 
-    # Issue #54: cross-node edges. The BFS only adds (parent → seed) edges,
-    # so two seeds that cite each other, or a parent that cites another
-    # parent in the same graph, never produce a visible relation. Scan the
-    # full collected node set against each node's references and add any
-    # in-graph citation links we find. This is purely a cache + Python
-    # operation — no LLM, no extra S2 round-trips for already-fetched
-    # references. Parent nodes whose references weren't fetched during BFS
-    # (depth=1 doesn't expand grandparents) are looked up here too so we
-    # discover lateral relationships across the whole graph.
+    # Issue #54 / #57: cross-node edges. The BFS only adds (parent → seed)
+    # edges, so two seeds that cite each other, or a parent that cites
+    # another parent in the same graph, never produce a visible relation.
+    # Scan the full collected node set against each node's references and
+    # add any in-graph citation links we find — purely a cache + Python
+    # operation (no LLM, references fetched from disk cache when present).
     #
-    # Issue #55 followup: constrain cross-node so at least one endpoint
-    # is a seed or a same-cohort paper (year >= since_year if set, else
-    # within 5 years of the most recent seed). This stops foundational
-    # papers (ResNet ↔ U-Net 2015) from clogging the view with many
-    # old-year arrows the user didn't ask for.
-    seed_set = set(seed_ids)
-    cohort_min_year: int | None
-    if since_year is not None:
-        cohort_min_year = since_year
-    else:
-        seed_years = [
-            n.get("year") for n in (nodes[s] for s in seed_ids)
-            if isinstance(n.get("year"), int)
-        ]
-        cohort_min_year = (max(seed_years) - 5) if seed_years else None
-    cross_added = _add_cross_node_edges(
-        nodes, edges, seed_ids=seed_set, cohort_min_year=cohort_min_year
-    )
+    # Issue #57 reverted: the cohort-anchor constraint introduced earlier
+    # was over-aggressive — it hid foundational-era cross-references the
+    # user wanted visible ("全体的に矢印を作成して"). Re-enable the
+    # full pass; volume is acceptable given the seeded influence filter
+    # already culls non-influential refs upstream.
+    cross_added = _add_cross_node_edges(nodes, edges)
     if cross_added:
         logger.info(
             "cross-node pass added %d edges (in-graph citations not seen by BFS)",
