@@ -1369,6 +1369,15 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   padding: 0.6rem 0.75rem;
   word-break: break-word;
   overflow-wrap: break-word;
+  /* #67: citation-heat (--card-heat: 0..1) drives border thickness and
+     a soft halo. High-impact papers (ResNet, Attention) read brighter
+     than niche refs without any explicit ranking UI. */
+  border-width: calc(1px + var(--card-heat, 0) * 1.5px);
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 calc(2px + var(--card-heat, 0) * 4px)
+      calc(8px + var(--card-heat, 0) * 14px)
+      oklch(58% 0.18 30 / calc(0.04 + var(--card-heat, 0) * 0.08));
   transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease,
               border-color 0.15s ease;
 }
