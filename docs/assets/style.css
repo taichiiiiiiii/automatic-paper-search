@@ -1382,6 +1382,25 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
               border-color 0.15s ease;
 }
 
+/* #83: hub badge — 👑 marks papers in the 90th percentile of total
+   degree (in + out). Sits next to the venue badge so the eye still
+   scans the existing top-row layout, but with a gold accent. */
+.node-card--theme .node-card__hub {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.78rem;
+  background: oklch(94% 0.10 90 / 0.95);
+  border-radius: 999px;
+  padding: 0 0.4rem;
+  vertical-align: middle;
+}
+.node-card--theme.node-card--hub {
+  border-color: oklch(70% 0.13 90);
+  box-shadow:
+    0 0 0 1px oklch(70% 0.13 90 / 0.5),
+    0 1px 4px oklch(70% 0.13 90 / 0.18);
+}
+
 /* #68: trending badge — small 📈 inline next to the venue. Pulses
    gently to draw the eye on a busy graph. */
 .node-card--theme .node-card__trending {
