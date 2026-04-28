@@ -1,0 +1,1970 @@
+[
+  {
+    "paperId": "37ec333f5fb4e694a09ef6573637b0277184d50b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2512-16913",
+      "ArXiv": "2512.16913",
+      "DOI": "10.48550/arXiv.2512.16913",
+      "CorpusId": 283933625
+    },
+    "title": "Depth Any Panoramas: A Foundation Model for Panoramic Depth Estimation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.16913, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2323101345",
+        "name": "Xin Lin"
+      },
+      {
+        "authorId": "2385441396",
+        "name": "Meixi Song"
+      },
+      {
+        "authorId": "2367731713",
+        "name": "Dizhe Zhang"
+      },
+      {
+        "authorId": "2329915964",
+        "name": "Wenxuan Lu"
+      },
+      {
+        "authorId": "2384784395",
+        "name": "Haodong Li"
+      },
+      {
+        "authorId": "2378953945",
+        "name": "Bo Du"
+      },
+      {
+        "authorId": "2265615338",
+        "name": "Ming-Hsuan Yang"
+      },
+      {
+        "authorId": "2295985083",
+        "name": "Truong Q. Nguyen"
+      },
+      {
+        "authorId": "2307083138",
+        "name": "Lu Qi"
+      }
+    ],
+    "abstract": "In this work, we present a panoramic metric depth foundation model that generalizes across diverse scene distances. We explore a data-in-the-loop paradigm from the view of both data construction and framework design. We collect a large-scale dataset by combining public datasets, high-quality synthetic data from our UE5 simulator and text-to-image models, and real panoramic images from the web. To reduce domain gaps between indoor/outdoor and synthetic/real data, we introduce a three-stage pseudo-label curation pipeline to generate reliable ground truth for unlabeled images. For the model, we adopt DINOv3-Large as the backbone for its strong pre-trained generalization, and introduce a plug-and-play range mask head, sharpness-centric optimization, and geometry-centric optimization to improve robustness to varying distances and enforce geometric consistency across views. Experiments on multiple benchmarks (e.g., Stanford2D3D, Matterport3D, and Deep360) demonstrate strong performance and zero-shot generalization, with particularly robust and stable metric predictions in diverse real-world scenes. The project page can be found at: \\href{https://insta360-research-team.github.io/DAP_website/} {https://insta360-research-team.github.io/DAP\\_website/}",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "84b8a219ad1b161da9d33a9978fe5438be80d305",
+    "externalIds": {
+      "ArXiv": "2509.26618",
+      "DBLP": "journals/corr/abs-2509-26618",
+      "DOI": "10.48550/arXiv.2509.26618",
+      "CorpusId": 281682591
+    },
+    "title": "DA2: Depth Anything in Any Direction",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.26618, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2322997758",
+        "name": "Haodong Li"
+      },
+      {
+        "authorId": "2383109459",
+        "name": "Wangguangdong Zheng"
+      },
+      {
+        "authorId": "2323038087",
+        "name": "Jing He"
+      },
+      {
+        "authorId": "2332074336",
+        "name": "Yuhao Liu"
+      },
+      {
+        "authorId": "2323101345",
+        "name": "Xin Lin"
+      },
+      {
+        "authorId": "2383171829",
+        "name": "Xin Yang"
+      },
+      {
+        "authorId": "2323149132",
+        "name": "Ying-Cong Chen"
+      },
+      {
+        "authorId": "2322073255",
+        "name": "Chunchao Guo"
+      }
+    ],
+    "abstract": "Panorama has a full FoV (360$^\\circ\\times$180$^\\circ$), offering a more complete visual description than perspective images. Thanks to this characteristic, panoramic depth estimation is gaining increasing traction in 3D vision. However, due to the scarcity of panoramic data, previous methods are often restricted to in-domain settings, leading to poor zero-shot generalization. Furthermore, due to the spherical distortions inherent in panoramas, many approaches rely on perspective splitting (e.g., cubemaps), which leads to suboptimal efficiency. To address these challenges, we propose $\\textbf{DA}$$^{\\textbf{2}}$: $\\textbf{D}$epth $\\textbf{A}$nything in $\\textbf{A}$ny $\\textbf{D}$irection, an accurate, zero-shot generalizable, and fully end-to-end panoramic depth estimator. Specifically, for scaling up panoramic data, we introduce a data curation engine for generating high-quality panoramic depth data from perspective, and create $\\sim$543K panoramic RGB-depth pairs, bringing the total to $\\sim$607K. To further mitigate the spherical distortions, we present SphereViT, which explicitly leverages spherical coordinates to enforce the spherical geometric consistency in panoramic image features, yielding improved performance. A comprehensive benchmark on multiple datasets clearly demonstrates DA$^{2}$'s SoTA performance, with an average 38% improvement on AbsRel over the strongest zero-shot baseline. Surprisingly, DA$^{2}$ even outperforms prior in-domain methods, highlighting its superior zero-shot generalization. Moreover, as an end-to-end solution, DA$^{2}$ exhibits much higher efficiency over fusion-based approaches. Both the code and the curated panoramic data has be released. Project page: https://depth-any-in-any-dir.github.io/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2d8270eca34c565e9ba66437147d2d9572a2cecd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2509-04444",
+      "ArXiv": "2509.04444",
+      "DOI": "10.48550/arXiv.2509.04444",
+      "CorpusId": 281103014
+    },
+    "title": "One Flight Over the Gap: A Survey from Perspective to Panoramic Vision",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.04444, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2323101345",
+        "name": "Xin Lin"
+      },
+      {
+        "authorId": "2379543077",
+        "name": "Xian Ge"
+      },
+      {
+        "authorId": "2367731713",
+        "name": "Dizhe Zhang"
+      },
+      {
+        "authorId": "2258644860",
+        "name": "Zhaoliang Wan"
+      },
+      {
+        "authorId": "47120353",
+        "name": "Xianshun Wang"
+      },
+      {
+        "authorId": "2294510925",
+        "name": "Xiangtai Li"
+      },
+      {
+        "authorId": "2379359886",
+        "name": "Wenjie Jiang"
+      },
+      {
+        "authorId": "2378953945",
+        "name": "Bo Du"
+      },
+      {
+        "authorId": "2257210161",
+        "name": "Dacheng Tao"
+      },
+      {
+        "authorId": "2265615338",
+        "name": "Ming-Hsuan Yang"
+      },
+      {
+        "authorId": "2307083138",
+        "name": "Lu Qi"
+      }
+    ],
+    "abstract": "Driven by the demand for spatial intelligence and holistic scene perception, omnidirectional images (ODIs), which provide a complete 360\\textdegree{} field of view, are receiving growing attention across diverse applications such as virtual reality, autonomous driving, and embodied robotics. Despite their unique characteristics, ODIs exhibit remarkable differences from perspective images in geometric projection, spatial distribution, and boundary continuity, making it challenging for direct domain adaption from perspective methods. This survey reviews recent panoramic vision techniques with a particular emphasis on the perspective-to-panorama adaptation. We first revisit the panoramic imaging pipeline and projection methods to build the prior knowledge required for analyzing the structural disparities. Then, we summarize three challenges of domain adaptation: severe geometric distortions near the poles, non-uniform sampling in Equirectangular Projection (ERP), and periodic boundary continuity. Building on this, we cover 20+ representative tasks drawn from more than 300 research papers in two dimensions. On one hand, we present a cross-method analysis of representative strategies for addressing panoramic specific challenges across different tasks. On the other hand, we conduct a cross-task comparison and classify panoramic vision into four major categories: visual quality enhancement and assessment, visual understanding, multimodal understanding, and visual generation. In addition, we discuss open challenges and future directions in data, models, and applications that will drive the advancement of panoramic vision research. We hope that our work can provide new insight and forward looking perspectives to advance the development of panoramic vision technologies. Our project page is https://insta360-research-team.github.io/Survey-of-Panorama",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "30b6e71d3341c114ace25951b7429f7b9e5fb104",
+    "externalIds": {
+      "DBLP": "journals/tcsv/HuangSCMX25",
+      "DOI": "10.1109/TCSVT.2025.3553472",
+      "CorpusId": 277257434
+    },
+    "title": "GADFNet: Geometric Priors Assisted Dual-Projection Fusion Network for Monocular Panoramic Depth Estimation",
+    "venue": "IEEE transactions on circuits and systems for video technology (Print)",
+    "year": 2025,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TCSVT.2025.3553472?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TCSVT.2025.3553472, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2302205314",
+        "name": "Chengchao Huang"
+      },
+      {
+        "authorId": "2166597539",
+        "name": "Feng Shao"
+      },
+      {
+        "authorId": "2145252631",
+        "name": "Hangwei Chen"
+      },
+      {
+        "authorId": "2210913056",
+        "name": "Baoyang Mu"
+      },
+      {
+        "authorId": "2345136327",
+        "name": "Long Xu"
+      }
+    ],
+    "abstract": "Panoramic depth estimation is crucial for acquiring comprehensive 3D environmental perception information, serving as a foundational basis for numerous panoramic vision tasks. The key challenge in panoramic depth estimation is how to address various distortions in 360° omnidirectional images. Most panoramic images are displayed as 2D equirectangular projections, which exhibit significant distortion, particularly with the severe fisheye effect near the equatorial regions. Traditional depth estimation methods for perspective images are unsuitable for such projections. On the other hand, cubemap projection consists of six distortion-free perspective images, allowing the use of existing depth estimation methods. However, the boundaries between faces of a cubemap projection introduce discontinuities, causing a loss of global information when using cube maps alone. In this work, we propose an innovative geometric priors assisted dual-projection fusion network (GADFNet) that leverages geometric priors of panoramic images and the strengths of both projection types to enhance the accuracy of panoramic depth estimation. Specifically, to better focus the network on key areas, we introduce a distortion perception module (DPM) and incorporate geometric information into the loss function. To more effectively extract global information from the equirectangular projection branch, we propose a scene understanding module (SUM), which captures features from different dimensions. Additionally, to achieve effective fusion of the two projections, we design a dual projection adaptive fusion module (DPAFM) to dynamically adjust the weights of the two branches during fusion. Extensive experiments conducted on four public datasets (including both virtual and real-world scenarios) demonstrate that our proposed GADFNet outperforms existing methods, achieving superior performance.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c41f002b48c74f57f2c51fde278feb8bac20bf9d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ChenWNLHVK22",
+      "DOI": "10.1109/CVPRW63382.2024.00134",
+      "CorpusId": 272761656
+    },
+    "title": "BGDNet: Background-guided Indoor Panorama Depth Estimation",
+    "venue": "2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2024,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPRW63382.2024.00134?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPRW63382.2024.00134, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2156962214",
+        "name": "Jiajing Chen"
+      },
+      {
+        "authorId": "2321973134",
+        "name": "∗. ZhiqiangWan"
+      },
+      {
+        "authorId": "2091897796",
+        "name": "M. Narayana"
+      },
+      {
+        "authorId": "2139479873",
+        "name": "Yuguang Li"
+      },
+      {
+        "authorId": "7560607",
+        "name": "Will Hutchcroft"
+      },
+      {
+        "authorId": "1714074",
+        "name": "Senem Velipasalar"
+      },
+      {
+        "authorId": "1738740",
+        "name": "S. B. Kang"
+      }
+    ],
+    "abstract": "Depth estimation from single perspective image has received significant attention in the past decade, whereas the same task applied to single panoramic image remains comparatively under-explored. Most existing depth estimation models for panoramic images imitate models proposed for perspective images, which take RGB images as input and output depth directly. However, as demonstrated by our experiments, model performance drops significantly when the training and testing datasets greatly differ, since they over-fit the training data. To address this issue, we propose a novel method, referred to as the Background-guided Network (BGDNet), for more robust and accurate depth estimation from indoor panoramic images. Different from existing models, our proposed BGDNet first infers the background depth, namely from walls, floor and ceiling, via background masks, room layout and camera model. The background depth is then used to guide and improve the output foreground depth. We perform within dataset as well as cross-domain experiments on two benchmark datasets. The results show that BGDNet outperforms the state-of-the-art baselines, and is more robust to overfitting issues, with superior generalization across datasets.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "38e4515e0c5304777362ee3baa8eb21a568d2212",
+    "externalIds": {
+      "ArXiv": "2404.14979",
+      "DBLP": "journals/corr/abs-2404-14979",
+      "DOI": "10.48550/arXiv.2404.14979",
+      "CorpusId": 269302415
+    },
+    "title": "SGFormer: Spherical Geometry Transformer for 360 Depth Estimation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.14979, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276745050",
+        "name": "Junsong Zhang"
+      },
+      {
+        "authorId": "2208870523",
+        "name": "Zisong Chen"
+      },
+      {
+        "authorId": "49043799",
+        "name": "Chunyu Lin"
+      },
+      {
+        "authorId": "2034846820",
+        "name": "Lang Nie"
+      },
+      {
+        "authorId": "2261928514",
+        "name": "Zhijie Shen"
+      },
+      {
+        "authorId": "2329570232",
+        "name": "Junda Huang"
+      },
+      {
+        "authorId": "2129511552",
+        "name": "Yao Zhao"
+      }
+    ],
+    "abstract": "Panoramic distortion poses a significant challenge in 360 depth estimation, particularly pronounced at the north and south poles. Existing methods either adopt a bi-projection fusion strategy to remove distortions or model long-range dependencies to capture global structures, which can result in either unclear structure or insufficient local perception. In this paper, we propose a spherical geometry transformer, named SGFormer, to address the above issues, with an innovative step to integrate spherical geometric priors into vision transformers. To this end, we retarget the transformer decoder to a spherical prior decoder (termed SPDecoder), which endeavors to uphold the integrity of spherical structures during decoding. Concretely, we leverage bipolar re-projection, circular rotation, and curve local embedding to preserve the spherical characteristics of equidistortion, continuity, and surface distance, respectively. Furthermore, we present a query-based global conditional position embedding to compensate for spatial structure at varying resolutions. It not only boosts the global perception of spatial position but also sharpens the depth structure across different patches. Finally, we conduct extensive experiments on popular benchmarks, demonstrating our superiority over state-of-the-art solutions.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "122abadb4840f9e8e62926131f9a7e383d6e7d5c",
+    "externalIds": {
+      "DBLP": "conf/cvpr/TsaiJZWCSK024",
+      "ArXiv": "2404.09993",
+      "DOI": "10.1109/CVPR52733.2024.02650",
+      "CorpusId": 269148812
+    },
+    "title": "No More Ambiguity in 360° Room Layout via Bi-Layout Estimation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2024,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.09993",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.09993, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47779766",
+        "name": "Yu-Ju Tsai"
+      },
+      {
+        "authorId": "2296712503",
+        "name": "Jin-Cheng Jhang"
+      },
+      {
+        "authorId": "2296749969",
+        "name": "Jingjing Zheng"
+      },
+      {
+        "authorId": "2296747804",
+        "name": "Wei Wang"
+      },
+      {
+        "authorId": "2294783998",
+        "name": "Albert Y. C. Chen"
+      },
+      {
+        "authorId": "2294518985",
+        "name": "Min Sun"
+      },
+      {
+        "authorId": "2259972955",
+        "name": "Cheng-Hao Kuo"
+      },
+      {
+        "authorId": "2270005057",
+        "name": "Ming-Hsuan Yang"
+      }
+    ],
+    "abstract": "Inherent ambiguity in layout annotations poses significant challenges to developing accurate 360° room layout estimation models. To address this issue, we propose a novel Bi-Layout model capable of predicting two distinct layout types. One stops at ambiguous regions, while the other extends to encompass all visible areas. Our model employs two global context embeddings, where each embedding is designed to capture specific contextual information for each layout type. With our novel feature guidance module, the image feature retrieves relevant context from these embeddings, generating layout-aware features for precise bi-layout predictions. A unique property of our Bi-Layout model is its ability to inherently detect ambiguous regions by comparing the two predictions. To circumvent the need for manual correction of ambiguous annotations during testing, we also introduce a new metric for disambiguating ground truth layouts. Our method demonstrates superior performance on benchmark datasets, notably outperforming leading approaches. Specifically, on the MatterportLayout dataset, it improves 3DIoU from 81.70% to 82.57% across the full test set and notably from 54.80% to 59.97% in subsets with significant ambiguity.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c26aea5ec852c374e672dc0de7f207ee76c76c3d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/AiW24",
+      "ArXiv": "2403.16376",
+      "DOI": "10.1109/CVPR52733.2024.00947",
+      "CorpusId": 268681414
+    },
+    "title": "Elite360D: Towards Efficient 360 Depth Estimation via Semantic- and Distance-Aware Bi-Projection Fusion",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2024,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2403.16376",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.16376, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117509694",
+        "name": "Hao Ai"
+      },
+      {
+        "authorId": "2186272673",
+        "name": "Lin Wang"
+      }
+    ],
+    "abstract": "360 depth estimation has recently received great attention for 3D reconstruction owing to its omnidirectional field of view (FoV). Recent approaches are predominantly focused on cross-projection fusion with geometry-based reprojection: they fuse 360 images with equirectangular projection (ERP) and another projection type, e.g., cubemap projection to estimate depth with the ERP format. However, these methods suffer from 1) limited local receptive fields, making it hardly possible to capture large FoV scenes, and 2) prohibitive computational cost, caused by the complex cross-projection fusion module design. In this paper, we propose Elite360D, a novel framework that inputs the ERP image and icosahedron projection (ICOSAP) point set, which is undistorted and spatially continuous. Elite360D is superior in its capacity in learning a representation from a local-with-global perspective. With a flexible ERP image encoder, it includes an ICOSAP point encoder, and a Biprojection Bi-attention Fusion (B2F) module (totally ~1M parameters). Specifically, the ERP image encoder can take various perspective image-trained backbones (e.g., ResNet, Transformer) to extract local features. The point encoder extracts the global features from the ICOSAP. Then, the B2F module captures the semantic- and distance-aware dependencies between each pixel of the ERP feature and the entire ICOSAP feature set. Without specific backbone design and obvious computational cost increase, Elite360D outperforms the prior arts on several benchmark datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5277d2f3d573841a89815dd24027f73bfd12fc73",
+    "externalIds": {
+      "DBLP": "conf/cvpr/YuHJF023",
+      "ArXiv": "2305.09078",
+      "DOI": "10.1109/CVPR52729.2023.00091",
+      "CorpusId": 258715304
+    },
+    "title": "PanelNet: Understanding 360 Indoor Environment via Panel Representation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.09078",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.09078, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149179144",
+        "name": "Haozheng Yu"
+      },
+      {
+        "authorId": "2179305137",
+        "name": "Lu He"
+      },
+      {
+        "authorId": "2183261",
+        "name": "B. Jian"
+      },
+      {
+        "authorId": "2179281329",
+        "name": "Weiwei Feng"
+      },
+      {
+        "authorId": "50152558",
+        "name": "Shanghua Liu"
+      }
+    ],
+    "abstract": "Indoor 360 panoramas have two essential properties. (1) The panoramas are continuous and seamless in the horizontal direction. (2) Gravity plays an important role in indoor environment design. By leveraging these properties, we present PanelNet, a framework that understands indoor environments using a novel panel representation of 360 images. We represent an equirectangular projection (ERP) as consecutive vertical panels with corresponding 3D panel geometry. To reduce the negative impact of panoramic distortion, we incorporate a panel geometry embedding network that encodes both the local and global geometric features of a panel. To capture the geometric context in room design, we introduce Local2Global Transformer, which aggregates local information within a panel and panel-wise global context. It greatly improves the model performance with low training overhead. Our method outperforms existing methods on indoor 360 depth estimation and shows competitive results against state-of-the-art approaches on the task of indoor layout estimation and semantic segmentation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7c059348d7f77847db177f75ee7806a13c104f50",
+    "externalIds": {
+      "DBLP": "conf/iccv/YunSLLR23",
+      "ArXiv": "2304.07803",
+      "DOI": "10.1109/ICCV51070.2023.00561",
+      "CorpusId": 258179758
+    },
+    "title": "EGformer: Equirectangular Geometry-biased Transformer for 360 Depth Estimation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.07803",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.07803, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2164423790",
+        "name": "Ilwi Yun"
+      },
+      {
+        "authorId": "2184170113",
+        "name": "Chanyong Shin"
+      },
+      {
+        "authorId": "2203027334",
+        "name": "Hyunku Lee"
+      },
+      {
+        "authorId": "2279768829",
+        "name": "Hyuk-Jae Lee"
+      },
+      {
+        "authorId": "33225025",
+        "name": "Chae-Eun Rhee"
+      }
+    ],
+    "abstract": "Estimating the depths of equirectangular (i.e., 360°) images (EIs) is challenging given the distorted 180° × 360° field-of-view, which is hard to be addressed via convolutional neural network (CNN). Although a transformer with global attention achieves significant improvements over CNN for EI depth estimation task, it is computationally inefficient, which raises the need for transformer with local attention. However, to apply local attention successfully for EIs, a specific strategy, which addresses distorted equirectangular geometry and limited receptive field simultaneously, is required. Prior works have only cared either of them, resulting in unsatisfactory depths occasionally. In this paper, we propose an equirectangular geometry-biased transformer termed EGformer. While limiting the computational cost and the number of network parameters, EGformer enables the extraction of the equirectangular geometry-aware local attention with a large receptive field. To achieve this, we actively utilize the equirectangular geometry as the bias for the local attention instead of struggling to reduce the distortion of EIs. As compared to the most recent EI depth estimation studies, the proposed approach yields the best depth outcomes overall with the lowest computational cost and the fewest parameters, demonstrating the effectiveness of the proposed methods.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "25c32783e132a3ed2dfa968f2416588422415ea2",
+    "externalIds": {
+      "ArXiv": "2303.11616",
+      "DBLP": "conf/cvpr/AiCCSW23",
+      "DOI": "10.1109/CVPR52729.2023.01275",
+      "CorpusId": 257636739
+    },
+    "title": "HRDFuse: Monocular 360° Depth Estimation by Collaboratively Learning Holistic-with-Regional Depth Distributions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.11616",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.11616, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117509694",
+        "name": "Hao Ai"
+      },
+      {
+        "authorId": "2114000180",
+        "name": "Zidong Cao"
+      },
+      {
+        "authorId": "2157429990",
+        "name": "Yan-Pei Cao"
+      },
+      {
+        "authorId": "1387190008",
+        "name": "Ying Shan"
+      },
+      {
+        "authorId": "2168616303",
+        "name": "Lin Wang"
+      }
+    ],
+    "abstract": "Depth estimation from a monocular 360° image is a burgeoning problem owing to its holistic sensing of a scene. Recently, some methods, e.g., OmniFusion, have applied the tangent projection (TP) to represent a 360° image and predicted depth values via patch-wise regressions, which are merged to get a depth map with equirectangular projection (ERP) format. However, these methods suffer from 1) non-trivial process of merging plenty of patches; 2) capturing less holistic-with-regional contextual information by directly regressing the depth value of each pixel. In this paper, we propose a novel framework, HRDFuse, that subtly combines the potential of convolutional neural networks (CNNs) and transformers by collaboratively learning the holistic contextual information from the ERP and the regional structural information from the TP. Firstly, we propose a spatial feature alignment (SFA) module that learns feature similarities between the TP and ERP to aggregate the TP features into a complete ERP feature map in a pixelwise manner. Secondly, we propose a collaborative depth distribution classification (CDDC) module that learns the holistic-with-regional histograms capturing the ERP and TP depth distributions. As such, the final depth values can be predicted as a linear combination of histogram bin centers. Lastly, we adaptively combine the depth predictions from ERP and TP to obtain the final depth map. Extensive experiments show that our method predicts more smooth and accurate depth results while achieving favorably better results than the SOTA methods.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "641d7866db6691e22aa36de5c8ba05804233c016",
+    "externalIds": {
+      "ArXiv": "2302.12242",
+      "DBLP": "conf/cvpr/XuZWHB23",
+      "DOI": "10.1109/CVPR52729.2023.00288",
+      "CorpusId": 257102616
+    },
+    "title": "Side Adapter Network for Open-Vocabulary Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 421,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2302.12242",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.12242, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153140227",
+        "name": "Mengde Xu"
+      },
+      {
+        "authorId": "1852415",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "2480483",
+        "name": "Fangyun Wei"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2117845424",
+        "name": "Xiang Bai"
+      }
+    ],
+    "abstract": "This paper presents a new framework for open-vocabulary semantic segmentation with the pre-trained vision-language model, named Side Adapter Network (SAN). Our approach models the semantic segmentation task as a region recognition problem. A side network is attached to a frozen CLIP model with two branches: one for predicting mask proposals, and the other for predicting attention bias which is applied in the CLIP model to recognize the class of masks. This decoupled design has the benefit CLIP in recognizing the class of mask proposals. Since the attached side network can reuse CLIP features, it can be very light. In addition, the entire network can be trained end-to-end, allowing the side network to be adapted to the frozen CLIP model, which makes the predicted mask proposals CLIP-aware. Our approach is fast, accurate, and only adds a few additional trainable parameters. We evaluate our approach on multiple semantic segmentation benchmarks. Our method significantly outperforms other counterparts, with up to 18 times fewer trainable parameters and 19 times faster inference speed. Fig. 1 shows some visualization results on ImageNet. We hope our approach will serve as a solid baseline and help ease future research in open-vocabulary semantic segmentation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "47d08964acb2b78d69c100455a9384bacb3e5c22",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-01595",
+      "ArXiv": "2210.01595",
+      "DOI": "10.1109/ICRA48891.2023.10161142",
+      "CorpusId": 252693460
+    },
+    "title": "FreDSNet: Joint Monocular Depth and Semantic Segmentation with Fast Fourier Convolutions from Single Panoramas",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2022,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "https://zaguan.unizar.es/record/131266/files/texto_completo.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.01595, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1626264425",
+        "name": "Bruno Berenguel-Baeta"
+      },
+      {
+        "authorId": "1403057510",
+        "name": "J. Bermudez-Cameo"
+      },
+      {
+        "authorId": "1753581",
+        "name": "J. J. Guerrero"
+      }
+    ],
+    "abstract": "In this work we present FreDSNet, a deep learning solution which obtains semantic 3D understanding of indoor environments from single panoramas. Omnidirectional images reveal task-specific advantages when addressing scene understanding problems due to the 360-degree contextual information about the entire environment they provide. However, the inherent characteristics of the omnidirectional images add additional problems to obtain an accurate detection and segmentation of objects or a good depth estimation. To overcome these problems, we exploit convolutions in the frequential domain obtaining a wider receptive field in each convolutional layer. These convolutions allow to leverage the whole context information from omnidirectional images. FreDSNet is the first network that jointly provides monocular depth estimation and semantic segmentation from a single panoramic image exploiting fast Fourier convolutions. Our experiments show that FreDSNet has slight better performance than the sole state-of-the-art method that obtains both semantic segmentation and depth estimation from panoramas. FreDSNet code is publicly available in https://github.com/Sbrunoberenguel/FreDSNet",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8c277af2c55cf6f13d91f2e304a0f2d14b6cf7b3",
+    "externalIds": {
+      "ArXiv": "2209.02952",
+      "DBLP": "journals/pami/WangYTCS23",
+      "DOI": "10.1109/TPAMI.2022.3203516",
+      "CorpusId": 252010287,
+      "PubMed": "36049011"
+    },
+    "title": "BiFuse++: Self-Supervised and Efficient Bi-Projection Fusion for 360° Depth Estimation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2022,
+    "citationCount": 59,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.02952",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.02952, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3459139",
+        "name": "Fu-En Wang"
+      },
+      {
+        "authorId": "2059969654",
+        "name": "Yu-Hsuan Yeh"
+      },
+      {
+        "authorId": "2580349",
+        "name": "Yi-Hsuan Tsai"
+      },
+      {
+        "authorId": "37811787",
+        "name": "Wei-Chen Chiu"
+      },
+      {
+        "authorId": "145718481",
+        "name": "Min Sun"
+      }
+    ],
+    "abstract": "Due to the rise of spherical cameras, monocular 360<inline-formula><tex-math notation=\"LaTeX\">$^\\circ$</tex-math><alternatives><mml:math><mml:msup><mml:mrow/><mml:mo>∘</mml:mo></mml:msup></mml:math><inline-graphic xlink:href=\"wang-ieq1-3203516.gif\"/></alternatives></inline-formula> depth estimation becomes an important technique for many applications (e.g., autonomous systems). Thus, state-of-the-art frameworks for monocular 360<inline-formula><tex-math notation=\"LaTeX\">$^\\circ$</tex-math><alternatives><mml:math><mml:msup><mml:mrow/><mml:mo>∘</mml:mo></mml:msup></mml:math><inline-graphic xlink:href=\"wang-ieq2-3203516.gif\"/></alternatives></inline-formula> depth estimation such as bi-projection fusion in BiFuse are proposed. To train such a framework, a large number of panoramas along with the corresponding depth ground truths captured by laser sensors are required, which highly increases the cost of data collection. Moreover, since such a data collection procedure is time-consuming, the scalability of extending these methods to different scenes becomes a challenge. To this end, self-training a network for monocular depth estimation from 360<inline-formula><tex-math notation=\"LaTeX\">$^\\circ$</tex-math><alternatives><mml:math><mml:msup><mml:mrow/><mml:mo>∘</mml:mo></mml:msup></mml:math><inline-graphic xlink:href=\"wang-ieq3-3203516.gif\"/></alternatives></inline-formula> videos is one way to alleviate this issue. However, there are no existing frameworks that incorporate bi-projection fusion into the self-training scheme, which highly limits the self-supervised performance since bi-projection fusion can leverage information from different projection types. In this paper, we propose BiFuse++ to explore the combination of bi-projection fusion and the self-training scenario. To be specific, we propose a new fusion module and Contrast-Aware Photometric Loss to improve the performance of BiFuse and increase the stability of self-training on real-world videos. We conduct both supervised and self-supervised experiments on benchmark datasets and achieve state-of-the-art performance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "63df46ace36c030fa45c64b0d219df8ba8d2692c",
+    "externalIds": {
+      "DBLP": "conf/eccv/ZhaoWXG22",
+      "ArXiv": "2207.09291",
+      "DOI": "10.48550/arXiv.2207.09291",
+      "CorpusId": 250644114
+    },
+    "title": "3D Room Layout Estimation from a Cubemap of Panorama Image via Deep Manhattan Hough Transform",
+    "venue": "European Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.09291",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.09291, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118978342",
+        "name": "Yining Zhao"
+      },
+      {
+        "authorId": "1904033375",
+        "name": "Chao Wen"
+      },
+      {
+        "authorId": "2052285971",
+        "name": "Zhou Xue"
+      },
+      {
+        "authorId": "2143411307",
+        "name": "Yue Gao"
+      }
+    ],
+    "abstract": "Significant geometric structures can be compactly described by global wireframes in the estimation of 3D room layout from a single panoramic image. Based on this observation, we present an alternative approach to estimate the walls in 3D space by modeling long-range geometric patterns in a learnable Hough Transform block. We transform the image feature from a cubemap tile to the Hough space of a Manhattan world and directly map the feature to the geometric output. The convolutional layers not only learn the local gradient-like line features, but also utilize the global information to successfully predict occluded walls with a simple network structure. Unlike most previous work, the predictions are performed individually on each cubemap tile, and then assembled to get the layout estimation. Experimental results show that we achieve comparable results with recent state-of-the-art in prediction accuracy and performance. Code is available at https://github.com/Starrah/DMH-Net.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "678dd2fa4a726d9ed014d76e69d5271eb9f818f2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2205-05570",
+      "ArXiv": "2205.05570",
+      "DOI": "10.1109/TIM.2022.3216675",
+      "CorpusId": 248693612
+    },
+    "title": "Review on Panoramic Imaging and Its Applications in Scene Understanding",
+    "venue": "IEEE Transactions on Instrumentation and Measurement",
+    "year": 2022,
+    "citationCount": 112,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.05570",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.05570, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2112313423",
+        "name": "Shaohua Gao"
+      },
+      {
+        "authorId": "8689702",
+        "name": "Kailun Yang"
+      },
+      {
+        "authorId": "2034192426",
+        "name": "Haowen Shi"
+      },
+      {
+        "authorId": "7200505",
+        "name": "Kaiwei Wang"
+      },
+      {
+        "authorId": "143669467",
+        "name": "J. Bai"
+      }
+    ],
+    "abstract": "With the rapid development of high-speed communication and artificial intelligence technologies, human perception of real-world scenes is no longer limited to the use of small Field of View (FoV) and low-dimensional scene detection devices. Panoramic imaging emerges as the next generation of innovative intelligent instruments for environmental perception and measurement. However, while satisfying the need for large-FoV photographic imaging, panoramic imaging instruments are expected to have high resolution, no blind area, miniaturization, and multidimensional intelligent perception and can be combined with artificial intelligence methods toward the next generation of intelligent instruments, enabling deeper understanding and more holistic perception of 360° real-world surrounding environments. Fortunately, recent advances in freeform surfaces, thin-plate optics, and metasurfaces provide innovative approaches to address the human perception of the environment, offering promising ideas beyond conventional optical imaging. In this review, we begin by introducing the basic principles of panoramic imaging systems and then describe the architectures, features, and functions of various panoramic imaging systems. Afterward, we discuss, in detail, the broad application prospects and great design potential of freeform surfaces, thin-plate optics, and metasurfaces in panoramic imaging. We then provide a detailed analysis of how these techniques can help enhance the performance of panoramic imaging systems. We further offer a detailed analysis of applications of panoramic imaging in scene understanding for autonomous driving and robotics, spanning panoramic semantic image segmentation, panoramic depth estimation, panoramic visual localization, and so on. Finally, we cast a perspective on future potential and research directions for panoramic imaging instruments.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "246e4b7a3dafedefc99070718e629a9ecef1b842",
+    "externalIds": {
+      "ArXiv": "2203.09283",
+      "DBLP": "journals/corr/abs-2203-09283",
+      "DOI": "10.48550/arXiv.2203.09283",
+      "CorpusId": 247519181
+    },
+    "title": "PanoFormer: Panorama Transformer for Indoor 360° Depth Estimation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 136,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.09283",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.09283, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2096286",
+        "name": "Zhijie Shen"
+      },
+      {
+        "authorId": "49043799",
+        "name": "Chunyu Lin"
+      },
+      {
+        "authorId": "1491637046",
+        "name": "K. Liao"
+      },
+      {
+        "authorId": "2034846820",
+        "name": "Lang Nie"
+      },
+      {
+        "authorId": "120964446",
+        "name": "Zishuo Zheng"
+      },
+      {
+        "authorId": "2129511552",
+        "name": "Yao Zhao"
+      }
+    ],
+    "abstract": "Existing panoramic depth estimation methods based on convolutional neural networks (CNNs) focus on removing panoramic distortions, failing to perceive panoramic structures efficiently due to the fixed receptive field in CNNs. This paper proposes the panorama transformer (named PanoFormer) to estimate the depth in panorama images, with tangent patches from spherical domain, learnable token flows, and panorama specific metrics. In particular, we divide patches on the spherical tangent domain into tokens to reduce the negative effect of panoramic distortions. Since the geometric structures are essential for depth estimation, a self-attention module is redesigned with an additional learnable token flow. In addition, considering the characteristic of the spherical domain, we present two panorama-specific metrics to comprehensively evaluate the panoramic depth estimation models' performance. Extensive experiments demonstrate that our approach significantly outperforms the state-of-the-art (SOTA) methods. Furthermore, the proposed method can be effectively extended to solve semantic panorama segmentation, a similar pixel2pixel task. Code will be available.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "8b26a34f6149b2e99ef1588611dff77d4b550d9c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-00838",
+      "ArXiv": "2203.00838",
+      "DOI": "10.1109/CVPR52688.2022.00282",
+      "CorpusId": 247218344
+    },
+    "title": "OmniFusion: 360 Monocular Depth Estimation via Geometry-Aware Fusion",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 103,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2203.00838",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.00838, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110445566",
+        "name": "Yu-yang Li"
+      },
+      {
+        "authorId": "2273989211",
+        "name": "Yuliang Guo"
+      },
+      {
+        "authorId": "1576178033",
+        "name": "Zhixin Yan"
+      },
+      {
+        "authorId": "2257812",
+        "name": "Xinyu Huang"
+      },
+      {
+        "authorId": "2151245011",
+        "name": "Ye Duan"
+      },
+      {
+        "authorId": "2066671106",
+        "name": "Liu Ren"
+      }
+    ],
+    "abstract": "A well-known challenge in applying deep-learning methods to omnidirectional images is spherical distortion. In dense regression tasks such as depth estimation, where structural details are required, using a vanilla CNN layer on the distorted 360 image results in undesired information loss. In this paper, we propose a 360 monocular depth estimation pipeline, OmniFusion, to tackle the spherical distortion issue. Our pipeline transforms a 360 image into less-distorted perspective patches (i.e. tangent images) to obtain patch-wise predictions via CNN, and then merge the patch-wise results for final output. To handle the discrepancy between patch-wise predictions which is a major issue affecting the merging quality, we propose a new framework with the following key components. First, we propose a geometry-aware feature fusion mechanism that combines 3D geometric features with 2D image features to compensate for the patch-wise discrepancy. Second, we employ the self-attention-based transformer architecture to conduct a global aggregation of patch-wise information, which further improves the consistency. Last, we introduce an iterative depth refinement mechanism, to further refine the estimated depth based on the more accurate geometric features. Experiments show that our method greatly mitigates the distortion issue, and achieves state-of-the-art performances on several 360 monocular depth estimation benchmark datasets. Our code is available at https://github.com/yuyanli0831/OmniFusion.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "92951ea82ea84f91d188e60695c452fad81440f7",
+    "externalIds": {
+      "ArXiv": "2202.02796",
+      "DBLP": "journals/corr/abs-2202-02796",
+      "DOI": "10.1109/TIP.2024.3386403",
+      "CorpusId": 246634727,
+      "PubMed": "38619939"
+    },
+    "title": "GLPanoDepth: Global-to-Local Panoramic Depth Estimation",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2022,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2202.02796",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.02796, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113829327",
+        "name": "Jia-Chi Bai"
+      },
+      {
+        "authorId": "2146349213",
+        "name": "Shuichang Lai"
+      },
+      {
+        "authorId": "71660806",
+        "name": "Haoyu Qin"
+      },
+      {
+        "authorId": "2117062812",
+        "name": "Jie Guo"
+      },
+      {
+        "authorId": "1720424",
+        "name": "Yanwen Guo"
+      }
+    ],
+    "abstract": "Depth estimation is a fundamental task in many vision applications. With the popularity of omnidirectional cameras, it becomes a new trend to tackle this problem in the spherical space. In this paper, we propose a learning-based method for predicting dense depth values of a scene from a monocular omnidirectional image. An omnidirectional image has a full field-of-view, providing much more complete descriptions of the scene than perspective images. However, fully-convolutional networks that most current solutions rely on fail to capture rich global contexts from the panorama. To address this issue and also the distortion of equirectangular projection in the panorama, we propose Cubemap Vision Transformers (CViT), a new transformer-based architecture that can model long-range dependencies and extract distortion-free global features from the panorama. We show that cubemap vision transformers have a global receptive field at every stage and can provide globally coherent predictions for spherical signals. As a general architecture, it removes any restriction that has been imposed on the panorama in many other monocular panoramic depth estimation methods. To preserve important local features, we further design a convolution-based branch in our pipeline (dubbed GLPanoDepth) and fuse global features from cubemap vision transformers at multiple scales. This global-to-local strategy allows us to fully exploit useful global and local features in the panorama, achieving state-of-the-art performance in panoramic depth estimation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c125576a80314792200b6cf9680c47973c4e28b7",
+    "externalIds": {
+      "ArXiv": "2111.15669",
+      "DBLP": "journals/corr/abs-2111-15669",
+      "DOI": "10.1109/CVPR52688.2022.00374",
+      "CorpusId": 244802875
+    },
+    "title": "360MonoDepth: High-Resolution 360° Monocular Depth Estimation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 104,
+    "openAccessPdf": {
+      "url": "https://purehost.bath.ac.uk/ws/files/232606163/360monodepth.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.15669, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1703079153",
+        "name": "M. Rey-Area"
+      },
+      {
+        "authorId": "5492066",
+        "name": "Mingze Yuan"
+      },
+      {
+        "authorId": "1819028",
+        "name": "Christian Richardt"
+      }
+    ],
+    "abstract": "360° cameras can capture complete environments in a single shot, which makes 360° imagery alluring in many computer vision tasks. However, monocular depth estimation remains a challenge for 360° data, particularly for high resolutions like 2K (2048 × 1 024) and beyond that are important for novel-view synthesis and virtual reality applications. Current CNN-based methods do not support such high resolutions due to limited GPU memory. In this work, we propose aflexible framework for monocular depth estimation from high-resolution 360° images using tangent images. We project the 360° input image onto a set of tangent planes that produce perspective views, which are suitable for the latest, most accurate state-of-the-art perspective monocular depth estimators. To achieve globally consistent disparity estimates, we recombine the individual depth estimates using deformable multi-scale alignment followed by gradient-domain blending. The result is a dense, high-resolution 360° depth map with a high level of detail, also for outdoor scenes which are not supported by existing methods. Our source code and data are available at https://manurare.github.io/360monodepth/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "061359df26f0326ba13ad2e79d1b81f66269abb4",
+    "externalIds": {
+      "ArXiv": "2203.09733",
+      "DBLP": "conf/icmcs/ShenLNLZ21",
+      "MAG": "3171179033",
+      "DOI": "10.1109/ICME51207.2021.9428385",
+      "CorpusId": 236265764
+    },
+    "title": "Distortion-Tolerant Monocular Depth Estimation on Omnidirectional Images Using Dual-Cubemap",
+    "venue": "IEEE International Conference on Multimedia and Expo",
+    "year": 2021,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2203.09733",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.09733, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2096286",
+        "name": "Zhijie Shen"
+      },
+      {
+        "authorId": "49043799",
+        "name": "Chunyu Lin"
+      },
+      {
+        "authorId": "2034846820",
+        "name": "Lang Nie"
+      },
+      {
+        "authorId": "1491637046",
+        "name": "K. Liao"
+      },
+      {
+        "authorId": "2129511552",
+        "name": "Yao Zhao"
+      }
+    ],
+    "abstract": "Estimating the depth of omnidirectional images is more challenging than that of normal field-of-view (NFoV) images because the varying distortion can significantly twist an object’s shape. The existing methods suffer from troublesome distortion while estimating the depth of omnidirectional images, leading to inferior performance. To reduce the negative impact of the distortion influence, we propose a distortion-tolerant omnidirectional depth estimation algorithm using a dual-cubemap. It comprises two modules: Dual-Cubemap Depth Estimation (DCDE) module and Boundary Revision (BR) module. In DCDE module, we present a rotation-based dual-cubemap model to estimate the accurate NFoV depth, reducing the distortion at the cost of boundary discontinuity on omnidirectional depths. Then a boundary revision module is designed to smooth the discontinuous boundaries, which contributes to the precise and visually continuous omnidirectional depths. Extensive experiments demonstrate the superiority of our method over other state-of-the-art solutions.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4aa88c1406414cda3ce9cf76c8af0abaa8391760",
+    "externalIds": {
+      "ArXiv": "2106.14405",
+      "DBLP": "conf/nips/SzotCUWZTMMCMGV21",
+      "CorpusId": 235658123
+    },
+    "title": "Habitat 2.0: Training Home Assistants to Rearrange their Habitat",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 698,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.14405, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1580188581",
+        "name": "Andrew Szot"
+      },
+      {
+        "authorId": "30933599",
+        "name": "Alexander Clegg"
+      },
+      {
+        "authorId": "29994440",
+        "name": "Eric Undersander"
+      },
+      {
+        "authorId": "2065670046",
+        "name": "Erik Wijmans"
+      },
+      {
+        "authorId": "2329715592",
+        "name": "Yili Zhao"
+      },
+      {
+        "authorId": "2115151351",
+        "name": "John Turner"
+      },
+      {
+        "authorId": "2115317784",
+        "name": "Noah Maestre"
+      },
+      {
+        "authorId": "2874057",
+        "name": "Mustafa Mukadam"
+      },
+      {
+        "authorId": "2328602",
+        "name": "Devendra Singh Chaplot"
+      },
+      {
+        "authorId": "90536527",
+        "name": "Oleksandr Maksymets"
+      },
+      {
+        "authorId": "8278433",
+        "name": "Aaron Gokaslan"
+      },
+      {
+        "authorId": "2115312567",
+        "name": "Vladimír Vondruš"
+      },
+      {
+        "authorId": "31340289",
+        "name": "Sameer Dharur"
+      },
+      {
+        "authorId": "153145615",
+        "name": "F. Meier"
+      },
+      {
+        "authorId": "2247475930",
+        "name": "Wojciech Galuba"
+      },
+      {
+        "authorId": "145830541",
+        "name": "Angel X. Chang"
+      },
+      {
+        "authorId": "145276578",
+        "name": "Z. Kira"
+      },
+      {
+        "authorId": "145231047",
+        "name": "V. Koltun"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      },
+      {
+        "authorId": "2295141",
+        "name": "M. Savva"
+      },
+      {
+        "authorId": "1746610",
+        "name": "Dhruv Batra"
+      }
+    ],
+    "abstract": "We introduce Habitat 2.0 (H2.0), a simulation platform for training virtual robots in interactive 3D environments and complex physics-enabled scenarios. We make comprehensive contributions to all levels of the embodied AI stack - data, simulation, and benchmark tasks. Specifically, we present: (i) ReplicaCAD: an artist-authored, annotated, reconfigurable 3D dataset of apartments (matching real spaces) with articulated objects (e.g. cabinets and drawers that can open/close); (ii) H2.0: a high-performance physics-enabled 3D simulator with speeds exceeding 25,000 simulation steps per second (850x real-time) on an 8-GPU node, representing 100x speed-ups over prior work; and, (iii) Home Assistant Benchmark (HAB): a suite of common tasks for assistive robots (tidy the house, prepare groceries, set the table) that test a range of mobile manipulation capabilities. These large-scale engineering contributions allow us to systematically compare deep reinforcement learning (RL) at scale and classical sense-plan-act (SPA) pipelines in long-horizon structured tasks, with an emphasis on generalization to new objects, receptacles, and layouts. We find that (1) flat RL policies struggle on HAB compared to hierarchical ones; (2) a hierarchy with independent skills suffers from 'hand-off problems', and (3) SPA pipelines are more brittle than RL policies.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a868b61f141bce392a15b8db1a79a658ad03661e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/PintoreAASG21",
+      "DOI": "10.1109/CVPR46437.2021.01137",
+      "CorpusId": 235679277
+    },
+    "title": "SliceNet: deep dense depth estimation from a single indoor panorama using a slice-based representation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 95,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR46437.2021.01137?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR46437.2021.01137, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1778838",
+        "name": "G. Pintore"
+      },
+      {
+        "authorId": "16308166",
+        "name": "Eva Almansa"
+      },
+      {
+        "authorId": "2257161024",
+        "name": "J. Schneider"
+      }
+    ],
+    "abstract": "We introduce a novel deep neural network to estimate a depth map from a single monocular indoor panorama. The network directly works on the equirectangular projection, exploiting the properties of indoor 360° images. Starting from the fact that gravity plays an important role in the design and construction of man-made indoor scenes, we propose a compact representation of the scene into vertical slices of the sphere, and we exploit long- and short-term relationships among slices to recover the equirectangular depth map. Our design makes it possible to maintain high-resolution information in the extracted features even with a deep network. The experimental results demonstrate that our method outperforms current state-of-the-art solutions in prediction accuracy, particularly for real-world data.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3dc996928c4e4c64cb98b877cf827ce8413f5c4b",
+    "externalIds": {
+      "ArXiv": "2104.00568",
+      "DBLP": "conf/cvpr/WangYSCT21",
+      "DOI": "10.1109/CVPR46437.2021.01276",
+      "CorpusId": 232478504
+    },
+    "title": "LED2-Net: Monocular 360° Layout Estimation via Differentiable Depth Rendering",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 62,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.00568, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3459139",
+        "name": "Fu-En Wang"
+      },
+      {
+        "authorId": "2059969654",
+        "name": "Yu-Hsuan Yeh"
+      },
+      {
+        "authorId": "145718481",
+        "name": "Min Sun"
+      },
+      {
+        "authorId": "37811787",
+        "name": "Wei-Chen Chiu"
+      },
+      {
+        "authorId": "2580349",
+        "name": "Yi-Hsuan Tsai"
+      }
+    ],
+    "abstract": "Although significant progress has been made in room layout estimation, most methods aim to reduce the loss in the 2D pixel coordinate rather than exploiting the room structure in the 3D space. Towards reconstructing the room layout in 3D, we formulate the task of 360° layout estimation as a problem of predicting depth on the horizon line of a panorama. Specifically, we propose the Differentiable Depth Rendering procedure to make the conversion from layout to depth prediction differentiable, thus making our proposed model end-to-end trainable while leveraging the 3D geometric information, without the need of providing the ground truth depth. Our method achieves state-of-the-art performance on numerous 360° layout benchmark datasets. Moreover, our formulation enables a pre-training step on the depth dataset, which further improves the generalizability of our layout estimation model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6e216a1789499e7fc47129dfcfa631599e782a27",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-03550",
+      "ArXiv": "2102.03550",
+      "DOI": "10.1109/LRA.2021.3058957",
+      "CorpusId": 231846497
+    },
+    "title": "UniFuse: Unidirectional Fusion for 360° Panorama Depth Estimation",
+    "venue": "IEEE Robotics and Automation Letters",
+    "year": 2021,
+    "citationCount": 156,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2102.03550",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.03550, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1490773707",
+        "name": "Hualie Jiang"
+      },
+      {
+        "authorId": "49101627",
+        "name": "Zhe Sheng"
+      },
+      {
+        "authorId": "2788528",
+        "name": "Siyu Zhu"
+      },
+      {
+        "authorId": "2541151",
+        "name": "Zilong Dong"
+      },
+      {
+        "authorId": "1516136186",
+        "name": "Rui Huang"
+      }
+    ],
+    "abstract": "Learning depth from spherical panoramas is becoming a popular research topic because a panorama has a full field-of-view of the environment and provides a relatively complete description of a scene. However, applying well-studied CNNs for perspective images to the standard representation of spherical panoramas, i.e., the equirectangular projection, is suboptimal, as it becomes distorted towards the poles. Another representation is the cubemap projection, which is distortion-free but discontinued on edges and limited in the field-of-view. This letter introduces a new framework to fuse features from the two projections, unidirectionally feeding the cubemap features to the equirectangular features only at the decoding stage. Unlike the recent bidirectional fusion approach operating at both the encoding and decoding stages, our fusion scheme is much more efficient. Besides, we also designed a more effective fusion module for our fusion scheme. Experiments verify the effectiveness of our proposed fusion strategy and module, and our model achieves state-of-the-art performance on four popular datasets. Additional experiments show that our model also has the advantages of model complexity and generalization capability.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4e35f47d7658d0cf6bfd97cc66045691bd596246",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2011-11498",
+      "ArXiv": "2011.11498",
+      "MAG": "3109126057",
+      "DOI": "10.1109/CVPR46437.2021.00260",
+      "CorpusId": 227126786
+    },
+    "title": "HoHoNet: 360 Indoor Holistic Understanding with Latent Horizontal Features",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 161,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2011.11498",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.11498, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118830989",
+        "name": "Cheng Sun"
+      },
+      {
+        "authorId": "145718481",
+        "name": "Min Sun"
+      },
+      {
+        "authorId": "1803730",
+        "name": "Hwann-Tzong Chen"
+      }
+    ],
+    "abstract": "We present HoHoNet, a versatile and efficient framework for holistic understanding of an indoor 360-degree panorama using a Latent Horizontal Feature (LHFeat). The compact LHFeat flattens the features along the vertical direction and has shown success in modeling per-column modality for room layout reconstruction. HoHoNet advances in two important aspects. First, the deep architecture is redesigned to run faster with improved accuracy. Second, we propose a novel horizon-to-dense module, which relaxes the per-column output shape constraint, allowing per-pixel dense prediction from LHFeat. HoHoNet is fast: It runs at 52 FPS and 110 FPS with ResNet-50 and ResNet-34 backbones respectively, for modeling dense modalities from a high-resolution 512 × 1024 panorama. HoHoNet is also accurate. On the tasks of layout estimation and semantic segmentation, HoHoNet achieves results on par with current state-of-the-art. On dense depth estimation, HoHoNet outperforms all the prior arts by a large margin. Code is available at https://github.com/sunset1995/HoHoNet.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "b5762b2034ac83c664398f93d1bb750e133cebc9",
+    "externalIds": {
+      "DBLP": "conf/eccv/PintoreAG20",
+      "MAG": "3047878062",
+      "DOI": "10.1007/978-3-030-58598-3_26",
+      "CorpusId": 222072576
+    },
+    "title": "AtlantaNet: Inferring the 3D Indoor Layout from a Single $360^\\circ $ Image Beyond the Manhattan World Assumption",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-030-58598-3_26?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-030-58598-3_26, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1778838",
+        "name": "G. Pintore"
+      },
+      {
+        "authorId": "144346127",
+        "name": "Marco Agus"
+      },
+      {
+        "authorId": "1708999",
+        "name": "E. Gobbetti"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16bda011bb41a6acddb2b6fbc95f305184300153",
+    "externalIds": {
+      "DBLP": "conf/cvpr/WangYSCT20",
+      "MAG": "3034728336",
+      "DOI": "10.1109/CVPR42600.2020.00054",
+      "CorpusId": 219963198
+    },
+    "title": "BiFuse: Monocular 360 Depth Estimation via Bi-Projection Fusion",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 204,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR42600.2020.00054?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR42600.2020.00054, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3459139",
+        "name": "Fu-En Wang"
+      },
+      {
+        "authorId": "2059969654",
+        "name": "Yu-Hsuan Yeh"
+      },
+      {
+        "authorId": "145718481",
+        "name": "Min Sun"
+      },
+      {
+        "authorId": "37811787",
+        "name": "Wei-Chen Chiu"
+      },
+      {
+        "authorId": "2580349",
+        "name": "Yi-Hsuan Tsai"
+      }
+    ],
+    "abstract": "Depth estimation from a monocular 360 image is an emerging problem that gains popularity due to the availability of consumer-level 360 cameras and the complete surrounding sensing capability. While the standard of 360 imaging is under rapid development, we propose to predict the depth map of a monocular 360 image by mimicking both peripheral and foveal vision of the human eye. To this end, we adopt a two-branch neural network leveraging two common projections: equirectangular and cubemap projections. In particular, equirectangular projection incorporates a complete field-of-view but introduces distortion, whereas cubemap projection avoids distortion but introduces discontinuity at the boundary of the cube. Thus we propose a bi-projection fusion scheme along with learnable masks to balance the feature map from the two projections. Moreover, for the cubemap projection, we propose a spherical padding procedure which mitigates discontinuity at the boundary of each face. We apply our method to four panorama datasets and show favorable results against the existing state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b68a5f6f0916573fdb09e070dde1811b42a8a6db",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2007-01475",
+      "MAG": "3039379124",
+      "ArXiv": "2007.01475",
+      "DOI": "10.1109/ICRA40945.2020.9197123",
+      "CorpusId": 221848568
+    },
+    "title": "Omnidirectional Depth Extension Networks",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2020,
+    "citationCount": 31,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.01475, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40898589",
+        "name": "Xinjing Cheng"
+      },
+      {
+        "authorId": "145498821",
+        "name": "Peng Wang"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "51226237",
+        "name": "Chenye Guan"
+      },
+      {
+        "authorId": "38958903",
+        "name": "Ruigang Yang"
+      }
+    ],
+    "abstract": "Omnidirectional 360° camera proliferates rapidly for autonomous robots since it significantly enhances the perception ability by widening the field of view (FoV). However, corresponding 360° depth sensors, which are also critical for the perception system, are still difficult or expensive to have. In this paper, we propose a low-cost 3D sensing system that combines an omnidirectional camera with a calibrated projective depth camera, where the depth from the limited FoV can be automatically extended to the rest of recorded omnidirectional image. To accurately recover the missing depths, we design an omnidirectional depth extension convolutional neural network (ODE-CNN), in which a spherical feature transform layer (SFTL) is embedded at the end of feature encoding layers, and a deformable convolutional spatial propagation network (D-CSPN) is appended at the end of feature decoding layers. The former re-samples the neighborhood of each pixel in the omnidirectional coordination to the projective coordination, which reduce the difficulty of feature learning, and the later automatically finds a proper context to well align the structures in the estimated depths via CNN w.r.t. the reference image, which significantly improves the visual quality. Finally, we demonstrate the effectiveness of proposed ODE-CNN over the popular 360D dataset, and show that ODE-CNN significantly outperforms (relatively 33% reduction in depth error) other state-of-the-art (SoTA) methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2b64d8c72de3efd9901a6a527386ae03409815bf",
+    "externalIds": {
+      "MAG": "2995635588",
+      "DBLP": "journals/corr/abs-1912-09390",
+      "ArXiv": "1912.09390",
+      "DOI": "10.1109/cvpr42600.2020.01244",
+      "CorpusId": 209414882
+    },
+    "title": "Tangent Images for Mitigating Spherical Distortion",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 132,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1912.09390",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.09390, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "123281476",
+        "name": "Marc Eder"
+      },
+      {
+        "authorId": "48178436",
+        "name": "Mykhailo Shvets"
+      },
+      {
+        "authorId": "1391882780",
+        "name": "John Lim"
+      },
+      {
+        "authorId": "40454588",
+        "name": "Jan-Michael Frahm"
+      }
+    ],
+    "abstract": "In this work, we propose \"tangent images,\" a spherical image representation that facilitates transferable and scalable 360 degree computer vision. Inspired by techniques in cartography and computer graphics, we render a spherical image to a set of distortion-mitigated, locally-planar image grids tangent to a subdivided icosahedron. By varying the resolution of these grids independently of the subdivision level, we can effectively represent high resolution spherical images while still benefiting from the low-distortion icosahedral spherical approximation. We show that training standard convolutional neural networks on tangent images compares favorably to the many specialized spherical convolutional kernels that have been developed, while also scaling efficiently to handle significantly higher spherical resolutions. Furthermore, because our approach does not require specialized kernels, we show that we can transfer networks trained on perspective images to spherical data without fine-tuning and with limited performance drop-off. Finally, we demonstrate that tangent images can be used to improve the quality of sparse feature detection on spherical images, illustrating its usefulness for traditional computer vision tasks like structure-from-motion and SLAM.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5487dadb5b4b8b240ab4ae28705acc0b9f138db0",
+    "externalIds": {
+      "DBLP": "conf/acl/LiSMLWL20",
+      "ACL": "2020.acl-main.45",
+      "MAG": "3034328552",
+      "ArXiv": "1911.02855",
+      "DOI": "10.18653/v1/2020.acl-main.45",
+      "CorpusId": 207847250
+    },
+    "title": "Dice Loss for Data-imbalanced NLP Tasks",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 735,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1911.02855",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.02855, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2845020",
+        "name": "Xiaoya Li"
+      },
+      {
+        "authorId": "2109329406",
+        "name": "Xiaofei Sun"
+      },
+      {
+        "authorId": "65844131",
+        "name": "Yuxian Meng"
+      },
+      {
+        "authorId": "2115780454",
+        "name": "Junjun Liang"
+      },
+      {
+        "authorId": "144894837",
+        "name": "Fei Wu"
+      },
+      {
+        "authorId": "49298465",
+        "name": "Jiwei Li"
+      }
+    ],
+    "abstract": "Many NLP tasks such as tagging and machine reading comprehension are faced with the severe data imbalance issue: negative examples significantly outnumber positive examples, and the huge number of easy-negative examples overwhelms the training. The most commonly used cross entropy (CE) criteria is actually an accuracy-oriented objective, and thus creates a discrepancy between training and test: at training time, each training instance contributes equally to the objective function, while at test time F1 score concerns more about positive examples. In this paper, we propose to use dice loss in replacement of the standard cross-entropy objective for data-imbalanced NLP tasks. Dice loss is based on the Sørensen--Dice coefficient or Tversky index , which attaches similar importance to false positives and false negatives, and is more immune to the data-imbalance issue. To further alleviate the dominating influence from easy-negative examples in training, we propose to associate training examples with dynamically adjusted weights to deemphasize easy-negative examples. Theoretical analysis shows that this strategy narrows down the gap between the F1 score in evaluation and the dice loss in training. With the proposed training objective, we observe significant performance boost on a wide range of data imbalanced NLP tasks. Notably, we are able to achieve SOTA results on CTB5, CTB6 and UD1.4 for the part of speech tagging task; SOTA results on CoNLL03, OntoNotes5.0, MSRA and OntoNotes4.0 for the named entity recognition task; along with competitive results on the tasks of machine reading comprehension and paraphrase identification.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e5eba5d952c8ce7124e090b4adbb08700ebd6411",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1908-00222",
+      "MAG": "2965084509",
+      "ArXiv": "1908.00222",
+      "DOI": "10.1007/978-3-030-58545-7_30",
+      "CorpusId": 199064623
+    },
+    "title": "Structured3D: A Large Photo-realistic Dataset for Structured 3D Modeling",
+    "venue": "European Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 381,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1908.00222",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.00222, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1806126",
+        "name": "Jia Zheng"
+      },
+      {
+        "authorId": "8215517",
+        "name": "Junfei Zhang"
+      },
+      {
+        "authorId": "2152908558",
+        "name": "Jing Li"
+      },
+      {
+        "authorId": "143713624",
+        "name": "Rui Tang"
+      },
+      {
+        "authorId": "1702868",
+        "name": "Shenghua Gao"
+      },
+      {
+        "authorId": "2519795",
+        "name": "Zihan Zhou"
+      }
+    ],
+    "abstract": "Recently, there has been growing interest in developing learning-based methods to detect and utilize salient semi-global or global structures, such as junctions, lines, planes, cuboids, smooth surfaces, and all types of symmetries, for 3D scene modeling and understanding. However, the ground truth annotations are often obtained via human labor, which is particularly challenging and inefficient for such tasks due to the large number of 3D structure instances (e.g., line segments) and other factors such as viewpoints and occlusions. In this paper, we present a new synthetic dataset, Structured3D, with the aim of providing large-scale photo-realistic images with rich 3D structure annotations for a wide spectrum of structured 3D modeling tasks. We take advantage of the availability of professional interior designs and automatically extract 3D structures from them. We generate high-quality images with an industry-leading rendering engine. We use our synthetic dataset in combination with real images to train deep networks for room layout estimation and demonstrate improved performance on benchmark datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "49e0c18ed3d9ca8b9530664b7b544f576a1fdf68",
+    "externalIds": {
+      "ArXiv": "1907.12849",
+      "MAG": "2984128514",
+      "DBLP": "conf/iccv/ZhangLSC19",
+      "DOI": "10.1109/ICCV.2019.00363",
+      "CorpusId": 198985698
+    },
+    "title": "Orientation-Aware Semantic Segmentation on Icosahedron Spheres",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 90,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1907.12849",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.12849, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Chao Zhang"
+      },
+      {
+        "authorId": "2297234",
+        "name": "Stephan Liwicki"
+      },
+      {
+        "authorId": "1612014500",
+        "name": "William Smith"
+      },
+      {
+        "authorId": "1745672",
+        "name": "R. Cipolla"
+      }
+    ],
+    "abstract": "We address semantic segmentation on omnidirectional images, to leverage a holistic understanding of the surrounding scene for applications like autonomous driving systems. For the spherical domain, several methods recently adopt an icosahedron mesh, but systems are typically rotation invariant or require significant memory and parameters, thus enabling execution only at very low resolutions. In our work, we propose an orientation-aware CNN framework for the icosahedron mesh. Our representation allows for fast network operations, as our design simplifies to standard network operations of classical CNNs, but under consideration of north-aligned kernel convolutions for features on the sphere. We implement our representation and demonstrate its memory efficiency up-to a level-8 resolution mesh (equivalent to 640 x 1024 equirectangular images). Finally, since our kernels operate on the tangent of the sphere, standard feature weights, pretrained on perspective data, can be directly transferred with only small need for weight refinement. In our evaluation our orientation-aware CNN becomes a new state of the art for the recent 2D3DS dataset, and our Omni-SYNTHIA version of SYNTHIA. Rotation invariant classification and segmentation tasks are additionally presented for comparison to prior art.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "586bd368968bcf4af408e38e389ade929ded49d9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1901-03861",
+      "MAG": "2963433827",
+      "ArXiv": "1901.03861",
+      "DOI": "10.1109/CVPR.2019.00114",
+      "CorpusId": 58004623
+    },
+    "title": "HorizonNet: Learning Room Layout With 1D Representation and Pano Stretch Data Augmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 191,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1901.03861",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.03861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118830989",
+        "name": "Cheng Sun"
+      },
+      {
+        "authorId": "40912663",
+        "name": "Chi-Wei Hsiao"
+      },
+      {
+        "authorId": "145718481",
+        "name": "Min Sun"
+      },
+      {
+        "authorId": "1803730",
+        "name": "Hwann-Tzong Chen"
+      }
+    ],
+    "abstract": "We present a new approach to the problem of estimating the 3D room layout from a single panoramic image. We represent room layout as three 1D vectors that encode, at each image column, the boundary positions of ﬂoor-wall and ceiling-wall, and the existence of wall-wall boundary. The proposed network, HorizonNet, trained for predicting 1D layout, outperforms previous state-of-the-art approaches. The designed post-processing procedure for recovering 3D room layouts from 1D predictions can automatically infer the room shape with low computation cost—it takes less than 20ms for a panorama image while prior works might need dozens of seconds. We also propose Pano Stretch Data Augmentation, which can diversify panorama data and be applied to other panorama-related learning tasks. Due to the limited data available for non-cuboid layout, we relabel 65 general layout from the current dataset for ﬁnetuning. Our approach shows good performance on general layouts by qualitative results and cross-validation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "292128329b01584da0e3f20d91ec0030c2d6e68c",
+    "externalIds": {
+      "ArXiv": "1811.08196",
+      "MAG": "2979485822",
+      "DBLP": "conf/cvpr/LeeJYCY19",
+      "DOI": "10.1109/CVPR.2019.00940",
+      "CorpusId": 198165883
+    },
+    "title": "SpherePHD: Applying CNNs on a Spherical PolyHeDron Representation of 360° Images",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 112,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.08196, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144709006",
+        "name": "Yeonkun Lee"
+      },
+      {
+        "authorId": "72286913",
+        "name": "Jaeseok Jeong"
+      },
+      {
+        "authorId": "48422463",
+        "name": "J. Yun"
+      },
+      {
+        "authorId": "73200885",
+        "name": "Wonjune Cho"
+      },
+      {
+        "authorId": "144295528",
+        "name": "Kuk-jin Yoon"
+      }
+    ],
+    "abstract": "Omni-directional cameras have many advantages overconventional cameras in that they have a much wider field-of-view (FOV). Accordingly, several approaches have beenproposed recently to apply convolutional neural networks(CNNs) to omni-directional images for various visual tasks.However, most of them use image representations defined inthe Euclidean space after transforming the omni-directionalviews originally formed in the non-Euclidean space. Thistransformation leads to shape distortion due to nonuniformspatial resolving power and the loss of continuity. Theseeffects make existing convolution kernels experience diffi-culties in extracting meaningful information. This paper presents a novel method to resolve such prob-lems of applying CNNs to omni-directional images. Theproposed method utilizes a spherical polyhedron to rep-resent omni-directional views. This method minimizes thevariance of the spatial resolving power on the sphere sur-face, and includes new convolution and pooling methodsfor the proposed representation. The proposed method canalso be adopted by any existing CNN-based methods. Thefeasibility of the proposed method is demonstrated throughclassification, detection, and semantic segmentation taskswith synthetic and real datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ca70aaf0972d095b3285848cd25e2b999f371fd9",
+    "externalIds": {
+      "ArXiv": "1810.12460",
+      "MAG": "3099707999",
+      "DBLP": "journals/corr/abs-1810-12460",
+      "DOI": "10.1109/LSP.2019.2891134",
+      "CorpusId": 53111438
+    },
+    "title": "A Novel Approach to Quantized Matrix Completion Using Huber Loss Measure",
+    "venue": "IEEE Signal Processing Letters",
+    "year": 2018,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/lsp.2019.2891134",
+      "status": "BRONZE",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.12460, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422969",
+        "name": "Ashkan Esmaeili"
+      },
+      {
+        "authorId": "152735346",
+        "name": "F. Marvasti"
+      }
+    ],
+    "abstract": "In this paper, we introduce a novel and robust approach to quantized matrix completion. First, we propose a rank minimization problem with constraints induced by quantization bounds. Next, we form an unconstrained optimization problem by regularizing the rank function with Huber loss. Huber loss is leveraged to control the violation from quantization bounds due to two properties: first, it is differentiable; and second, it is less sensitive to outliers than the quadratic loss. A smooth rank approximation is utilized to endorse lower rank on the genuine data matrix. Thus, an unconstrained optimization problem with differentiable objective function is obtained allowing us to advantage from gradient descent technique. Novel and firm theoretical analysis of the problem model and convergence of our algorithm to the global solution are provided. Another contribution of this letter is that our method does not require projections or initial rank estimation, unlike the state-of-the-art. In the Numerical Experiments section, the noticeable outperformance of our proposed method in learning accuracy and computational complexity compared to those of the state-of-the-art literature methods is illustrated as the main contribution.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "06066e4d4bae468c5a67473fa64a44e34c1cf9cf",
+    "externalIds": {
+      "MAG": "2883505290",
+      "DBLP": "conf/eccv/ZioulisKZD18",
+      "ArXiv": "1807.09620",
+      "DOI": "10.1007/978-3-030-01231-1_28",
+      "CorpusId": 50787222
+    },
+    "title": "OmniDepth: Dense Depth Estimation for Indoors Spherical Panoramas",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 235,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.09620, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2418323",
+        "name": "N. Zioulis"
+      },
+      {
+        "authorId": "51150187",
+        "name": "Antonis Karakottas"
+      },
+      {
+        "authorId": "1737843",
+        "name": "D. Zarpalas"
+      },
+      {
+        "authorId": "1747572",
+        "name": "P. Daras"
+      }
+    ],
+    "abstract": "Recent work on depth estimation up to now has only focused on projective images ignoring \\({360}^{\\circ }\\) content which is now increasingly and more easily produced. We show that monocular depth estimation models trained on traditional images produce sub-optimal results on omnidirectional images, showcasing the need for training directly on \\({360}^{\\circ }\\) datasets, which however, are hard to acquire. In this work, we circumvent the challenges associated with acquiring high quality \\({360}^{\\circ }\\) datasets with ground truth depth annotations, by re-using recently released large scale 3D datasets and re-purposing them to \\({360}^{\\circ }\\) via rendering. This dataset, which is considerably larger than similar projective datasets, is publicly offered to the community to enable future research in this direction. We use this dataset to learn in an end-to-end fashion the task of depth estimation from \\({360}^{\\circ }\\) images. We show promising results in our synthesized data as well as in unseen realistic images.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1269e191091eadeed6f246cf5a6692b178bb4d94",
+    "externalIds": {
+      "MAG": "2963587345",
+      "DOI": "10.1117/12.2520589",
+      "CorpusId": 260552651
+    },
+    "title": "Super-convergence: very fast training of neural networks using large learning rates",
+    "venue": "Defense + Commercial Sensing",
+    "year": 2018,
+    "citationCount": 1699,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1708.07120",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1117/12.2520589?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1117/12.2520589, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2596816",
+        "name": "L. Smith"
+      },
+      {
+        "authorId": "34887814",
+        "name": "Nicholay Topin"
+      }
+    ],
+    "abstract": "In this paper, we describe a phenomenon, which we named “super-convergence”, where neural networks can be trained an order of magnitude faster than with standard training methods. The existence of super-convergence is relevant to understanding why deep networks generalize well. One of the key elements of super-convergence is training with one learning rate cycle and a large maximum learning rate. A insight that allows super-convergence training is that large learning rates regularize the training, hence requiring a reduction of all other forms of regularization in order to preserve an optimal regularization balance. We also derive a simplification of the Hessian Free optimization method to compute an estimate of the optimal learning rate. Experiments demonstrate super-convergence for Cifar-10/100, MNIST and Imagenet datasets, and resnet, wide-resnet, densenet, and inception architectures. In addition, we show that super-convergence provides a greater boost in performance relative to standard training when the amount of labeled training data is limited. The architectures and code to replicate the figures in this paper are available at github.com/lnsmith54/super-convergence.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "8337441971f941716a9e525a67f37088eb01fd13",
+    "externalIds": {
+      "MAG": "2949525187",
+      "DBLP": "journals/corr/abs-1709-06158",
+      "ArXiv": "1709.06158",
+      "DOI": "10.1109/3DV.2017.00081",
+      "CorpusId": 21435690
+    },
+    "title": "Matterport3D: Learning from RGB-D Data in Indoor Environments",
+    "venue": "International Conference on 3D Vision",
+    "year": 2017,
+    "citationCount": 2406,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1709.06158",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1709.06158, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145830541",
+        "name": "Angel X. Chang"
+      },
+      {
+        "authorId": "2208531",
+        "name": "Angela Dai"
+      },
+      {
+        "authorId": "1807080",
+        "name": "T. Funkhouser"
+      },
+      {
+        "authorId": "49034306",
+        "name": "Maciej Halber"
+      },
+      {
+        "authorId": "2209612",
+        "name": "M. Nießner"
+      },
+      {
+        "authorId": "2295141",
+        "name": "M. Savva"
+      },
+      {
+        "authorId": "3340170",
+        "name": "Shuran Song"
+      },
+      {
+        "authorId": "38591293",
+        "name": "Andy Zeng"
+      },
+      {
+        "authorId": "1591143181",
+        "name": "Yinda Zhang"
+      }
+    ],
+    "abstract": "Access to large, diverse RGB-D datasets is critical for training RGB-D scene understanding algorithms. However, existing datasets still cover only a limited number of views or a restricted scale of spaces. In this paper, we introduce Matterport3D, a large-scale RGB-D dataset containing 10,800 panoramic views from 194,400 RGB-D images of 90 building-scale scenes. Annotations are provided with surface reconstructions, camera poses, and 2D and 3D semantic segmentations. The precise global alignment and comprehensive, diverse panoramic set of views over entire buildings enable a variety of supervised and self-supervised computer vision tasks, including keypoint matching, view overlap prediction, normal prediction from color, semantic segmentation, and region classification.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7ad66cba3b7e3abae7ef33122588512a146f7f77",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhangY17aa",
+      "ArXiv": "1707.08114",
+      "MAG": "3141797743",
+      "DOI": "10.1109/TKDE.2021.3070203",
+      "CorpusId": 11311635
+    },
+    "title": "A Survey on Multi-Task Learning",
+    "venue": "IEEE Transactions on Knowledge and Data Engineering",
+    "year": 2017,
+    "citationCount": 2848,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1707.08114",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.08114, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46867608",
+        "name": "Yu Zhang"
+      },
+      {
+        "authorId": "152290618",
+        "name": "Qiang Yang"
+      }
+    ],
+    "abstract": "Multi-Task Learning (MTL) is a learning paradigm in machine learning and its aim is to leverage useful information contained in multiple related tasks to help improve the generalization performance of all the tasks. In this paper, we give a survey for MTL from the perspective of algorithmic modeling, applications and theoretical analyses. For algorithmic modeling, we give a definition of MTL and then classify different MTL algorithms into five categories, including feature learning approach, low-rank approach, task clustering approach, task relation learning approach and decomposition approach as well as discussing the characteristics of each approach. In order to improve the performance of learning tasks further, MTL can be combined with other learning paradigms including semi-supervised learning, active learning, unsupervised learning, reinforcement learning, multi-view learning and graphical models. When the number of tasks is large or the data dimensionality is high, we review online, parallel and distributed MTL models as well as dimensionality reduction and feature hashing to reveal their computational and storage advantages. Many real-world applications use MTL to boost their performance and we review representative works in this paper. Finally, we present theoretical analyses and discuss several future directions for MTL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b441dd8fb25eddbaf92bc9938afda69627a281ab",
+    "externalIds": {
+      "MAG": "2913758415",
+      "DBLP": "journals/ac/Rosenfeld88",
+      "DOI": "10.1016/S0065-2458(08)60261-2",
+      "CorpusId": 441278,
+      "PubMed": "1891713"
+    },
+    "title": "Computer Vision",
+    "venue": "Advances in Computing",
+    "year": 1988,
+    "citationCount": 5599,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/S0065-2458(08)60261-2?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/S0065-2458(08)60261-2, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2270045064",
+        "name": "Azriel Rosenfeld"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0d8a2ebacab7091c1f0c734235d87dd629a175cd",
+    "externalIds": {
+      "MAG": "2037294629",
+      "DOI": "10.1177/004057367102800203",
+      "CorpusId": 144645672
+    },
+    "title": "Searching for “IT”",
+    "venue": "",
+    "year": 1971,
+    "citationCount": 85,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1177/004057367102800203?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1177/004057367102800203, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f81f07c2cf0ccb192d2c12dbcc80ef430cbe6605",
+    "externalIds": {
+      "DBLP": "journals/access/MohadikarD25",
+      "DOI": "10.1109/ACCESS.2025.3590646",
+      "CorpusId": 280035831
+    },
+    "title": "SN360: Semantic and Surface Normal Cascaded Multi-Task 360 Monocular Depth Estimation",
+    "venue": "IEEE Access",
+    "year": 2025,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ACCESS.2025.3590646?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ACCESS.2025.3590646, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9197507",
+        "name": "Payal Mohadikar"
+      },
+      {
+        "authorId": "2288292221",
+        "name": "Ye Duan"
+      }
+    ],
+    "abstract": "Omnidirectional images carry comprehensive scene representation and are widely useful for applications like AR/VR, robotics, and autonomous driving that require holistic scene understanding. Depth estimation, being the core component of scene understanding, has been widely researched, achieving significant improvement for perspective inputs. However, for 360 input, the methods still produce low-quality, globally inconsistent depths, indicating poor generalization ability due to challenges such as inherent spherical distortion and relatively few training data. Recent state-of-the-art (SOTA) methods utilize multiple projected distortionless tangent patches to mitigate spherical distortion, but they lose the learning of holistic contextual information, leading to global discrepancies and merging artifacts in the final merged-back 360 depths. In this paper, we propose to mitigate the existing global inconsistency and merging artifact issue via a new initial depth estimation network that directly takes a panorama image to learn holistic features with enhanced global awareness via latent attention. We further present a novel semantic and surface normal cascaded multi-task model agnostic framework that mitigates the negative transfer effect observed in current multi-task 360-depth approaches, to produce fine-grained, structure-detailed depths. Specifically, our approach utilizes an initial depth estimation to simulate RGBD input to enhance the performance of semantic segmentation and surface normal estimation, which is, in turn, leveraged to explicitly guide the final depth prediction. Our approach shows significant improvement in Abs Rel by 19.62%, 21.45%, and zero-shot depths by 22.8% using real-world Stanford2D3D and Matterport2D3D benchmark datasets, respectively, over the SOTA while producing structurally detailed globally consistent high-quality depths.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "864b598a80c1f112343aad8fdfeedb29f1944a9d",
+    "externalIds": {
+      "DBLP": "journals/tmm/WangHZYZJ25",
+      "DOI": "10.1109/TMM.2025.3535340",
+      "CorpusId": 275972874
+    },
+    "title": "Geometry-Aware Self-Supervised Indoor 360$^{\\circ }$ Depth Estimation via Asymmetric Dual-Domain Collaborative Learning",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMM.2025.3535340?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMM.2025.3535340, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2133438435",
+        "name": "Xu Wang"
+      },
+      {
+        "authorId": "2204349131",
+        "name": "Ziyan He"
+      },
+      {
+        "authorId": "30024940",
+        "name": "Qiudan Zhang"
+      },
+      {
+        "authorId": "47796278",
+        "name": "You Yang"
+      },
+      {
+        "authorId": "2153707464",
+        "name": "Tiesong Zhao"
+      },
+      {
+        "authorId": "2244585958",
+        "name": "Jianmin Jiang"
+      }
+    ],
+    "abstract": "Being able to estimate monocular depth for spherical panoramas is of fundamental importance in 3D scene perception. However, spherical distortion severely limits the effectiveness of vanilla convolutions. To push the envelope of accuracy, recent approaches attempt to utilize Tangent projection (TP) to estimate the depth of <inline-formula><tex-math notation=\"LaTeX\">$360 ^{\\circ }$</tex-math></inline-formula> images. Yet, these methods still suffer from discrepancies and inconsistencies among patch-wise tangent images, as well as the lack of accurate ground truth depth maps under a supervised fashion. In this paper, we propose a geometry-aware self-supervised <inline-formula><tex-math notation=\"LaTeX\">$360 ^{\\circ }$</tex-math></inline-formula> image depth estimation methodology that explores the complementary advantages of TP and Equirectangular projection (ERP) by an asymmetric dual-domain collaborative learning strategy. Especially, we first develop a lightweight asymmetric dual-domain depth estimation network, which enables to aggregate depth-related features from a single TP domain, and then produce depth distributions of the TP and ERP domains via collaborative learning. This effectively mitigates stitching artifacts and preserves fine details in depth inference without overspending model parameters. In addition, a frequent-spatial feature concentration module is devised to simultaneously capture non-local Fourier features and local spatial features, such that facilitating the efficient exploration of monocular depth cues. Moreover, we introduce a geometric structural alignment module to further improve geometric structural consistency among tangent images. Extensive experiments illustrate that our designed approach outperforms existing self-supervised <inline-formula><tex-math notation=\"LaTeX\">$360 ^{\\circ }$</tex-math></inline-formula> depth estimation methods on three publicly available benchmark datasets.",
+    "_is_influential": false,
+    "_intents": []
+  }
+]

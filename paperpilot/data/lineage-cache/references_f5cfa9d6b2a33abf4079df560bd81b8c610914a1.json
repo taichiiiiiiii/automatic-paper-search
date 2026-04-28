@@ -1,0 +1,1570 @@
+[
+  {
+    "paperId": "d481bac891f1dd6d375d0cfb5224635454fbd649",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-19319",
+      "ArXiv": "2501.19319",
+      "DOI": "10.1109/ICRA55743.2025.11128637",
+      "CorpusId": 276079736
+    },
+    "title": "Advancing Dense Endoscopic Reconstruction with Gaussian Splatting-Driven Surface Normal-Aware Tracking and Mapping",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2025,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.19319, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281785076",
+        "name": "Yiming Huang"
+      },
+      {
+        "authorId": "2279022152",
+        "name": "Beilei Cui"
+      },
+      {
+        "authorId": "2185487835",
+        "name": "Long Bai"
+      },
+      {
+        "authorId": "2255052412",
+        "name": "Zhen Chen"
+      },
+      {
+        "authorId": "49387921",
+        "name": "Jinlin Wu"
+      },
+      {
+        "authorId": "2325278192",
+        "name": "Zhen Li"
+      },
+      {
+        "authorId": "2254302736",
+        "name": "Hongbin Liu"
+      },
+      {
+        "authorId": "2260612957",
+        "name": "Hongliang Ren"
+      }
+    ],
+    "abstract": "Simultaneous Localization and Mapping (SLAM) is essential for precise surgical interventions and robotic tasks in minimally invasive procedures. While recent advancements in 3D Gaussian Splatting (3DGS) have improved SLAM with high-quality novel view synthesis and fast rendering, these systems struggle with accurate depth and surface reconstruction due to multi-view inconsistencies. Simply incorporating SLAM and 3DGS leads to mismatches between the reconstructed frames. In this work, we present Endo-2DTAM, a real-time endoscopic SLAM system with 2D Gaussian Splatting (2DGS) to address these challenges. Endo-2DTAM incorporates a surface normal-aware pipeline, which consists of tracking, mapping, and bundle adjustment modules for geometrically accurate reconstruction. Our robust tracking module combines point-topoint and point-to-plane distance metrics, while the mapping module utilizes normal consistency and depth distortion to enhance surface reconstruction quality. We also introduce a pose-consistent strategy for efficient and geometrically coherent keyframe sampling. Extensive experiments on public endoscopic datasets demonstrate that Endo-2DTAM achieves an RMSE of $1.87 \\pm 0.63 \\mathbf{m m}$ for depth reconstruction of surgical scenes while maintaining computationally efficient tracking, high-quality visual appearance, and real-time rendering. Our code will be released at github.com/lastbasket/Endo-2DTAM.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "02a7f19c6a0a72e86ca53e12402befe5bd22f265",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2408-07981",
+      "ArXiv": "2408.07981",
+      "DOI": "10.48550/arXiv.2408.07981",
+      "CorpusId": 271874387
+    },
+    "title": "LLaVA-Surg: Towards Multimodal Surgical Assistant via Structured Surgical Video Learning",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 31,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.07981, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2271492968",
+        "name": "Jiajie Li"
+      },
+      {
+        "authorId": "2259816662",
+        "name": "Garrett C. Skinner"
+      },
+      {
+        "authorId": "2316244758",
+        "name": "Gene Yang"
+      },
+      {
+        "authorId": "4853040",
+        "name": "Brian R Quaranto"
+      },
+      {
+        "authorId": "2259912623",
+        "name": "Steven D. Schwaitzberg"
+      },
+      {
+        "authorId": "2259642044",
+        "name": "Peter C W Kim"
+      },
+      {
+        "authorId": "2257201414",
+        "name": "Jinjun Xiong"
+      }
+    ],
+    "abstract": "Multimodal large language models (LLMs) have achieved notable success across various domains, while research in the medical field has largely focused on unimodal images. Meanwhile, current general-domain multimodal models for videos still lack the capabilities to understand and engage in conversations about surgical videos. One major contributing factor is the absence of datasets in the surgical field. In this paper, we create a new dataset, Surg-QA, consisting of 102,000 surgical video-instruction pairs, the largest of its kind so far. To build such a dataset, we propose a novel two-stage question-answer generation pipeline with LLM to learn surgical knowledge in a structured manner from the publicly available surgical lecture videos. The pipeline breaks down the generation process into two stages to significantly reduce the task complexity, allowing us to use a more affordable, locally deployed open-source LLM than the premium paid LLM services. It also mitigates the risk of LLM hallucinations during question-answer generation, thereby enhancing the overall quality of the generated data. We further train LLaVA-Surg, a novel vision-language conversational assistant capable of answering open-ended questions about surgical videos, on this Surg-QA dataset, and conduct comprehensive evaluations on zero-shot surgical video question-answering tasks. We show that LLaVA-Surg significantly outperforms all previous general-domain models, demonstrating exceptional multimodal conversational skills in answering open-ended questions about surgical videos. We will release our code, model, and the instruction-tuning dataset.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c00e336dad58044a20f335f43ca2b3c7b2fc1c45",
+    "externalIds": {
+      "DBLP": "journals/tmi/WangYZQGXJZ24",
+      "DOI": "10.1109/TMI.2024.3426953",
+      "CorpusId": 261030211,
+      "PubMed": "38990752"
+    },
+    "title": "Video-Instrument Synergistic Network for Referring Video Instrument Segmentation in Robotic Surgery",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2024,
+    "citationCount": 61,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMI.2024.3426953?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMI.2024.3426953, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109602547",
+        "name": "Hongqiu Wang"
+      },
+      {
+        "authorId": "2144133041",
+        "name": "Lei Zhu"
+      },
+      {
+        "authorId": "2149522433",
+        "name": "Guang Yang"
+      },
+      {
+        "authorId": "2118270918",
+        "name": "Yi-Ting Guo"
+      },
+      {
+        "authorId": "38654394",
+        "name": "Shenmin Zhang"
+      },
+      {
+        "authorId": "2232751200",
+        "name": "Bo Xu"
+      },
+      {
+        "authorId": "33981465",
+        "name": "Yueming Jin"
+      }
+    ],
+    "abstract": "Surgical instrument segmentation is fundamentally important for facilitating cognitive intelligence in robot-assisted surgery. Although existing methods have achieved accurate instrument segmentation results, they simultaneously generate segmentation masks of all instruments, which lack the capability to specify a target object and allow an interactive experience. This paper focuses on a novel and essential task in robotic surgery, i.e., Referring Surgical Video Instrument Segmentation (RSVIS), which aims to automatically identify and segment the target surgical instruments from each video frame, referred by a given language expression. This interactive feature offers enhanced user engagement and customized experiences, greatly benefiting the development of the next generation of surgical education systems. To achieve this, this paper constructs two surgery video datasets to promote the RSVIS research. Then, we devise a novel Video-Instrument Synergistic Network (VIS-Net) to learn both video-level and instrument-level knowledge to boost performance, while previous work only utilized video-level information. Meanwhile, we design a Graph-based Relation-aware Module (GRM) to model the correlation between multi-modal information (i.e., textual description and video frame) to facilitate the extraction of instrument-level information. Extensive experimental results on two RSVIS datasets exhibit that the VIS-Net can significantly outperform existing state-of-the-art referring segmentation methods. We will release our code and dataset for future research (https://github.com/whq-xxh/RSVIS).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ed1643e6ac201a38767ae24ee07aeda6837068ea",
+    "externalIds": {
+      "DBLP": "conf/nips/WuMLWSC0FD0024",
+      "ArXiv": "2406.02058",
+      "DOI": "10.48550/arXiv.2406.02058",
+      "CorpusId": 270226180
+    },
+    "title": "OpenGaussian: Towards Point-Level 3D Gaussian-based Open Vocabulary Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 124,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.02058, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2040798755",
+        "name": "Yanmin Wu"
+      },
+      {
+        "authorId": "2294388245",
+        "name": "Jiarui Meng"
+      },
+      {
+        "authorId": "2294503634",
+        "name": "Haijie Li"
+      },
+      {
+        "authorId": "2287903001",
+        "name": "Chenming Wu"
+      },
+      {
+        "authorId": "2202448544",
+        "name": "Yahao Shi"
+      },
+      {
+        "authorId": "48684102",
+        "name": "Xinhua Cheng"
+      },
+      {
+        "authorId": "2273075553",
+        "name": "Chen Zhao"
+      },
+      {
+        "authorId": "2104451945",
+        "name": "Haocheng Feng"
+      },
+      {
+        "authorId": "2287836061",
+        "name": "Errui Ding"
+      },
+      {
+        "authorId": "2237593465",
+        "name": "Jingdong Wang"
+      },
+      {
+        "authorId": "2275312839",
+        "name": "Jian Zhang"
+      }
+    ],
+    "abstract": "This paper introduces OpenGaussian, a method based on 3D Gaussian Splatting (3DGS) capable of 3D point-level open vocabulary understanding. Our primary motivation stems from observing that existing 3DGS-based open vocabulary methods mainly focus on 2D pixel-level parsing. These methods struggle with 3D point-level tasks due to weak feature expressiveness and inaccurate 2D-3D feature associations. To ensure robust feature presentation and 3D point-level understanding, we first employ SAM masks without cross-frame associations to train instance features with 3D consistency. These features exhibit both intra-object consistency and inter-object distinction. Then, we propose a two-stage codebook to discretize these features from coarse to fine levels. At the coarse level, we consider the positional information of 3D points to achieve location-based clustering, which is then refined at the fine level. Finally, we introduce an instance-level 3D-2D feature association method that links 3D points to 2D masks, which are further associated with 2D CLIP features. Extensive experiments, including open vocabulary-based 3D object selection, 3D point cloud understanding, click-based 3D object selection, and ablation studies, demonstrate the effectiveness of our proposed method. The source code is available at our project page: https://3d-aigc.github.io/OpenGaussian",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a0cb56be9a3da291fa523e648e17ea0cf97e997d",
+    "externalIds": {
+      "DBLP": "conf/eccv/LabeILB24",
+      "ArXiv": "2405.19321",
+      "DOI": "10.48550/arXiv.2405.19321",
+      "CorpusId": 270095305
+    },
+    "title": "DGD: Dynamic 3D Gaussians Distillation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2024,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.19321, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303656336",
+        "name": "Isaac Labe"
+      },
+      {
+        "authorId": "2303655524",
+        "name": "Noam Issachar"
+      },
+      {
+        "authorId": "2303655820",
+        "name": "Itai Lang"
+      },
+      {
+        "authorId": "19310335",
+        "name": "Sagie Benaim"
+      }
+    ],
+    "abstract": "We tackle the task of learning dynamic 3D semantic radiance fields given a single monocular video as input. Our learned semantic radiance field captures per-point semantics as well as color and geometric properties for a dynamic 3D scene, enabling the generation of novel views and their corresponding semantics. This enables the segmentation and tracking of a diverse set of 3D semantic entities, specified using a simple and intuitive interface that includes a user click or a text prompt. To this end, we present DGD, a unified 3D representation for both the appearance and semantics of a dynamic 3D scene, building upon the recently proposed dynamic 3D Gaussians representation. Our representation is optimized over time with both color and semantic information. Key to our method is the joint optimization of the appearance and semantic attributes, which jointly affect the geometric properties of the scene. We evaluate our approach in its ability to enable dense semantic 3D object tracking and demonstrate high-quality results that are fast to render, for a diverse set of scenes. Our project webpage is available on https://isaaclabe.github.io/DGD-Website/",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "55f7615b5386cc2b672e810bdbb40216341ad2f2",
+    "externalIds": {
+      "ArXiv": "2405.17835",
+      "DBLP": "journals/corr/abs-2405-17835",
+      "DOI": "10.48550/arXiv.2405.17835",
+      "CorpusId": 270067997
+    },
+    "title": "Deform3DGS: Flexible Deformation for Fast Surgical Scene Reconstruction with Gaussian Splatting",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2024,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.17835, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2303855253",
+        "name": "Shuojue Yang"
+      },
+      {
+        "authorId": "2303757703",
+        "name": "Qian Li"
+      },
+      {
+        "authorId": "2303469019",
+        "name": "Daiyun Shen"
+      },
+      {
+        "authorId": "2298042490",
+        "name": "Bingchen Gong"
+      },
+      {
+        "authorId": "2293171106",
+        "name": "Qi Dou"
+      },
+      {
+        "authorId": "2254282818",
+        "name": "Yueming Jin"
+      }
+    ],
+    "abstract": "Tissue deformation poses a key challenge for accurate surgical scene reconstruction. Despite yielding high reconstruction quality, existing methods suffer from slow rendering speeds and long training times, limiting their intraoperative applicability. Motivated by recent progress in 3D Gaussian Splatting, an emerging technology in real-time 3D rendering, this work presents a novel fast reconstruction framework, termed Deform3DGS, for deformable tissues during endoscopic surgery. Specifically, we introduce 3D GS into surgical scenes by integrating a point cloud initialization to improve reconstruction. Furthermore, we propose a novel flexible deformation modeling scheme (FDM) to learn tissue deformation dynamics at the level of individual Gaussians. Our FDM can model the surface deformation with efficient representations, allowing for real-time rendering performance. More importantly, FDM significantly accelerates surgical scene reconstruction, demonstrating considerable clinical values, particularly in intraoperative settings where time efficiency is crucial. Experiments on DaVinci robotic surgery videos indicate the efficacy of our approach, showcasing superior reconstruction fidelity PSNR: (37.90) and rendering speed (338.8 FPS) while substantially reducing training time to only 1 minute/scene. Our code is available at https://github.com/jinlab-imvr/Deform3DGS.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "64adfae39ebbe4b55c4e2592c70c4ce677f116f5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2405-08672",
+      "ArXiv": "2405.08672",
+      "DOI": "10.48550/arXiv.2405.08672",
+      "CorpusId": 269761398
+    },
+    "title": "EndoDAC: Efficient Adapting Foundation Model for Self-Supervised Depth Estimation from Any Endoscopic Camera",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2024,
+    "citationCount": 61,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.08672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2279022152",
+        "name": "Beilei Cui"
+      },
+      {
+        "authorId": "145481136",
+        "name": "Mobarak Islam Hoque"
+      },
+      {
+        "authorId": "2185487835",
+        "name": "Long Bai"
+      },
+      {
+        "authorId": "2152824745",
+        "name": "An-Chi Wang"
+      },
+      {
+        "authorId": "2260612957",
+        "name": "Hongliang Ren"
+      }
+    ],
+    "abstract": "Depth estimation plays a crucial role in various tasks within endoscopic surgery, including navigation, surface reconstruction, and augmented reality visualization. Despite the significant achievements of foundation models in vision tasks, including depth estimation, their direct application to the medical domain often results in suboptimal performance. This highlights the need for efficient adaptation methods to adapt these models to endoscopic depth estimation. We propose Endoscopic Depth Any Camera (EndoDAC) which is an efficient self-supervised depth estimation framework that adapts foundation models to endoscopic scenes. Specifically, we develop the Dynamic Vector-Based Low-Rank Adaptation (DV-LoRA) and employ Convolutional Neck blocks to tailor the foundational model to the surgical domain, utilizing remarkably few trainable parameters. Given that camera information is not always accessible, we also introduce a self-supervised adaptation strategy that estimates camera intrinsics using the pose encoder. Our framework is capable of being trained solely on monocular surgical videos from any camera, ensuring minimal training costs. Experiments demonstrate that our approach obtains superior performance even with fewer training epochs and unaware of the ground truth camera intrinsics. Code is available at https://github.com/BeileiCui/EndoDAC.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "87bf5f3d5034dbbc10cfbc8f51ddfbd45070f97c",
+    "externalIds": {
+      "ArXiv": "2401.16416",
+      "DBLP": "conf/miccai/HuangCBGXIR24",
+      "DOI": "10.48550/arXiv.2401.16416",
+      "CorpusId": 267311960
+    },
+    "title": "Endo-4DGS: Endoscopic Monocular Scene Reconstruction with 4D Gaussian Splatting",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2024,
+    "citationCount": 48,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.16416, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281785076",
+        "name": "Yiming Huang"
+      },
+      {
+        "authorId": "2279022152",
+        "name": "Beilei Cui"
+      },
+      {
+        "authorId": "2185487835",
+        "name": "Long Bai"
+      },
+      {
+        "authorId": "2281799098",
+        "name": "Ziqi Guo"
+      },
+      {
+        "authorId": "92816666",
+        "name": "Mengya Xu"
+      },
+      {
+        "authorId": "2260612957",
+        "name": "Hongliang Ren"
+      }
+    ],
+    "abstract": "In the realm of robot-assisted minimally invasive surgery, dynamic scene reconstruction can significantly enhance downstream tasks and improve surgical outcomes. Neural Radiance Fields (NeRF)-based methods have recently risen to prominence for their exceptional ability to reconstruct scenes but are hampered by slow inference speed, prolonged training, and inconsistent depth estimation. Some previous work utilizes ground truth depth for optimization but is hard to acquire in the surgical domain. To overcome these obstacles, we present Endo-4DGS, a real-time endoscopic dynamic reconstruction approach that utilizes 3D Gaussian Splatting (GS) for 3D representation. Specifically, we propose lightweight MLPs to capture temporal dynamics with Gaussian deformation fields. To obtain a satisfactory Gaussian Initialization, we exploit a powerful depth estimation foundation model, Depth-Anything, to generate pseudo-depth maps as a geometry prior. We additionally propose confidence-guided learning to tackle the ill-pose problems in monocular depth estimation and enhance the depth-guided reconstruction with surface normal constraints and depth regularization. Our approach has been validated on two surgical datasets, where it can effectively render in real-time, compute efficiently, and reconstruct with remarkable accuracy.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ee28fc760d8efbcd0066299fec3c0ff07b704bb7",
+    "externalIds": {
+      "ArXiv": "2401.11535",
+      "DBLP": "conf/miccai/ZhuWCJLY24",
+      "DOI": "10.48550/arXiv.2401.11535",
+      "CorpusId": 267068612
+    },
+    "title": "Deformable Endoscopic Tissues Reconstruction with Gaussian Splatting",
+    "venue": "ISIC/iMIMIC/EARTH/DeCaF@MICCAI",
+    "year": 2024,
+    "citationCount": 50,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.11535, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2051283032",
+        "name": "Lingting Zhu"
+      },
+      {
+        "authorId": "2144720582",
+        "name": "Zhao Wang"
+      },
+      {
+        "authorId": "2152843665",
+        "name": "Zhenchao Jin"
+      },
+      {
+        "authorId": "2280990728",
+        "name": "Guying Lin"
+      },
+      {
+        "authorId": "2259850862",
+        "name": "Lequan Yu"
+      }
+    ],
+    "abstract": "Surgical 3D reconstruction is a critical area of research in robotic surgery, with recent works adopting variants of dynamic radiance fields to achieve success in 3D reconstruction of deformable tissues from single-viewpoint videos. However, these methods often suffer from time-consuming optimization or inferior quality, limiting their adoption in downstream tasks. Inspired by 3D Gaussian Splatting, a recent trending 3D representation, we present EndoGS, applying Gaussian Splatting for deformable endoscopic tissue reconstruction. Specifically, our approach incorporates deformation fields to handle dynamic scenes, depth-guided supervision with spatial-temporal weight masks to optimize 3D targets with tool occlusion from a single viewpoint, and surface-aligned regularization terms to capture the much better geometry. As a result, EndoGS reconstructs and renders high-quality deformable endoscopic tissues from a single-viewpoint video, estimated depth maps, and labeled tool masks. Experiments on DaVinci robotic surgery videos demonstrate that EndoGS achieves superior rendering quality. Code is available at https://github.com/HKU-MedAI/EndoGS.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "42fb38cba6e078a1c5c2d98694dd55613ebca150",
+    "externalIds": {
+      "DBLP": "conf/cvpr/Qin0ZWP24",
+      "ArXiv": "2312.16084",
+      "DOI": "10.1109/CVPR52733.2024.01895",
+      "CorpusId": 266550750
+    },
+    "title": "LangSplat: 3D Language Gaussian Splatting",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 432,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2312.16084",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.16084, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256995514",
+        "name": "Minghan Qin"
+      },
+      {
+        "authorId": "7878225",
+        "name": "Wanhua Li"
+      },
+      {
+        "authorId": "2235316749",
+        "name": "Jiawei Zhou"
+      },
+      {
+        "authorId": "2256985567",
+        "name": "Haoqian Wang"
+      },
+      {
+        "authorId": "2276425609",
+        "name": "Hanspeter Pfister"
+      }
+    ],
+    "abstract": "Humans live in a 3D world and commonly use natural language to interact with a 3D scene. Modeling a 3D language field to support open-ended language queries in 3D has gained increasing attention recently. This paper introduces LangSplat, which constructs a 3D language field that enables precise and efficient open-vocabulary querying within 3D spaces. Unlike existing methods that ground CLIP language embeddings in a NeRF model, LangSplat advances the field by utilizing a collection of 3D Gaussians, each encoding language features distilled from CLIP, to represent the language field. By employing a tile-based splatting technique for rendering language features, we circumvent the costly rendering process inherent in NeRF. Instead of directly learning CLIP embeddings, LangSplat first trains a scene-wise language autoencoder and then learns language features on the scene-specific latent space, thereby alleviating substantial memory demands imposed by explicit modeling. Existing methods struggle with imprecise and vague 3D language fields, which fail to discern clear boundaries between objects. We delve into this issue and propose to learn hierarchical semantics using SAM, thereby eliminating the need for extensively querying the language field across various scales and the regularization of DINO features. Extensive experimental results show that LangSplat significantly outperforms the previous state-of-the-art method LERF by a large margin. Notably, LangSplat is extremely efficient, achieving a 199 x speedup compared to LERF at the resolution of 1440 x 1080. We strongly recommend readers to check out our video results at https://langsplat.github.io/",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "908d8314e25be5ff1dad7f0dd28255bafb6d71be",
+    "externalIds": {
+      "DBLP": "journals/tmi/LiuHWWWM24",
+      "DOI": "10.1109/TMI.2023.3335406",
+      "CorpusId": 265496789,
+      "PubMed": "38015689"
+    },
+    "title": "LSKANet: Long Strip Kernel Attention Network for Robotic Surgical Scene Segmentation",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2023,
+    "citationCount": 27,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMI.2023.3335406?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMI.2023.3335406, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2186862750",
+        "name": "Min Liu"
+      },
+      {
+        "authorId": "2268710757",
+        "name": "Yubin Han"
+      },
+      {
+        "authorId": "2110186761",
+        "name": "Jiazheng Wang"
+      },
+      {
+        "authorId": "2375790638",
+        "name": "Can Wang"
+      },
+      {
+        "authorId": "2119050236",
+        "name": "Yaonan Wang"
+      },
+      {
+        "authorId": "2238183585",
+        "name": "Erik H. W. Meijering"
+      }
+    ],
+    "abstract": "Surgical scene segmentation is a critical task in Robotic-assisted surgery. However, the complexity of the surgical scene, which mainly includes local feature similarity (e.g., between different anatomical tissues), intraoperative complex artifacts, and indistinguishable boundaries, poses significant challenges to accurate segmentation. To tackle these problems, we propose the Long Strip Kernel Attention network (LSKANet), including two well-designed modules named Dual-block Large Kernel Attention module (DLKA) and Multiscale Affinity Feature Fusion module (MAFF), which can implement precise segmentation of surgical images. Specifically, by introducing strip convolutions with different topologies (cascaded and parallel) in two blocks and a large kernel design, DLKA can make full use of region- and strip-like surgical features and extract both visual and structural information to reduce the false segmentation caused by local feature similarity. In MAFF, affinity matrices calculated from multiscale feature maps are applied as feature fusion weights, which helps to address the interference of artifacts by suppressing the activations of irrelevant regions. Besides, the hybrid loss with Boundary Guided Head (BGH) is proposed to help the network segment indistinguishable boundaries effectively. We evaluate the proposed LSKANet on three datasets with different surgical scenes. The experimental results show that our method achieves new state-of-the-art results on all three datasets with improvements of 2.6%, 1.4%, and 3.4% mIoU, respectively. Furthermore, our method is compatible with different backbones and can significantly increase their segmentation accuracy. Code is available at https://github.com/YubinHan73/LSKANet.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d58fd8209b680783b4f247c5effcf825a849a2d2",
+    "externalIds": {
+      "ArXiv": "2307.15220",
+      "DBLP": "journals/corr/abs-2307-15220",
+      "DOI": "10.48550/arXiv.2307.15220",
+      "CorpusId": 260316014,
+      "PubMed": "40513506"
+    },
+    "title": "Learning Multi-modal Representations by Watching Hundreds of Surgical Video Lectures",
+    "venue": "Medical Image Anal.",
+    "year": 2023,
+    "citationCount": 71,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.15220",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.15220, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50492964",
+        "name": "Kun Yuan"
+      },
+      {
+        "authorId": "49215304",
+        "name": "V. Srivastav"
+      },
+      {
+        "authorId": "2117902249",
+        "name": "Tong Yu"
+      },
+      {
+        "authorId": "50881397",
+        "name": "Joël L. Lavanchy"
+      },
+      {
+        "authorId": "104492007",
+        "name": "P. Mascagni"
+      },
+      {
+        "authorId": "145587209",
+        "name": "N. Navab"
+      },
+      {
+        "authorId": "2298142593",
+        "name": "N. Padoy"
+      }
+    ],
+    "abstract": "Recent advancements in surgical computer vision applications have been driven by vision-only models, which do not explicitly integrate the rich semantics of language into their design. These methods rely on manually annotated surgical videos to predict a fixed set of object categories, limiting their generalizability to unseen surgical procedures and downstream tasks. In this work, we put forward the idea that the surgical video lectures available through open surgical e-learning platforms can provide effective vision and language supervisory signals for multi-modal representation learning without relying on manual annotations. We address the surgery-specific linguistic challenges present in surgical video lectures by employing multiple complementary automatic speech recognition systems to generate text transcriptions. We then present a novel method, SurgVLP - Surgical Vision Language Pre-training, for multi-modal representation learning. SurgVLP constructs a new contrastive learning objective to align video clip embeddings with the corresponding multiple text embeddings by bringing them together within a joint latent space. To effectively demonstrate the representational capability of the learned joint latent space, we introduce several vision-and-language surgical tasks and evaluate various vision-only tasks specific to surgery, e.g., surgical tool, phase, and triplet recognition. Extensive experiments across diverse surgical procedures and tasks demonstrate that the multi-modal representations learned by SurgVLP exhibit strong transferability and adaptability in surgical video analysis. Furthermore, our zero-shot evaluations highlight SurgVLP's potential as a general-purpose foundation model for surgical workflow analysis, reducing the reliance on extensive manual annotations for downstream tasks, and facilitating adaptation methods such as few-shot learning to build a scalable and data-efficient solution for various downstream surgical applications. The code is available at https://github.com/CAMMA-public/SurgVLP.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2cc1d857e86d5152ba7fe6a8355c2a0150cc280a",
+    "externalIds": {
+      "DBLP": "journals/tog/KerblKLD23",
+      "ArXiv": "2308.04079",
+      "DOI": "10.1145/3592433",
+      "CorpusId": 259267917
+    },
+    "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2023,
+    "citationCount": 8077,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3592433",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.04079, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2454128",
+        "name": "Bernhard Kerbl"
+      },
+      {
+        "authorId": "72209802",
+        "name": "Georgios Kopanas"
+      },
+      {
+        "authorId": "41015873",
+        "name": "Thomas Leimkuehler"
+      },
+      {
+        "authorId": "1721779",
+        "name": "G. Drettakis"
+      }
+    ],
+    "abstract": "Radiance Field methods have recently revolutionized novel-view synthesis of scenes captured with multiple photos or videos. However, achieving high visual quality still requires neural networks that are costly to train and render, while recent faster methods inevitably trade off speed for quality. For unbounded and complete scenes (rather than isolated objects) and 1080p resolution rendering, no current method can achieve real-time display rates. We introduce three key elements that allow us to achieve state-of-the-art visual quality while maintaining competitive training times and importantly allow high-quality real-time (≥ 30 fps) novel-view synthesis at 1080p resolution. First, starting from sparse points produced during camera calibration, we represent the scene with 3D Gaussians that preserve desirable properties of continuous volumetric radiance fields for scene optimization while avoiding unnecessary computation in empty space; Second, we perform interleaved optimization/density control of the 3D Gaussians, notably optimizing anisotropic covariance to achieve an accurate representation of the scene; Third, we develop a fast visibility-aware rendering algorithm that supports anisotropic splatting and both accelerates training and allows realtime rendering. We demonstrate state-of-the-art visual quality and real-time rendering on several established datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "beaa4310cc9fba9360130c8f3bf049a50e0aef79",
+    "externalIds": {
+      "ArXiv": "2307.11307",
+      "DBLP": "journals/corr/abs-2307-11307",
+      "DOI": "10.48550/arXiv.2307.11307",
+      "CorpusId": 260091635
+    },
+    "title": "EndoSurf: Neural Surface Reconstruction of Deformable Tissues with Stereo Endoscope Videos",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2023,
+    "citationCount": 92,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.11307",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.11307, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2030527601",
+        "name": "Ruyi Zha"
+      },
+      {
+        "authorId": "47172429",
+        "name": "Xuelian Cheng"
+      },
+      {
+        "authorId": "2171936720",
+        "name": "Hongdong Li"
+      },
+      {
+        "authorId": "23911916",
+        "name": "Mehrtash Harandi"
+      },
+      {
+        "authorId": "1808390",
+        "name": "ZongYuan Ge"
+      }
+    ],
+    "abstract": "Reconstructing soft tissues from stereo endoscope videos is an essential prerequisite for many medical applications. Previous methods struggle to produce high-quality geometry and appearance due to their inadequate representations of 3D scenes. To address this issue, we propose a novel neural-field-based method, called EndoSurf, which effectively learns to represent a deforming surface from an RGBD sequence. In EndoSurf, we model surface dynamics, shape, and texture with three neural fields. First, 3D points are transformed from the observed space to the canonical space using the deformation field. The signed distance function (SDF) field and radiance field then predict their SDFs and colors, respectively, with which RGBD images can be synthesized via differentiable volume rendering. We constrain the learned shape by tailoring multiple regularization strategies and disentangling geometry and appearance. Experiments on public endoscope datasets demonstrate that EndoSurf significantly outperforms existing solutions, particularly in reconstructing high-fidelity shapes. Code is available at https://github.com/Ruyi-Zha/endosurf.git.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cd51dda4f02b2294a0b61385862d4ed091076755",
+    "externalIds": {
+      "ArXiv": "2306.09244",
+      "DBLP": "conf/nips/0002AWVS23",
+      "DOI": "10.48550/arXiv.2306.09244",
+      "CorpusId": 259165099
+    },
+    "title": "Text Promptable Surgical Instrument Segmentation with Vision-Language Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.09244",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.09244, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1825713856",
+        "name": "Zijian Zhou"
+      },
+      {
+        "authorId": "34817861",
+        "name": "Oluwatosin O. Alabi"
+      },
+      {
+        "authorId": "2072849011",
+        "name": "Meng Wei"
+      },
+      {
+        "authorId": "2014232",
+        "name": "Tom Kamiel Magda Vercauteren"
+      },
+      {
+        "authorId": "8003001",
+        "name": "Miaojing Shi"
+      }
+    ],
+    "abstract": "In this paper, we propose a novel text promptable surgical instrument segmentation approach to overcome challenges associated with diversity and differentiation of surgical instruments in minimally invasive surgeries. We redefine the task as text promptable, thereby enabling a more nuanced comprehension of surgical instruments and adaptability to new instrument types. Inspired by recent advancements in vision-language models, we leverage pretrained image and text encoders as our model backbone and design a text promptable mask decoder consisting of attention- and convolution-based prompting schemes for surgical instrument segmentation prediction. Our model leverages multiple text prompts for each surgical instrument through a new mixture of prompts mechanism, resulting in enhanced segmentation performance. Additionally, we introduce a hard instrument area reinforcement module to improve image feature comprehension and segmentation precision. Extensive experiments on several surgical instrument segmentation datasets demonstrate our model's superior performance and promising generalization capability. To our knowledge, this is the first implementation of a promptable approach to surgical instrument segmentation, offering significant potential for practical application in the field of robotic-assisted surgery.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ef05a0bbaead9d6d3162a86d3f0fd94a2b7571bd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-11692",
+      "ArXiv": "2305.11692",
+      "DOI": "10.1109/ICRA48891.2023.10160403",
+      "CorpusId": 258823315
+    },
+    "title": "Surgical-VQLA:Transformer with Gated Vision-Language Embedding for Visual Question Localized-Answering in Robotic Surgery",
+    "venue": "IEEE International Conference on Robotics and Automation",
+    "year": 2023,
+    "citationCount": 61,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.11692",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.11692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2185487835",
+        "name": "Long Bai"
+      },
+      {
+        "authorId": "145481136",
+        "name": "Mobarak Islam Hoque"
+      },
+      {
+        "authorId": "1409253593",
+        "name": "L. Seenivasan"
+      },
+      {
+        "authorId": "1738214662",
+        "name": "Hongliang Ren"
+      }
+    ],
+    "abstract": "Despite the availability of computer-aided simulators and recorded videos of surgical procedures, junior residents still heavily rely on experts to answer their queries. However, expert surgeons are often overloaded with clinical and academic workloads and limit their time in answering. For this purpose, we develop a surgical question-answering system to facilitate robot-assisted surgical scene and activity understanding from recorded videos. Most of the existing visual question answering (VQA) methods require an object detector and regions based feature extractor to extract visual features and fuse them with the embedded text of the question for answer generation. However, (i) surgical object detection model is scarce due to smaller datasets and lack of bounding box annotation; (ii) current fusion strategy of heterogeneous modalities like text and image is naive; (iii) the localized answering is missing, which is crucial in complex surgical scenarios. In this paper, we propose Visual Question Localized-Answering in Robotic Surgery (Surgical-VQLA) to localize the specific surgical area during the answer prediction. To deal with the fusion of the heterogeneous modalities, we design gated vision-language embedding (GVLE) to build input patches for the Language Vision Transformer (LViT) to predict the answer. To get localization, we add the detection head in parallel with the prediction head of the LViT. We also integrate generalized intersection over union (GIoU) loss to boost localization performance by preserving the accuracy of the question-answering model. We annotate two datasets of VQLA by utilizing publicly available surgical videos from EndoVis-17 and 18 of the MICCAI challenges. Our validation results suggest that Surgical-VQLA can better understand the surgical scene and localized the specific area related to the question-answering. GVLE presents an efficient language-vision embedding technique by showing superior performance over the existing benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7470a1702c8c86e6f28d32cfa315381150102f5b",
+    "externalIds": {
+      "DBLP": "conf/iccv/KirillovMRMRGXW23",
+      "ArXiv": "2304.02643",
+      "DOI": "10.1109/ICCV51070.2023.00371",
+      "CorpusId": 257952310
+    },
+    "title": "Segment Anything",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 13017,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.02643, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064802835",
+        "name": "A. Kirillov"
+      },
+      {
+        "authorId": "13131689",
+        "name": "Eric Mintun"
+      },
+      {
+        "authorId": "2065647966",
+        "name": "Nikhila Ravi"
+      },
+      {
+        "authorId": "2053590350",
+        "name": "Hanzi Mao"
+      },
+      {
+        "authorId": "2213549340",
+        "name": "Chloé Rolland"
+      },
+      {
+        "authorId": "47029037",
+        "name": "Laura Gustafson"
+      },
+      {
+        "authorId": "15727192",
+        "name": "Tete Xiao"
+      },
+      {
+        "authorId": "153188991",
+        "name": "Spencer Whitehead"
+      },
+      {
+        "authorId": "39668247",
+        "name": "A. Berg"
+      },
+      {
+        "authorId": "3317278",
+        "name": "Wan-Yen Lo"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We introduce the Segment Anything (SA) project: a new task, model, and dataset for image segmentation. Using our efficient model in a data collection loop, we built the largest segmentation dataset to date (by far), with over 1 billion masks on 11M licensed and privacy respecting images. The model is designed and trained to be promptable, so it can transfer zero-shot to new image distributions and tasks. We evaluate its capabilities on numerous tasks and find that its zero-shot performance is impressive – often competitive with or even superior to prior fully supervised results. We are releasing the Segment Anything Model (SAM) and corresponding dataset (SA-1B) of 1B masks and 11M images at segment-anything.com to foster research into foundation models for computer vision. We recommend reading the full paper at: arxiv.org/abs/2304.02643.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "804fc51343267224a0c654bbf8bec67a96062fad",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ChoSHASK24",
+      "ArXiv": "2303.11797",
+      "DOI": "10.1109/CVPR52733.2024.00394",
+      "CorpusId": 257636688
+    },
+    "title": "CAT-Seg: Cost Aggregation for Open-Vocabulary Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 234,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.11797",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.11797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109470172",
+        "name": "Seokju Cho"
+      },
+      {
+        "authorId": "49881042",
+        "name": "Heeseong Shin"
+      },
+      {
+        "authorId": "2153119782",
+        "name": "Sung‐Jin Hong"
+      },
+      {
+        "authorId": "2192832507",
+        "name": "Seungjun An"
+      },
+      {
+        "authorId": "2116979264",
+        "name": "Seungjun Lee"
+      },
+      {
+        "authorId": "2348740098",
+        "name": "Anurag Arnab"
+      },
+      {
+        "authorId": "14454974",
+        "name": "P. H. Seo"
+      },
+      {
+        "authorId": "2596437",
+        "name": "Seung Wook Kim"
+      }
+    ],
+    "abstract": "Open-vocabulary semantic segmentation presents the challenge of labeling each pixel within an image based on a wide range of text descriptions. In this work, we introduce a novel cost-based approach to adapt vision-language foundation models, notably CLIP, for the intricate task of semantic segmentation. Through aggregating the cosine similarity score, i. e., the cost volume between image and text embeddings, our method potently adapts CLIP for segmenting seen and unseen classes by fine-tuning its encoders, addressing the challenges faced by existing methods in handling unseen classes. Building upon this, we explore methods to effectively aggregate the cost volume considering its multi-modal nature of being established between image and text embeddings. Furthermore, we examine various methods for efficiently fine-tuning CLIP.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "611e2100a3f8ed02b2583d4e53fd27a12d223b4c",
+    "externalIds": {
+      "ArXiv": "2303.09553",
+      "DBLP": "journals/corr/abs-2303-09553",
+      "DOI": "10.1109/ICCV51070.2023.01807",
+      "CorpusId": 257557329
+    },
+    "title": "LERF: Language Embedded Radiance Fields",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 616,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.09553, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48220159",
+        "name": "J. Kerr"
+      },
+      {
+        "authorId": "2152613913",
+        "name": "C. Kim"
+      },
+      {
+        "authorId": "144344283",
+        "name": "Ken Goldberg"
+      },
+      {
+        "authorId": "20615377",
+        "name": "Angjoo Kanazawa"
+      },
+      {
+        "authorId": "7638730",
+        "name": "Matthew Tancik"
+      }
+    ],
+    "abstract": "Humans describe the physical world using natural language to refer to specific 3D locations based on a vast range of properties: visual appearance, semantics, abstract associations, or actionable affordances. In this work we propose Language Embedded Radiance Fields (LERFs), a method for grounding language embeddings from off-the-shelf models like CLIP into NeRF, which enable these types of open-ended language queries in 3D. LERF learns a dense, multi-scale language field inside NeRF by volume rendering CLIP embeddings along training rays, supervising these embeddings across training views to provide multi-view consistency and smooth the underlying language field. After optimization, LERF can extract 3D relevancy maps for a broad range of language prompts interactively in real-time, which has potential use cases in robotics, understanding vision-language models, and interacting with 3D scenes. LERF enables pixel-aligned, zero-shot queries on the distilled 3D CLIP embeddings without relying on region proposals or masks, supporting long-tail open-vocabulary queries hierarchically across the volume. See the project website at: https://lerf.io.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c170ab309fabcdb0d5258f509ae6d0f12f8d3482",
+    "externalIds": {
+      "ArXiv": "2206.15255",
+      "DBLP": "conf/miccai/WangLFD22",
+      "DOI": "10.48550/arXiv.2206.15255",
+      "CorpusId": 250144276
+    },
+    "title": "Neural Rendering for Stereo 3D Reconstruction of Deformable Tissues in Robotic Surgery",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2022,
+    "citationCount": 195,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2206.15255",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.15255, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115623711",
+        "name": "Yuehao Wang"
+      },
+      {
+        "authorId": "1500393949",
+        "name": "Yonghao Long"
+      },
+      {
+        "authorId": "2174176347",
+        "name": "Siu Hin Fan"
+      },
+      {
+        "authorId": "38973792",
+        "name": "Qingxu Dou"
+      }
+    ],
+    "abstract": "Reconstruction of the soft tissues in robotic surgery from endoscopic stereo videos is important for many applications such as intra-operative navigation and image-guided robotic surgery automation. Previous works on this task mainly rely on SLAM-based approaches, which struggle to handle complex surgical scenes. Inspired by recent progress in neural rendering, we present a novel framework for deformable tissue reconstruction from binocular captures in robotic surgery under the single-viewpoint setting. Our framework adopts dynamic neural radiance fields to represent deformable surgical scenes in MLPs and optimize shapes and deformations in a learning-based manner. In addition to non-rigid deformations, tool occlusion and poor 3D clues from a single viewpoint are also particular challenges in soft tissue reconstruction. To overcome these difficulties, we present a series of strategies of tool mask-guided ray casting, stereo depth-cueing ray marching and stereo depth-supervised optimization. With experiments on DaVinci robotic surgery videos, our method significantly outperforms the current state-of-the-art reconstruction method for handling various complex non-rigid deformations. To our best knowledge, this is the first work leveraging neural rendering for surgical scene 3D reconstruction with remarkable potential demonstrated. Code is available at: https://github.com/med-air/EndoNeRF.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4c3dada9bc0f95578877adae5ddadfaa25cc1f21",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2206-11053",
+      "ArXiv": "2206.11053",
+      "DOI": "10.48550/arXiv.2206.11053",
+      "CorpusId": 249926686
+    },
+    "title": "Surgical-VQA: Visual Question Answering in Surgical Scenes using Transformer",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2022,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2206.11053",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.11053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1409253593",
+        "name": "L. Seenivasan"
+      },
+      {
+        "authorId": "145481136",
+        "name": "Mobarak Islam Hoque"
+      },
+      {
+        "authorId": "2079021972",
+        "name": "Adithya K. Krishna"
+      },
+      {
+        "authorId": "1738214662",
+        "name": "Hongliang Ren"
+      }
+    ],
+    "abstract": "Visual question answering (VQA) in surgery is largely unexplored. Expert surgeons are scarce and are often overloaded with clinical and academic workloads. This overload often limits their time answering questionnaires from patients, medical students or junior residents related to surgical procedures. At times, students and junior residents also refrain from asking too many questions during classes to reduce disruption. While computer-aided simulators and recording of past surgical procedures have been made available for them to observe and improve their skills, they still hugely rely on medical experts to answer their questions. Having a Surgical-VQA system as a reliable 'second opinion' could act as a backup and ease the load on the medical experts in answering these questions. The lack of annotated medical data and the presence of domain-specific terms has limited the exploration of VQA for surgical procedures. In this work, we design a Surgical-VQA task that answers questionnaires on surgical procedures based on the surgical scene. Extending the MICCAI endoscopic vision challenge 2018 dataset and workflow recognition dataset further, we introduce two Surgical-VQA datasets with classification and sentence-based answers. To perform Surgical-VQA, we employ vision-text transformers models. We further introduce a residual MLP-based VisualBert encoder model that enforces interaction between visual and text tokens, improving performance in classification-based answering. Furthermore, we study the influence of the number of input image patches and temporal visual features on the model performance in both classification and sentence-based answering.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "91eaf433b759e08fc037eee16451c6d87b16d011",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-15251",
+      "ArXiv": "2203.15251",
+      "DOI": "10.1109/TMI.2022.3177077",
+      "CorpusId": 247778690,
+      "PubMed": "35604967"
+    },
+    "title": "Exploring Intra- and Inter-Video Relation for Surgical Semantic Scene Segmentation",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2022,
+    "citationCount": 52,
+    "openAccessPdf": {
+      "url": "https://discovery.ucl.ac.uk/id/eprint/10149297/7/Jin_Exploring%20Intra-%20and%20Inter-Video%20Relation%20for%20Surgical%20Semantic%20Scene%20Segmentation_AAM.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.15251, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33981465",
+        "name": "Yueming Jin"
+      },
+      {
+        "authorId": "2152848889",
+        "name": "Yang Yu"
+      },
+      {
+        "authorId": "1390805683",
+        "name": "Cheng Chen"
+      },
+      {
+        "authorId": "116046679",
+        "name": "Zixu Zhao"
+      },
+      {
+        "authorId": "1714602",
+        "name": "P. Heng"
+      },
+      {
+        "authorId": "2825517",
+        "name": "D. Stoyanov"
+      }
+    ],
+    "abstract": "Automatic surgical scene segmentation is fundamental for facilitating cognitive intelligence in the modern operating theatre. Previous works rely on conventional aggregation modules (e.g., dilated convolution, convolutional LSTM), which only make use of the local context. In this paper, we propose a novel framework STswinCL that explores the complementary intra- and inter-video relations to boost segmentation performance, by progressively capturing the global context. We firstly develop a hierarchy Transformer to capture intra-video relation that includes richer spatial and temporal cues from neighbor pixels and previous frames. A joint space-time window shift scheme is proposed to efficiently aggregate these two cues into each pixel embedding. Then, we explore inter-video relation via pixel-to-pixel contrastive learning, which well structures the global embedding space. A multi-source contrast training objective is developed to group the pixel embeddings across videos with the ground-truth guidance, which is crucial for learning the global property of the whole data. We extensively validate our approach on two public surgical video benchmarks, including EndoVis18 Challenge and CaDIS dataset. Experimental results demonstrate the promising performance of our method, which consistently exceeds previous state-of-the-art approaches. Code is available at https://github.com/YuemingJin/STswinCL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4",
+    "externalIds": {
+      "DBLP": "conf/icml/RadfordKHRGASAM21",
+      "ArXiv": "2103.00020",
+      "CorpusId": 231591445
+    },
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 47396,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.00020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2110935237",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "40087786",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4853df296d052c17de6c788c7a8ead10097a3e97",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2012-12453",
+      "ArXiv": "2012.12453",
+      "CorpusId": 229363724
+    },
+    "title": "CholecSeg8k: A Semantic Segmentation Dataset for Laparoscopic Cholecystectomy Based on Cholec80",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 153,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.12453, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2040798090",
+        "name": "W.-Y. Hong"
+      },
+      {
+        "authorId": "143902278",
+        "name": "Chang-Lung Kao"
+      },
+      {
+        "authorId": "2067540546",
+        "name": "Y.-H. Kuo"
+      },
+      {
+        "authorId": "120465413",
+        "name": "J.-R. Wang"
+      },
+      {
+        "authorId": "2189367455",
+        "name": "Wanxing Chang"
+      },
+      {
+        "authorId": "145131218",
+        "name": "C.-S. Shih"
+      }
+    ],
+    "abstract": "Computer-assisted surgery has been developed to enhance surgery correctness and safety. However, researchers and engineers suffer from limited annotated data to develop and train better algorithms. Consequently, the development of fundamental algorithms such as Simultaneous Localization and Mapping (SLAM) is limited. This article elaborates on the efforts of preparing the dataset for semantic segmentation, which is the foundation of many computer-assisted surgery mechanisms. Based on the Cholec80 dataset [3], we extracted 8,080 laparoscopic cholecystectomy image frames from 17 video clips in Cholec80 and annotated the images. The dataset is named CholecSeg8K and its total size is 3GB. Each of these images is annotated at pixel-level for thirteen classes, which are commonly founded in laparoscopic cholecystectomy surgery. CholecSeg8k is released under the license CC BY- NC-SA 4.0.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "bd6d0224e94a19caa1669f2bd7b97709090b01bf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2001-11190",
+      "MAG": "3003209274",
+      "ArXiv": "2001.11190",
+      "CorpusId": 210965971
+    },
+    "title": "2018 Robotic Scene Segmentation Challenge",
+    "venue": "arXiv.org",
+    "year": 2020,
+    "citationCount": 178,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.11190, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48313894",
+        "name": "M. Allan"
+      },
+      {
+        "authorId": "48671275",
+        "name": "S. Kondo"
+      },
+      {
+        "authorId": "2462340",
+        "name": "S. Bodenstedt"
+      },
+      {
+        "authorId": "47381059",
+        "name": "S. Leger"
+      },
+      {
+        "authorId": "1491042762",
+        "name": "Rahim Kadkhodamohammadi"
+      },
+      {
+        "authorId": "3395070",
+        "name": "Imanol Luengo"
+      },
+      {
+        "authorId": "1403539731",
+        "name": "Félix Fuentes-Hurtado"
+      },
+      {
+        "authorId": "29895917",
+        "name": "Evangello Flouty"
+      },
+      {
+        "authorId": "35726760",
+        "name": "A. Mohammed"
+      },
+      {
+        "authorId": "3276066",
+        "name": "Marius Pedersen"
+      },
+      {
+        "authorId": "35982249",
+        "name": "A. Kori"
+      },
+      {
+        "authorId": "34319048",
+        "name": "Alex Varghese"
+      },
+      {
+        "authorId": "2053121",
+        "name": "Ganapathy Krishnamurthi"
+      },
+      {
+        "authorId": "38353340",
+        "name": "D. Rauber"
+      },
+      {
+        "authorId": "9735732",
+        "name": "R. Mendel"
+      },
+      {
+        "authorId": "1827676",
+        "name": "C. Palm"
+      },
+      {
+        "authorId": "2222659",
+        "name": "Sophia Bano"
+      },
+      {
+        "authorId": "1491035169",
+        "name": "Guinther Saibro"
+      },
+      {
+        "authorId": "145131218",
+        "name": "C.-S. Shih"
+      },
+      {
+        "authorId": "152697953",
+        "name": "Hsun-An Chiang"
+      },
+      {
+        "authorId": "46251934",
+        "name": "Juntang Zhuang"
+      },
+      {
+        "authorId": "46478443",
+        "name": "Junlin Yang"
+      },
+      {
+        "authorId": "19231037",
+        "name": "V. Iglovikov"
+      },
+      {
+        "authorId": "26916449",
+        "name": "A. Dobrenkii"
+      },
+      {
+        "authorId": "87494652",
+        "name": "M. Reddiboina"
+      },
+      {
+        "authorId": "1491038833",
+        "name": "A. Reddy"
+      },
+      {
+        "authorId": "120281016",
+        "name": "Xingtong Liu"
+      },
+      {
+        "authorId": "144065403",
+        "name": "Cong Gao"
+      },
+      {
+        "authorId": "3197182",
+        "name": "M. Unberath"
+      },
+      {
+        "authorId": "1715489",
+        "name": "M. Azizian"
+      },
+      {
+        "authorId": "2825517",
+        "name": "D. Stoyanov"
+      },
+      {
+        "authorId": "1397958668",
+        "name": "L. Maier-Hein"
+      },
+      {
+        "authorId": "47515221",
+        "name": "S. Speidel"
+      }
+    ],
+    "abstract": "In 2015 we began a sub-challenge at the EndoVis workshop at MICCAI in Munich using endoscope images of ex-vivo tissue with automatically generated annotations from robot forward kinematics and instrument CAD models. However, the limited background variation and simple motion rendered the dataset uninformative in learning about which techniques would be suitable for segmentation in real surgery. In 2017, at the same workshop in Quebec we introduced the robotic instrument segmentation dataset with 10 teams participating in the challenge to perform binary, articulating parts and type segmentation of da Vinci instruments. This challenge included realistic instrument motion and more complex porcine tissue as background and was widely addressed with modifications on U-Nets and other popular CNN architectures. In 2018 we added to the complexity by introducing a set of anatomical objects and medical devices to the segmented classes. To avoid over-complicating the challenge, we continued with porcine data which is dramatically simpler than human tissue due to the lack of fatty tissue occluding many organs.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "44cadd24a58af15898e18e4450df5134fddd3c7b",
+    "externalIds": {
+      "MAG": "2951144181",
+      "ArXiv": "1602.03012",
+      "DBLP": "journals/tmi/TwinandaSMMMP17",
+      "DOI": "10.1109/TMI.2016.2593957",
+      "CorpusId": 5633749,
+      "PubMed": "27455522"
+    },
+    "title": "EndoNet: A Deep Architecture for Recognition Tasks on Laparoscopic Videos",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2016,
+    "citationCount": 1076,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1602.03012",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.03012, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2171765",
+        "name": "A. P. Twinanda"
+      },
+      {
+        "authorId": "145296109",
+        "name": "S. Shehata"
+      },
+      {
+        "authorId": "2055499",
+        "name": "D. Mutter"
+      },
+      {
+        "authorId": "144688664",
+        "name": "J. Marescaux"
+      },
+      {
+        "authorId": "1720360",
+        "name": "M. Mathelin"
+      },
+      {
+        "authorId": "2655297",
+        "name": "N. Padoy"
+      }
+    ],
+    "abstract": "Surgical workflow recognition has numerous potential medical applications, such as the automatic indexing of surgical video databases and the optimization of real-time operating room scheduling, among others. As a result, surgical phase recognition has been studied in the context of several kinds of surgeries, such as cataract, neurological, and laparoscopic surgeries. In the literature, two types of features are typically used to perform this task: visual features and tool usage signals. However, the used visual features are mostly handcrafted. Furthermore, the tool usage signals are usually collected via a manual annotation process or by using additional equipment. In this paper, we propose a novel method for phase recognition that uses a convolutional neural network (CNN) to automatically learn features from cholecystectomy videos and that relies uniquely on visual information. In previous studies, it has been shown that the tool usage signals can provide valuable information in performing the phase recognition task. Thus, we present a novel CNN architecture, called EndoNet, that is designed to carry out the phase recognition and tool presence detection tasks in a multi-task manner. To the best of our knowledge, this is the first work proposing to use a CNN for multiple recognition tasks on laparoscopic videos. Experimental comparisons to other methods show that EndoNet yields state-of-the-art results for both tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e67f07b993ecd7f66952177c7fd2529d988e3a05",
+    "externalIds": {
+      "MAG": "1965914414",
+      "DOI": "10.1016/S0140-6736(11)61597-3",
+      "CorpusId": 5389220,
+      "PubMed": "22010263"
+    },
+    "title": "From 2D to 3D: the future of surgery?",
+    "venue": "The Lancet",
+    "year": 2011,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/S0140-6736(11)61597-3?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/S0140-6736(11)61597-3, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39690998",
+        "name": "G. Mclachlan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fd15592898d52a899332766d12b4b8fe8109d84b",
+    "externalIds": {
+      "MAG": "2293372129",
+      "DBLP": "conf/siggraph/ZwickerPBG01",
+      "DOI": "10.1145/383259.383300",
+      "CorpusId": 262379744
+    },
+    "title": "Surface splatting",
+    "venue": "International Conference on Computer Graphics and Interactive Techniques",
+    "year": 2001,
+    "citationCount": 856,
+    "openAccessPdf": {
+      "url": "https://dash.harvard.edu/bitstream/1/4266873/2/Zwicker_Surface.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/383259.383300?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/383259.383300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256691213",
+        "name": "M. Zwicker"
+      },
+      {
+        "authorId": "2288632642",
+        "name": "H. Pfister"
+      },
+      {
+        "authorId": "1751880",
+        "name": "J. Baar"
+      },
+      {
+        "authorId": "2259420415",
+        "name": "M. Gross"
+      }
+    ],
+    "abstract": "Modern laser range and optical scanners need rendering techniques that can handle millions of points with high resolution textures. This paper describes a point rendering and texture filtering technique called surface splatting which directly renders opaque and transparent surfaces from point clouds without connectivity. It is based on a novel screen space formulation of the Elliptical Weighted Average (EWA) filter. Our rigorous mathematical analysis extends the texture resampling framework of Heckbert to irregularly spaced point samples. To render the points, we develop a surface splat primitive that implements the screen space EWA filter. Moreover, we show how to optimally sample image and procedural textures to irregular point data during pre-processing. We also compare the optimal algorithm with a more efficient view-independent EWA pre-filter. Surface splatting makes the benefits of EWA texture filtering available to point-based rendering. It provides high quality anisotropic texture filtering, hidden surface removal, edge anti-aliasing, and order-independent transparency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4c38c6d9241ad3db1d80f30329a85475ad2d64e6",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-12561",
+      "DOI": "10.48550/arXiv.2401.12561",
+      "CorpusId": 267095350
+    },
+    "title": "EndoGaussian: Gaussian Splatting for Deformable Surgical Scene Reconstruction",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 62,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2401.12561?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2401.12561, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2254346400",
+        "name": "Yifan Liu"
+      },
+      {
+        "authorId": "2280375068",
+        "name": "Chenxin Li"
+      },
+      {
+        "authorId": "2255799386",
+        "name": "Chen Yang"
+      },
+      {
+        "authorId": "2254283583",
+        "name": "Yixuan Yuan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fff39414fb848345a8b400b6cb7bc454d75f277b",
+    "externalIds": {
+      "DBLP": "conf/miccai/YoonHHLSPSYKPHC22",
+      "DOI": "10.1007/978-3-031-16449-1_53",
+      "CorpusId": 252408628
+    },
+    "title": "Surgical Scene Segmentation Using Semantic Image Synthesis with a Virtual Surgery Environment",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2022,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-031-16449-1_53?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-031-16449-1_53, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1435732544",
+        "name": "Jihun Yoon"
+      },
+      {
+        "authorId": "2111502317",
+        "name": "SeulGi Hong"
+      },
+      {
+        "authorId": "2154320929",
+        "name": "Seungbum Hong"
+      },
+      {
+        "authorId": "2130030600",
+        "name": "Jiwon Lee"
+      },
+      {
+        "authorId": "2168291551",
+        "name": "So-Myoung Shin"
+      },
+      {
+        "authorId": "2148450764",
+        "name": "Bokyung Park"
+      },
+      {
+        "authorId": "2185650286",
+        "name": "Nakjun Sung"
+      },
+      {
+        "authorId": "2148634991",
+        "name": "Hayeong Yu"
+      },
+      {
+        "authorId": "2144275657",
+        "name": "Sungjae Kim"
+      },
+      {
+        "authorId": "2108106660",
+        "name": "Sunghyun Park"
+      },
+      {
+        "authorId": "4397140",
+        "name": "W. Hyung"
+      },
+      {
+        "authorId": "2501453",
+        "name": "Min-Kook Choi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

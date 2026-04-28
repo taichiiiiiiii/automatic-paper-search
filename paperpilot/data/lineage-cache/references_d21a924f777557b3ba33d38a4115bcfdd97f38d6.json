@@ -1,0 +1,2812 @@
+[
+  {
+    "paperId": "3dd1d22923de55a3d0d0a067c57ac123c906bceb",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeFLZ25",
+      "DOI": "10.1109/CVPR52734.2025.02357",
+      "CorpusId": 280088911
+    },
+    "title": "Samba: A Unified Mamba-Based Framework for General Salient Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2025,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR52734.2025.02357?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR52734.2025.02357, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261603953",
+        "name": "Jiahao He"
+      },
+      {
+        "authorId": "2261392277",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "2221216038",
+        "name": "Xiaohong Liu"
+      },
+      {
+        "authorId": "2261474790",
+        "name": "Qijun Zhao"
+      }
+    ],
+    "abstract": "Existing salient object detection (SOD) models primarily resort to convolutional neural networks (CNNs) and Transformers. However, the limited receptive fields of CNNs and quadratic computational complexity of transformers both constrain the performance of current models on discovering attention-grabbing objects. The emerging state space model, namely Mamba, has demonstrated its potential to balance global receptive fields and computational complexity. Therefore, we propose a novel unified framework based on the pure Mamba architecture, dubbed saliency Mamba (Samba), to flexibly handle general SOD tasks, including RGB/RGB-D/RGB-T SOD, video SOD (VSOD), and RGB-D VSOD. Specifically, we rethink Mamba’s scanning strategy from the perspective of SOD, and identify the importance of maintaining spatial continuity of salient patches within scanning sequences. Based on this, we propose a saliency-guided Mamba block (SGMB), incorporating a spatial neighboring scanning (SNS) algorithm to preserve spatial continuity of salient patches. Additionally, we propose a context-aware upsampling (CAU) method to promote hierarchical feature alignment and aggregations by modeling contextual dependencies Experimental results show that our Samba outperforms existing methods across five SOD tasks on 21 datasets with lower computational cost, confirming the superiority of introducing Mamba to the SOD areas. Our code is available at https://github.com/Jia-Hao999/Samba.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "62bbd25556d9472dd0f9fa440b42638491520211",
+    "externalIds": {
+      "DBLP": "journals/tip/JiangLFZ24",
+      "DOI": "10.1109/TIP.2024.3498331",
+      "CorpusId": 274235707,
+      "PubMed": "40030224"
+    },
+    "title": "Transformer-Based Light Field Salient Object Detection and Its Application to Autofocus",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2024,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TIP.2024.3498331?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TIP.2024.3498331, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117865546",
+        "name": "Yao Jiang"
+      },
+      {
+        "authorId": "2332339588",
+        "name": "Xin Li"
+      },
+      {
+        "authorId": "2261392277",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "2261474790",
+        "name": "Qijun Zhao"
+      }
+    ],
+    "abstract": "Existing light field salient object detection (LFSOD) models predominantly rely on convolutional neural networks or local attention to process light field data, consequently encountering difficulties in modeling intra-slice and cross-slice long-range dependencies within focal stacks. In this paper, we ponder the feasibility of relying solely on the pure Transformer architecture to address this dilemma and propose a novel quasi-pure Transformer-based framework for LFSOD, termed TLFNet. TLFNet incorporates innovative Transformer-based fusion modules (PGFormer) along with an edge enhancement module. The PGFormer employs a perpendicular self-attention (PSA) mechanism to capture long-range dependencies along both cross-slice and intra-slice axes within the focal stack, and integrates multi-modal features using a guided feature fusion (GFF) module. To address the issue of blurry edges arising from the Transformer-based encoder-decoder architecture, the edge enhancement module combines detailed texture and body information and employs focal loss to improve the edge precision of salient objects. TLFNet is a nearly pure Transformer-based approach (with approximately 99.01% of its parameters belonging to the Transformer), while the edge enhancement module significantly boosts accuracy with only around 0.99% of parameters. Comprehensive benchmarks demonstrate that TLFNet outperforms 14 light field models and achieves new state-of-the-art performance. Last but not least, we show in this paper a new application scheme of TLFNet, by cooperating with the deep autofocus technique proposed by Herrmann et al. (2020), leading to light field salient object autofocus (LFSOA). LFSOA aims to identify and output the focal slice with a salient object in focus while keeping other irrelevant background blurred (out-of-focus), yielding an autonomous bokeh effect in photography. The code for the model and application will be publicly available at https://github.com/jiangyao-scu/TLFNet.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2772cd3edd8412098c18626c56063a4cc048c7c0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2407-08132",
+      "ArXiv": "2407.08132",
+      "DOI": "10.1109/TGRS.2025.3578309",
+      "CorpusId": 271097740
+    },
+    "title": "DMM: Disparity-Guided Multispectral Mamba for Oriented Object Detection in Remote Sensing",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 47,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.08132, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2310850496",
+        "name": "Minghang Zhou"
+      },
+      {
+        "authorId": "2275656754",
+        "name": "Tianyu Li"
+      },
+      {
+        "authorId": "2310699575",
+        "name": "Chaofan Qiao"
+      },
+      {
+        "authorId": "2310701378",
+        "name": "Dongyu Xie"
+      },
+      {
+        "authorId": "2295276621",
+        "name": "Guoqing Wang"
+      },
+      {
+        "authorId": "2316819330",
+        "name": "Ningjuan Ruan"
+      },
+      {
+        "authorId": "2310700160",
+        "name": "Lin Mei"
+      },
+      {
+        "authorId": "2310835353",
+        "name": "Yang Yang"
+      },
+      {
+        "authorId": "1491249037",
+        "name": "Heng Tao Shen"
+      }
+    ],
+    "abstract": "Multispectral-oriented object detection faces challenges due to both intermodal and intramodal discrepancies. Recent studies often rely on transformer-based models to address these issues and achieve cross-modal fusion detection. However, the quadratic computational complexity of transformers limits their performance in remote sensing imagery. Inspired by the efficiency and lower complexity of Mamba in long-sequence tasks, we propose disparity-guided multispectral Mamba (DMM), a multispectral-oriented object detection framework comprised of a disparity-guided cross-modal fusion Mamba (DCFM) module, a multiscale target-aware attention (MTA) module, and a target-prior aware (TPA) auxiliary task. The DCFM module leverages disparity information between modalities to adaptively merge features from RGB and infrared (IR) images, mitigating intermodal conflicts. The MTA module aims to enhance feature representation by focusing on relevant target regions within the RGB modality, addressing intramodal variations. The TPA auxiliary task utilizes single-modal labels to guide the optimization of the MTA module, ensuring it focuses on targets and their local context. Extensive experiments on the DroneVehicle and VEDAI datasets demonstrate the effectiveness of our method, which outperforms state-of-the-art methods while maintaining computational efficiency. Code will be available at https://github.com/Another-0/DMM",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7061c05ddcbad654349e2a783089fe4c7a166b54",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2406-12536",
+      "ArXiv": "2406.12536",
+      "DOI": "10.1007/s11263-024-02051-5",
+      "CorpusId": 270272103
+    },
+    "title": "ViDSOD-100: A New Dataset and a Baseline Model for RGB-D Video Salient Object Detection",
+    "venue": "International Journal of Computer Vision",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2406.12536",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.12536, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2110811017",
+        "name": "Jun-Hong Lin"
+      },
+      {
+        "authorId": "2280201265",
+        "name": "Lei Zhu"
+      },
+      {
+        "authorId": "2115733731",
+        "name": "Jia Shen"
+      },
+      {
+        "authorId": "2258526535",
+        "name": "Huazhu Fu"
+      },
+      {
+        "authorId": "2145803651",
+        "name": "Qing Zhang"
+      },
+      {
+        "authorId": "2254332888",
+        "name": "Liansheng Wang"
+      }
+    ],
+    "abstract": "With the rapid development of depth sensor, more and more RGB-D videos could be obtained. Identifying the foreground in RGB-D videos is a fundamental and important task. However, the existing salient object detection (SOD) works only focus on either static RGB-D images or RGB videos, ignoring the collaborating of RGB-D and video information. In this paper, we first collect a new annotated RGB-D video SOD (ViDSOD-100) dataset, which contains 100 videos within a total of 9362 frames, acquired from diverse natural scenes. All the frames in each video are manually annotated to a high-quality saliency annotation. Moreover, we propose a new baseline model, named attentive triple-fusion network (ATF-Net), for RGB-D video salient object detection. Our method aggregates the appearance information from an input RGB image, spatio-temporal information from an estimated motion map, and the geometry information from the depth map by devising three modality-specific branches and a multi-modality integration branch. The modality-specific branches extract the representation of different inputs, while the multi-modality integration branch combines the multi-level modality-specific features by introducing the encoder feature aggregation (MEA) modules and decoder feature aggregation (MDA) modules. The experimental findings conducted on both our newly introduced ViDSOD-100 dataset and the well-established DAVSOD dataset highlight the superior performance of the proposed ATF-Net.This performance enhancement is demonstrated both quantitatively and qualitatively, surpassing the capabilities of current state-of-the-art techniques across various domains, including RGB-D saliency detection, video saliency detection, and video object segmentation. We shall release our data, our results, and our code upon the publication of this work.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16009a691e3f8eb5a61d25a0ec6f313d4d634498",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-15008",
+      "ArXiv": "2404.15008",
+      "DOI": "10.48550/arXiv.2404.15008",
+      "CorpusId": 269303103
+    },
+    "title": "External Prompt Features Enhanced Parameter-efficient Fine-tuning for Salient Object Detection",
+    "venue": "International Conference on Pattern Recognition",
+    "year": 2024,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.15008, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2224236581",
+        "name": "Wen Liang"
+      },
+      {
+        "authorId": "2297849477",
+        "name": "Peipei Ran"
+      },
+      {
+        "authorId": "2297850329",
+        "name": "Mengchao Bai"
+      },
+      {
+        "authorId": "2285761010",
+        "name": "Xiao Liu"
+      },
+      {
+        "authorId": "2284687177",
+        "name": "P. Githinji"
+      },
+      {
+        "authorId": "2327857180",
+        "name": "Wei Zhao"
+      },
+      {
+        "authorId": "2284682596",
+        "name": "Peiwu Qin"
+      }
+    ],
+    "abstract": "Salient object detection (SOD) aims at finding the most salient objects in images and outputs pixel-level binary masks. Transformer-based methods achieve promising performance due to their global semantic understanding, crucial for identifying salient objects. However, these models tend to be large and require numerous training parameters. To better harness the potential of transformers for SOD, we propose a novel parameter-efficient fine-tuning method aimed at reducing the number of training parameters while enhancing the salient object detection capability. Our model, termed EXternal Prompt features Enhanced adapteR Tuning (ExPert), features an encoder-decoder structure with adapters and injectors interspersed between the layers of a frozen transformer encoder. The adapter modules adapt the pretrained backbone to SOD while the injector modules incorporate external prompt features to enhance the awareness of salient objects. Comprehensive experiments demonstrate the superiority of our method. Surpassing former state-of-the-art (SOTA) models across five SOD datasets, ExPert achieves 0.215 mean absolute error (MAE) in the ECSSD dataset with 80.2M trained parameters, 21% better than SelfReformer and 47% better than EGNet.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9b54e80ab60632213cfd0a90d2f10f62619e0eb4",
+    "externalIds": {
+      "DBLP": "journals/tmm/DongZLLSGZ25",
+      "ArXiv": "2404.09146",
+      "DOI": "10.1109/TMM.2025.3599020",
+      "CorpusId": 269148408
+    },
+    "title": "Fusion-Mamba for Cross-Modality Object Detection",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2024,
+    "citationCount": 106,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.09146, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2296757494",
+        "name": "Wenhao Dong"
+      },
+      {
+        "authorId": "2296745269",
+        "name": "Haodong Zhu"
+      },
+      {
+        "authorId": "2257475538",
+        "name": "Shaohui Lin"
+      },
+      {
+        "authorId": "2266762340",
+        "name": "Xiaoyan Luo"
+      },
+      {
+        "authorId": "2259478606",
+        "name": "Yunhang Shen"
+      },
+      {
+        "authorId": "2296712081",
+        "name": "Guodong Guo"
+      },
+      {
+        "authorId": "2279241615",
+        "name": "Baochang Zhang"
+      }
+    ],
+    "abstract": "Cross-modality object detection aims to fuse complementary information from different modalities to improve model performance, which achieves a wider range of applications. However, traditional cross-modality fusion methods, based on CNN or Transformer, inadequately address the issue of pseudo-target information, which causes model attention dispersion to degrade object detection performance. In this paper, we investigate a novel cross-modality fusion approach by associating cross-modal features in a hidden state space based on an improved Mamba with a gating attention mechanism. We propose the Fusion-Mamba Block(FMB), designed to map cross-modal features into a hidden state space for interaction, thereby refining the model’s attention on true target areas and enhancing overall performance. The FMB comprises two key modules: State Space Channel Swapping (SSCS) module, which facilitates the fusion of shallow features, and Dual State Space Fusion (DSSF) module, which enables deep fusion and effectively suppresses pseudo-target information within the hidden state space. Our proposed method outperforms state-of-the-art approaches, achieving improvements of 5.9%, 3.5% and 2.1% mAP on $M^{3}$FD, DroneVehicle and FLIR-Aligned, respectively. To the best of our knowledge, this work establishes a new baseline for cross-modality object detection, providing a robust foundation for future research in this area.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a06ad946578d92baac73735726a00b5f7f446c98",
+    "externalIds": {
+      "DBLP": "conf/wacv/WanZWYSSX25",
+      "ArXiv": "2404.04256",
+      "DOI": "10.1109/WACV61041.2025.00176",
+      "CorpusId": 268987521
+    },
+    "title": "Sigma: Siamese Mamba Network for Multi-Modal Semantic Segmentation",
+    "venue": "IEEE Workshop/Winter Conference on Applications of Computer Vision",
+    "year": 2024,
+    "citationCount": 118,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.04256, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2186826514",
+        "name": "Zifu Wan"
+      },
+      {
+        "authorId": "2274966413",
+        "name": "Yuhao Wang"
+      },
+      {
+        "authorId": "2295511052",
+        "name": "Silong Yong"
+      },
+      {
+        "authorId": "2295585237",
+        "name": "Pingping Zhang"
+      },
+      {
+        "authorId": "8083127",
+        "name": "Simon Stepputtis"
+      },
+      {
+        "authorId": "2239104696",
+        "name": "Katia P. Sycara"
+      },
+      {
+        "authorId": "2266307378",
+        "name": "Yaqi Xie"
+      }
+    ],
+    "abstract": "Multi-modal semantic segmentation significantly enhances AI agents' perception and scene understanding, especially under adverse conditions like low-light or overexposed environments. Leveraging additional modalities (X-modality) like thermal and depth alongside traditional RGB provides complementary information, enabling more robust and reliable prediction. In this work, we introduce Sigma, a Siamese Mamba network for multi-modal semantic segmentation utilizing the advanced Mamba. Unlike conventional methods that rely on CNNs, with their limited local receptive fields, or Vision Transformers (ViTs), which offer global receptive fields at the cost of quadratic complexity, our model achieves global receptive fields with linear complexity. By employing a Siamese encoder and innovating a Mamba-based fusion mechanism, we effectively select essential information from different modalities. A decoder is then developed to enhance the channel-wise modeling ability of the model. Our proposed method is rigorously evaluated on both RGB-Thermal and RGB-Depth semantic segmentation tasks, demonstrating its superiority and marking the first successful application of State Space Models (SSMs) in multi-modal perception tasks. Code is available at https://github.com/zifuwan/Sigma.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "2833716cabbd7c709f4b266832b8b3fa3e37d2c6",
+    "externalIds": {
+      "DBLP": "journals/tgrs/ZhaoCZXBO24",
+      "ArXiv": "2404.02668",
+      "DOI": "10.1109/TGRS.2024.3425540",
+      "CorpusId": 268875757
+    },
+    "title": "RS-Mamba for Large Remote Sensing Image Dense Prediction",
+    "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+    "year": 2024,
+    "citationCount": 300,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2404.02668",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.02668, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2262009613",
+        "name": "Sijie Zhao"
+      },
+      {
+        "authorId": "2282496760",
+        "name": "Hao Chen"
+      },
+      {
+        "authorId": "49470313",
+        "name": "Xue-liang Zhang"
+      },
+      {
+        "authorId": "2976074",
+        "name": "P. Xiao"
+      },
+      {
+        "authorId": "2253472588",
+        "name": "Lei Bai"
+      },
+      {
+        "authorId": "2253464521",
+        "name": "Wanli Ouyang"
+      }
+    ],
+    "abstract": "Context modeling is critical for remote sensing image dense prediction tasks. Nowadays, the growing size of very-high-resolution (VHR) remote sensing images poses challenges in effectively modeling context. While transformer-based models possess global modeling capabilities, they encounter computational challenges when applied to large VHR images due to their quadratic complexity. The conventional practice of cropping large images into smaller patches results in a notable loss of contextual information. To address these issues, we propose the remote sensing Mamba (RSM) for dense prediction tasks in large VHR remote sensing images. RSM is specifically designed to capture the global context of remote sensing images with linear complexity, facilitating the effective processing of large VHR images. Considering that the land covers in remote sensing images are distributed in arbitrary spatial directions due to characteristics of remote sensing over-head imaging, the RSM incorporates an omnidirectional selective scan module (OSSM) to globally model the context of images in multiple directions, capturing large spatial features from various directions. We designed simple yet effective models based on RSM, achieving state-of-the-art performance on dense prediction tasks in VHR remote sensing images without fancy training strategies. Extensive experiments on semantic segmentation (SS) and change detection (CD) tasks across various land covers demonstrate the effectiveness of the proposed RSM. Leveraging the linear complexity and global modeling capabilities, RSM achieves better efficiency and accuracy than transformer-based models on large remote sensing images. Interestingly, we also demonstrated that our model generally performs better with a larger image size on dense prediction tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "62ac3ef81e54e1d1930fb5980b236345ee2e4f32",
+    "externalIds": {
+      "ArXiv": "2403.17695",
+      "DBLP": "conf/bmvc/YangCEEWLC24",
+      "DOI": "10.48550/arXiv.2403.17695",
+      "CorpusId": 268692121
+    },
+    "title": "PlainMamba: Improving Non-Hierarchical Mamba in Visual Recognition",
+    "venue": "British Machine Vision Conference",
+    "year": 2024,
+    "citationCount": 194,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.17695, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1443245211",
+        "name": "Chenhongyi Yang"
+      },
+      {
+        "authorId": "2275197422",
+        "name": "Zehui Chen"
+      },
+      {
+        "authorId": "1663825682",
+        "name": "Miguel Espinosa"
+      },
+      {
+        "authorId": "2293395470",
+        "name": "Linus Ericsson"
+      },
+      {
+        "authorId": "2305122598",
+        "name": "Zhenyu Wang"
+      },
+      {
+        "authorId": "2293550958",
+        "name": "Jiaming Liu"
+      },
+      {
+        "authorId": "2278426510",
+        "name": "Elliot Crowley"
+      }
+    ],
+    "abstract": "We present PlainMamba: a simple non-hierarchical state space model (SSM) designed for general visual recognition. The recent Mamba model has shown how SSMs can be highly competitive with other architectures on sequential data and initial attempts have been made to apply it to images. In this paper, we further adapt the selective scanning process of Mamba to the visual domain, enhancing its ability to learn features from two-dimensional images by (i) a continuous 2D scanning process that improves spatial continuity by ensuring adjacency of tokens in the scanning sequence, and (ii) direction-aware updating which enables the model to discern the spatial relations of tokens by encoding directional information. Our architecture is designed to be easy to use and easy to scale, formed by stacking identical PlainMamba blocks, resulting in a model with constant width throughout all layers. The architecture is further simplified by removing the need for special tokens. We evaluate PlainMamba on a variety of visual recognition tasks, achieving performance gains over previous non-hierarchical models and is competitive with hierarchical alternatives. For tasks requiring high-resolution inputs, in particular, PlainMamba requires much less computing while maintaining high performance. Code and models are available at: https://github.com/ChenhongyiYang/PlainMamba .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bd4e670b16b9086dbcc2b8e24106143b53317539",
+    "externalIds": {
+      "DBLP": "journals/visintelligence/JiangYJFSXFK24",
+      "ArXiv": "2403.04306",
+      "DOI": "10.1007/s44267-024-00066-7",
+      "CorpusId": 268264800
+    },
+    "title": "Effectiveness assessment of recent large vision-language models",
+    "venue": "Visual Intelligence",
+    "year": 2024,
+    "citationCount": 44,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1007/s44267-024-00066-7",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.04306, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117865546",
+        "name": "Yao Jiang"
+      },
+      {
+        "authorId": "2116537389",
+        "name": "Xinyu Yan"
+      },
+      {
+        "authorId": "94805190",
+        "name": "Ge-Peng Ji"
+      },
+      {
+        "authorId": "2261392277",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "2290466291",
+        "name": "Meijun Sun"
+      },
+      {
+        "authorId": "2290179524",
+        "name": "Huan Xiong"
+      },
+      {
+        "authorId": "2268675384",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "2290294424",
+        "name": "Fahad Khan"
+      }
+    ],
+    "abstract": "The advent of large vision-language models (LVLMs) represents a remarkable advance in the quest for artificial general intelligence. However, the models’ effectiveness in both specialized and general tasks warrants further investigation. This paper endeavors to evaluate the competency of popular LVLMs in specialized and general tasks, respectively, aiming to offer a comprehensive understanding of these novel models. To gauge their effectiveness in specialized tasks, we employ six challenging tasks in three different application scenarios: natural, healthcare, and industrial. These six tasks include salient/camouflaged/transparent object detection, as well as polyp detection, skin lesion detection, and industrial anomaly detection. We examine the performance of three recent open-source LVLMs, including MiniGPT-v2, LLaVA-1.5, and Shikra, on both visual recognition and localization in these tasks. Moreover, we conduct empirical investigations utilizing the aforementioned LVLMs together with GPT-4V, assessing their multi-modal understanding capabilities in general tasks including object counting, absurd question answering, affordance reasoning, attribute recognition, and spatial relation reasoning. Our investigations reveal that these LVLMs demonstrate limited proficiency not only in specialized tasks but also in general tasks. We delve deep into this inadequacy and uncover several potential factors, including limited cognition in specialized tasks, object hallucination, text-to-image interference, and decreased robustness in complex problems. We hope that this study can provide useful insights for the future development of LVLMs, helping researchers improve LVLMs for both general and specialized applications.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fda9905a917534bfce72b1d5a9fea71decc2ad19",
+    "externalIds": {
+      "DBLP": "journals/ijcv/HuSSWL24",
+      "DOI": "10.1007/s11263-024-02020-y",
+      "CorpusId": 268208619
+    },
+    "title": "Cross-Modal Fusion and Progressive Decoding Network for RGB-D Salient Object Detection",
+    "venue": "International Journal of Computer Vision",
+    "year": 2024,
+    "citationCount": 106,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11263-024-02020-y?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11263-024-02020-y, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277982765",
+        "name": "Xihang Hu"
+      },
+      {
+        "authorId": "2075375099",
+        "name": "Fuming Sun"
+      },
+      {
+        "authorId": "2156016962",
+        "name": "Jing Sun"
+      },
+      {
+        "authorId": "2241590783",
+        "name": "Fasheng Wang"
+      },
+      {
+        "authorId": "2241962561",
+        "name": "Haojie Li"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b24e899ec0f77eef2fc87a9b8e50516367aa1f97",
+    "externalIds": {
+      "DBLP": "conf/nips/LiuTZYX0YJ024",
+      "ArXiv": "2401.10166",
+      "DOI": "10.48550/arXiv.2401.10166",
+      "CorpusId": 267035250
+    },
+    "title": "VMamba: Visual State Space Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 2100,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.10166, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2279865167",
+        "name": "Yue Liu"
+      },
+      {
+        "authorId": "145649522",
+        "name": "Yunjie Tian"
+      },
+      {
+        "authorId": "2279864665",
+        "name": "Yuzhong Zhao"
+      },
+      {
+        "authorId": "2279908067",
+        "name": "Hongtian Yu"
+      },
+      {
+        "authorId": "2279860604",
+        "name": "Lingxi Xie"
+      },
+      {
+        "authorId": "2274017459",
+        "name": "Yaowei Wang"
+      },
+      {
+        "authorId": "2278220085",
+        "name": "Qixiang Ye"
+      },
+      {
+        "authorId": "2279787174",
+        "name": "Yunfan Liu"
+      }
+    ],
+    "abstract": "Designing computationally efficient network architectures remains an ongoing necessity in computer vision. In this paper, we adapt Mamba, a state-space language model, into VMamba, a vision backbone with linear time complexity. At the core of VMamba is a stack of Visual State-Space (VSS) blocks with the 2D Selective Scan (SS2D) module. By traversing along four scanning routes, SS2D bridges the gap between the ordered nature of 1D selective scan and the non-sequential structure of 2D vision data, which facilitates the collection of contextual information from various sources and perspectives. Based on the VSS blocks, we develop a family of VMamba architectures and accelerate them through a succession of architectural and implementation enhancements. Extensive experiments demonstrate VMamba's promising performance across diverse visual perception tasks, highlighting its superior input scaling efficiency compared to existing benchmark models. Source code is available at https://github.com/MzeroMiko/VMamba.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "38c48a1cd296d16dc9c56717495d6e44cc354444",
+    "externalIds": {
+      "DBLP": "conf/icml/ZhuL0W0W24",
+      "ArXiv": "2401.09417",
+      "DOI": "10.48550/arXiv.2401.09417",
+      "CorpusId": 267028142
+    },
+    "title": "Vision Mamba: Efficient Visual Representation Learning with Bidirectional State Space Model",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 1696,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.09417, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261901203",
+        "name": "Lianghui Zhu"
+      },
+      {
+        "authorId": "2060439659",
+        "name": "Bencheng Liao"
+      },
+      {
+        "authorId": "2261816376",
+        "name": "Qian Zhang"
+      },
+      {
+        "authorId": "2261792454",
+        "name": "Xinlong Wang"
+      },
+      {
+        "authorId": "2257432695",
+        "name": "Wenyu Liu"
+      },
+      {
+        "authorId": "2261738789",
+        "name": "Xinggang Wang"
+      }
+    ],
+    "abstract": "Recently the state space models (SSMs) with efficient hardware-aware designs, i.e., the Mamba deep learning model, have shown great potential for long sequence modeling. Meanwhile building efficient and generic vision backbones purely upon SSMs is an appealing direction. However, representing visual data is challenging for SSMs due to the position-sensitivity of visual data and the requirement of global context for visual understanding. In this paper, we show that the reliance on self-attention for visual representation learning is not necessary and propose a new generic vision backbone with bidirectional Mamba blocks (Vim), which marks the image sequences with position embeddings and compresses the visual representation with bidirectional state space models. On ImageNet classification, COCO object detection, and ADE20k semantic segmentation tasks, Vim achieves higher performance compared to well-established vision transformers like DeiT, while also demonstrating significantly improved computation&memory efficiency. For example, Vim is 2.8$\\times$ faster than DeiT and saves 86.8% GPU memory when performing batch inference to extract features on images with a resolution of 1248$\\times$1248. The results demonstrate that Vim is capable of overcoming the computation&memory constraints on performing Transformer-style understanding for high-resolution images and it has great potential to be the next-generation backbone for vision foundation models. Code is available at https://github.com/hustvl/Vim.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "30d31dd034fd65c0bf4df6f24c6225eab39317f1",
+    "externalIds": {
+      "DBLP": "journals/tnn/MoserSRFPD25",
+      "ArXiv": "2401.00736",
+      "DOI": "10.1109/TNNLS.2024.3476671",
+      "CorpusId": 266693843,
+      "PubMed": "39471123"
+    },
+    "title": "Diffusion Models, Image Super-Resolution, and Everything: A Survey",
+    "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": 2024,
+    "citationCount": 123,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/tnnls.2024.3476671",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.00736, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064375154",
+        "name": "Brian B. Moser"
+      },
+      {
+        "authorId": "2277248486",
+        "name": "Arundhati S. Shanbhag"
+      },
+      {
+        "authorId": "48258541",
+        "name": "Federico Raue"
+      },
+      {
+        "authorId": "50120446",
+        "name": "Stanislav Frolov"
+      },
+      {
+        "authorId": "145491338",
+        "name": "Sebastián M. Palacio"
+      },
+      {
+        "authorId": "2282138873",
+        "name": "Andreas Dengel"
+      }
+    ],
+    "abstract": "Diffusion models (DMs) have disrupted the image super-resolution (SR) field and further closed the gap between image quality and human perceptual preferences. They are easy to train and can produce very high-quality samples that exceed the realism of those produced by previous generative methods. Despite their promising results, they also come with new challenges that need further research: high computational demands, comparability, lack of explainability, color shifts, and more. Unfortunately, entry into this field is overwhelming because of the abundance of publications. To address this, we provide a unified recount of the theoretical foundations underlying DMs applied to image SR and offer a detailed analysis that underscores the unique characteristics and methodologies within this domain, distinct from broader existing reviews in the field. This article articulates a cohesive understanding of DM principles and explores current research avenues, including alternative input domains, conditioning techniques, guidance mechanisms, corruption spaces, and zero-shot learning approaches. By offering a detailed examination of the evolution and current trends in image SR through the lens of DMs, this article sheds light on the existing challenges and charts potential future directions, aiming to inspire further innovation in this rapidly advancing area.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7bbc7595196a0606a07506c4fb1473e5e87f6082",
+    "externalIds": {
+      "ArXiv": "2312.00752",
+      "DBLP": "journals/corr/abs-2312-00752",
+      "CorpusId": 265551773
+    },
+    "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 6671,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.00752, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269161650",
+        "name": "Albert Gu"
+      },
+      {
+        "authorId": "2269146652",
+        "name": "Tri Dao"
+      }
+    ],
+    "abstract": "Foundation models, now powering most of the exciting applications in deep learning, are almost universally based on the Transformer architecture and its core attention module. Many subquadratic-time architectures such as linear attention, gated convolution and recurrent models, and structured state space models (SSMs) have been developed to address Transformers' computational inefficiency on long sequences, but they have not performed as well as attention on important modalities such as language. We identify that a key weakness of such models is their inability to perform content-based reasoning, and make several improvements. First, simply letting the SSM parameters be functions of the input addresses their weakness with discrete modalities, allowing the model to selectively propagate or forget information along the sequence length dimension depending on the current token. Second, even though this change prevents the use of efficient convolutions, we design a hardware-aware parallel algorithm in recurrent mode. We integrate these selective SSMs into a simplified end-to-end neural network architecture without attention or even MLP blocks (Mamba). Mamba enjoys fast inference (5$\\times$ higher throughput than Transformers) and linear scaling in sequence length, and its performance improves on real data up to million-length sequences. As a general sequence model backbone, Mamba achieves state-of-the-art performance across several modalities such as language, audio, and genomics. On language modeling, our Mamba-3B model outperforms Transformers of the same size and matches Transformers twice its size, both in pretraining and downstream evaluation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dc0f81cf9d46e849bd1311ec21a288af596a65c8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2311-15011",
+      "ArXiv": "2311.15011",
+      "DOI": "10.1109/CVPR52733.2024.01625",
+      "CorpusId": 265457243
+    },
+    "title": "VSCode: General Visual Salient and Camouflaged Object Detection with 2D Prompt Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 117,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2311.15011",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.15011, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2260563683",
+        "name": "Ziyang Luo"
+      },
+      {
+        "authorId": "2027424343",
+        "name": "Nian Liu"
+      },
+      {
+        "authorId": "2109435100",
+        "name": "Wangbo Zhao"
+      },
+      {
+        "authorId": "2268572672",
+        "name": "Xuguang Yang"
+      },
+      {
+        "authorId": "39901030",
+        "name": "Dingwen Zhang"
+      },
+      {
+        "authorId": "2268409627",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "2290294424",
+        "name": "Fahad Khan"
+      },
+      {
+        "authorId": "2156545589",
+        "name": "Junwei Han"
+      }
+    ],
+    "abstract": "Salient object detection (SOD) and camouflaged object detection (COD) are related yet distinct binary mapping tasks. These tasks involve multiple modalities, sharing commonalities and unique cues. Existing research often employs intricate task-specific specialist models, potentially leading to redundancy and suboptimal results. We introduce VS-Code, a generalist model with novel 2D prompt learning, to jointly address four SOD tasks and three COD tasks. We utilize VST as the foundation model and introduce 2D prompts within the encoder-decoder architecture to learn domain and task-specific knowledge on two separate dimensions. A prompt discrimination loss helps disentangle peculiarities to benefit model optimization. VSCode outperforms state-of-the-art methods across six tasks on 26 datasets and exhibits zero-shot generalization to unseen tasks by combining 2D prompts, such as RGB-D COD. Source code has been available at https://github.com/Sssssuperior/VSCode.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "56ceca1419c6ae99f2babf14c2ffd1abd1694a78",
+    "externalIds": {
+      "DBLP": "conf/mm/ZhangWH23",
+      "DOI": "10.1145/3581783.3612466",
+      "CorpusId": 264492125
+    },
+    "title": "Saliency Prototype for RGB-D and RGB-T Salient Object Detection",
+    "venue": "ACM Multimedia",
+    "year": 2023,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3581783.3612466?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3581783.3612466, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261750833",
+        "name": "Zihao Zhang"
+      },
+      {
+        "authorId": "2258203092",
+        "name": "Jie Wang"
+      },
+      {
+        "authorId": "2261890091",
+        "name": "Yahong Han"
+      }
+    ],
+    "abstract": "Most of the existing bi-modal (RGB-D or RGB-T) salient object detection methods attempt to integrate multimodality information through various fusion strategies. However, existing methods lack a clear definition of salient regions before feature fusion, which results in poor model robustness. To tackle this problem, we propose a novel prototype, the saliency prototype, which captures common characteristic information among salient objects. A prototype contains inherent characteristics information of multiple salient objects, which can be used for feature enhancement of various salient objects. By utilizing the saliency prototype, we provide a clearer definition of salient regions and enable the model to focus on these regions before feature fusion, avoiding the influence of complex backgrounds during the feature fusion stage. Additionally, we utilize the saliency prototypes to address the quality issue of auxiliary modality. Firstly, we apply the saliency prototypes obtained by the primary modality to perform semantic enhancement of the auxiliary modality. Secondly, we dynamically allocate weights for the auxiliary modality during the feature fusion stage in proportion to its quality. Thus, we develop a new bi-modal salient detection architecture Saliency Prototype Network (SPNet), which can be used for both RGB-D and RGB-T SOD. Extensive experimental results on RGB-D and RGB-T SOD datasets demonstrate the effectiveness of the proposed approach against the state-of-the-art. Our code is available at https://github.com/ZZ2490/SPNet.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "5417705d8238a772b5ee1a3cef28e08abfc6ab2f",
+    "externalIds": {
+      "ArXiv": "2310.15482",
+      "DBLP": "journals/corr/abs-2310-15482",
+      "DOI": "10.1109/TIP.2024.3498326",
+      "CorpusId": 264439424,
+      "PubMed": "40030223"
+    },
+    "title": "Salient Object Detection in RGB-D Videos",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2023,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.15482, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326187278",
+        "name": "Ao Mou"
+      },
+      {
+        "authorId": "2368500810",
+        "name": "Yu Lu"
+      },
+      {
+        "authorId": "2261603953",
+        "name": "Jiahao He"
+      },
+      {
+        "authorId": "2154417046",
+        "name": "Dingyao Min"
+      },
+      {
+        "authorId": "2261392277",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "2261474790",
+        "name": "Qijun Zhao"
+      }
+    ],
+    "abstract": "Given the widespread adoption of depth-sensing acquisition devices, RGB-D videos and related data/media have gained considerable traction in various aspects of daily life. Consequently, conducting salient object detection (SOD) in RGB-D videos presents a highly promising and evolving avenue. Despite the potential of this area, SOD in RGB-D videos remains somewhat under-explored, with RGB-D SOD and video SOD (VSOD) traditionally studied in isolation. To explore this emerging field, this paper makes two primary contributions: the dataset and the model. On one front, we construct the RDVS dataset, a new RGB-D VSOD dataset with realistic depth and characterized by its diversity of scenes and rigorous frame-by-frame annotations. We validate the dataset through comprehensive attribute and object-oriented analyses, and provide training and testing splits. Moreover, we introduce DCTNet+, a three-stream network tailored for RGB-D VSOD, with an emphasis on RGB modality and treats depth and optical flow as auxiliary modalities. In pursuit of effective feature enhancement, refinement, and fusion for precise final prediction, we propose two modules: the multi-modal attention module (MAM) and the refinement fusion module (RFM). To enhance interaction and fusion within RFM, we design a universal interaction module (UIM) and then integrate holistic multi-modal attentive paths (HMAPs) for refining multi-modal low-level features before reaching RFMs. Comprehensive experiments, conducted on pseudo RGB-D video datasets alongside our proposed RDVS, highlight the superiority of DCTNet+ over 19 VSOD models and 14 RGB-D SOD models. Additionally, insightful ablation experiments were performed on both pseudo and realistic RGB-D video datasets to demonstrate the advantages of individual modules as well as the necessity of introducing realistic depth into VSOD. Our code together with RDVS dataset will be available at https://github.com/kerenfu/RDVS/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "25a235b80d38557753460d678fa5880b9f4fd88a",
+    "externalIds": {
+      "ArXiv": "2310.11725",
+      "DBLP": "journals/pami/LiuLZH24",
+      "DOI": "10.1109/TPAMI.2024.3388153",
+      "CorpusId": 264289102
+    },
+    "title": "VST++: Efficient and Stronger Visual Saliency Transformer",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2023,
+    "citationCount": 48,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.11725",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.11725, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2027424343",
+        "name": "Nian Liu"
+      },
+      {
+        "authorId": "2260563683",
+        "name": "Ziyang Luo"
+      },
+      {
+        "authorId": "2153012406",
+        "name": "Ni Zhang"
+      },
+      {
+        "authorId": "2243351312",
+        "name": "Junwei Han"
+      }
+    ],
+    "abstract": "While previous CNN-based models have exhibited promising results for salient object detection (SOD), their ability to explore global long-range dependencies is restricted. Our previous work, the Visual Saliency Transformer (VST), addressed this constraint from a transformer-based sequence-to-sequence perspective, to unify RGB and RGB-D SOD. In VST, we developed a multi-task transformer decoder that concurrently predicts saliency and boundary outcomes in a pure transformer architecture. Moreover, we introduced a novel token upsampling method called reverse T2T for predicting a high-resolution saliency map effortlessly within transformer-based structures. Building upon the VST model, we further propose an efficient and stronger VST version in this work, i.e.VST++. To mitigate the computational costs of the VST model, we propose a Select-Integrate Attention (SIA) module, partitioning foreground into fine-grained segments and aggregating background information into a single coarse-grained token. To incorporate 3D depth information with low cost, we design a novel depth position encoding method tailored for depth maps. Furthermore, we introduce a token-supervised prediction loss to provide straightforward guidance for the task-related tokens. We evaluate our VST++ model across various transformer-based backbones on RGB, RGB-D, and RGB-T SOD benchmark datasets. Experimental results show that our model outperforms existing methods while achieving a 25% reduction in computational costs without significant performance compromise. The demonstrated strong ability for generalization, enhanced performance, and heightened efficiency of our VST++ model highlight its potential.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c2fa4d1ea1626522f509d8038cc7e96125954ee7",
+    "externalIds": {
+      "ArXiv": "2310.01407",
+      "DBLP": "conf/cvpr/MeiDTTPM24",
+      "DOI": "10.1109/CVPR52733.2024.00864",
+      "CorpusId": 263605620
+    },
+    "title": "CoDi: Conditional Diffusion Distillation for Higher-Fidelity and Faster Image Generation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 33,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2310.01407",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.01407, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "77733241",
+        "name": "Kangfu Mei"
+      },
+      {
+        "authorId": "2346590",
+        "name": "M. Delbracio"
+      },
+      {
+        "authorId": "1980498754",
+        "name": "Hossein Talebi"
+      },
+      {
+        "authorId": "2253396714",
+        "name": "Zhengzhong Tu"
+      },
+      {
+        "authorId": "2249762620",
+        "name": "Vishal M. Patel"
+      },
+      {
+        "authorId": "1718280",
+        "name": "P. Milanfar"
+      }
+    ],
+    "abstract": "Large generative diffusion models have revolution-ized text-to-image generation and offer immense po-tential for conditional generation tasks such as im-age enhancement, restoration, editing, and compositing. However, their widespread adoption is hindered by the high computational cost, which limits their real-time application. To address this challenge, we in-troduce a novel method dubbed CoDi, that adapts a pre-trained latent diffusion model to accept additional image conditioning inputs while significantly reducing the sampling steps required to achieve high-quality results. Our method can leverage architectures such as ControlNet to incorporate conditioning inputs with-out compromising the model's prior knowledge gained during large scale pre-training. Additionally, a con-ditional consistency loss enforces consistent predictions across diffusion steps, effectively compelling the model to generate high-quality images with conditions in a few steps. Our conditional-task learning and distil-lation approach outperforms previous distillation meth-ods, achieving a new state-of-the-art in producing high-quality images with very few steps (e.g., 1–4) across multiple tasks, including super-resolution, text-guided image editing, and depth-to-image generation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "08be64558eb81b47a2f86066fecab730eed18642",
+    "externalIds": {
+      "DBLP": "journals/tcsv/SongHGY23",
+      "DOI": "10.1109/TCSVT.2022.3233131",
+      "CorpusId": 255288874
+    },
+    "title": "Multiple Graph Affinity Interactive Network and a Variable Illumination Dataset for RGBT Image Salient Object Detection",
+    "venue": "IEEE transactions on circuits and systems for video technology (Print)",
+    "year": 2023,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TCSVT.2022.3233131?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TCSVT.2022.3233131, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "37843131",
+        "name": "Kechen Song"
+      },
+      {
+        "authorId": "1959060036",
+        "name": "Liming Huang"
+      },
+      {
+        "authorId": "1965773149",
+        "name": "Aojun Gong"
+      },
+      {
+        "authorId": "2091609",
+        "name": "Yunhui Yan"
+      }
+    ],
+    "abstract": "Salient object detection (SOD) of images refers to simulating the attention mechanism of human vision to capture the most attractive objects in an image. Current SOD mainly relies on RGB images captured by optical cameras. However, existing optical cameras are not comparable to the human visual system, especially in poorly illumination scenes. Our human visual system is able to resolve scenes well in low light conditions, while optical cameras can barely image without enough illumination. To make machine vision closer to the imaging of the human eye, we propose to use thermal infrared (T) images to compensate RGB images and build a variable illumination RGBT dataset named VI-RGBT1500 for SOD. This dataset is collected under three different illumination conditions including sufficient illumination, uneven illumination and insufficient illumination to fully demonstrate the superiority of the RGBT image combination. Furthermore, we propose a multiple graph affinity interactive (MGAI) network to validate the proposed dataset. Our network structure is simple using only the MGAI to fuse the features of different modalities. Meanwhile, the MGAI model highlights valuable information during the interaction, which facilitates feature representation under variable illumination. The proposed VI-RGBT1500 dataset and three publicly available RGBT SOD datasets are used for the comparison experiments, and the results with the state-of-the-art methods prove that our VI-RGBT1500 dataset is valuable and the performance of the MGAI network is competitive. The VI-RGBT1500 dataset and the MGAI network are available at: https://github.com/huanglm-me/VI-RGBT1500.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e989d0dfadd43a8ce1138e77a32cfd5c90844d1d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/WangWFWH23",
+      "DOI": "10.1109/CVPR52729.2023.00967",
+      "CorpusId": 261081508
+    },
+    "title": "Pixels, Regions, and Objects: Multiple Enhancement for Salient Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 95,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR52729.2023.00967?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR52729.2023.00967, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2154461869",
+        "name": "Yi Wang"
+      },
+      {
+        "authorId": "2282983599",
+        "name": "Ruili Wang"
+      },
+      {
+        "authorId": "2221075746",
+        "name": "Xin Fan"
+      },
+      {
+        "authorId": "49981119",
+        "name": "Tianzhu Wang"
+      },
+      {
+        "authorId": "2143945278",
+        "name": "Xiangjian He"
+      }
+    ],
+    "abstract": "Salient object detection (SOD) aims to mimic the human visual system (HVS) and cognition mechanisms to identify and segment salient objects. However, due to the complexity of these mechanisms, current methods are not perfect. Accuracy and robustness need to be further improved, particularly in complex scenes with multiple objects and background clutter. To address this issue, we propose a novel approach called Multiple Enhancement Network (MENet) that adopts the boundary sensibility, content integrity, iterative refinement, and frequency decomposition mechanisms of HVS. A multi-level hybrid loss is firstly designed to guide the network to learn pixel-level, region-level, and object-level features. A flexible multiscale feature enhancement module (ME-Module) is then designed to gradually aggregate and refine global or detailed features by changing the size order of the input feature sequence. An iterative training strategy is used to enhance boundary features and adaptive features in the dual-branch decoder of MENet. Comprehensive evaluations on six challenging benchmark datasets show that MENet achieves state-of-the-art results. Both the codes and results are publicly available at https://github.com/yiwangtz/MENet.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b63cdf948929cd36b1a18c95c8db40649343287f",
+    "externalIds": {
+      "DBLP": "conf/cvpr/MiangolehBKSA23",
+      "ArXiv": "2306.06092",
+      "DOI": "10.1109/CVPR52729.2023.00026",
+      "CorpusId": 259129874
+    },
+    "title": "Realistic Saliency Guided Image Enhancement",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2306.06092",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.06092, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2106387422",
+        "name": "S. Mahdi H. Miangoleh"
+      },
+      {
+        "authorId": "3326347",
+        "name": "Z. Bylinskii"
+      },
+      {
+        "authorId": "2219575",
+        "name": "E. Kee"
+      },
+      {
+        "authorId": "2177801",
+        "name": "Eli Shechtman"
+      },
+      {
+        "authorId": "37416755",
+        "name": "Yağız Aksoy"
+      }
+    ],
+    "abstract": "Common editing operations performed by professional photographers include the cleanup operations: de-emphasizing distracting elements and enhancing subjects. These edits are challenging, requiring a delicate balance between manipulating the viewer's attention while maintaining photo realism. While recent approaches can boast successful examples of attention attenuation or amplification, most of them also suffer from frequent unrealistic edits. We propose a realism loss for saliency-guided image enhancement to maintain high realism across varying image types, while attenuating distractors and amplifying objects of interest. Evaluations with professional photographers confirm that we achieve the dual objective of realism and effectiveness, and outperform the recent approaches on their own datasets, while requiring a smaller memory footprint and runtime. We thus offer a viable solution for automating image enhancement and photo cleanup operations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e2afa77db3442163c843f6588ed9f68bc9770624",
+    "externalIds": {
+      "DBLP": "journals/tnn/LiuNZYH24",
+      "DOI": "10.1109/TNNLS.2023.3243246",
+      "CorpusId": 256971968,
+      "PubMed": "37027778"
+    },
+    "title": "Learning Complementary Spatial–Temporal Transformer for Video Salient Object Detection",
+    "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": 2023,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TNNLS.2023.3243246?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TNNLS.2023.3243246, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2027424343",
+        "name": "Nian Liu"
+      },
+      {
+        "authorId": "2207118366",
+        "name": "Kepan Nan"
+      },
+      {
+        "authorId": "2109435100",
+        "name": "Wangbo Zhao"
+      },
+      {
+        "authorId": "2227434",
+        "name": "Xiwen Yao"
+      },
+      {
+        "authorId": "2156545584",
+        "name": "Junwei Han"
+      }
+    ],
+    "abstract": "Besides combining appearance and motion information, another crucial factor for video salient object detection (VSOD) is to mine spatial–temporal (ST) knowledge, including complementary long–short temporal cues and global–local spatial context from neighboring frames. However, the existing methods only explored part of them and ignored their complementarity. In this article, we propose a novel complementary ST transformer (CoSTFormer) for VSOD, which has a short-global branch and a long-local branch to aggregate complementary ST contexts. The former integrates the global context from the neighboring two frames using dense pairwise attention, while the latter is designed to fuse long-term temporal information from more consecutive frames with local attention windows. In this way, we decompose the ST context into a short-global part and a long-local part and leverage the powerful transformer to model the context relationship and learn their complementarity. To solve the contradiction between local window attention and object motion, we propose a novel flow-guided window attention (FGWA) mechanism to align the attention windows with object and camera movements. Furthermore, we deploy CoSTFormer on fused appearance and motion features, thus enabling the effective combination of all three VSOD factors. Besides, we present a pseudo video generation method to synthesize sufficient video clips from static images for training ST saliency models. Extensive experiments have verified the effectiveness of our method and illustrated that we achieve new state-of-the-art results on several benchmark datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "efbe97d20c4ffe356e8826c01dc550bacc405add",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2302-05543",
+      "ArXiv": "2302.05543",
+      "DOI": "10.1109/ICCV51070.2023.00355",
+      "CorpusId": 256827727
+    },
+    "title": "Adding Conditional Control to Text-to-Image Diffusion Models",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2023,
+    "citationCount": 6683,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2302.05543",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.05543, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2287850511",
+        "name": "Lvmin Zhang"
+      },
+      {
+        "authorId": "36290866",
+        "name": "Anyi Rao"
+      },
+      {
+        "authorId": "1820412",
+        "name": "Maneesh Agrawala"
+      }
+    ],
+    "abstract": "We present ControlNet, a neural network architecture to add spatial conditioning controls to large, pretrained text-to-image diffusion models. ControlNet locks the production-ready large diffusion models, and reuses their deep and robust encoding layers pretrained with billions of images as a strong backbone to learn a diverse set of conditional controls. The neural architecture is connected with \"zero convolutions\" (zero-initialized convolution layers) that progressively grow the parameters from zero and ensure that no harmful noise could affect the finetuning. We test various conditioning controls, e.g., edges, depth, segmentation, human pose, etc., with Stable Diffusion, using single or multiple conditions, with or without prompts. We show that the training of ControlNets is robust with small (<50k) and large (>1m) datasets. Extensive results show that ControlNet may facilitate wider applications to control image diffusion models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "14d31a19da066e1fe6708bd84bb3e5fd63881413",
+    "externalIds": {
+      "DBLP": "journals/tip/MaXXCL23",
+      "DOI": "10.1109/TIP.2022.3232209",
+      "CorpusId": 255669245,
+      "PubMed": "37018243"
+    },
+    "title": "Boosting Broader Receptive Fields for Salient Object Detection",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2023,
+    "citationCount": 101,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TIP.2022.3232209?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TIP.2022.3232209, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2106680256",
+        "name": "Mingcan Ma"
+      },
+      {
+        "authorId": "2749565",
+        "name": "Changqun Xia"
+      },
+      {
+        "authorId": "2152297314",
+        "name": "Chenxi Xie"
+      },
+      {
+        "authorId": "1425091532",
+        "name": "Xiaowu Chen"
+      },
+      {
+        "authorId": "2118372693",
+        "name": "Jia Li"
+      }
+    ],
+    "abstract": "Salient Object Detection has boomed in recent years and achieved impressive performance on regular-scale targets. However, existing methods encounter performance bottlenecks in processing objects with scale variation, especially extremely large- or small-scale objects with asymmetric segmentation requirements, since they are inefficient in obtaining more comprehensive receptive fields. With this issue in mind, this paper proposes a framework named BBRF for Boosting Broader Receptive Fields, which includes a Bilateral Extreme Stripping (BES) encoder, a Dynamic Complementary Attention Module (DCAM) and a Switch-Path Decoder (SPD) with a new boosting loss under the guidance of Loop Compensation Strategy (LCS). Specifically, we rethink the characteristics of the bilateral networks, and construct a BES encoder that separates semantics and details in an extreme way so as to get the broader receptive fields and obtain the ability to perceive extreme large- or small-scale objects. Then, the bilateral features generated by the proposed BES encoder can be dynamically filtered by the newly proposed DCAM. This module interactively provides spacial-wise and channel-wise dynamic attention weights for the semantic and detail branches of our BES encoder. Furthermore, we subsequently propose a Loop Compensation Strategy to boost the scale-specific features of multiple decision paths in SPD. These decision paths form a feature loop chain, which creates mutually compensating features under the supervision of boosting loss. Experiments on five benchmark datasets demonstrate that the proposed BBRF has a great advantage to cope with scale variation and can reduce the Mean Absolute Error over 20% compared with the state-of-the-art methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "14f69fe3d0a361afb223b5b2c92ed1348f86b21f",
+    "externalIds": {
+      "DBLP": "journals/tmm/CongZZZZHK23",
+      "ArXiv": "2210.04266",
+      "DOI": "10.1109/TMM.2022.3216476",
+      "CorpusId": 252780368
+    },
+    "title": "Does Thermal Really Always Matter for RGB-T Salient Object Detection?",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2022,
+    "citationCount": 116,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2210.04266",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.04266, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3409475",
+        "name": "Runmin Cong"
+      },
+      {
+        "authorId": "2119060077",
+        "name": "Ke Zhang"
+      },
+      {
+        "authorId": "2200060818",
+        "name": "Chen Zhang"
+      },
+      {
+        "authorId": "2057491353",
+        "name": "Feng Zheng"
+      },
+      {
+        "authorId": "2109882005",
+        "name": "Yao Zhao"
+      },
+      {
+        "authorId": "1689702",
+        "name": "Qingming Huang"
+      },
+      {
+        "authorId": "2169707980",
+        "name": "Sam Kwong"
+      }
+    ],
+    "abstract": "In recent years, RGB-T salient object detection (SOD) has attracted continuous attention, which makes it possible to identify salient objects in environments such as low light by introducing thermal image. However, most of the existing RGB-T SOD models focus on how to perform cross-modality feature fusion, ignoring whether thermal image is really always matter in SOD task. Starting from the definition and nature of this task, this paper rethinks the connotation of thermal modality, and proposes a network named TNet to solve the RGB-T SOD task. In this paper, we introduce a global illumination estimation module to predict the global illuminance score of the image, so as to regulate the role played by the two modalities. In addition, considering the role of thermal modality, we set up different cross-modality interaction mechanisms in the encoding phase and the decoding phase. On the one hand, we introduce a semantic constraint provider to enrich the semantics of thermal images in the encoding phase, which makes thermal modality more suitable for the SOD task. On the other hand, we introduce a two-stage localization and complementation module in the decoding phase to transfer object localization cue and internal integrity cue in thermal features to the RGB modality. Extensive experiments on three datasets show that the proposed TNet achieves competitive performance compared with 20 state-of-the-art methods.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "4d932a51e3aa8fc496d3b62149d6869f39af3efe",
+    "externalIds": {
+      "DBLP": "journals/tnn/ChenZLFZ24",
+      "DOI": "10.1109/TNNLS.2022.3202241",
+      "CorpusId": 252210372,
+      "PubMed": "36099219"
+    },
+    "title": "3-D Convolutional Neural Networks for RGB-D Salient Object Detection and Beyond",
+    "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": 2022,
+    "citationCount": 86,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TNNLS.2022.3202241?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TNNLS.2022.3202241, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2146378318",
+        "name": "Qian Chen"
+      },
+      {
+        "authorId": "2109506952",
+        "name": "Zhenxi Zhang"
+      },
+      {
+        "authorId": "2909282",
+        "name": "Yanye Lu"
+      },
+      {
+        "authorId": "1847070",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "7345195",
+        "name": "Qijun Zhao"
+      }
+    ],
+    "abstract": "RGB-depth (RGB-D) salient object detection (SOD) recently has attracted increasing research interest, and many deep learning methods based on encoder–decoder architectures have emerged. However, most existing RGB-D SOD models conduct explicit and controllable cross-modal feature fusion either in the single encoder or decoder stage, which hardly guarantees sufficient cross-modal fusion ability. To this end, we make the first attempt in addressing RGB-D SOD through 3-D convolutional neural networks. The proposed model, named RD3D, aims at prefusion in the encoder stage and in-depth fusion in the decoder stage to effectively promote the full integration of RGB and depth streams. Specifically, RD3D first conducts prefusion across RGB and depth modalities through a 3-D encoder obtained by inflating 2-D ResNet and later provides in-depth feature fusion by designing a 3-D decoder equipped with rich back-projection paths (RBPPs) for leveraging the extensive aggregation ability of 3-D convolutions. Toward an improved model RD3D+, we propose to disentangle the conventional 3-D convolution into successive spatial and temporal convolutions and, meanwhile, discard unnecessary zero padding. This eventually results in a 2-D convolutional equivalence that facilitates optimization and reduces parameters and computation costs. Thanks to such a progressive-fusion strategy involving both the encoder and the decoder, effective and thorough interactions between the two modalities can be exploited and boost detection accuracy. As an additional boost, we also introduce channel-modality attention and its variant after each path of RBPP to attend to important features. Extensive experiments on seven widely used benchmark datasets demonstrate that RD3D and RD3D+ perform favorably against 14 state-of-the-art RGB-D SOD approaches in terms of five key evaluation metrics. Our code will be made publicly available at https://github.com/PPOLYpubki/RD3D.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b6791bc8aab0557b83835a926539f5f2bcfe6564",
+    "externalIds": {
+      "DBLP": "conf/icpr/EnglebertCV22",
+      "DOI": "10.1109/ICPR56361.2022.9956711",
+      "CorpusId": 254102453
+    },
+    "title": "Backward recursive Class Activation Map refinement for high resolution saliency map",
+    "venue": "International Conference on Pattern Recognition",
+    "year": 2022,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICPR56361.2022.9956711?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICPR56361.2022.9956711, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "98133092",
+        "name": "A. Englebert"
+      },
+      {
+        "authorId": "2073150798",
+        "name": "O. Cornu"
+      },
+      {
+        "authorId": "1719942",
+        "name": "C. Vleeschouwer"
+      }
+    ],
+    "abstract": "The need for Explainable AI is increasing with the development of deep learning. The saliency maps derived from convolutional neural networks generally fail in localizing with accuracy the image features justifying the network prediction. This is because those maps are either low-resolution as for CAM, or smooth as for perturbation-based methods, or do correspond to a large number of widespread peaky spots as for gradient-based approaches. In contrast, our work proposes to combine the information from earlier network layers with the one from later layers to produce a high resolution Class Activation Map that is competitive with the previous art in term of insertion-deletion faithfulness metrics, while outperforming it in term of precision of class-specific features localization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "08b5f0d019a4c5637c5b791b1274766f023e2582",
+    "externalIds": {
+      "DBLP": "conf/icpr/ZhangHD22",
+      "DOI": "10.1109/ICPR56361.2022.9956354",
+      "CorpusId": 254100619
+    },
+    "title": "Channel-Spatial Mutual Attention Network for 360° Salient Object Detection",
+    "venue": "International Conference on Pattern Recognition",
+    "year": 2022,
+    "citationCount": 3,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICPR56361.2022.9956354?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICPR56361.2022.9956354, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153911759",
+        "name": "Yi Zhang"
+      },
+      {
+        "authorId": "1931304",
+        "name": "W. Hamidouche"
+      },
+      {
+        "authorId": "144598687",
+        "name": "O. Déforges"
+      }
+    ],
+    "abstract": "In this work, we conduct 360° panoramic salient object detection by taking advantage of both the global and local visual cues of 360° images, with a novel channel-spatial mutual attention network (CSMA-Net). The key component of the CSMA-Net is the proposed CSMA module, which cascades channel-/spatial-weighting-based mutual attentions. The objective of our CSMA module is to refine and fuse the bottleneck features from two separate encoders with different planar representations of 360° panorama as inputs, i.e., equirectangular image and cube map. Our CSMA-Net outperforms 10 state-of-the-art segmentation methods based on the proposed 360° SOD benchmark where multiple fine-tuning and testing strategies are applied to the widely-used 360° datasets. Extensive experimental results illustrate the effectiveness and robustness of the proposed CSMA-Net1.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7209bc65018ef06d9ffaf9937de856b8d725f149",
+    "externalIds": {
+      "ArXiv": "2208.00946",
+      "DBLP": "journals/tip/ZhaoLLSZLH24",
+      "DOI": "10.1109/TIP.2023.3348659",
+      "CorpusId": 251224413,
+      "PubMed": "38190677"
+    },
+    "title": "Motion-Aware Memory Network for Fast Video Salient Object Detection",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2022,
+    "citationCount": 30,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2208.00946",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2208.00946, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143711282",
+        "name": "Xingke Zhao"
+      },
+      {
+        "authorId": "2111207039",
+        "name": "Haoran Liang"
+      },
+      {
+        "authorId": "2112728298",
+        "name": "Peipei Li"
+      },
+      {
+        "authorId": "47333988",
+        "name": "Guodao Sun"
+      },
+      {
+        "authorId": null,
+        "name": "Dongdong Zhao"
+      },
+      {
+        "authorId": "2070440739",
+        "name": "Ronghua Liang"
+      },
+      {
+        "authorId": "3945955",
+        "name": "Xiaofei He"
+      }
+    ],
+    "abstract": "Previous methods based on 3DCNN, convLSTM, or optical flow have achieved great success in video salient object detection (VSOD). However, these methods still suffer from high computational costs or poor quality of the generated saliency maps. To address this, we design a space-time memory (STM)-based network that employs a standard encoder–decoder architecture. During the encoding stage, we extract high-level temporal features from the current frame and its adjacent frames, which is more efficient and practical than methods reliant on optical flow. During the decoding stage, we introduce an effective fusion strategy for both spatial and temporal branches. The semantic information of the high-level features is used to improve the object details in the low-level features. Subsequently, spatiotemporal features are methodically derived step by step to reconstruct the saliency maps. Moreover, inspired by the boundary supervision prevalent in image salient object detection (ISOD), we design a motion-aware loss that predicts object boundary motion, and simultaneously perform multitask learning for VSOD and object motion prediction. This can further enhance the model’s capability to accurately extract spatiotemporal features while maintaining object integrity. Extensive experiments on several datasets demonstrate the effectiveness of our method and can achieve state-of-the-art metrics on some datasets. Our proposed model does not require optical flow or additional preprocessing, and can reach an impressive inference speed of nearly 100 FPS.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b4f545ea90fd327b28c5b178a06646d84ca7695b",
+    "externalIds": {
+      "ArXiv": "2207.07898",
+      "DBLP": "journals/corr/abs-2207-07898",
+      "DOI": "10.48550/arXiv.2207.07898",
+      "CorpusId": 250627431
+    },
+    "title": "SPSN: Superpixel Prototype Sampling Network for RGB-D Salient Object Detection",
+    "venue": "European Conference on Computer Vision",
+    "year": 2022,
+    "citationCount": 93,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.07898",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.07898, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109503396",
+        "name": "Minhyeok Lee"
+      },
+      {
+        "authorId": "2109124052",
+        "name": "Chaewon Park"
+      },
+      {
+        "authorId": "9613506",
+        "name": "Suhwan Cho"
+      },
+      {
+        "authorId": "39847092",
+        "name": "Sangyoun Lee"
+      }
+    ],
+    "abstract": "RGB-D salient object detection (SOD) has been in the spotlight recently because it is an important preprocessing operation for various vision tasks. However, despite advances in deep learning-based methods, RGB-D SOD is still challenging due to the large domain gap between an RGB image and the depth map and low-quality depth maps. To solve this problem, we propose a novel superpixel prototype sampling network (SPSN) architecture. The proposed model splits the input RGB image and depth map into component superpixels to generate component prototypes. We design a prototype sampling network so that the network only samples prototypes corresponding to salient objects. In addition, we propose a reliance selection module to recognize the quality of each RGB and depth feature map and adaptively weight them in proportion to their reliability. The proposed method makes the model robust to inconsistencies between RGB images and depth maps and eliminates the influence of non-salient objects. Our method is evaluated on five popular datasets, achieving state-of-the-art performance. We prove the effectiveness of the proposed method through comparative experiments.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0928a0af87c02f773a0d70fa6954e60139a27b1b",
+    "externalIds": {
+      "DBLP": "conf/icpr/LinSLBC022",
+      "ArXiv": "2205.08959",
+      "DOI": "10.1109/ICPR56361.2022.9956350",
+      "CorpusId": 248862989
+    },
+    "title": "A lightweight multi-scale context network for salient object detection in optical remote sensing images",
+    "venue": "International Conference on Pattern Recognition",
+    "year": 2022,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.08959",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.08959, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2107964403",
+        "name": "Yuhan Lin"
+      },
+      {
+        "authorId": "40186176",
+        "name": "Han Sun"
+      },
+      {
+        "authorId": "1870994",
+        "name": "Ningzhong Liu"
+      },
+      {
+        "authorId": "2125031501",
+        "name": "Yetong Bian"
+      },
+      {
+        "authorId": "2031508773",
+        "name": "Jun Cen"
+      },
+      {
+        "authorId": "46544755",
+        "name": "Huiyu Zhou"
+      }
+    ],
+    "abstract": "Due to the more dramatic multi-scale variations and more complicated foregrounds and backgrounds in optical remote sensing images (RSIs), the salient object detection (SOD) for optical RSIs becomes a huge challenge. However, different from natural scene images (NSIs), the discussion on the optical RSI SOD task still remains scarce. In this paper, we propose a multi-scale context network, namely MSCNet, for SOD in optical RSIs. Specifically, a multi-scale context extraction module is adopted to address the scale variation of salient objects by effectively learning multi-scale contextual information. Meanwhile, in order to accurately detect complete salient objects in complex backgrounds, we design an attention-based pyramid feature aggregation mechanism for gradually aggregating and refining the salient regions from the multi-scale context extraction module. Extensive experiments on two benchmarks demonstrate that MSCNet achieves competitive performance with only 3.26M parameters. The code will be available at https://github.com/NuaaYH/MSCNet.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1b052ce2e4f84e3881b4e14a82af495f075090fa",
+    "externalIds": {
+      "DBLP": "journals/tcsv/LiuTHX22",
+      "ArXiv": "2204.05585",
+      "DOI": "10.1109/TCSVT.2021.3127149",
+      "CorpusId": 244005925
+    },
+    "title": "SwinNet: Swin Transformer Drives Edge-Aware RGB-D and RGB-T Salient Object Detection",
+    "venue": "IEEE transactions on circuits and systems for video technology (Print)",
+    "year": 2022,
+    "citationCount": 307,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2204.05585",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.05585, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2145313023",
+        "name": "Zhengyi Liu"
+      },
+      {
+        "authorId": "2148912858",
+        "name": "Yacheng Tan"
+      },
+      {
+        "authorId": "91658524",
+        "name": "Qian He"
+      },
+      {
+        "authorId": "2122426686",
+        "name": "Yun Xiao"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) are good at extracting contexture features within certain receptive fields, while transformers can model the global long-range dependency features. By absorbing the advantage of transformer and the merit of CNN, Swin Transformer shows strong feature representation ability. Based on it, we propose a cross-modality fusion model, SwinNet, for RGB-D and RGB-T salient object detection. It is driven by Swin Transformer to extract the hierarchical features, boosted by attention mechanism to bridge the gap between two modalities, and guided by edge information to sharp the contour of salient object. To be specific, two-stream Swin Transformer encoder first extracts multi-modality features, and then spatial alignment and channel re-calibration module is presented to optimize intra-level cross-modality features. To clarify the fuzzy boundary, edge-guided decoder achieves inter-level cross-modality fusion under the guidance of edge features. The proposed model outperforms the state-of-the-art models on RGB-D and RGB-T datasets, showing that it provides more insight into the cross-modality complementarity task.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "68bfc928d2141b9b0c5cb953004c97b017cd583e",
+    "externalIds": {
+      "DBLP": "conf/icip/LuMFZ22",
+      "ArXiv": "2202.06060",
+      "DOI": "10.1109/ICIP46576.2022.9897762",
+      "CorpusId": 246823415
+    },
+    "title": "Depth-Cooperated Trimodal Network for Video Salient Object Detection",
+    "venue": "International Conference on Information Photonics",
+    "year": 2022,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2202.06060",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.06060, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2155710874",
+        "name": "Yukang Lu"
+      },
+      {
+        "authorId": "2154417046",
+        "name": "Dingyao Min"
+      },
+      {
+        "authorId": "1847070",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "7345195",
+        "name": "Qijun Zhao"
+      }
+    ],
+    "abstract": "Depth can provide useful geographical cues for salient object detection (SOD), and has been proven helpful in recent RGB-D SOD methods. However, existing video salient object detection (VSOD) methods only utilize spatiotemporal information and seldom exploit depth information for detection. In this paper, we propose a depth-cooperated trimodal network, called DCTNet for VSOD, which is a pioneering work to incorporate depth information to assist VSOD. To this end, we first generate depth from RGB frames, and then propose an approach to treat the three modalities unequally. Specifically, a multi-modal attention module (MAM) is designed to model multi-modal long-range dependencies between the main modality (RGB) and the two auxiliary modalities (depth, optical flow). We also introduce a refinement fusion module (RFM) to suppress noises in each modality and select useful information dynamically for further feature refinement. Lastly, a progressive fusion strategy is adopted after the refined features to achieve final cross-modal fusion. Experiments on five benchmark datasets demonstrate the superiority of our depth-cooperated model against 12 state-of-the-art methods, and the necessity of depth is also validated.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "da74a10824193be9d3889ce0d6ed4c6f8ee48b9e",
+    "externalIds": {
+      "DBLP": "conf/iclr/MehtaR22",
+      "ArXiv": "2110.02178",
+      "CorpusId": 238354201
+    },
+    "title": "MobileViT: Light-weight, General-purpose, and Mobile-friendly Vision Transformer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2021,
+    "citationCount": 2138,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2110.02178, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144839857",
+        "name": "Sachin Mehta"
+      },
+      {
+        "authorId": "143887493",
+        "name": "Mohammad Rastegari"
+      }
+    ],
+    "abstract": "Light-weight convolutional neural networks (CNNs) are the de-facto for mobile vision tasks. Their spatial inductive biases allow them to learn representations with fewer parameters across different vision tasks. However, these networks are spatially local. To learn global representations, self-attention-based vision trans-formers (ViTs) have been adopted. Unlike CNNs, ViTs are heavy-weight. In this paper, we ask the following question: is it possible to combine the strengths of CNNs and ViTs to build a light-weight and low latency network for mobile vision tasks? Towards this end, we introduce MobileViT, a light-weight and general-purpose vision transformer for mobile devices. MobileViT presents a different perspective for the global processing of information with transformers, i.e., transformers as convolutions. Our results show that MobileViT significantly outperforms CNN- and ViT-based networks across different tasks and datasets. On the ImageNet-1k dataset, MobileViT achieves top-1 accuracy of 78.4% with about 6 million parameters, which is 3.2% and 6.2% more accurate than MobileNetv3 (CNN-based) and DeIT (ViT-based) for a similar number of parameters. On the MS-COCO object detection task, MobileViT is 5.7% more accurate than MobileNetv3 for a similar number of parameters. Our source code is open-source and available at: https://github.com/apple/ml-cvnets",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "eea134f36dec9c7d1e7ef7f1f961cc193272a1fc",
+    "externalIds": {
+      "ArXiv": "2108.08162",
+      "DBLP": "journals/corr/abs-2108-08162",
+      "DOI": "10.1007/s41095-022-0268-6",
+      "CorpusId": 237194692
+    },
+    "title": "Specificity-preserving RGB-D saliency detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 210,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s41095-022-0268-6.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.08162, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144114810",
+        "name": "Tao Zhou"
+      },
+      {
+        "authorId": "1929093",
+        "name": "H. Fu"
+      },
+      {
+        "authorId": "143808551",
+        "name": "Geng Chen"
+      },
+      {
+        "authorId": "2118764762",
+        "name": "Yi Zhou"
+      },
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "2067609498",
+        "name": "Ling Shao"
+      }
+    ],
+    "abstract": "Salient object detection (SOD) in RGB and depth images has attracted increasing research interest. Existing RGB-D SOD models usually adopt fusion strategies to learn a shared representation from RGB and depth modalities, while few methods explicitly consider how to preserve modality-specific characteristics. In this study, we propose a novel framework, the specificity-preserving network (SPNet), which improves SOD performance by exploring both the shared information and modality-specific properties. Specifically, we use two modality-specific networks and a shared learning network to generate individual and shared saliency prediction maps. To effectively fuse cross-modal features in the shared learning network, we propose a cross-enhanced integration module (CIM) and propagate the fused feature to the next layer to integrate cross-level information. Moreover, to capture rich complementary multi-modal information to boost SOD performance, we use a multi-modal feature aggregation (MFA) module to integrate the modality-specific features from each individual decoder into the shared decoder. By using skip connections between encoder and decoder layers, hierarchical features can be fully combined. Extensive experiments demonstrate that our SPNet outperforms cutting-edge approaches on six popular RGB-D SOD and three camouflaged object detection benchmarks. The project is publicly available at https://github.com/taozh2017/SPNet .",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "48c6ca17f17038ff9933dca86a23f8516168a3ea",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-03637",
+      "ArXiv": "2108.03637",
+      "DOI": "10.1109/ICCV48922.2021.00972",
+      "CorpusId": 236956397
+    },
+    "title": "Saliency-Associated Object Tracking",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 106,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2108.03637",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.03637, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1485000269",
+        "name": "Zikun Zhou"
+      },
+      {
+        "authorId": "1678473",
+        "name": "Wenjie Pei"
+      },
+      {
+        "authorId": "2153898855",
+        "name": "Xin Li"
+      },
+      {
+        "authorId": "2120492605",
+        "name": "Hongpeng Wang"
+      },
+      {
+        "authorId": "2057491353",
+        "name": "Feng Zheng"
+      },
+      {
+        "authorId": "48427193",
+        "name": "Zhenyu He"
+      }
+    ],
+    "abstract": "Most existing trackers based on deep learning perform tracking in a holistic strategy, which aims to learn deep representations of the whole target for localizing the target. It is arduous for such methods to track targets with various appearance variations. To address this limitation, another type of methods adopts a part-based tracking strategy which divides the target into equal patches and tracks all these patches in parallel. The target state is inferred by summarizing the tracking results of these patches. A potential limitation of such trackers is that not all patches are equally informative for tracking. Some patches that are not discriminative may have adverse effects. In this paper, we propose to track the salient local parts of the target that are discriminative for tracking. In particular, we propose a fine-grained saliency mining module to capture the local saliencies. Further, we design a saliency-association modeling module to associate the captured saliencies together to learn effective correlation representations between the exemplar and the search image for state estimation. Extensive experiments on five diverse datasets demonstrate that the proposed method performs favorably against state-of-the-art trackers.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e0d677dec0248e4673fae079b6479fce96133f5b",
+    "externalIds": {
+      "DBLP": "journals/cvm/JiFFWSS23",
+      "ArXiv": "2108.03151",
+      "DOI": "10.1007/s41095-021-0262-4",
+      "CorpusId": 236950747
+    },
+    "title": "Full-duplex strategy for video object segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 173,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/s41095-021-0262-4.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.03151, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "94805190",
+        "name": "Ge-Peng Ji"
+      },
+      {
+        "authorId": "1847070",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "2146267547",
+        "name": "Zhe Wu"
+      },
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "145953515",
+        "name": "Jianbing Shen"
+      },
+      {
+        "authorId": "144082425",
+        "name": "Ling Shao"
+      }
+    ],
+    "abstract": "Previous video object segmentation approaches mainly focus on simplex solutions linking appearance and motion, limiting effective feature collaboration between these two cues. In this work, we study a novel and efficient full-duplex strategy network ( FSNet ) to address this issue, by considering a better mutual restraint scheme linking motion and appearance allowing exploitation of cross-modal features from the fusion and decoding stage. Specifically, we introduce a relational cross-attention module (RCAM) to achieve bidirectional message propagation across embedding sub-spaces. To improve the model’s robustness and update inconsistent features from the spatiotemporal embeddings, we adopt a bidirectional purification module after the RCAM. Extensive experiments on five popular benchmarks show that our FSNet is robust to various challenging scenarios (e.g., motion blur and occlusion), and compares well to leading methods both for video object segmentation and video salient object detection. The project is publicly available at https://github.com/GewelsJI/FSNet .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5086fc8d19f2d0ba7bf522cfcbee2f12dcb3faca",
+    "externalIds": {
+      "DBLP": "journals/tcsv/HuoZZLS22",
+      "MAG": "3188963955",
+      "DOI": "10.1109/tcsvt.2021.3102268",
+      "CorpusId": 238840923
+    },
+    "title": "Efficient Context-Guided Stacked Refinement Network for RGB-T Salient Object Detection",
+    "venue": "IEEE transactions on circuits and systems for video technology (Print)",
+    "year": 2021,
+    "citationCount": 127,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/tcsvt.2021.3102268?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/tcsvt.2021.3102268, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1904860264",
+        "name": "Fushuo Huo"
+      },
+      {
+        "authorId": "2145238196",
+        "name": "Xuegui Zhu"
+      },
+      {
+        "authorId": "2152827214",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2145513163",
+        "name": "Qifeng Liu"
+      },
+      {
+        "authorId": "2066476864",
+        "name": "Y. Shu"
+      }
+    ],
+    "abstract": "RGB-T salient object detection (SOD) aims at utilizing the complementary cues of RGB and Thermal (T) modalities to detect and segment the common objects. However, on one hand, existing methods simply fuse the features of two modalities without fully considering the characters of RGB and T. On the other hand, the high computational cost of existing methods prevents them from real-world applications (e.g., automatic driving, abnormal detection, person re-ID). To this end, we proposed an efficient encoder-decoder network named Context-guided Stacked Refinement Network (CSRNet). Specifically, we utilize a lightweight backbone and design efficient decoder parts, which greatly reduce the computational cost. To fuse RGB and T modalities, we proposed an efficient Context-guided Cross Modality Fusion (CCMF) module to filter the noise and explore the complementation of two modalities. Besides, Stacked Refinement Network (SRN) progressively refines the features from top to down via the interaction of semantic and spatial information. Extensive experiments show that our method performs favorably against state-of-the-art algorithms on RGB-T SOD task while with small model size (4.6M), few FLOPs (4.2G), and real-time speed (38 fps). Our codes is available at: https://github.com/huofushuo/CSRNet.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "758ec7a4e0448264e5797c63afacc36fabf8857b",
+    "externalIds": {
+      "ArXiv": "2101.07663",
+      "DBLP": "journals/corr/abs-2101-07663",
+      "DOI": "10.1109/TPAMI.2022.3179526",
+      "CorpusId": 231639493,
+      "PubMed": "35666793"
+    },
+    "title": "Salient Object Detection via Integrity Learning",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 433,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2101.07663",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.07663, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326846214",
+        "name": "Mingchen Zhuge"
+      },
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "2027424343",
+        "name": "Nian Liu"
+      },
+      {
+        "authorId": "39901030",
+        "name": "Dingwen Zhang"
+      },
+      {
+        "authorId": "1510477221",
+        "name": "Dong Xu"
+      },
+      {
+        "authorId": "144082425",
+        "name": "Ling Shao"
+      }
+    ],
+    "abstract": "Although current salient object detection (SOD) works have achieved significant progress, they are limited when it comes to the integrity of the predicted salient regions. We define the concept of integrity at both a micro and macro level. Specifically, at the micro level, the model should highlight all parts that belong to a certain salient object. Meanwhile, at the macro level, the model needs to discover all salient objects in a given image. To facilitate integrity learning for SOD, we design a novel <bold>I</bold>ntegrity <bold>Co</bold>gnition <bold>N</bold>etwork (<italic>ICON</italic>), which explores three important components for learning strong integrity features. 1) Unlike existing models, which focus more on feature discriminability, we introduce a diverse feature aggregation (DFA) component to aggregate features with various receptive fields (i.e., kernel shape and context) and increase feature diversity. Such diversity is the foundation for mining the integral salient objects. 2) Based on the DFA features, we introduce an integrity channel enhancement (ICE) component with the goal of enhancing feature channels that highlight the integral salient objects, while suppressing the other distracting ones. 3) After extracting the enhanced features, the part-whole verification (PWV) method is employed to determine whether the part and whole object features have strong agreement. Such part-whole agreements can further improve the micro-level integrity for each salient object. To demonstrate the effectiveness of our ICON, comprehensive experiments are conducted on seven challenging benchmarks. Our ICON outperforms the baseline methods in terms of a wide range of metrics. Notably, our ICON achieves <inline-formula><tex-math notation=\"LaTeX\">$\\sim$</tex-math><alternatives><mml:math><mml:mo>∼</mml:mo></mml:math><inline-graphic xlink:href=\"zhang-ieq1-3179526.gif\"/></alternatives></inline-formula>10% relative improvement over the previous best model in terms of average false negative ratio (FNR), on six datasets. Codes and results are available at: <uri>https://github.com/mczhuge/ICON</uri>.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ec8557caf54e71425624a73de5c607feb742693d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2012-13093",
+      "ArXiv": "2012.13093",
+      "DOI": "10.1109/TIP.2022.3164550",
+      "CorpusId": 229371288,
+      "PubMed": "35412981"
+    },
+    "title": "EDN: Salient Object Detection via Extremely-Downsampled Network",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2020,
+    "citationCount": 228,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2012.13093",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.13093, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48607882",
+        "name": "Yu-Huan Wu"
+      },
+      {
+        "authorId": "71222785",
+        "name": "Yun Liu"
+      },
+      {
+        "authorId": "2108005521",
+        "name": "Le Zhang"
+      },
+      {
+        "authorId": "37535930",
+        "name": "Ming-Ming Cheng"
+      }
+    ],
+    "abstract": "Recent progress on salient object detection (SOD) mainly benefits from multi-scale learning, where the high-level and low-level features collaborate in locating salient objects and discovering fine details, respectively. However, most efforts are devoted to low-level feature learning by fusing multi-scale features or enhancing boundary representations. High-level features, which although have long proven effective for many other tasks, yet have been barely studied for SOD. In this paper, we tap into this gap and show that enhancing high-level features is essential for SOD as well. To this end, we introduce an Extremely-Downsampled Network (EDN), which employs an extreme downsampling technique to effectively learn a global view of the whole image, leading to accurate salient object localization. To accomplish better multi-level feature fusion, we construct the Scale-Correlated Pyramid Convolution (SCPC) to build an elegant decoder for recovering object details from the above extreme downsampling. Extensive experiments demonstrate that EDN achieves state-of-the-art performance with real-time speed. Our efficient EDN-Lite also achieves competitive performance with a speed of 316fps. Hence, this work is expected to spark some new thinking in SOD. Code is available at https://github.com/yuhuan-wu/EDN.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "04b8cdba29adc14293d6d12aa4891a73ddaee6de",
+    "externalIds": {
+      "ArXiv": "2005.02315",
+      "DBLP": "journals/tip/TuLLLT21",
+      "DOI": "10.1109/TIP.2021.3087412",
+      "CorpusId": 235353057,
+      "PubMed": "34125680"
+    },
+    "title": "Multi-Interactive Dual-Decoder for RGB-Thermal Salient Object Detection",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2020,
+    "citationCount": 215,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2005.02315",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.02315, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1690963",
+        "name": "Zhengzheng Tu"
+      },
+      {
+        "authorId": "2141335688",
+        "name": "Zhun Li"
+      },
+      {
+        "authorId": "2199572",
+        "name": "Chenglong Li"
+      },
+      {
+        "authorId": "2027413331",
+        "name": "Yang Lang"
+      },
+      {
+        "authorId": "37864689",
+        "name": "Jin Tang"
+      }
+    ],
+    "abstract": "RGB-thermal salient object detection (SOD) aims to segment the common prominent regions of visible image and corresponding thermal infrared image that we call it RGBT SOD. Existing methods don’t fully explore and exploit the potentials of complementarity of different modalities and multi-type cues of image contents, which play a vital role in achieving accurate results. In this paper, we propose a multi-interactive dual-decoder to mine and model the multi-type interactions for accurate RGBT SOD. In specific, we first encode two modalities into multi-level multi-modal feature representations. Then, we design a novel dual-decoder to conduct the interactions of multi-level features, two modalities and global contexts. With these interactions, our method works well in diversely challenging scenarios even in the presence of invalid modality. Finally, we carry out extensive experiments on public RGBT and RGBD SOD datasets, and the results show that the proposed method achieves the outstanding performance against state-of-the-art algorithms. The source code has been released at: https://github.com/lz118/Multi-interactive-Dual-decoder.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1f1abcd6fba3283d9799527b325b0d302cb7bace",
+    "externalIds": {
+      "MAG": "3035284915",
+      "ArXiv": "2004.08515",
+      "DBLP": "journals/corr/abs-2004-08515",
+      "DOI": "10.1109/cvpr42600.2020.00312",
+      "CorpusId": 215828501
+    },
+    "title": "JL-DCF: Joint Learning and Densely-Cooperative Fusion Framework for RGB-D Salient Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 301,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2004.08515",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.08515, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1847070",
+        "name": "Keren Fu"
+      },
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "94805190",
+        "name": "Ge-Peng Ji"
+      },
+      {
+        "authorId": "7345195",
+        "name": "Qijun Zhao"
+      }
+    ],
+    "abstract": "This paper proposes a novel joint learning and densely-cooperative fusion (JL-DCF) architecture for RGB-D salient object detection. Existing models usually treat RGB and depth as independent information and design separate networks for feature extraction from each. Such schemes can easily be constrained by a limited amount of training data or over-reliance on an elaborately-designed training process. In contrast, our JL-DCF learns from both RGB and depth inputs through a Siamese network. To this end, we propose two effective components: joint learning (JL), and densely-cooperative fusion (DCF). The JL module provides robust saliency feature learning, while the latter is introduced for complementary feature discovery. Comprehensive experiments on four popular metrics show that the designed framework yields a robust RGB-D saliency detector with good generalization. As a result, JL-DCF significantly advances the top-1 D3Net model by an average of ~1.9% (S-measure) across six challenging datasets, showing that the proposed framework offers a potential solution for real-world applications and could provide more insight into the cross-modality complementarity task. The code will be available at https://github.com/kerenfu/JLDCF/.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "33a6de4a5a10c5662e93da7b017f93bd582c96d4",
+    "externalIds": {
+      "MAG": "3109623941",
+      "DBLP": "journals/corr/abs-2003-05643",
+      "ArXiv": "2003.05643",
+      "DOI": "10.1007/978-3-030-58539-6_42",
+      "CorpusId": 212675598
+    },
+    "title": "Highly Efficient Salient Object Detection with 100K Parameters",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 203,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2003.05643, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3180489",
+        "name": "Shanghua Gao"
+      },
+      {
+        "authorId": "48272941",
+        "name": "Yong-qiang Tan"
+      },
+      {
+        "authorId": "37535930",
+        "name": "Ming-Ming Cheng"
+      },
+      {
+        "authorId": "1500386594",
+        "name": "Chengze Lu"
+      },
+      {
+        "authorId": "2144861793",
+        "name": "Yunpeng Chen"
+      },
+      {
+        "authorId": "143653681",
+        "name": "Shuicheng Yan"
+      }
+    ],
+    "abstract": "Salient object detection models often demand a considerable amount of computation cost to make precise prediction for each pixel, making them hardly applicable on low-power devices. In this paper, we aim to relieve the contradiction between computation cost and model performance by improving the network efficiency to a higher degree. We propose a flexible convolutional module, namely generalized OctConv (gOctConv), to efficiently utilize both in-stage and cross-stages multi-scale features, while reducing the representation redundancy by a novel dynamic weight decay scheme. The effective dynamic weight decay scheme stably boosts the sparsity of parameters during training, supports learnable number of channels for each scale in gOctConv, allowing 80% of parameters reduce with negligible performance drop. Utilizing gOctConv, we build an extremely light-weighted model, namely CSNet, which achieves comparable performance with about 0.2% parameters (100k) of large models on popular salient object detection benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bdb6e818edae527c2f81186758b9ef96c97c5aba",
+    "externalIds": {
+      "MAG": "3002301267",
+      "DBLP": "conf/iccv/PiaoJLZL19",
+      "DOI": "10.1109/ICCV.2019.00735",
+      "CorpusId": 204977953
+    },
+    "title": "Depth-Induced Multi-Scale Recurrent Attention Network for Saliency Detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 450,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2019.00735?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2019.00735, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3051892",
+        "name": "Yongri Piao"
+      },
+      {
+        "authorId": null,
+        "name": "Wei Ji"
+      },
+      {
+        "authorId": "31115284",
+        "name": "Jingjing Li"
+      },
+      {
+        "authorId": "47474101",
+        "name": "Miao Zhang"
+      },
+      {
+        "authorId": "153176123",
+        "name": "Huchuan Lu"
+      }
+    ],
+    "abstract": "In this work, we propose a novel depth-induced multi-scale recurrent attention network for saliency detection. It achieves dramatic performance especially in complex scenarios. There are three main contributions of our network that are experimentally demonstrated to have significant practical merits. First, we design an effective depth refinement block using residual connections to fully extract and fuse multi-level paired complementary cues from RGB and depth streams. Second, depth cues with abundant spatial information are innovatively combined with multi-scale context features for accurately locating salient objects. Third, we boost our model's performance by a novel recurrent attention module inspired by Internal Generative Mechanism of human brain. This module can generate more accurate saliency results via comprehensively learning the internal semantic relation of the fused feature and progressively optimizing local details with memory-oriented scene understanding. In addition, we create a large scale RGB-D dataset containing more complex scenarios, which can contribute to comprehensively evaluating saliency models. Extensive experiments on six public datasets and ours demonstrate that our method can accurately identify salient objects and achieve consistently superior performance over 16 state-of-the-art RGB and RGB-D approaches.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "115df25cc9080f0b384b3398a897767b33c42a5f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1908-08297",
+      "MAG": "2990984982",
+      "ArXiv": "1908.08297",
+      "DOI": "10.1109/ICCV.2019.00887",
+      "CorpusId": 201319385
+    },
+    "title": "EGNet: Edge Guidance Network for Salient Object Detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 1048,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1908.08297",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1908.08297, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109784468",
+        "name": "Jiaxing Zhao"
+      },
+      {
+        "authorId": "2119612440",
+        "name": "Jiangjiang Liu"
+      },
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "2108097465",
+        "name": "Yang Cao"
+      },
+      {
+        "authorId": "1755872",
+        "name": "Jufeng Yang"
+      },
+      {
+        "authorId": "37535930",
+        "name": "Ming-Ming Cheng"
+      }
+    ],
+    "abstract": "Fully convolutional neural networks (FCNs) have shown their advantages in the salient object detection task. However, most existing FCNs-based methods still suffer from coarse object boundaries. In this paper, to solve this problem, we focus on the complementarity between salient edge information and salient object information. Accordingly, we present an edge guidance network (EGNet) for salient object detection with three steps to simultaneously model these two kinds of complementary information in a single network. In the ﬁrst step, we extract the salient object features by a progressive fusion way. In the second step, we integrate the local edge information and global location information to obtain the salient edge features. Finally, to sufﬁciently leverage these complementary features, we couple the same salient edge features with salient object features at various resolutions. Beneﬁting from the rich edge information and location information in salient edge features, the fused features can help locate salient objects, especially their boundaries more accurately. Experimental results demonstrate that the proposed method performs favorably against the state-of-the-art methods on six widely used datasets without any pre-processing and post-processing. The source code is available at http: //mmcheng.net/egnet/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8cdb3279f8b29b6a19c228af02e8ee1deb591e21",
+    "externalIds": {
+      "MAG": "2957414648",
+      "DBLP": "journals/corr/abs-1907-06781",
+      "ArXiv": "1907.06781",
+      "DOI": "10.1109/TNNLS.2020.2996406",
+      "CorpusId": 196831465,
+      "PubMed": "32491986"
+    },
+    "title": "Rethinking RGB-D Salient Object Detection: Models, Data Sets, and Large-Scale Benchmarks",
+    "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": 2019,
+    "citationCount": 613,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1907.06781",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.06781, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "23999143",
+        "name": "Deng-Ping Fan"
+      },
+      {
+        "authorId": "2112752933",
+        "name": "Zheng Lin"
+      },
+      {
+        "authorId": "2109784468",
+        "name": "Jiaxing Zhao"
+      },
+      {
+        "authorId": "71222785",
+        "name": "Yun Liu"
+      },
+      {
+        "authorId": "2156122174",
+        "name": "Zhao Zhang"
+      },
+      {
+        "authorId": "3298532",
+        "name": "Qibin Hou"
+      },
+      {
+        "authorId": "2717876",
+        "name": "Menglong Zhu"
+      },
+      {
+        "authorId": "37535930",
+        "name": "Ming-Ming Cheng"
+      }
+    ],
+    "abstract": "The use of RGB-D information for salient object detection (SOD) has been extensively explored in recent years. However, relatively few efforts have been put toward modeling SOD in real-world human activity scenes with RGB-D. In this article, we fill the gap by making the following contributions to RGB-D SOD: 1) we carefully collect a new Salient Person (SIP) data set that consists of ~1 K high-resolution images that cover diverse real-world scenes from various viewpoints, poses, occlusions, illuminations, and background s; 2) we conduct a large-scale (and, so far, the most comprehensive) benchmark comparing contemporary methods, which has long been missing in the field and can serve as a baseline for future research, and we systematically summarize 32 popular models and evaluate 18 parts of 32 models on seven data sets containing a total of about 97k images; and 3) we propose a simple general architecture, called deep depth-depurator network (D3Net). It consists of a depth depurator unit (DDU) and a three-stream feature learning module (FLM), which performs low-quality depth map filtering and cross-modal feature learning, respectively. These components form a nested structure and are elaborately designed to be learned jointly. D3Net exceeds the performance of any prior contenders across all five metrics under consideration, thus serving as a strong model to advance research in this field. We also demonstrate that D3Net can be used to efficiently extract salient object masks from real scenes, enabling effective background-changing application with a speed of 65 frames/s on a single GPU. All the saliency maps, our new SIP data set, the D3Net model, and the evaluation tools are publicly available at https://github.com/DengPingFan/D3NetBenchmark.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "acdd90e576a3747f442f4c88dabcd5a41682647c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1905-06741",
+      "ArXiv": "1905.06741",
+      "MAG": "2945809413",
+      "DOI": "10.1109/TMM.2019.2924578",
+      "CorpusId": 155100124
+    },
+    "title": "RGB-T Image Saliency Detection via Collaborative Graph Learning",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2019,
+    "citationCount": 236,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1905.06741",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.06741, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1690963",
+        "name": "Zhengzheng Tu"
+      },
+      {
+        "authorId": "2143749533",
+        "name": "Tian Xia"
+      },
+      {
+        "authorId": "2199572",
+        "name": "Chenglong Li"
+      },
+      {
+        "authorId": "2108168494",
+        "name": "Xiaoxiao Wang"
+      },
+      {
+        "authorId": "2148984853",
+        "name": "Yan Ma"
+      },
+      {
+        "authorId": "37864689",
+        "name": "Jin Tang"
+      }
+    ],
+    "abstract": "Image saliency detection is an active research topic in the community of computer vision and multimedia. Fusing complementary RGB and thermal infrared data has been proven to be effective for image saliency detection. In this paper, we propose an effective approach for RGB-T image saliency detection. Our approach relies on a novel collaborative graph learning algorithm. In particular, we take superpixels as graph nodes, and collaboratively use hierarchical deep features to jointly learn graph affinity and node saliency in a unified optimization framework. Moreover, we contribute a more challenging dataset for the purpose of RGB-T image saliency detection, which contains 1000 spatially aligned RGB-T image pairs and their ground truth annotations. Extensive experiments on the public dataset and the newly created dataset suggest that the proposed approach performs favorably against the state-of-the-art RGB-T saliency detection methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bf9aee2857c39cfcc8f468aa93c81f48e2453d89",
+    "externalIds": {
+      "MAG": "2740667773",
+      "DBLP": "conf/cvpr/WangLWF0YR17",
+      "DOI": "10.1109/CVPR.2017.404",
+      "CorpusId": 6283383
+    },
+    "title": "Learning to Detect Salient Objects with Image-Level Supervision",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 1219,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2017.404?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2017.404, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118354131",
+        "name": "Lijun Wang"
+      },
+      {
+        "authorId": "153176123",
+        "name": "Huchuan Lu"
+      },
+      {
+        "authorId": null,
+        "name": "Yifan Wang"
+      },
+      {
+        "authorId": "40117581",
+        "name": "Mengyang Feng"
+      },
+      {
+        "authorId": "40562844",
+        "name": "D. Wang"
+      },
+      {
+        "authorId": "1714354",
+        "name": "Baocai Yin"
+      },
+      {
+        "authorId": "144526777",
+        "name": "Xiang Ruan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "134269cac21547cf73ab05f7522e8e51971c2322",
+    "externalIds": {
+      "MAG": "2573840532",
+      "DBLP": "journals/corr/LiWMZLT17",
+      "ArXiv": "1701.02829",
+      "CorpusId": 2474878
+    },
+    "title": "A Unified RGB-T Saliency Detection Benchmark: Dataset, Baselines, Analysis and A Novel Approach",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 177,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.02829, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2199572",
+        "name": "Chenglong Li"
+      },
+      {
+        "authorId": "8810611",
+        "name": "Guizhao Wang"
+      },
+      {
+        "authorId": "2109267557",
+        "name": "Yunpeng Ma"
+      },
+      {
+        "authorId": "4520695",
+        "name": "A. Zheng"
+      },
+      {
+        "authorId": "2151264175",
+        "name": "B. Luo"
+      },
+      {
+        "authorId": "37864689",
+        "name": "Jin Tang"
+      }
+    ],
+    "abstract": "Despite significant progress, image saliency detection still remains a challenging task in complex scenes and environments. Integrating multiple different but complementary cues, like RGB and Thermal (RGB-T), may be an effective way for boosting saliency detection performance. The current research in this direction, however, is limited by the lack of a comprehensive benchmark. This work contributes such a RGB-T image dataset, which includes 821 spatially aligned RGB-T image pairs and their ground truth annotations for saliency detection purpose. The image pairs are with high diversity recorded under different scenes and environmental conditions, and we annotate 11 challenges on these image pairs for performing the challenge-sensitive analysis for different saliency detection algorithms. We also implement 3 kinds of baseline methods with different modality inputs to provide a comprehensive comparison platform. \nWith this benchmark, we propose a novel approach, multi-task manifold ranking with cross-modality consistency, for RGB-T saliency detection. In particular, we introduce a weight for each modality to describe the reliability, and integrate them into the graph-based manifold ranking algorithm to achieve adaptive fusion of different source data. Moreover, we incorporate the cross-modality consistent constraints to integrate different modalities collaboratively. For the optimization, we design an efficient algorithm to iteratively solve several subproblems with closed-form solutions. Extensive experiments against other baseline methods on the newly created benchmark demonstrate the effectiveness of the proposed approach, and we also provide basic insights and potential future research directions for RGB-T saliency detection.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "940f7bb5c1f69c61e57b33b4a266c2d578faa012",
+    "externalIds": {
+      "MAG": "2950622378",
+      "ArXiv": "1503.08663",
+      "DBLP": "conf/cvpr/LiY15",
+      "DOI": "10.1109/CVPR.2015.7299184",
+      "CorpusId": 2280516
+    },
+    "title": "Visual saliency based on multiscale deep features",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 1323,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1503.08663",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.08663, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144958813",
+        "name": "Guanbin Li"
+      },
+      {
+        "authorId": "1841911",
+        "name": "Yizhou Yu"
+      }
+    ],
+    "abstract": "Visual saliency is a fundamental problem in both cognitive and computational sciences, including computer vision. In this paper, we discover that a high-quality visual saliency model can be learned from multiscale features extracted using deep convolutional neural networks (CNNs), which have had many successes in visual recognition tasks. For learning such saliency models, we introduce a neural network architecture, which has fully connected layers on top of CNNs responsible for feature extraction at three different scales. We then propose a refinement method to enhance the spatial coherence of our saliency results. Finally, aggregating multiple saliency maps computed for different levels of image segmentation can further boost the performance, yielding saliency maps better than those generated from a single segmentation. To promote further research and evaluation of visual saliency models, we also construct a new large database of 4447 challenging images and their pixelwise saliency annotations. Experimental results demonstrate that our proposed method is capable of achieving state-of-the-art performance on all public benchmarks, improving the F-Measure by 5.0% and 13.2% respectively on the MSRA-B dataset and our new dataset (HKU-IS), and lowering the mean absolute error by 5.7% and 35.1% respectively on these two datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1a64a37af7205a7f6b208c740bd702027eadecff",
+    "externalIds": {
+      "MAG": "1976409045",
+      "DBLP": "conf/icip/JuGGRW14",
+      "DOI": "10.1109/ICIP.2014.7025222",
+      "CorpusId": 3251349
+    },
+    "title": "Depth saliency based on anisotropic center-surround difference",
+    "venue": "International Conference on Information Photonics",
+    "year": 2014,
+    "citationCount": 506,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICIP.2014.7025222?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICIP.2014.7025222, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33687539",
+        "name": "Ran Ju"
+      },
+      {
+        "authorId": "2054615059",
+        "name": "L. Ge"
+      },
+      {
+        "authorId": "2428394",
+        "name": "Wenjing Geng"
+      },
+      {
+        "authorId": "1744930",
+        "name": "Tongwei Ren"
+      },
+      {
+        "authorId": "39914710",
+        "name": "Gangshan Wu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "fd455bef8dea04acc37f1a4b4be47068bbf58303",
+    "externalIds": {
+      "MAG": "20683899",
+      "DBLP": "conf/eccv/PengLXHJ14",
+      "DOI": "10.1007/978-3-319-10578-9_7",
+      "CorpusId": 15592109
+    },
+    "title": "RGBD Salient Object Detection: A Benchmark and Algorithms",
+    "venue": "European Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 624,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-319-10578-9_7?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-319-10578-9_7, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2484788",
+        "name": "Houwen Peng"
+      },
+      {
+        "authorId": "2152691925",
+        "name": "Bing Li"
+      },
+      {
+        "authorId": "2214855",
+        "name": "Weihua Xiong"
+      },
+      {
+        "authorId": "40506509",
+        "name": "Weiming Hu"
+      },
+      {
+        "authorId": "145592290",
+        "name": "R. Ji"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "40e71c10edc2afc68d079546e8f4952cd52dc671",
+    "externalIds": {
+      "MAG": "2086791339",
+      "ArXiv": "1406.2807",
+      "DBLP": "journals/corr/LiHKRY14",
+      "DOI": "10.1109/CVPR.2014.43",
+      "CorpusId": 6881166
+    },
+    "title": "The Secrets of Salient Object Segmentation",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 1302,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1406.2807",
+      "status": "GREEN",
+      "license": "CCBYNCSA",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1406.2807, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47002659",
+        "name": "Yin Li"
+      },
+      {
+        "authorId": "3084719",
+        "name": "Xiaodi Hou"
+      },
+      {
+        "authorId": "2082451791",
+        "name": "Christof Koch"
+      },
+      {
+        "authorId": "144177248",
+        "name": "James M. Rehg"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this paper we provide an extensive evaluation of fixation prediction and salient object segmentation algorithms as well as statistics of major datasets. Our analysis identifies serious design flaws of existing salient object benchmarks, called the dataset design bias, by over emphasising the stereotypical concepts of saliency. The dataset design bias does not only create the discomforting disconnection between fixations and salient object segmentation, but also misleads the algorithm designing. Based on our analysis, we propose a new high quality dataset that offers both fixation and salient object segmentation ground-truth. With fixations and salient object being presented simultaneously, we are able to bridge the gap between fixations and salient objects, and propose a novel method for salient object segmentation. Finally, we report significant benchmark progress on 3 existing datasets of segmenting salient objects.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6ce9251c7e72e93928a6bae17a6f2b4c85a8a706",
+    "externalIds": {
+      "DBLP": "conf/cvpr/YanXSJ13",
+      "MAG": "2002781701",
+      "DOI": "10.1109/CVPR.2013.153",
+      "CorpusId": 1677606
+    },
+    "title": "Hierarchical Saliency Detection",
+    "venue": "2013 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2013,
+    "citationCount": 1751,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1408.5418.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2013.153?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2013.153, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144479026",
+        "name": "Qiong Yan"
+      },
+      {
+        "authorId": "144574904",
+        "name": "Li Xu"
+      },
+      {
+        "authorId": "1788070",
+        "name": "Jianping Shi"
+      },
+      {
+        "authorId": "1729056",
+        "name": "Jiaya Jia"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "699d4d8c8b91b1a34dd6f47d28e3fe1236f25944",
+    "externalIds": {
+      "DBLP": "conf/cvpr/YangZLRY13",
+      "MAG": "2039313011",
+      "DOI": "10.1109/CVPR.2013.407",
+      "CorpusId": 10024504
+    },
+    "title": "Saliency Detection via Graph-Based Manifold Ranking",
+    "venue": "2013 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2013,
+    "citationCount": 2452,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2013.407?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2013.407, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2154926843",
+        "name": "Chuan Yang"
+      },
+      {
+        "authorId": "50081215",
+        "name": "L. Zhang"
+      },
+      {
+        "authorId": "153176123",
+        "name": "Huchuan Lu"
+      },
+      {
+        "authorId": "144526777",
+        "name": "Xiang Ruan"
+      },
+      {
+        "authorId": "1715634",
+        "name": "Ming-Hsuan Yang"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b718058b2a758a69147bc32ae54571057ec6694f",
+    "externalIds": {
+      "DBLP": "conf/cvpr/NiuGLL12",
+      "MAG": "1993713494",
+      "DOI": "10.1109/CVPR.2012.6247708",
+      "CorpusId": 18654057
+    },
+    "title": "Leveraging stereopsis for saliency analysis",
+    "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2012,
+    "citationCount": 559,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2012.6247708?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2012.6247708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2637872",
+        "name": "Yuzhen Niu"
+      },
+      {
+        "authorId": "1397655463",
+        "name": "Yujie Geng"
+      },
+      {
+        "authorId": "1502891111",
+        "name": "Xue-qing Li"
+      },
+      {
+        "authorId": "40513795",
+        "name": "Feng Liu"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "28e1ebabc8199522ef7ddfa104f2a7bd644d82d3",
+    "externalIds": {
+      "DBLP": "conf/icpr/LiSYZZC24",
+      "DOI": "10.1007/978-3-031-78305-0_28",
+      "CorpusId": 274656793
+    },
+    "title": "Transformer-Based Depth Optimization Network for RGB-D Salient Object Detection",
+    "venue": "International Conference on Pattern Recognition",
+    "year": 2024,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-031-78305-0_28?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-031-78305-0_28, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2325198504",
+        "name": "Lu Li"
+      },
+      {
+        "authorId": "2274960369",
+        "name": "Yanjiao Shi"
+      },
+      {
+        "authorId": "2274712055",
+        "name": "Jinyu Yang"
+      },
+      {
+        "authorId": "2335071959",
+        "name": "Qiangqiang Zhou"
+      },
+      {
+        "authorId": "2316297125",
+        "name": "Qing Zhang"
+      },
+      {
+        "authorId": "2295634114",
+        "name": "Liu Cui"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cb38a6f26b2a6737257c38944c29fca899107bfb",
+    "externalIds": {
+      "DBLP": "journals/tmm/GuoYQQ24",
+      "DOI": "10.1109/TMM.2024.3369922",
+      "CorpusId": 268146147
+    },
+    "title": "UniTR: A Unified TRansformer-Based Framework for Co-Object and Multi-Modal Saliency Detection",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2024,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMM.2024.3369922?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMM.2024.3369922, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2289601409",
+        "name": "Ruohao Guo"
+      },
+      {
+        "authorId": "2262446094",
+        "name": "Xianghua Ying"
+      },
+      {
+        "authorId": "2263501017",
+        "name": "Yanyu Qi"
+      },
+      {
+        "authorId": "2289235804",
+        "name": "Liao Qu"
+      }
+    ],
+    "abstract": "Recent years have witnessed a growing interest in co-object segmentation and multi-modal salient object detection. Many efforts are devoted to segmenting co-existed objects among a group of images or detecting salient objects from different modalities. Albeit the appreciable performance achieved on respective benchmarks, each of these methods is limited to a specific task and cannot be generalized to other tasks. In this paper, we develop a Unified TRansformer-based framework, namely UniTR, aiming at tackling the above tasks individually with a unified architecture. Specifically, a transformer module (CoFormer) is introduced to learn the consistency of relevant objects or complementarity from different modalities. To generate high-quality segmentation maps, we adopt a dual-stream decoding paradigm that allows the extracted consistent or complementary information to better guide mask prediction. Moreover, a feature fusion module (ZoomFormer) is designed to enhance backbone features and capture multi-granularity and multi-semantic information. Extensive experiments show that our UniTR performs well on 17 benchmarks, and surpasses existing state-of-the-art approaches.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "249fa399e25ee2246ba4032ceaa6642302870556",
+    "externalIds": {
+      "DBLP": "journals/tmm/SunRYWL24",
+      "DOI": "10.1109/TMM.2023.3294003",
+      "CorpusId": 259892387
+    },
+    "title": "CATNet: A Cascaded and Aggregated Transformer Network for RGB-D Salient Object Detection",
+    "venue": "IEEE transactions on multimedia",
+    "year": 2024,
+    "citationCount": 125,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMM.2023.3294003?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMM.2023.3294003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2075375099",
+        "name": "Fuming Sun"
+      },
+      {
+        "authorId": "1491278417",
+        "name": "Pengfei Ren"
+      },
+      {
+        "authorId": "2055464733",
+        "name": "Bo Yin"
+      },
+      {
+        "authorId": "2595425",
+        "name": "Fasheng Wang"
+      },
+      {
+        "authorId": "2261841626",
+        "name": "Haojie Li"
+      }
+    ],
+    "abstract": "Salient object detection (SOD) is an important preprocessing operation for various computer vision tasks. Most of existing RGB-D SOD models employ additive or connected strategies to directly aggregate and decode multi-scale features to predict salient maps. However, due to the large differences between the features of different scales, these aggregation strategies adopted may lead to information loss or redundancy, and few methods explicitly consider how to establish connections between features at different scales in the decoding process, which consequently deteriorates the detection performance of the models. To this end, we propose a cascaded and aggregated Transformer Network (CATNet) which consists of three key modules, i.e., attention feature enhancement module (AFEM), cross-modal fusion module (CMFM) and cascaded correction decoder (CCD). Specifically, the AFEM is designed on the basis of atrous spatial pyramid pooling to obtain multi-scale semantic information and global context information in high-level features through dilated convolution and multi-head self-attention mechanism, enhancing high-level features. The role of the CMFM is to enhance and thereafter fuse the RGB features and depth features, alleviating the problem of poor-quality depth maps. The CCD is composed of two subdecoders in a cascading fashion. It is designed to suppress noise in low-level features and mitigate the differences between features at different scales. Moreover, the CCD uses a feedback mechanism to correct and repair the output of the subdecoder by exploiting supervised features, so that the problem of information loss caused by the upsampling operation during the multi-scale features aggregation process can be mitigated. Extensive experimental results demonstrate that the proposed CATNet achieves superior performance over 14 state-of-the-art RGB-D methods on 7 challenging benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c8b25fab5608c3e033d34b4483ec47e68ba109b7",
+    "externalIds": {
+      "DBLP": "conf/iccv/LiuL00W0LG21",
+      "ArXiv": "2103.14030",
+      "DOI": "10.1109/ICCV48922.2021.00986",
+      "CorpusId": 232352874
+    },
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 31375,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2103.14030",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.14030, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109371439",
+        "name": "Ze Liu"
+      },
+      {
+        "authorId": "51091819",
+        "name": "Yutong Lin"
+      },
+      {
+        "authorId": "2112823372",
+        "name": "Yue Cao"
+      },
+      {
+        "authorId": "1823518756",
+        "name": "Han Hu"
+      },
+      {
+        "authorId": "2107995927",
+        "name": "Yixuan Wei"
+      },
+      {
+        "authorId": "2148904543",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "145676588",
+        "name": "Stephen Lin"
+      },
+      {
+        "authorId": "2261753424",
+        "name": "B. Guo"
+      }
+    ],
+    "abstract": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection. This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size. These qualities of Swin Transformer make it compatible with a broad range of vision tasks, including image classification (87.3 top-1 accuracy on ImageNet-1K) and dense prediction tasks such as object detection (58.7 box AP and 51.1 mask AP on COCO test-dev) and semantic segmentation (53.5 mIoU on ADE20K val). Its performance surpasses the previous state-of-the-art by a large margin of +2.7 box AP and +2.6 mask AP on COCO, and +3.2 mIoU on ADE20K, demonstrating the potential of Transformer-based models as vision backbones. The hierarchical design and the shifted window approach also prove beneficial for all-MLP architectures. The code and models are publicly available at https://github.com/microsoft/Swin-Transformer.",
+    "_is_influential": false,
+    "_intents": []
+  }
+]
