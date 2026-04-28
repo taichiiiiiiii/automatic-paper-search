@@ -117,6 +117,8 @@ const els = {
   yearMaxLabel: document.getElementById("year-range-max-label"),
   minimap: document.getElementById("minimap"),
   minimapCanvas: document.getElementById("minimap-canvas"),
+  exportSvg: document.getElementById("export-svg"),
+  exportPng: document.getElementById("export-png"),
   popover: document.getElementById("card-popover"),
   popVenue: document.getElementById("cp-venue"),
   popTitle: document.getElementById("cp-title"),
@@ -274,6 +276,7 @@ async function init() {
   bindSearch();
   setupYearRange();
   bindYearRange();
+  bindExport();
   render();
 
   // #65: if the URL carried a ?node=, scroll to it and highlight after
@@ -285,6 +288,106 @@ async function init() {
       focusNode(requestedNode)
     ));
   }
+}
+
+// #82: PNG / SVG export — bake the live SVG (with foreignObject HTML
+// inside) into a stand-alone document and trigger a browser download.
+// CSS is inlined so the exported image renders identically off-line.
+function bindExport() {
+  if (els.exportSvg) {
+    els.exportSvg.addEventListener("click", () => exportImage("svg"));
+  }
+  if (els.exportPng) {
+    els.exportPng.addEventListener("click", () => exportImage("png"));
+  }
+}
+
+async function buildSelfContainedSvg() {
+  const svg = els.svg;
+  const clone = svg.cloneNode(true);
+  // Inline computed styles for every element so the SVG renders the
+  // same with no external stylesheet. Walk the clone and the live tree
+  // in lockstep so we copy the styles browsers actually used.
+  const cssText = await collectInlineCss();
+  const defs = clone.querySelector("defs") || (() => {
+    const d = document.createElementNS(SVG_NS, "defs");
+    clone.insertBefore(d, clone.firstChild);
+    return d;
+  })();
+  const style = document.createElementNS(SVG_NS, "style");
+  style.textContent = cssText;
+  defs.appendChild(style);
+  // Ensure xmlns on the root.
+  clone.setAttribute("xmlns", SVG_NS);
+  clone.setAttribute("xmlns:xhtml", XHTML_NS);
+  return new XMLSerializer().serializeToString(clone);
+}
+
+async function collectInlineCss() {
+  // Pull every CSSRule from same-origin sheets — Cloudflare Pages
+  // serves style.css from the same origin so this works without a
+  // CORS preflight. Skip rules that throw (cross-origin).
+  const parts = [];
+  for (const sheet of document.styleSheets) {
+    try {
+      for (const rule of sheet.cssRules) {
+        parts.push(rule.cssText);
+      }
+    } catch {
+      /* skip cross-origin */
+    }
+  }
+  return parts.join("\n");
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function exportImage(kind) {
+  const xml = await buildSelfContainedSvg();
+  const date = new Date().toISOString().slice(0, 10);
+  const slug = state.currentSlug || "theme";
+  const base = `${slug}-lineage-${date}`;
+  if (kind === "svg") {
+    const blob = new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n${xml}`],
+      { type: "image/svg+xml;charset=utf-8" });
+    downloadBlob(blob, `${base}.svg`);
+    return;
+  }
+  // PNG: rasterize via canvas. Encoded data URL keeps the workflow
+  // pure-client and avoids any CORS hassle that fetch + Blob URL hits.
+  const w = parseFloat(els.svg.getAttribute("width")) || 1;
+  const h = parseFloat(els.svg.getAttribute("height")) || 1;
+  const cap = 8000; // browser canvas pixel ceiling
+  const scale = Math.min(2, cap / Math.max(w, h));
+  const cw = Math.round(w * scale);
+  const ch = Math.round(h * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = cw;
+  canvas.height = ch;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#fdfaf3";
+  ctx.fillRect(0, 0, cw, ch);
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = svgUrl;
+  });
+  ctx.drawImage(img, 0, 0, cw, ch);
+  canvas.toBlob((blob) => {
+    if (blob) downloadBlob(blob, `${base}.png`);
+  }, "image/png");
 }
 
 // #65: scroll target node into view + reuse the hover-highlight pipeline
