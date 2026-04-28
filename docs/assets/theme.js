@@ -437,7 +437,7 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
     if (p.is_focus) card.classList.add("node-card--focus");
 
     const tier = p.venue_tier === "A+" ? "aplus" : p.venue_tier === "A" ? "a" : "preprint";
-    const venue = `${p.venue || ""} ${p.year || ""}`.trim();
+    const venue = PP.formatVenue(p.venue, p.year);
     const authors = (p.authors || []).slice(0, 3).join(", ")
       + ((p.authors || []).length > 3 ? ` +${p.authors.length - 3}` : "");
     const cits = typeof p.citation_count === "number" && p.citation_count > 0
