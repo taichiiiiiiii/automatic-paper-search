@@ -867,6 +867,39 @@ def test_build_prioritises_influential_parents_over_citation_count(
     )
 
 
+def test_is_trending_threshold():
+    """Issue #68: citation velocity gate. 200 cites/year for last-3-years
+    papers is the badge cut-off. Older classics (high lifetime cites,
+    high lifetime velocity) are excluded so the badge means "hot now"."""
+    # 2024 paper with 600 cites by 2026 = 300 cites/year → trending
+    assert build_theme_lineage._is_trending(
+        {"citationCount": 600, "year": 2024}, 2026
+    )
+    # 2024 paper with 100 cites by 2026 = 50 cites/year → not trending
+    assert not build_theme_lineage._is_trending(
+        {"citationCount": 100, "year": 2024}, 2026
+    )
+    # Same-year preprint (uses the 0.5y floor) — 200 cites is fast.
+    assert build_theme_lineage._is_trending(
+        {"citationCount": 200, "year": 2026}, 2026  # 200 / 0.5 = 400 → trending
+    )
+    # Established classic (ResNet 2015, 226k cites) — high velocity but
+    # NOT trending because it's > 3 years old.
+    assert not build_theme_lineage._is_trending(
+        {"citationCount": 226_000, "year": 2015}, 2026
+    )
+    # Boundary: exactly 3 years old still counts.
+    assert build_theme_lineage._is_trending(
+        {"citationCount": 700, "year": 2023}, 2026  # 700/3 = 233 → trending
+    )
+    # Missing year → never trending
+    assert not build_theme_lineage._is_trending({"citationCount": 9999}, 2026)
+    # Future year (S2 metadata oddity) → never trending
+    assert not build_theme_lineage._is_trending(
+        {"citationCount": 9999, "year": 2030}, 2026
+    )
+
+
 def test_build_skips_classify_for_non_influential_parents(
     tmp_path: Path, monkeypatch
 ):
