@@ -28,9 +28,11 @@ const RELATION_LABEL_JA = {
 };
 
 const NODE_W = 260;
-// #63: 168 → 192 to fit 2-line TLDR clamp under the existing rows
-// without re-introducing the title/authors/meta overflow #56 fixed.
-const NODE_H = 192;
+// #63 → #79: 168 → 192 → 216. The TLDR row pushed long-title cards
+// to ~207 px, which clipped the meta line (📖 / ⭐) at the bottom of
+// the foreignObject. 216 gives a 24 px buffer for cards with 3-line
+// title + 2-line TLDR + multi-author + meta together.
+const NODE_H = 216;
 const ROW_GAP = 80;        // vertical gap between year rows
 const SIBLING_GAP = 28;    // horizontal gap between within-year siblings
 const PADDING = 56;
