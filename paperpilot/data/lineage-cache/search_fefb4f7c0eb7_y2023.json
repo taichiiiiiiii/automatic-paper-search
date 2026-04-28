@@ -1,0 +1,2410 @@
+[
+  {
+    "paperId": "24b8a0b02bcb7934967757fc59d273a71ba67e30",
+    "externalIds": {
+      "ArXiv": "2102.04306",
+      "DBLP": "journals/corr/abs-2102-04306",
+      "CorpusId": 231847326
+    },
+    "title": "TransUNet: Transformers Make Strong Encoders for Medical Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 5424,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.04306, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "90972805",
+        "name": "Jieneng Chen"
+      },
+      {
+        "authorId": "2946371",
+        "name": "Yongyi Lu"
+      },
+      {
+        "authorId": "2156559",
+        "name": "Qihang Yu"
+      },
+      {
+        "authorId": "1932191260",
+        "name": "Xiangde Luo"
+      },
+      {
+        "authorId": "2397747903",
+        "name": "Ehsan Adeli"
+      },
+      {
+        "authorId": "2152539822",
+        "name": "Yan Wang"
+      },
+      {
+        "authorId": "50706692",
+        "name": "Le Lu"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      },
+      {
+        "authorId": "7743268",
+        "name": "Yuyin Zhou"
+      }
+    ],
+    "abstract": "Medical image segmentation is an essential prerequisite for developing healthcare systems, especially for disease diagnosis and treatment planning. On various medical image segmentation tasks, the u-shaped architecture, also known as U-Net, has become the de-facto standard and achieved tremendous success. However, due to the intrinsic locality of convolution operations, U-Net generally demonstrates limitations in explicitly modeling long-range dependency. Transformers, designed for sequence-to-sequence prediction, have emerged as alternative architectures with innate global self-attention mechanisms, but can result in limited localization abilities due to insufficient low-level details. In this paper, we propose TransUNet, which merits both Transformers and U-Net, as a strong alternative for medical image segmentation. On one hand, the Transformer encodes tokenized image patches from a convolution neural network (CNN) feature map as the input sequence for extracting global contexts. On the other hand, the decoder upsamples the encoded features which are then combined with the high-resolution CNN feature maps to enable precise localization. We argue that Transformers can serve as strong encoders for medical image segmentation tasks, with the combination of U-Net to enhance finer details by recovering localized spatial information. TransUNet achieves superior performances to various competing methods on different medical applications including multi-organ segmentation and cardiac segmentation. Code and models are available at https://github.com/Beckschen/TransUNet."
+  },
+  {
+    "paperId": "ea7cfe7f2340584cbe653da6077ee7c213e49b92",
+    "externalIds": {
+      "ArXiv": "2105.05537",
+      "DBLP": "journals/corr/abs-2105-05537",
+      "DOI": "10.1007/978-3-031-25066-8_9",
+      "CorpusId": 234469981
+    },
+    "title": "Swin-Unet: Unet-like Pure Transformer for Medical Image Segmentation",
+    "venue": "ECCV Workshops",
+    "year": 2021,
+    "citationCount": 4824,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.05537, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40223253",
+        "name": "Hu Cao"
+      },
+      {
+        "authorId": "2115849834",
+        "name": "Yueyue Wang"
+      },
+      {
+        "authorId": "90972805",
+        "name": "Jieneng Chen"
+      },
+      {
+        "authorId": "49731273",
+        "name": "Dongsheng Jiang"
+      },
+      {
+        "authorId": "2108250420",
+        "name": "Xiaopeng Zhang"
+      },
+      {
+        "authorId": "1400120070",
+        "name": "Qi Tian"
+      },
+      {
+        "authorId": "40532896",
+        "name": "Manning Wang"
+      }
+    ],
+    "abstract": "In the past few years, convolutional neural networks (CNNs) have achieved milestones in medical image analysis. Especially, the deep neural networks based on U-shaped architecture and skip-connections have been widely applied in a variety of medical image tasks. However, although CNN has achieved excellent performance, it cannot learn global and long-range semantic information interaction well due to the locality of the convolution operation. In this paper, we propose Swin-Unet, which is an Unet-like pure Transformer for medical image segmentation. The tokenized image patches are fed into the Transformer-based U-shaped Encoder-Decoder architecture with skip-connections for local-global semantic feature learning. Specifically, we use hierarchical Swin Transformer with shifted windows as the encoder to extract context features. And a symmetric Swin Transformer-based decoder with patch expanding layer is designed to perform the up-sampling operation to restore the spatial resolution of the feature maps. Under the direct down-sampling and up-sampling of the inputs and outputs by 4x, experiments on multi-organ and cardiac segmentation tasks demonstrate that the pure Transformer-based U-shaped Encoder-Decoder network outperforms those methods with full-convolution or the combination of transformer and convolution. The codes and trained models will be publicly available at https://github.com/HuCaoFighting/Swin-Unet."
+  },
+  {
+    "paperId": "f28e387d4229c5f690ce4570a391c0f47e7155c7",
+    "externalIds": {
+      "MAG": "3112701542",
+      "DOI": "10.1038/s41592-020-01008-z",
+      "CorpusId": 227947847,
+      "PubMed": "33288961"
+    },
+    "title": "nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation",
+    "venue": "Nature Methods",
+    "year": 2020,
+    "citationCount": 8393,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.08128",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/s41592-020-01008-z?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/s41592-020-01008-z, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7886986",
+        "name": "Fabian Isensee"
+      },
+      {
+        "authorId": "51433108",
+        "name": "P. Jaeger"
+      },
+      {
+        "authorId": "51011129",
+        "name": "Simon A. A. Kohl"
+      },
+      {
+        "authorId": "152800798",
+        "name": "Jens Petersen"
+      },
+      {
+        "authorId": "1397951928",
+        "name": "Klaus Hermann Maier-Hein"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "a6876ea89e677a7cc42dd43f27165ff6fd414de5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1807-10165",
+      "MAG": "2952339589",
+      "ArXiv": "1807.10165",
+      "DOI": "10.1007/978-3-030-00889-5_1",
+      "CorpusId": 50786304,
+      "PubMed": "32613207"
+    },
+    "title": "UNet++: A Nested U-Net Architecture for Medical Image Segmentation",
+    "venue": "DLMIA/ML-CDS@MICCAI",
+    "year": 2018,
+    "citationCount": 8544,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7329239",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.10165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2198519",
+        "name": "Zongwei Zhou"
+      },
+      {
+        "authorId": "1988405",
+        "name": "M. R. Siddiquee"
+      },
+      {
+        "authorId": "1930128",
+        "name": "Nima Tajbakhsh"
+      },
+      {
+        "authorId": "2674518",
+        "name": "Jianming Liang"
+      }
+    ],
+    "abstract": "In this paper, we present UNet++, a new, more powerful architecture for medical image segmentation. Our architecture is essentially a deeply-supervised encoder-decoder network where the encoder and decoder sub-networks are connected through a series of nested, dense skip pathways. The re-designed skip pathways aim at reducing the semantic gap between the feature maps of the encoder and decoder sub-networks. We argue that the optimizer would deal with an easier learning task when the feature maps from the decoder and encoder networks are semantically similar. We have evaluated UNet++ in comparison with U-Net and wide U-Net architectures across multiple medical image segmentation tasks: nodule segmentation in the low-dose CT scans of chest, nuclei segmentation in the microscopy images, liver segmentation in abdominal CT scans, and polyp segmentation in colonoscopy videos. Our experiments demonstrate that UNet++ with deep supervision achieves an average IoU gain of 3.9 and 3.4 points over U-Net and wide U-Net, respectively."
+  },
+  {
+    "paperId": "ee4a012a4b12d11d7ab8c0e79c61e807927a163c",
+    "externalIds": {
+      "ArXiv": "1706.05587",
+      "DBLP": "journals/corr/ChenPSA17",
+      "MAG": "2630837129",
+      "CorpusId": 22655199
+    },
+    "title": "Rethinking Atrous Convolution for Semantic Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 9785,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.05587, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "3302320",
+        "name": "Florian Schroff"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "In this work, we revisit atrous convolution, a powerful tool to explicitly adjust filter's field-of-view as well as control the resolution of feature responses computed by Deep Convolutional Neural Networks, in the application of semantic image segmentation. To handle the problem of segmenting objects at multiple scales, we design modules which employ atrous convolution in cascade or in parallel to capture multi-scale context by adopting multiple atrous rates. Furthermore, we propose to augment our previously proposed Atrous Spatial Pyramid Pooling module, which probes convolutional features at multiple scales, with image-level features encoding global context and further boost performance. We also elaborate on implementation details and share our experience on training our system. The proposed `DeepLabv3' system significantly improves over our previous DeepLab versions without DenseCRF post-processing and attains comparable performance with other state-of-art models on the PASCAL VOC 2012 semantic image segmentation benchmark."
+  },
+  {
+    "paperId": "658a017302d29e4acf4ca789cb5d9f27983717ff",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ChengMSKG22",
+      "ArXiv": "2112.01527",
+      "DOI": "10.1109/CVPR52688.2022.00135",
+      "CorpusId": 244799297
+    },
+    "title": "Masked-attention Mask Transformer for Universal Image Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 3757,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2112.01527",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.01527, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50563570",
+        "name": "Bowen Cheng"
+      },
+      {
+        "authorId": "1806773",
+        "name": "Ishan Misra"
+      },
+      {
+        "authorId": "2068227",
+        "name": "A. Schwing"
+      },
+      {
+        "authorId": "144843400",
+        "name": "Alexander Kirillov"
+      },
+      {
+        "authorId": "3102850",
+        "name": "Rohit Girdhar"
+      }
+    ],
+    "abstract": "Image segmentation groups pixels with different semantics, e.g., category or instance membership. Each choice of semantics defines a task. While only the semantics of each task differ, current research focuses on designing spe-cialized architectures for each task. We present Masked- attention Mask Transformer (Mask2Former), a new archi-tecture capable of addressing any image segmentation task (panoptic, instance or semantic). Its key components in-clude masked attention, which extracts localized features by constraining cross-attention within predicted mask regions. In addition to reducing the research effort by at least three times, it outperforms the best specialized architectures by a significant margin on four popular datasets. Most no-tably, Mask2Former sets a new state-of-the-art for panoptic segmentation (57.8 PQ on COCO), instance segmentation (50.1 AP on COCO) and semantic segmentation (57.7 mIoU onADE20K)."
+  },
+  {
+    "paperId": "9217e28b2273eb3b26e4e9b7b498b4661e6e09f5",
+    "externalIds": {
+      "ArXiv": "1802.02611",
+      "MAG": "2787091153",
+      "DBLP": "journals/corr/abs-1802-02611",
+      "DOI": "10.1007/978-3-030-01234-2_49",
+      "CorpusId": 3638670
+    },
+    "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 16313,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.02611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "1844940337",
+        "name": "Yukun Zhu"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "3302320",
+        "name": "Florian Schroff"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "Spatial pyramid pooling module or encode-decoder structure are used in deep neural networks for semantic segmentation task. The former networks are able to encode multi-scale contextual information by probing the incoming features with filters or pooling operations at multiple rates and multiple effective fields-of-view, while the latter networks can capture sharper object boundaries by gradually recovering the spatial information. In this work, we propose to combine the advantages from both methods. Specifically, our proposed model, DeepLabv3+, extends DeepLabv3 by adding a simple yet effective decoder module to refine the segmentation results especially along object boundaries. We further explore the Xception model and apply the depthwise separable convolution to both Atrous Spatial Pyramid Pooling and decoder modules, resulting in a faster and stronger encoder-decoder network. We demonstrate the effectiveness of the proposed model on PASCAL VOC 2012 and Cityscapes datasets, achieving the test set performance of 89.0\\% and 82.1\\% without any post-processing. Our paper is accompanied with a publicly available reference implementation of the proposed models in Tensorflow at \\url{this https URL}."
+  },
+  {
+    "paperId": "cab372bc3824780cce20d9dd1c22d4df39ed081a",
+    "externalIds": {
+      "ArXiv": "1606.00915",
+      "MAG": "2952865063",
+      "DBLP": "journals/pami/ChenPKMY18",
+      "DOI": "10.1109/TPAMI.2017.2699184",
+      "CorpusId": 3429309,
+      "PubMed": "28463186"
+    },
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 20749,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1606.00915",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.00915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7 percent mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online."
+  },
+  {
+    "paperId": "50004c086ffd6a201a4b782281aaa930fbfe6ecf",
+    "externalIds": {
+      "MAG": "2432481613",
+      "ArXiv": "1606.04797",
+      "DBLP": "conf/3dim/MilletariNA16",
+      "DOI": "10.1109/3DV.2016.79",
+      "CorpusId": 206429151
+    },
+    "title": "V-Net: Fully Convolutional Neural Networks for Volumetric Medical Image Segmentation",
+    "venue": "International Conference on 3D Vision",
+    "year": 2016,
+    "citationCount": 10517,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1606.04797",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.04797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1877512",
+        "name": "Fausto Milletarì"
+      },
+      {
+        "authorId": "145587209",
+        "name": "N. Navab"
+      },
+      {
+        "authorId": "145774206",
+        "name": "Seyed-Ahmad Ahmadi"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) have been recently employed to solve problems from both the computer vision and medical image analysis fields. Despite their popularity, most approaches are only able to process 2D images while most medical data used in clinical practice consists of 3D volumes. In this work we propose an approach to 3D image segmentation based on a volumetric, fully convolutional, neural network. Our CNN is trained end-to-end on MRI volumes depicting prostate, and learns to predict segmentation for the whole volume at once. We introduce a novel objective function, that we optimise during training, based on Dice coefficient. In this way we can deal with situations where there is a strong imbalance between the number of foreground and background voxels. To cope with the limited number of annotated volumes available for training, we augment the data applying random non-linear transformations and histogram matching. We show in our experimental evaluation that our approach achieves good performances on challenging test data while requiring only a fraction of the processing time needed by other previous methods."
+  },
+  {
+    "paperId": "7519a1e9e7371df79bd8a21cee871feb0ec597a5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-10504",
+      "ArXiv": "2103.10504",
+      "DOI": "10.1109/WACV51458.2022.00181",
+      "CorpusId": 232290634
+    },
+    "title": "UNETR: Transformers for 3D Medical Image Segmentation",
+    "venue": "IEEE Workshop/Winter Conference on Applications of Computer Vision",
+    "year": 2021,
+    "citationCount": 2568,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.10504",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.10504, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31374559",
+        "name": "Ali Hatamizadeh"
+      },
+      {
+        "authorId": "144041873",
+        "name": "Dong Yang"
+      },
+      {
+        "authorId": "144531567",
+        "name": "H. Roth"
+      },
+      {
+        "authorId": "3262394",
+        "name": "Daguang Xu"
+      }
+    ],
+    "abstract": "Fully Convolutional Neural Networks (FCNNs) with contracting and expanding paths have shown prominence for the majority of medical image segmentation applications since the past decade. In FCNNs, the encoder plays an integral role by learning both global and local features and contextual representations which can be utilized for semantic output prediction by the decoder. Despite their success, the locality of convolutional layers in FCNNs, limits the capability of learning long-range spatial dependencies. Inspired by the recent success of transformers for Natural Language Processing (NLP) in long-range sequence learning, we reformulate the task of volumetric (3D) medical image segmentation as a sequence-to-sequence prediction problem. We introduce a novel architecture, dubbed as UNEt TRansformers (UNETR), that utilizes a transformer as the encoder to learn sequence representations of the input volume and effectively capture the global multi-scale information, while also following the successful \"U-shaped\" network design for the encoder and decoder. The transformer encoder is directly connected to a decoder via skip connections at different resolutions to compute the final semantic segmentation output. We have validated the performance of our method on the Multi Atlas Labeling Beyond The Cranial Vault (BTCV) dataset for multi-organ segmentation and the Medical Segmentation Decathlon (MSD) dataset for brain tumor and spleen segmentation tasks. Our benchmarks demonstrate new state-of-the-art performance on the BTCV leaderboard."
+  },
+  {
+    "paperId": "6364fdaa0a0eccd823a779fcdd489173f938e91a",
+    "externalIds": {
+      "MAG": "1901129140",
+      "DBLP": "journals/corr/RonnebergerFB15",
+      "ArXiv": "1505.04597",
+      "DOI": "10.1007/978-3-319-24574-4_28",
+      "CorpusId": 3719281
+    },
+    "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2015,
+    "citationCount": 94117,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.04597, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1737326",
+        "name": "O. Ronneberger"
+      },
+      {
+        "authorId": "152702479",
+        "name": "P. Fischer"
+      },
+      {
+        "authorId": "1710872",
+        "name": "T. Brox"
+      }
+    ],
+    "abstract": "There is large consent that successful training of deep networks requires many thousand annotated training samples. In this paper, we present a network and training strategy that relies on the strong use of data augmentation to use the available annotated samples more efficiently. The architecture consists of a contracting path to capture context and a symmetric expanding path that enables precise localization. We show that such a network can be trained end-to-end from very few images and outperforms the prior best method (a sliding-window convolutional network) on the ISBI challenge for segmentation of neuronal structures in electron microscopic stacks. Using the same network trained on transmitted light microscopy images (phase contrast and DIC) we won the ISBI cell tracking challenge 2015 in these categories by a large margin. Moreover, the network is fast. Segmentation of a 512x512 image takes less than a second on a recent GPU. The full implementation (based on Caffe) and the trained networks are available at http://lmb.informatik.uni-freiburg.de/people/ronneber/u-net ."
+  },
+  {
+    "paperId": "42b0a8f757e45462e627e57f9af7e9849dcdacdf",
+    "externalIds": {
+      "MAG": "2994754739",
+      "ArXiv": "1912.05074",
+      "DBLP": "journals/tmi/ZhouSTL20",
+      "DOI": "10.1109/TMI.2019.2959609",
+      "CorpusId": 209202133,
+      "PubMed": "31841402"
+    },
+    "title": "UNet++: Redesigning Skip Connections to Exploit Multiscale Features in Image Segmentation",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2019,
+    "citationCount": 3558,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7357299",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.05074, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1389392654",
+        "name": "Zongwei Zhou"
+      },
+      {
+        "authorId": "1988405",
+        "name": "M. R. Siddiquee"
+      },
+      {
+        "authorId": "1930128",
+        "name": "Nima Tajbakhsh"
+      },
+      {
+        "authorId": "2674518",
+        "name": "Jianming Liang"
+      }
+    ],
+    "abstract": "The state-of-the-art models for medical image segmentation are variants of U-Net and fully convolutional networks (FCN). Despite their success, these models have two limitations: (1) their optimal depth is apriori unknown, requiring extensive architecture search or inefficient ensemble of models of varying depths; and (2) their skip connections impose an unnecessarily restrictive fusion scheme, forcing aggregation only at the same-scale feature maps of the encoder and decoder sub-networks. To overcome these two limitations, we propose UNet++, a new neural architecture for semantic and instance segmentation, by (1) alleviating the unknown network depth with an efficient ensemble of U-Nets of varying depths, which partially share an encoder and co-learn simultaneously using deep supervision; (2) redesigning skip connections to aggregate features of varying semantic scales at the decoder sub-networks, leading to a highly flexible feature fusion scheme; and (3) devising a pruning scheme to accelerate the inference speed of UNet++. We have evaluated UNet++ using six different medical image segmentation datasets, covering multiple imaging modalities such as computed tomography (CT), magnetic resonance imaging (MRI), and electron microscopy (EM), and demonstrating that (1) UNet++ consistently outperforms the baseline models for the task of semantic segmentation across different datasets and backbone architectures; (2) UNet++ enhances segmentation quality of varying-size objects—an improvement over the fixed-depth U-Net; (3) Mask RCNN++ (Mask R-CNN with UNet++ design) outperforms the original Mask R-CNN for the task of instance segmentation; and (4) pruned UNet++ models achieve significant speedup while showing only modest performance degradation. Our implementation and pre-trained models are available at https://github.com/MrGiovanni/UNetPlusPlus."
+  },
+  {
+    "paperId": "580062407427236ced45253a2ff7df2e147a81e2",
+    "externalIds": {
+      "DBLP": "journals/tmi/MenzeJBKFKBPSWL15",
+      "MAG": "1641498739",
+      "DOI": "10.1109/TMI.2014.2377694",
+      "CorpusId": 1739295,
+      "PubMed": "25494501"
+    },
+    "title": "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2015,
+    "citationCount": 5997,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/42/7283692/06975210.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMI.2014.2377694?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMI.2014.2377694, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143893221",
+        "name": "Bjoern H Menze"
+      },
+      {
+        "authorId": "153194548",
+        "name": "A. Jakab"
+      },
+      {
+        "authorId": "2067693441",
+        "name": "S. Bauer"
+      },
+      {
+        "authorId": "1401724111",
+        "name": "Jayashree Kalpathy-Cramer"
+      },
+      {
+        "authorId": "1781663",
+        "name": "K. Farahani"
+      },
+      {
+        "authorId": "40078837",
+        "name": "J. Kirby"
+      },
+      {
+        "authorId": "1805112",
+        "name": "Y. Burren"
+      },
+      {
+        "authorId": "1784933",
+        "name": "N. Porz"
+      },
+      {
+        "authorId": "46666577",
+        "name": "J. Slotboom"
+      },
+      {
+        "authorId": "1800611",
+        "name": "R. Wiest"
+      },
+      {
+        "authorId": "47220122",
+        "name": "L. Lanczi"
+      },
+      {
+        "authorId": "1770961",
+        "name": "E. Gerstner"
+      },
+      {
+        "authorId": "2034063990",
+        "name": "M. Weber"
+      },
+      {
+        "authorId": "1699104",
+        "name": "T. Arbel"
+      },
+      {
+        "authorId": "1781699",
+        "name": "B. Avants"
+      },
+      {
+        "authorId": "144827643",
+        "name": "N. Ayache"
+      },
+      {
+        "authorId": "1805591",
+        "name": "Patricia Buendia"
+      },
+      {
+        "authorId": "2238288468",
+        "name": "D. Collins"
+      },
+      {
+        "authorId": "1766621",
+        "name": "Nicolas Cordier"
+      },
+      {
+        "authorId": "3587688",
+        "name": "Jason J. Corso"
+      },
+      {
+        "authorId": "1716777",
+        "name": "A. Criminisi"
+      },
+      {
+        "authorId": "34850697",
+        "name": "T. Das"
+      },
+      {
+        "authorId": "1781157",
+        "name": "H. Delingette"
+      },
+      {
+        "authorId": "1786137",
+        "name": "Çağatay Demiralp"
+      },
+      {
+        "authorId": "1763576",
+        "name": "C. Durst"
+      },
+      {
+        "authorId": "1699302",
+        "name": "M. Dojat"
+      },
+      {
+        "authorId": "28614542",
+        "name": "Senan Doyle"
+      },
+      {
+        "authorId": "38098148",
+        "name": "Joana Festa"
+      },
+      {
+        "authorId": "51000009",
+        "name": "F. Forbes"
+      },
+      {
+        "authorId": "20512625",
+        "name": "Ezequiel Geremia"
+      },
+      {
+        "authorId": "1381873274",
+        "name": "B. Glocker"
+      },
+      {
+        "authorId": "1729630",
+        "name": "P. Golland"
+      },
+      {
+        "authorId": "46909985",
+        "name": "Xiaotao Guo"
+      },
+      {
+        "authorId": "1796183",
+        "name": "A. Hamamci"
+      },
+      {
+        "authorId": "1759819",
+        "name": "K. Iftekharuddin"
+      },
+      {
+        "authorId": "1804582",
+        "name": "R. Jena"
+      },
+      {
+        "authorId": "144984944",
+        "name": "N. John"
+      },
+      {
+        "authorId": "1796918",
+        "name": "E. Konukoglu"
+      },
+      {
+        "authorId": "1795365",
+        "name": "D. Lashkari"
+      },
+      {
+        "authorId": "49021251",
+        "name": "J. Mariz"
+      },
+      {
+        "authorId": "48836970",
+        "name": "Raphael Meier"
+      },
+      {
+        "authorId": "145934576",
+        "name": "Sérgio Pereira"
+      },
+      {
+        "authorId": "144368601",
+        "name": "Doina Precup"
+      },
+      {
+        "authorId": "1806134",
+        "name": "S. Price"
+      },
+      {
+        "authorId": "1398079691",
+        "name": "Tammy Riklin-Raviv"
+      },
+      {
+        "authorId": "1753217",
+        "name": "Syed M. S. Reza"
+      },
+      {
+        "authorId": "2072630088",
+        "name": "Michael T. Ryan"
+      },
+      {
+        "authorId": "39075905",
+        "name": "Duygu Sarikaya"
+      },
+      {
+        "authorId": "35802562",
+        "name": "L. Schwartz"
+      },
+      {
+        "authorId": "1797022",
+        "name": "Hoo-Chang Shin"
+      },
+      {
+        "authorId": "143774737",
+        "name": "J. Shotton"
+      },
+      {
+        "authorId": "1757347",
+        "name": "Carlos Alberto Silva"
+      },
+      {
+        "authorId": "143953558",
+        "name": "N. Sousa"
+      },
+      {
+        "authorId": "1730375",
+        "name": "N. Subbanna"
+      },
+      {
+        "authorId": "1707791",
+        "name": "G. Székely"
+      },
+      {
+        "authorId": "2066925502",
+        "name": "Thomas J. Taylor"
+      },
+      {
+        "authorId": "144988242",
+        "name": "O. Thomas"
+      },
+      {
+        "authorId": "1785987",
+        "name": "N. Tustison"
+      },
+      {
+        "authorId": "1695066",
+        "name": "Gözde B. Ünal"
+      },
+      {
+        "authorId": "1793848",
+        "name": "F. Vasseur"
+      },
+      {
+        "authorId": "1794900",
+        "name": "M. Wintermark"
+      },
+      {
+        "authorId": "36440980",
+        "name": "Dong Hye Ye"
+      },
+      {
+        "authorId": "2116733823",
+        "name": "Liang Zhao"
+      },
+      {
+        "authorId": "9445492",
+        "name": "Binsheng Zhao"
+      },
+      {
+        "authorId": "1792600",
+        "name": "Darko Zikic"
+      },
+      {
+        "authorId": "1774950",
+        "name": "M. Prastawa"
+      },
+      {
+        "authorId": "2365649316",
+        "name": "M. Reyes"
+      },
+      {
+        "authorId": "1796114",
+        "name": "K. V. Leemput"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "b0c065cd43aa7280e766b5dcbcc7e26abce59330",
+    "externalIds": {
+      "MAG": "1910657905",
+      "DBLP": "journals/pami/BadrinarayananK17",
+      "ArXiv": "1511.00561",
+      "DOI": "10.1109/TPAMI.2016.2644615",
+      "CorpusId": 60814714,
+      "PubMed": "28060704"
+    },
+    "title": "SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2015,
+    "citationCount": 17789,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/tpami.2016.2644615",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.00561, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2442177",
+        "name": "Vijay Badrinarayanan"
+      },
+      {
+        "authorId": "47645184",
+        "name": "Alex Kendall"
+      },
+      {
+        "authorId": "1745672",
+        "name": "R. Cipolla"
+      }
+    ],
+    "abstract": "We present a novel and practical deep fully convolutional neural network architecture for semantic pixel-wise segmentation termed SegNet. This core trainable segmentation engine consists of an encoder network, a corresponding decoder network followed by a pixel-wise classification layer. The architecture of the encoder network is topologically identical to the 13 convolutional layers in the VGG16 network [1] . The role of the decoder network is to map the low resolution encoder feature maps to full input resolution feature maps for pixel-wise classification. The novelty of SegNet lies is in the manner in which the decoder upsamples its lower resolution input feature map(s). Specifically, the decoder uses pooling indices computed in the max-pooling step of the corresponding encoder to perform non-linear upsampling. This eliminates the need for learning to upsample. The upsampled maps are sparse and are then convolved with trainable filters to produce dense feature maps. We compare our proposed architecture with the widely adopted FCN [2] and also with the well known DeepLab-LargeFOV [3] , DeconvNet [4] architectures. This comparison reveals the memory versus accuracy trade-off involved in achieving good segmentation performance. SegNet was primarily motivated by scene understanding applications. Hence, it is designed to be efficient both in terms of memory and computational time during inference. It is also significantly smaller in the number of trainable parameters than other competing architectures and can be trained end-to-end using stochastic gradient descent. We also performed a controlled benchmark of SegNet and other architectures on both road scenes and SUN RGB-D indoor scene segmentation tasks. These quantitative assessments show that SegNet provides good performance with competitive inference time and most efficient inference memory-wise as compared to other architectures. We also provide a Caffe implementation of SegNet and a web demo at http://mi.eng.cam.ac.uk/projects/segnet/."
+  },
+  {
+    "paperId": "c7bbeaef75fa64c7e9cdf1b68bb487b9f8cd9a7d",
+    "externalIds": {
+      "MAG": "2999607073",
+      "ArXiv": "2001.05566",
+      "DBLP": "journals/corr/abs-2001-05566",
+      "DOI": "10.1109/TPAMI.2021.3059968",
+      "CorpusId": 210702798,
+      "PubMed": "33596172"
+    },
+    "title": "Image Segmentation Using Deep Learning: A Survey",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2020,
+    "citationCount": 3656,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2001.05566",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.05566, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2164604",
+        "name": "Shervin Minaee"
+      },
+      {
+        "authorId": "1692688",
+        "name": "Yuri Boykov"
+      },
+      {
+        "authorId": "29905643",
+        "name": "F. Porikli"
+      },
+      {
+        "authorId": "143767945",
+        "name": "A. Plaza"
+      },
+      {
+        "authorId": "30567641",
+        "name": "N. Kehtarnavaz"
+      },
+      {
+        "authorId": "1750924",
+        "name": "Demetri Terzopoulos"
+      }
+    ],
+    "abstract": "Image segmentation is a key task in computer vision and image processing with important applications such as scene understanding, medical image analysis, robotic perception, video surveillance, augmented reality, and image compression, among others, and numerous segmentation algorithms are found in the literature. Against this backdrop, the broad success of deep learning (DL) has prompted the development of new image segmentation approaches leveraging DL models. We provide a comprehensive review of this recent literature, covering the spectrum of pioneering efforts in semantic and instance segmentation, including convolutional pixel-labeling networks, encoder-decoder architectures, multiscale and pyramid-based approaches, recurrent networks, visual attention models, and generative models in adversarial settings. We investigate the relationships, strengths, and challenges of these DL-based segmentation models, examine the widely used datasets, compare performances, and discuss promising research directions."
+  },
+  {
+    "paperId": "0b444f74dd9cc06c2833dd15f9258ef5e169e6ea",
+    "externalIds": {
+      "DBLP": "conf/icassp/HuangLTHZIHCW20",
+      "MAG": "3017333496",
+      "ArXiv": "2004.08790",
+      "DOI": "10.1109/ICASSP40776.2020.9053405",
+      "CorpusId": 215828394
+    },
+    "title": "UNet 3+: A Full-Scale Connected UNet for Medical Image Segmentation",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2020,
+    "citationCount": 2542,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2004.08790",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2004.08790, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48186750",
+        "name": "Huimin Huang"
+      },
+      {
+        "authorId": "2940227",
+        "name": "Lanfen Lin"
+      },
+      {
+        "authorId": "3128157",
+        "name": "Ruofeng Tong"
+      },
+      {
+        "authorId": "3186871",
+        "name": "Hongjie Hu"
+      },
+      {
+        "authorId": "6427167",
+        "name": "Qiaowei Zhang"
+      },
+      {
+        "authorId": "3153697",
+        "name": "Yutaro Iwamoto"
+      },
+      {
+        "authorId": "121685794",
+        "name": "Xianhua Han"
+      },
+      {
+        "authorId": "7377952",
+        "name": "Yenwei Chen"
+      },
+      {
+        "authorId": "2145136039",
+        "name": "Jian Wu"
+      }
+    ],
+    "abstract": "Recently, a growing interest has been seen in deep learning-based semantic segmentation. UNet, which is one of deep learning networks with an encoder-decoder architecture, is widely used in medical image segmentation. Combining multi-scale features is one of important factors for accurate segmentation. UNet++ was developed as a modified Unet by designing an architecture with nested and dense skip connections. However, it does not explore sufficient information from full scales and there is still a large room for improvement. In this paper, we propose a novel UNet 3+, which takes advantage of full-scale skip connections and deep supervisions. The full-scale skip connections incorporate low-level details with high-level semantics from feature maps in different scales; while the deep supervision learns hierarchical representations from the full-scale aggregated feature maps. The proposed method is especially benefiting for organs that appear at varying scales. In addition to accuracy improvements, the proposed UNet 3+ can reduce the network parameters to improve the computation efficiency. We further propose a hybrid loss function and devise a classification-guided module to enhance the organ boundary and reduce the over-segmentation in a non-organ image, yielding more accurate segmentation results. The effectiveness of the proposed method is demonstrated on two datasets. The code is available at: github.com/ZJUGiveLab/UNet-Version"
+  },
+  {
+    "paperId": "39ad6c911f3351a3b390130a6e4265355b4d593b",
+    "externalIds": {
+      "MAG": "1923697677",
+      "DBLP": "journals/corr/ChenPKMY14",
+      "ArXiv": "1412.7062",
+      "CorpusId": 1996665
+    },
+    "title": "Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 5217,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.7062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "Deep Convolutional Neural Networks (DCNNs) have recently shown state of the art performance in high level vision tasks, such as image classification and object detection. This work brings together methods from DCNNs and probabilistic graphical models for addressing the task of pixel-level classification (also called \"semantic image segmentation\"). We show that responses at the final layer of DCNNs are not sufficiently localized for accurate object segmentation. This is due to the very invariance properties that make DCNNs good for high level tasks. We overcome this poor localization property of deep networks by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF). Qualitatively, our \"DeepLab\" system is able to localize segment boundaries at a level of accuracy which is beyond previous methods. Quantitatively, our method sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 71.6% IOU accuracy in the test set. We show how these results can be obtained efficiently: Careful network re-purposing and a novel application of the 'hole' algorithm from the wavelet community allow dense computation of neural net responses at 8 frames per second on a modern GPU."
+  },
+  {
+    "paperId": "b94c7ff9532ab26c3aedbee3988ec4c7a237c173",
+    "externalIds": {
+      "MAG": "2121947440",
+      "DBLP": "journals/pami/ShiM00",
+      "DOI": "10.1109/CVPR.1997.609407",
+      "CorpusId": 14848918
+    },
+    "title": "Normalized cuts and image segmentation",
+    "venue": "Proceedings of IEEE Computer Society Conference on Computer Vision and Pattern Recognition",
+    "year": 1997,
+    "citationCount": 17802,
+    "openAccessPdf": {
+      "url": "http://www.cs.berkeley.edu/~malik/papers/SM-ncut.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.1997.609407?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.1997.609407, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46865129",
+        "name": "Jianbo Shi"
+      },
+      {
+        "authorId": "153652147",
+        "name": "J. Malik"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "dd33f1cef0471e4fedb5615dafff222295a42cf4",
+    "externalIds": {
+      "DBLP": "journals/mia/ChenMLLYWLXAWLZXLYZ24",
+      "DOI": "10.1016/j.media.2024.103280",
+      "CorpusId": 271341150,
+      "PubMed": "39096845"
+    },
+    "title": "TransUNet: Rethinking the U-Net architecture design for medical image segmentation through the lens of transformers",
+    "venue": "Medical Image Anal.",
+    "year": 2024,
+    "citationCount": 921,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.media.2024.103280?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.media.2024.103280, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "90972805",
+        "name": "Jieneng Chen"
+      },
+      {
+        "authorId": "10407760",
+        "name": "Jieru Mei"
+      },
+      {
+        "authorId": "2108261491",
+        "name": "Xianhang Li"
+      },
+      {
+        "authorId": "2254153703",
+        "name": "Yongyi Lu"
+      },
+      {
+        "authorId": "2156559",
+        "name": "Qihang Yu"
+      },
+      {
+        "authorId": "2258334262",
+        "name": "Qingyue Wei"
+      },
+      {
+        "authorId": "2257721390",
+        "name": "Xiangde Luo"
+      },
+      {
+        "authorId": "2256700361",
+        "name": "Yutong Xie"
+      },
+      {
+        "authorId": "2397747903",
+        "name": "Ehsan Adeli"
+      },
+      {
+        "authorId": "2273770531",
+        "name": "Yan Wang"
+      },
+      {
+        "authorId": "2188270295",
+        "name": "M. Lungren"
+      },
+      {
+        "authorId": "2257020212",
+        "name": "Shaoting Zhang"
+      },
+      {
+        "authorId": "2257346885",
+        "name": "Lei Xing"
+      },
+      {
+        "authorId": "2257381041",
+        "name": "Le Lu"
+      },
+      {
+        "authorId": "2250139492",
+        "name": "Alan Yuille"
+      },
+      {
+        "authorId": "2351902476",
+        "name": "Yuyin Zhou"
+      }
+    ],
+    "abstract": "Medical image segmentation is crucial for healthcare, yet convolution-based methods like U-Net face limitations in modeling long-range dependencies. To address this, Transformers designed for sequence-to-sequence predictions have been integrated into medical image segmentation. However, a comprehensive understanding of Transformers' self-attention in U-Net components is lacking. TransUNet, first introduced in 2021, is widely recognized as one of the first models to integrate Transformer into medical image analysis. In this study, we present the versatile framework of TransUNet that encapsulates Transformers' self-attention into two key modules: (1) a Transformer encoder tokenizing image patches from a convolution neural network (CNN) feature map, facilitating global context extraction, and (2) a Transformer decoder refining candidate regions through cross-attention between proposals and U-Net features. These modules can be flexibly inserted into the U-Net backbone, resulting in three configurations: Encoder-only, Decoder-only, and Encoder+Decoder. TransUNet provides a library encompassing both 2D and 3D implementations, enabling users to easily tailor the chosen architecture. Our findings highlight the encoder's efficacy in modeling interactions among multiple abdominal organs and the decoder's strength in handling small targets like tumors. It excels in diverse medical applications, such as multi-organ segmentation, pancreatic tumor segmentation, and hepatic vessel segmentation. Notably, our TransUNet achieves a significant average Dice improvement of 1.06% and 4.30% for multi-organ segmentation and pancreatic tumor segmentation, respectively, when compared to the highly competitive nn-UNet, and surpasses the top-1 solution in the BrasTS2021 challenge. 2D/3D Code and models are available at https://github.com/Beckschen/TransUNet and https://github.com/Beckschen/TransUNet-3D, respectively."
+  },
+  {
+    "paperId": "c1a04730c83967d0bb904b02263b17893cb50bad",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-04722",
+      "ArXiv": "2401.04722",
+      "DOI": "10.48550/arXiv.2401.04722",
+      "CorpusId": 266899624
+    },
+    "title": "U-Mamba: Enhancing Long-range Dependency for Biomedical Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 763,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04722, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143854906",
+        "name": "Jun Ma"
+      },
+      {
+        "authorId": "2115375848",
+        "name": "Feifei Li"
+      },
+      {
+        "authorId": "2279039516",
+        "name": "Bo Wang"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) and Transformers have been the most popular architectures for biomedical image segmentation, but both of them have limited ability to handle long-range dependencies because of inherent locality or computational complexity. To address this challenge, we introduce U-Mamba, a general-purpose network for biomedical image segmentation. Inspired by the State Space Sequence Models (SSMs), a new family of deep sequence models known for their strong capability in handling long sequences, we design a hybrid CNN-SSM block that integrates the local feature extraction power of convolutional layers with the abilities of SSMs for capturing the long-range dependency. Moreover, U-Mamba enjoys a self-configuring mechanism, allowing it to automatically adapt to various datasets without manual intervention. We conduct extensive experiments on four diverse tasks, including the 3D abdominal organ segmentation in CT and MR images, instrument segmentation in endoscopy images, and cell segmentation in microscopy images. The results reveal that U-Mamba outperforms state-of-the-art CNN-based and Transformer-based segmentation networks across all tasks. This opens new avenues for efficient long-range dependency modeling in biomedical image analysis. The code, models, and data are publicly available at https://wanglab.ai/u-mamba.html."
+  },
+  {
+    "paperId": "ffaa66e698655d4b2dee1ab61448d5cc1a743a63",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2402-02491",
+      "ArXiv": "2402.02491",
+      "DOI": "10.1145/3767748",
+      "CorpusId": 267413263
+    },
+    "title": "VM-UNet: Vision Mamba UNet for Medical Image Segmentation",
+    "venue": "ACM Transactions on Multimedia Computing, Communications, and Applications (TOMCCAP)",
+    "year": 2024,
+    "citationCount": 802,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.02491, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2052357524",
+        "name": "Jiacheng Ruan"
+      },
+      {
+        "authorId": "2108935913",
+        "name": "Jincheng Li"
+      },
+      {
+        "authorId": "9357059",
+        "name": "Suncheng Xiang"
+      }
+    ],
+    "abstract": "In the realm of medical image segmentation, both CNN-based and Transformer-based models have been extensively explored. However, CNNs exhibit limitations in long-range modeling capabilities, whereas Transformers are hampered by their quadratic computational complexity. Recently, State Space Models (SSMs), exemplified by Mamba, have emerged as a promising approach. They not only excel in modeling long-range interactions but also maintain a linear computational complexity. In this paper, leveraging state space models, we propose a U-shape architecture model for medical image segmentation, named Vision Mamba UNet (VM-UNet). Specifically, the Visual State Space (VSS) block is introduced as the foundation block to capture extensive contextual information, and an asymmetrical encoder-decoder structure is constructed with fewer convolution layers to save calculation cost. We conduct comprehensive experiments on the ISIC17, ISIC18, and Synapse datasets, and the results indicate that VM-UNet performs competitively in medical image segmentation tasks, e.g. obtaining 89.03, 89.71 and 81.08 in terms of DSC score on three datasets respectively. To our best knowledge, this is the first medical image segmentation model constructed based on the pure SSM-based model. We aim to establish a baseline and provide valuable insights for the future development of more efficient and effective SSM-based segmentation systems. Our code is available at https://github.com/JCruan519/VM-UNet."
+  },
+  {
+    "paperId": "0e5a262bf59b68ba8a7a1103d16fa33a9f5ffc28",
+    "externalIds": {
+      "DBLP": "journals/pami/ArbelaezMFM11",
+      "MAG": "2110158442",
+      "DOI": "10.1109/TPAMI.2010.161",
+      "CorpusId": 206764694,
+      "PubMed": "20733228"
+    },
+    "title": "Contour Detection and Hierarchical Image Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2011,
+    "citationCount": 5719,
+    "openAccessPdf": {
+      "url": "http://www.cs.berkeley.edu/%7Emalik/papers/arbelaezMFM-pami2010.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPAMI.2010.161?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPAMI.2010.161, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1778133",
+        "name": "Pablo Arbeláez"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "143800213",
+        "name": "Charless C. Fowlkes"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "367f7f64ded5d18528c1013db9dfa01b075db484",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2102-10662",
+      "ArXiv": "2102.10662",
+      "DOI": "10.1007/978-3-030-87193-2_4",
+      "CorpusId": 231986084
+    },
+    "title": "Medical Transformer: Gated Axial-Attention for Medical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2021,
+    "citationCount": 1354,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.10662, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144958260",
+        "name": "Jeya Maria Jose Valanarasu"
+      },
+      {
+        "authorId": "144477698",
+        "name": "Poojan Oza"
+      },
+      {
+        "authorId": "1836588",
+        "name": "I. Hacihaliloglu"
+      },
+      {
+        "authorId": "1741177",
+        "name": "Vishal M. Patel"
+      }
+    ],
+    "abstract": "Over the past decade, Deep Convolutional Neural Networks have been widely adopted for medical image segmentation and shown to achieve adequate performance. However, due to the inherent inductive biases present in the convolutional architectures, they lack understanding of long-range dependencies in the image. Recently proposed Transformer-based architectures that leverage self-attention mechanism encode long-range dependencies and learn representations that are highly expressive. This motivates us to explore Transformer-based solutions and study the feasibility of using Transformer-based network architectures for medical image segmentation tasks. Majority of existing Transformer-based network architectures proposed for vision applications require large-scale datasets to train properly. However, compared to the datasets for vision applications, for medical imaging the number of data samples is relatively low, making it difficult to efficiently train transformers for medical applications. To this end, we propose a Gated Axial-Attention model which extends the existing architectures by introducing an additional control mechanism in the self-attention module. Furthermore, to train the model effectively on medical images, we propose a Local-Global training strategy (LoGo) which further improves the performance. Specifically, we operate on the whole image and patches to learn global and local features, respectively. The proposed Medical Transformer (MedT) is evaluated on three different medical image segmentation datasets and it is shown that it achieves better performance than the convolutional and other related transformer-based architectures. Code: https://github.com/jeya-maria-jose/Medical-Transformer"
+  },
+  {
+    "paperId": "49f9882d5fd442f02f9c9dff780336f6dce2da4f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-12620",
+      "ArXiv": "2304.12620",
+      "DOI": "10.48550/arXiv.2304.12620",
+      "CorpusId": 258309597,
+      "PubMed": "40121809"
+    },
+    "title": "Medical SAM Adapter: Adapting Segment Anything Model for Medical Image Segmentation",
+    "venue": "Medical Image Analysis",
+    "year": 2023,
+    "citationCount": 859,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.12620",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.12620, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2146668763",
+        "name": "Junde Wu"
+      },
+      {
+        "authorId": "2054309105",
+        "name": "Rao Fu"
+      },
+      {
+        "authorId": "2087117656",
+        "name": "Huihui Fang"
+      },
+      {
+        "authorId": "2375534",
+        "name": "Yuanpei Liu"
+      },
+      {
+        "authorId": "2144715952",
+        "name": "Zhao-Yang Wang"
+      },
+      {
+        "authorId": "98271873",
+        "name": "Yanwu Xu"
+      },
+      {
+        "authorId": "33981465",
+        "name": "Yueming Jin"
+      },
+      {
+        "authorId": "1699104",
+        "name": "T. Arbel"
+      }
+    ],
+    "abstract": "The Segment Anything Model (SAM) has recently gained popularity in the field of image segmentation due to its impressive capabilities in various segmentation tasks and its prompt-based interface. However, recent studies and individual experiments have shown that SAM underperforms in medical image segmentation due to the lack of medical-specific knowledge. This raises the question of how to enhance SAM's segmentation capability for medical images. We propose the Medical SAM Adapter (Med-SA), which is one of the first methods to integrate SAM into medical image segmentation. Med-SA uses a light yet effective adaptation technique instead of fine-tuning the SAM model, incorporating domain-specific medical knowledge into the segmentation model. We also propose Space-Depth Transpose (SD-Trans) to adapt 2D SAM to 3D medical images and Hyper-Prompting Adapter (HyP-Adpt) to achieve prompt-conditioned adaptation. Comprehensive evaluation experiments on 17 medical image segmentation tasks across various modalities demonstrate the superior performance of Med-SA while updating only 2% of the SAM parameters (13M). Our code is released at https://github.com/KidsWithTokens/Medical-SAM-Adapter."
+  },
+  {
+    "paperId": "eb20e67ee20cd4122f3812b695b79a3220f2fe4a",
+    "externalIds": {
+      "DBLP": "conf/miccai/ZhangLH21",
+      "ArXiv": "2102.08005",
+      "DOI": "10.1007/978-3-030-87193-2_2",
+      "CorpusId": 231933932
+    },
+    "title": "TransFuse: Fusing Transformers and CNNs for Medical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2021,
+    "citationCount": 1358,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.08005, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49890233",
+        "name": "Yundong Zhang"
+      },
+      {
+        "authorId": "30949464",
+        "name": "Huiye Liu"
+      },
+      {
+        "authorId": "152280946",
+        "name": "Qiang Hu"
+      }
+    ],
+    "abstract": "Medical image segmentation - the prerequisite of numerous clinical needs - has been significantly prospered by recent advances in convolutional neural networks (CNNs). However, it exhibits general limitations on modeling explicit long-range relation, and existing cures, resorting to building deep encoders along with aggressive downsampling operations, leads to redundant deepened networks and loss of localized details. Hence, the segmentation task awaits a better solution to improve the efficiency of modeling global contexts while maintaining a strong grasp of low-level details. In this paper, we propose a novel parallel-in-branch architecture, TransFuse, to address this challenge. TransFuse combines Transformers and CNNs in a parallel style, where both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to efficiently fuse the multi-level features from both branches. Extensive experiments demonstrate that TransFuse achieves the newest state-of-the-art results on both 2D and 3D medical image sets including polyp, skin lesion, hip, and prostate segmentation, with significant parameter decrease and inference speed improvement."
+  },
+  {
+    "paperId": "ccb5a70f8a6f7b7fc923b9d4c18488b2837daa6f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2203-04967",
+      "ArXiv": "2203.04967",
+      "DOI": "10.48550/arXiv.2203.04967",
+      "CorpusId": 247362702
+    },
+    "title": "UNeXt: MLP-based Rapid Medical Image Segmentation Network",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2022,
+    "citationCount": 882,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2203.04967",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.04967, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144958260",
+        "name": "Jeya Maria Jose Valanarasu"
+      },
+      {
+        "authorId": "1741177",
+        "name": "Vishal M. Patel"
+      }
+    ],
+    "abstract": "UNet and its latest extensions like TransUNet have been the leading medical image segmentation methods in recent years. However, these networks cannot be effectively adopted for rapid image segmentation in point-of-care applications as they are parameter-heavy, computationally complex and slow to use. To this end, we propose UNeXt which is a Convolutional multilayer perceptron (MLP) based network for image segmentation. We design UNeXt in an effective way with an early convolutional stage and a MLP stage in the latent stage. We propose a tokenized MLP block where we efficiently tokenize and project the convolutional features and use MLPs to model the representation. To further boost the performance, we propose shifting the channels of the inputs while feeding in to MLPs so as to focus on learning local dependencies. Using tokenized MLPs in latent space reduces the number of parameters and computational complexity while being able to result in a better representation to help segmentation. The network also consists of skip connections between various levels of encoder and decoder. We test UNeXt on multiple medical image segmentation datasets and show that we reduce the number of parameters by 72x, decrease the computational complexity by 68x, and improve the inference speed by 10x while also obtaining better segmentation performance over the state-of-the-art medical image segmentation architectures. Code is available at https://github.com/jeya-maria-jose/UNeXt-pytorch"
+  },
+  {
+    "paperId": "705315602e9e78b155220169d7704475efeb4a11",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2304-13785",
+      "ArXiv": "2304.13785",
+      "DOI": "10.48550/arXiv.2304.13785",
+      "CorpusId": 258352583
+    },
+    "title": "Customized Segment Anything Model for Medical Image Segmentation",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 451,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2304.13785",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.13785, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47969138",
+        "name": "Kaiwen Zhang"
+      },
+      {
+        "authorId": "2152507365",
+        "name": "Dong Liu"
+      }
+    ],
+    "abstract": "We propose SAMed, a general solution for medical image segmentation. Different from the previous methods, SAMed is built upon the large-scale image segmentation model, Segment Anything Model (SAM), to explore the new research paradigm of customizing large-scale models for medical image segmentation. SAMed applies the low-rank-based (LoRA) finetuning strategy to the SAM image encoder and finetunes it together with the prompt encoder and the mask decoder on labeled medical image segmentation datasets. We also observe the warmup finetuning strategy and the AdamW optimizer lead SAMed to successful convergence and lower loss. Different from SAM, SAMed could perform semantic segmentation on medical images. Our trained SAMed model achieves 81.88 DSC and 20.64 HD on the Synapse multi-organ segmentation dataset, which is on par with the state-of-the-art methods. We conduct extensive experiments to validate the effectiveness of our design. Since SAMed only updates a small fraction of the SAM parameters, its deployment cost and storage cost are quite marginal in practical usage. The code of SAMed is available at https://github.com/hitachinsk/SAMed."
+  },
+  {
+    "paperId": "6ee64897e219cdf7dad6e5918fb2e3c3e07b12c5",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-03495",
+      "ArXiv": "2401.03495",
+      "DOI": "10.48550/arXiv.2401.03495",
+      "CorpusId": 266845736,
+      "PubMed": "38422961"
+    },
+    "title": "Segment Anything Model for Medical Image Segmentation: Current Applications and Future Directions",
+    "venue": "Comput. Biol. Medicine",
+    "year": 2024,
+    "citationCount": 316,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.03495, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2257311706",
+        "name": "Yichi Zhang"
+      },
+      {
+        "authorId": "2279283139",
+        "name": "Zhenrong Shen"
+      },
+      {
+        "authorId": "2143195404",
+        "name": "Rushi Jiao"
+      }
+    ],
+    "abstract": "Due to the inherent flexibility of prompting, foundation models have emerged as the predominant force in the fields of natural language processing and computer vision. The recent introduction of the Segment Anything Model (SAM) signifies a noteworthy expansion of the prompt-driven paradigm into the domain of image segmentation, thereby introducing a plethora of previously unexplored capabilities. However, the viability of its application to medical image segmentation remains uncertain, given the substantial distinctions between natural and medical images. In this work, we provide a comprehensive overview of recent endeavors aimed at extending the efficacy of SAM to medical image segmentation tasks, encompassing both empirical benchmarking and methodological adaptations. Additionally, we explore potential avenues for future research directions in SAM's role within medical image segmentation. While direct application of SAM to medical image segmentation does not yield satisfactory performance on multi-modal and multi-target medical datasets so far, numerous insights gleaned from these efforts serve as valuable guidance for shaping the trajectory of foundational models in the realm of medical image analysis. To support ongoing research endeavors, we maintain an active repository that contains an up-to-date paper list and a succinct summary of open-source projects at https://github.com/YichiZhang98/SAM4MIS."
+  },
+  {
+    "paperId": "0586e4d914fb28a5a1b3cf3ab2de9c3e91183506",
+    "externalIds": {
+      "PubMedCentral": "11505408",
+      "DOI": "10.3390/bioengineering11101034",
+      "CorpusId": 273409791,
+      "PubMed": "39451409"
+    },
+    "title": "Advances in Medical Image Segmentation: A Comprehensive Review of Traditional, Deep Learning and Hybrid Approaches",
+    "venue": "Bioengineering",
+    "year": 2024,
+    "citationCount": 230,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.3390/bioengineering11101034",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC11505408, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2326598336",
+        "name": "Yan Xu"
+      },
+      {
+        "authorId": "2193807456",
+        "name": "Rixiang Quan"
+      },
+      {
+        "authorId": "2274601021",
+        "name": "Weiting Xu"
+      },
+      {
+        "authorId": "2326327024",
+        "name": "Yi Huang"
+      },
+      {
+        "authorId": "2326446859",
+        "name": "Xiaolong Chen"
+      },
+      {
+        "authorId": "2274987144",
+        "name": "Fengyuan Liu"
+      }
+    ],
+    "abstract": "Medical image segmentation plays a critical role in accurate diagnosis and treatment planning, enabling precise analysis across a wide range of clinical tasks. This review begins by offering a comprehensive overview of traditional segmentation techniques, including thresholding, edge-based methods, region-based approaches, clustering, and graph-based segmentation. While these methods are computationally efficient and interpretable, they often face significant challenges when applied to complex, noisy, or variable medical images. The central focus of this review is the transformative impact of deep learning on medical image segmentation. We delve into prominent deep learning architectures such as Convolutional Neural Networks (CNNs), Fully Convolutional Networks (FCNs), U-Net, Recurrent Neural Networks (RNNs), Adversarial Networks (GANs), and Autoencoders (AEs). Each architecture is analyzed in terms of its structural foundation and specific application to medical image segmentation, illustrating how these models have enhanced segmentation accuracy across various clinical contexts. Finally, the review examines the integration of deep learning with traditional segmentation methods, addressing the limitations of both approaches. These hybrid strategies offer improved segmentation performance, particularly in challenging scenarios involving weak edges, noise, or inconsistent intensities. By synthesizing recent advancements, this review provides a detailed resource for researchers and practitioners, offering valuable insights into the current landscape and future directions of medical image segmentation."
+  },
+  {
+    "paperId": "aeeffe327e6c93e9010c7b1e401caa9113723851",
+    "externalIds": {
+      "MAG": "1999478155",
+      "DBLP": "journals/ijcv/FelzenszwalbH04",
+      "DOI": "10.1023/B:VISI.0000022288.19776.77",
+      "CorpusId": 207663697
+    },
+    "title": "Efficient Graph-Based Image Segmentation",
+    "venue": "International Journal of Computer Vision",
+    "year": 2004,
+    "citationCount": 6074,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1023/B:VISI.0000022288.19776.77?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1023/B:VISI.0000022288.19776.77, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1685089",
+        "name": "Pedro F. Felzenszwalb"
+      },
+      {
+        "authorId": "1713089",
+        "name": "D. Huttenlocher"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "5bc8d8e541045d5c5a2b4c329e5fea5b5e3bc10d",
+    "externalIds": {
+      "ArXiv": "1902.04049",
+      "MAG": "2928133111",
+      "DBLP": "journals/nn/IbtehazR20",
+      "DOI": "10.1016/j.neunet.2019.08.025",
+      "CorpusId": 60440399,
+      "PubMed": "31536901"
+    },
+    "title": "MultiResUNet : Rethinking the U-Net Architecture for Multimodal Biomedical Image Segmentation",
+    "venue": "Neural Networks",
+    "year": 2019,
+    "citationCount": 2012,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1902.04049",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1902.04049, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51046000",
+        "name": "Nabil Ibtehaz"
+      },
+      {
+        "authorId": "144411375",
+        "name": "Mohammad Sohel Rahman"
+      }
+    ],
+    "abstract": "In recent years Deep Learning has brought about a breakthrough in Medical Image Segmentation. In this regard, U-Net has been the most popular architecture in the medical imaging community. Despite outstanding overall performance in segmenting multimodal medical images, through extensive experimentations on some challenging datasets, we demonstrate that the classical U-Net architecture seems to be lacking in certain aspects. Therefore, we propose some modifications to improve upon the already state-of-the-art U-Net model. Following these modifications, we develop a novel architecture, MultiResUNet, as the potential successor to the U-Net architecture. We have tested and compared MultiResUNet with the classical U-Net on a vast repertoire of multimodal medical images. Although only slight improvements in the cases of ideal images are noticed, remarkable gains in performance have been attained for the challenging ones. We have evaluated our model on five different datasets, each with their own unique challenges, and have obtained a relative improvement in performance of 10.15%, 5.07%, 2.63%, 1.41%, and 0.62% respectively. We have also discussed and highlighted some qualitatively superior aspects of MultiResUNet over classical U-Net that are not really reflected in the quantitative measures."
+  },
+  {
+    "paperId": "6a993404e07687b7edb7fb9a05092213a9419859",
+    "externalIds": {
+      "DBLP": "conf/cvpr/Jain0C0OS23",
+      "ArXiv": "2211.06220",
+      "DOI": "10.1109/CVPR52729.2023.00292",
+      "CorpusId": 253499214
+    },
+    "title": "OneFormer: One Transformer to Rule Universal Image Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2022,
+    "citationCount": 543,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2211.06220",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.06220, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2908866",
+        "name": "Jitesh Jain"
+      },
+      {
+        "authorId": "1492114156",
+        "name": "Jiacheng Li"
+      },
+      {
+        "authorId": "2065899658",
+        "name": "M. Chiu"
+      },
+      {
+        "authorId": "2855934",
+        "name": "Ali Hassani"
+      },
+      {
+        "authorId": "2057154011",
+        "name": "Nikita Orlov"
+      },
+      {
+        "authorId": "48667025",
+        "name": "Humphrey Shi"
+      }
+    ],
+    "abstract": "Universal Image Segmentation is not a new concept. Past attempts to unify image segmentation include scene parsing, panoptic segmentation, and, more recently, new panoptic architectures. However, such panoptic architectures do not truly unify image segmentation because they need to be trained individually on the semantic, instance, or panoptic segmentation to achieve the best performance. Ideally, a truly universal framework should be trained only once and achieve SOTA performance across all three image segmentation tasks. To that end, we propose OneFormer, a universal image segmentation framework that unifies segmentation with a multi-task train-once design. We first propose a task-conditioned joint training strategy that enables training on ground truths of each domain (semantic, instance, and panoptic segmentation) within a single multi-task training process. Secondly, we introduce a task token to condition our model on the task at hand, making our model task-dynamic to support multi-task training and inference. Thirdly, we propose using a query-text contrastive loss during training to establish better intertask and inter-class distinctions. Notably, our single OneFormer model outperforms specialized Mask2Former models across all three segmentation tasks on ADE20k, Cityscapes, and COCO, despite the latter being trained on each task individually. We believe OneFormer is a significant step towards making image segmentation more universal and accessible."
+  },
+  {
+    "paperId": "a07aa5b834e5083624189a929be07c7ae2389229",
+    "externalIds": {
+      "ArXiv": "1903.02740",
+      "DBLP": "journals/corr/abs-1903-02740",
+      "MAG": "2921406441",
+      "DOI": "10.1109/TMI.2019.2903562",
+      "CorpusId": 71143907,
+      "PubMed": "30843824"
+    },
+    "title": "CE-Net: Context Encoder Network for 2D Medical Image Segmentation",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2019,
+    "citationCount": 2004,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1903.02740",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1903.02740, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46210036",
+        "name": "Zaiwang Gu"
+      },
+      {
+        "authorId": "50995454",
+        "name": "Jun Cheng"
+      },
+      {
+        "authorId": "1929093",
+        "name": "H. Fu"
+      },
+      {
+        "authorId": "144990531",
+        "name": "Kang Zhou"
+      },
+      {
+        "authorId": "47412750",
+        "name": "Huaying Hao"
+      },
+      {
+        "authorId": "1956017",
+        "name": "Yitian Zhao"
+      },
+      {
+        "authorId": "50615630",
+        "name": "Tianyang Zhang"
+      },
+      {
+        "authorId": "1702868",
+        "name": "Shenghua Gao"
+      },
+      {
+        "authorId": "38620434",
+        "name": "Jiang Liu"
+      }
+    ],
+    "abstract": "Medical image segmentation is an important step in medical image analysis. With the rapid development of a convolutional neural network in image processing, deep learning has been used for medical image segmentation, such as optic disc segmentation, blood vessel detection, lung segmentation, cell segmentation, and so on. Previously, U-net based approaches have been proposed. However, the consecutive pooling and strided convolutional operations led to the loss of some spatial information. In this paper, we propose a context encoder network (CE-Net) to capture more high-level information and preserve spatial information for 2D medical image segmentation. CE-Net mainly contains three major components: a feature encoder module, a context extractor, and a feature decoder module. We use the pretrained ResNet block as the fixed feature extractor. The context extractor module is formed by a newly proposed dense atrous convolution block and a residual multi-kernel pooling block. We applied the proposed CE-Net to different 2D medical image segmentation tasks. Comprehensive results show that the proposed method outperforms the original U-Net method and other state-of-the-art methods for optic disc segmentation, vessel detection, lung segmentation, cell contour segmentation, and retinal optical coherence tomography layer segmentation."
+  },
+  {
+    "paperId": "b90a84f364d97c7ca9e94a1e1384fb4b280a8de9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2303-09975",
+      "ArXiv": "2303.09975",
+      "DOI": "10.48550/arXiv.2303.09975",
+      "CorpusId": 257623026
+    },
+    "title": "MedNeXt: Transformer-driven Scaling of ConvNets for Medical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2023,
+    "citationCount": 359,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.09975",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.09975, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47115629",
+        "name": "Saikat Roy"
+      },
+      {
+        "authorId": "1923275244",
+        "name": "Gregor Koehler"
+      },
+      {
+        "authorId": "2148692880",
+        "name": "Constantin Ulrich"
+      },
+      {
+        "authorId": "2065793436",
+        "name": "M. Baumgartner"
+      },
+      {
+        "authorId": "152800798",
+        "name": "Jens Petersen"
+      },
+      {
+        "authorId": "7886986",
+        "name": "Fabian Isensee"
+      },
+      {
+        "authorId": "51433108",
+        "name": "P. Jaeger"
+      },
+      {
+        "authorId": "2139962185",
+        "name": "Klaus H. Maier-Hein"
+      }
+    ],
+    "abstract": "There has been exploding interest in embracing Transformer-based architectures for medical image segmentation. However, the lack of large-scale annotated medical datasets make achieving performances equivalent to those in natural images challenging. Convolutional networks, in contrast, have higher inductive biases and consequently, are easily trainable to high performance. Recently, the ConvNeXt architecture attempted to modernize the standard ConvNet by mirroring Transformer blocks. In this work, we improve upon this to design a modernized and scalable convolutional architecture customized to challenges of data-scarce medical settings. We introduce MedNeXt, a Transformer-inspired large kernel segmentation network which introduces - 1) A fully ConvNeXt 3D Encoder-Decoder Network for medical image segmentation, 2) Residual ConvNeXt up and downsampling blocks to preserve semantic richness across scales, 3) A novel technique to iteratively increase kernel sizes by upsampling small kernel networks, to prevent performance saturation on limited medical data, 4) Compound scaling at multiple levels (depth, width, kernel size) of MedNeXt. This leads to state-of-the-art performance on 4 tasks on CT and MRI modalities and varying dataset sizes, representing a modernized deep architecture for medical image segmentation. Our code is made publicly available at: https://github.com/MIC-DKFZ/MedNeXt."
+  },
+  {
+    "paperId": "b1c037a32ea0cb74232c84fab435d1392ef36f88",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2206-14718",
+      "ArXiv": "2206.14718",
+      "DOI": "10.1109/TMI.2023.3291719",
+      "CorpusId": 250113683,
+      "PubMed": "37399157"
+    },
+    "title": "LViT: Language Meets Vision Transformer in Medical Image Segmentation",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2022,
+    "citationCount": 270,
+    "openAccessPdf": {
+      "url": "https://hull-repository.worktribe.com/preview/4537002/IEEE%20TMI__LViT-2023_AccptedVer2.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2206.14718, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118273929",
+        "name": "Zihan Li"
+      },
+      {
+        "authorId": "2110415400",
+        "name": "Yunxiang Li"
+      },
+      {
+        "authorId": "2108110236",
+        "name": "Qingde Li"
+      },
+      {
+        "authorId": "49890547",
+        "name": "You Zhang"
+      },
+      {
+        "authorId": "11792070",
+        "name": "Puyang Wang"
+      },
+      {
+        "authorId": "145889317",
+        "name": "Dazhou Guo"
+      },
+      {
+        "authorId": "50706692",
+        "name": "Le Lu"
+      },
+      {
+        "authorId": "2502329",
+        "name": "D. Jin"
+      },
+      {
+        "authorId": "40300673",
+        "name": "Qingqi Hong"
+      }
+    ],
+    "abstract": "Deep learning has been widely used in medical image segmentation and other aspects. However, the performance of existing medical image segmentation models has been limited by the challenge of obtaining sufficient high-quality labeled data due to the prohibitive data annotation cost. To alleviate this limitation, we propose a new text-augmented medical image segmentation model LViT (Language meets Vision Transformer). In our LViT model, medical text annotation is incorporated to compensate for the quality deficiency in image data. In addition, the text information can guide to generate pseudo labels of improved quality in the semi-supervised learning. We also propose an Exponential Pseudo label Iteration mechanism (EPI) to help the Pixel-Level Attention Module (PLAM) preserve local image features in semi-supervised LViT setting. In our model, LV (Language-Vision) loss is designed to supervise the training of unlabeled images using text information directly. For evaluation, we construct three multimodal medical segmentation datasets (image + text) containing X-rays and CT images. Experimental results show that our proposed LViT has superior segmentation performance in both fully-supervised and semi-supervised setting. The code and datasets are available at https://github.com/HUANGLIZI/LViT."
+  },
+  {
+    "paperId": "f396860627bf43ffe714d0ae749ac588491e5483",
+    "externalIds": {
+      "PubMedCentral": "11903308",
+      "DOI": "10.1038/s41592-025-02595-5",
+      "CorpusId": 267658250,
+      "PubMed": "39939718"
+    },
+    "title": "Cellpose3: one-click image restoration for improved cellular segmentation",
+    "venue": "bioRxiv",
+    "year": 2024,
+    "citationCount": 283,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1038/s41592-025-02595-5",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC11903308, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "23980213",
+        "name": "C. Stringer"
+      },
+      {
+        "authorId": "3090784",
+        "name": "Marius Pachitariu"
+      }
+    ],
+    "abstract": "Generalist methods for cellular segmentation have good out-of-the-box performance on a variety of image types. However, existing methods struggle for images that are degraded by noise, blurred or undersampled, all of which are common in microscopy. We focused the development of Cellpose3 on addressing these cases, and here we demonstrate substantial out-of-the-box gains in segmentation and image quality for noisy, blurry or undersampled images. Unlike previous approaches, which train models to restore pixel values, we trained Cellpose3 to output images that are well-segmented by a generalist segmentation model, while maintaining perceptual similarity to the target images. Furthermore, we trained the restoration models on a large, varied collection of datasets, thus ensuring good generalization to user images. We provide these tools as “one-click” buttons inside the graphical interface of Cellpose as well as in the Cellpose API."
+  },
+  {
+    "paperId": "840540040e46ab6fd30e93e21aa756cacedd4662",
+    "externalIds": {
+      "MAG": "3096947210",
+      "ArXiv": "2011.01118",
+      "DBLP": "journals/corr/abs-2011-01118",
+      "DOI": "10.1109/ACCESS.2021.3086020",
+      "CorpusId": 226236779
+    },
+    "title": "U-Net and Its Variants for Medical Image Segmentation: A Review of Theory and Applications",
+    "venue": "IEEE Access",
+    "year": 2020,
+    "citationCount": 1494,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/6287639/9312710/09446143.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.01118, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7411883",
+        "name": "N. Siddique"
+      },
+      {
+        "authorId": "66966265",
+        "name": "Sidike Paheding"
+      },
+      {
+        "authorId": "143815294",
+        "name": "Colin P. Elkin"
+      },
+      {
+        "authorId": "49738269",
+        "name": "V. Devabhaktuni"
+      }
+    ],
+    "abstract": "U-net is an image segmentation technique developed primarily for image segmentation tasks. These traits provide U-net with a high utility within the medical imaging community and have resulted in extensive adoption of U-net as the primary tool for segmentation tasks in medical imaging. The success of U-net is evident in its widespread use in nearly all major image modalities, from CT scans and MRI to X-rays and microscopy. Furthermore, while U-net is largely a segmentation tool, there have been instances of the use of U-net in other applications. Given that U-net’s potential is still increasing, this narrative literature review examines the numerous developments and breakthroughs in the U-net architecture and provides observations on recent trends. We also discuss the many innovations that have advanced in deep learning and discuss how these tools facilitate U-net. In addition, we review the different image modalities and application areas that have been enhanced by U-net."
+  },
+  {
+    "paperId": "e77c484af99fc1eb3d3c36699ac81822e98cb74d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/LuddeckeE22",
+      "ArXiv": "2112.10003",
+      "DOI": "10.1109/CVPR52688.2022.00695",
+      "CorpusId": 247794227
+    },
+    "title": "Image Segmentation Using Text and Image Prompts",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 735,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2112.10003",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.10003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "73235537",
+        "name": "Timo Lüddecke"
+      },
+      {
+        "authorId": "1746183",
+        "name": "Alexander S. Ecker"
+      }
+    ],
+    "abstract": "Image segmentation is usually addressed by training a model for a fixed set of object classes. Incorporating additional classes or more complex queries later is expensive as it requires re-training the model on a dataset that encompasses these expressions. Here we propose a system that can generate image segmentations based on arbitrary prompts at test time. A prompt can be either a text or an image. This approach enables us to create a unified model (trained once) for three common segmentation tasks, which come with distinct challenges: referring expression segmentation, zero-shot segmentation and one-shot segmentation. We build upon the CLIP model as a backbone which we extend with a transformer-based decoder that enables dense prediction. After training on an extended version of the PhraseCut dataset, our system generates a binary segmentation map for an image based on a free-text prompt or on an additional image expressing the query. We analyze different variants of the latter image-based prompts in detail. This novel hybrid input allows for dynamic adaptation not only to the three segmentation tasks mentioned above, but to any binary segmentation task where a text or image query can be formulated. Finally, we find our system to adapt well to generalized queries involving affordances or properties. Code is available at https://eckerlab.org/code/CLIPSeg"
+  },
+  {
+    "paperId": "c266aedf9660a70d15d02f53242c6fcebe7b4b8c",
+    "externalIds": {
+      "ArXiv": "2211.00611",
+      "DBLP": "journals/corr/abs-2211-00611",
+      "DOI": "10.48550/arXiv.2211.00611",
+      "CorpusId": 253244032
+    },
+    "title": "MedSegDiff: Medical Image Segmentation with Diffusion Probabilistic Model",
+    "venue": "International Conference on Medical Imaging with Deep Learning",
+    "year": 2022,
+    "citationCount": 432,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2211.00611",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.00611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2146668763",
+        "name": "Junde Wu"
+      },
+      {
+        "authorId": "2087117656",
+        "name": "Huihui Fang"
+      },
+      {
+        "authorId": "2153638609",
+        "name": "Yu Zhang"
+      },
+      {
+        "authorId": "2116729659",
+        "name": "Yehui Yang"
+      },
+      {
+        "authorId": "98271873",
+        "name": "Yanwu Xu"
+      }
+    ],
+    "abstract": "Diffusion probabilistic model (DPM) recently becomes one of the hottest topic in computer vision. Its image generation application such as Imagen, Latent Diffusion Models and Stable Diffusion have shown impressive generation capabilities, which aroused extensive discussion in the community. Many recent studies also found it is useful in many other vision tasks, like image deblurring, super-resolution and anomaly detection. Inspired by the success of DPM, we propose the first DPM based model toward general medical image segmentation tasks, which we named MedSegDiff. In order to enhance the step-wise regional attention in DPM for the medical image segmentation, we propose dynamic conditional encoding, which establishes the state-adaptive conditions for each sampling step. We further propose Feature Frequency Parser (FF-Parser), to eliminate the negative effect of high-frequency noise component in this process. We verify MedSegDiff on three medical segmentation tasks with different image modalities, which are optic cup segmentation over fundus images, brain tumor segmentation over MRI images and thyroid nodule segmentation over ultrasound images. The experimental results show that MedSegDiff outperforms state-of-the-art (SOTA) methods with considerable performance gap, indicating the generalization and effectiveness of the proposed model. Our code is released at https://github.com/WuJunde/MedSegDiff."
+  },
+  {
+    "paperId": "8d737dc6a91a7bfde20aed7bb13d100476de5ae3",
+    "externalIds": {
+      "DBLP": "conf/eccv/GhiasiGCL22",
+      "ArXiv": "2112.12143",
+      "DOI": "10.1007/978-3-031-20059-5_31",
+      "CorpusId": 250895808
+    },
+    "title": "Scaling Open-Vocabulary Image Segmentation with Image-Level Labels",
+    "venue": "European Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 563,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.12143, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1898210",
+        "name": "Golnaz Ghiasi"
+      },
+      {
+        "authorId": "10734287",
+        "name": "Xiuye Gu"
+      },
+      {
+        "authorId": "50355189",
+        "name": "Yin Cui"
+      },
+      {
+        "authorId": "2115356502",
+        "name": "Tsung-Yi Lin"
+      }
+    ],
+    "abstract": "We design an open-vocabulary image segmentation model to organize an image into meaningful regions indicated by arbitrary texts. Recent works (CLIP and ALIGN), despite attaining impressive open-vocabulary classification accuracy with image-level caption labels, are unable to segment visual concepts with pixels. We argue that these models miss an important step of visual grouping, which organizes pixels into groups before learning visual-semantic alignments. We propose OpenSeg to address the above issue while still making use of scalable image-level supervision of captions. First, it learns to propose segmentation masks for possible organizations. Then it learns visual-semantic alignments by aligning each word in a caption to one or a few predicted masks. We find the mask representations are the key to support learning image segmentation from captions, making it possible to scale up the dataset and vocabulary sizes. OpenSeg significantly outperforms the recent open-vocabulary method of LSeg by +19.9 mIoU on PASCAL dataset, thanks to its scalability."
+  },
+  {
+    "paperId": "4a0a2cfe3eabfcff1f2131b66ee553a1a10751ca",
+    "externalIds": {
+      "DBLP": "journals/mia/LuoWLCSCZMZ22",
+      "DOI": "10.1016/j.media.2022.102517",
+      "CorpusId": 249717993,
+      "PubMed": "35732106"
+    },
+    "title": "Semi-supervised medical image segmentation via uncertainty rectified pyramid consistency",
+    "venue": "Medical Image Anal.",
+    "year": 2022,
+    "citationCount": 355,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.media.2022.102517?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.media.2022.102517, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1932191260",
+        "name": "Xiangde Luo"
+      },
+      {
+        "authorId": "2107886449",
+        "name": "Guotai Wang"
+      },
+      {
+        "authorId": "87875700",
+        "name": "Wenjun Liao"
+      },
+      {
+        "authorId": "90972805",
+        "name": "Jieneng Chen"
+      },
+      {
+        "authorId": "145147423",
+        "name": "Tao Song"
+      },
+      {
+        "authorId": "47558569",
+        "name": "Yinan Chen"
+      },
+      {
+        "authorId": "2145408530",
+        "name": "Shichuan Zhang"
+      },
+      {
+        "authorId": "1711560",
+        "name": "Dimitris N. Metaxas"
+      },
+      {
+        "authorId": "48692127",
+        "name": "Shaoting Zhang"
+      }
+    ],
+    "abstract": "Despite that Convolutional Neural Networks (CNNs) have achieved promising performance in many medical image segmentation tasks, they rely on a large set of labeled images for training, which is expensive and time-consuming to acquire. Semi-supervised learning has shown the potential to alleviate this challenge by learning from a large set of unlabeled images and limited labeled samples. In this work, we present a simple yet efficient consistency regularization approach for semi-supervised medical image segmentation, called Uncertainty Rectified Pyramid Consistency (URPC). Inspired by the pyramid feature network, we chose a pyramid-prediction network that obtains a set of segmentation predictions at different scales. For semi-supervised learning, URPC learns from unlabeled data by minimizing the discrepancy between each of the pyramid predictions and their average. We further present multi-scale uncertainty rectification to boost the pyramid consistency regularization, where the rectification seeks to temper the consistency loss at outlier pixels that may have substantially different predictions than the average, potentially due to upsampling errors or lack of enough labeled data. Experiments on two public datasets and an in-house clinical dataset showed that: 1) URPC can achieve large performance improvement by utilizing unlabeled data and 2) Compared with five existing semi-supervised methods, URPC achieved better or comparable results with a simpler pipeline. Furthermore, we build a semi-supervised medical image segmentation codebase to boost research on this topic: https://github.com/HiLab-git/SSL4MIS."
+  },
+  {
+    "paperId": "8356d155d730e374f4db6dfd03d19a7b66c348a8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-03024",
+      "ArXiv": "2103.03024",
+      "DOI": "10.1007/978-3-030-87199-4_16",
+      "CorpusId": 232110575
+    },
+    "title": "CoTr: Efficiently Bridging CNN and Transformer for 3D Medical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2021,
+    "citationCount": 667,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.03024",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.03024, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2154709897",
+        "name": "Yutong Xie"
+      },
+      {
+        "authorId": "49049926",
+        "name": "Jianpeng Zhang"
+      },
+      {
+        "authorId": "12459603",
+        "name": "Chunhua Shen"
+      },
+      {
+        "authorId": "144344681",
+        "name": "Yong Xia"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) have been the de facto standard for nowadays 3D medical image segmentation. The convolutional operations used in these networks, however, inevitably have limitations in modeling the long-range dependency due to their inductive bias of locality and weight sharing. Although Transformer was born to address this issue, it suffers from extreme computational and spatial complexities in processing high-resolution 3D feature maps. In this paper, we propose a novel framework that efficiently bridges a {\\bf Co}nvolutional neural network and a {\\bf Tr}ansformer {\\bf (CoTr)} for accurate 3D medical image segmentation. Under this framework, the CNN is constructed to extract feature representations and an efficient deformable Transformer (DeTrans) is built to model the long-range dependency on the extracted feature maps. Different from the vanilla Transformer which treats all image positions equally, our DeTrans pays attention only to a small set of key positions by introducing the deformable self-attention mechanism. Thus, the computational and spatial complexities of DeTrans have been greatly reduced, making it possible to process the multi-scale and high-resolution feature maps, which are usually of paramount importance for image segmentation. We conduct an extensive evaluation on the Multi-Atlas Labeling Beyond the Cranial Vault (BCV) dataset that covers 11 major human organs. The results indicate that our CoTr leads to a substantial performance improvement over other CNN-based, transformer-based, and hybrid methods on the 3D multi-organ segmentation task. Code is available at \\def\\UrlFont{\\rm\\small\\ttfamily} \\url{https://github.com/YtongXie/CoTr}"
+  },
+  {
+    "paperId": "76a2b197b5427ffd1d3470c6d3ea026588eb5d0a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2111-15174",
+      "ArXiv": "2111.15174",
+      "DOI": "10.1109/CVPR52688.2022.01139",
+      "CorpusId": 244729320
+    },
+    "title": "CRIS: CLIP-Driven Referring Image Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 495,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2111.15174",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2111.15174, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144713917",
+        "name": "Zhaoqing Wang"
+      },
+      {
+        "authorId": "2145038208",
+        "name": "Yu Lu"
+      },
+      {
+        "authorId": "2146262334",
+        "name": "Qiang Li"
+      },
+      {
+        "authorId": "1850169",
+        "name": "Xunqiang Tao"
+      },
+      {
+        "authorId": "2155601214",
+        "name": "Yan Guo"
+      },
+      {
+        "authorId": "2052304911",
+        "name": "Ming Gong"
+      },
+      {
+        "authorId": "121698214",
+        "name": "Tongliang Liu"
+      }
+    ],
+    "abstract": "Referring image segmentation aims to segment a referent via a natural linguistic expression. Due to the distinct data properties between text and image, it is challenging for a network to well align text and pixel-level features. Existing approaches use pretrained models to facilitate learning, yet separately transfer the language/vision knowledge from pretrained models, ignoring the multi-modal corresponding information. Inspired by the recent advance in Contrastive Language-Image Pretraining (CLIP), in this paper, we propose an end-to-end CLIP-Driven Referring Image Segmen-tation framework (CRIS). To transfer the multi-modal knowledge effectively, CRIS resorts to vision-language decoding and contrastive learning for achieving the text-to-pixel alignment. More specifically, we design a vision-language decoder to propagate fine-grained semantic information from textual representations to each pixel-level activation, which promotes consistency between the two modalities. In addition, we present text-to-pixel contrastive learning to explicitly enforce the text feature similar to the related pixel-level features and dissimilar to the irrelevances. The experimental results on three benchmark datasets demonstrate that our proposed framework significantly outperforms the state-of-the-art performance without any post-processing."
+  },
+  {
+    "paperId": "bd9ab344da99022cbbbfd3f5c9c82a0b21c60ad9",
+    "externalIds": {
+      "ArXiv": "2109.03201",
+      "DBLP": "journals/tip/ZhouGZHYWY23",
+      "DOI": "10.1109/TIP.2023.3293771",
+      "CorpusId": 237431181,
+      "PubMed": "37440404"
+    },
+    "title": "nnFormer: Volumetric Medical Image Segmentation via a 3D Transformer",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2021,
+    "citationCount": 642,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.03201, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2157473801",
+        "name": "Hong-Yu Zhou"
+      },
+      {
+        "authorId": "2107183556",
+        "name": "J. Guo"
+      },
+      {
+        "authorId": "2135917541",
+        "name": "Yinghao Zhang"
+      },
+      {
+        "authorId": "2342535",
+        "name": "Lequan Yu"
+      },
+      {
+        "authorId": "2144688834",
+        "name": "Liansheng Wang"
+      },
+      {
+        "authorId": "1841911",
+        "name": "Yizhou Yu"
+      }
+    ],
+    "abstract": "Transformer, the model of choice for natural language processing, has drawn scant attention from the medical imaging community. Given the ability to exploit long-term dependencies, transformers are promising to help atypical convolutional neural networks to learn more contextualized visual representations. However, most of recently proposed transformer-based segmentation approaches simply treated transformers as assisted modules to help encode global context into convolutional representations. To address this issue, we introduce nnFormer (i.e., not-another transFormer), a 3D transformer for volumetric medical image segmentation. nnFormer not only exploits the combination of interleaved convolution and self-attention operations, but also introduces local and global volume-based self-attention mechanism to learn volume representations. Moreover, nnFormer proposes to use skip attention to replace the traditional concatenation/summation operations in skip connections in U-Net like architecture. Experiments show that nnFormer significantly outperforms previous transformer-based counterparts by large margins on three public datasets. Compared to nnUNet, the most widely recognized convnet-based 3D medical segmentation model, nnFormer produces significantly lower HD95 and is much more computationally efficient. Furthermore, we show that nnFormer and nnUNet are highly complementary to each other in model ensembling. Codes and models of nnFormer are available at https://git.io/JSf3i."
+  },
+  {
+    "paperId": "8fba2ddafba784325bf4d1fa8e53e9252e867f5c",
+    "externalIds": {
+      "DBLP": "journals/mia/WuGZXZXC22",
+      "ArXiv": "2109.09960",
+      "DOI": "10.1016/j.media.2022.102530",
+      "CorpusId": 248266926,
+      "PubMed": "35839737"
+    },
+    "title": "Mutual consistency learning for semi-supervised medical image segmentation",
+    "venue": "Medical Image Anal.",
+    "year": 2021,
+    "citationCount": 382,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2109.09960",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.09960, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51009710",
+        "name": "Yicheng Wu"
+      },
+      {
+        "authorId": "2111742544",
+        "name": "Z. Ge"
+      },
+      {
+        "authorId": "2109559435",
+        "name": "Donghao Zhang"
+      },
+      {
+        "authorId": "1720767070",
+        "name": "Minfeng Xu"
+      },
+      {
+        "authorId": "2152838923",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2111026901",
+        "name": "Yong Xia"
+      },
+      {
+        "authorId": "2115671281",
+        "name": "Jianfei Cai"
+      }
+    ],
+    "abstract": "In this paper, we propose a novel mutual consistency network (MC-Net+) to effectively exploit the unlabeled data for semi-supervised medical image segmentation. The MC-Net+ model is motivated by the observation that deep models trained with limited annotations are prone to output highly uncertain and easily mis-classified predictions in the ambiguous regions (e.g., adhesive edges or thin branches) for medical image segmentation. Leveraging these challenging samples can make the semi-supervised segmentation model training more effective. Therefore, our proposed MC-Net+ model consists of two new designs. First, the model contains one shared encoder and multiple slightly different decoders (i.e., using different up-sampling strategies). The statistical discrepancy of multiple decoders' outputs is computed to denote the model's uncertainty, which indicates the unlabeled hard regions. Second, we apply a novel mutual consistency constraint between one decoder's probability output and other decoders' soft pseudo labels. In this way, we minimize the discrepancy of multiple outputs (i.e., the model uncertainty) during training and force the model to generate invariant results in such challenging regions, aiming at regularizing the model training. We compared the segmentation results of our MC-Net+ model with five state-of-the-art semi-supervised approaches on three public medical datasets. Extension experiments with two standard semi-supervised settings demonstrate the superior performance of our model over other methods, which sets a new state of the art for semi-supervised medical image segmentation. Our code is released publicly at https://github.com/ycwu1997/MC-Net."
+  },
+  {
+    "paperId": "3f77a62ae888c3b816eabd354a6dd0fc6b9528ea",
+    "externalIds": {
+      "ArXiv": "2301.11798",
+      "DBLP": "journals/corr/abs-2301-11798",
+      "DOI": "10.48550/arXiv.2301.11798",
+      "CorpusId": 256358859
+    },
+    "title": "MedSegDiff-V2: Diffusion based Medical Image Segmentation with Transformer",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2023,
+    "citationCount": 307,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.11798",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.11798, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2146668763",
+        "name": "Junde Wu"
+      },
+      {
+        "authorId": "2054309105",
+        "name": "Rao Fu"
+      },
+      {
+        "authorId": "2087117656",
+        "name": "Huihui Fang"
+      },
+      {
+        "authorId": "2153638609",
+        "name": "Yu Zhang"
+      },
+      {
+        "authorId": "2109514",
+        "name": "Yanwu Xu"
+      }
+    ],
+    "abstract": "The Diffusion Probabilistic Model (DPM) has recently gained popularity in the field of computer vision, thanks to its image generation applications, such as Imagen, Latent Diffusion Models, and Stable Diffusion, which have demonstrated impressive capabilities and sparked much discussion within the community. Recent investigations have further unveiled the utility of DPM in the domain of medical image analysis, as underscored by the commendable performance exhibited by the medical image segmentation model across various tasks. Although these models were originally underpinned by a UNet architecture, there exists a potential avenue for enhancing their performance through the integration of vision transformer mechanisms. However, we discovered that simply combining these two models resulted in subpar performance. To effectively integrate these two cutting-edge techniques for the Medical image segmentation, we propose a novel Transformer-based Diffusion framework, called MedSegDiff-V2. We verify its effectiveness on 20 medical image segmentation tasks with different image modalities. Through comprehensive evaluation, our approach demonstrates superiority over prior state-of-the-art (SOTA) methodologies. Code is released at https://github.com/KidsWithTokens/MedSegDiff."
+  },
+  {
+    "paperId": "b3afa9df22a8cd2e32840d5fcd8e8084279836ef",
+    "externalIds": {
+      "DOI": "10.3390/electronics12051199",
+      "CorpusId": 257315394
+    },
+    "title": "Techniques and Challenges of Image Segmentation: A Review",
+    "venue": "Electronics",
+    "year": 2023,
+    "citationCount": 307,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2079-9292/12/5/1199/pdf?version=1677745366",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/electronics12051199?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/electronics12051199, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2119041210",
+        "name": "Ying Yu"
+      },
+      {
+        "authorId": "2125147630",
+        "name": "Chunping Wang"
+      },
+      {
+        "authorId": "38891296",
+        "name": "Qiankun Fu"
+      },
+      {
+        "authorId": "102820572",
+        "name": "Ren-Jay Kou"
+      },
+      {
+        "authorId": "12195005",
+        "name": "Fuyu Huang"
+      },
+      {
+        "authorId": "2119658958",
+        "name": "Boxiong Yang"
+      },
+      {
+        "authorId": "2155048789",
+        "name": "Tingting Yang"
+      },
+      {
+        "authorId": "39810756",
+        "name": "Mingliang Gao"
+      }
+    ],
+    "abstract": "Image segmentation, which has become a research hotspot in the field of image processing and computer vision, refers to the process of dividing an image into meaningful and non-overlapping regions, and it is an essential step in natural scene understanding. Despite decades of effort and many achievements, there are still challenges in feature extraction and model design. In this paper, we review the advancement in image segmentation methods systematically. According to the segmentation principles and image data characteristics, three important stages of image segmentation are mainly reviewed, which are classic segmentation, collaborative segmentation, and semantic segmentation based on deep learning. We elaborate on the main algorithms and key techniques in each stage, compare, and summarize the advantages and defects of different segmentation models, and discuss their applicability. Finally, we analyze the main challenges and development trends of image segmentation techniques."
+  },
+  {
+    "paperId": "a7a4033c7e132118f00a6be308ee6a2d03fb06af",
+    "externalIds": {
+      "DBLP": "journals/tmi/HeWLDXF23",
+      "DOI": "10.1109/TMI.2023.3264513",
+      "CorpusId": 257953473,
+      "PubMed": "37018111"
+    },
+    "title": "H2Former: An Efficient Hierarchical Hybrid Transformer for Medical Image Segmentation",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2023,
+    "citationCount": 249,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TMI.2023.3264513?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TMI.2023.3264513, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153245407",
+        "name": "Along He"
+      },
+      {
+        "authorId": "37833805",
+        "name": "Kai Wang"
+      },
+      {
+        "authorId": "1840553660",
+        "name": "Tao Li"
+      },
+      {
+        "authorId": "2213541715",
+        "name": "Chengkun Du"
+      },
+      {
+        "authorId": "2055483507",
+        "name": "S. Xia"
+      },
+      {
+        "authorId": "1929093",
+        "name": "H. Fu"
+      }
+    ],
+    "abstract": "Accurate medical image segmentation is of great significance for computer aided diagnosis. Although methods based on convolutional neural networks (CNNs) have achieved good results, it is weak to model the long-range dependencies, which is very important for segmentation task to build global context dependencies. The Transformers can establish long-range dependencies among pixels by self-attention, providing a supplement to the local convolution. In addition, multi-scale feature fusion and feature selection are crucial for medical image segmentation tasks, which is ignored by Transformers. However, it is challenging to directly apply self-attention to CNNs due to the quadratic computational complexity for high-resolution feature maps. Therefore, to integrate the merits of CNNs, multi-scale channel attention and Transformers, we propose an efficient hierarchical hybrid vision Transformer (H2Former) for medical image segmentation. With these merits, the model can be data-efficient for limited medical data regime. The experimental results show that our approach exceeds previous Transformer, CNNs and hybrid methods on three 2D and two 3D medical image segmentation tasks. Moreover, it keeps computational efficiency in model parameters, FLOPs and inference time. For example, H2Former outperforms TransUNet by 2.29% in IoU score on KVASIR-SEG dataset with 30.77% parameters and 59.23% FLOPs."
+  },
+  {
+    "paperId": "07444ce3c90b9490b8ba12cfe890d74a210ce077",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-05196",
+      "ArXiv": "2306.05196",
+      "DOI": "10.48550/arXiv.2306.05196",
+      "CorpusId": 259108547,
+      "PubMed": "38941900"
+    },
+    "title": "Channel prior convolutional attention for medical image segmentation",
+    "venue": "Comput. Biol. Medicine",
+    "year": 2023,
+    "citationCount": 270,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.05196",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.05196, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1471735464",
+        "name": "He-lu Huang"
+      },
+      {
+        "authorId": "2000516429",
+        "name": "Zuguo Chen"
+      },
+      {
+        "authorId": "2117012818",
+        "name": "Y. Zou"
+      },
+      {
+        "authorId": "2149493596",
+        "name": "Ming Lu"
+      },
+      {
+        "authorId": "2145763842",
+        "name": "Chaoyang Chen"
+      }
+    ],
+    "abstract": "Characteristics such as low contrast and significant organ shape variations are often exhibited in medical images. The improvement of segmentation performance in medical imaging is limited by the generally insufficient adaptive capabilities of existing attention mechanisms. An efficient Channel Prior Convolutional Attention (CPCA) method is proposed in this paper, supporting the dynamic distribution of attention weights in both channel and spatial dimensions. Spatial relationships are effectively extracted while preserving the channel prior by employing a multi-scale depth-wise convolutional module. The ability to focus on informative channels and important regions is possessed by CPCA. A segmentation network called CPCANet for medical image segmentation is proposed based on CPCA. CPCANet is validated on two publicly available datasets. Improved segmentation performance is achieved by CPCANet while requiring fewer computational resources through comparisons with state-of-the-art algorithms. Our code is publicly available at https://github.com/Cuthbert-Huang/CPCANet."
+  },
+  {
+    "paperId": "6feecbba7eacf002edeee797db2704d15ffbda1b",
+    "externalIds": {
+      "ArXiv": "2106.06716",
+      "DBLP": "journals/corr/abs-2106-06716",
+      "DOI": "10.1109/tim.2022.3178991",
+      "CorpusId": 235422017
+    },
+    "title": "DS-TransUNet: Dual Swin Transformer U-Net for Medical Image Segmentation",
+    "venue": "IEEE Transactions on Instrumentation and Measurement",
+    "year": 2021,
+    "citationCount": 879,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2106.06716",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.06716, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2374308042",
+        "name": "Ailiang Lin"
+      },
+      {
+        "authorId": "152176293",
+        "name": "Bingzhi Chen"
+      },
+      {
+        "authorId": "2154704134",
+        "name": "Jiayu Xu"
+      },
+      {
+        "authorId": "2148904489",
+        "name": "Zheng Zhang"
+      },
+      {
+        "authorId": "143911582",
+        "name": "Guangming Lu"
+      },
+      {
+        "authorId": "2116655937",
+        "name": "David Zhang"
+      }
+    ],
+    "abstract": "Automatic medical image segmentation has made great progress owing to powerful deep representation learning. Inspired by the success of self-attention mechanism in transformer, considerable efforts are devoted to designing the robust variants of the encoder–decoder architecture with transformer. However, the patch division used in the existing transformer-based models usually ignores the pixel-level intrinsic structural features inside each patch. In this article, we propose a novel deep medical image segmentation framework called dual swin transformer U-Net (DS-TransUNet), which aims to incorporate the hierarchical swin transformer into both the encoder and the decoder of the standard U-shaped architecture. Our DS-TransUNet benefits from the self-attention computation in swin transformer and the designed dual-scale encoding, which can effectively model the non-local dependencies and multiscale contexts for enhancing the semantic segmentation quality of varying medical images. Unlike many prior transformer-based solutions, the proposed DS-TransUNet adopts a well-established dual-scale encoding mechanism that uses dual-scale encoders based on swin transformer to extract the coarse and fine-grained feature representations of different semantic scales. Meanwhile, a well-designed transformer interactive fusion (TIF) module is proposed to effectively perform multiscale information fusion through the self-attention mechanism. Furthermore, we introduce the swin transformer block into the decoder to further explore the long-range contextual information during the up-sampling process. Extensive experiments across four typical tasks for medical image segmentation demonstrate the effectiveness of DS-TransUNet, and our approach significantly outperforms the state-of-the-art methods."
+  }
+]
