@@ -115,6 +115,12 @@ const els = {
   yearMaxLabel: document.getElementById("year-range-max-label"),
   minimap: document.getElementById("minimap"),
   minimapCanvas: document.getElementById("minimap-canvas"),
+  popover: document.getElementById("card-popover"),
+  popVenue: document.getElementById("cp-venue"),
+  popTitle: document.getElementById("cp-title"),
+  popTldr: document.getElementById("cp-tldr"),
+  popAuthors: document.getElementById("cp-authors"),
+  popMeta: document.getElementById("cp-meta"),
 };
 
 // ---- Manifest / URL plumbing ----
@@ -677,8 +683,14 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
 
     // Hover: highlight edges incident to this node, fade the rest. Done
     // by toggling .is-faded on every edge that doesn't touch this id.
-    card.addEventListener("mouseenter", () => highlightNode(p.id));
-    card.addEventListener("mouseleave", () => clearHighlight());
+    card.addEventListener("mouseenter", () => {
+      highlightNode(p.id);
+      schedulePopover(p, card);
+    });
+    card.addEventListener("mouseleave", () => {
+      clearHighlight();
+      hidePopover();
+    });
     // Click: open the paper page in a new tab. arxiv > doi > S2 fallback
     // gives readers the most direct route to the actual paper.
     card.addEventListener("click", () => {
@@ -838,6 +850,60 @@ function highlightNode(nodeId) {
       card.classList.add("node-card--dimmed");
     }
   }
+}
+
+// #69: card hover popover. Card body shows the 2-line clamped TLDR;
+// hover for 700ms surfaces the full title + abstract head + authors
+// in a side panel so readers can verify a paper before clicking.
+let popoverTimer = null;
+function schedulePopover(node, cardEl) {
+  clearTimeout(popoverTimer);
+  popoverTimer = setTimeout(() => showPopover(node, cardEl), 700);
+}
+function showPopover(node, cardEl) {
+  if (!els.popover) return;
+  if (els.popVenue) {
+    els.popVenue.textContent = PP.formatVenue(node.venue, node.year) || "—";
+  }
+  if (els.popTitle) els.popTitle.textContent = node.title || "";
+  if (els.popTldr) els.popTldr.textContent = node.tldr || "";
+  if (els.popAuthors) {
+    els.popAuthors.textContent = (node.authors || []).join(", ");
+  }
+  if (els.popMeta) {
+    const cit = typeof node.citation_count === "number" && node.citation_count > 0
+      ? `📖 ${node.citation_count.toLocaleString()}` : "";
+    const stars = formatStars(node.github_stars);
+    const link = node.arxiv_id ? `arXiv:${node.arxiv_id}`
+                : node.doi ? `DOI:${node.doi}`
+                : "";
+    els.popMeta.textContent = [cit, stars && `⭐${stars}`, link]
+      .filter(Boolean).join("  ·  ");
+  }
+  // Position next to the card — prefer the right side; fall back to left
+  // when there's no room. Coords are in page space.
+  const rect = cardEl.getBoundingClientRect();
+  const popW = 360, popH = 220, gap = 12;
+  let x = rect.right + gap + window.scrollX;
+  let y = rect.top + window.scrollY;
+  if (x + popW > window.scrollX + window.innerWidth - 12) {
+    x = rect.left + window.scrollX - popW - gap;
+  }
+  if (x < window.scrollX + 12) x = window.scrollX + 12;
+  if (y + popH > window.scrollY + window.innerHeight - 12) {
+    y = window.scrollY + window.innerHeight - popH - 12;
+  }
+  if (y < window.scrollY + 12) y = window.scrollY + 12;
+  els.popover.style.left = `${x}px`;
+  els.popover.style.top = `${y}px`;
+  els.popover.setAttribute("aria-hidden", "false");
+  els.popover.classList.add("card-popover--visible");
+}
+function hidePopover() {
+  clearTimeout(popoverTimer);
+  if (!els.popover) return;
+  els.popover.setAttribute("aria-hidden", "true");
+  els.popover.classList.remove("card-popover--visible");
 }
 
 function clearHighlight() {
