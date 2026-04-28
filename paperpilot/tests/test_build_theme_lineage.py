@@ -477,11 +477,17 @@ def test_build_emits_templated_rationale(tmp_path: Path, monkeypatch):
             theme="Test", depth=1, seeds_count=1, width=4, since_year=None
         )
     payload = json.loads(out_path.read_text())
-    assert len(payload["edges"]) == 1
-    edge = payload["edges"][0]
-    assert edge["rel"] == "extends"
-    assert edge["rationale"], "templated rationale must not be empty"
-    assert "論文" in edge["rationale"]
+    assert len(payload["edges"]) >= 1
+    # Issue #55 added a descendants pass that may also use the same mock
+    # return value; just assert the first BFS-derived edge looks right.
+    bfs_edge = next(
+        (e for e in payload["edges"] if e["dst"] == "seed" and e["src"] == "parent"),
+        None,
+    )
+    assert bfs_edge is not None
+    assert bfs_edge["rel"] == "extends"
+    assert bfs_edge["rationale"], "templated rationale must not be empty"
+    assert "論文" in bfs_edge["rationale"]
 
 
 def test_build_emits_required_meta_fields(tmp_path: Path, monkeypatch):

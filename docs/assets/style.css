@@ -1348,6 +1348,24 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   padding: 0.6rem 0.75rem;
   word-break: break-word;
   overflow-wrap: break-word;
+  transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease,
+              border-color 0.15s ease;
+}
+
+/* Hover-driven peer/peer-self/dimmed classes (#56). Theme cards reuse the
+   same visual hierarchy as the lineage viewer's edge--highlight / dim. */
+.node-card--peer-self {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px oklch(58% 0.18 30 / 0.20);
+  transform: translateY(-1px);
+  z-index: 2;
+}
+.node-card--peer {
+  border-color: var(--color-ink-muted);
+  box-shadow: 0 1px 4px oklch(0% 0 0 / 0.08);
+}
+.node-card--dimmed {
+  opacity: 0.28;
 }
 
 .node-card--theme .node-card__title {

@@ -225,14 +225,23 @@ function renderFilterChips() {
     supersedes: "Supersedes", successor: "Successor", extends: "Extends",
     ablation: "Ablation", baseline_only: "Baseline", contrasts: "Contrasts",
   };
+  // Count edges per relation so the chip can show the budget at a glance —
+  // big asymmetries (e.g. "Extends 64 / Successor 2") nudge the user to
+  // toggle filters rather than scroll through a wall of one type.
+  const counts = {};
+  for (const e of state.data?.edges || []) {
+    counts[e.rel] = (counts[e.rel] || 0) + 1;
+  }
   // innerHTML only — listener is bound once via bindFilterBar() to avoid
   // accumulating duplicates if this is ever called on re-render.
   els.filterBar.innerHTML = ALL_RELATIONS.map((r) => {
     const on = state.visibleRelations.has(r);
     const dotKind = r === "baseline_only" ? "baseline" : r;
+    const count = counts[r] || 0;
     return `<button class="chip chip--rel" data-rel="${r}" aria-pressed="${on}">
       <span class="chip__dot chip__dot--${dotKind}"></span>
       ${labels[r]}
+      <span class="chip__count">${count}</span>
     </button>`;
   }).join("");
 }
@@ -415,6 +424,8 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
     path.dataset.rel = e.rel;
     path.dataset.rationale = e.rationale || "";
     path.dataset.conf = e.conf ?? "";
+    path.dataset.src = e.src;
+    path.dataset.dst = e.dst;
     path.addEventListener("mouseenter", onEdgeHover);
     path.addEventListener("mousemove", onEdgeMove);
     path.addEventListener("mouseleave", onEdgeLeave);
@@ -431,6 +442,7 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
     fo.setAttribute("y", p._y);
     fo.setAttribute("width", NODE_W);
     fo.setAttribute("height", NODE_H);
+    fo.dataset.nodeId = p.id;
     const card = document.createElement("div");
     card.setAttribute("xmlns", XHTML_NS);
     card.className = "node-card node-card--theme";
@@ -444,6 +456,9 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
       ? `<span class="node-card__cit">📖 ${p.citation_count.toLocaleString()}</span>` : "";
     const stars = formatStars(p.github_stars);
     const starsHtml = stars ? `<span class="node-card__stars">⭐${stars}</span>` : "";
+    // Build a Semantic Scholar URL from the paperId — clicking the card
+    // opens the canonical paper page so readers can dive in.
+    const s2Url = `https://www.semanticscholar.org/paper/${encodeURIComponent(p.id)}`;
     card.innerHTML = `
       <div class="node-card__venue">
         <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
@@ -452,10 +467,66 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
       <div class="node-card__authors">${escapeHtml(authors)}</div>
       <div class="node-card__meta">${cits}${starsHtml}</div>
     `;
+
+    // Hover: highlight edges incident to this node, fade the rest. Done
+    // by toggling .is-faded on every edge that doesn't touch this id.
+    card.addEventListener("mouseenter", () => highlightNode(p.id));
+    card.addEventListener("mouseleave", () => clearHighlight());
+    // Click: open the S2 paper page in a new tab (rel=noopener for safety).
+    card.addEventListener("click", () => {
+      window.open(s2Url, "_blank", "noopener,noreferrer");
+    });
+    card.style.cursor = "pointer";
+    card.title = "クリックで Semantic Scholar に開く";
+
     fo.appendChild(card);
     ng.appendChild(fo);
   }
   els.svg.appendChild(ng);
+}
+
+function highlightNode(nodeId) {
+  const eg = document.getElementById("edges");
+  if (!eg) return;
+  // Re-use the lineage viewer's existing edge--highlight / edge--dim
+  // CSS classes so the visual treatment stays consistent across viewers.
+  const peers = new Set([nodeId]);
+  for (const path of eg.querySelectorAll("path.edge")) {
+    const src = path.dataset.src;
+    const dst = path.dataset.dst;
+    if (src === nodeId || dst === nodeId) {
+      path.classList.add("edge--highlight");
+      path.classList.remove("edge--dim");
+      peers.add(src);
+      peers.add(dst);
+    } else {
+      path.classList.add("edge--dim");
+      path.classList.remove("edge--highlight");
+    }
+  }
+  for (const fo of document.querySelectorAll("foreignObject[data-node-id]")) {
+    const id = fo.dataset.nodeId;
+    const card = fo.firstChild;
+    if (!card) continue;
+    if (id === nodeId) {
+      card.classList.add("node-card--peer-self");
+    } else if (peers.has(id)) {
+      card.classList.add("node-card--peer");
+    } else {
+      card.classList.add("node-card--dimmed");
+    }
+  }
+}
+
+function clearHighlight() {
+  for (const path of document.querySelectorAll("#edges path.edge")) {
+    path.classList.remove("edge--highlight", "edge--dim");
+  }
+  for (const fo of document.querySelectorAll("foreignObject[data-node-id]")) {
+    const card = fo.firstChild;
+    if (!card) continue;
+    card.classList.remove("node-card--peer-self", "node-card--peer", "node-card--dimmed");
+  }
 }
 
 // ---- Tooltip ----

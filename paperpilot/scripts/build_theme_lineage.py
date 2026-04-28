@@ -94,28 +94,40 @@ _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
 
 
 def _add_cross_node_edges(
-    nodes: dict[str, dict], edges: list[dict]
+    nodes: dict[str, dict],
+    edges: list[dict],
+    *,
+    seed_ids: set[str] | None = None,
+    cohort_min_year: int | None = None,
 ) -> int:
     """Find citation links between nodes already in the graph.
 
-    Issue #54: BFS only emits (parent → seed) edges, but the collected
-    node set frequently contains intra-cohort citations — e.g. one 2024
-    paper citing another 2024 paper that's also a seed, or two parents
-    where one cites the other. Those edges should be visible in the
-    chronological tree.
+    Issue #54 / #55: BFS only emits (parent → seed) edges, but the
+    collected node set frequently contains intra-cohort citations — e.g.
+    one 2024 paper citing another 2024 paper that's also a seed, or two
+    parents where one cites the other.
 
-    For each node in the graph, fetch its references (from the on-disk
-    cache; a network call is made only if the cache is missing) and add
-    an edge whenever the cited paper is also in our node set.
-    derive_relation() supplies the relation type so this stays LLM-free.
+    Issue #55 followup: when `seed_ids` and/or `cohort_min_year` are
+    given, only emit edges where at least one endpoint is a seed *or* a
+    paper from the requested cohort year. This stops foundational papers
+    (ResNet ↔ U-Net) from polluting the view with many old-year arrows
+    the user didn't ask for.
 
     Returns the number of edges added.
     """
     existing = {(e["src"], e["dst"]) for e in edges}
     node_ids = set(nodes.keys())
+    seed_ids = seed_ids or set()
     added = 0
-    # Snapshot the keys — we never mutate `nodes`, but iterating over a
-    # set we read from is fine; the explicit list makes intent clearer.
+
+    def _is_anchor(nid: str) -> bool:
+        if nid in seed_ids:
+            return True
+        if cohort_min_year is None:
+            return True  # no constraint configured → accept all
+        year = nodes.get(nid, {}).get("year")
+        return isinstance(year, int) and year >= cohort_min_year
+
     for citing_id in list(node_ids):
         try:
             refs = fetch_related(citing_id, "references", _CROSS_NODE_LIMIT)
@@ -130,6 +142,10 @@ def _add_cross_node_edges(
                 # S2 occasionally lists a paper among its own references
                 # (data anomaly); a self-loop in the chronological tree
                 # would render as a degenerate edge.
+                continue
+            # Anchor constraint: at least one endpoint must be a seed or
+            # a cohort-year paper. Skip pure ancestor↔ancestor edges.
+            if not (_is_anchor(citing_id) or _is_anchor(ref_id)):
                 continue
             # Edge convention is parent → child. References = ancestors;
             # cited paper is the parent, citing paper is the child.
@@ -413,6 +429,49 @@ def build_theme_lineage(
                 visited.add(pid)
                 frontier.append((parent, current_depth + 1))
 
+    # Issue #55: descendants direction. BFS only goes UP (parents) so the
+    # graph cuts off at the seed year — newer papers that cite the seeds
+    # (and represent the field's *next* step) never appear. Fetch each
+    # seed's top-N citing papers, add them as nodes, and emit seed → child
+    # edges. derive_relation() handles the relation type from intents.
+    desc_added = 0
+    for seed in seeds:
+        sid = seed["paperId"]
+        # Wide pool then influential-first, citation-count desc — mirrors
+        # the parent partition above so descendants stay quality-anchored.
+        all_children = fetch_related(sid, "citations", width * 4)
+        all_children = [c for c in all_children if c.get("abstract")]
+        influential = [c for c in all_children if c.get("_is_influential") is not False]
+        non_influential = [c for c in all_children if c.get("_is_influential") is False]
+        influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
+        non_influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
+        children = (influential + non_influential)[:width]
+
+        for child in children:
+            cid = child.get("paperId")
+            if not cid or cid == sid:
+                continue
+            if cid not in nodes:
+                nodes[cid] = to_node(child)
+            cls = derive_relation(child)
+            if cls is None:
+                continue
+            if any(e["src"] == sid and e["dst"] == cid for e in edges):
+                continue
+            edges.append({
+                "src": sid,
+                "dst": cid,
+                "rel": cls["relation"],
+                "conf": cls["confidence"],
+                "rationale": cls["rationale"],
+            })
+            desc_added += 1
+    if desc_added:
+        logger.info(
+            "descendants pass added %d edges (seed → newer citing papers)",
+            desc_added,
+        )
+
     # Issue #54: cross-node edges. The BFS only adds (parent → seed) edges,
     # so two seeds that cite each other, or a parent that cites another
     # parent in the same graph, never produce a visible relation. Scan the
@@ -422,7 +481,25 @@ def build_theme_lineage(
     # references. Parent nodes whose references weren't fetched during BFS
     # (depth=1 doesn't expand grandparents) are looked up here too so we
     # discover lateral relationships across the whole graph.
-    cross_added = _add_cross_node_edges(nodes, edges)
+    #
+    # Issue #55 followup: constrain cross-node so at least one endpoint
+    # is a seed or a same-cohort paper (year >= since_year if set, else
+    # within 5 years of the most recent seed). This stops foundational
+    # papers (ResNet ↔ U-Net 2015) from clogging the view with many
+    # old-year arrows the user didn't ask for.
+    seed_set = set(seed_ids)
+    cohort_min_year: int | None
+    if since_year is not None:
+        cohort_min_year = since_year
+    else:
+        seed_years = [
+            n.get("year") for n in (nodes[s] for s in seed_ids)
+            if isinstance(n.get("year"), int)
+        ]
+        cohort_min_year = (max(seed_years) - 5) if seed_years else None
+    cross_added = _add_cross_node_edges(
+        nodes, edges, seed_ids=seed_set, cohort_min_year=cohort_min_year
+    )
     if cross_added:
         logger.info(
             "cross-node pass added %d edges (in-graph citations not seen by BFS)",
