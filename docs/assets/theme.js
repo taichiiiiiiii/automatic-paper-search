@@ -65,7 +65,23 @@ const state = {
       ? prefs.visibleRelations.filter((r) => ALL_RELATIONS.includes(r))
       : DEFAULT_RELATIONS,
   ),
+  // #61: search query (lowercased). Empty string = no filter applied.
+  searchQuery: "",
 };
+
+// #61: matchesSearch — case-insensitive needle in title / authors / venue.
+// Returns true when the query is empty so an empty box keeps everything
+// visible. Pulled out so render() and tests can share the same predicate.
+function matchesSearch(node, q) {
+  if (!q) return true;
+  const needle = q.toLowerCase();
+  if ((node.title || "").toLowerCase().includes(needle)) return true;
+  if ((node.venue || "").toLowerCase().includes(needle)) return true;
+  for (const a of node.authors || []) {
+    if (typeof a === "string" && a.toLowerCase().includes(needle)) return true;
+  }
+  return false;
+}
 
 const els = {
   svg: document.getElementById("lineage-svg"),
@@ -77,6 +93,7 @@ const els = {
   filterBar: document.getElementById("relation-filter"),
   picker: document.getElementById("theme-picker"),
   meta: document.getElementById("theme-meta"),
+  searchInput: document.getElementById("theme-search-input"),
 };
 
 // ---- Manifest / URL plumbing ----
@@ -216,7 +233,20 @@ async function init() {
   renderHeader();
   renderFilterChips();
   bindFilterBar();
+  bindSearch();
   render();
+}
+
+// #61: search-box wiring. Debounced re-render so each keystroke doesn't
+// rebuild the whole SVG.
+function bindSearch() {
+  if (!els.searchInput) return;
+  let pending = null;
+  els.searchInput.addEventListener("input", () => {
+    state.searchQuery = els.searchInput.value || "";
+    clearTimeout(pending);
+    pending = setTimeout(render, 120);
+  });
 }
 
 function renderFilterChips() {
@@ -324,12 +354,19 @@ function render() {
   const { nodes, edges } = state.data;
   const visibleEdges = (edges || []).filter((e) => state.visibleRelations.has(e.rel));
   const layout = layoutChronological(nodes);
-  drawSvg(layout, visibleEdges);
+  // #61: compute the search-match set once and hand to drawSvg so it can
+  // mark non-matching cards + their incident edges as faded. Layout still
+  // includes every node so the chronological grid stays stable as the
+  // user types.
+  const matchSet = state.searchQuery
+    ? new Set(nodes.filter((n) => matchesSearch(n, state.searchQuery)).map((n) => n.id))
+    : null;
+  drawSvg(layout, visibleEdges, matchSet);
 }
 
 // ---- SVG drawing ----
 
-function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
+function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
   els.svg.innerHTML = "";
   if (positioned.length === 0) {
     els.canvas.querySelector(".empty-state")?.remove();
@@ -412,6 +449,11 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
   for (const e of edges) {
     const a = posById.get(e.src), b = posById.get(e.dst);
     if (!a || !b) continue;
+    // #61: when a search filter is active, fade edges whose endpoints
+    // are both outside the match set. Edges incident to a matched node
+    // stay full-opacity so the user can see how a hit relates to its
+    // neighbours.
+    const edgeMatches = !matchSet || matchSet.has(e.src) || matchSet.has(e.dst);
     const ax = a._x + NODE_W / 2;
     const ay = a._y + NODE_H;
     const bx = b._x + NODE_W / 2;
@@ -429,6 +471,7 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
     path.dataset.conf = e.conf ?? "";
     path.dataset.src = e.src;
     path.dataset.dst = e.dst;
+    if (!edgeMatches) path.classList.add("edge--filtered");
     path.addEventListener("mouseenter", onEdgeHover);
     path.addEventListener("mousemove", onEdgeMove);
     path.addEventListener("mouseleave", onEdgeLeave);
@@ -450,6 +493,8 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges) {
     card.setAttribute("xmlns", XHTML_NS);
     card.className = "node-card node-card--theme";
     if (p.is_focus) card.classList.add("node-card--focus");
+    // #61: fade non-matching cards when a search query is active.
+    if (matchSet && !matchSet.has(p.id)) card.classList.add("node-card--filtered");
 
     const tier = p.venue_tier === "A+" ? "aplus" : p.venue_tier === "A" ? "a" : "preprint";
     const venue = PP.formatVenue(p.venue, p.year);
