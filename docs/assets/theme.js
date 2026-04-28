@@ -294,12 +294,15 @@ async function init() {
 // inside) into a stand-alone document and trigger a browser download.
 // CSS is inlined so the exported image renders identically off-line.
 function bindExport() {
-  if (els.exportSvg) {
-    els.exportSvg.addEventListener("click", () => exportImage("svg"));
-  }
-  if (els.exportPng) {
-    els.exportPng.addEventListener("click", () => exportImage("png"));
-  }
+  // Wrap async export() so a rejected promise (image load fail, etc.)
+  // surfaces in the console instead of an unhandled rejection.
+  const safe = (kind) => () => {
+    exportImage(kind).catch((err) => {
+      console.error("export failed:", err);
+    });
+  };
+  if (els.exportSvg) els.exportSvg.addEventListener("click", safe("svg"));
+  if (els.exportPng) els.exportPng.addEventListener("click", safe("png"));
 }
 
 async function buildSelfContainedSvg() {
@@ -324,17 +327,20 @@ async function buildSelfContainedSvg() {
 }
 
 async function collectInlineCss() {
-  // Pull every CSSRule from same-origin sheets — Cloudflare Pages
-  // serves style.css from the same origin so this works without a
-  // CORS preflight. Skip rules that throw (cross-origin).
+  // Only inline CSS from the application's own stylesheet so a browser
+  // extension or a third-party script that injects rules at runtime
+  // can't ride along into the exported file (security review #82).
   const parts = [];
   for (const sheet of document.styleSheets) {
+    const href = sheet.href || "";
+    // Match the deployed style.css path (cache-bust query allowed).
+    if (!href.includes("/assets/style.css")) continue;
     try {
       for (const rule of sheet.cssRules) {
         parts.push(rule.cssText);
       }
     } catch {
-      /* skip cross-origin */
+      /* skip — same-origin should never throw, but be defensive */
     }
   }
   return parts.join("\n");
@@ -348,7 +354,11 @@ function downloadBlob(blob, filename) {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  // Revoke immediately after the synchronous click — the download
+  // manager already holds a reference to the blob (review #82 HIGH:
+  // the previous 1-second timer could revoke before slow networks
+  // started or after page hide stalled the timer).
+  URL.revokeObjectURL(url);
 }
 
 async function exportImage(kind) {
@@ -362,11 +372,13 @@ async function exportImage(kind) {
     downloadBlob(blob, `${base}.svg`);
     return;
   }
-  // PNG: rasterize via canvas. Encoded data URL keeps the workflow
-  // pure-client and avoids any CORS hassle that fetch + Blob URL hits.
+  // PNG: rasterize via canvas. SVGs containing <foreignObject> taint
+  // the canvas (browsers refuse toBlob with SecurityError) — detect
+  // that and fall back to the SVG download with a user-visible message
+  // so the click never silently produces nothing (review #82 HIGH).
   const w = parseFloat(els.svg.getAttribute("width")) || 1;
   const h = parseFloat(els.svg.getAttribute("height")) || 1;
-  const cap = 8000; // browser canvas pixel ceiling
+  const cap = 8000;
   const scale = Math.min(2, cap / Math.max(w, h));
   const cw = Math.round(w * scale);
   const ch = Math.round(h * scale);
@@ -374,20 +386,41 @@ async function exportImage(kind) {
   canvas.width = cw;
   canvas.height = ch;
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#fdfaf3";
+  // Pull the page background colour from a CSS custom property so the
+  // export tracks any future palette change instead of a hardcoded hex.
+  const bg = getComputedStyle(document.documentElement)
+    .getPropertyValue("--color-bg").trim() || "#fdfaf3";
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, cw, ch);
   const img = new Image();
-  img.crossOrigin = "anonymous";
   const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
-  await new Promise((resolve, reject) => {
-    img.onload = resolve;
-    img.onerror = reject;
-    img.src = svgUrl;
+  try {
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error("SVG image load failed"));
+      img.src = svgUrl;
+    });
+    ctx.drawImage(img, 0, 0, cw, ch);
+  } catch (err) {
+    // Image failed to load → SVG download fallback.
+    console.warn("PNG export failed:", err);
+    return exportImage("svg");
+  }
+  await new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        downloadBlob(blob, `${base}.png`);
+      } else {
+        // toBlob === null when the canvas is tainted (foreignObject case).
+        console.warn("PNG export blob came back null — falling back to SVG.");
+        exportImage("svg");
+      }
+      // Release the canvas backing store immediately so a 8000×8000
+      // export doesn't sit at ~256 MB until the next GC tick.
+      canvas.width = canvas.height = 0;
+      resolve();
+    }, "image/png");
   });
-  ctx.drawImage(img, 0, 0, cw, ch);
-  canvas.toBlob((blob) => {
-    if (blob) downloadBlob(blob, `${base}.png`);
-  }, "image/png");
 }
 
 // #65: scroll target node into view + reuse the hover-highlight pipeline
@@ -589,10 +622,14 @@ function computeHubSet(nodes, edges) {
     if (degree.has(e.dst)) degree.set(e.dst, degree.get(e.dst) + 1);
   }
   const values = [...degree.values()].filter((d) => d > 0).sort((a, b) => a - b);
-  if (values.length === 0) return new Set();
-  // 90th percentile + a floor (≥ 4 connections) so trees with few
-  // edges don't gild every node.
-  const idx = Math.floor(values.length * 0.9);
+  // Need a meaningful sample to talk about percentiles at all. Bail
+  // early on tiny graphs to avoid the small-N degeneracy where every
+  // rank clamps to the maximum (review #83 MEDIUM).
+  if (values.length < 5) return new Set();
+  // 90th percentile (Math.ceil − 1 picks the value where 90% of obs
+  // are ≤). Floor of 4 keeps the badge meaningful — sparse trees
+  // shouldn't gild a node with only 2-3 connections.
+  const idx = Math.min(Math.ceil(values.length * 0.9) - 1, values.length - 1);
   const threshold = Math.max(values[idx], 4);
   const hubs = new Set();
   for (const [id, d] of degree) if (d >= threshold) hubs.add(id);

@@ -1,8 +1,7 @@
 name: regen-themes
 # Issue #84: weekly auto-regeneration of theme family-tree JSONs.
 # Runs every Sunday 09:00 JST (00:00 UTC). Pushes the updated docs/themes/
-# JSONs straight to develop; Cloudflare Pages picks them up and serves
-# the fresh viewer within minutes.
+# JSONs to develop; Cloudflare Pages picks them up automatically.
 
 on:
   schedule:
@@ -11,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       themes:
-        description: 'Comma-separated themes to regen (default: all)'
+        description: 'Comma-separated themes to regen (default: every dir under docs/themes/)'
         required: false
         default: ''
 
@@ -24,56 +23,84 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: develop
-          # Use a token that can push back to develop. PAT with "Contents: RW"
-          # so the auto-commit triggers Cloudflare's git-watch deploy.
+          # PAT with "Contents: RW" so the auto-commit pushes back to
+          # develop and triggers Cloudflare's git-watch deploy. Falls back
+          # to GITHUB_TOKEN when GH_PAT isn't configured.
           token: ${{ secrets.GH_PAT || github.token }}
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
+      # Pinned action — vetted release, no curl-pipe-sh supply-chain risk
+      # (review #87 finding).
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.7.x'
 
       - name: uv sync
         run: uv sync
 
       - name: Regenerate themes
+        # Inputs are interpolated into env vars FIRST, never directly into
+        # shell strings — protects against command injection via
+        # workflow_dispatch theme list (review #87 CRITICAL finding).
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
+          THEMES_INPUT: ${{ github.event.inputs.themes }}
         run: |
-          set -e
-          # Default theme list — keep aligned with the published manifest.
-          DEFAULT_THEMES=(
-            "Mixture of Experts"
-            "Direct Preference Optimization"
-            "Diffusion Models"
-            "Retrieval-Augmented Generation"
-            "Reinforcement Learning from Human Feedback"
-            "Semantic Segmentation"
-          )
-          # Allow workflow_dispatch to override.
-          if [ -n "${{ github.event.inputs.themes }}" ]; then
-            IFS=',' read -ra THEMES <<< "${{ github.event.inputs.themes }}"
+          set -u
+          # Theme list defaults to whatever directories already live under
+          # docs/themes/ — keeps the workflow in sync with the manifest
+          # without a separate hard-coded list to drift.
+          if [ -n "${THEMES_INPUT:-}" ]; then
+            IFS=',' read -ra THEMES <<< "$THEMES_INPUT"
           else
-            THEMES=("${DEFAULT_THEMES[@]}")
+            mapfile -t THEMES < <(
+              for d in docs/themes/*/; do
+                slug=$(basename "$d")
+                if [ -f "$d/lineage.json" ]; then
+                  jq -r '.meta.theme' "$d/lineage.json"
+                else
+                  echo "$slug"
+                fi
+              done
+            )
           fi
+          if [ "${#THEMES[@]}" -eq 0 ]; then
+            echo "::error::no themes discovered"
+            exit 1
+          fi
+          # Track partial failure: warn on individual theme errors, but
+          # fail the whole job if EVERY theme regen failed (review #87
+          # HIGH — silent total-failure was the original concern).
+          failed=0
+          attempted=0
           for theme in "${THEMES[@]}"; do
+            attempted=$((attempted + 1))
             echo "::group::regen $theme"
-            # Don't fail the whole job if one theme hits an S2/Groq throttle —
-            # the existing JSON stays in place and the operator can re-run via
-            # workflow_dispatch.
-            uv run python -m paperpilot.scripts.build_theme_lineage \
-              --theme "$theme" \
-              --depth 1 --seeds 5 --width 8 --since-year 2018 \
-              || echo "::warning::regen failed for $theme — keeping previous build"
-            # Cool-off between themes so S2's per-IP rate limit recovers.
+            if uv run python -m paperpilot.scripts.build_theme_lineage \
+                --theme "$theme" \
+                --depth 1 --seeds 5 --width 8 --since-year 2018; then
+              :
+            else
+              failed=$((failed + 1))
+              echo "::warning::regen failed for $theme — keeping previous build"
+            fi
+            # 60s cool-off matches the S2 free-tier rate window so the
+            # next theme starts with a fresh per-IP budget. Fixed sleep
+            # is fine for free tier (~100 req/5min); switch to dynamic
+            # backoff if we ever hit the paid plan.
             sleep 60
             echo "::endgroup::"
           done
+          echo "regen result: $((attempted - failed))/$attempted ok, $failed failed"
+          if [ "$failed" -gt 0 ] && [ "$failed" -eq "$attempted" ]; then
+            echo "::error::all $attempted themes failed — likely an S2/Groq outage or expired secret"
+            exit 1
+          fi
 
       - name: Refresh manifest
         run: |
@@ -84,7 +111,10 @@ jobs:
         run: |
           git config user.email "actions@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add docs/themes/ paperpilot/data/lineage-cache/ || true
+          # Stage only the published JSONs — the local lineage-cache
+          # holds large per-paper S2 fetches whose growth would inflate
+          # the repo every week (review #87 HIGH finding).
+          git add docs/themes/
           if git diff --cached --quiet; then
             echo "nothing changed — skipping commit"
             exit 0
