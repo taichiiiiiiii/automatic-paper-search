@@ -69,6 +69,30 @@ _KEYWORD_EXPANSIONS = 8
 # already caps at 100 (S2's per-page max).
 _CROSS_NODE_LIMIT = 100
 
+# Trending threshold (#68): citations / year for *recent* papers.
+# Limiting to the last 3 years keeps the badge meaning "fast-moving
+# right now" — not "established classic". 200 cites/year for a 2024
+# paper means ~600 cites by mid-2026, well above noise.
+_TRENDING_VELOCITY_THRESHOLD = 200.0
+_TRENDING_AGE_LIMIT_YEARS = 3
+
+
+def _is_trending(paper: dict, current_year: int) -> bool:
+    """True when citation velocity (cites/year) clears the threshold AND
+    the paper is recent enough that "trending" makes sense. ResNet has
+    a high velocity too, but it's a 10-year-old classic — calling it
+    trending dilutes the signal for genuinely hot 2024–2026 papers.
+    """
+    cit = paper.get("citationCount") or 0
+    year = paper.get("year")
+    if not isinstance(year, int) or year > current_year:
+        return False
+    age = current_year - year
+    if age > _TRENDING_AGE_LIMIT_YEARS:
+        return False
+    age = max(age, 0.5)  # 0.5y floor guards against same-year div
+    return (cit / age) >= _TRENDING_VELOCITY_THRESHOLD
+
 
 # Issue #53: heuristic templates that mirror build_deep_lineage's lenient
 # fallback rationales. derive_relation() picks one based on S2's intent
@@ -359,11 +383,17 @@ def build_theme_lineage(
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
 
+    # #68: stamp the build year so _is_trending() can compute citation
+    # velocity. Single fetch keeps every node's badge consistent.
+    current_year = datetime.now(timezone.utc).year
+
     seed_ids: list[str] = []
     frontier: list[tuple[dict, int]] = []
     for seed in seeds:
         sid = seed["paperId"]
-        nodes[sid] = to_node(seed, focus=True)
+        nodes[sid] = to_node(
+            seed, focus=True, trending=_is_trending(seed, current_year)
+        )
         seed_ids.append(sid)
         frontier.append((seed, 0))
 
@@ -406,7 +436,9 @@ def build_theme_lineage(
             if not pid:
                 continue
             if pid not in nodes:
-                nodes[pid] = to_node(parent)
+                nodes[pid] = to_node(
+                    parent, trending=_is_trending(parent, current_year)
+                )
             # Issue #53: derive the relation from S2 intents instead of
             # firing an LLM classify call. derive_relation() returns None
             # when S2 says the parent is non-influential (we drop the
@@ -458,7 +490,9 @@ def build_theme_lineage(
             if not cid or cid == sid:
                 continue
             if cid not in nodes:
-                nodes[cid] = to_node(child)
+                nodes[cid] = to_node(
+                    child, trending=_is_trending(child, current_year)
+                )
             cls = derive_relation(child)
             if cls is None:
                 continue

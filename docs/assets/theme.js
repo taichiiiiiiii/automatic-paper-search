@@ -660,9 +660,14 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     const tldrHtml = p.tldr
       ? `<div class="node-card__tldr">${escapeHtml(p.tldr)}</div>`
       : "";
+    // #68: trending badge for fast-moving papers (citation velocity).
+    const trendingHtml = p.is_trending
+      ? `<span class="node-card__trending" title="citation velocity: trending">📈</span>`
+      : "";
     card.innerHTML = `
       <div class="node-card__venue">
         <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
+        ${trendingHtml}
       </div>
       <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
       ${tldrHtml}
