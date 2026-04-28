@@ -668,7 +668,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-## 実装ステータス（2026-04-21 時点）
+## 実装ステータス（2026-04-28 時点）
 
 | 仕様 | 状態 |
 |------|------|
@@ -682,11 +682,12 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | GitHub Actions | ⏸️ ワークフロー作成済み、PAT の workflow scope 追加待ち（#12 / #14） |
 | **ビューア一覧 (papers.json)** | ✅ `index.html` + `build_pages.py` で生成 |
 | **家系図ビュー (lineage.json)** | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI (`collect-weekly.yml`) に統合済 |
+| **テーマ家系図 (themes/)** | ✅ `build_theme_lineage.py`（テーマ→S2/paper/search→BFS→LLM 分類→年軸ツリー）。silent-fallback 検知 (#45) と classify summary log + 0-edges 時 exit 3 を実装 |
 | **Groq Provider (lineage 第一候補)** | ✅ `paperpilot/llm/groq_provider.py` (Gemini もフォールバック対応) |
-| **scripts のテスト** | 🟡 `build_lineage` / `build_pages` / `build_summary_csv` は smoke test 済。`sync_to_sheets` は未対応（#24） |
+| **scripts のテスト** | 🟡 `build_lineage` / `build_pages` / `build_summary_csv` / `build_theme_lineage` は smoke test 済。`sync_to_sheets` は未対応（#24） |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
-| テストカバレッジ | ✅ 96% (334 tests) |
+| テストカバレッジ | ✅ 457 tests pass |
 
 ---
 
-*最終更新：2026年4月23日（deep viewer に `?arxiv=` URL パラメータ対応 / `generate_deep_manifest.py` を追加 / 絶対ルール §12 に家系図構築の例外条項を追記）*
+*最終更新：2026年4月28日（テーマ家系図の silent-fallback 検知 #45 を追加 / 4 テーマ (MoE / DPO / Diffusion / RAG / RLHF) を初回生成）*
