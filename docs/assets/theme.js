@@ -113,6 +113,8 @@ const els = {
   yearMax: document.getElementById("year-range-max"),
   yearMinLabel: document.getElementById("year-range-min-label"),
   yearMaxLabel: document.getElementById("year-range-max-label"),
+  minimap: document.getElementById("minimap"),
+  minimapCanvas: document.getElementById("minimap-canvas"),
 };
 
 // ---- Manifest / URL plumbing ----
@@ -679,6 +681,117 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     ng.appendChild(fo);
   }
   els.svg.appendChild(ng);
+
+  // #66: paint the minimap with the same node positions, then bind
+  // click/drag and a window-scroll viewport tracker. Late so coords
+  // are up-to-date.
+  drawMinimap(positioned, totalW, totalH);
+}
+
+// #66: minimap — a small canvas that mirrors the SVG's node positions at
+// scale, draws the current viewport rect, and lets the user click or drag
+// to pan. State holds a pre-rendered "dots only" canvas so scroll only
+// re-paints the viewport rectangle (cheap; no DOM rebuild).
+let minimapState = null;
+function drawMinimap(positioned, totalW, totalH) {
+  if (!els.minimap || !els.minimapCanvas) return;
+  // Hide the minimap when the SVG already fits in the viewport — no nav needed.
+  const needsMinimap = totalW > window.innerWidth + 100
+    || totalH > window.innerHeight + 100;
+  els.minimap.hidden = !needsMinimap;
+  if (!needsMinimap) {
+    minimapState = null;
+    return;
+  }
+  const cv = els.minimapCanvas;
+  const cw = cv.width, ch = cv.height;
+  const s = Math.min(cw / totalW, ch / totalH);
+  const ox = (cw - totalW * s) / 2;
+  const oy = (ch - totalH * s) / 2;
+
+  // Render the static dot layer once into an offscreen canvas. Scroll
+  // updates only blit this image then draw the viewport rect on top.
+  const dotsLayer = document.createElement("canvas");
+  dotsLayer.width = cw;
+  dotsLayer.height = ch;
+  const dctx = dotsLayer.getContext("2d");
+  dctx.fillStyle = "rgba(255, 250, 240, 0.95)";
+  dctx.fillRect(0, 0, cw, ch);
+  dctx.fillStyle = "rgba(80, 60, 40, 0.55)";
+  for (const n of positioned) {
+    const x = ox + (n._x + NODE_W / 2) * s;
+    const y = oy + (n._y + NODE_H / 2) * s;
+    dctx.fillRect(x - 1.5, y - 1.5, 3, 3);
+  }
+
+  minimapState = { totalW, totalH, s, ox, oy, dotsLayer };
+  drawMinimapViewport();
+}
+
+function drawMinimapViewport() {
+  if (!minimapState || !els.minimapCanvas) return;
+  const cv = els.minimapCanvas;
+  const ctx = cv.getContext("2d");
+  const { s, ox, oy, dotsLayer } = minimapState;
+
+  // Blit the cached dot layer (constant-cost paint).
+  ctx.drawImage(dotsLayer, 0, 0);
+
+  // Viewport rect — clipped to the canvas bounds.
+  const vx = ox + window.scrollX * s;
+  const vy = oy + window.scrollY * s;
+  const vw = window.innerWidth * s;
+  const vh = window.innerHeight * s;
+  const rx = Math.max(0, Math.min(cv.width, vx));
+  const ry = Math.max(0, Math.min(cv.height, vy));
+  const rw = Math.max(0, Math.min(cv.width - rx, vw));
+  const rh = Math.max(0, Math.min(cv.height - ry, vh));
+  ctx.fillStyle = "rgba(255, 110, 0, 0.10)";
+  ctx.strokeStyle = "oklch(58% 0.18 30)";
+  ctx.lineWidth = 1.5;
+  ctx.fillRect(rx, ry, rw, rh);
+  ctx.strokeRect(rx, ry, rw, rh);
+}
+
+// Click / drag the minimap to pan the page.
+function onMinimapPointer(ev) {
+  if (!minimapState) return;
+  const rect = els.minimapCanvas.getBoundingClientRect();
+  // Account for any CSS scaling between the canvas's intrinsic px and
+  // its layout box.
+  const scaleX = els.minimapCanvas.width / rect.width;
+  const scaleY = els.minimapCanvas.height / rect.height;
+  const px = (ev.clientX - rect.left) * scaleX;
+  const py = (ev.clientY - rect.top) * scaleY;
+  const { s, ox, oy } = minimapState;
+  const targetX = (px - ox) / s - window.innerWidth / 2;
+  const targetY = (py - oy) / s - window.innerHeight / 2;
+  window.scrollTo({
+    left: Math.max(0, targetX),
+    top: Math.max(0, targetY),
+    behavior: "smooth",
+  });
+}
+
+if (els.minimapCanvas) {
+  let dragging = false;
+  els.minimapCanvas.addEventListener("mousedown", (ev) => {
+    dragging = true;
+    onMinimapPointer(ev);
+  });
+  els.minimapCanvas.addEventListener("mousemove", (ev) => {
+    if (dragging) onMinimapPointer(ev);
+  });
+  window.addEventListener("mouseup", () => { dragging = false; });
+  let scrollPending = false;
+  window.addEventListener("scroll", () => {
+    if (!minimapState || scrollPending) return;
+    scrollPending = true;
+    requestAnimationFrame(() => {
+      drawMinimapViewport();
+      scrollPending = false;
+    });
+  }, { passive: true });
 }
 
 function highlightNode(nodeId) {
