@@ -816,6 +816,70 @@ def test_main_returns_3_when_zero_edges(tmp_path: Path, monkeypatch):
     assert rc == 3, f"expected exit 3 on 0 edges, got {rc}"
 
 
+def test_build_skips_classify_for_non_influential_parents(
+    tmp_path: Path, monkeypatch
+):
+    """Issue #50: parents flagged isInfluential=false by S2 must skip the
+    LLM classify call entirely — those are 'background only' refs that we
+    don't want to spend Groq TPM on."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    provider = _stub_external_calls(monkeypatch)
+    seed = _mk_s2_paper("seed", year=2023)
+    parent_yes = {
+        **_mk_s2_paper("p_yes", title="INFL parent", year=2018),
+        "_is_influential": True,
+    }
+    parent_no = {
+        **_mk_s2_paper("p_no", title="BACKGROUND only", year=2018),
+        "_is_influential": False,
+    }
+    parent_unknown = {
+        **_mk_s2_paper("p_unk", title="UNKNOWN flag", year=2018),
+        "_is_influential": None,
+    }
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            return_value=[parent_yes, parent_no, parent_unknown],
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="X", depth=1, seeds_count=1, width=8, since_year=None
+        )
+    payload = json.loads(out_path.read_text())
+
+    # All three parents should appear as nodes (skipped only the LLM call,
+    # not the node — keeping the node preserves the chronological viewer).
+    node_ids = {n["id"] for n in payload["nodes"]}
+    assert {"seed", "p_yes", "p_no", "p_unk"} <= node_ids
+
+    # The classify prompt body embeds the parent title — use it as a probe
+    # for which parents were sent to the LLM.
+    def chats_with(needle: str) -> list:
+        return [c for c in provider.chat_calls if needle in c[1]]
+
+    assert chats_with("BACKGROUND only") == [], (
+        "non-influential parent must skip the LLM classify call"
+    )
+    assert len(chats_with("INFL parent")) == 1, (
+        "influential parent should still be classified"
+    )
+    assert len(chats_with("UNKNOWN flag")) == 1, (
+        "missing flag (older cache) must NOT be treated as a hard reject — "
+        "fall back to classifying so we don't regress on existing themes"
+    )
+
+
 def test_main_returns_0_on_normal_build(tmp_path: Path, monkeypatch):
     """Sanity: a healthy build (some edges) still returns 0."""
     _patch_env(monkeypatch)
