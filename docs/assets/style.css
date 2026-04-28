@@ -1505,6 +1505,28 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   transform: scale(1.15);
 }
 
+/* #66: minimap fixed to the lower-right corner. Click/drag the canvas
+   to pan the whole page; scroll keeps the viewport rect in sync. */
+.minimap {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 100;
+  background: oklch(98% 0.01 75 / 0.92);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 4px 12px oklch(0% 0 0 / 0.10);
+  backdrop-filter: blur(4px);
+}
+.minimap canvas {
+  display: block;
+  cursor: grab;
+}
+.minimap canvas:active {
+  cursor: grabbing;
+}
+
 .node-card--theme .node-card__title {
   font-size: 0.9rem;
   line-height: 1.3;
