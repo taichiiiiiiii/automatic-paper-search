@@ -1,0 +1,5018 @@
+[
+  {
+    "paperId": "8703fdfdb13d0616a6f95bf64f8b2c687f0150e5",
+    "externalIds": {
+      "DBLP": "conf/www/TaffaU25",
+      "DOI": "10.1145/3701716.3715459",
+      "CorpusId": 278822999
+    },
+    "title": "Bridge-Generate: Scholarly Hybrid Question Answering",
+    "venue": "The Web Conference",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3701716.3715459?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3701716.3715459, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238639634",
+        "name": "Tilahun Abedissa Taffa"
+      },
+      {
+        "authorId": "2238639701",
+        "name": "Ricardo Usbeck"
+      }
+    ],
+    "abstract": "Answering scholarly hybrid questions requires access to bibliographic facts stored in structured data, such as a Knowledge Graph (KG) and textual information. Existing Scholarly Hybrid Question Answering (SHQA) approaches rely on retrieving KG triples and documents from the Wikipedia text corpus and prompt an LLM (Large Language Model) for answers. However, the retrieval is heavily keyword-based, introducing noise into the context. Furthermore, despite detecting the entities in the question, the models do not attempt any question analysis. Therefore, we propose a new SHQA system that employs a bridge-generate approach. During the bridge phase, our system recursively identifies entity-encapsulating phrases within the question and resolves the entities leveraging the underlying KGs. It then formulates assertion statements based on the resolved entities and their corresponding phrases. In the generation phase, the system auto-generates context guided by the question and the assertions. Finally, it returns an answer prompting an LLM with the generated context, the assertions, and the question. Our approach outperforms previous approaches, addressing the identified gaps.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8e584b714769dd69fe0344edc0e96120c0885a41",
+    "externalIds": {
+      "DBLP": "conf/emnlp/GaoLQ25",
+      "ArXiv": "2502.12737",
+      "DOI": "10.48550/arXiv.2502.12737",
+      "CorpusId": 276422072
+    },
+    "title": "Beyond Seen Data: Improving KBQA Generalization Through Schema-Guided Logical Form Generation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.12737, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2346307530",
+        "name": "Shengxiang Gao"
+      },
+      {
+        "authorId": "1800564",
+        "name": "Jey Han Lau"
+      },
+      {
+        "authorId": "2307989401",
+        "name": "Jianzhong Qi"
+      }
+    ],
+    "abstract": "Knowledge base question answering (KBQA) aims to answer user questions in natural language using rich human knowledge stored in large KBs. As current KBQA methods struggle with unseen knowledge base elements at test time,we introduce SG-KBQA: a novel model that injects schema contexts into entity retrieval and logical form generation to tackle this issue. It uses the richer semantics and awareness of the knowledge base structure provided by schema contexts to enhance generalizability. We show that SG-KBQA achieves strong generalizability, outperforming state-of-the-art models on two commonly used benchmark datasets across a variety of test settings. Our source code is available at https://github.com/gaosx2000/SG_KBQA.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "3b1baabcbfd19e2f292863c522de41083814856a",
+    "externalIds": {
+      "ArXiv": "2412.18537",
+      "DBLP": "journals/corr/abs-2412-18537",
+      "DOI": "10.48550/arXiv.2412.18537",
+      "CorpusId": 274992443
+    },
+    "title": "Harnessing Large Language Models for Knowledge Graph Question Answering via Adaptive Multi-Aspect Retrieval-Augmentation",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.18537, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2336954338",
+        "name": "Derong Xu Xinhang Li"
+      },
+      {
+        "authorId": "2030976630",
+        "name": "Ziheng Zhang"
+      },
+      {
+        "authorId": "2258562926",
+        "name": "Zhenxi Lin"
+      },
+      {
+        "authorId": "2288043255",
+        "name": "Zhihong Zhu"
+      },
+      {
+        "authorId": "2227734260",
+        "name": "Zhi Zheng"
+      },
+      {
+        "authorId": "2277462592",
+        "name": "Xian Wu"
+      },
+      {
+        "authorId": "2281902096",
+        "name": "Xiangyu Zhao"
+      },
+      {
+        "authorId": "2277237058",
+        "name": "Tong Xu"
+      },
+      {
+        "authorId": "2265580543",
+        "name": "Enhong Chen"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) demonstrate remarkable capabilities, yet struggle with hallucination and outdated knowledge when tasked with complex knowledge reasoning, resulting in factually incorrect outputs. Previous studies have attempted to mitigate it by retrieving factual knowledge from large-scale knowledge graphs (KGs) to assist LLMs in logical reasoning and prediction of answers. However, this kind of approach often introduces noise and irrelevant data, especially in situations with extensive context from multiple knowledge aspects. In this way, LLM attention can be potentially mislead from question and relevant information. In our study, we introduce an Adaptive Multi-Aspect Retrieval-augmented over KGs (Amar) framework. This method retrieves knowledge including entities, relations, and subgraphs, and converts each piece of retrieved text into prompt embeddings. The Amar framework comprises two key sub-components: 1) a self-alignment module that aligns commonalities among entities, relations, and subgraphs to enhance retrieved text, thereby reducing noise interference; 2) a relevance gating module that employs a soft gate to learn the relevance score between question and multi-aspect retrieved data, to determine which information should be used to enhance LLMs' output, or even filtered altogether. Our method has achieved state-of-the-art performance on two common datasets, WebQSP and CWQ, showing a 1.9\\% improvement in accuracy over its best competitor and a 6.6\\% improvement in logical form generation over a method that directly uses retrieved text as context prompts. These results demonstrate the effectiveness of Amar in improving the reasoning of LLMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b925fddf61b19f4f5351f8dfb681d987abaf41ed",
+    "externalIds": {
+      "ArXiv": "2410.14211",
+      "DBLP": "conf/www/TanWLXYZ25",
+      "DOI": "10.1145/3696410.3714892",
+      "CorpusId": 273482196
+    },
+    "title": "Paths-over-Graph: Knowledge Graph Empowered Large Language Model Reasoning",
+    "venue": "The Web Conference",
+    "year": 2024,
+    "citationCount": 83,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.14211, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2260858714",
+        "name": "Xingyu Tan"
+      },
+      {
+        "authorId": "2243441133",
+        "name": "Xiaoyang Wang"
+      },
+      {
+        "authorId": "2262047305",
+        "name": "Qing Liu"
+      },
+      {
+        "authorId": "2326913758",
+        "name": "Xiwei Xu"
+      },
+      {
+        "authorId": "2294537377",
+        "name": "Xin Yuan"
+      },
+      {
+        "authorId": "2260826901",
+        "name": "Wenjie Zhang"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) have achieved impressive results in various tasks but struggle with hallucination problems and lack of relevant knowledge, especially in deep complex reasoning and knowledge-intensive tasks. Knowledge Graphs (KGs), which capture vast amounts of facts in a structured format, offer a reliable source of knowledge for reasoning. However, existing KG-based LLM reasoning methods face challenges like handling multi-hop reasoning, multi-entity questions, and effectively utilizing graph structures. To address these issues, we propose Paths-over-Graph (PoG), a novel method that enhances LLM reasoning by integrating knowledge reasoning paths from KGs, improving the interpretability and faithfulness of LLM outputs. PoG tackles multi-hop and multi-entity questions through a three-phase dynamic multi-hop path exploration, which combines the inherent knowledge of LLMs with factual knowledge from KGs. In order to improve the efficiency, PoG prunes irrelevant information from the graph exploration first and introduces efficient three-step pruning techniques that incorporate graph structures, LLM prompting, and a pre-trained language model (e.g., SBERT) to effectively narrow down the explored candidate paths. This ensures all reasoning paths contain highly relevant information captured from KGs, making the reasoning faithful and interpretable in problem-solving. PoG innovatively utilizes graph structure to prune the irrelevant noise and represents the first method to implement multi-entity deep path detection on KGs for LLM reasoning tasks. Comprehensive experiments on five benchmark KGQA datasets demonstrate PoG outperforms the state-of-the-art method ToG across GPT-3.5-Turbo and GPT-4, achieving an average accuracy improvement of 18.9%. Notably, PoG with GPT-3.5-Turbo surpasses ToG with GPT-4 by up to 23.9%.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f355bef0df69eaa9c51a6805757eb2c55ae7281b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2409-19753",
+      "ACL": "2024.emnlp-main.205",
+      "ArXiv": "2409.19753",
+      "DOI": "10.48550/arXiv.2409.19753",
+      "CorpusId": 272986661
+    },
+    "title": "CoTKR: Chain-of-Thought Enhanced Knowledge Rewriting for Complex Knowledge Graph Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.19753, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281709529",
+        "name": "Yike Wu"
+      },
+      {
+        "authorId": "2323523115",
+        "name": "Yi Huang"
+      },
+      {
+        "authorId": "2154445064",
+        "name": "Nan Hu"
+      },
+      {
+        "authorId": "3479260",
+        "name": "Yuncheng Hua"
+      },
+      {
+        "authorId": "2284686899",
+        "name": "Guilin Qi"
+      },
+      {
+        "authorId": "2282590387",
+        "name": "Jiaoyan Chen"
+      },
+      {
+        "authorId": "2281582268",
+        "name": "Jeff Z. Pan"
+      }
+    ],
+    "abstract": "Recent studies have explored the use of Large Language Models (LLMs) with Retrieval Augmented Generation (RAG) for Knowledge Graph Question Answering (KGQA). They typically require rewriting retrieved subgraphs into natural language formats comprehensible to LLMs. However, when tackling complex questions, the knowledge rewritten by existing methods may include irrelevant information, omit crucial details, or fail to align with the question’s semantics. To address them, we propose a novel rewriting method CoTKR, Chain- of-Thought Enhanced Knowledge Rewriting, for generating reasoning traces and corresponding knowledge in an interleaved manner, thereby mitigating the limitations of single-step knowledge rewriting. Additionally, to bridge the preference gap between the knowledge rewriter and the question answering (QA) model, we propose a training strategy PAQAF, Preference Alignment from Question Answering Feedback, for leveraging feedback from the QA model to further optimize the knowledge rewriter. We conduct experiments using various LLMs across several KGQA benchmarks. Experimental results demonstrate that, compared with previous knowledge rewriting methods, CoTKR generates the most beneficial knowledge representation for QA models, which significantly improves the performance of LLMs in KGQA.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "11dd2fc88747d20629f5aafab72ba649d93e969c",
+    "externalIds": {
+      "ArXiv": "2409.12186",
+      "DBLP": "journals/corr/abs-2409-12186",
+      "CorpusId": 272707390
+    },
+    "title": "Qwen2.5-Coder Technical Report",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1129,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.12186, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2321578848",
+        "name": "Binyuan Hui"
+      },
+      {
+        "authorId": "2319616826",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "2248072386",
+        "name": "Zeyu Cui"
+      },
+      {
+        "authorId": "2135964855",
+        "name": "Jiaxi Yang"
+      },
+      {
+        "authorId": "2248487202",
+        "name": "Dayiheng Liu"
+      },
+      {
+        "authorId": "2321577284",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2311842337",
+        "name": "Tianyu Liu"
+      },
+      {
+        "authorId": "2321653170",
+        "name": "Jiajun Zhang"
+      },
+      {
+        "authorId": "2249451832",
+        "name": "Bowen Yu"
+      },
+      {
+        "authorId": "2247877609",
+        "name": "K. Dang"
+      },
+      {
+        "authorId": "2311633047",
+        "name": "An Yang"
+      },
+      {
+        "authorId": "47447639",
+        "name": "Rui Men"
+      },
+      {
+        "authorId": "152159016",
+        "name": "Fei Huang"
+      },
+      {
+        "authorId": "2325151882",
+        "name": "Shanghaoran Quan"
+      },
+      {
+        "authorId": "2274095735",
+        "name": "Xingzhang Ren"
+      },
+      {
+        "authorId": "2312110505",
+        "name": "Xuancheng Ren"
+      },
+      {
+        "authorId": "2237981776",
+        "name": "Jingren Zhou"
+      },
+      {
+        "authorId": "2312866505",
+        "name": "Junyang Lin"
+      }
+    ],
+    "abstract": "In this report, we introduce the Qwen2.5-Coder series, a significant upgrade from its predecessor, CodeQwen1.5. This series includes six models: Qwen2.5-Coder-(0.5B/1.5B/3B/7B/14B/32B). As a code-specific model, Qwen2.5-Coder is built upon the Qwen2.5 architecture and continues pretrained on a vast corpus of over 5.5 trillion tokens. Through meticulous data cleaning, scalable synthetic data generation, and balanced data mixing, Qwen2.5-Coder demonstrates impressive code generation capabilities while retaining general and math skills. These models have been evaluated on a wide range of code-related tasks, achieving state-of-the-art (SOTA) performance across more than 10 benchmarks, including code generation, completion, reasoning, and repair, consistently outperforming larger models of the same model size. We believe that the release of the Qwen2.5-Coder series will advance research in code intelligence and, with its permissive licensing, support wider adoption by developers in real-world applications.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "40e8af970329135ec95057d73e239dab805ad128",
+    "externalIds": {
+      "ArXiv": "2407.21783",
+      "CorpusId": 271571434
+    },
+    "title": "The Llama 3 Herd of Models",
+    "venue": "",
+    "year": 2024,
+    "citationCount": 14531,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.21783, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2479521",
+        "name": "Abhimanyu Dubey"
+      },
+      {
+        "authorId": "2369482",
+        "name": "Abhinav Jauhri"
+      },
+      {
+        "authorId": "2299944289",
+        "name": "Abhinav Pandey"
+      },
+      {
+        "authorId": "89942851",
+        "name": "Abhishek Kadian"
+      },
+      {
+        "authorId": "2313916217",
+        "name": "Ahmad Al-Dahle"
+      },
+      {
+        "authorId": "2313924937",
+        "name": "Aiesha Letman"
+      },
+      {
+        "authorId": "2313975817",
+        "name": "Akhil Mathur"
+      },
+      {
+        "authorId": "14279694",
+        "name": "A. Schelten"
+      },
+      {
+        "authorId": "2329138320",
+        "name": "Amy Yang"
+      },
+      {
+        "authorId": "2247818297",
+        "name": "Angela Fan"
+      },
+      {
+        "authorId": "2313918197",
+        "name": "Anirudh Goyal"
+      },
+      {
+        "authorId": "2129047988",
+        "name": "Anthony S. Hartshorn"
+      },
+      {
+        "authorId": "2269467670",
+        "name": "Aobo Yang"
+      },
+      {
+        "authorId": "2313926281",
+        "name": "A. Mitra"
+      },
+      {
+        "authorId": "2313918952",
+        "name": "A. Sravankumar"
+      },
+      {
+        "authorId": "2294453195",
+        "name": "A. Korenev"
+      },
+      {
+        "authorId": "2279336258",
+        "name": "Arthur Hinsvark"
+      },
+      {
+        "authorId": "2314521400",
+        "name": "Arun Rao"
+      },
+      {
+        "authorId": "2313922587",
+        "name": "Aston Zhang"
+      },
+      {
+        "authorId": "2166043087",
+        "name": "Aur'elien Rodriguez"
+      },
+      {
+        "authorId": "2313910288",
+        "name": "Austen Gregerson"
+      },
+      {
+        "authorId": "2295667288",
+        "name": "Ava Spataru"
+      },
+      {
+        "authorId": "2313953240",
+        "name": "Baptiste Rozière"
+      },
+      {
+        "authorId": "2313916233",
+        "name": "B. Biron"
+      },
+      {
+        "authorId": "2237987675",
+        "name": "Binh Tang"
+      },
+      {
+        "authorId": "2079950350",
+        "name": "Bobbie Chern"
+      },
+      {
+        "authorId": "83928755",
+        "name": "Charlotte Caucheteux"
+      },
+      {
+        "authorId": "2313917653",
+        "name": "Chaya Nayak"
+      },
+      {
+        "authorId": "2313909658",
+        "name": "Chloe Bi"
+      },
+      {
+        "authorId": "2313913576",
+        "name": "Chris Marra"
+      },
+      {
+        "authorId": "2217959550",
+        "name": "Chris McConnell"
+      },
+      {
+        "authorId": "2313909741",
+        "name": "Christian Keller"
+      },
+      {
+        "authorId": "103277778",
+        "name": "C. Touret"
+      },
+      {
+        "authorId": "2268428822",
+        "name": "Chunyang Wu"
+      },
+      {
+        "authorId": "2273700455",
+        "name": "C. Wong"
+      },
+      {
+        "authorId": "66286536",
+        "name": "Cristian Canton Ferrer"
+      },
+      {
+        "authorId": "2273414632",
+        "name": "Cyrus Nikolaidis"
+      },
+      {
+        "authorId": "2362698133",
+        "name": "Damien Allonsius"
+      },
+      {
+        "authorId": "2273006690",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "2313909437",
+        "name": "D. Pintz"
+      },
+      {
+        "authorId": "2313918299",
+        "name": "D. Livshits"
+      },
+      {
+        "authorId": "71039937",
+        "name": "David Esiobu"
+      },
+      {
+        "authorId": "2303390957",
+        "name": "Dhruv Choudhary"
+      },
+      {
+        "authorId": "2267338678",
+        "name": "Dhruv Mahajan"
+      },
+      {
+        "authorId": "1405390891",
+        "name": "Diego Garcia-Olano"
+      },
+      {
+        "authorId": "2306842160",
+        "name": "Diego Perino"
+      },
+      {
+        "authorId": "3449411",
+        "name": "Dieuwke Hupkes"
+      },
+      {
+        "authorId": "2343773325",
+        "name": "Egor Lakomkin"
+      },
+      {
+        "authorId": "1394834533",
+        "name": "Ehab A. AlBadawy"
+      },
+      {
+        "authorId": "2313918680",
+        "name": "E. Lobanova"
+      },
+      {
+        "authorId": "31461304",
+        "name": "Emily Dinan"
+      },
+      {
+        "authorId": "2268821751",
+        "name": "E. Smith"
+      },
+      {
+        "authorId": "2708577",
+        "name": "Filip Radenovic"
+      },
+      {
+        "authorId": "2313967211",
+        "name": "Frank Zhang"
+      },
+      {
+        "authorId": "2282478",
+        "name": "Gabriel Synnaeve"
+      },
+      {
+        "authorId": "2314074302",
+        "name": "Gabrielle Lee"
+      },
+      {
+        "authorId": "2313919767",
+        "name": "Georgia Lewis Anderson"
+      },
+      {
+        "authorId": "2268397654",
+        "name": "G. Nail"
+      },
+      {
+        "authorId": "51888120",
+        "name": "G. Mialon"
+      },
+      {
+        "authorId": "2264339927",
+        "name": "Guanglong Pang"
+      },
+      {
+        "authorId": "2313924900",
+        "name": "Guillem Cucurell"
+      },
+      {
+        "authorId": "2314075528",
+        "name": "Hailey Nguyen"
+      },
+      {
+        "authorId": "103405110",
+        "name": "Hannah Korevaar"
+      },
+      {
+        "authorId": "2314125186",
+        "name": "Hu Xu"
+      },
+      {
+        "authorId": "2290402489",
+        "name": "Hugo Touvron"
+      },
+      {
+        "authorId": "121929334",
+        "name": "Iliyan Zarov"
+      },
+      {
+        "authorId": "34921162",
+        "name": "Imanol Arrieta Ibarra"
+      },
+      {
+        "authorId": "2207049",
+        "name": "Isabel M. Kloumann"
+      },
+      {
+        "authorId": "2267241285",
+        "name": "Ishan Misra"
+      },
+      {
+        "authorId": "2264288587",
+        "name": "Ivan Evtimov"
+      },
+      {
+        "authorId": "1805998294",
+        "name": "Jade Copet"
+      },
+      {
+        "authorId": "2314056661",
+        "name": "Jaewon Lee"
+      },
+      {
+        "authorId": "2350357790",
+        "name": "Jan Geffert"
+      },
+      {
+        "authorId": "2313917660",
+        "name": "Jana Vranes"
+      },
+      {
+        "authorId": "2314078634",
+        "name": "Jason Park"
+      },
+      {
+        "authorId": "3222225",
+        "name": "Jay Mahadeokar"
+      },
+      {
+        "authorId": "2313919733",
+        "name": "Jeet Shah"
+      },
+      {
+        "authorId": "35721567",
+        "name": "J. V. D. Linde"
+      },
+      {
+        "authorId": "2313909388",
+        "name": "J. Billock"
+      },
+      {
+        "authorId": "2287049560",
+        "name": "Jenny Hong"
+      },
+      {
+        "authorId": "2223749565",
+        "name": "Jenya Lee"
+      },
+      {
+        "authorId": "2430465950",
+        "name": "Jeremy Fu"
+      },
+      {
+        "authorId": "31357678",
+        "name": "Jianfeng Chi"
+      },
+      {
+        "authorId": "2314428565",
+        "name": "Jianyu Huang"
+      },
+      {
+        "authorId": "2314080357",
+        "name": "Jiawen Liu"
+      },
+      {
+        "authorId": "2314602001",
+        "name": "Jie Wang"
+      },
+      {
+        "authorId": "2314078877",
+        "name": "Jiecao Yu"
+      },
+      {
+        "authorId": "1749686057",
+        "name": "Joanna Bitton"
+      },
+      {
+        "authorId": "90591458",
+        "name": "Joe Spisak"
+      },
+      {
+        "authorId": "2149161568",
+        "name": "Jongsoo Park"
+      },
+      {
+        "authorId": "2313925205",
+        "name": "Joseph Rocca"
+      },
+      {
+        "authorId": "2313912873",
+        "name": "J. Johnstun"
+      },
+      {
+        "authorId": "2273413914",
+        "name": "Joshua Saxe"
+      },
+      {
+        "authorId": "2211671694",
+        "name": "Ju-Qing Jia"
+      },
+      {
+        "authorId": "2313918589",
+        "name": "Kalyan Vasuden Alwala"
+      },
+      {
+        "authorId": "17097160",
+        "name": "K. Upasani"
+      },
+      {
+        "authorId": "2313918427",
+        "name": "Kate Plawiak"
+      },
+      {
+        "authorId": "2313920868",
+        "name": "Keqian Li"
+      },
+      {
+        "authorId": "1702066",
+        "name": "Kenneth Heafield"
+      },
+      {
+        "authorId": "2282542714",
+        "name": "Kevin R. Stone"
+      },
+      {
+        "authorId": "1405642252",
+        "name": "Khalid El-Arini"
+      },
+      {
+        "authorId": "2273645788",
+        "name": "Krithika Iyer"
+      },
+      {
+        "authorId": "2279924280",
+        "name": "Kshitiz Malik"
+      },
+      {
+        "authorId": "2313925316",
+        "name": "Kuen-ley Chiu"
+      },
+      {
+        "authorId": "2313913532",
+        "name": "Kunal Bhalla"
+      },
+      {
+        "authorId": "2313915935",
+        "name": "Lauren Rantala-Yeary"
+      },
+      {
+        "authorId": "1803520",
+        "name": "L. Maaten"
+      },
+      {
+        "authorId": "2314080073",
+        "name": "Lawrence Chen"
+      },
+      {
+        "authorId": "2313924605",
+        "name": "Liang Tan"
+      },
+      {
+        "authorId": "2313918409",
+        "name": "Liz Jenkins"
+      },
+      {
+        "authorId": "2249724552",
+        "name": "Louis Martin"
+      },
+      {
+        "authorId": "151093281",
+        "name": "Lovish Madaan"
+      },
+      {
+        "authorId": "2313912794",
+        "name": "Lubo Malo"
+      },
+      {
+        "authorId": "2040305955",
+        "name": "Lukas Blecher"
+      },
+      {
+        "authorId": "2313925619",
+        "name": "Lukas Landzaat"
+      },
+      {
+        "authorId": "2314194315",
+        "name": "Luke de Oliveira"
+      },
+      {
+        "authorId": "2000839712",
+        "name": "M. Muzzi"
+      },
+      {
+        "authorId": "2351135162",
+        "name": "Ma-hesh Pasupuleti"
+      },
+      {
+        "authorId": "152964870",
+        "name": "Mannat Singh"
+      },
+      {
+        "authorId": "2210374",
+        "name": "Manohar Paluri"
+      },
+      {
+        "authorId": "2059886128",
+        "name": "Marcin Kardas"
+      },
+      {
+        "authorId": "2313909379",
+        "name": "Mathew Oldham"
+      },
+      {
+        "authorId": "2313912870",
+        "name": "Mathieu Rita"
+      },
+      {
+        "authorId": "2313905186",
+        "name": "Maya Pavlova"
+      },
+      {
+        "authorId": "2165660870",
+        "name": "M. Kambadur"
+      },
+      {
+        "authorId": "2247796743",
+        "name": "Mike Lewis"
+      },
+      {
+        "authorId": "2310234768",
+        "name": "Min Si"
+      },
+      {
+        "authorId": "2247874378",
+        "name": "Mitesh Kumar Singh"
+      },
+      {
+        "authorId": "2314434867",
+        "name": "Mona Hassan"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "2911626",
+        "name": "Narjes Torabi"
+      },
+      {
+        "authorId": "2223756247",
+        "name": "Niko-lay Bashlykov"
+      },
+      {
+        "authorId": "3444222",
+        "name": "Nikolay Bogoychev"
+      },
+      {
+        "authorId": "22193324",
+        "name": "Niladri S. Chatterji"
+      },
+      {
+        "authorId": "2096643450",
+        "name": "Olivier Duchenne"
+      },
+      {
+        "authorId": "2166310112",
+        "name": "Onur cCelebi"
+      },
+      {
+        "authorId": "2037772368",
+        "name": "Patrick Alrassy"
+      },
+      {
+        "authorId": "2336857761",
+        "name": "Pengchuan Zhang"
+      },
+      {
+        "authorId": "2273574279",
+        "name": "Pengwei Li"
+      },
+      {
+        "authorId": "2268221163",
+        "name": "Petar Vasić"
+      },
+      {
+        "authorId": "2313915931",
+        "name": "Peter Weng"
+      },
+      {
+        "authorId": "51229603",
+        "name": "Prajjwal Bhargava"
+      },
+      {
+        "authorId": "46175439",
+        "name": "P. Dubal"
+      },
+      {
+        "authorId": "2304450089",
+        "name": "Praveen Krishnan"
+      },
+      {
+        "authorId": "2146367061",
+        "name": "Punit Singh Koura"
+      },
+      {
+        "authorId": "2214843767",
+        "name": "Puxin Xu"
+      },
+      {
+        "authorId": "2314186827",
+        "name": "Q. He"
+      },
+      {
+        "authorId": "2313912601",
+        "name": "Qingxiao Dong"
+      },
+      {
+        "authorId": "2313910187",
+        "name": "Ragavan Srinivasan"
+      },
+      {
+        "authorId": "2313925467",
+        "name": "R. Ganapathy"
+      },
+      {
+        "authorId": "98804036",
+        "name": "Ramon Calderer"
+      },
+      {
+        "authorId": "2313909428",
+        "name": "Ricardo Silveira Cabral"
+      },
+      {
+        "authorId": "1962768",
+        "name": "Robert Stojnic"
+      },
+      {
+        "authorId": "48647153",
+        "name": "R. Raileanu"
+      },
+      {
+        "authorId": "3102850",
+        "name": "Rohit Girdhar"
+      },
+      {
+        "authorId": "2313913363",
+        "name": "Rohit Patel"
+      },
+      {
+        "authorId": "2007285239",
+        "name": "Romain Sauvestre"
+      },
+      {
+        "authorId": "2313925210",
+        "name": "Ron-nie Polidoro"
+      },
+      {
+        "authorId": "1722889",
+        "name": "Roshan Sumbaly"
+      },
+      {
+        "authorId": "2110697298",
+        "name": "Ross Taylor"
+      },
+      {
+        "authorId": "2214818043",
+        "name": "Ruan Silva"
+      },
+      {
+        "authorId": "2266467782",
+        "name": "Rui Hou"
+      },
+      {
+        "authorId": "2248766592",
+        "name": "Rui Wang"
+      },
+      {
+        "authorId": "2268759462",
+        "name": "S. Hosseini"
+      },
+      {
+        "authorId": "2273416143",
+        "name": "Sa-hana Chennabasappa"
+      },
+      {
+        "authorId": "2313985129",
+        "name": "Sanjay Singh"
+      },
+      {
+        "authorId": "2277511475",
+        "name": "Sean Bell"
+      },
+      {
+        "authorId": "2281792543",
+        "name": "S. Kim"
+      },
+      {
+        "authorId": "2068070",
+        "name": "Sergey Edunov"
+      },
+      {
+        "authorId": "35557488",
+        "name": "Shaoliang Nie"
+      },
+      {
+        "authorId": "46617804",
+        "name": "Sharan Narang"
+      },
+      {
+        "authorId": "1498636613",
+        "name": "S. Raparthy"
+      },
+      {
+        "authorId": "2191455",
+        "name": "Sheng Shen"
+      },
+      {
+        "authorId": "2272846244",
+        "name": "Shengye Wan"
+      },
+      {
+        "authorId": "2116473",
+        "name": "Shruti Bhosale"
+      },
+      {
+        "authorId": "2314071119",
+        "name": "Shun Zhang"
+      },
+      {
+        "authorId": "83754395",
+        "name": "Simon Vandenhende"
+      },
+      {
+        "authorId": "47505161",
+        "name": "Soumya Batra"
+      },
+      {
+        "authorId": "2273415395",
+        "name": "Spencer Whitman"
+      },
+      {
+        "authorId": "31460313",
+        "name": "Sten Sootla"
+      },
+      {
+        "authorId": "2313909594",
+        "name": "S. Collot"
+      },
+      {
+        "authorId": "40895369",
+        "name": "Suchin Gururangan"
+      },
+      {
+        "authorId": "148016419",
+        "name": "S. Borodinsky"
+      },
+      {
+        "authorId": "2313925454",
+        "name": "Tamar Herman"
+      },
+      {
+        "authorId": "2313918585",
+        "name": "T. Fowler"
+      },
+      {
+        "authorId": "2313917558",
+        "name": "Tarek Sheasha"
+      },
+      {
+        "authorId": "2313910328",
+        "name": "Thomas Georgiou"
+      },
+      {
+        "authorId": "2073456043",
+        "name": "Thomas Scialom"
+      },
+      {
+        "authorId": "2313915815",
+        "name": "Tobias Speckbacher"
+      },
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "2313914277",
+        "name": "Tong Xiao"
+      },
+      {
+        "authorId": "46907106",
+        "name": "Ujjwal Karn"
+      },
+      {
+        "authorId": "28554843",
+        "name": "Vedanuj Goswami"
+      },
+      {
+        "authorId": "2314332514",
+        "name": "Vibhor Gupta"
+      },
+      {
+        "authorId": "34066479",
+        "name": "Vignesh Ramanathan"
+      },
+      {
+        "authorId": "2190957318",
+        "name": "Viktor Kerkez"
+      },
+      {
+        "authorId": "2313913380",
+        "name": "Vincent Gonguet"
+      },
+      {
+        "authorId": "2313918349",
+        "name": "Virginie Do"
+      },
+      {
+        "authorId": "2232955561",
+        "name": "Vish Vogeti"
+      },
+      {
+        "authorId": "2162195471",
+        "name": "Vladan Petrovic"
+      },
+      {
+        "authorId": "2266751414",
+        "name": "Weiwei Chu"
+      },
+      {
+        "authorId": "2290750668",
+        "name": "Wenhan Xiong"
+      },
+      {
+        "authorId": "2223742000",
+        "name": "Wenyin Fu"
+      },
+      {
+        "authorId": "2313913371",
+        "name": "Whit-ney Meers"
+      },
+      {
+        "authorId": "1490887583",
+        "name": "X. Martinet"
+      },
+      {
+        "authorId": "2297930724",
+        "name": "Xiaodong Wang"
+      },
+      {
+        "authorId": "2249851858",
+        "name": "X. Tan"
+      },
+      {
+        "authorId": "2285798957",
+        "name": "Xinfeng Xie"
+      },
+      {
+        "authorId": "2313910170",
+        "name": "Xuchao Jia"
+      },
+      {
+        "authorId": "2314067352",
+        "name": "Xuewei Wang"
+      },
+      {
+        "authorId": "1404341450",
+        "name": "Yaelle Goldschlag"
+      },
+      {
+        "authorId": "2334648",
+        "name": "Yashesh Gaur"
+      },
+      {
+        "authorId": "2223764353",
+        "name": "Yasmine Babaei"
+      },
+      {
+        "authorId": "148416622",
+        "name": "Yiqian Wen"
+      },
+      {
+        "authorId": "2314381758",
+        "name": "Yiwen Song"
+      },
+      {
+        "authorId": "2108473229",
+        "name": "Yuchen Zhang"
+      },
+      {
+        "authorId": "2297839847",
+        "name": "Yue Li"
+      },
+      {
+        "authorId": "2272672481",
+        "name": "Yuning Mao"
+      },
+      {
+        "authorId": "2297187212",
+        "name": "Zacharie Delpierre Coudert"
+      },
+      {
+        "authorId": "2293992938",
+        "name": "Zhengxu Yan"
+      },
+      {
+        "authorId": "2266490735",
+        "name": "Zhengxing Chen"
+      },
+      {
+        "authorId": "51149919",
+        "name": "Zoe Papakipos"
+      },
+      {
+        "authorId": "2306863572",
+        "name": "Aaditya K. Singh"
+      },
+      {
+        "authorId": "2233294011",
+        "name": "Aaron Grattafiori"
+      },
+      {
+        "authorId": "2312019070",
+        "name": "Abha Jain"
+      },
+      {
+        "authorId": "2313915967",
+        "name": "A. Kelsey"
+      },
+      {
+        "authorId": "116814432",
+        "name": "Adam Shajnfeld"
+      },
+      {
+        "authorId": "2077604116",
+        "name": "Adi Gangidi"
+      },
+      {
+        "authorId": "2313910256",
+        "name": "Adolfo Victoria"
+      },
+      {
+        "authorId": "2313913221",
+        "name": "Ahuva Goldstand"
+      },
+      {
+        "authorId": "2313925780",
+        "name": "A. Menon"
+      },
+      {
+        "authorId": "2314067298",
+        "name": "Ajay Sharma"
+      },
+      {
+        "authorId": "2313915843",
+        "name": "Alex Boesenberg"
+      },
+      {
+        "authorId": "2313910116",
+        "name": "Alex Vaughan"
+      },
+      {
+        "authorId": "14667698",
+        "name": "Alexei Baevski"
+      },
+      {
+        "authorId": "2313918472",
+        "name": "Allie Feinstein"
+      },
+      {
+        "authorId": "122882087",
+        "name": "Amanda Kallet"
+      },
+      {
+        "authorId": "2313918666",
+        "name": "Amit Sangani"
+      },
+      {
+        "authorId": "2313925473",
+        "name": "Anam Yunus"
+      },
+      {
+        "authorId": "2266838640",
+        "name": "Andrei Lupu"
+      },
+      {
+        "authorId": "2243192949",
+        "name": "Andres Alvarado"
+      },
+      {
+        "authorId": "2313925570",
+        "name": "A. Caples"
+      },
+      {
+        "authorId": "2313913152",
+        "name": "Andrew Gu"
+      },
+      {
+        "authorId": "2313919243",
+        "name": "Andrew Ho"
+      },
+      {
+        "authorId": "2282542314",
+        "name": "Andrew Poulton"
+      },
+      {
+        "authorId": "2313909933",
+        "name": "Andrew Ryan"
+      },
+      {
+        "authorId": "1453469113",
+        "name": "Ankit Ramchandani"
+      },
+      {
+        "authorId": "2313918528",
+        "name": "Annie Franco"
+      },
+      {
+        "authorId": "51912276",
+        "name": "Aparajita Saraf"
+      },
+      {
+        "authorId": "2313917455",
+        "name": "Arkabandhu Chowdhury"
+      },
+      {
+        "authorId": "2313925699",
+        "name": "Ashley Gabriel"
+      },
+      {
+        "authorId": "2313909987",
+        "name": "Ashwin Bharambe"
+      },
+      {
+        "authorId": "35198582",
+        "name": "Assaf Eisenman"
+      },
+      {
+        "authorId": "2313915928",
+        "name": "Azadeh Yazdan"
+      },
+      {
+        "authorId": "2313918606",
+        "name": "Beau James"
+      },
+      {
+        "authorId": "2313913272",
+        "name": "Ben Maurer"
+      },
+      {
+        "authorId": "2897362",
+        "name": "B. Leonhardi"
+      },
+      {
+        "authorId": "2319973",
+        "name": "Po-Yao (Bernie) Huang"
+      },
+      {
+        "authorId": "2313918673",
+        "name": "Beth Loyd"
+      },
+      {
+        "authorId": "2313909983",
+        "name": "Beto de Paola"
+      },
+      {
+        "authorId": "8005713",
+        "name": "Bhargavi Paranjape"
+      },
+      {
+        "authorId": "2314014642",
+        "name": "Bing Liu"
+      },
+      {
+        "authorId": "2314069142",
+        "name": "Bo Wu"
+      },
+      {
+        "authorId": "2313909094",
+        "name": "B. Ni"
+      },
+      {
+        "authorId": "2313916282",
+        "name": "Braden Hancock"
+      },
+      {
+        "authorId": "46240090",
+        "name": "Bram Wasti"
+      },
+      {
+        "authorId": "2313918213",
+        "name": "Brandon Spence"
+      },
+      {
+        "authorId": "2313918219",
+        "name": "B. Stojkovic"
+      },
+      {
+        "authorId": "2313925572",
+        "name": "Brian Gamido"
+      },
+      {
+        "authorId": "2313917587",
+        "name": "Britt Montalvo"
+      },
+      {
+        "authorId": "2313919256",
+        "name": "Carl Parker"
+      },
+      {
+        "authorId": "2313913658",
+        "name": "Carly Burton"
+      },
+      {
+        "authorId": "2313917281",
+        "name": "Catalina Mejia"
+      },
+      {
+        "authorId": "2313925537",
+        "name": "Changhan Wang"
+      },
+      {
+        "authorId": "2314071777",
+        "name": "Changkyu Kim"
+      },
+      {
+        "authorId": "2314072280",
+        "name": "Chao Zhou"
+      },
+      {
+        "authorId": "2313982652",
+        "name": "Chester Hu"
+      },
+      {
+        "authorId": "2290129157",
+        "name": "Ching-Hsiang Chu"
+      },
+      {
+        "authorId": "2263867885",
+        "name": "Chris Cai"
+      },
+      {
+        "authorId": "2313925773",
+        "name": "Chris Tindal"
+      },
+      {
+        "authorId": "2322150",
+        "name": "Christoph Feichtenhofer"
+      },
+      {
+        "authorId": "50986776",
+        "name": "Damon Civin"
+      },
+      {
+        "authorId": "2313913237",
+        "name": "D. Beaty"
+      },
+      {
+        "authorId": "3046707",
+        "name": "Daniel Kreymer"
+      },
+      {
+        "authorId": "2530311",
+        "name": "Shang-Wen Li"
+      },
+      {
+        "authorId": "2313916159",
+        "name": "Danny Wyatt"
+      },
+      {
+        "authorId": "2161835643",
+        "name": "David Adkins"
+      },
+      {
+        "authorId": "2313915190",
+        "name": "David Xu"
+      },
+      {
+        "authorId": "2273657478",
+        "name": "Davide Testuggine"
+      },
+      {
+        "authorId": "2311498203",
+        "name": "Delia David"
+      },
+      {
+        "authorId": "2248278031",
+        "name": "Devi Parikh"
+      },
+      {
+        "authorId": "2145259939",
+        "name": "Diana Liskovich"
+      },
+      {
+        "authorId": "2313925798",
+        "name": "Didem Foss"
+      },
+      {
+        "authorId": "2283843884",
+        "name": "Dingkang Wang"
+      },
+      {
+        "authorId": "145267619",
+        "name": "Duc Le"
+      },
+      {
+        "authorId": "2313913567",
+        "name": "Dustin Holland"
+      },
+      {
+        "authorId": "2313916034",
+        "name": "Edward Dowling"
+      },
+      {
+        "authorId": "2313916009",
+        "name": "Eissa Jamil"
+      },
+      {
+        "authorId": "2313925401",
+        "name": "Elaine Montgomery"
+      },
+      {
+        "authorId": "6072807",
+        "name": "Eleonora Presani"
+      },
+      {
+        "authorId": "2313914699",
+        "name": "Emily Hahn"
+      },
+      {
+        "authorId": "2313913986",
+        "name": "Emily Wood"
+      },
+      {
+        "authorId": "2313913160",
+        "name": "Erik Brinkman"
+      },
+      {
+        "authorId": "2064373270",
+        "name": "E. Arcaute"
+      },
+      {
+        "authorId": "2313915853",
+        "name": "Evan Dunbar"
+      },
+      {
+        "authorId": "2313918562",
+        "name": "Evan Smothers"
+      },
+      {
+        "authorId": "2314197755",
+        "name": "Fei Sun"
+      },
+      {
+        "authorId": "32653170",
+        "name": "F. Kreuk"
+      },
+      {
+        "authorId": "2313907929",
+        "name": "Feng Tian"
+      },
+      {
+        "authorId": "2160885118",
+        "name": "Firat Ozgenel"
+      },
+      {
+        "authorId": "31292058",
+        "name": "Francesco Caggioni"
+      },
+      {
+        "authorId": "144204682",
+        "name": "Francisco (Paco) Guzmán"
+      },
+      {
+        "authorId": "3360115",
+        "name": "Frank J. Kanayet"
+      },
+      {
+        "authorId": "2243280567",
+        "name": "Frank Seide"
+      },
+      {
+        "authorId": "2313913137",
+        "name": "Gabriela Medina Florez"
+      },
+      {
+        "authorId": "2313925846",
+        "name": "Gabriella Schwarz"
+      },
+      {
+        "authorId": "2313918570",
+        "name": "Gada Badeer"
+      },
+      {
+        "authorId": "2313916006",
+        "name": "Georgia Swee"
+      },
+      {
+        "authorId": "2313925677",
+        "name": "Gil Halpern"
+      },
+      {
+        "authorId": "2028300167",
+        "name": "Govind Thattai"
+      },
+      {
+        "authorId": "2313918648",
+        "name": "Grant Herman"
+      },
+      {
+        "authorId": "2266304177",
+        "name": "Grigory Sizov"
+      },
+      {
+        "authorId": "47776500",
+        "name": "Guangyi Zhang"
+      },
+      {
+        "authorId": "2289832027",
+        "name": "G. Lakshminarayanan"
+      },
+      {
+        "authorId": "2343773236",
+        "name": "Hamid Shojanazeri"
+      },
+      {
+        "authorId": "2313908554",
+        "name": "Han Zou"
+      },
+      {
+        "authorId": "2314725059",
+        "name": "Hannah Wang"
+      },
+      {
+        "authorId": "2261827291",
+        "name": "Han Zha"
+      },
+      {
+        "authorId": "30279076",
+        "name": "Haroun Habeeb"
+      },
+      {
+        "authorId": "2313913215",
+        "name": "Harrison Rudolph"
+      },
+      {
+        "authorId": "2297942583",
+        "name": "Helen Suk"
+      },
+      {
+        "authorId": "87085411",
+        "name": "Henry Aspegren"
+      },
+      {
+        "authorId": "2313910892",
+        "name": "Hunter Goldman"
+      },
+      {
+        "authorId": "2322981055",
+        "name": "Igor Molybog"
+      },
+      {
+        "authorId": "2032201719",
+        "name": "Igor Tufanov"
+      },
+      {
+        "authorId": "2127473751",
+        "name": "Irina-Elena Veliche"
+      },
+      {
+        "authorId": "2064713742",
+        "name": "Itai Gat"
+      },
+      {
+        "authorId": "2313913125",
+        "name": "J. Weissman"
+      },
+      {
+        "authorId": "2313913133",
+        "name": "James Geboski"
+      },
+      {
+        "authorId": "2313917982",
+        "name": "James Kohli"
+      },
+      {
+        "authorId": "2313909751",
+        "name": "Japhet Asher"
+      },
+      {
+        "authorId": "2131867883",
+        "name": "Jean-Baptiste Gaya"
+      },
+      {
+        "authorId": "2313917933",
+        "name": "Jeff Marcus"
+      },
+      {
+        "authorId": "2314079720",
+        "name": "Jeff Tang"
+      },
+      {
+        "authorId": "2313924089",
+        "name": "J. Chan"
+      },
+      {
+        "authorId": "2313906372",
+        "name": "Jenny Zhen"
+      },
+      {
+        "authorId": "39906022",
+        "name": "J. Reizenstein"
+      },
+      {
+        "authorId": "2313925697",
+        "name": "J. Teboul"
+      },
+      {
+        "authorId": "2314712137",
+        "name": "J. Zhong"
+      },
+      {
+        "authorId": "2314696266",
+        "name": "Jian Jin"
+      },
+      {
+        "authorId": "2314170063",
+        "name": "Jingyi Yang"
+      },
+      {
+        "authorId": "2313921009",
+        "name": "Joe Cummings"
+      },
+      {
+        "authorId": "2313916920",
+        "name": "J. Carvill"
+      },
+      {
+        "authorId": "2313918017",
+        "name": "Jon Shepard"
+      },
+      {
+        "authorId": "2313925667",
+        "name": "J. McPhie"
+      },
+      {
+        "authorId": "2314554743",
+        "name": "J. Torres"
+      },
+      {
+        "authorId": "2313925786",
+        "name": "Josh Ginsburg"
+      },
+      {
+        "authorId": "2314072216",
+        "name": "Junjie Wang"
+      },
+      {
+        "authorId": "2115598555",
+        "name": "Kaixing(Kai) Wu"
+      },
+      {
+        "authorId": "2313913073",
+        "name": "U. KamHou"
+      },
+      {
+        "authorId": "2313917036",
+        "name": "Karan Saxena"
+      },
+      {
+        "authorId": "2313913208",
+        "name": "Karthik Prasad"
+      },
+      {
+        "authorId": "40267343",
+        "name": "Kartikay Khandelwal"
+      },
+      {
+        "authorId": "2158995926",
+        "name": "Katayoun Zand"
+      },
+      {
+        "authorId": "2313926373",
+        "name": "Kathy Matosich"
+      },
+      {
+        "authorId": "2262920209",
+        "name": "K. Veeraraghavan"
+      },
+      {
+        "authorId": "2313925800",
+        "name": "Kelly Michelena"
+      },
+      {
+        "authorId": "2313920868",
+        "name": "Keqian Li"
+      },
+      {
+        "authorId": "2314883034",
+        "name": "Kun Huang"
+      },
+      {
+        "authorId": "2313918835",
+        "name": "Kunal Chawla"
+      },
+      {
+        "authorId": "1410624139",
+        "name": "Kushal Lakhotia"
+      },
+      {
+        "authorId": "2314883036",
+        "name": "Kyle Huang"
+      },
+      {
+        "authorId": "2197533966",
+        "name": "Lailin Chen"
+      },
+      {
+        "authorId": "2313913092",
+        "name": "Lakshya Garg"
+      },
+      {
+        "authorId": "2313926370",
+        "name": "A. Lavender"
+      },
+      {
+        "authorId": "2314073913",
+        "name": "Leandro Silva"
+      },
+      {
+        "authorId": "2313926731",
+        "name": "Lee Bell"
+      },
+      {
+        "authorId": "2313951052",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2314460078",
+        "name": "Liangpeng Guo"
+      },
+      {
+        "authorId": "2269696579",
+        "name": "Licheng Yu"
+      },
+      {
+        "authorId": "2313918301",
+        "name": "Liron Moshkovich"
+      },
+      {
+        "authorId": "2331511165",
+        "name": "Luca Wehrstedt"
+      },
+      {
+        "authorId": "2072010",
+        "name": "Madian Khabsa"
+      },
+      {
+        "authorId": "2313918577",
+        "name": "Manav Avalani"
+      },
+      {
+        "authorId": "2273002871",
+        "name": "M. Bhatt"
+      },
+      {
+        "authorId": "2010057",
+        "name": "M. Tsimpoukelli"
+      },
+      {
+        "authorId": "98800979",
+        "name": "Martynas Mankus"
+      },
+      {
+        "authorId": "2093466943",
+        "name": "Matan Hasson"
+      },
+      {
+        "authorId": "2343773752",
+        "name": "M. Lennie"
+      },
+      {
+        "authorId": "2248340971",
+        "name": "Matthias Reso"
+      },
+      {
+        "authorId": "2313918566",
+        "name": "M. Groshev"
+      },
+      {
+        "authorId": "2290016941",
+        "name": "M. Naumov"
+      },
+      {
+        "authorId": "52097509",
+        "name": "Maya Lathi"
+      },
+      {
+        "authorId": "2313926376",
+        "name": "Meghan Keneally"
+      },
+      {
+        "authorId": "1727524",
+        "name": "M. Seltzer"
+      },
+      {
+        "authorId": "1806291",
+        "name": "Michal Valko"
+      },
+      {
+        "authorId": "2313917797",
+        "name": "Michelle Restrepo"
+      },
+      {
+        "authorId": "2314105463",
+        "name": "M. Patel"
+      },
+      {
+        "authorId": "2313909990",
+        "name": "Mik Vyatskov"
+      },
+      {
+        "authorId": "49089678",
+        "name": "Mikayel Samvelyan"
+      },
+      {
+        "authorId": "2314111844",
+        "name": "Mike Clark"
+      },
+      {
+        "authorId": "2313910746",
+        "name": "M. Macey"
+      },
+      {
+        "authorId": "2314078208",
+        "name": "Mike Wang"
+      },
+      {
+        "authorId": "147487949",
+        "name": "Miquel Jubert Hermoso"
+      },
+      {
+        "authorId": "2313913313",
+        "name": "Mo Metanat"
+      },
+      {
+        "authorId": "32371083",
+        "name": "Mohammad Rastegari"
+      },
+      {
+        "authorId": "2313910172",
+        "name": "Mun-ish Bansal"
+      },
+      {
+        "authorId": "2265554054",
+        "name": "N. Santhanam"
+      },
+      {
+        "authorId": "2313916856",
+        "name": "Natascha Parks"
+      },
+      {
+        "authorId": "2313910535",
+        "name": "Natasha White"
+      },
+      {
+        "authorId": "2313918859",
+        "name": "Navy-ata Bawa"
+      },
+      {
+        "authorId": "40943290",
+        "name": "Nayan Singhal"
+      },
+      {
+        "authorId": "2313909893",
+        "name": "Nick Egebo"
+      },
+      {
+        "authorId": "1746841",
+        "name": "Nicolas Usunier"
+      },
+      {
+        "authorId": "2285597551",
+        "name": "Nikolay Pavlovich Laptev"
+      },
+      {
+        "authorId": "2313910396",
+        "name": "Ning Dong"
+      },
+      {
+        "authorId": "2314687456",
+        "name": "Ning Zhang"
+      },
+      {
+        "authorId": "2313916655",
+        "name": "Norman Cheng"
+      },
+      {
+        "authorId": "1405690366",
+        "name": "Oleg Chernoguz"
+      },
+      {
+        "authorId": "2313918980",
+        "name": "O. Hart"
+      },
+      {
+        "authorId": "1778909324",
+        "name": "Omkar Salpekar"
+      },
+      {
+        "authorId": "1729960",
+        "name": "Ozlem Kalinli"
+      },
+      {
+        "authorId": "2313916098",
+        "name": "Parkin Kent"
+      },
+      {
+        "authorId": "2313909999",
+        "name": "Parth Parekh"
+      },
+      {
+        "authorId": "2313915995",
+        "name": "Paul Saab"
+      },
+      {
+        "authorId": "2307470796",
+        "name": "Pavan Balaji"
+      },
+      {
+        "authorId": "31915793",
+        "name": "Pe-dro Rittner"
+      },
+      {
+        "authorId": "14171685",
+        "name": "Philip Bontrager"
+      },
+      {
+        "authorId": "2313919367",
+        "name": "Pierre Roux"
+      },
+      {
+        "authorId": "2257254817",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2163709899",
+        "name": "Polina Zvyagina"
+      },
+      {
+        "authorId": "2459737",
+        "name": "Prashant Ratanchandani"
+      },
+      {
+        "authorId": "41020300",
+        "name": "P. Yuvraj"
+      },
+      {
+        "authorId": "2313916229",
+        "name": "Qian Liang"
+      },
+      {
+        "authorId": "2313909804",
+        "name": "Rachad Alao"
+      },
+      {
+        "authorId": "2313934481",
+        "name": "R. Rodriguez"
+      },
+      {
+        "authorId": "14714641",
+        "name": "Rafi Ayub"
+      },
+      {
+        "authorId": "2313909891",
+        "name": "Raghotham Murthy"
+      },
+      {
+        "authorId": "2313918294",
+        "name": "Raghu Nayani"
+      },
+      {
+        "authorId": "2264459586",
+        "name": "Rahul Mitra"
+      },
+      {
+        "authorId": "2313919671",
+        "name": "Raymond Li"
+      },
+      {
+        "authorId": "2313918488",
+        "name": "Rebekkah Hogan"
+      },
+      {
+        "authorId": "2313913081",
+        "name": "Robin Battey"
+      },
+      {
+        "authorId": "46886013",
+        "name": "Rocky Wang"
+      },
+      {
+        "authorId": "2313918943",
+        "name": "R. Maheswari"
+      },
+      {
+        "authorId": "1410913697",
+        "name": "Russ Howes"
+      },
+      {
+        "authorId": "1905713",
+        "name": "Ruty Rinott"
+      },
+      {
+        "authorId": "2313916859",
+        "name": "Sai Jayesh Bondu"
+      },
+      {
+        "authorId": "19200118",
+        "name": "Samyak Datta"
+      },
+      {
+        "authorId": "2313913104",
+        "name": "Sara Chugh"
+      },
+      {
+        "authorId": "4320304",
+        "name": "Sara Hunt"
+      },
+      {
+        "authorId": "2313919311",
+        "name": "Sargun Dhillon"
+      },
+      {
+        "authorId": "2105932549",
+        "name": "S. Sidorov"
+      },
+      {
+        "authorId": "3315729",
+        "name": "S. Pan"
+      },
+      {
+        "authorId": "2368297117",
+        "name": "Saurabh Verma"
+      },
+      {
+        "authorId": "2314406059",
+        "name": "Seiji Yamamoto"
+      },
+      {
+        "authorId": "48347720",
+        "name": "Sharadh Ramaswamy"
+      },
+      {
+        "authorId": "2313926214",
+        "name": "Shaun Lindsay"
+      },
+      {
+        "authorId": "2314693028",
+        "name": "Sheng Feng"
+      },
+      {
+        "authorId": "2311565327",
+        "name": "Shenghao Lin"
+      },
+      {
+        "authorId": "2815926",
+        "name": "Shengxin Zha"
+      },
+      {
+        "authorId": "2313916766",
+        "name": "S. Shankar"
+      },
+      {
+        "authorId": "2237076180",
+        "name": "Shuqiang Zhang"
+      },
+      {
+        "authorId": "2237101143",
+        "name": "Sinong Wang"
+      },
+      {
+        "authorId": "50230355",
+        "name": "Sneha Agarwal"
+      },
+      {
+        "authorId": "2423558",
+        "name": "Soji Sajuyigbe"
+      },
+      {
+        "authorId": "2127604",
+        "name": "Soumith Chintala"
+      },
+      {
+        "authorId": "2313919129",
+        "name": "Stephanie Max"
+      },
+      {
+        "authorId": "2125208891",
+        "name": "Stephen Chen"
+      },
+      {
+        "authorId": "2313926357",
+        "name": "Steve Kehoe"
+      },
+      {
+        "authorId": "2313909787",
+        "name": "Steve Satterfield"
+      },
+      {
+        "authorId": "2313918283",
+        "name": "Sudarshan Govindaprasad"
+      },
+      {
+        "authorId": "2157683980",
+        "name": "S. Gupta"
+      },
+      {
+        "authorId": "2286537482",
+        "name": "Sung-Bae Cho"
+      },
+      {
+        "authorId": "2313919117",
+        "name": "Sunny Virk"
+      },
+      {
+        "authorId": "2313914940",
+        "name": "Suraj Subramanian"
+      },
+      {
+        "authorId": "89754631",
+        "name": "Sy Choudhury"
+      },
+      {
+        "authorId": "2313908725",
+        "name": "Sydney Goldman"
+      },
+      {
+        "authorId": "2211633",
+        "name": "Tal Remez"
+      },
+      {
+        "authorId": "2071335303",
+        "name": "Tamar Glaser"
+      },
+      {
+        "authorId": "2313910221",
+        "name": "Tamara Best"
+      },
+      {
+        "authorId": "2189305275",
+        "name": "Thilo Kohler"
+      },
+      {
+        "authorId": "2313919760",
+        "name": "Thomas Robinson"
+      },
+      {
+        "authorId": "2314332791",
+        "name": "Tianhe Li"
+      },
+      {
+        "authorId": "1993655237",
+        "name": "Tianjun Zhang"
+      },
+      {
+        "authorId": "2313919132",
+        "name": "Tim Matthews"
+      },
+      {
+        "authorId": "2313919289",
+        "name": "Timothy Chou"
+      },
+      {
+        "authorId": "2313919174",
+        "name": "Tzook Shaked"
+      },
+      {
+        "authorId": "2273415095",
+        "name": "Varun Vontimitta"
+      },
+      {
+        "authorId": "2313918541",
+        "name": "Victoria O Ajayi"
+      },
+      {
+        "authorId": "2313910202",
+        "name": "Victoria Montanez"
+      },
+      {
+        "authorId": "2313916470",
+        "name": "Vijai Mohan"
+      },
+      {
+        "authorId": "2314056846",
+        "name": "Vinay Kumar"
+      },
+      {
+        "authorId": "71203676",
+        "name": "Vishal Mangla"
+      },
+      {
+        "authorId": "2313685593",
+        "name": "Vlad Ionescu"
+      },
+      {
+        "authorId": "144386035",
+        "name": "V. Poenaru"
+      },
+      {
+        "authorId": "2051654054",
+        "name": "Vlad T. Mihailescu"
+      },
+      {
+        "authorId": "2313920446",
+        "name": "V. Ivanov"
+      },
+      {
+        "authorId": "2293767405",
+        "name": "Wei Li"
+      },
+      {
+        "authorId": "2314069334",
+        "name": "Wenchen Wang"
+      }
+    ],
+    "abstract": "Modern artificial intelligence (AI) systems are powered by foundation models. This paper presents a new set of foundation models, called Llama 3. It is a herd of language models that natively support multilinguality, coding, reasoning, and tool usage. Our largest model is a dense Transformer with 405B parameters and a context window of up to 128K tokens. This paper presents an extensive empirical evaluation of Llama 3. We find that Llama 3 delivers comparable quality to leading language models such as GPT-4 on a plethora of tasks. We publicly release Llama 3, including pre-trained and post-trained versions of the 405B parameter language model and our Llama Guard 3 model for input and output safety. The paper also presents the results of experiments in which we integrate image, video, and speech capabilities into Llama 3 via a compositional approach. We observe this approach performs competitively with the state-of-the-art on image, video, and speech recognition tasks. The resulting models are not yet being broadly released as they are still under development.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "212d41449bc2133537234d75cfc2bad9c7a9370a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2406-07492",
+      "ArXiv": "2406.07492",
+      "DOI": "10.48550/arXiv.2406.07492",
+      "CorpusId": 270380279
+    },
+    "title": "Paraphrasing in Affirmative Terms Improves Negation Understanding",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.07492, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261083322",
+        "name": "MohammadHossein Rezaei"
+      },
+      {
+        "authorId": "2305685541",
+        "name": "Eduardo Blanco"
+      }
+    ],
+    "abstract": "Negation is a common linguistic phenomenon. Yet language models face challenges with negation in many natural language understanding tasks such as question answering and natural language inference. In this paper, we experiment with seamless strategies that incorporate affirmative interpretations (i.e., paraphrases without negation) to make models more robust against negation. Crucially, our affirmative interpretations are obtained automatically. We show improvements with CondaQA, a large corpus requiring reasoning with negation, and five natural language understanding tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d2fcc37adf54e92a46f468f996a1c4c510963ae8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2406-05494",
+      "ArXiv": "2406.05494",
+      "DOI": "10.48550/arXiv.2406.05494",
+      "CorpusId": 270371030
+    },
+    "title": "Investigating and Addressing Hallucinations of LLMs in Tasks Involving Negation",
+    "venue": "Proceedings of the 5th Workshop on Trustworthy NLP (TrustNLP 2025)",
+    "year": 2024,
+    "citationCount": 23,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.05494, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2067056655",
+        "name": "Neeraj Varshney"
+      },
+      {
+        "authorId": "2305602897",
+        "name": "Satyam Raj"
+      },
+      {
+        "authorId": "2305617080",
+        "name": "Venkatesh Mishra"
+      },
+      {
+        "authorId": "145328123",
+        "name": "Agneet Chatterjee"
+      },
+      {
+        "authorId": "2154678047",
+        "name": "Ritika Sarkar"
+      },
+      {
+        "authorId": "2297846204",
+        "name": "Amir Saeidi"
+      },
+      {
+        "authorId": "2064619864",
+        "name": "Chitta Baral"
+      }
+    ],
+    "abstract": "Large Language Models (LLMs) have achieved remarkable performance across a wide variety of natural language tasks. However, they have been shown to suffer from a critical limitation pertinent to 'hallucination' in their output. Recent research has focused on investigating and addressing this problem for a variety of tasks such as biography generation, question answering, abstractive summarization, and dialogue generation. However, the crucial aspect pertaining to 'negation' has remained considerably underexplored. Negation is important because it adds depth and nuance to the understanding of language and is also crucial for logical reasoning and inference. In this work, we address the above limitation and particularly focus on studying the impact of negation in LLM hallucinations. Specifically, we study four tasks with negation: 'false premise completion', 'constrained fact generation', 'multiple choice question answering', and 'fact generation'. We show that open-source state-of-the-art LLMs such as LLaMA-2-chat, Vicuna, and Orca-2 hallucinate considerably on all these tasks involving negation which underlines a critical shortcoming of these models. Addressing this problem, we further study numerous strategies to mitigate these hallucinations and demonstrate their impact.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "53a803388e83ae89261624099d7be4287ace67cb",
+    "externalIds": {
+      "ArXiv": "2405.04434",
+      "DBLP": "journals/corr/abs-2405-04434",
+      "DOI": "10.48550/arXiv.2405.04434",
+      "CorpusId": 269613809
+    },
+    "title": "DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1117,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.04434, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144485528",
+        "name": "Zhihong Shao"
+      },
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "2278834796",
+        "name": "Daya Guo"
+      },
+      {
+        "authorId": "2243360876",
+        "name": "Zihan Wang"
+      },
+      {
+        "authorId": "2238628841",
+        "name": "Huajian Xin"
+      }
+    ],
+    "abstract": "We present DeepSeek-V2, a strong Mixture-of-Experts (MoE) language model characterized by economical training and efficient inference. It comprises 236B total parameters, of which 21B are activated for each token, and supports a context length of 128K tokens. DeepSeek-V2 adopts innovative architectures including Multi-head Latent Attention (MLA) and DeepSeekMoE. MLA guarantees efficient inference through significantly compressing the Key-Value (KV) cache into a latent vector, while DeepSeekMoE enables training strong models at an economical cost through sparse computation. Compared with DeepSeek 67B, DeepSeek-V2 achieves significantly stronger performance, and meanwhile saves 42.5% of training costs, reduces the KV cache by 93.3%, and boosts the maximum generation throughput to 5.76 times. We pretrain DeepSeek-V2 on a high-quality and multi-source corpus consisting of 8.1T tokens, and further perform Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) to fully unlock its potential. Evaluation results show that, even with only 21B activated parameters, DeepSeek-V2 and its chat versions still achieve top-tier performance among open-source models.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a4b94716e3691357b19ed05f0f178f6accc05a76",
+    "externalIds": {
+      "DBLP": "journals/semweb/Usbeck0P0SKMH0N24",
+      "DOI": "10.3233/sw-233471",
+      "CorpusId": 265577096
+    },
+    "title": "QALD-10 - The 10th challenge on question answering over linked data: Shifting from DBpedia to Wikidata as a KG for KGQA",
+    "venue": "Semantic Web",
+    "year": 2023,
+    "citationCount": 51,
+    "openAccessPdf": {
+      "url": "https://content.iospress.com:443/download/semantic-web/sw233471?id=semantic-web%2Fsw233471",
+      "status": "HYBRID",
+      "license": "unspecified-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3233/sw-233471?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3233/sw-233471, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2269298565",
+        "name": "Ricardo Usbeck"
+      },
+      {
+        "authorId": "2315556480",
+        "name": "Xi Yan"
+      },
+      {
+        "authorId": "145757722",
+        "name": "A. Perevalov"
+      },
+      {
+        "authorId": "1697318",
+        "name": "Longquan Jiang"
+      },
+      {
+        "authorId": "2269249456",
+        "name": "Julius Schulz"
+      },
+      {
+        "authorId": "2180786421",
+        "name": "Angelie Kraft"
+      },
+      {
+        "authorId": "2269309801",
+        "name": "Cedric Möller"
+      },
+      {
+        "authorId": "2269423146",
+        "name": "Junbo Huang"
+      },
+      {
+        "authorId": "2286607561",
+        "name": "Jan Reineke"
+      },
+      {
+        "authorId": "7327160",
+        "name": "Axel-Cyrille Ngonga Ngomo"
+      },
+      {
+        "authorId": "144126656",
+        "name": "Muhammad Saleem"
+      },
+      {
+        "authorId": "2268768331",
+        "name": "A. Both"
+      }
+    ],
+    "abstract": "Knowledge Graph Question Answering (KGQA) has gained attention from both industry and academia over the past decade. Researchers proposed a substantial amount of benchmarking datasets with different properties, pushing the development in this field forward. Many of these benchmarks depend on Freebase, DBpedia, or Wikidata. However, KGQA benchmarks that depend on Freebase and DBpedia are gradually less studied and used, because Freebase is defunct and DBpedia lacks the structural validity of Wikidata. Therefore, research is gravitating toward Wikidata-based benchmarks. That is, new KGQA benchmarks are created on the basis of Wikidata and existing ones are migrated. We present a new, multilingual, complex KGQA benchmarking dataset as the 10th part of the Question Answering over Linked Data (QALD) benchmark series. This corpus formerly depended on DBpedia. Since QALD serves as a base for many machine-generated benchmarks, we increased the size and adjusted the benchmark to Wikidata and its ranking mechanism of properties. These measures foster novel KGQA developments by more demanding benchmarks. Creating a benchmark from scratch or migrating it from DBpedia to Wikidata is non-trivial due to the complexity of the Wikidata knowledge graph, mapping issues between different languages, and the ranking mechanism of properties using qualifiers. We present our creation strategy and the challenges we faced that will assist other researchers in their future work. Our case study, in the form of a conference challenge, is accompanied by an in-depth analysis of the created benchmark.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ed5d6c4ee7161f951f09c4bd16046010c4acb47e",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2310-14868",
+      "ArXiv": "2310.14868",
+      "DOI": "10.48550/arXiv.2310.14868",
+      "CorpusId": 264436421
+    },
+    "title": "Assessing Step-by-Step Reasoning against Lexical Negation: A Case Study on Syllogism",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.14868, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2261380965",
+        "name": "Mengyu Ye"
+      },
+      {
+        "authorId": "83446147",
+        "name": "Tatsuki Kuribayashi"
+      },
+      {
+        "authorId": "2260652898",
+        "name": "Jun Suzuki"
+      },
+      {
+        "authorId": "2060291042",
+        "name": "Goro Kobayashi"
+      },
+      {
+        "authorId": "32850099",
+        "name": "Hiroaki Funayama"
+      }
+    ],
+    "abstract": "Large language models (LLMs) take advantage of step-by-step reasoning instructions, e.g., chain-of-thought (CoT) prompting. Building on this, their ability to perform CoT-style reasoning robustly is of interest from a probing perspective. In this study, we inspect the step-by-step reasoning ability of LLMs with a focus on negation, which is a core linguistic phenomenon that is difficult to process. In particular, we introduce several controlled settings (e.g., reasoning in case of fictional entities) to evaluate the logical reasoning abilities of the models. We observed that dozens of modern LLMs were not robust against lexical negation (e.g., plausible ->implausible) when performing CoT-style reasoning, and the results highlight unique limitations in each LLM family.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b401c0c25742405cf4d7162f2ce264aa409544f2",
+    "externalIds": {
+      "DBLP": "conf/wsdm/KaiserRW24",
+      "ArXiv": "2310.13505",
+      "DOI": "10.1145/3616855.3635822",
+      "CorpusId": 264406240
+    },
+    "title": "Robust Training for Conversational Question Answering Models with Reinforced Reformulation Generation",
+    "venue": "Web Search and Data Mining",
+    "year": 2023,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3616855.3635822",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.13505, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51189123",
+        "name": "Magdalena Kaiser"
+      },
+      {
+        "authorId": "40075164",
+        "name": "Rishiraj Saha Roy"
+      },
+      {
+        "authorId": "1751591",
+        "name": "G. Weikum"
+      }
+    ],
+    "abstract": "Models for conversational question answering (ConvQA) over knowledge graphs (KGs) are usually trained and tested on benchmarks of gold QA pairs. This implies that training is limited to surface forms seen in the respective datasets, and evaluation is on a small set of held-out questions. Through our proposed framework REIGN, we take several steps to remedy this restricted learning setup. First, we systematically generate reformulations of training questions to increase robustness of models to surface form variations. This is a particularly challenging problem, given the incomplete nature of such questions. Second, we guide ConvQA models towards higher performance by feeding it only those reformulations that help improve their answering quality, using deep reinforcement learning. Third, we demonstrate the viability of training major model components on one benchmark and applying them zero-shot to another. Finally, for a rigorous evaluation of robustness for trained models, we use and release large numbers of diverse reformulations generated by prompting ChatGPT for benchmark test sets (resulting in 20x increase in sizes). Our findings show that ConvQA models with robust training via reformulations significantly outperform those with standard training from gold QA pairs only.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b9fc37adcc251571b88e9bba1fc2cad2a6d0f595",
+    "externalIds": {
+      "DBLP": "conf/sigir/AtifKD23",
+      "DOI": "10.1145/3539618.3591698",
+      "CorpusId": 259949829
+    },
+    "title": "BeamQA: Multi-hop Knowledge Graph Question Answering with Sequence-to-Sequence Prediction and Beam Search",
+    "venue": "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": 2023,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3539618.3591698?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3539618.3591698, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1491789788",
+        "name": "Farah Atif"
+      },
+      {
+        "authorId": "2223742749",
+        "name": "Ola El Khatib"
+      },
+      {
+        "authorId": "1695677",
+        "name": "D. Difallah"
+      }
+    ],
+    "abstract": "Knowledge Graph Question Answering (KGQA) is a task that aims to answer natural language queries by extracting facts from a knowledge graph. Current state-of-the-art techniques for KGQA rely on text-based information from graph entity and relations labels, as well as external textual corpora. By reasoning over multiple edges in the graph, these can accurately rank and return the most relevant entities. However, one of the limitations of these methods is that they cannot handle the inherent incompleteness of real-world knowledge graphs and may lead to inaccurate answers due to missing edges. To address this issue, recent advances in graph representation learning have led to the development of systems that can use link prediction techniques to handle missing edges probabilistically, allowing the system to reason with incomplete information. However, existing KGQA frameworks that use such techniques often depend on learning a transformation from the query representation to the graph embedding space, which requires access to a large training dataset. We present BeamQA, an approach that overcomes these limitations by combining a sequence-to-sequence prediction model with beam search execution in the embedding space. Our model uses a pre-trained large language model and synthetic question generation. Our experiments demonstrate the effectiveness of BeamQA when compared to other KGQA methods on two knowledge graph question-answering datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c7184f9a914dbfbad59faa5aeaf9ba7019dfcf74",
+    "externalIds": {
+      "ArXiv": "2307.07697",
+      "DBLP": "conf/iclr/SunXTW0GNSG24",
+      "CorpusId": 263333907
+    },
+    "title": "Think-on-Graph: Deep and Responsible Reasoning of Large Language Model on Knowledge Graph",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 243,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.07697, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2202454665",
+        "name": "Jiashuo Sun"
+      },
+      {
+        "authorId": "2250617116",
+        "name": "Chengjin Xu"
+      },
+      {
+        "authorId": "2253747495",
+        "name": "Lumingyuan Tang"
+      },
+      {
+        "authorId": "2211588034",
+        "name": "Sai Wang"
+      },
+      {
+        "authorId": "2249759096",
+        "name": "Chen Lin"
+      },
+      {
+        "authorId": "2254121688",
+        "name": "Yeyun Gong"
+      },
+      {
+        "authorId": "2249757348",
+        "name": "Lionel M. Ni"
+      },
+      {
+        "authorId": "93596028",
+        "name": "H. Shum"
+      },
+      {
+        "authorId": "2188226506",
+        "name": "Jian Guo"
+      }
+    ],
+    "abstract": "Although large language models (LLMs) have achieved significant success in various tasks, they often struggle with hallucination problems, especially in scenarios requiring deep and responsible reasoning. These issues could be partially addressed by introducing external knowledge graphs (KG) in LLM reasoning. In this paper, we propose a new LLM-KG integrating paradigm ``$\\hbox{LLM}\\otimes\\hbox{KG}$'' which treats the LLM as an agent to interactively explore related entities and relations on KGs and perform reasoning based on the retrieved knowledge. We further implement this paradigm by introducing a new approach called Think-on-Graph (ToG), in which the LLM agent iteratively executes beam search on KG, discovers the most promising reasoning paths, and returns the most likely reasoning results. We use a number of well-designed experiments to examine and illustrate the following advantages of ToG: 1) compared with LLMs, ToG has better deep reasoning power; 2) ToG has the ability of knowledge traceability and knowledge correctability by leveraging LLMs reasoning and expert feedback; 3) ToG provides a flexible plug-and-play framework for different LLMs, KGs and prompting strategies without any additional training cost; 4) the performance of ToG with small LLM models could exceed large LLM such as GPT-4 in certain scenarios and this reduces the cost of LLM deployment and application. As a training-free method with lower computational cost and better generality, ToG achieves overall SOTA in 6 out of 9 datasets where most previous SOTAs rely on additional training.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "438a0221379aacd53f4d8af3b44dfdb2cc3ddab0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-08189",
+      "ACL": "2023.starsem-1.10",
+      "ArXiv": "2306.08189",
+      "DOI": "10.48550/arXiv.2306.08189",
+      "CorpusId": 259164714
+    },
+    "title": "Language models are not naysayers: an analysis of language models on negation benchmarks",
+    "venue": "STARSEM",
+    "year": 2023,
+    "citationCount": 93,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2306.08189",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.08189, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153574160",
+        "name": "Thinh Hung Truong"
+      },
+      {
+        "authorId": "2112644025",
+        "name": "Timothy Baldwin"
+      },
+      {
+        "authorId": "1404100607",
+        "name": "K. Verspoor"
+      },
+      {
+        "authorId": "1630460898",
+        "name": "Trevor Cohn"
+      }
+    ],
+    "abstract": "Negation has been shown to be a major bottleneck for masked language models, such as BERT. However, whether this finding still holds for larger-sized auto-regressive language models (“LLMs”) has not been studied comprehensively. With the ever-increasing volume of research and applications of LLMs, we take a step back to evaluate the ability of current-generation LLMs to handle negation, a fundamental linguistic phenomenon that is central to language understanding. We evaluate different LLMs - including the open-source GPT-neo, GPT-3, and InstructGPT - against a wide range of negation benchmarks. Through systematic experimentation with varying model sizes and prompts, we show that LLMs have several limitations including insensitivity to the presence of negation, an inability to capture the lexical semantics of negation, and a failure to reason under negation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "00337d7d7fc679cb4959aead3204b0fb9c6a5ef2",
+    "externalIds": {
+      "ACL": "2023.acl-short.154",
+      "DBLP": "journals/corr/abs-2305-19426",
+      "ArXiv": "2305.19426",
+      "DOI": "10.18653/v1/2023.acl-short.154",
+      "CorpusId": 258987746
+    },
+    "title": "ScoNe: Benchmarking Negation Reasoning in Language Models With Fine-Tuning and In-Context Learning",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 25,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.acl-short.154.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.19426, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2193561169",
+        "name": "Jingyuan Selena She"
+      },
+      {
+        "authorId": "144922861",
+        "name": "Christopher Potts"
+      },
+      {
+        "authorId": "1799822",
+        "name": "Sam Bowman"
+      },
+      {
+        "authorId": "80833908",
+        "name": "Atticus Geiger"
+      }
+    ],
+    "abstract": "A number of recent benchmarks seek to assess how well models handle natural language negation. However, these benchmarks lack the controlled example paradigms that would allow us to infer whether a model had truly learned how negation morphemes semantically scope. To fill these analytical gaps, we present the Scoped Negation NLI (ScoNe-NLI) benchmark, which contains contrast sets of six examples with up to two negations where either zero, one, or both negative morphemes affect the NLI label. We use ScoNe-NLI to assess fine-tuning and in-context learning strategies. We find that RoBERTa and DeBERTa models solve ScoNe-NLI after many shot fine-tuning. For in-context learning, we test the latest InstructGPT models and find that most prompt strategies are not successful, including those using step-by-step reasoning. To better understand this result, we extend ScoNe with ScoNe-NLG, a sentence completion test set that embeds negation reasoning in short narratives. Here, InstructGPT is successful, which reveals the model can correctly reason about negation, but struggles to do so on NLI examples outside of its core pretraining regime.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e0f27336698c84709bd60b6b7f4ce588cbae66bf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-09645",
+      "ArXiv": "2305.09645",
+      "DOI": "10.48550/arXiv.2305.09645",
+      "CorpusId": 258714753
+    },
+    "title": "StructGPT: A General Framework for Large Language Model to Reason over Structured Data",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2023,
+    "citationCount": 511,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.09645",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.09645, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118240359",
+        "name": "Jinhao Jiang"
+      },
+      {
+        "authorId": "1423651904",
+        "name": "Kun Zhou"
+      },
+      {
+        "authorId": "2198280871",
+        "name": "Zican Dong"
+      },
+      {
+        "authorId": "1657563745",
+        "name": "Keming Ye"
+      },
+      {
+        "authorId": "2542603",
+        "name": "Wayne Xin Zhao"
+      },
+      {
+        "authorId": "153693432",
+        "name": "Ji-rong Wen"
+      }
+    ],
+    "abstract": "In this paper, we study how to improve the zero-shot reasoning ability of large language models~(LLMs) over structured data in a unified way. Inspired by the study on tool augmentation for LLMs, we develop an \\emph{Iterative Reading-then-Reasoning~(IRR)} approach for solving question answering tasks based on structured data, called \\textbf{StructGPT}. In our approach, we construct the specialized function to collect relevant evidence from structured data (\\ie \\emph{reading}), and let LLMs concentrate the reasoning task based on the collected information (\\ie \\emph{reasoning}). Specially, we propose an \\emph{invoking-linearization-generation} procedure to support LLMs in reasoning on the structured data with the help of the external interfaces. By iterating this procedures with provided interfaces, our approach can gradually approach the target answer to a given query. Extensive experiments conducted on three types of structured data demonstrate the effectiveness of our approach, which can significantly boost the performance of ChatGPT and achieve comparable performance against the full-data supervised-tuning baselines. Our codes and data are publicly available at~\\url{https://github.com/RUCAIBox/StructGPT}.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0139e689add40a61c9454674edac4e93702aa5fc",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-01750",
+      "ArXiv": "2305.01750",
+      "ACL": "2023.acl-long.385",
+      "DOI": "10.48550/arXiv.2305.01750",
+      "CorpusId": 258461017
+    },
+    "title": "Few-shot In-context Learning on Knowledge Base Question Answering",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2023,
+    "citationCount": 145,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.01750",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.01750, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2157466550",
+        "name": "Tianle Li"
+      },
+      {
+        "authorId": "2461713",
+        "name": "Xueguang Ma"
+      },
+      {
+        "authorId": "14697077",
+        "name": "Alex Zhuang"
+      },
+      {
+        "authorId": "2022231256",
+        "name": "Yu Gu"
+      },
+      {
+        "authorId": "1758652",
+        "name": "Yu Su"
+      },
+      {
+        "authorId": "2928777",
+        "name": "Wenhu Chen"
+      }
+    ],
+    "abstract": "Question answering over knowledge bases is considered a difficult problem due to the challenge of generalizing to a wide variety of possible natural language questions. Additionally, the heterogeneity of knowledge base schema items between different knowledge bases often necessitates specialized training for different knowledge base question-answering (KBQA) datasets. To handle questions over diverse KBQA datasets with a unified training-free framework, we propose KB-BINDER, which for the first time enables few-shot in-context learning over KBQA tasks. Firstly, KB-BINDER leverages large language models like Codex to generate logical forms as the draft for a specific question by imitating a few demonstrations. Secondly, KB-BINDER grounds on the knowledge base to bind the generated draft to an executable one with BM25 score matching. The experimental results on four public heterogeneous KBQA datasets show that KB-BINDER can achieve a strong performance with only a few in-context demonstrations. Especially on GraphQA and 3-hop MetaQA, KB-BINDER can even outperform the state-of-the-art trained models. On GrailQA and WebQSP, our model is also on par with other fully-trained models. We believe KB-BINDER can serve as an important baseline for future research. We plan to release all the code and data. Our code is available at https://github.com/ltl3A87/KB-BINDER.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "163b4d6a79a5b19af88b8585456363340d9efd04",
+    "externalIds": {
+      "ArXiv": "2303.08774",
+      "CorpusId": 257532815
+    },
+    "title": "GPT-4 Technical Report",
+    "venue": "",
+    "year": 2023,
+    "citationCount": 23912,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.08774, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2275249853",
+        "name": "OpenAI Josh Achiam"
+      },
+      {
+        "authorId": "2275250875",
+        "name": "Steven Adler"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "2274773568",
+        "name": "L. Ahmad"
+      },
+      {
+        "authorId": "2258629",
+        "name": "Ilge Akkaya"
+      },
+      {
+        "authorId": "2275244794",
+        "name": "Florencia Leoni Aleman"
+      },
+      {
+        "authorId": "2275252021",
+        "name": "D. Almeida"
+      },
+      {
+        "authorId": "2275252424",
+        "name": "Janko Altenschmidt"
+      },
+      {
+        "authorId": "2275245579",
+        "name": "S. Altman"
+      },
+      {
+        "authorId": "2275246437",
+        "name": "Shyamal Anadkat"
+      },
+      {
+        "authorId": "2275139370",
+        "name": "Red Avila"
+      },
+      {
+        "authorId": "2256699302",
+        "name": "Igor Babuschkin"
+      },
+      {
+        "authorId": "2054519183",
+        "name": "S. Balaji"
+      },
+      {
+        "authorId": "2275251659",
+        "name": "Valerie Balcom"
+      },
+      {
+        "authorId": "47626612",
+        "name": "Paul Baltescu"
+      },
+      {
+        "authorId": "2275198557",
+        "name": "Haim-ing Bao"
+      },
+      {
+        "authorId": "2275251620",
+        "name": "Mo Bavarian"
+      },
+      {
+        "authorId": "2275245092",
+        "name": "Jeff Belgum"
+      },
+      {
+        "authorId": "4689792",
+        "name": "Irwan Bello"
+      },
+      {
+        "authorId": "2275245414",
+        "name": "Jake Berdine"
+      },
+      {
+        "authorId": "2275245581",
+        "name": "Gabriel Bernadett-Shapiro"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "2275251674",
+        "name": "Lenny Bogdonoff"
+      },
+      {
+        "authorId": "2275246071",
+        "name": "O. Boiko"
+      },
+      {
+        "authorId": "2275248137",
+        "name": "Made-laine Boyd"
+      },
+      {
+        "authorId": "2275245419",
+        "name": "Anna-Luisa Brakman"
+      },
+      {
+        "authorId": "2065151121",
+        "name": "Greg Brockman"
+      },
+      {
+        "authorId": "2275219628",
+        "name": "Tim Brooks"
+      },
+      {
+        "authorId": "35167962",
+        "name": "Miles Brundage"
+      },
+      {
+        "authorId": "2146257251",
+        "name": "Kevin Button"
+      },
+      {
+        "authorId": "2275157286",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "2274782053",
+        "name": "Rosie Campbell"
+      },
+      {
+        "authorId": "2275245404",
+        "name": "Andrew Cann"
+      },
+      {
+        "authorId": "2275246368",
+        "name": "Brittany Carey"
+      },
+      {
+        "authorId": "2275120298",
+        "name": "Chelsea Carlson"
+      },
+      {
+        "authorId": "144114446",
+        "name": "Rory Carmichael"
+      },
+      {
+        "authorId": "1466431052",
+        "name": "Brooke Chan"
+      },
+      {
+        "authorId": "2275545855",
+        "name": "Che Chang"
+      },
+      {
+        "authorId": "2057091285",
+        "name": "Fotis Chantzis"
+      },
+      {
+        "authorId": "2253841704",
+        "name": "Derek Chen"
+      },
+      {
+        "authorId": "2275188918",
+        "name": "Sully Chen"
+      },
+      {
+        "authorId": "2275179180",
+        "name": "Ruby Chen"
+      },
+      {
+        "authorId": "2275289833",
+        "name": "Jason Chen"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2275251158",
+        "name": "Chester Cho"
+      },
+      {
+        "authorId": "2276186593",
+        "name": "Casey Chu"
+      },
+      {
+        "authorId": "2275839391",
+        "name": "Hyung Won Chung"
+      },
+      {
+        "authorId": "2275231534",
+        "name": "Dave Cummings"
+      },
+      {
+        "authorId": "49645091",
+        "name": "Jeremiah Currier"
+      },
+      {
+        "authorId": "2276187456",
+        "name": "Yunxing Dai"
+      },
+      {
+        "authorId": "2275251205",
+        "name": "Cory Decareaux"
+      },
+      {
+        "authorId": "2275244920",
+        "name": "Thomas Degry"
+      },
+      {
+        "authorId": "2275247090",
+        "name": "Noah Deutsch"
+      },
+      {
+        "authorId": "2275251200",
+        "name": "Damien Deville"
+      },
+      {
+        "authorId": "2275244298",
+        "name": "Arka Dhar"
+      },
+      {
+        "authorId": "35363891",
+        "name": "David Dohan"
+      },
+      {
+        "authorId": "2275252295",
+        "name": "Steve Dowling"
+      },
+      {
+        "authorId": "2275245491",
+        "name": "Sheila Dunning"
+      },
+      {
+        "authorId": "66821245",
+        "name": "Adrien Ecoffet"
+      },
+      {
+        "authorId": "2275245457",
+        "name": "Atty Eleti"
+      },
+      {
+        "authorId": "2146257131",
+        "name": "Tyna Eloundou"
+      },
+      {
+        "authorId": "2065430571",
+        "name": "David Farhi"
+      },
+      {
+        "authorId": "2096916416",
+        "name": "L. Fedus"
+      },
+      {
+        "authorId": "2275249996",
+        "name": "Niko Felix"
+      },
+      {
+        "authorId": "2275245820",
+        "name": "S. Fishman"
+      },
+      {
+        "authorId": "2275244914",
+        "name": "Juston Forte"
+      },
+      {
+        "authorId": "2275251173",
+        "name": "Is-abella Fulford"
+      },
+      {
+        "authorId": "2027599537",
+        "name": "Leo Gao"
+      },
+      {
+        "authorId": "2275200811",
+        "name": "Elie Georges"
+      },
+      {
+        "authorId": "2275254804",
+        "name": "C. Gibson"
+      },
+      {
+        "authorId": "2275144649",
+        "name": "Vik Goel"
+      },
+      {
+        "authorId": "2325028819",
+        "name": "Tarun Gogineni"
+      },
+      {
+        "authorId": "2261041177",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "2158366935",
+        "name": "Raphael Gontijo-Lopes"
+      },
+      {
+        "authorId": "2265066144",
+        "name": "J. Gordon"
+      },
+      {
+        "authorId": "2275250003",
+        "name": "Morgan Grafstein"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "2275247307",
+        "name": "Ryan Greene"
+      },
+      {
+        "authorId": "2275137274",
+        "name": "Joshua Gross"
+      },
+      {
+        "authorId": "2253699903",
+        "name": "S. Gu"
+      },
+      {
+        "authorId": "2276101257",
+        "name": "Yufei Guo"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "2275540338",
+        "name": "Jesse Han"
+      },
+      {
+        "authorId": "2275295848",
+        "name": "J. Harris"
+      },
+      {
+        "authorId": "2275226809",
+        "name": "Yuchen He"
+      },
+      {
+        "authorId": "2275245527",
+        "name": "Mike Heaton"
+      },
+      {
+        "authorId": "2151087994",
+        "name": "Johannes Heidecke"
+      },
+      {
+        "authorId": "2242286342",
+        "name": "Chris Hesse"
+      },
+      {
+        "authorId": "2226452668",
+        "name": "Alan Hickey"
+      },
+      {
+        "authorId": "2275246148",
+        "name": "W. Hickey"
+      },
+      {
+        "authorId": "2275245339",
+        "name": "P. Hoeschele"
+      },
+      {
+        "authorId": "103681415",
+        "name": "Brandon Houghton"
+      },
+      {
+        "authorId": "2275214107",
+        "name": "Kenny Hsu"
+      },
+      {
+        "authorId": "2275210604",
+        "name": "Shengli Hu"
+      },
+      {
+        "authorId": "2275777049",
+        "name": "Xin Hu"
+      },
+      {
+        "authorId": "39378983",
+        "name": "Joost Huizinga"
+      },
+      {
+        "authorId": "2276187117",
+        "name": "Shantanu Jain"
+      },
+      {
+        "authorId": "2171110177",
+        "name": "Shawn Jain"
+      },
+      {
+        "authorId": "2151094350",
+        "name": "Joanne Jang"
+      },
+      {
+        "authorId": "2253471334",
+        "name": "Angela Jiang"
+      },
+      {
+        "authorId": "2275172062",
+        "name": "R. Jiang"
+      },
+      {
+        "authorId": "2275752035",
+        "name": "Haozhun Jin"
+      },
+      {
+        "authorId": "2275203081",
+        "name": "Denny Jin"
+      },
+      {
+        "authorId": "2275250083",
+        "name": "Shino Jomoto"
+      },
+      {
+        "authorId": "2275247096",
+        "name": "Billie Jonn"
+      },
+      {
+        "authorId": "35450887",
+        "name": "Heewoo Jun"
+      },
+      {
+        "authorId": "2403754",
+        "name": "Tomer Kaftan"
+      },
+      {
+        "authorId": "2275230678",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "2275169038",
+        "name": "Ali Kamali"
+      },
+      {
+        "authorId": "3151440",
+        "name": "I. Kanitscheider"
+      },
+      {
+        "authorId": "2844898",
+        "name": "N. Keskar"
+      },
+      {
+        "authorId": "2152264064",
+        "name": "Tabarak Khan"
+      },
+      {
+        "authorId": "2314112114",
+        "name": "Logan Kilpatrick"
+      },
+      {
+        "authorId": "2260346092",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2149054292",
+        "name": "Christina Kim"
+      },
+      {
+        "authorId": "2275296777",
+        "name": "Yongjik Kim"
+      },
+      {
+        "authorId": "2275112980",
+        "name": "Hendrik Kirchner"
+      },
+      {
+        "authorId": "51131802",
+        "name": "J. Kiros"
+      },
+      {
+        "authorId": "2146257375",
+        "name": "Matthew Knight"
+      },
+      {
+        "authorId": "1485556711",
+        "name": "Daniel Kokotajlo"
+      },
+      {
+        "authorId": "2275246094",
+        "name": "Lukasz Kondraciuk"
+      },
+      {
+        "authorId": "1666171360",
+        "name": "Andrew Kondrich"
+      },
+      {
+        "authorId": "2317096965",
+        "name": "Aris Konstantinidis"
+      },
+      {
+        "authorId": "2275245594",
+        "name": "Kyle Kosic"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "2275229877",
+        "name": "Vishal Kuo"
+      },
+      {
+        "authorId": "2275247085",
+        "name": "Michael Lampe"
+      },
+      {
+        "authorId": "2275246287",
+        "name": "Ikai Lan"
+      },
+      {
+        "authorId": "2274915115",
+        "name": "Teddy Lee"
+      },
+      {
+        "authorId": "2990741",
+        "name": "Jan Leike"
+      },
+      {
+        "authorId": "52152632",
+        "name": "Jade Leung"
+      },
+      {
+        "authorId": "2275256930",
+        "name": "Daniel Levy"
+      },
+      {
+        "authorId": "2275285124",
+        "name": "Chak Li"
+      },
+      {
+        "authorId": "2275176375",
+        "name": "Rachel Lim"
+      },
+      {
+        "authorId": "2275759230",
+        "name": "Molly Lin"
+      },
+      {
+        "authorId": "2253840098",
+        "name": "Stephanie L. Lin"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "2275248327",
+        "name": "Theresa Lopez"
+      },
+      {
+        "authorId": "2257272397",
+        "name": "Ryan Lowe"
+      },
+      {
+        "authorId": "2275245628",
+        "name": "Patricia Lue"
+      },
+      {
+        "authorId": "119341078",
+        "name": "A. Makanju"
+      },
+      {
+        "authorId": "2275245649",
+        "name": "Kim Malfacini"
+      },
+      {
+        "authorId": "46430291",
+        "name": "Sam Manning"
+      },
+      {
+        "authorId": "14113256",
+        "name": "Todor Markov"
+      },
+      {
+        "authorId": "2275245336",
+        "name": "Yaniv Markovski"
+      },
+      {
+        "authorId": "2114362965",
+        "name": "Bianca Martin"
+      },
+      {
+        "authorId": "2275231822",
+        "name": "Katie Mayer"
+      },
+      {
+        "authorId": "2275247045",
+        "name": "Andrew Mayne"
+      },
+      {
+        "authorId": "39593364",
+        "name": "Bob McGrew"
+      },
+      {
+        "authorId": "2047820455",
+        "name": "S. McKinney"
+      },
+      {
+        "authorId": "3028785",
+        "name": "Christine McLeavey"
+      },
+      {
+        "authorId": "2274772421",
+        "name": "Paul McMillan"
+      },
+      {
+        "authorId": "2275234856",
+        "name": "Jake McNeil"
+      },
+      {
+        "authorId": "2275210659",
+        "name": "David Medina"
+      },
+      {
+        "authorId": "2275132306",
+        "name": "Aalok Mehta"
+      },
+      {
+        "authorId": "10698483",
+        "name": "Jacob Menick"
+      },
+      {
+        "authorId": "2275246330",
+        "name": "Luke Metz"
+      },
+      {
+        "authorId": "2275252694",
+        "name": "Andrey Mishchenko"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2275245453",
+        "name": "Vinnie Monaco"
+      },
+      {
+        "authorId": "1404556973",
+        "name": "Evan Morikawa"
+      },
+      {
+        "authorId": "3407880",
+        "name": "Daniel P. Mossing"
+      },
+      {
+        "authorId": "2275154456",
+        "name": "Tong Mu"
+      },
+      {
+        "authorId": "2117715631",
+        "name": "M. Murati"
+      },
+      {
+        "authorId": "147746767",
+        "name": "O. Murk"
+      },
+      {
+        "authorId": "2275246116",
+        "name": "David M'ely"
+      },
+      {
+        "authorId": "3422774",
+        "name": "Ashvin Nair"
+      },
+      {
+        "authorId": "7406311",
+        "name": "Reiichiro Nakano"
+      },
+      {
+        "authorId": "2057426488",
+        "name": "Rajeev Nayak"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "2273886618",
+        "name": "R. Ngo"
+      },
+      {
+        "authorId": "2275115983",
+        "name": "Hyeonwoo Noh"
+      },
+      {
+        "authorId": "2228518120",
+        "name": "Ouyang Long"
+      },
+      {
+        "authorId": "1435765036",
+        "name": "Cullen O'Keefe"
+      },
+      {
+        "authorId": "2713380",
+        "name": "J. Pachocki"
+      },
+      {
+        "authorId": "34800652",
+        "name": "A. Paino"
+      },
+      {
+        "authorId": "2275244652",
+        "name": "Joe Palermo"
+      },
+      {
+        "authorId": "2275246178",
+        "name": "Ashley Pantuliano"
+      },
+      {
+        "authorId": "50213542",
+        "name": "Giambattista Parascandolo"
+      },
+      {
+        "authorId": "2275245818",
+        "name": "J. Parish"
+      },
+      {
+        "authorId": "2275245435",
+        "name": "Emy Parparita"
+      },
+      {
+        "authorId": "2274774915",
+        "name": "Alexandre Passos"
+      },
+      {
+        "authorId": "2068123790",
+        "name": "Mikhail Pavlov"
+      },
+      {
+        "authorId": "2275125663",
+        "name": "Andrew Peng"
+      },
+      {
+        "authorId": "2275245529",
+        "name": "Adam Perelman"
+      },
+      {
+        "authorId": "2275250075",
+        "name": "Filipe de Avila Belbute Peres"
+      },
+      {
+        "authorId": "2136008481",
+        "name": "Michael Petrov"
+      },
+      {
+        "authorId": "1463773776",
+        "name": "Henrique Pondé de Oliveira Pinto"
+      },
+      {
+        "authorId": "2275246346",
+        "name": "Michael Pokorny"
+      },
+      {
+        "authorId": "2275246814",
+        "name": "Michelle Pokrass"
+      },
+      {
+        "authorId": "144401061",
+        "name": "Vitchyr H. Pong"
+      },
+      {
+        "authorId": "2275150061",
+        "name": "Tolly Powell"
+      },
+      {
+        "authorId": "146162186",
+        "name": "Alethea Power"
+      },
+      {
+        "authorId": "2151088845",
+        "name": "Boris Power"
+      },
+      {
+        "authorId": "2275243930",
+        "name": "Elizabeth Proehl"
+      },
+      {
+        "authorId": "2285654208",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2275178294",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "2261024614",
+        "name": "Aditya Ramesh"
+      },
+      {
+        "authorId": "2275225165",
+        "name": "Cameron Raymond"
+      },
+      {
+        "authorId": "2275252438",
+        "name": "F. Real"
+      },
+      {
+        "authorId": "2275252095",
+        "name": "Kendra Rimbach"
+      },
+      {
+        "authorId": "2275207240",
+        "name": "Carl Ross"
+      },
+      {
+        "authorId": "11150265",
+        "name": "Bob Rotsted"
+      },
+      {
+        "authorId": "2275250007",
+        "name": "Henri Roussez"
+      },
+      {
+        "authorId": "2260406867",
+        "name": "N. Ryder"
+      },
+      {
+        "authorId": "47204843",
+        "name": "M. Saltarelli"
+      },
+      {
+        "authorId": "2275246803",
+        "name": "Ted Sanders"
+      },
+      {
+        "authorId": "2852106",
+        "name": "Shibani Santurkar"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "2275265666",
+        "name": "Heather Schmidt"
+      },
+      {
+        "authorId": "2252874293",
+        "name": "David Schnurr"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "2196579",
+        "name": "Daniel Selsam"
+      },
+      {
+        "authorId": "2275244711",
+        "name": "Kyla Sheppard"
+      },
+      {
+        "authorId": "102475503",
+        "name": "T. Sherbakov"
+      },
+      {
+        "authorId": "2275246834",
+        "name": "Jessica Shieh"
+      },
+      {
+        "authorId": "118335789",
+        "name": "S. Shoker"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "2700360",
+        "name": "Szymon Sidor"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "2151735251",
+        "name": "M. Simens"
+      },
+      {
+        "authorId": "2275252299",
+        "name": "Jordan Sitkin"
+      },
+      {
+        "authorId": "2117680841",
+        "name": "Katarina Slama"
+      },
+      {
+        "authorId": "103422608",
+        "name": "Ian Sohl"
+      },
+      {
+        "authorId": "2901424",
+        "name": "Benjamin Sokolowsky"
+      },
+      {
+        "authorId": "2307592658",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2275245668",
+        "name": "N. Staudacher"
+      },
+      {
+        "authorId": "9927844",
+        "name": "F. Such"
+      },
+      {
+        "authorId": "2275252251",
+        "name": "Natalie Summers"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2275750817",
+        "name": "Jie Tang"
+      },
+      {
+        "authorId": "145950540",
+        "name": "N. Tezak"
+      },
+      {
+        "authorId": "2151289331",
+        "name": "Madeleine Thompson"
+      },
+      {
+        "authorId": "2275252092",
+        "name": "P. Tillet"
+      },
+      {
+        "authorId": "2267339677",
+        "name": "Amin Tootoonchian"
+      },
+      {
+        "authorId": "2275249879",
+        "name": "Elizabeth Tseng"
+      },
+      {
+        "authorId": "2275249709",
+        "name": "Preston Tuggle"
+      },
+      {
+        "authorId": "2275244171",
+        "name": "Nick Turley"
+      },
+      {
+        "authorId": "2065005836",
+        "name": "Jerry Tworek"
+      },
+      {
+        "authorId": "2275203310",
+        "name": "Juan Felipe Cer'on Uribe"
+      },
+      {
+        "authorId": "2275244586",
+        "name": "Andrea Vallone"
+      },
+      {
+        "authorId": "2275245661",
+        "name": "Arun Vijayvergiya"
+      },
+      {
+        "authorId": "153387869",
+        "name": "Chelsea Voss"
+      },
+      {
+        "authorId": "2275245962",
+        "name": "Carroll L. Wainwright"
+      },
+      {
+        "authorId": "2305029155",
+        "name": "Justin Wang"
+      },
+      {
+        "authorId": "3209373",
+        "name": "Alvin Wang"
+      },
+      {
+        "authorId": "2275189326",
+        "name": "Ben Wang"
+      },
+      {
+        "authorId": "2170081200",
+        "name": "Jonathan Ward"
+      },
+      {
+        "authorId": "2253952872",
+        "name": "Jason Wei"
+      },
+      {
+        "authorId": "2275244218",
+        "name": "CJ Weinmann"
+      },
+      {
+        "authorId": "2275245663",
+        "name": "Akila Welihinda"
+      },
+      {
+        "authorId": "2930640",
+        "name": "Peter Welinder"
+      },
+      {
+        "authorId": "2275139180",
+        "name": "Jiayi Weng"
+      },
+      {
+        "authorId": "2065741038",
+        "name": "Lilian Weng"
+      },
+      {
+        "authorId": "2275252154",
+        "name": "Matt Wiethoff"
+      },
+      {
+        "authorId": "2275249733",
+        "name": "Dave Willner"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "2275244177",
+        "name": "Samuel Wolrich"
+      },
+      {
+        "authorId": "2275225207",
+        "name": "Hannah Wong"
+      },
+      {
+        "authorId": "2275245771",
+        "name": "Lauren Workman"
+      },
+      {
+        "authorId": "2275299848",
+        "name": "Sherwin Wu"
+      },
+      {
+        "authorId": "2274911253",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2307456650",
+        "name": "Michael Wu"
+      },
+      {
+        "authorId": "2275190169",
+        "name": "Kai Xiao"
+      },
+      {
+        "authorId": "2275452480",
+        "name": "Tao Xu"
+      },
+      {
+        "authorId": "2275310096",
+        "name": "Sarah Yoo"
+      },
+      {
+        "authorId": "2275593618",
+        "name": "Kevin Yu"
+      },
+      {
+        "authorId": "2275194186",
+        "name": "Qim-ing Yuan"
+      },
+      {
+        "authorId": "2563432",
+        "name": "Wojciech Zaremba"
+      },
+      {
+        "authorId": "49629836",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "2262080679",
+        "name": "Chong Zhang"
+      },
+      {
+        "authorId": "2275288889",
+        "name": "Marvin Zhang"
+      },
+      {
+        "authorId": "2275545682",
+        "name": "Shengjia Zhao"
+      },
+      {
+        "authorId": "2275257857",
+        "name": "Tianhao Zheng"
+      },
+      {
+        "authorId": "2275201537",
+        "name": "Juntang Zhuang"
+      },
+      {
+        "authorId": "2275245715",
+        "name": "William Zhuk"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      }
+    ],
+    "abstract": "We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs. While less capable than humans in many real-world scenarios, GPT-4 exhibits human-level performance on various professional and academic benchmarks, including passing a simulated bar exam with a score around the top 10% of test takers. GPT-4 is a Transformer-based model pre-trained to predict the next token in a document. The post-training alignment process results in improved performance on measures of factuality and adherence to desired behavior. A core component of this project was developing infrastructure and optimization methods that behave predictably across a wide range of scales. This allowed us to accurately predict some aspects of GPT-4's performance based on models trained with no more than 1/1,000th the compute of GPT-4.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "dbc6622b8c70bc1a3cc290fdb166229d80ec8f83",
+    "externalIds": {
+      "DBLP": "conf/emnlp/ShuYLKMQL22",
+      "ACL": "2022.emnlp-main.555",
+      "ArXiv": "2210.12925",
+      "DOI": "10.48550/arXiv.2210.12925",
+      "CorpusId": 253098671
+    },
+    "title": "TIARA: Multi-grained Retrieval for Robust Question Answering over Large Knowledge Base",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2022,
+    "citationCount": 105,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.12925",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.12925, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1406331721",
+        "name": "Yiheng Shu"
+      },
+      {
+        "authorId": "2114173",
+        "name": "Zhiwei Yu"
+      },
+      {
+        "authorId": "2110539208",
+        "name": "Yuhan Li"
+      },
+      {
+        "authorId": "2047947436",
+        "name": "Börje F. Karlsson"
+      },
+      {
+        "authorId": "2168066",
+        "name": "Tingting Ma"
+      },
+      {
+        "authorId": "1887019",
+        "name": "Yuzhong Qu"
+      },
+      {
+        "authorId": "50554693",
+        "name": "Chin-Yew Lin"
+      }
+    ],
+    "abstract": "Pre-trained language models (PLMs) have shown their effectiveness in multiple scenarios. However, KBQA remains challenging, especially regarding coverage and generalization settings. This is due to two main factors: i) understanding the semantics of both questions and relevant knowledge from the KB; ii) generating executable logical forms with both semantic and syntactic correctness. In this paper, we present a new KBQA model, TIARA, which addresses those issues by applying multi-grained retrieval to help the PLM focus on the most relevant KB context, viz., entities, exemplary logical forms, and schema items. Moreover, constrained decoding is used to control the output space and reduce generation errors. Experiments over important benchmarks demonstrate the effectiveness of our approach. TIARA outperforms previous SOTA, including those using PLMs or oracle entity annotations, by at least 4.1 and 1.1 F1 points on GrailQA and WebQuestionsSP, respectively. Specifically on GrailQA, TIARA outperforms previous models in all categories, with an improvement of 4.7 F1 points in zero-shot generalization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5b745be118ae6e8678725698ffaa336ecffd31c0",
+    "externalIds": {
+      "ACL": "2023.acl-long.202",
+      "DBLP": "conf/acl/0002LJ23",
+      "ArXiv": "2210.12810",
+      "DOI": "10.18653/v1/2023.acl-long.202",
+      "CorpusId": 258887711
+    },
+    "title": "Code4Struct: Code Generation for Few-Shot Event Structure Prediction",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2023.acl-long.202.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.12810, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144803999",
+        "name": "Xingyao Wang"
+      },
+      {
+        "authorId": "2109154767",
+        "name": "Sha Li"
+      },
+      {
+        "authorId": "2072975661",
+        "name": "Heng Ji"
+      }
+    ],
+    "abstract": "Large Language Model (LLM) trained on a mixture of text and code has demonstrated impressive capability in translating natural language (NL) into structured code.We observe that semantic structures can be conveniently translated into code and propose Code4Struct to leverage such text-to-structure translation capability to tackle structured prediction tasks.As a case study, we formulate Event Argument Extraction (EAE) as converting text into event-argument structures that can be represented as a class object using code.This alignment between structures and code enables us to take advantage of Programming Language (PL) features such as inheritance and type annotation to introduce external knowledge or add constraints.We show that, with sufficient in-context examples, formulating EAE as a code generation problem is advantageous over using variants of text-based prompts.Despite only using 20 training event instances for each event type, Code4Struct is comparable to supervised models trained on 4,202 instances and outperforms current state-of-the-art (SOTA) trained on 20-shot data by 29.5% absolute F1. Code4Struct can use 10-shot training data from a sibling event type to predict arguments for zero-resource event types and outperforms the zero-shot baseline by 12% absolute F1.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0751b6de6c07c52a324450e32ae6581d403603da",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2210-00063",
+      "ArXiv": "2210.00063",
+      "DOI": "10.48550/arXiv.2210.00063",
+      "CorpusId": 252683172
+    },
+    "title": "DecAF: Joint Decoding of Answers and Logical Forms for Question Answering over Knowledge Bases",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 147,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2210.00063",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.00063, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2111506236",
+        "name": "Donghan Yu"
+      },
+      {
+        "authorId": "38654394",
+        "name": "Shenmin Zhang"
+      },
+      {
+        "authorId": "145878390",
+        "name": "Patrick Ng"
+      },
+      {
+        "authorId": "1787682",
+        "name": "Henghui Zhu"
+      },
+      {
+        "authorId": "2123247219",
+        "name": "A. Li"
+      },
+      {
+        "authorId": "66063792",
+        "name": "J. Wang"
+      },
+      {
+        "authorId": "2186873589",
+        "name": "Yiqun Hu"
+      },
+      {
+        "authorId": "2145535635",
+        "name": "William Wang"
+      },
+      {
+        "authorId": "40296541",
+        "name": "Zhiguo Wang"
+      },
+      {
+        "authorId": "144028698",
+        "name": "Bing Xiang"
+      }
+    ],
+    "abstract": "Question answering over knowledge bases (KBs) aims to answer natural language questions with factual information such as entities and relations in KBs. Previous methods either generate logical forms that can be executed over KBs to obtain final answers or predict answers directly. Empirical results show that the former often produces more accurate answers, but it suffers from non-execution issues due to potential syntactic and semantic errors in the generated logical forms. In this work, we propose a novel framework DecAF that jointly generates both logical forms and direct answers, and then combines the merits of them to get the final answers. Moreover, different from most of the previous methods, DecAF is based on simple free-text retrieval without relying on any entity linking tools -- this simplification eases its adaptation to different datasets. DecAF achieves new state-of-the-art accuracy on WebQSP, FreebaseQA, and GrailQA benchmarks, while getting competitive results on the ComplexWebQuestions benchmark.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7766e38adc9d48d25aebf87ebc8608e8a7b193cf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2204-08109",
+      "ACL": "2022.coling-1.148",
+      "ArXiv": "2204.08109",
+      "DOI": "10.48550/arXiv.2204.08109",
+      "CorpusId": 248227660
+    },
+    "title": "ArcaneQA: Dynamic Program Induction and Contextualized Encoding for Knowledge Base Question Answering",
+    "venue": "International Conference on Computational Linguistics",
+    "year": 2022,
+    "citationCount": 97,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.08109",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.08109, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2022231256",
+        "name": "Yu Gu"
+      },
+      {
+        "authorId": "1758652",
+        "name": "Yu Su"
+      }
+    ],
+    "abstract": "Question answering on knowledge bases (KBQA) poses a unique challenge for semantic parsing research due to two intertwined challenges: large search space and ambiguities in schema linking. Conventional ranking-based KBQA models, which rely on a candidate enumeration step to reduce the search space, struggle with flexibility in predicting complicated queries and have impractical running time. In this paper, we present ArcaneQA, a novel generation-based model that addresses both the large search space and the schema linking challenges in a unified framework with two mutually boosting ingredients: dynamic program induction for tackling the large search space and dynamic contextualized encoding for schema linking. Experimental results on multiple popular KBQA datasets demonstrate the highly competitive performance of ArcaneQA in both effectiveness and efficiency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9b2473c1d88f2300358dc8b11e826dc5ba81bbbc",
+    "externalIds": {
+      "ArXiv": "2109.08678",
+      "DBLP": "journals/corr/abs-2109-08678",
+      "ACL": "2022.acl-long.417",
+      "DOI": "10.18653/v1/2022.acl-long.417",
+      "CorpusId": 237562927
+    },
+    "title": "RNG-KBQA: Generation Augmented Iterative Ranking for Knowledge Base Question Answering",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2021,
+    "citationCount": 200,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.acl-long.417.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.08678, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50183897",
+        "name": "Xi Ye"
+      },
+      {
+        "authorId": "3014143",
+        "name": "Semih Yavuz"
+      },
+      {
+        "authorId": "20851195",
+        "name": "Kazuma Hashimoto"
+      },
+      {
+        "authorId": "2118860628",
+        "name": "Yingbo Zhou"
+      },
+      {
+        "authorId": "2054594326",
+        "name": "Caiming Xiong"
+      }
+    ],
+    "abstract": "Existing KBQA approaches, despite achieving strong performance on i.i.d. test data, often struggle in generalizing to questions involving unseen KB schema items. Prior ranking-based approaches have shown some success in generalization, but suffer from the coverage issue. We present RnG-KBQA, a Rank-and-Generate approach for KBQA, which remedies the coverage issue with a generation model while preserving a strong generalization capability. Our approach first uses a contrastive ranker to rank a set of candidate logical forms obtained by searching over the knowledge graph. It then introduces a tailored generation model conditioned on the question and the top-ranked candidates to compose the final logical form. We achieve new state-of-the-art results on GrailQA and WebQSP datasets. In particular, our method surpasses the prior state-of-the-art by a large margin on the GrailQA leaderboard. In addition, RnG-KBQA outperforms all prior approaches on the popular WebQSP benchmark, even including the ones that use the oracle entity linking. The experimental results demonstrate the effectiveness of the interplay between ranking and generation, which leads to the superior performance of our proposed approach across all settings with especially strong improvements in zero-shot generalization.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c26759e6c701201af2f62f7ee4eb68742b5bf085",
+    "externalIds": {
+      "ArXiv": "2104.08821",
+      "DBLP": "journals/corr/abs-2104-08821",
+      "ACL": "2021.emnlp-main.552",
+      "DOI": "10.18653/v1/2021.emnlp-main.552",
+      "CorpusId": 233296292
+    },
+    "title": "SimCSE: Simple Contrastive Learning of Sentence Embeddings",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2021,
+    "citationCount": 4351,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.emnlp-main.552.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.08821, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "4800645",
+        "name": "Tianyu Gao"
+      },
+      {
+        "authorId": "2087141625",
+        "name": "Xingcheng Yao"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      }
+    ],
+    "abstract": "This paper presents SimCSE, a simple contrastive learning framework that greatly advances the state-of-the-art sentence embeddings. We first describe an unsupervised approach, which takes an input sentence and predicts itself in a contrastive objective, with only standard dropout used as noise. This simple method works surprisingly well, performing on par with previous supervised counterparts. We find that dropout acts as minimal data augmentation and removing it leads to a representation collapse. Then, we propose a supervised approach, which incorporates annotated pairs from natural language inference datasets into our contrastive learning framework, by using “entailment” pairs as positives and “contradiction” pairs as hard negatives. We evaluate SimCSE on standard semantic textual similarity (STS) tasks, and our unsupervised and supervised models using BERT base achieve an average of 76.3% and 81.6% Spearman’s correlation respectively, a 4.2% and 2.2% improvement compared to previous best results. We also show—both theoretically and empirically—that contrastive learning objective regularizes pre-trained embeddings’ anisotropic space to be more uniform, and it better aligns positive pairs when supervised signals are available.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d21c5a9e34a6290212c68f6ec64f65ad5c5e46f4",
+    "externalIds": {
+      "MAG": "3100058503",
+      "ArXiv": "2011.07743",
+      "DBLP": "conf/www/GuKVSLY021",
+      "DOI": "10.1145/3442381.3449992",
+      "CorpusId": 226965153
+    },
+    "title": "Beyond I.I.D.: Three Levels of Generalization for Question Answering on Knowledge Bases",
+    "venue": "The Web Conference",
+    "year": 2020,
+    "citationCount": 299,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2011.07743",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.07743, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2022231256",
+        "name": "Yu Gu"
+      },
+      {
+        "authorId": "145030211",
+        "name": "Sue E. Kase"
+      },
+      {
+        "authorId": "36349209",
+        "name": "M. Vanni"
+      },
+      {
+        "authorId": "1709722",
+        "name": "Brian M. Sadler"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      },
+      {
+        "authorId": "1740249",
+        "name": "Xifeng Yan"
+      },
+      {
+        "authorId": "1758652",
+        "name": "Yu Su"
+      }
+    ],
+    "abstract": "Existing studies on question answering on knowledge bases (KBQA) mainly operate with the standard i.i.d. assumption, i.e., training distribution over questions is the same as the test distribution. However, i.i.d. may be neither achievable nor desirable on large-scale KBs because 1) true user distribution is hard to capture and 2) randomly sampling training examples from the enormous space would be data-inefficient. Instead, we suggest that KBQA models should have three levels of built-in generalization: i.i.d., compositional, and zero-shot. To facilitate the development of KBQA models with stronger generalization, we construct and release a new large-scale, high-quality dataset with 64,331 questions, GrailQA, and provide evaluation settings for all three levels of generalization. In addition, we propose a novel BERT-based KBQA model. The combination of our dataset and model enables us to thoroughly examine and demonstrate, for the first time, the key role of pre-trained contextual embeddings like BERT in the generalization of KBQA.1",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "2aa1d4350e80613feed88d5a6337e79693f7aa57",
+    "externalIds": {
+      "DBLP": "conf/acl/CaoSPNX0LHZ22",
+      "ArXiv": "2007.03875",
+      "ACL": "2022.acl-long.422",
+      "DOI": "10.18653/v1/2022.acl-long.422",
+      "CorpusId": 247362971
+    },
+    "title": "KQA Pro: A Dataset with Explicit Compositional Programs for Complex Question Answering over Knowledge Base",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2020,
+    "citationCount": 129,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2022.acl-long.422.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2007.03875, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1712738522",
+        "name": "S. Cao"
+      },
+      {
+        "authorId": "2522647",
+        "name": "Jiaxin Shi"
+      },
+      {
+        "authorId": "3470231",
+        "name": "Liangming Pan"
+      },
+      {
+        "authorId": "115361209",
+        "name": "L. Nie"
+      },
+      {
+        "authorId": "2068340987",
+        "name": "Yutong Xiang"
+      },
+      {
+        "authorId": "145779862",
+        "name": "Lei Hou"
+      },
+      {
+        "authorId": "2133353675",
+        "name": "Juanzi Li"
+      },
+      {
+        "authorId": "1631386300",
+        "name": "Bin He"
+      },
+      {
+        "authorId": "2119078220",
+        "name": "Hanwang Zhang"
+      }
+    ],
+    "abstract": "Complex question answering over knowledge base (Complex KBQA) is challenging because it requires various compositional reasoning capabilities, such as multi-hop inference, attribute comparison, set operation, etc. Existing benchmarks have some shortcomings that limit the development of Complex KBQA: 1) they only provide QA pairs without explicit reasoning processes; 2) questions are poor in diversity or scale. To this end, we introduce KQA Pro, a dataset for Complex KBQA including around 120K diverse natural language questions. We introduce a compositional and interpretable programming language KoPL to represent the reasoning process of complex questions. For each question, we provide the corresponding KoPL program and SPARQL query, so that KQA Pro can serve for both KBQA and semantic parsing tasks. Experimental results show that state-of-the-art KBQA methods cannot achieve promising results on KQA Pro as on current datasets, which suggests that KQA Pro is challenging and Complex KBQA requires further research efforts. We also treat KQA Pro as a diagnostic dataset for testing multiple reasoning skills, conduct a thorough evaluation of existing models and discuss further directions for Complex KBQA. Our codes and datasets can be obtained from https://github.com/shijx12/KQAPro_Baselines.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
+    "externalIds": {
+      "ArXiv": "2005.14165",
+      "DBLP": "conf/nips/BrownMRSKDNSSAA20",
+      "MAG": "3030163527",
+      "CorpusId": 218971783
+    },
+    "title": "Language Models are Few-Shot Learners",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 57154,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.14165, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "31035595",
+        "name": "Tom B. Brown"
+      },
+      {
+        "authorId": "2056658938",
+        "name": "Benjamin Mann"
+      },
+      {
+        "authorId": "39849748",
+        "name": "Nick Ryder"
+      },
+      {
+        "authorId": "2065894334",
+        "name": "Melanie Subbiah"
+      },
+      {
+        "authorId": "152724169",
+        "name": "J. Kaplan"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "2072676",
+        "name": "Arvind Neelakantan"
+      },
+      {
+        "authorId": "67311962",
+        "name": "Pranav Shyam"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "1404060687",
+        "name": "Ariel Herbert-Voss"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "103143311",
+        "name": "T. Henighan"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "2052152920",
+        "name": "Daniel M. Ziegler"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "2059411355",
+        "name": "Clemens Winter"
+      },
+      {
+        "authorId": "144239765",
+        "name": "Christopher Hesse"
+      },
+      {
+        "authorId": "2108828435",
+        "name": "Mark Chen"
+      },
+      {
+        "authorId": "2064673055",
+        "name": "Eric Sigler"
+      },
+      {
+        "authorId": "1380985420",
+        "name": "Ma-teusz Litwin"
+      },
+      {
+        "authorId": "145565184",
+        "name": "Scott Gray"
+      },
+      {
+        "authorId": "1490681878",
+        "name": "Benjamin Chess"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "133740015",
+        "name": "Christopher Berner"
+      },
+      {
+        "authorId": "52238703",
+        "name": "Sam McCandlish"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      }
+    ],
+    "abstract": "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from simple instructions - something which current NLP systems still largely struggle to do. Here we show that scaling up language models greatly improves task-agnostic, few-shot performance, sometimes even reaching competitiveness with prior state-of-the-art fine-tuning approaches. Specifically, we train GPT-3, an autoregressive language model with 175 billion parameters, 10x more than any previous non-sparse language model, and test its performance in the few-shot setting. For all tasks, GPT-3 is applied without any gradient updates or fine-tuning, with tasks and few-shot demonstrations specified purely via text interaction with the model. GPT-3 achieves strong performance on many NLP datasets, including translation, question-answering, and cloze tasks, as well as several tasks that require on-the-fly reasoning or domain adaptation, such as unscrambling words, using a novel word in a sentence, or performing 3-digit arithmetic. At the same time, we also identify some datasets where GPT-3's few-shot learning still struggles, as well as some datasets where GPT-3 faces methodological issues related to training on large web corpora. Finally, we find that GPT-3 can generate samples of news articles which human evaluators have difficulty distinguishing from articles written by humans. We discuss broader societal impacts of this finding and of GPT-3 in general.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "659bf9ce7175e1ec266ff54359e2bd76e0b7ff31",
+    "externalIds": {
+      "DBLP": "conf/nips/LewisPPPKGKLYR020",
+      "MAG": "3027879771",
+      "ArXiv": "2005.11401",
+      "CorpusId": 218869575
+    },
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 13228,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.11401, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145222654",
+        "name": "Patrick Lewis"
+      },
+      {
+        "authorId": "3439053",
+        "name": "Ethan Perez"
+      },
+      {
+        "authorId": "1716179427",
+        "name": "Aleksandara Piktus"
+      },
+      {
+        "authorId": "40052301",
+        "name": "F. Petroni"
+      },
+      {
+        "authorId": "2067091563",
+        "name": "Vladimir Karpukhin"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "103131985",
+        "name": "Heinrich Kuttler"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "144105277",
+        "name": "Wen-tau Yih"
+      },
+      {
+        "authorId": "2620211",
+        "name": "Tim Rocktäschel"
+      },
+      {
+        "authorId": "48662861",
+        "name": "Sebastian Riedel"
+      },
+      {
+        "authorId": "1743722",
+        "name": "Douwe Kiela"
+      }
+    ],
+    "abstract": "Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when fine-tuned on downstream NLP tasks. However, their ability to access and precisely manipulate knowledge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-specific architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre-trained models with a differentiable access mechanism to explicit non-parametric memory can overcome this issue, but have so far been only investigated for extractive downstream tasks. We explore a general-purpose fine-tuning recipe for retrieval-augmented generation (RAG) -- models which combine pre-trained parametric and non-parametric memory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We compare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, the other can use different passages per token. We fine-tune and evaluate our models on a wide range of knowledge-intensive NLP tasks and set the state-of-the-art on three open domain QA tasks, outperforming parametric seq2seq models and task-specific retrieve-and-extract architectures. For language generation tasks, we find that RAG models generate more specific, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "255e08aeb077057ca7b2891924f22af10d31cd25",
+    "externalIds": {
+      "MAG": "3090822916",
+      "DBLP": "conf/ecai/AlvezGR20",
+      "ArXiv": "1808.04620",
+      "DOI": "10.3233/FAIA200142",
+      "CorpusId": 211858524
+    },
+    "title": "Applying the Closed World Assumption to SUMO-Based FOL Ontologies for Effective Commonsense Reasoning",
+    "venue": "European Conference on Artificial Intelligence",
+    "year": 2018,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1808.04620",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.04620, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2043617",
+        "name": "J. Álvez"
+      },
+      {
+        "authorId": "1404791152",
+        "name": "Itziar Gonzalez-Dios"
+      },
+      {
+        "authorId": "1785173",
+        "name": "German Rigau"
+      }
+    ],
+    "abstract": "Most commonly, the Open World Assumption is adopted as a standard strategy for the design, construction and use of ontologies. This strategy limits the inferencing capabilities of any system because non-asserted statements (missing knowledge) could be assumed to be alternatively true or false. As we will demonstrate, this is especially the case of first-order logic (FOL) ontologies where non-asserted statements is nowadays one of the main obstacles to its practical application in automated commonsense reasoning tasks. In this paper, we investigate the application of the Closed World Assumption (CWA) to enable a better exploitation of FOL ontologies by using state-of-the-art automated theorem provers. To that end, we explore different CWA formulations for the structural knowledge encoded in a FOL translation of the SUMO ontology, discovering that almost 30 % of the structural knowledge is missing. We evaluate these formulations on a practical experimentation using a very large commonsense benchmark obtained from WordNet through its mapping to SUMO. The results show that the competency of the ontology improves more than 50 % when reasoning under the CWA. Thus, applying the CWA automatically to FOL ontologies reduces their ambiguity and more commonsense questions can be answered",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2cbb8de53759e75411bc528518947a3094fbce3a",
+    "externalIds": {
+      "MAG": "2998702515",
+      "DBLP": "journals/tbd/JohnsonDJ21",
+      "ArXiv": "1702.08734",
+      "DOI": "10.1109/tbdata.2019.2921572",
+      "CorpusId": 926364
+    },
+    "title": "Billion-Scale Similarity Search with GPUs",
+    "venue": "IEEE Transactions on Big Data",
+    "year": 2017,
+    "citationCount": 5044,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1702.08734",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.08734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115354049",
+        "name": "Jeff Johnson"
+      },
+      {
+        "authorId": "3271933",
+        "name": "Matthijs Douze"
+      },
+      {
+        "authorId": "1681054",
+        "name": "H. Jégou"
+      }
+    ],
+    "abstract": "Similarity search finds application in database systems handling complex data such as images or videos, which are typically represented by high-dimensional features and require specific indexing structures. This paper tackles the problem of better utilizing GPUs for this task. While GPUs excel at data parallel tasks such as distance computation, prior approaches in this domain are bottlenecked by algorithms that expose less parallelism, such as <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq1-2921572.gif\"/></alternatives></inline-formula>-min selection, or make poor use of the memory hierarchy. We propose a novel design for <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq2-2921572.gif\"/></alternatives></inline-formula>-selection. We apply it in different similarity search scenarios, by optimizing brute-force, approximate and compressed-domain search based on product quantization. In all these setups, we outperform the state of the art by large margins. Our implementation operates at up to 55 percent of theoretical peak performance, enabling a nearest neighbor implementation that is 8.5 × faster than prior GPU state of the art. It enables the construction of a high accuracy <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq3-2921572.gif\"/></alternatives></inline-formula>-NN graph on 95 million images from the <sc>Yfcc100M</sc> dataset in 35 minutes, and of a graph connecting 1 billion vectors in less than 12 hours on 4 Maxwell Titan X GPUs. We have open-sourced our approach for the sake of comparison and reproducibility.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ce23476759263bd3f5e95fc758385eb62b3ab59a",
+    "externalIds": {
+      "ACL": "D16-1054",
+      "DBLP": "conf/emnlp/SuSSSGYY16",
+      "MAG": "2566402689",
+      "DOI": "10.18653/v1/D16-1054",
+      "CorpusId": 348944
+    },
+    "title": "On Generating Characteristic-rich Question Sets for QA Evaluation",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2016,
+    "citationCount": 131,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D16-1054.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/D16-1054, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1758652",
+        "name": "Yu Su"
+      },
+      {
+        "authorId": "11121990",
+        "name": "Huan Sun"
+      },
+      {
+        "authorId": "1709722",
+        "name": "Brian M. Sadler"
+      },
+      {
+        "authorId": "1718467",
+        "name": "M. Srivatsa"
+      },
+      {
+        "authorId": "3737312",
+        "name": "Izzeddin Gur"
+      },
+      {
+        "authorId": "3451616",
+        "name": "Zenghui Yan"
+      },
+      {
+        "authorId": "1740249",
+        "name": "Xifeng Yan"
+      }
+    ],
+    "abstract": ".",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c7fcaa13db8c89ff1f39b5687ba47f8beee107c4",
+    "externalIds": {
+      "ACL": "P16-2033",
+      "MAG": "2511149293",
+      "DBLP": "conf/acl/YihRMCS16",
+      "DOI": "10.18653/v1/P16-2033",
+      "CorpusId": 13905064
+    },
+    "title": "The Value of Semantic Parse Labeling for Knowledge Base Question Answering",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2016,
+    "citationCount": 673,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.18653/v1/p16-2033",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/P16-2033, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144105277",
+        "name": "Wen-tau Yih"
+      },
+      {
+        "authorId": "144422314",
+        "name": "Matthew Richardson"
+      },
+      {
+        "authorId": "50004012",
+        "name": "Christopher Meek"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "38972741",
+        "name": "Jina Suh"
+      }
+    ],
+    "abstract": "We demonstrate the value of collecting semantic parse labels for knowledge base question answering. In particular, (1) unlike previous studies on small-scale datasets, we show that learning from labeled semantic parses significantly improves overall performance, resulting in absolute 5 point gain compared to learning from answers, (2) we show that with an appropriate user interface, one can obtain semantic parses with high accuracy and at a cost comparable or lower than obtaining just answers, and (3) we have created and shared the largest semantic-parse labeled dataset to date in order to advance research in question answering.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "25369f56a933e3bfb1d8e1588cdc6c50df93ecae",
+    "externalIds": {
+      "MAG": "2251957808",
+      "ACL": "P15-1129",
+      "DBLP": "conf/acl/WangBL15",
+      "DOI": "10.3115/v1/P15-1129",
+      "CorpusId": 14472576
+    },
+    "title": "Building a Semantic Parser Overnight",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2015,
+    "citationCount": 375,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/P15-1129, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108101115",
+        "name": "Yushi Wang"
+      },
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "How do we build a semantic parser in a new domain starting with zero training examples? We introduce a new methodology for this setting: First, we use a simple grammar to generate logical forms paired with canonical utterances. The logical forms are meant to cover the desired set of compositional operators, and the canonical utterances are meant to capture the meaning of the logical forms (although clumsily). We then use crowdsourcing to paraphrase these canonical utterances into natural utterances. The resulting data is used to train the semantic parser. We further study the role of compositionality in the resulting paraphrases. Finally, we test our methodology on seven domains and show that we can build an adequate semantic parser in just a few hours.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "96232dd74fad21f495a2f4563fd42869d968e6bf",
+    "externalIds": {
+      "MAG": "1539162551",
+      "ArXiv": "1309.4408",
+      "DBLP": "journals/corr/Liang13",
+      "CorpusId": 13380342
+    },
+    "title": "Lambda Dependency-Based Compositional Semantics",
+    "venue": "arXiv.org",
+    "year": 2013,
+    "citationCount": 145,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1309.4408, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2075292388",
+        "name": "P. Liang"
+      }
+    ],
+    "abstract": "This short note presents a new formal language, lambda dependency-based compositional semantics (lambda DCS) for representing logical forms in semantic parsing. By eliminating variables and making existential quantification implicit, lambda DCS logical forms are generally more compact than those in lambda calculus.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b7dcbcf7383fca4555dd2ef9d7f3e8374b9c1b11",
+    "externalIds": {
+      "DBLP": "books/daglib/0071545",
+      "MAG": "1554278997",
+      "CorpusId": 7062578
+    },
+    "title": "Lambda-calculus, types and models",
+    "venue": "Ellis Horwood series in computers and their applications",
+    "year": 1993,
+    "citationCount": 268,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3098530",
+        "name": "J. Krivine"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dbb3fbc0e0ab30a2d7b9d6e083e520a27ddaa7b5",
+    "externalIds": {
+      "DBLP": "conf/coling/AgarwalKJ25",
+      "CorpusId": 275821226
+    },
+    "title": "Aligning Complex Knowledge Graph Question Answering as Knowledge-Aware Constrained Code Generation",
+    "venue": "International Conference on Computational Linguistics",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2316635729",
+        "name": "Prerna Agarwal"
+      },
+      {
+        "authorId": "2316676036",
+        "name": "Nishant Kumar"
+      },
+      {
+        "authorId": "118347524",
+        "name": "Srikanta Bedathur Jagannath"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d0fe343fbdecaf4cc477d70e8701f9a6935b13d0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-10768",
+      "DOI": "10.48550/arXiv.2401.10768",
+      "CorpusId": 273502891
+    },
+    "title": "Mitigating Hallucinations of Large Language Models via Knowledge Consistent Alignment",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2401.10768?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2401.10768, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2217614543",
+        "name": "Fanqi Wan"
+      },
+      {
+        "authorId": "14799547",
+        "name": "Xinting Huang"
+      },
+      {
+        "authorId": "2279792419",
+        "name": "Leyang Cui"
+      },
+      {
+        "authorId": "2258552983",
+        "name": "Xiaojun Quan"
+      },
+      {
+        "authorId": "2258552250",
+        "name": "Wei Bi"
+      },
+      {
+        "authorId": "2257446263",
+        "name": "Shuming Shi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2f3ce76e7d92c19a8c59ba6dbdc3db7cbae6cb56",
+    "externalIds": {
+      "DBLP": "conf/acl/AgarwalKB24",
+      "DOI": "10.18653/v1/2024.acl-long.545",
+      "CorpusId": 271923537
+    },
+    "title": "SymKGQA: Few-Shot Knowledge Graph Question Answering via Symbolic Program Generation and Execution",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.18653/v1/2024.acl-long.545?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.18653/v1/2024.acl-long.545, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2316635729",
+        "name": "Prerna Agarwal"
+      },
+      {
+        "authorId": "2316676036",
+        "name": "Nishant Kumar"
+      },
+      {
+        "authorId": "1751538",
+        "name": "Srikanta J. Bedathur"
+      }
+    ],
+    "abstract": "Semantic Parsing of natural language questions into their executable logical form (LF) has shown state-of-the-art (SOTA) performance for Knowledge Graph Question Answering (KGQA). However, these methods are not applicable for real-world applications, due to lack of KG-specific training data. Recent advances in the capabilities of Large Language Models (LLMs) has led towards generating low-level LFs such as SPARQL and S-Expression in a few-shot setting. Unfortunately, these methods: (1) are limited to the knowledge of underlying LLM about the LF, (2) performs inferior for the harder complex benchmarks such as KQA Pro, (3) suffers while grounding the generated LF to a specific Knowledge Graph. Recently, a new LF called KoPL (Cao et al., 2022a) has been introduced that explicitly models complex reasoning process step-by-step in a symbolic manner and has shown SOTA on KQA Pro in fully-supervised setting. Inspired by this, we propose SymKGQA 1 framework that generates step-by-step Sym bolic LF i.e., KoPL in a few-shot in-context learning setting using LLM. Our framework is not dependent on pre-trained knowledge of LLM about KoPL. We further build a Retrieval-Augmented Generation based Qu estion-A ware C ontextual K oPL (QUACK) resolver to ground the generated LF. Our experiments with different LLMs and few-shot settings demonstrate that SymKGQA outperforms all other few-shot and even many of the fully-supervised KGQA approaches.",
+    "_is_influential": false,
+    "_intents": []
+  }
+]

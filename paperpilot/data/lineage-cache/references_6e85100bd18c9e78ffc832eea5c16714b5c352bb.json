@@ -1,0 +1,1691 @@
+[
+  {
+    "paperId": "7eca6ef1133f0db2039fd2a47276f22b99f63e49",
+    "externalIds": {
+      "ArXiv": "2507.05724",
+      "DBLP": "journals/corr/abs-2507-05724",
+      "DOI": "10.1109/ASRU65441.2025.11434645",
+      "CorpusId": 280125250
+    },
+    "title": "Omni-Router: Sharing Routing Decisions in Sparse Mixture-of-Experts for Speech Recognition",
+    "venue": "Automatic Speech Recognition & Understanding",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.05724, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2349069784",
+        "name": "Zijin Gu"
+      },
+      {
+        "authorId": "2256707284",
+        "name": "Tatiana Likhomanenko"
+      },
+      {
+        "authorId": "3111912",
+        "name": "N. Jaitly"
+      }
+    ],
+    "abstract": "Mixture-of-experts (MoE) models have expanded from language modeling to automatic speech recognition (ASR). Traditional MoE methods, such as the Switch Transformer, route experts independently within each layer. Our analysis reveals that routers in most layers make expert choices that are not strongly correlated with the choices of the routers in other layers. To increase the cooperation between experts in different layers and encourage greater specialization, we use a shared router across different MoE layers. We call this model Omni-router Transformer. Extensive experiments on a large-scale pseudolabeled dataset and evaluations across 10 diverse, out-of-domain datasets demonstrate that the Omni-router Transformer is able to achieve lower training loss and consistently outperform dense and Switch Transformer models, reducing average word error rates by 11.2% and 8.2%, respectively, while promoting structured expert usage and improved robustness to diverse data.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "00814e5631c20bec502838a1e8040b3f5f258971",
+    "externalIds": {
+      "DBLP": "conf/emnlp/YangSXHGD0YC024",
+      "ArXiv": "2411.01016",
+      "DOI": "10.18653/v1/2024.findings-emnlp.612",
+      "CorpusId": 273811289
+    },
+    "title": "MoE-I²: Compressing Mixture of Experts Models through Inter-Expert Pruning and Intra-Expert Low-Rank Decomposition",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2024,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2411.01016",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.01016, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2329224758",
+        "name": "Cheng Yang"
+      },
+      {
+        "authorId": "2117517225",
+        "name": "Yang Sui"
+      },
+      {
+        "authorId": "2196307128",
+        "name": "Jinqi Xiao"
+      },
+      {
+        "authorId": "2152279863",
+        "name": "Lingyi Huang"
+      },
+      {
+        "authorId": "2168502148",
+        "name": "Yu Gong"
+      },
+      {
+        "authorId": "2329727095",
+        "name": "Yuanlin Duan"
+      },
+      {
+        "authorId": "2297818320",
+        "name": "Wenqi Jia"
+      },
+      {
+        "authorId": "1471722186",
+        "name": "Miao Yin"
+      },
+      {
+        "authorId": "2275615387",
+        "name": "Yu Cheng"
+      },
+      {
+        "authorId": "2241581494",
+        "name": "Bo Yuan"
+      }
+    ],
+    "abstract": "The emergence of Mixture of Experts (MoE) LLMs has significantly advanced the development of language models. Compared to traditional LLMs, MoE LLMs outperform traditional LLMs by achieving higher performance with considerably fewer activated parameters. Despite this efficiency, their enormous parameter size still leads to high deployment costs. In this paper, we introduce a two-stage compression method tailored for MoE to reduce the model size and decrease the computational cost. First, in the inter-expert pruning stage, we analyze the importance of each layer and propose the Layer-wise Genetic Search and Block-wise KT-Reception Field with the non-uniform pruning ratio to prune the individual expert. Second, in the intra-expert decomposition stage, we apply the low-rank decomposition to further compress the parameters within the remaining experts. Extensive experiments on Qwen1.5-MoE-A2.7B, DeepSeek-V2-Lite, and Mixtral-8$\\times$7B demonstrate that our proposed methods can both reduce the model size and enhance inference efficiency while maintaining performance in various zero-shot tasks. The code will be available at \\url{https://github.com/xiaochengsky/MoEI-2.git}",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b256751e6abcc595f7500f3cc0e8c1f225af7837",
+    "externalIds": {
+      "ArXiv": "2409.17115",
+      "DBLP": "conf/icml/ZhouWLL025",
+      "DOI": "10.48550/arXiv.2409.17115",
+      "CorpusId": 272881081
+    },
+    "title": "Programming Every Example: Lifting Pre-training Data Quality like Experts at Scale",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 32,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.17115, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153433679",
+        "name": "Fan Zhou"
+      },
+      {
+        "authorId": "3196852",
+        "name": "Zengzhi Wang"
+      },
+      {
+        "authorId": "2323943448",
+        "name": "Qiang Liu"
+      },
+      {
+        "authorId": "2278801242",
+        "name": "Junlong Li"
+      },
+      {
+        "authorId": "2319963282",
+        "name": "Pengfei Liu"
+      }
+    ],
+    "abstract": "Large language model pre-training has traditionally relied on human experts to craft heuristics for improving the corpora quality, resulting in numerous rules developed to date. However, these rules lack the flexibility to address the unique characteristics of individual example effectively. Meanwhile, applying tailored rules to every example is impractical for human experts. In this paper, we demonstrate that even small language models, with as few as 0.3B parameters, can exhibit substantial data refining capabilities comparable to those of human experts. We introduce Programming Every Example (ProX), a novel framework that treats data refinement as a programming task, enabling models to refine corpora by generating and executing fine-grained operations, such as string normalization, for each individual example at scale. Experimental results show that models pre-trained on ProX-curated data outperform either original data or data filtered by other selection methods by more than 2% across various downstream benchmarks. Its effectiveness spans various model sizes and pre-training corpora, including C4, RedPajama-V2, FineWeb, FineWeb-Edu, and DCLM. Furthermore, ProX exhibits significant potential in domain-specific continual pre-training: without domain specific design, models trained on OpenWebMath refined by ProX outperform human-crafted rule-based methods, improving average accuracy by 7.6% over Mistral-7B, with 14.6% for Llama-2-7B and 20.3% for CodeLlama-7B, all within 10B tokens to be comparable to models like Llemma-7B trained on 200B tokens. Further analysis highlights that ProX significantly saves training FLOPs, offering a promising path for efficient LLM pre-training. We are open-sourcing ProX with>500B corpus, models, and sharing all training and implementation details for reproducible research and future innovation. Code: https://github.com/GAIR-NLP/ProX",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "541773c4cbb30bcdcbc82b8d02eba15af811f739",
+    "externalIds": {
+      "ArXiv": "2408.06793",
+      "DBLP": "journals/corr/abs-2408-06793",
+      "DOI": "10.48550/arXiv.2408.06793",
+      "CorpusId": 271859634
+    },
+    "title": "Layerwise Recurrent Router for Mixture-of-Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.06793, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2258961204",
+        "name": "Zihan Qiu"
+      },
+      {
+        "authorId": "2259588806",
+        "name": "Zeyu Huang"
+      },
+      {
+        "authorId": "2385487863",
+        "name": "Shuang Cheng"
+      },
+      {
+        "authorId": "2372318173",
+        "name": "Yizhi Zhou"
+      },
+      {
+        "authorId": "2284801141",
+        "name": "Zili Wang"
+      },
+      {
+        "authorId": "2315980300",
+        "name": "Ivan Titov"
+      },
+      {
+        "authorId": "2259001590",
+        "name": "Jie Fu"
+      }
+    ],
+    "abstract": "The scaling of large language models (LLMs) has revolutionized their capabilities in various tasks, yet this growth must be matched with efficient computational strategies. The Mixture-of-Experts (MoE) architecture stands out for its ability to scale model size without significantly increasing training costs. Despite their advantages, current MoE models often display parameter inefficiency. For instance, a pre-trained MoE-based LLM with 52 billion parameters might perform comparably to a standard model with 6.7 billion parameters. Being a crucial part of MoE, current routers in different layers independently assign tokens without leveraging historical routing information, potentially leading to suboptimal token-expert combinations and the parameter inefficiency problem. To alleviate this issue, we introduce the Layerwise Recurrent Router for Mixture-of-Experts (RMoE). RMoE leverages a Gated Recurrent Unit (GRU) to establish dependencies between routing decisions across consecutive layers. Such layerwise recurrence can be efficiently parallelly computed for input tokens and introduces negotiable costs. Our extensive empirical evaluations demonstrate that RMoE-based language models consistently outperform a spectrum of baseline models. Furthermore, RMoE integrates a novel computation stage orthogonal to existing methods, allowing seamless compatibility with other MoE architectures. Our analyses attribute RMoE's gains to its effective cross-layer information sharing, which also improves expert selection and diversity. Our code is at https://github.com/qiuzh20/RMoE .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b83a9e35c3aeeb37708e362473c7617d59b815b5",
+    "externalIds": {
+      "DBLP": "conf/nips/PenedoKALMRW024",
+      "ArXiv": "2406.17557",
+      "DOI": "10.48550/arXiv.2406.17557",
+      "CorpusId": 270711474
+    },
+    "title": "The FineWeb Datasets: Decanting the Web for the Finest Text Data at Scale",
+    "venue": "Neural Information Processing Systems",
+    "year": 2024,
+    "citationCount": 770,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.17557, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2179371701",
+        "name": "Guilherme Penedo"
+      },
+      {
+        "authorId": "2312305966",
+        "name": "Hynek Kydlícek"
+      },
+      {
+        "authorId": "2190281230",
+        "name": "Loubna Ben Allal"
+      },
+      {
+        "authorId": "2159547851",
+        "name": "Anton Lozhkov"
+      },
+      {
+        "authorId": "2308102046",
+        "name": "Margaret Mitchell"
+      },
+      {
+        "authorId": "2269733851",
+        "name": "Colin Raffel"
+      },
+      {
+        "authorId": "51128119",
+        "name": "L. V. Werra"
+      },
+      {
+        "authorId": "2308099634",
+        "name": "Thomas Wolf"
+      }
+    ],
+    "abstract": "The performance of a large language model (LLM) depends heavily on the quality and size of its pretraining dataset. However, the pretraining datasets for state-of-the-art open LLMs like Llama 3 and Mixtral are not publicly available and very little is known about how they were created. In this work, we introduce FineWeb, a 15-trillion token dataset derived from 96 Common Crawl snapshots that produces better-performing LLMs than other open pretraining datasets. To advance the understanding of how best to curate high-quality pretraining datasets, we carefully document and ablate all of the design choices used in FineWeb, including in-depth investigations of deduplication and filtering strategies. In addition, we introduce FineWeb-Edu, a 1.3-trillion token collection of educational text filtered from FineWeb. LLMs pretrained on FineWeb-Edu exhibit dramatically better performance on knowledge- and reasoning-intensive benchmarks like MMLU and ARC. Along with our datasets, we publicly release our data curation codebase and all of the models trained during our ablation experiments.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a1f23f04421cdc62e80fe9f04c1ce60f4a6af9f0",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2404-02258",
+      "ArXiv": "2404.02258",
+      "DOI": "10.48550/arXiv.2404.02258",
+      "CorpusId": 268876220
+    },
+    "title": "Mixture-of-Depths: Dynamically allocating compute in transformer-based language models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 177,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.02258, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143724694",
+        "name": "David Raposo"
+      },
+      {
+        "authorId": "2294720392",
+        "name": "Sam Ritter"
+      },
+      {
+        "authorId": "2294720848",
+        "name": "Blake A. Richards"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "2275186692",
+        "name": "Peter C. Humphreys"
+      },
+      {
+        "authorId": "35030998",
+        "name": "Adam Santoro"
+      }
+    ],
+    "abstract": "Transformer-based language models spread FLOPs uniformly across input sequences. In this work we demonstrate that transformers can instead learn to dynamically allocate FLOPs (or compute) to specific positions in a sequence, optimising the allocation along the sequence for different layers across the model depth. Our method enforces a total compute budget by capping the number of tokens ($k$) that can participate in the self-attention and MLP computations at a given layer. The tokens to be processed are determined by the network using a top-$k$ routing mechanism. Since $k$ is defined a priori, this simple procedure uses a static computation graph with known tensor sizes, unlike other conditional computation techniques. Nevertheless, since the identities of the $k$ tokens are fluid, this method can expend FLOPs non-uniformly across the time and model depth dimensions. Thus, compute expenditure is entirely predictable in sum total, but dynamic and context-sensitive at the token-level. Not only do models trained in this way learn to dynamically allocate compute, they do so efficiently. These models match baseline performance for equivalent FLOPS and wall-clock times to train, but require a fraction of the FLOPs per forward pass, and can be upwards of 50\\% faster to step during post-training sampling.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16d6e1ed1cf72212f6154644f3aa59d18bc95fda",
+    "externalIds": {
+      "ArXiv": "2401.06066",
+      "DBLP": "conf/acl/DaiDZXGCLZYWXLH24",
+      "DOI": "10.48550/arXiv.2401.06066",
+      "CorpusId": 266933338
+    },
+    "title": "DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 791,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.06066, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "2278221484",
+        "name": "C. Deng"
+      },
+      {
+        "authorId": "2278389597",
+        "name": "Chenggang Zhao"
+      },
+      {
+        "authorId": "2274917091",
+        "name": "R. Xu"
+      },
+      {
+        "authorId": "2278395340",
+        "name": "Huazuo Gao"
+      },
+      {
+        "authorId": "2274200088",
+        "name": "Deli Chen"
+      },
+      {
+        "authorId": "2278337977",
+        "name": "Jiashi Li"
+      },
+      {
+        "authorId": "2279051415",
+        "name": "Wangding Zeng"
+      },
+      {
+        "authorId": "2279159169",
+        "name": "Xingkai Yu"
+      },
+      {
+        "authorId": "49176273",
+        "name": "Yu Wu"
+      },
+      {
+        "authorId": "2279107352",
+        "name": "Zhenda Xie"
+      },
+      {
+        "authorId": "2278599324",
+        "name": "Y. K. Li"
+      },
+      {
+        "authorId": "2278251752",
+        "name": "Panpan Huang"
+      },
+      {
+        "authorId": "2278218736",
+        "name": "Fuli Luo"
+      },
+      {
+        "authorId": "2278217940",
+        "name": "C. Ruan"
+      },
+      {
+        "authorId": "3335836",
+        "name": "Zhifang Sui"
+      },
+      {
+        "authorId": "2278618633",
+        "name": "W. Liang"
+      }
+    ],
+    "abstract": "In the era of large language models, Mixture-of-Experts (MoE) is a promising architecture for managing computational costs when scaling up model parameters. However, conventional MoE architectures like GShard, which activate the top-$K$ out of $N$ experts, face challenges in ensuring expert specialization, i.e. each expert acquires non-overlapping and focused knowledge. In response, we propose the DeepSeekMoE architecture towards ultimate expert specialization. It involves two principal strategies: (1) finely segmenting the experts into $mN$ ones and activating $mK$ from them, allowing for a more flexible combination of activated experts; (2) isolating $K_s$ experts as shared ones, aiming at capturing common knowledge and mitigating redundancy in routed experts. Starting from a modest scale with 2B parameters, we demonstrate that DeepSeekMoE 2B achieves comparable performance with GShard 2.9B, which has 1.5 times the expert parameters and computation. In addition, DeepSeekMoE 2B nearly approaches the performance of its dense counterpart with the same number of total parameters, which set the upper bound of MoE models. Subsequently, we scale up DeepSeekMoE to 16B parameters and show that it achieves comparable performance with LLaMA2 7B, with only about 40% of computations. Further, our preliminary efforts to scale up DeepSeekMoE to 145B parameters consistently validate its substantial advantages over the GShard architecture, and show its performance comparable with DeepSeek 67B, using only 28.5% (maybe even 18.2%) of computations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "411114f989a3d1083d90afd265103132fee94ebe",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2401-04088",
+      "ArXiv": "2401.04088",
+      "DOI": "10.48550/arXiv.2401.04088",
+      "CorpusId": 266844877
+    },
+    "title": "Mixtral of Experts",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 1797,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.04088, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2278435713",
+        "name": "Albert Q. Jiang"
+      },
+      {
+        "authorId": "2256994781",
+        "name": "Alexandre Sablayrolles"
+      },
+      {
+        "authorId": "2278435471",
+        "name": "Antoine Roux"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "2278434888",
+        "name": "Blanche Savary"
+      },
+      {
+        "authorId": "2256994975",
+        "name": "Chris Bamford"
+      },
+      {
+        "authorId": "2328602",
+        "name": "Devendra Singh Chaplot"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "2168785331",
+        "name": "Emma Bou Hanna"
+      },
+      {
+        "authorId": "2256995640",
+        "name": "Florian Bressand"
+      },
+      {
+        "authorId": "2256993163",
+        "name": "Gianna Lengyel"
+      },
+      {
+        "authorId": "2278434464",
+        "name": "Guillaume Bour"
+      },
+      {
+        "authorId": "1830914",
+        "name": "Guillaume Lample"
+      },
+      {
+        "authorId": "2256995632",
+        "name": "Lélio Renard Lavaud"
+      },
+      {
+        "authorId": "2113836860",
+        "name": "Lucile Saulnier"
+      },
+      {
+        "authorId": "114952298",
+        "name": "M. Lachaux"
+      },
+      {
+        "authorId": "2256994779",
+        "name": "Pierre Stock"
+      },
+      {
+        "authorId": "2278428931",
+        "name": "Sandeep Subramanian"
+      },
+      {
+        "authorId": "2303863687",
+        "name": "Sophia Yang"
+      },
+      {
+        "authorId": "2184103686",
+        "name": "Szymon Antoniak"
+      },
+      {
+        "authorId": "1379806208",
+        "name": "Teven Le Scao"
+      },
+      {
+        "authorId": "81588783",
+        "name": "Théophile Gervet"
+      },
+      {
+        "authorId": "46183616",
+        "name": "Thibaut Lavril"
+      },
+      {
+        "authorId": "2278590503",
+        "name": "Thomas Wang"
+      },
+      {
+        "authorId": "47733973",
+        "name": "Timothée Lacroix"
+      },
+      {
+        "authorId": "2256992826",
+        "name": "William El Sayed"
+      }
+    ],
+    "abstract": "We introduce Mixtral 8x7B, a Sparse Mixture of Experts (SMoE) language model. Mixtral has the same architecture as Mistral 7B, with the difference that each layer is composed of 8 feedforward blocks (i.e. experts). For every token, at each layer, a router network selects two experts to process the current state and combine their outputs. Even though each token only sees two experts, the selected experts can be different at each timestep. As a result, each token has access to 47B parameters, but only uses 13B active parameters during inference. Mixtral was trained with a context size of 32k tokens and it outperforms or matches Llama 2 70B and GPT-3.5 across all evaluated benchmarks. In particular, Mixtral vastly outperforms Llama 2 70B on mathematics, code generation, and multilingual benchmarks. We also provide a model fine-tuned to follow instructions, Mixtral 8x7B - Instruct, that surpasses GPT-3.5 Turbo, Claude-2.1, Gemini Pro, and Llama 2 70B - chat model on human benchmarks. Both the base and instruct models are released under the Apache 2.0 license.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5aae7d84f8eaa55f3386cee41d94769e7ab01e9d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2309-05444",
+      "ArXiv": "2309.05444",
+      "DOI": "10.48550/arXiv.2309.05444",
+      "CorpusId": 261697072
+    },
+    "title": "Pushing Mixture of Experts to the Limit: Extremely Parameter Efficient MoE for Instruction Tuning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 165,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2309.05444",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2309.05444, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2212363034",
+        "name": "Ted Zadouri"
+      },
+      {
+        "authorId": "82290814",
+        "name": "A. Ustun"
+      },
+      {
+        "authorId": "2186822213",
+        "name": "Arash Ahmadian"
+      },
+      {
+        "authorId": "2239102266",
+        "name": "Beyza Ermics"
+      },
+      {
+        "authorId": "153563548",
+        "name": "Acyr F. Locatelli"
+      },
+      {
+        "authorId": "2261493078",
+        "name": "Sara Hooker"
+      }
+    ],
+    "abstract": "The Mixture of Experts (MoE) is a widely known neural architecture where an ensemble of specialized sub-models optimizes overall performance with a constant computational cost. However, conventional MoEs pose challenges at scale due to the need to store all experts in memory. In this paper, we push MoE to the limit. We propose extremely parameter-efficient MoE by uniquely combining MoE architecture with lightweight experts.Our MoE architecture outperforms standard parameter-efficient fine-tuning (PEFT) methods and is on par with full fine-tuning by only updating the lightweight experts -- less than 1% of an 11B parameters model. Furthermore, our method generalizes to unseen tasks as it does not depend on any prior task knowledge. Our research underscores the versatility of the mixture of experts architecture, showcasing its ability to deliver robust performance even when subjected to rigorous parameter constraints. Our code used in all the experiments is publicly available here: https://github.com/for-ai/parameter-efficient-moe.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2edccb8fa562ed52cd49ea6fc67ed32db6218247",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2308-00951",
+      "ArXiv": "2308.00951",
+      "DOI": "10.48550/arXiv.2308.00951",
+      "CorpusId": 260378993
+    },
+    "title": "From Sparse to Soft Mixtures of Experts",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 254,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.00951",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.00951, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1794202",
+        "name": "J. Puigcerver"
+      },
+      {
+        "authorId": "145814174",
+        "name": "C. Riquelme"
+      },
+      {
+        "authorId": "40608942",
+        "name": "Basil Mustafa"
+      },
+      {
+        "authorId": "2815290",
+        "name": "N. Houlsby"
+      }
+    ],
+    "abstract": "Sparse mixture of expert architectures (MoEs) scale model capacity without significant increases in training or inference costs. Despite their success, MoEs suffer from a number of issues: training instability, token dropping, inability to scale the number of experts, or ineffective finetuning. In this work, we propose Soft MoE, a fully-differentiable sparse Transformer that addresses these challenges, while maintaining the benefits of MoEs. Soft MoE performs an implicit soft assignment by passing different weighted combinations of all input tokens to each expert. As in other MoEs, experts in Soft MoE only process a subset of the (combined) tokens, enabling larger model capacity (and performance) at lower inference cost. In the context of visual recognition, Soft MoE greatly outperforms dense Transformers (ViTs) and popular MoEs (Tokens Choice and Experts Choice). Furthermore, Soft MoE scales well: Soft MoE Huge/14 with 128 experts in 16 MoE layers has over 40x more parameters than ViT Huge/14, with only 2% increased inference time, and substantially better quality.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c26bb68806a992bf4fc85b5639e1657a445c4781",
+    "externalIds": {
+      "DBLP": "conf/nips/Chi0HDMPSBSMHW22",
+      "ArXiv": "2204.09179",
+      "DOI": "10.48550/arXiv.2204.09179",
+      "CorpusId": 248266346
+    },
+    "title": "On the Representation Collapse of Sparse Mixture of Experts",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 171,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.09179",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.09179, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46221722",
+        "name": "Zewen Chi"
+      },
+      {
+        "authorId": "145307652",
+        "name": "Li Dong"
+      },
+      {
+        "authorId": "3110003",
+        "name": "Shaohan Huang"
+      },
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "2118866998",
+        "name": "Shuming Ma"
+      },
+      {
+        "authorId": "27419446",
+        "name": "Barun Patra"
+      },
+      {
+        "authorId": "14839052",
+        "name": "Saksham Singhal"
+      },
+      {
+        "authorId": "34765717",
+        "name": "Payal Bajaj"
+      },
+      {
+        "authorId": "50706785",
+        "name": "Xia Song"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      }
+    ],
+    "abstract": "Sparse mixture of experts provides larger model capacity while requiring a constant computational overhead. It employs the routing mechanism to distribute input tokens to the best-matched experts according to their hidden representations. However, learning such a routing mechanism encourages token clustering around expert centroids, implying a trend toward representation collapse. In this work, we propose to estimate the routing scores between tokens and experts on a low-dimensional hypersphere. We conduct extensive experiments on cross-lingual language model pre-training and fine-tuning on downstream tasks. Experimental results across seven multilingual benchmarks show that our method achieves consistent gains. We also present a comprehensive analysis on the representation and routing behaviors of our models. Our method alleviates the representation collapse issue and achieves more consistent routing than the baseline mixture-of-experts methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c9550f0d1940ee1adf1549c9a0d699ef896dbefd",
+    "externalIds": {
+      "ACL": "2022.acl-long.489",
+      "ArXiv": "2204.08396",
+      "DBLP": "conf/acl/Dai0MZSCW22",
+      "DOI": "10.48550/arXiv.2204.08396",
+      "CorpusId": 248227505
+    },
+    "title": "StableMoE: Stable Routing Strategy for Mixture of Experts",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2022,
+    "citationCount": 110,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2204.08396",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.08396, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10780897",
+        "name": "Damai Dai"
+      },
+      {
+        "authorId": "145307652",
+        "name": "Li Dong"
+      },
+      {
+        "authorId": "2118866998",
+        "name": "Shuming Ma"
+      },
+      {
+        "authorId": "2112670329",
+        "name": "Bo Zheng"
+      },
+      {
+        "authorId": "3335836",
+        "name": "Zhifang Sui"
+      },
+      {
+        "authorId": "7267809",
+        "name": "Baobao Chang"
+      },
+      {
+        "authorId": "49807919",
+        "name": "Furu Wei"
+      }
+    ],
+    "abstract": "The Mixture-of-Experts (MoE) technique can scale up the model size of Transformers with an affordable computational overhead. We point out that existing learning-to-route MoE methods suffer from the routing fluctuation issue, i.e., the target expert of the same input may change along with training, but only one expert will be activated for the input during inference. The routing fluctuation tends to harm sample efficiency because the same input updates different experts but only one is finally used. In this paper, we propose StableMoE with two training stages to address the routing fluctuation problem. In the first training stage, we learn a balanced and cohesive routing strategy and distill it into a lightweight router decoupled from the backbone model. In the second training stage, we utilize the distilled router to determine the token-to-expert assignment and freeze it for a stable routing strategy. We validate our method on language modeling and multilingual machine translation. The results show that StableMoE outperforms existing MoE methods in terms of both convergence speed and performance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8342b592fe238f3d230e4959b06fd10153c45db1",
+    "externalIds": {
+      "ArXiv": "2203.15556",
+      "DBLP": "journals/corr/abs-2203-15556",
+      "DOI": "10.52202/068431-2176",
+      "CorpusId": 247778764
+    },
+    "title": "Training Compute-Optimal Large Language Models",
+    "venue": "Advances in Neural Information Processing Systems 35",
+    "year": 2022,
+    "citationCount": 3047,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2203.15556, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46616544",
+        "name": "Jordan Hoffmann"
+      },
+      {
+        "authorId": "148016269",
+        "name": "Sebastian Borgeaud"
+      },
+      {
+        "authorId": "1697879",
+        "name": "Arthur Mensch"
+      },
+      {
+        "authorId": "118801223",
+        "name": "Elena Buchatskaya"
+      },
+      {
+        "authorId": "2072572294",
+        "name": "Trevor Cai"
+      },
+      {
+        "authorId": "2143538252",
+        "name": "Eliza Rutherford"
+      },
+      {
+        "authorId": "40550616",
+        "name": "Diego de Las Casas"
+      },
+      {
+        "authorId": "2234342",
+        "name": "Lisa Anne Hendricks"
+      },
+      {
+        "authorId": "1851564",
+        "name": "Johannes Welbl"
+      },
+      {
+        "authorId": "31993415",
+        "name": "Aidan Clark"
+      },
+      {
+        "authorId": "2146532222",
+        "name": "T. Hennigan"
+      },
+      {
+        "authorId": "51210148",
+        "name": "Eric Noland"
+      },
+      {
+        "authorId": "2143434227",
+        "name": "Katie Millican"
+      },
+      {
+        "authorId": "47568983",
+        "name": "George van den Driessche"
+      },
+      {
+        "authorId": "2143374656",
+        "name": "Bogdan Damoc"
+      },
+      {
+        "authorId": "40895205",
+        "name": "Aurelia Guy"
+      },
+      {
+        "authorId": "2217144",
+        "name": "Simon Osindero"
+      },
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "152585800",
+        "name": "Erich Elsen"
+      },
+      {
+        "authorId": "34269227",
+        "name": "Jack W. Rae"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      }
+    ],
+    "abstract": "We investigate the optimal model size and number of tokens for training a transformer language model under a given compute budget. We find that current large language models are significantly undertrained, a consequence of the recent focus on scaling language models whilst keeping the amount of training data constant. By training over 400 language models ranging from 70 million to over 16 billion parameters on 5 to 500 billion tokens, we find that for compute-optimal training, the model size and the number of training tokens should be scaled equally: for every doubling of model size the number of training tokens should also be doubled. We test this hypothesis by training a predicted compute-optimal model, Chinchilla, that uses the same compute budget as Gopher but with 70B parameters and 4$\\times$ more more data. Chinchilla uniformly and significantly outperforms Gopher (280B), GPT-3 (175B), Jurassic-1 (178B), and Megatron-Turing NLG (530B) on a large range of downstream evaluation tasks. This also means that Chinchilla uses substantially less compute for fine-tuning and inference, greatly facilitating downstream usage. As a highlight, Chinchilla reaches a state-of-the-art average accuracy of 67.5% on the MMLU benchmark, greater than a 7% improvement over Gopher.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bbc57e1b3cf90e09b64377f13de455793bc81ad5",
+    "externalIds": {
+      "DBLP": "conf/nips/ZhouLLDHZDCLL22",
+      "ArXiv": "2202.09368",
+      "DOI": "10.52202/068431-0515",
+      "CorpusId": 247011948
+    },
+    "title": "Mixture-of-Experts with Expert Choice Routing",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 696,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.09368, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1929135",
+        "name": "Yan-Quan Zhou"
+      },
+      {
+        "authorId": "2055852528",
+        "name": "Tao Lei"
+      },
+      {
+        "authorId": "46935491",
+        "name": "Han-Chu Liu"
+      },
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2406193831",
+        "name": "Vincent Zhao"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2111317372",
+        "name": "Zhifeng Chen"
+      },
+      {
+        "authorId": "1397917613",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2926266",
+        "name": "J. Laudon"
+      }
+    ],
+    "abstract": "Sparsely-activated Mixture-of-experts (MoE) models allow the number of parameters to greatly increase while keeping the amount of computation for a given token or a given sample unchanged. However, a poor expert routing strategy (e.g. one resulting in load imbalance) can cause certain experts to be under-trained, leading to an expert being under or over-specialized. Prior work allocates a fixed number of experts to each token using a top-k function regardless of the relative importance of different tokens. To address this, we propose a heterogeneous mixture-of-experts employing an expert choice method. Instead of letting tokens select the top-k experts, we have experts selecting the top-k tokens. As a result, each token can be routed to a variable number of experts and each expert can have a fixed bucket size. We systematically study pre-training speedups using the same computational resources of the Switch Transformer top-1 and GShard top-2 gating of prior work and find that our method improves training convergence time by more than 2x. For the same computational cost, our method demonstrates higher performance in fine-tuning 11 selected tasks in the GLUE and SuperGLUE benchmarks. For a smaller activation cost, our method outperforms the T5 dense model in 7 out of the 11 tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "80d0116d77beeded0c23cf48946d9d10d4faee14",
+    "externalIds": {
+      "ArXiv": "2112.06905",
+      "DBLP": "journals/corr/abs-2112-06905",
+      "CorpusId": 245124124
+    },
+    "title": "GLaM: Efficient Scaling of Language Models with Mixture-of-Experts",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 1160,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.06905, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2140321952",
+        "name": "Nan Du"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2555924",
+        "name": "Andrew M. Dai"
+      },
+      {
+        "authorId": "2058177533",
+        "name": "Simon Tong"
+      },
+      {
+        "authorId": "150077954",
+        "name": "Dmitry Lepikhin"
+      },
+      {
+        "authorId": "2145139570",
+        "name": "Yuanzhong Xu"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "2389316",
+        "name": "Yanqi Zhou"
+      },
+      {
+        "authorId": "40625240",
+        "name": "Adams Wei Yu"
+      },
+      {
+        "authorId": "2345617",
+        "name": "Orhan Firat"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "2096916416",
+        "name": "L. Fedus"
+      },
+      {
+        "authorId": "40377863",
+        "name": "Maarten Bosma"
+      },
+      {
+        "authorId": "1389392654",
+        "name": "Zongwei Zhou"
+      },
+      {
+        "authorId": null,
+        "name": "Tao Wang"
+      },
+      {
+        "authorId": "2153608756",
+        "name": "Yu Emma Wang"
+      },
+      {
+        "authorId": "20825661",
+        "name": "Kellie Webster"
+      },
+      {
+        "authorId": "97905921",
+        "name": "Marie Pellat"
+      },
+      {
+        "authorId": "2148473059",
+        "name": "Kevin Robinson"
+      },
+      {
+        "authorId": "1398655031",
+        "name": "K. Meier-Hellstern"
+      },
+      {
+        "authorId": "2145151992",
+        "name": "Toju Duke"
+      },
+      {
+        "authorId": "2065639113",
+        "name": "Lucas Dixon"
+      },
+      {
+        "authorId": "1556095165",
+        "name": "Kun Zhang"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "48607963",
+        "name": "Yonghui Wu"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      },
+      {
+        "authorId": "2052275005",
+        "name": "Claire Cui"
+      }
+    ],
+    "abstract": "Scaling language models with more data, compute and parameters has driven significant progress in natural language processing. For example, thanks to scaling, GPT-3 was able to achieve strong results on in-context learning tasks. However, training these large dense models requires significant amounts of computing resources. In this paper, we propose and develop a family of language models named GLaM (Generalist Language Model), which uses a sparsely activated mixture-of-experts architecture to scale the model capacity while also incurring substantially less training cost compared to dense variants. The largest GLaM has 1.2 trillion parameters, which is approximately 7x larger than GPT-3. It consumes only 1/3 of the energy used to train GPT-3 and requires half of the computation flops for inference, while still achieving better overall zero-shot and one-shot performance across 29 NLP tasks.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "fdacf2a732f55befdc410ea927091cad3b791f13",
+    "externalIds": {
+      "DBLP": "journals/jmlr/FedusZS22",
+      "ArXiv": "2101.03961",
+      "CorpusId": 231573431
+    },
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+    "venue": "Journal of machine learning research",
+    "year": 2021,
+    "citationCount": 3707,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.03961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "26958176",
+        "name": "W. Fedus"
+      },
+      {
+        "authorId": "2368067",
+        "name": "Barret Zoph"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      }
+    ],
+    "abstract": "In deep learning, models typically reuse the same parameters for all inputs. Mixture of Experts (MoE) defies this and instead selects different parameters for each incoming example. The result is a sparsely-activated model -- with outrageous numbers of parameters -- but a constant computational cost. However, despite several notable successes of MoE, widespread adoption has been hindered by complexity, communication costs and training instability -- we address these with the Switch Transformer. We simplify the MoE routing algorithm and design intuitive improved models with reduced communication and computational costs. Our proposed training techniques help wrangle the instabilities and we show large sparse models may be trained, for the first time, with lower precision (bfloat16) formats. We design models based off T5-Base and T5-Large to obtain up to 7x increases in pre-training speed with the same computational resources. These improvements extend into multilingual settings where we measure gains over the mT5-Base version across all 101 languages. Finally, we advance the current scale of language models by pre-training up to trillion parameter models on the\"Colossal Clean Crawled Corpus\"and achieve a 4x speedup over the T5-XXL model.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "814a4f680b9ba6baba23b93499f4b48af1a27678",
+    "externalIds": {
+      "ArXiv": "2009.03300",
+      "DBLP": "journals/corr/abs-2009-03300",
+      "MAG": "3083410900",
+      "CorpusId": 221516475
+    },
+    "title": "Measuring Massive Multitask Language Understanding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 7786,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.03300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422872",
+        "name": "Dan Hendrycks"
+      },
+      {
+        "authorId": "90909974",
+        "name": "Collin Burns"
+      },
+      {
+        "authorId": "104444594",
+        "name": "Steven Basart"
+      },
+      {
+        "authorId": "1380103052",
+        "name": "Andy Zou"
+      },
+      {
+        "authorId": "16787428",
+        "name": "Mantas Mazeika"
+      },
+      {
+        "authorId": "143711382",
+        "name": "D. Song"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      }
+    ],
+    "abstract": "We propose a new test to measure a text model's multitask accuracy. The test covers 57 tasks including elementary mathematics, US history, computer science, law, and more. To attain high accuracy on this test, models must possess extensive world knowledge and problem solving ability. We find that while most recent models have near random-chance accuracy, the very largest GPT-3 model improves over random chance by almost 20 percentage points on average. However, on every one of the 57 tasks, the best models still need substantial improvements before they can reach expert-level accuracy. Models also have lopsided performance and frequently do not know when they are wrong. Worse, they still have near-random accuracy on some socially important subjects such as morality and law. By comprehensively evaluating the breadth and depth of a model's academic and professional understanding, our test can be used to analyze models across many tasks and to identify important shortcomings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1882f194cb43828852cc052887671e55a80f945a",
+    "externalIds": {
+      "MAG": "3040573126",
+      "DBLP": "conf/iclr/LepikhinLXCFHKS21",
+      "ArXiv": "2006.16668",
+      "CorpusId": 220265858
+    },
+    "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 1918,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.16668, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150077954",
+        "name": "Dmitry Lepikhin"
+      },
+      {
+        "authorId": "34946720",
+        "name": "HyoukJoong Lee"
+      },
+      {
+        "authorId": "2145139570",
+        "name": "Yuanzhong Xu"
+      },
+      {
+        "authorId": "7167328",
+        "name": "Dehao Chen"
+      },
+      {
+        "authorId": "2345617",
+        "name": "Orhan Firat"
+      },
+      {
+        "authorId": "2145438541",
+        "name": "Yanping Huang"
+      },
+      {
+        "authorId": "2048712",
+        "name": "M. Krikun"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      }
+    ],
+    "abstract": "Neural network scaling has been critical for improving the model quality in many real-world machine learning applications with vast amounts of training data and compute. Although this trend of scaling is affirmed to be a sure-fire approach for better model quality, there are challenges on the path such as the computation cost, ease of programming, and efficient implementation on parallel devices. GShard is a module composed of a set of lightweight annotation APIs and an extension to the XLA compiler. It provides an elegant way to express a wide range of parallel computation patterns with minimal changes to the existing model code. GShard enabled us to scale up multilingual neural machine translation Transformer model with Sparsely-Gated Mixture-of-Experts beyond 600 billion parameters using automatic sharding. We demonstrate that such a giant model can efficiently be trained on 2048 TPU v3 accelerators in 4 days to achieve far superior quality for translation from 100 languages to English compared to the prior art.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "04f4e55e14150b7c48b0287ba77c7443df76ed45",
+    "externalIds": {
+      "DBLP": "conf/aaai/BiskZLGC20",
+      "MAG": "2998617917",
+      "ArXiv": "1911.11641",
+      "DOI": "10.1609/AAAI.V34I05.6239",
+      "CorpusId": 208290939
+    },
+    "title": "PIQA: Reasoning about Physical Commonsense in Natural Language",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2019,
+    "citationCount": 2879,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/6239/6095",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.11641, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "48441311",
+        "name": "Jianfeng Gao"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "To apply eyeshadow without a brush, should I use a cotton swab or a toothpick? Questions requiring this kind of physical commonsense pose a challenge to today's natural language understanding systems. While recent pretrained models (such as BERT) have made progress on question answering over more abstract domains – such as news articles and encyclopedia entries, where text is plentiful – in more physical domains, text is inherently limited due to reporting bias. Can AI systems learn to reliably answer physical commonsense questions without experiencing the physical world?In this paper, we introduce the task of physical commonsense reasoning and a corresponding benchmark dataset Physical Interaction: Question Answering or PIQA. Though humans find the dataset easy (95% accuracy), large pretrained models struggle (∼75%). We provide analysis about the dimensions of knowledge that existing models lack, which offers significant opportunities for future research.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8b0f27bb594b1eaaf493eaf1e2ee723a2b0a19ad",
+    "externalIds": {
+      "MAG": "2946609015",
+      "DBLP": "journals/corr/abs-1905-07830",
+      "ACL": "P19-1472",
+      "ArXiv": "1905.07830",
+      "DOI": "10.18653/v1/P19-1472",
+      "CorpusId": 159041722
+    },
+    "title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 3988,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1472.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.07830, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Recent work by Zellers et al. (2018) introduced a new task of commonsense natural language inference: given an event description such as “A woman sits at a piano,” a machine must select the most likely followup: “She sets her fingers on the keys.” With the introduction of BERT, near human-level performance was reached. Does this mean that machines can perform human level commonsense inference? In this paper, we show that commonsense inference still proves difficult for even state-of-the-art models, by presenting HellaSwag, a new challenge dataset. Though its questions are trivial for humans (>95% accuracy), state-of-the-art models struggle (<48%). We achieve this via Adversarial Filtering (AF), a data collection paradigm wherein a series of discriminators iteratively select an adversarial set of machine-generated wrong answers. AF proves to be surprisingly robust. The key insight is to scale up the length and complexity of the dataset examples towards a critical ‘Goldilocks’ zone wherein generated text is ridiculous to humans, yet often misclassified by state-of-the-art models. Our construction of HellaSwag, and its resulting difficulty, sheds light on the inner workings of deep pretrained models. More broadly, it suggests a new path forward for NLP research, in which benchmarks co-evolve with the evolving state-of-the-art in an adversarial way, so as to present ever-harder challenges.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "9770fff7379a7ab9006b48939462354dda9a2053",
+    "externalIds": {
+      "MAG": "2953271402",
+      "DBLP": "journals/corr/abs-1905-10044",
+      "ArXiv": "1905.10044",
+      "ACL": "N19-1300",
+      "DOI": "10.18653/v1/N19-1300",
+      "CorpusId": 165163607
+    },
+    "title": "BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 2305,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.10044, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143997772",
+        "name": "Christopher Clark"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "15652489",
+        "name": "T. Kwiatkowski"
+      },
+      {
+        "authorId": "123052390",
+        "name": "Michael Collins"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "In this paper we study yes/no questions that are naturally occurring — meaning that they are generated in unprompted and unconstrained settings. We build a reading comprehension dataset, BoolQ, of such questions, and show that they are unexpectedly challenging. They often query for complex, non-factoid information, and require difficult entailment-like inference to solve. We also explore the effectiveness of a range of transfer learning baselines. We find that transferring from entailment data is more effective than transferring from paraphrase or extractive QA data, and that it, surprisingly, continues to be very beneficial even when starting from massive pre-trained language models such as BERT. Our best method trains BERT on MultiNLI and then re-trains it on our train set. It achieves 80.4% accuracy compared to 90% accuracy of human annotators (and 62% majority-baseline), leaving a significant gap for future work.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1536e8958697c5364f68b2e2448905dbbeb3a0ca",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1809-02789",
+      "MAG": "2952396187",
+      "ACL": "D18-1260",
+      "ArXiv": "1809.02789",
+      "DOI": "10.18653/v1/D18-1260",
+      "CorpusId": 52183757
+    },
+    "title": "Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2018,
+    "citationCount": 2321,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/D18-1260.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.02789, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39980906",
+        "name": "Todor Mihaylov"
+      },
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      }
+    ],
+    "abstract": "We present a new kind of question answering dataset, OpenBookQA, modeled after open book exams for assessing human understanding of a subject. The open book that comes with our questions is a set of 1326 elementary level science facts. Roughly 6000 questions probe an understanding of these facts and their application to novel situations. This requires combining an open book fact (e.g., metals conduct electricity) with broad common knowledge (e.g., a suit of armor is made of metal) obtained from other sources. While existing QA datasets over documents or knowledge bases, being generally self-contained, focus on linguistic understanding, OpenBookQA probes a deeper understanding of both the topic—in the context of common knowledge—and the language it is expressed in. Human performance on OpenBookQA is close to 92%, but many state-of-the-art pre-trained QA methods perform surprisingly poorly, worse than several simple neural baselines we develop. Our oracle experiments designed to circumvent the knowledge retrieval bottleneck demonstrate the value of both the open book and additional facts. We leave it as a challenge to solve the retrieval problem in this multi-hop setting and to close the large gap to human performance.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "88bb0a28bb58d847183ec505dda89b63771bb495",
+    "externalIds": {
+      "ArXiv": "1803.05457",
+      "DBLP": "journals/corr/abs-1803-05457",
+      "MAG": "2794325560",
+      "CorpusId": 3922816
+    },
+    "title": "Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 4431,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.05457, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48323507",
+        "name": "Peter Clark"
+      },
+      {
+        "authorId": "3390191",
+        "name": "Isaac Cowhey"
+      },
+      {
+        "authorId": "1741101",
+        "name": "Oren Etzioni"
+      },
+      {
+        "authorId": "2236429",
+        "name": "Tushar Khot"
+      },
+      {
+        "authorId": "48229640",
+        "name": "Ashish Sabharwal"
+      },
+      {
+        "authorId": "3393851",
+        "name": "Carissa Schoenick"
+      },
+      {
+        "authorId": "3385516",
+        "name": "Oyvind Tafjord"
+      }
+    ],
+    "abstract": "We present a new question set, text corpus, and baselines assembled to encourage AI research in advanced question answering. Together, these constitute the AI2 Reasoning Challenge (ARC), which requires far more powerful knowledge and reasoning than previous challenges such as SQuAD or SNLI. The ARC question set is partitioned into a Challenge Set and an Easy Set, where the Challenge Set contains only questions answered incorrectly by both a retrieval-based algorithm and a word co-occurence algorithm. The dataset contains only natural, grade-school science questions (authored for human tests), and is the largest public-domain set of this kind (7,787 questions). We test several baselines on the Challenge Set, including leading neural models from the SQuAD and SNLI tasks, and find that none are able to significantly outperform a random baseline, reflecting the difficult nature of this task. We are also releasing the ARC Corpus, a corpus of 14M science sentences relevant to the task, and implementations of the three neural baseline models tested. Can your model perform better? We pose ARC as a challenge to the community.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "f010affab57b5fcf1cd6be23df79d8ec98c7289c",
+    "externalIds": {
+      "MAG": "2612431505",
+      "ArXiv": "1705.03551",
+      "ACL": "P17-1147",
+      "DBLP": "journals/corr/JoshiCWZ17",
+      "DOI": "10.18653/v1/P17-1147",
+      "CorpusId": 26501419
+    },
+    "title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 3690,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P17-1147.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1705.03551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "2890423",
+        "name": "Eunsol Choi"
+      },
+      {
+        "authorId": "1780531",
+        "name": "Daniel S. Weld"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      }
+    ],
+    "abstract": "We present TriviaQA, a challenging reading comprehension dataset containing over 650K question-answer-evidence triples. TriviaQA includes 95K question-answer pairs authored by trivia enthusiasts and independently gathered evidence documents, six per question on average, that provide high quality distant supervision for answering the questions. We show that, in comparison to other recently introduced large-scale datasets, TriviaQA (1) has relatively complex, compositional questions, (2) has considerable syntactic and lexical variability between questions and corresponding answer-evidence sentences, and (3) requires more cross sentence reasoning to find answers. We also present two baseline algorithms: a feature-based classifier and a state-of-the-art neural network, that performs well on SQuAD reading comprehension. Neither approach comes close to human performance (23% and 40% vs. 80%), suggesting that TriviaQA is a challenging testbed that is worth significant future study.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+    "externalIds": {
+      "DBLP": "journals/corr/ShazeerMMDLHD17",
+      "MAG": "2952339051",
+      "ArXiv": "1701.06538",
+      "CorpusId": 12462234
+    },
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 4382,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.06538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "1861312",
+        "name": "Azalia Mirhoseini"
+      },
+      {
+        "authorId": "2275364713",
+        "name": "Krzysztof Maziarz"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      },
+      {
+        "authorId": "48448318",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address these challenges and finally realize the promise of conditional computation, achieving greater than 1000x improvements in model capacity with only minor losses in computational efficiency on modern GPU clusters. We introduce a Sparsely-Gated Mixture-of-Experts layer (MoE), consisting of up to thousands of feed-forward sub-networks. A trainable gating network determines a sparse combination of these experts to use for each example. We apply the MoE to the tasks of language modeling and machine translation, where model capacity is critical for absorbing the vast quantities of knowledge available in the training corpora. We present model architectures in which a MoE with up to 137 billion parameters is applied convolutionally between stacked LSTM layers. On large language modeling and machine translation benchmarks, these models achieve significantly better results than state-of-the-art at lower computational cost.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5ed791f810da580c78df6a052c6b9f2e258f6b0a",
+    "externalIds": {
+      "MAG": "2952915793",
+      "ArXiv": "1606.06031",
+      "DBLP": "conf/acl/PapernoKLPBPBBF16",
+      "ACL": "P16-1144",
+      "DOI": "10.18653/v1/P16-1144",
+      "CorpusId": 2381275
+    },
+    "title": "The LAMBADA dataset: Word prediction requiring a broad discourse context",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2016,
+    "citationCount": 1022,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.18653/v1/p16-1144",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.06031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2129425",
+        "name": "Denis Paperno"
+      },
+      {
+        "authorId": "2067996",
+        "name": "Germán Kruszewski"
+      },
+      {
+        "authorId": "2672644",
+        "name": "Angeliki Lazaridou"
+      },
+      {
+        "authorId": "3422089",
+        "name": "Q. N. Pham"
+      },
+      {
+        "authorId": "145040726",
+        "name": "R. Bernardi"
+      },
+      {
+        "authorId": "3422247",
+        "name": "Sandro Pezzelle"
+      },
+      {
+        "authorId": "145283199",
+        "name": "Marco Baroni"
+      },
+      {
+        "authorId": "1807810",
+        "name": "Gemma Boleda"
+      },
+      {
+        "authorId": "144151273",
+        "name": "R. Fernández"
+      }
+    ],
+    "abstract": "We introduce LAMBADA, a dataset to evaluate the capabilities of computational models for text understanding by means of a word prediction task. LAMBADA is a collection of narrative passages sharing the characteristic that human subjects are able to guess their last word if they are exposed to the whole passage, but not if they only see the last sentence preceding the target word. To succeed on LAMBADA, computational models cannot simply rely on local context, but must be able to keep track of information in the broader discourse. We show that LAMBADA exemplifies a wide range of linguistic phenomena, and that none of several state-of-the-art language models reaches accuracy above 1% on this novel benchmark. We thus propose LAMBADA as a challenging test set, meant to encourage the development of new models capable of genuine understanding of broad context in natural language text.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c8d90974c3f3b40fa05e322df2905fc16204aa56",
+    "externalIds": {
+      "DBLP": "journals/neco/JacobsJNH91",
+      "MAG": "2150884987",
+      "DOI": "10.1162/neco.1991.3.1.79",
+      "CorpusId": 572361,
+      "PubMed": "31141872"
+    },
+    "title": "Adaptive Mixtures of Local Experts",
+    "venue": "Neural Computation",
+    "year": 1991,
+    "citationCount": 6491,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco.1991.3.1.79?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco.1991.3.1.79, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144215175",
+        "name": "R. Jacobs"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "1802785",
+        "name": "S. Nowlan"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c21a4d70d83e0f6eb2a9e1c41d034842dd561e47",
+    "externalIds": {
+      "MAG": "2952331680",
+      "ACL": "N19-1421",
+      "DBLP": "journals/corr/abs-1811-00937",
+      "ArXiv": "1811.00937",
+      "DOI": "10.18653/v1/N19-1421",
+      "CorpusId": 53296520
+    },
+    "title": "CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 2368,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1811.00937, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "12371246",
+        "name": "Alon Talmor"
+      },
+      {
+        "authorId": "47426264",
+        "name": "Jonathan Herzig"
+      },
+      {
+        "authorId": "35219984",
+        "name": "Nicholas Lourie"
+      },
+      {
+        "authorId": "1750652",
+        "name": "Jonathan Berant"
+      }
+    ],
+    "abstract": "When answering a question, people often draw upon their rich world knowledge in addition to the particular context. Recent work has focused primarily on answering questions given some relevant document or context, and required very little general background. To investigate question answering with prior knowledge, we present CommonsenseQA: a challenging new dataset for commonsense question answering. To capture common sense beyond associations, we extract from ConceptNet (Speer et al., 2017) multiple target concepts that have the same semantic relation to a single source concept. Crowd-workers are asked to author multiple-choice questions that mention the source concept and discriminate in turn between each of the target concepts. This encourages workers to create questions with complex semantics that often require prior knowledge. We create 12,247 questions through this procedure and demonstrate the difficulty of our task with a large number of strong baselines. Our best baseline is based on BERT-large (Devlin et al., 2018) and obtains 56% accuracy, well below human performance, which is 89%.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "92e121c6e114fe3cfb89370df03847c66a9b4e28",
+    "externalIds": {
+      "CorpusId": 199370376
+    },
+    "title": "An Adversarial Winograd Schema Challenge at Scale",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 2999,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2325708",
+        "name": "Keisuke Sakaguchi"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "1857797",
+        "name": "Chandra Bhagavatula"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

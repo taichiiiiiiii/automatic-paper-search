@@ -1,0 +1,2110 @@
+[
+  {
+    "paperId": "e3b0ea7209731c47b582215c6c67f9c691ad9863",
+    "externalIds": {
+      "MAG": "2950392377",
+      "DBLP": "conf/aaai/HesterVPLSPHQSO18",
+      "DOI": "10.1609/aaai.v32i1.11757",
+      "CorpusId": 10208474
+    },
+    "title": "Deep Q-learning From Demonstrations",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2017,
+    "citationCount": 1247,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/11757/11616",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1609/aaai.v32i1.11757?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1609/aaai.v32i1.11757, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143772943",
+        "name": "Todd Hester"
+      },
+      {
+        "authorId": "7515048",
+        "name": "Matej Vecerík"
+      },
+      {
+        "authorId": "1721354",
+        "name": "O. Pietquin"
+      },
+      {
+        "authorId": "1975889",
+        "name": "Marc Lanctot"
+      },
+      {
+        "authorId": "1725157",
+        "name": "T. Schaul"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      },
+      {
+        "authorId": "48257711",
+        "name": "Dan Horgan"
+      },
+      {
+        "authorId": "34660073",
+        "name": "John Quan"
+      },
+      {
+        "authorId": "2533110",
+        "name": "A. Sendonaris"
+      },
+      {
+        "authorId": "2561924",
+        "name": "Ian Osband"
+      },
+      {
+        "authorId": "1387885286",
+        "name": "Gabriel Dulac-Arnold"
+      },
+      {
+        "authorId": "70495322",
+        "name": "J. Agapiou"
+      },
+      {
+        "authorId": "1700356",
+        "name": "Joel Z. Leibo"
+      },
+      {
+        "authorId": "2203658",
+        "name": "A. Gruslys"
+      }
+    ],
+    "abstract": "\n \n Deep reinforcement learning (RL) has achieved several high profile successes in difficult decision-making problems. However, these algorithms typically require a huge amount of data before they reach reasonable performance. In fact, their performance during learning can be extremely poor. This may be acceptable for a simulator, but it severely limits the applicability of deep RL to many real-world tasks, where the agent must learn in the real environment. In this paper we study a setting where the agent may access data from previous control of the system. We present an algorithm, Deep Q-learning from Demonstrations (DQfD), that leverages small sets of demonstration data to massively accelerate the learning process even from relatively small amounts of demonstration data and is able to automatically assess the necessary ratio of demonstration data while learning thanks to a prioritized replay mechanism. DQfD works by combining temporal difference updates with supervised classification of the demonstrator’s actions. We show that DQfD has better initial performance than Prioritized Dueling Double Deep Q-Networks (PDD DQN) as it starts with better scores on the first million steps on 41 of 42 games and on average it takes PDD DQN 83 million steps to catch up to DQfD’s performance. DQfD learns to out-perform the best demonstration given in 14 of 42 games. In addition, DQfD leverages human demonstrations to achieve state-of-the-art results for 11 games. Finally, we show that DQfD performs better than three related algorithms for incorporating demonstration data into DQN.\n \n",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a7fb199f85943b3fb6b5f7e9f1680b2e2a445cce",
+    "externalIds": {
+      "DBLP": "journals/corr/HesterVPLSPSDOA17",
+      "ArXiv": "1704.03732",
+      "MAG": "2607198029",
+      "CorpusId": 15254659
+    },
+    "title": "Learning from Demonstrations for Real World Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 161,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.03732, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143772943",
+        "name": "Todd Hester"
+      },
+      {
+        "authorId": "7515048",
+        "name": "Matej Vecerík"
+      },
+      {
+        "authorId": "1721354",
+        "name": "O. Pietquin"
+      },
+      {
+        "authorId": "1975889",
+        "name": "Marc Lanctot"
+      },
+      {
+        "authorId": "1725157",
+        "name": "T. Schaul"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      },
+      {
+        "authorId": "2533110",
+        "name": "A. Sendonaris"
+      },
+      {
+        "authorId": "1387885286",
+        "name": "Gabriel Dulac-Arnold"
+      },
+      {
+        "authorId": "2561924",
+        "name": "Ian Osband"
+      },
+      {
+        "authorId": "70495322",
+        "name": "J. Agapiou"
+      },
+      {
+        "authorId": "1700356",
+        "name": "Joel Z. Leibo"
+      },
+      {
+        "authorId": "2203658",
+        "name": "A. Gruslys"
+      }
+    ],
+    "abstract": "Deep reinforcement learning (RL) has achieved several high profile successes in difficult decision-making problems. However, these algorithms typically require a huge amount of data before they reach reasonable performance. In fact, their performance during learning can be extremely poor. This may be acceptable for a simulator, but it severely limits the applicability of deep RL to many real-world tasks, where the agent must learn in the real environment. In this paper we study a setting where the agent may access data from previous control of the system. We present an algorithm, Deep Q-learning from Demonstrations (DQfD), that leverages this data to massively accelerate the learning process even from relatively small amounts of demonstration data and is able to automatically assess the necessary ratio of demonstration data while learning thanks to a prioritized replay mechanism. DQfD works by combining temporal difference updates with supervised classification of the demonstrator's actions. We show that DQfD has better initial performance than Prioritized Dueling Double Deep Q-Networks (PDD DQN) as it starts with better scores on the first million steps on 41 of 42 games and on average it takes PDD DQN 82 million steps to catch up to DQfD's performance. DQfD learns to out-perform the best demonstration given in 14 of 42 games. In addition, DQfD leverages human demonstrations to achieve state-of-the-art results for 17 games. Finally, we show that DQfD performs better than three related algorithms for incorporating demonstration data into DQN.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2e1a1b9c2e8feeb31c6855292859bf94101e8382",
+    "externalIds": {
+      "ArXiv": "1703.01703",
+      "DBLP": "journals/corr/StadieAS17",
+      "MAG": "2591957724",
+      "CorpusId": 14724343
+    },
+    "title": "Third-Person Imitation Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 244,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.01703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3275284",
+        "name": "Bradly C. Stadie"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "Reinforcement learning (RL) makes it possible to train agents capable of achieving sophisticated goals in complex and uncertain environments. A key difficulty in reinforcement learning is specifying a reward function for the agent to optimize. Traditionally, imitation learning in RL has been used to overcome this problem. Unfortunately, hitherto imitation learning methods tend to require that demonstrations are supplied in the first-person: the agent is provided with a sequence of states and a specification of the actions that it should have taken. While powerful, this kind of imitation learning is limited by the relatively hard problem of collecting first-person demonstrations. Humans address this problem by learning from third-person demonstrations: they observe other humans perform tasks, infer the task, and accomplish the same task themselves. \nIn this paper, we present a method for unsupervised third-person imitation learning. Here third-person refers to training an agent to correctly achieve a simple goal in a simple environment when it is provided a demonstration of a teacher achieving the same goal but from a different viewpoint; and unsupervised refers to the fact that the agent receives only these third-person demonstrations, and is not provided a correspondence between teacher states and student states. Our methods primary insight is that recent advances from domain confusion can be utilized to yield domain agnostic features which are crucial during the training process. To validate our approach, we report successful experiments on learning from third-person demonstrations in a pointmass domain, a reacher domain, and inverted pendulum.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "630bf4c0b7e5abd276ec38468f490b7d6222f3a2",
+    "externalIds": {
+      "MAG": "2951952563",
+      "DBLP": "journals/corr/MacGlashanHLPRT17",
+      "ArXiv": "1701.06049",
+      "CorpusId": 8818528
+    },
+    "title": "Interactive Learning from Policy-Dependent Human Feedback",
+    "venue": "International Conference on Machine Learning",
+    "year": 2017,
+    "citationCount": 340,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1701.06049, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2700008",
+        "name": "J. MacGlashan"
+      },
+      {
+        "authorId": "2543534",
+        "name": "Mark K. Ho"
+      },
+      {
+        "authorId": "32182645",
+        "name": "R. Loftin"
+      },
+      {
+        "authorId": "2323268",
+        "name": "Bei Peng"
+      },
+      {
+        "authorId": "2152582666",
+        "name": "Guan Wang"
+      },
+      {
+        "authorId": "2113538648",
+        "name": "David L. Roberts"
+      },
+      {
+        "authorId": "39286677",
+        "name": "Matthew E. Taylor"
+      },
+      {
+        "authorId": "144885169",
+        "name": "M. Littman"
+      }
+    ],
+    "abstract": "This paper investigates the problem of interactively learning behaviors communicated by a human teacher using positive and negative feedback. Much previous work on this problem has made the assumption that people provide feedback for decisions that is dependent on the behavior they are teaching and is independent from the learner's current policy. We present empirical results that show this assumption to be false— whether human trainers give a positive or negative feedback for a decision is influenced by the learner's current policy. Based on this insight, we introduce Convergent Actor-Critic by Humans (COACH), an algorithm for learning from policy-dependent feedback that converges to a local optimum. Finally, we demonstrate that COACH can successfully learn multiple behaviors on a physical robot.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4603f26093d64fc4107d3ec49667003f60210654",
+    "externalIds": {
+      "MAG": "2558634851",
+      "ArXiv": "1612.00429",
+      "DBLP": "journals/corr/FinnYFAL16",
+      "CorpusId": 8685592
+    },
+    "title": "Generalizing Skills with Semi-Supervised Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 69,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.00429, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "10909315",
+        "name": "Tianhe Yu"
+      },
+      {
+        "authorId": "2550764",
+        "name": "Justin Fu"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Deep reinforcement learning (RL) can acquire complex behaviors from low-level inputs, such as images. However, real-world applications of such methods require generalizing to the vast variability of the real world. Deep networks are known to achieve remarkable generalization when provided with massive amounts of labeled data, but can we provide this breadth of experience to an RL agent, such as a robot? The robot might continuously learn as it explores the world around it, even while deployed. However, this learning requires access to a reward function, which is often hard to measure in real-world domains, where the reward could depend on, for example, unknown positions of objects or the emotional state of the user. Conversely, it is often quite practical to provide the agent with reward functions in a limited set of situations, such as when a human supervisor is present or in a controlled setting. Can we make use of this limited supervision, and still benefit from the breadth of experience an agent might collect on its own? In this paper, we formalize this problem as semisupervised reinforcement learning, where the reward function can only be evaluated in a set of \"labeled\" MDPs, and the agent must generalize its behavior to the wide range of states it might encounter in a set of \"unlabeled\" MDPs, by using experience from both settings. Our proposed method infers the task objective in the unlabeled MDPs through an algorithm that resembles inverse RL, using the agent's own prior experience in the labeled MDPs as a kind of demonstration of optimal behavior. We evaluate our method on challenging tasks that require control directly from images, and show that our approach can improve the generalization of a learned deep neural network policy by using experience for which no reward function is available. We also show that our method outperforms direct supervised learning of the reward.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "401d78258c81cdff04f254809bd89bcf8373261b",
+    "externalIds": {
+      "MAG": "2589152698",
+      "DBLP": "conf/cig/SorensenOR16",
+      "DOI": "10.1109/CIG.2016.7860436",
+      "CorpusId": 18378516
+    },
+    "title": "Breeding a diversity of Super Mario behaviors through interactive evolution",
+    "venue": "IEEE Conference on Computational Intelligence and Games",
+    "year": 2016,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CIG.2016.7860436?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CIG.2016.7860436, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1409081725",
+        "name": "Patrikk D. Sørensen"
+      },
+      {
+        "authorId": "3440051",
+        "name": "Jeppeh M. Olsen"
+      },
+      {
+        "authorId": "1745664",
+        "name": "S. Risi"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e86f71ca2948d17b003a5f068db1ecb2b77827f7",
+    "externalIds": {
+      "DBLP": "journals/corr/AmodeiOSCSM16",
+      "ArXiv": "1606.06565",
+      "MAG": "2462906003",
+      "CorpusId": 10242377
+    },
+    "title": "Concrete Problems in AI Safety",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 3024,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.06565, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "2287268442",
+        "name": "Chris Olah"
+      },
+      {
+        "authorId": "5164568",
+        "name": "J. Steinhardt"
+      },
+      {
+        "authorId": "145791315",
+        "name": "P. Christiano"
+      },
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "30415265",
+        "name": "Dandelion Mané"
+      }
+    ],
+    "abstract": "Rapid progress in machine learning and artificial intelligence (AI) has brought increasing attention to the potential impacts of AI technologies on society. In this paper we discuss one such potential impact: the problem of accidents in machine learning systems, defined as unintended and harmful behavior that may emerge from poor design of real-world AI systems. We present a list of five practical research problems related to accident risk, categorized according to whether the problem originates from having the wrong objective function (\"avoiding side effects\" and \"avoiding reward hacking\"), an objective function that is too expensive to evaluate frequently (\"scalable supervision\"), or undesirable behavior during the learning process (\"safe exploration\" and \"distributional shift\"). We review previous work in these areas as well as suggesting research directions with a focus on relevance to cutting-edge AI systems. Finally, we consider the high-level question of how to think most productively about the safety of forward-looking applications of AI.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4ab53de69372ec2cd2d90c126b6a100165dc8ed1",
+    "externalIds": {
+      "DBLP": "journals/corr/HoE16",
+      "ArXiv": "1606.03476",
+      "MAG": "2949080919",
+      "CorpusId": 16153365
+    },
+    "title": "Generative Adversarial Imitation Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 3596,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.03476, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Consider learning a policy from example expert behavior, without interaction with the expert or access to reinforcement signal. One approach is to recover the expert's cost function with inverse reinforcement learning, then extract a policy from that cost function with reinforcement learning. This approach is indirect and can be slow. We propose a new general framework for directly extracting a policy from data, as if it were obtained by reinforcement learning following inverse reinforcement learning. We show that a certain instantiation of our framework draws an analogy between imitation learning and generative adversarial networks, from which we derive a model-free imitation learning algorithm that obtains significant performance gains over existing model-free methods in imitating complex behaviors in large, high-dimensional environments.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "13d156f37ecea807706fd117547ac1b805d5c5aa",
+    "externalIds": {
+      "DBLP": "conf/acl/WangLM16",
+      "MAG": "2964193163",
+      "ArXiv": "1606.02447",
+      "ACL": "P16-1224",
+      "DOI": "10.18653/v1/P16-1224",
+      "CorpusId": 2705742
+    },
+    "title": "Learning Language Games through Interaction",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2016,
+    "citationCount": 195,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P16-1224.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.02447, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8729431",
+        "name": "Sida I. Wang"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      }
+    ],
+    "abstract": "We introduce a new language learning setting relevant to building adaptive natural language interfaces. It is inspired by Wittgenstein's language games: a human wishes to accomplish some task (e.g., achieving a certain configuration of blocks), but can only communicate with a computer, who performs the actual actions (e.g., removing all red blocks). The computer initially knows nothing about language and therefore must learn it from scratch through interaction, while the human adapts to the computer's capabilities. We created a game in a blocks world and collected interactions from 100 people playing it. First, we analyze the humans' strategies, showing that using compositionality and avoiding synonyms correlates positively with task performance. Second, we compare computer strategies, showing how to quickly learn a semantic parsing model from scratch, and that modeling pragmatics further accelerates learning for successful players.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1e6abd43fcb157fde4d4ddc3ac8787ae45dbf777",
+    "externalIds": {
+      "MAG": "2410842990",
+      "ArXiv": "1606.03137",
+      "DBLP": "journals/corr/Hadfield-Menell16",
+      "CorpusId": 6208061
+    },
+    "title": "Cooperative Inverse Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2016,
+    "citationCount": 739,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.03137, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1397904824",
+        "name": "Dylan Hadfield-Menell"
+      },
+      {
+        "authorId": "145107462",
+        "name": "Stuart J. Russell"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "2745001",
+        "name": "A. Dragan"
+      }
+    ],
+    "abstract": "For an autonomous system to be helpful to humans and to pose no unwarranted risks, it needs to align its values with those of the humans in its environment in such a way that its actions contribute to the maximization of value for the humans. We propose a formal definition of the value alignment problem as cooperative inverse reinforcement learning (CIRL). A CIRL problem is a cooperative, partial-information game with two agents, human and robot; both are rewarded according to the human's reward function, but the robot does not initially know what this is. In contrast to classical IRL, where the human is assumed to act optimally in isolation, optimal CIRL solutions produce behaviors such as active teaching, active learning, and communicative actions that are more effective in achieving value alignment. We show that computing optimal joint policies in CIRL games can be reduced to solving a POMDP, prove that optimality in isolation is suboptimal in CIRL, and derive an approximate CIRL algorithm.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "64c7ba4096caaf3c577ff438f4313f0bc32a9588",
+    "externalIds": {
+      "MAG": "2399852338",
+      "DOI": "10.1038/scientificamerican0616-58",
+      "CorpusId": 19336688,
+      "PubMed": "27196844"
+    },
+    "title": "Should We Fear Supersmart Robots?",
+    "venue": "Scientific American",
+    "year": 2016,
+    "citationCount": 53,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/scientificamerican0616-58?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/scientificamerican0616-58, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2055581993",
+        "name": "Stuart Russell"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "53fcb4a07f6825439a311e61b98c007c5641e2f0",
+    "externalIds": {
+      "DBLP": "conf/atal/AsriPGLP16",
+      "MAG": "2486334580",
+      "DOI": "10.5555/2936924.2936991",
+      "CorpusId": 15719006
+    },
+    "title": "Score-based Inverse Reinforcement Learning",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2016,
+    "citationCount": 41,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.5555/2936924.2936991?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5555/2936924.2936991, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3349496",
+        "name": "Layla El Asri"
+      },
+      {
+        "authorId": "1808897",
+        "name": "Bilal Piot"
+      },
+      {
+        "authorId": "1737555",
+        "name": "M. Geist"
+      },
+      {
+        "authorId": "144100820",
+        "name": "R. Laroche"
+      },
+      {
+        "authorId": "1721354",
+        "name": "O. Pietquin"
+      }
+    ],
+    "abstract": "This paper reports theoretical and empirical results obtained for the score-based Inverse Reinforcement Learning (IRL) algorithm. It relies on a non-standard setting for IRL consisting of learning a reward from a set of globally scored trajectories. This allows using any type of policy (optimal or not) to generate trajectories without prior knowledge during data collection. This way, any existing database (like logs of systems in use) can be scored a posteriori by an expert and used to learn a reward function. Thanks to this reward function, it is shown that a near-optimal policy can be computed. Being related to least-square regression, the algorithm (called SBIRL) comes with theoretical guarantees that are proven in this paper. SBIRL is compared to standard IRL algorithms on synthetic data showing that annotations do help under conditions on the quality of the trajectories. It is also shown to be suitable for real-world applications such as the optimisation of a spoken dialogue system.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9c9d7247f8c51ec5a02b0d911d1d7b9e8160495d",
+    "externalIds": {
+      "MAG": "2271840356",
+      "ArXiv": "1603.04467",
+      "DBLP": "journals/corr/AbadiABBCCCDDDG16",
+      "CorpusId": 5707386
+    },
+    "title": "TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 11650,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1603.04467, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2057642721",
+        "name": "Martín Abadi"
+      },
+      {
+        "authorId": "2078528337",
+        "name": "Ashish Agarwal"
+      },
+      {
+        "authorId": "144758007",
+        "name": "P. Barham"
+      },
+      {
+        "authorId": "2445241",
+        "name": "E. Brevdo"
+      },
+      {
+        "authorId": "2545358",
+        "name": "Z. Chen"
+      },
+      {
+        "authorId": "48738717",
+        "name": "C. Citro"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "36347083",
+        "name": "Andy Davis"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "145139947",
+        "name": "M. Devin"
+      },
+      {
+        "authorId": "1780892",
+        "name": "S. Ghemawat"
+      },
+      {
+        "authorId": "153440022",
+        "name": "I. Goodfellow"
+      },
+      {
+        "authorId": "2064102917",
+        "name": "A. Harp"
+      },
+      {
+        "authorId": "2060655766",
+        "name": "G. Irving"
+      },
+      {
+        "authorId": "2090818",
+        "name": "M. Isard"
+      },
+      {
+        "authorId": "39978391",
+        "name": "Yangqing Jia"
+      },
+      {
+        "authorId": "1944541",
+        "name": "R. Józefowicz"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "1942300",
+        "name": "M. Kudlur"
+      },
+      {
+        "authorId": "3369421",
+        "name": "J. Levenberg"
+      },
+      {
+        "authorId": "30415265",
+        "name": "Dandelion Mané"
+      },
+      {
+        "authorId": "3089272",
+        "name": "R. Monga"
+      },
+      {
+        "authorId": "144375552",
+        "name": "Sherry Moore"
+      },
+      {
+        "authorId": "20154699",
+        "name": "D. Murray"
+      },
+      {
+        "authorId": "2357599490",
+        "name": "C. Olah"
+      },
+      {
+        "authorId": "144927151",
+        "name": "M. Schuster"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "32163737",
+        "name": "Benoit Steiner"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "35210462",
+        "name": "Kunal Talwar"
+      },
+      {
+        "authorId": "2080690",
+        "name": "P. Tucker"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "2053781980",
+        "name": "Vijay Vasudevan"
+      },
+      {
+        "authorId": "1765169",
+        "name": "F. Viégas"
+      },
+      {
+        "authorId": "1689108",
+        "name": "O. Vinyals"
+      },
+      {
+        "authorId": "47941411",
+        "name": "Pete Warden"
+      },
+      {
+        "authorId": "145233583",
+        "name": "M. Wattenberg"
+      },
+      {
+        "authorId": "35078078",
+        "name": "M. Wicke"
+      },
+      {
+        "authorId": "2117163698",
+        "name": "Yuan Yu"
+      },
+      {
+        "authorId": "2152198093",
+        "name": "Xiaoqiang Zheng"
+      }
+    ],
+    "abstract": "TensorFlow is an interface for expressing machine learning algorithms, and an implementation for executing such algorithms. A computation expressed using TensorFlow can be executed with little or no change on a wide variety of heterogeneous systems, ranging from mobile devices such as phones and tablets up to large-scale distributed systems of hundreds of machines and thousands of computational devices such as GPU cards. The system is flexible and can be used to express a wide variety of algorithms, including training and inference algorithms for deep neural network models, and it has been used for conducting research and for deploying machine learning systems into production across more than a dozen areas of computer science and other fields, including speech recognition, computer vision, robotics, information retrieval, natural language processing, geographic information extraction, and computational drug discovery. This paper describes the TensorFlow interface and an implementation of that interface that we have built at Google. The TensorFlow API and a reference implementation were released as an open-source package under the Apache 2.0 license in November, 2015 and are available at www.tensorflow.org.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "04162cb8cfaa0f7e37586823ff4ad0bff09ed21d",
+    "externalIds": {
+      "MAG": "2963590100",
+      "DBLP": "journals/corr/FinnLA16",
+      "ArXiv": "1603.00448",
+      "CorpusId": 8121626
+    },
+    "title": "Guided Cost Learning: Deep Inverse Optimal Control via Policy Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2016,
+    "citationCount": 1034,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1603.00448, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "Reinforcement learning can acquire complex behaviors from high-level specifications. However, defining a cost function that can be optimized effectively and encodes the correct task is challenging in practice. We explore how inverse optimal control (IOC) can be used to learn behaviors from demonstrations, with applications to torque control of high-dimensional robotic systems. Our method addresses two key challenges in inverse optimal control: first, the need for informative features and effective regularization to impose structure on the cost, and second, the difficulty of learning the cost function under unknown dynamics for high-dimensional continuous systems. To address the former challenge, we present an algorithm capable of learning arbitrary nonlinear cost functions, such as neural networks, without meticulous feature engineering. To address the latter challenge, we formulate an efficient sample-based approximation for MaxEnt IOC. We evaluate our method on a series of simulated tasks and real-world robotic manipulation problems, demonstrating substantial improvement over prior methods both in terms of task complexity and sample efficiency.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f009a64f87841b79b1e2ea1748366270455ef9c0",
+    "externalIds": {
+      "MAG": "2573393487",
+      "DBLP": "conf/aaai/WirthFN16",
+      "DOI": "10.1609/aaai.v30i1.10269",
+      "CorpusId": 17740071
+    },
+    "title": "Model-Free Preference-Based Reinforcement Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2016,
+    "citationCount": 111,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/10269/10128",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1609/aaai.v30i1.10269?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1609/aaai.v30i1.10269, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144389295",
+        "name": "Christian Wirth"
+      },
+      {
+        "authorId": "1747752",
+        "name": "Johannes Fürnkranz"
+      },
+      {
+        "authorId": "26599977",
+        "name": "G. Neumann"
+      }
+    ],
+    "abstract": "\n \n Specifying a numeric reward function for reinforcement learning typically requires a lot of hand-tuning from a human expert. In contrast, preference-based reinforcement learning (PBRL) utilizes only pairwise comparisons between trajectories as a feedback signal, which are often more intuitive to specify. Currently available approaches to PBRL for control problems with continuous state/action spaces require a known or estimated model, which is often not available and hard to learn. In this paper, we integrate preference-based estimation of the reward function into a model-free reinforcement learning (RL) algorithm, resulting in a model-free PBRL algorithm. Our new algorithm is based on Relative Entropy Policy Search (REPS), enabling us to utilize stochastic policies and to directly control the greediness of the policy update. REPS decreases exploration of the policy slowly by limiting the relative entropy of the policy update, which ensures that the algorithm is provided with a versatile set of trajectories, and consequently with informative preferences. The preference-based estimation is computed using a sample-based Bayesian method, which can also estimate the uncertainty of the utility. Additionally, we also compare to a linear solvable approximation, based on inverse RL. We show that both approaches perform favourably to the current state-of-the-art. The overall result is an algorithm that can learn non-parametric continuous action policies from a small number of preferences.\n \n",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "69e76e16740ed69f4dc55361a3d319ac2f1293dd",
+    "externalIds": {
+      "MAG": "2964043796",
+      "DBLP": "journals/corr/MnihBMGLHSK16",
+      "ArXiv": "1602.01783",
+      "CorpusId": 6875312
+    },
+    "title": "Asynchronous Methods for Deep Reinforcement Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2016,
+    "citationCount": 9895,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.01783, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "36045539",
+        "name": "Adrià Puigdomènech Badia"
+      },
+      {
+        "authorId": "153583218",
+        "name": "Mehdi Mirza"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "3367786",
+        "name": "Tim Harley"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      }
+    ],
+    "abstract": "We propose a conceptually simple and lightweight framework for deep reinforcement learning that uses asynchronous gradient descent for optimization of deep neural network controllers. We present asynchronous variants of four standard reinforcement learning algorithms and show that parallel actor-learners have a stabilizing effect on training allowing all four methods to successfully train neural network controllers. The best performing method, an asynchronous variant of actor-critic, surpasses the current state-of-the-art on the Atari domain while training for half the time on a single multi-core CPU instead of a GPU. Furthermore, we show that asynchronous actor-critic succeeds on a wide variety of continuous motor control problems as well as on a new task of navigating random 3D mazes using a visual input.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "846aedd869a00c09b40f1f1f35673cb22bc87490",
+    "externalIds": {
+      "DBLP": "journals/nature/SilverHMGSDSAPL16",
+      "MAG": "2257979135",
+      "DOI": "10.1038/nature16961",
+      "CorpusId": 515925,
+      "PubMed": "26819042"
+    },
+    "title": "Mastering the game of Go with deep neural networks and tree search",
+    "venue": "Nature",
+    "year": 2016,
+    "citationCount": 18703,
+    "openAccessPdf": {
+      "url": "https://www.nature.com/articles/nature16961.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/nature16961?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/nature16961, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1885349",
+        "name": "Aja Huang"
+      },
+      {
+        "authorId": "2772217",
+        "name": "Chris J. Maddison"
+      },
+      {
+        "authorId": "35099444",
+        "name": "A. Guez"
+      },
+      {
+        "authorId": "2175946",
+        "name": "L. Sifre"
+      },
+      {
+        "authorId": "47568983",
+        "name": "George van den Driessche"
+      },
+      {
+        "authorId": "4337102",
+        "name": "Julian Schrittwieser"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "2749418",
+        "name": "Vedavyas Panneershelvam"
+      },
+      {
+        "authorId": "1975889",
+        "name": "Marc Lanctot"
+      },
+      {
+        "authorId": "48373216",
+        "name": "S. Dieleman"
+      },
+      {
+        "authorId": "2401609",
+        "name": "Dominik Grewe"
+      },
+      {
+        "authorId": "4111313",
+        "name": "John Nham"
+      },
+      {
+        "authorId": "2583391",
+        "name": "Nal Kalchbrenner"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "40662181",
+        "name": "Madeleine Leach"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "1686971",
+        "name": "T. Graepel"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "21c05d606d6899c42ae02e3b671e92faaaf130a7",
+    "externalIds": {
+      "MAG": "1155403144",
+      "DBLP": "journals/arobots/DanielKVM015",
+      "DOI": "10.1007/s10514-015-9454-z",
+      "CorpusId": 14757449
+    },
+    "title": "Active reward learning with a novel acquisition function",
+    "venue": "Autonomous Robots",
+    "year": 2015,
+    "citationCount": 68,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10514-015-9454-z?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10514-015-9454-z, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "37755468",
+        "name": "Christian Daniel"
+      },
+      {
+        "authorId": "1785853",
+        "name": "Oliver Kroemer"
+      },
+      {
+        "authorId": "2948013",
+        "name": "Malte Viering"
+      },
+      {
+        "authorId": "153221265",
+        "name": "Jan Metz"
+      },
+      {
+        "authorId": "145197867",
+        "name": "Jan Peters"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "340f48901f72278f6bf78a04ee5b01df208cc508",
+    "externalIds": {
+      "MAG": "2145339207",
+      "DBLP": "journals/nature/MnihKSRVBGRFOPB15",
+      "DOI": "10.1038/nature14236",
+      "CorpusId": 205242740,
+      "PubMed": "25719670"
+    },
+    "title": "Human-level control through deep reinforcement learning",
+    "venue": "Nature",
+    "year": 2015,
+    "citationCount": 31293,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/nature14236?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/nature14236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "2228824",
+        "name": "Andrei A. Rusu"
+      },
+      {
+        "authorId": "144056327",
+        "name": "J. Veness"
+      },
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      },
+      {
+        "authorId": "145600108",
+        "name": "A. Fidjeland"
+      },
+      {
+        "authorId": "2273072",
+        "name": "Georg Ostrovski"
+      },
+      {
+        "authorId": "48348688",
+        "name": "Stig Petersen"
+      },
+      {
+        "authorId": "50388928",
+        "name": "Charlie Beattie"
+      },
+      {
+        "authorId": "49813280",
+        "name": "Amir Sadik"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "143776287",
+        "name": "Helen King"
+      },
+      {
+        "authorId": "2106164",
+        "name": "D. Kumaran"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "449532187c94af3dd3aa55e16d2c50f7854d2199",
+    "externalIds": {
+      "MAG": "1771410628",
+      "ArXiv": "1502.05477",
+      "DBLP": "conf/icml/SchulmanLAJM15",
+      "CorpusId": 16046818
+    },
+    "title": "Trust Region Policy Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 7828,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.05477, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "29912342",
+        "name": "Philipp Moritz"
+      }
+    ],
+    "abstract": "In this article, we describe a method for optimizing control policies, with guaranteed monotonic improvement. By making several approximations to the theoretically-justified scheme, we develop a practical algorithm, called Trust Region Policy Optimization (TRPO). This algorithm is effective for optimizing large nonlinear policies such as neural networks. Our experiments demonstrate its robust performance on a wide variety of tasks: learning simulated robotic swimming, hopping, and walking gaits; and playing Atari games using images of the screen as input. Despite its approximations that deviate from the theory, TRPO tends to give monotonic improvement, with little tuning of hyperparameters.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "05355b13af5e67cfb86a782de15e4491d84c98c9",
+    "externalIds": {
+      "DBLP": "conf/rss/DanielVMK014",
+      "MAG": "218896052",
+      "DOI": "10.15607/RSS.2014.X.031",
+      "CorpusId": 16043466
+    },
+    "title": "Active Reward Learning",
+    "venue": "Robotics: Science and Systems",
+    "year": 2014,
+    "citationCount": 127,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.15607/rss.2014.x.031",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.15607/RSS.2014.X.031?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.15607/RSS.2014.X.031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "37755468",
+        "name": "Christian Daniel"
+      },
+      {
+        "authorId": "2948013",
+        "name": "Malte Viering"
+      },
+      {
+        "authorId": "153221265",
+        "name": "Jan Metz"
+      },
+      {
+        "authorId": "1785853",
+        "name": "Oliver Kroemer"
+      },
+      {
+        "authorId": "145197867",
+        "name": "Jan Peters"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "05e30d16cf7fdcb23ba4523d40c2ebdc3eee88c8",
+    "externalIds": {
+      "MAG": "648152870",
+      "DOI": "10.5860/choice.187536",
+      "CorpusId": 106762840
+    },
+    "title": "Superintelligence: Paths, Dangers, Strategies",
+    "venue": "",
+    "year": 2014,
+    "citationCount": 547,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://hrcak.srce.hr/file/326852, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2193691",
+        "name": "N. Bostrom"
+      }
+    ],
+    "abstract": "The human brain has some capabilities that the brains of other animals lack. It is to these distinctive capabilities that our species owes its dominant position. Other animals have stronger muscles or sharper claws, but we have cleverer brains. If machine brains one day come to surpass human brains in general intelligence, then this new superintelligence could become very powerful. As the fate of the gorillas now depends more on us humans than on the gorillas themselves, so the fate of our species then would come to depend on the actions of the machine superintelligence. But we have one advantage: we get to make the first move. Will it be possible to construct a seed AI or otherwise to engineer initial conditions so as to make an intelligence explosion survivable? How could one achieve a controlled detonation? To get closer to an answer to this question, we must make our way through a fascinating landscape of topics and considerations. Read the book and learn about oracles, genies, singletons; about boxing methods, tripwires, and mind crime; about humanity's cosmic endowment and differential technological development; indirect normativity, instrumental convergence, whole brain emulation and technology couplings; Malthusian economics and dystopian evolution; artificial intelligence, and biological cognitive enhancement, and collective intelligence. This profoundly ambitious and original book picks its way carefully through a vast tract of forbiddingly difficult intellectual terrain. Yet the writing is so lucid that it somehow makes it all seem easy. After an utterly engrossing journey that takes us to the frontiers of thinking about the human condition and the future of intelligent life, we find in Nick Bostrom's work nothing less than a reconceptualization of the essential task of our time.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "16302319d910a1da77656133727f081c65995635",
+    "externalIds": {
+      "MAG": "1566123042",
+      "DBLP": "conf/icml/SchoenauerASS14",
+      "CorpusId": 77838
+    },
+    "title": "Programming by Feedback",
+    "venue": "International Conference on Machine Learning",
+    "year": 2014,
+    "citationCount": 71,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "69881991",
+        "name": "Marc Schoenauer"
+      },
+      {
+        "authorId": "1688702",
+        "name": "R. Akrour"
+      },
+      {
+        "authorId": "69343681",
+        "name": "M. Sebag"
+      },
+      {
+        "authorId": "2810073",
+        "name": "J. Souplet"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2319a491378867c7049b3da055c5df60e1671158",
+    "externalIds": {
+      "DBLP": "journals/corr/MnihKSGAWR13",
+      "MAG": "1757796397",
+      "ArXiv": "1312.5602",
+      "CorpusId": 15238391
+    },
+    "title": "Playing Atari with Deep Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2013,
+    "citationCount": 13590,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1312.5602, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      }
+    ],
+    "abstract": "We present the first deep learning model to successfully learn control policies directly from high-dimensional sensory input using reinforcement learning. The model is a convolutional neural network, trained with a variant of Q-learning, whose input is raw pixels and whose output is a value function estimating future rewards. We apply our method to seven Atari 2600 games from the Arcade Learning Environment, with no adjustment of the architecture or learning algorithm. We find that it outperforms all previous approaches on six of the games and surpasses a human expert on three of them.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1ee3d855069c31b7990a1ac554be9e20f408aefb",
+    "externalIds": {
+      "DBLP": "conf/iui/KnoxS13",
+      "MAG": "2157726050",
+      "DOI": "10.1145/2449396.2449422",
+      "CorpusId": 1750056
+    },
+    "title": "Learning non-myopically from human-generated reward",
+    "venue": "International Conference on Intelligent User Interfaces",
+    "year": 2013,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "http://www.cs.utexas.edu/~pstone/Papers/bib2html-links/iui13-knox.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/2449396.2449422?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/2449396.2449422, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144288136",
+        "name": "W. B. Knox"
+      },
+      {
+        "authorId": "144848112",
+        "name": "P. Stone"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b354ee518bfc1ac0d8ac447eece9edb69e92eae1",
+    "externalIds": {
+      "MAG": "2158782408",
+      "DBLP": "conf/iros/TodorovET12",
+      "DOI": "10.1109/IROS.2012.6386109",
+      "CorpusId": 5230692
+    },
+    "title": "MuJoCo: A physics engine for model-based control",
+    "venue": "2012 IEEE/RSJ International Conference on Intelligent Robots and Systems",
+    "year": 2012,
+    "citationCount": 7070,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/IROS.2012.6386109?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/IROS.2012.6386109, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144832491",
+        "name": "E. Todorov"
+      },
+      {
+        "authorId": "1968210",
+        "name": "Tom Erez"
+      },
+      {
+        "authorId": "2109481",
+        "name": "Yuval Tassa"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b3af2e367d7297775c71fa9a61b0b49fb888bc38",
+    "externalIds": {
+      "MAG": "2116671302",
+      "DBLP": "conf/nips/WilsonFT12",
+      "CorpusId": 6019958
+    },
+    "title": "A Bayesian Approach for Policy Learning from Trajectory Preference Queries",
+    "venue": "Neural Information Processing Systems",
+    "year": 2012,
+    "citationCount": 199,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144056302",
+        "name": "Aaron Wilson"
+      },
+      {
+        "authorId": "145841336",
+        "name": "Alan Fern"
+      },
+      {
+        "authorId": "1729906",
+        "name": "Prasad Tadepalli"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "80128eac4063571da71f8e731ac6b137dd208e24",
+    "externalIds": {
+      "MAG": "2114864106",
+      "CorpusId": 62656736
+    },
+    "title": "Learning from human-generated reward",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 60,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144288136",
+        "name": "W. B. Knox"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b8014d4af46d9b26cf434240dced24294b2110b6",
+    "externalIds": {
+      "DBLP": "journals/ml/FurnkranzHCP12",
+      "MAG": "2154023516",
+      "DOI": "10.1007/s10994-012-5313-8",
+      "CorpusId": 10373780
+    },
+    "title": "Preference-based reinforcement learning: a formal framework and a policy iteration algorithm",
+    "venue": "Machine-mediated learning",
+    "year": 2012,
+    "citationCount": 173,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2Fs10994-012-5313-8.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s10994-012-5313-8?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s10994-012-5313-8, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285090520",
+        "name": "Johannes Fürnkranz"
+      },
+      {
+        "authorId": "1691955",
+        "name": "Eyke Hüllermeier"
+      },
+      {
+        "authorId": "49767752",
+        "name": "Weiwei Cheng"
+      },
+      {
+        "authorId": "2829854",
+        "name": "Sang-Hyeun Park"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "781cfd4e09dc6d721844391f415518dfa2774f1d",
+    "externalIds": {
+      "MAG": "1583953806",
+      "ArXiv": "1208.0984",
+      "DBLP": "conf/pkdd/AkrourSS12",
+      "DOI": "10.1007/978-3-642-33486-3_8",
+      "CorpusId": 47518713
+    },
+    "title": "APRIL: Active Preference-learning based Reinforcement Learning",
+    "venue": "ECML/PKDD",
+    "year": 2012,
+    "citationCount": 126,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2F978-3-642-33486-3_8.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1208.0984, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1688702",
+        "name": "R. Akrour"
+      },
+      {
+        "authorId": "69881991",
+        "name": "Marc Schoenauer"
+      },
+      {
+        "authorId": "69343681",
+        "name": "M. Sebag"
+      }
+    ],
+    "abstract": "This paper focuses on reinforcement learning (RL) with limited prior knowledge. In the domain of swarm robotics for instance, the expert can hardly design a reward function or demonstrate the target behavior, forbidding the use of both standard RL and inverse reinforcement learning. Although with a limited expertise, the human expert is still often able to emit preferences and rank the agent demonstrations. Earlier work has presented an iterative preference-based RL framework: expert preferences are exploited to learn an approximate policy return, thus enabling the agent to achieve direct policy search. Iteratively, the agent selects a new candidate policy and demonstrates it; the expert ranks the new demonstration comparatively to the previous best one; the expert's ranking feedback enables the agent to refine the approximate policy return, and the process is iterated. \n \nIn this paper, preference-based reinforcement learning is combined with active ranking in order to decrease the number of ranking queries to the expert needed to yield a satisfactory policy. Experiments on the mountain car and the cancer treatment testbeds witness that a couple of dozen rankings enable to learn a competent policy.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f82e4ff4f003581330338aaae71f60316e58dd26",
+    "externalIds": {
+      "ArXiv": "1207.4708",
+      "DBLP": "journals/jair/BellemareNVB13",
+      "MAG": "2150468603",
+      "DOI": "10.1613/jair.3912",
+      "CorpusId": 1552061
+    },
+    "title": "The Arcade Learning Environment: An Evaluation Platform for General Agents",
+    "venue": "Journal of Artificial Intelligence Research",
+    "year": 2012,
+    "citationCount": 3282,
+    "openAccessPdf": {
+      "url": "https://jair.org/index.php/jair/article/download/10819/25823",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1207.4708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "2294249",
+        "name": "Yavar Naddaf"
+      },
+      {
+        "authorId": "144056327",
+        "name": "J. Veness"
+      },
+      {
+        "authorId": "1687780",
+        "name": "Michael Bowling"
+      }
+    ],
+    "abstract": "In this article we introduce the Arcade Learning Environment (ALE): both a challenge problem and a platform and methodology for evaluating the development of general, domain-independent AI technology. ALE provides an interface to hundreds of Atari 2600 game environments, each one different, interesting, and designed to be a challenge for human players. ALE presents significant research challenges for reinforcement learning, model learning, model-based planning, imitation learning, transfer learning, and intrinsic motivation. Most importantly, it provides a rigorous testbed for evaluating and comparing approaches to these problems. We illustrate the promise of ALE by developing and benchmarking domain-independent agents designed using well-established AI techniques for both reinforcement learning and planning. In doing so, we also propose an evaluation methodology made possible by ALE, reporting empirical results on over 55 different games. All of the software, including the benchmark agents, is publicly available.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cbbcf7b0ae2d7503836a5a1db42dd3104579972d",
+    "externalIds": {
+      "MAG": "122021961",
+      "DBLP": "conf/pkdd/AkrourSS11",
+      "DOI": "10.1007/978-3-642-23780-5_11",
+      "CorpusId": 16505586
+    },
+    "title": "Preference-Based Policy Learning",
+    "venue": "ECML/PKDD",
+    "year": 2011,
+    "citationCount": 166,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/978-3-642-23780-5_11.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-23780-5_11?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-23780-5_11, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1688702",
+        "name": "R. Akrour"
+      },
+      {
+        "authorId": "2258347493",
+        "name": "Marc Schoenauer"
+      },
+      {
+        "authorId": "2247935754",
+        "name": "Michèle Sebag"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c54174bd1a98b1ae1fb111b32950fce538f32007",
+    "externalIds": {
+      "MAG": "2098584016",
+      "DOI": "10.1109/ICORR.2011.5975338",
+      "CorpusId": 341617,
+      "PubMed": "22275543"
+    },
+    "title": "Online human training of a myoelectric prosthesis controller via actor-critic reinforcement learning",
+    "venue": "International Conference on Rehabilitation Robotics",
+    "year": 2011,
+    "citationCount": 185,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICORR.2011.5975338?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICORR.2011.5975338, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1780797",
+        "name": "P. Pilarski"
+      },
+      {
+        "authorId": "144507887",
+        "name": "M. R. Dawson"
+      },
+      {
+        "authorId": "1804488",
+        "name": "T. Degris"
+      },
+      {
+        "authorId": "3252520",
+        "name": "F. Fahimi"
+      },
+      {
+        "authorId": "145853353",
+        "name": "J. Carey"
+      },
+      {
+        "authorId": "1699645",
+        "name": "R. Sutton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "122c45495b725e1c999c4f2a65c3a380631262d5",
+    "externalIds": {
+      "DBLP": "conf/sca/BrochuBF10",
+      "MAG": "2169003314",
+      "DOI": "10.2312/SCA/SCA10/103-112",
+      "CorpusId": 8788234
+    },
+    "title": "A Bayesian interactive optimization approach to procedural animation design",
+    "venue": "Symposium on Computer Animation",
+    "year": 2010,
+    "citationCount": 198,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2312/SCA/SCA10/103-112?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2312/SCA/SCA10/103-112, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144180357",
+        "name": "E. Brochu"
+      },
+      {
+        "authorId": "2935553",
+        "name": "Tyson Brochu"
+      },
+      {
+        "authorId": "1737568",
+        "name": "Nando de Freitas"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "256c3bd45ab7452bb51721eb25d3367bb654225e",
+    "externalIds": {
+      "MAG": "2156869222",
+      "DBLP": "conf/kcap/KnoxS09",
+      "DOI": "10.1145/1597735.1597738",
+      "CorpusId": 2994241
+    },
+    "title": "Interactively shaping agents via human reinforcement: the TAMER framework",
+    "venue": "International Conference on Knowledge Capture",
+    "year": 2009,
+    "citationCount": 579,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1597735.1597738?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1597735.1597738, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144288136",
+        "name": "W. B. Knox"
+      },
+      {
+        "authorId": "144848112",
+        "name": "P. Stone"
+      }
+    ],
+    "abstract": "As computational learning agents move into domains that incur real costs (e.g., autonomous driving or financial investment), it will be necessary to learn good policies without numerous high-cost learning trials. One promising approach to reducing sample complexity of learning a task is knowledge transfer from humans to agents. Ideally, methods of transfer should be accessible to anyone with task knowledge, regardless of that person's expertise in programming and AI. This paper focuses on allowing a human trainer to interactively shape an agent's policy via reinforcement signals. Specifically, the paper introduces \"Training an Agent Manually via Evaluative Reinforcement,\" or TAMER, a framework that enables such shaping. Differing from previous approaches to interactive shaping, a TAMER agent models the human's reinforcement and exploits its model by choosing actions expected to be most highly reinforced. Results from two domains demonstrate that lay users can train TAMER agents without defining an environmental reward function (as in an MDP) and indicate that human training within the TAMER framework can reduce sample complexity over autonomous learning algorithms.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "efbfe39af65fd22118f096e217774c9a2c0ba78f",
+    "externalIds": {
+      "MAG": "2095980045",
+      "DBLP": "conf/chi/SecretanB08",
+      "DOI": "10.1145/1357054.1357328",
+      "CorpusId": 2818161
+    },
+    "title": "Picbreeder: evolving pictures collaboratively online",
+    "venue": "International Conference on Human Factors in Computing Systems",
+    "year": 2008,
+    "citationCount": 232,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1357054.1357328?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1357054.1357328, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50297114",
+        "name": "J. Secretan"
+      },
+      {
+        "authorId": "2138671",
+        "name": "Nicholas Beato"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "dd6960d576da0d769ca30de6eb6607a66806211f",
+    "externalIds": {
+      "MAG": "2061562262",
+      "DOI": "10.2460/AJVR.67.2.323",
+      "CorpusId": 266239314
+    },
+    "title": "Algorithms for Inverse Reinforcement Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2000,
+    "citationCount": 2401,
+    "openAccessPdf": {
+      "url": "https://avmajournals.avma.org/downloadpdf/journals/ajvr/67/2/ajvr.67.2.323.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.2460/AJVR.67.2.323?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.2460/AJVR.67.2.323, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2286228978",
+        "name": "Andrew Y. Ng"
+      },
+      {
+        "authorId": "2285249014",
+        "name": "Stuart J. Russell"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f8222304ca201f8d524b3aa270673023334e7ed1",
+    "externalIds": {
+      "MAG": "2094536313",
+      "DOI": "10.1037/14396-000",
+      "CorpusId": 123178801
+    },
+    "title": "Individual Choice Behavior: A Theoretical Analysis",
+    "venue": "",
+    "year": 1979,
+    "citationCount": 2842,
+    "openAccessPdf": {
+      "url": "https://zbmath.org/pdf/1191.91003.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1037/14396-000?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1037/14396-000, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "104060925",
+        "name": "R. Luce"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "188e350a1323dc88aa79e74beb9470a102610486",
+    "externalIds": {
+      "MAG": "2050985708",
+      "DOI": "10.1007/BF02288967",
+      "CorpusId": 121778137
+    },
+    "title": "Stimulus and response generalization: A stochastic model relating generalization to distance in psychological space",
+    "venue": "",
+    "year": 1957,
+    "citationCount": 506,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/BF02288967?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/BF02288967, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2137198",
+        "name": "R. Shepard"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7d47ee5f84103529f84297c98c21dadb4742e3ff",
+    "externalIds": {
+      "MAG": "2013784666",
+      "DOI": "10.1093/BIOMET/39.3-4.324",
+      "CorpusId": 121987403
+    },
+    "title": "RANK ANALYSIS OF INCOMPLETE BLOCK DESIGNS THE METHOD OF PAIRED COMPARISONS",
+    "venue": "",
+    "year": 1952,
+    "citationCount": 4104,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1093/BIOMET/39.3-4.324?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1093/BIOMET/39.3-4.324, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "69566971",
+        "name": "R. Bradley"
+      },
+      {
+        "authorId": "49491973",
+        "name": "M. E. Terry"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "544db7ccbd689d84e172d300ba6edccf8792560c",
+    "externalIds": {
+      "MAG": "2290967747",
+      "CorpusId": 6049287
+    },
+    "title": "Preference-Based Reinforcement Learning: A Preliminary Survey",
+    "venue": "",
+    "year": 2013,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144389295",
+        "name": "Christian Wirth"
+      },
+      {
+        "authorId": "1747752",
+        "name": "Johannes Fürnkranz"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3306d0f3aa93267dd57c24b53e5142daf3b86d1b",
+    "externalIds": {
+      "DBLP": "conf/interspeech/SugiyamaMM12",
+      "MAG": "2395738761",
+      "DOI": "10.21437/Interspeech.2012-72",
+      "CorpusId": 15950188
+    },
+    "title": "Preference-learning based Inverse Reinforcement Learning for Dialog Control",
+    "venue": "Interspeech",
+    "year": 2012,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.21437/Interspeech.2012-72?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.21437/Interspeech.2012-72, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1873769",
+        "name": "Hiroaki Sugiyama"
+      },
+      {
+        "authorId": "39400069",
+        "name": "Toyomi Meguro"
+      },
+      {
+        "authorId": "47431383",
+        "name": "Yasuhiro Minami"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8904141ad0995760441180ea088fb78e86d398d4",
+    "externalIds": {
+      "MAG": "2295221083",
+      "CorpusId": 3029737
+    },
+    "title": "INTRODUCING MACHINE LEARNING WITHIN AN INTERACTIVE EVOLUTIONARY DESIGN ENVIRONMENT",
+    "venue": "",
+    "year": 2006,
+    "citationCount": 19,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "40401712",
+        "name": "A. Machwe"
+      },
+      {
+        "authorId": "1804851",
+        "name": "I. Parmee"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9f414c81159b5e8296a267d5ae95a5bf464061d1",
+    "externalIds": {
+      "MAG": "1597864774",
+      "CorpusId": 142610973
+    },
+    "title": "The rating of chessplayers, past and present",
+    "venue": "",
+    "year": 1978,
+    "citationCount": 1174,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "117965395",
+        "name": "A. Elo"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5c1b3dc95d1ba44fd7d9e3f6dec60fdc46a0eb78",
+    "externalIds": {
+      "MAG": "3003252051",
+      "DOI": "10.1093/biomet/41.3-4.502",
+      "CorpusId": 115965399
+    },
+    "title": "RANK ANALYSIS OF INCOMPLETE BLOCK DESIGNS",
+    "venue": "",
+    "year": 1952,
+    "citationCount": 1306,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1093/biomet/41.3-4.502?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1093/biomet/41.3-4.502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "69566971",
+        "name": "R. Bradley"
+      },
+      {
+        "authorId": "49491973",
+        "name": "M. E. Terry"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  }
+]

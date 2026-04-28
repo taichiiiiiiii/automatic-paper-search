@@ -1,0 +1,1241 @@
+[
+  {
+    "paperId": "47bada7675891f0296f8fc3a0658f01a984ad935",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2512-02472",
+      "ArXiv": "2512.02472",
+      "DOI": "10.48550/arXiv.2512.02472",
+      "CorpusId": 283458198
+    },
+    "title": "Guided Self-Evolving LLMs with Minimal Human Supervision",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 18,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.02472, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2265843326",
+        "name": "Wenhao Yu"
+      },
+      {
+        "authorId": "2362316761",
+        "name": "Zhenwen Liang"
+      },
+      {
+        "authorId": "31937655",
+        "name": "Chengsong Huang"
+      },
+      {
+        "authorId": "1518267866",
+        "name": "Kishan Panaganti"
+      },
+      {
+        "authorId": "2044202073",
+        "name": "Tianqing Fang"
+      },
+      {
+        "authorId": "2238955130",
+        "name": "Haitao Mi"
+      },
+      {
+        "authorId": "2303999735",
+        "name": "Dong Yu"
+      }
+    ],
+    "abstract": "AI self-evolution has long been envisioned as a path toward superintelligence, where models autonomously acquire, refine, and internalize knowledge from their own learning experiences. Yet in practice, unguided self-evolving systems often plateau quickly or even degrade as training progresses. These failures arise from issues such as concept drift, diversity collapse, and mis-evolution, as models reinforce their own biases and converge toward low-entropy behaviors. To enable models to self-evolve in a stable and controllable manner while minimizing reliance on human supervision, we introduce R-Few, a guided Self-Play Challenger-Solver framework that incorporates lightweight human oversight through in-context grounding and mixed training. At each iteration, the Challenger samples a small set of human-labeled examples to guide synthetic question generation, while the Solver jointly trains on human and synthetic examples under an online, difficulty-based curriculum. Across math and general reasoning benchmarks, R-Few achieves consistent and iterative improvements. For example, Qwen3-8B-Base improves by +3.0 points over R-Zero on math tasks and achieves performance on par with General-Reasoner, despite the latter being trained on 20 times more human data. Ablation studies confirm the complementary contributions of grounded challenger training and curriculum-based solver training, and further analysis shows that R-Few mitigates drift, yielding more stable and controllable co-evolutionary dynamics.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8c5add802b4a761ef9aab37419198945ab1f91a9",
+    "externalIds": {
+      "ArXiv": "2509.21552",
+      "DBLP": "journals/corr/abs-2509-21552",
+      "DOI": "10.48550/arXiv.2509.21552",
+      "CorpusId": 281659279
+    },
+    "title": "Learning GUI Grounding with Spatial Reasoning from Visual Feedback",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.21552, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2155474139",
+        "name": "Yu Zhao"
+      },
+      {
+        "authorId": "2382845012",
+        "name": "Wei-Ning Chen"
+      },
+      {
+        "authorId": "3058104",
+        "name": "Huseyin A. Inan"
+      },
+      {
+        "authorId": "2366164191",
+        "name": "Samuel Kessler"
+      },
+      {
+        "authorId": "2163383329",
+        "name": "Lu Wang"
+      },
+      {
+        "authorId": "2324587556",
+        "name": "Lukas Wutschitz"
+      },
+      {
+        "authorId": "2261394438",
+        "name": "Fangkai Yang"
+      },
+      {
+        "authorId": "2256775302",
+        "name": "Chaoyun Zhang"
+      },
+      {
+        "authorId": "2339305802",
+        "name": "Pasquale Minervini"
+      },
+      {
+        "authorId": "148121358",
+        "name": "S. Rajmohan"
+      },
+      {
+        "authorId": "2382768268",
+        "name": "Robert Sim"
+      }
+    ],
+    "abstract": "Graphical User Interface (GUI) grounding is commonly framed as a coordinate prediction task -- given a natural language instruction, generate on-screen coordinates for actions such as clicks and keystrokes. However, recent Vision Language Models (VLMs) often fail to predict accurate numeric coordinates when processing high-resolution GUI images with complex layouts. To address this issue, we reframe GUI grounding as an \\emph{interactive search task}, where the VLM generates actions to move a cursor in the GUI to locate UI elements. At each step, the model determines the target object, evaluates the spatial relations between the cursor and the target, and moves the cursor closer to the target conditioned on the movement history. In this interactive process, the rendered cursor provides visual feedback to help the model align its predictions with the corresponding on-screen locations. We train our GUI grounding model, GUI-Cursor, using multi-step online reinforcement learning with a dense trajectory-based reward function. Our experimental results show that GUI-Cursor, based on Qwen2.5-VL-7B, improves the GUI grounding accuracy and achieves state-of-the-art results on ScreenSpot-v2 ($88.8\\% \\rightarrow 93.9\\%$) and ScreenSpot-Pro ($26.8\\% \\rightarrow 56.5\\%$). Moreover, we observe that GUI-Cursor learns to solve the problem within two steps for 95\\% of instances and can adaptively conduct more steps on more difficult examples.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "31723aa7fbce4064070e655d2c77ecf09ff52e20",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2508-05615",
+      "ArXiv": "2508.05615",
+      "DOI": "10.48550/arXiv.2508.05615",
+      "CorpusId": 280546645
+    },
+    "title": "Test-Time Reinforcement Learning for GUI Grounding via Region Consistency",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 8,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.05615, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1878735637",
+        "name": "Yongkun Du"
+      },
+      {
+        "authorId": "2284984220",
+        "name": "Yuchen Yan"
+      },
+      {
+        "authorId": "2325955364",
+        "name": "Fei Tang"
+      },
+      {
+        "authorId": "2373465967",
+        "name": "Zhengxi Lu"
+      },
+      {
+        "authorId": "2186563459",
+        "name": "Chang Zong"
+      },
+      {
+        "authorId": "1776903",
+        "name": "Weiming Lu"
+      },
+      {
+        "authorId": "2364733996",
+        "name": "Shengpei Jiang"
+      },
+      {
+        "authorId": "2337846158",
+        "name": "Yongliang Shen"
+      }
+    ],
+    "abstract": "Graphical User Interface (GUI) grounding, the task of mapping natural language instructions to precise screen coordinates, is fundamental to autonomous GUI agents. While existing methods achieve strong performance through extensive supervised training or reinforcement learning with labeled rewards, they remain constrained by the cost and availability of pixel-level annotations. We observe that when models generate multiple predictions for the same GUI element, the spatial overlap patterns reveal implicit confidence signals that can guide more accurate localization. Leveraging this insight, GUI-RC (Region Consistency), a test-time scaling method that constructs spatial voting grids from multiple sampled predictions to identify consensus regions where models show highest agreement. Without any training, GUI-RC improves accuracy by 2-3% across various architectures on ScreenSpot benchmarks. We further introduce GUI-RCPO (Region Consistency Policy Optimization), transforming these consistency patterns into rewards for test-time reinforcement learning. By computing how well each prediction aligns with the collective consensus, GUI-RCPO enables models to iteratively refine their outputs on unlabeled data during inference. Extensive experiments demonstrate the generality of our approach: using only 1,272 unlabeled data, GUI-RCPO achieves 3-6% accuracy improvements across various architectures on ScreenSpot benchmarks. Our approach reveals the untapped potential of test-time scaling and test-time reinforcement learning for GUI grounding, offering a promising path toward more data-efficient GUI agents.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "006e8a0cc35d13272c5936003cfb5834f7a88a75",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-05791",
+      "ArXiv": "2507.05791",
+      "DOI": "10.48550/arXiv.2507.05791",
+      "CorpusId": 280067988
+    },
+    "title": "GTA1: GUI Test-time Scaling Agent",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 64,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.05791, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281906366",
+        "name": "Yan Yang"
+      },
+      {
+        "authorId": "2314668370",
+        "name": "Dongxu Li"
+      },
+      {
+        "authorId": "2316803927",
+        "name": "Yutong Dai"
+      },
+      {
+        "authorId": "2382931818",
+        "name": "Yuhao Yang"
+      },
+      {
+        "authorId": "2337101849",
+        "name": "Ziyang Luo"
+      },
+      {
+        "authorId": "2325635107",
+        "name": "Zirui Zhao"
+      },
+      {
+        "authorId": "2341664926",
+        "name": "Zhiyuan Hu"
+      },
+      {
+        "authorId": "2339532903",
+        "name": "Junzhe Huang"
+      },
+      {
+        "authorId": "2258549992",
+        "name": "Amrita Saha"
+      },
+      {
+        "authorId": "2292059557",
+        "name": "Zeyuan Chen"
+      },
+      {
+        "authorId": "2327302468",
+        "name": "Ran Xu"
+      },
+      {
+        "authorId": "2269763608",
+        "name": "Liyuan Pan"
+      },
+      {
+        "authorId": "2256976968",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "2295682370",
+        "name": "Junnan Li"
+      }
+    ],
+    "abstract": "Graphical user interface (GUI) agents autonomously complete tasks across platforms (\\eg, Linux) by sequentially decomposing user instructions into action proposals that iteratively interact with visual elements in the evolving environment. However, two main challenges arise: i) planning (\\ie, the action proposal sequence) under expansive action space, where selecting an appropriate plan is non-trivial, as many valid ones may exist; ii) accurately grounding actions in complex and high-resolution interfaces, \\ie, precisely interacting with visual targets. This paper investigates the aforementioned challenges with our \\textbf{G}UI \\textbf{T}est-time Scaling \\textbf{A}gent, namely GTA1. First, we conduct test-time scaling to select the most appropriate action proposal: at each step, multiple candidate proposals are sampled and evaluated and selected by a judge model. It trades off computation for better decision quality by concurrent sampling. Second, we propose a model that improves grounding of the selected action proposals to its corresponding visual elements. Our key insight is that reinforcement learning (RL) facilitates grounding through inherent objective alignments, rewarding successful clicks on interface elements. Experimentally, GTA1 achieves state-of-the-art performance on both grounding and agent task execution benchmarks. The code and models are released here.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "3d289db865f2501f31c7be15a96880aaeb328a22",
+    "externalIds": {
+      "DBLP": "conf/emnlp/WuCCLYYW25",
+      "ArXiv": "2507.00008",
+      "DOI": "10.48550/arXiv.2507.00008",
+      "CorpusId": 280047851
+    },
+    "title": "DiMo-GUI: Advancing Test-time Scaling in GUI Grounding via Modality-Aware Visual Reasoning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2025,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.00008, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2371090879",
+        "name": "Hang Wu"
+      },
+      {
+        "authorId": "2337808627",
+        "name": "Hongkai Chen"
+      },
+      {
+        "authorId": "1928716951",
+        "name": "Yujun Cai"
+      },
+      {
+        "authorId": "2371101527",
+        "name": "Chang Liu"
+      },
+      {
+        "authorId": "2337797857",
+        "name": "Qingwen Ye"
+      },
+      {
+        "authorId": "2335103256",
+        "name": "Mingchao Yang"
+      },
+      {
+        "authorId": "2343896743",
+        "name": "Yiwei Wang"
+      }
+    ],
+    "abstract": "Grounding natural language queries in graphical user interfaces (GUIs) poses unique challenges due to the diversity of visual elements, spatial clutter, and the ambiguity of language. In this paper, we introduce DiMo-GUI, a training-free framework for GUI grounding that leverages two core strategies: dynamic visual grounding and modality-aware optimization. Instead of treating the GUI as a monolithic image, our method splits the input into textual elements and iconic elements, allowing the model to reason over each modality independently using general-purpose vision-language models. When predictions are ambiguous or incorrect, DiMo-GUI dynamically focuses attention by generating candidate focal regions centered on the model's initial predictions and incrementally zooms into subregions to refine the grounding result. This hierarchical refinement process helps disambiguate visually crowded layouts without the need for additional training or annotations. We evaluate our approach on standard GUI grounding benchmarks and demonstrate consistent improvements over baseline inference pipelines, highlighting the effectiveness of combining modality separation with region-focused reasoning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a1c9066aab4c408db49982f0975c2ec7c0be47dd",
+    "externalIds": {
+      "ArXiv": "2505.13227",
+      "DBLP": "journals/corr/abs-2505-13227",
+      "DOI": "10.48550/arXiv.2505.13227",
+      "CorpusId": 278769550
+    },
+    "title": "Scaling Computer-Use Grounding via User Interface Decomposition and Synthesis",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 84,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.13227, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2346173497",
+        "name": "Tianbao Xie"
+      },
+      {
+        "authorId": "2363131525",
+        "name": "Jiaqi Deng"
+      },
+      {
+        "authorId": "2296227930",
+        "name": "Xiaochuan Li"
+      },
+      {
+        "authorId": "2362512516",
+        "name": "Junlin Yang"
+      },
+      {
+        "authorId": "2284673498",
+        "name": "Haoyuan Wu"
+      },
+      {
+        "authorId": "2296064274",
+        "name": "Jixuan Chen"
+      },
+      {
+        "authorId": "2311649983",
+        "name": "Wenjing Hu"
+      },
+      {
+        "authorId": "2261680539",
+        "name": "Xinyuan Wang"
+      },
+      {
+        "authorId": "48615640",
+        "name": "Yuhui Xu"
+      },
+      {
+        "authorId": "2108727290",
+        "name": "Zekun Wang"
+      },
+      {
+        "authorId": "3032611",
+        "name": "Yiheng Xu"
+      },
+      {
+        "authorId": "2333894240",
+        "name": "Junli Wang"
+      },
+      {
+        "authorId": "36187119",
+        "name": "Doyen Sahoo"
+      },
+      {
+        "authorId": "2334519572",
+        "name": "Tao Yu"
+      },
+      {
+        "authorId": "2311439896",
+        "name": "Caiming Xiong"
+      }
+    ],
+    "abstract": "Graphical user interface (GUI) grounding, the ability to map natural language instructions to specific actions on graphical user interfaces, remains a critical bottleneck in computer use agent development. Current benchmarks oversimplify grounding tasks as short referring expressions, failing to capture the complexity of real-world interactions that require software commonsense, layout understanding, and fine-grained manipulation capabilities. To address these limitations, we introduce OSWorld-G, a comprehensive benchmark comprising 564 finely annotated samples across diverse task types including text matching, element recognition, layout understanding, and precise manipulation. Additionally, we synthesize and release the largest computer use grounding dataset Jedi, which contains 4 million examples through multi-perspective decoupling of tasks. Our multi-scale models trained on Jedi demonstrate its effectiveness by outperforming existing approaches on ScreenSpot-v2, ScreenSpot-Pro, and our OSWorld-G. Furthermore, we demonstrate that improved grounding with Jedi directly enhances agentic capabilities of general foundation models on complex computer tasks, improving from 5% to 27% on OSWorld. Through detailed ablation studies, we identify key factors contributing to grounding performance and verify that combining specialized data for different interface elements enables compositional generalization to novel interfaces. All benchmark, data, checkpoints, and code are open-sourced and available at https://osworld-grounding.github.io.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2eab6698a914b5015b9fb32f1766634315233c0e",
+    "externalIds": {
+      "ArXiv": "2505.00684",
+      "DBLP": "journals/corr/abs-2505-00684",
+      "DOI": "10.48550/arXiv.2505.00684",
+      "CorpusId": 278237813
+    },
+    "title": "Visual Test-time Scaling for GUI Agent Grounding",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 15,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.00684, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2358460352",
+        "name": "Tiange Luo"
+      },
+      {
+        "authorId": "2876316",
+        "name": "Lajanugen Logeswaran"
+      },
+      {
+        "authorId": "2296223294",
+        "name": "Justin Johnson"
+      },
+      {
+        "authorId": "2296302312",
+        "name": "Honglak Lee"
+      }
+    ],
+    "abstract": "We introduce RegionFocus, a visual test-time scaling approach for Vision Language Model Agents. Understanding webpages is challenging due to the visual complexity of GUI images and the large number of interface elements, making accurate action selection difficult. Our approach dynamically zooms in on relevant regions, reducing background clutter and improving grounding accuracy. To support this process, we propose an image-as-map mechanism that visualizes key landmarks at each step, providing a transparent action record and enables the agent to effectively choose among action candidates. Even with a simple region selection strategy, we observe significant performance gains of 28+\\% on Screenspot-pro and 24+\\% on WebVoyager benchmarks on top of two state-of-the-art open vision language model agents, UI-TARS and Qwen2.5-VL, highlighting the effectiveness of visual test-time scaling in interactive settings. We achieve a new state-of-the-art grounding performance of 61.6\\% on the ScreenSpot-Pro benchmark by applying RegionFocus to a Qwen2.5-VL-72B model. Our code will be released publicly at https://github.com/tiangeluo/RegionFocus.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f264e7f6e398e4a2f6c4b84f073a9de1467b6cf7",
+    "externalIds": {
+      "DBLP": "conf/acl/LiuZZL25",
+      "ArXiv": "2504.11257",
+      "DOI": "10.48550/arXiv.2504.11257",
+      "CorpusId": 277786869
+    },
+    "title": "UI-E2I-Synth: Advancing GUI Grounding with Large-Scale Instruction Synthesis",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2025,
+    "citationCount": 21,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.11257, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2355492782",
+        "name": "Xinyi Liu"
+      },
+      {
+        "authorId": "2258309879",
+        "name": "Xiaoyi Zhang"
+      },
+      {
+        "authorId": "2355434808",
+        "name": "Ziyun Zhang"
+      },
+      {
+        "authorId": "2355689676",
+        "name": "Yan Lu"
+      }
+    ],
+    "abstract": "Recent advancements in Large Vision-Language Models are accelerating the development of Graphical User Interface (GUI) agents that utilize human-like vision perception capabilities to enhance productivity on digital devices. Compared to approaches predicated on GUI metadata, which are platform-dependent and vulnerable to implementation variations, vision-based approaches offer broader applicability. In this vision-based paradigm, the GUI instruction grounding, which maps user instruction to the location of corresponding element on the given screenshot, remains a critical challenge, particularly due to limited public training dataset and resource-intensive manual instruction data annotation. In this paper, we delve into unexplored challenges in this task including element-to-screen ratio, unbalanced element type, and implicit instruction. To address these challenges, we introduce a large-scale data synthesis pipeline UI-E2I-Synth for generating varying complex instruction datasets using GPT-4o instead of human annotators. Furthermore, we propose a new GUI instruction grounding benchmark UI-I2E-Bench, which is designed to address the limitations of existing benchmarks by incorporating diverse annotation aspects. Our model, trained on the synthesized data, achieves superior performance in GUI instruction grounding, demonstrating the advancements of proposed data synthesis pipeline. The proposed benchmark, accompanied by extensive analyses, provides practical insights for future research in GUI grounding. We will release corresponding artifacts at https://microsoft.github.io/FIVE-UI-Evol/ .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "df7b286e53d66c6881966b5e6904f7fa5e6d774b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2504-07981",
+      "ArXiv": "2504.07981",
+      "DOI": "10.1145/3746027.3755688",
+      "CorpusId": 277740982
+    },
+    "title": "ScreenSpot-Pro: GUI Grounding for Professional High-Resolution Computer Use",
+    "venue": "ACM Multimedia",
+    "year": 2025,
+    "citationCount": 174,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.07981, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2298147619",
+        "name": "Kaixin Li"
+      },
+      {
+        "authorId": "2400494724",
+        "name": "Ziyang Meng"
+      },
+      {
+        "authorId": "2109380683",
+        "name": "Hongzhan Lin"
+      },
+      {
+        "authorId": "23523733",
+        "name": "Ziyang Luo"
+      },
+      {
+        "authorId": "2296745584",
+        "name": "Yuchen Tian"
+      },
+      {
+        "authorId": "2296745808",
+        "name": "Jing Ma"
+      },
+      {
+        "authorId": "2315303144",
+        "name": "Zhiyong Huang"
+      },
+      {
+        "authorId": "2315992692",
+        "name": "Tat-Seng Chua"
+      }
+    ],
+    "abstract": "Recent advancements in Multi-modal Large Language Models (MLLMs) have led to significant progress in developing GUI agents for general tasks such as web browsing and mobile phone use. However, their application in professional domains remains under-explored. These specialized workflows introduce unique challenges for GUI perception models, including high-resolution displays and complex environments which lead to smaller target sizes. In this paper, we introduce ScreenSpot-Pro, a new benchmark designed to rigorously evaluate the grounding capabilities of MLLMs in high-resolution professional settings. The benchmark comprises authentic high-resolution images from a variety of professional domains with expert annotations. It spans 23 applications across five industries and three operating systems. Existing GUI grounding models perform poorly on this dataset, with the best model achieving only 18.9%. Our experiments reveal that strategically reducing the search area enhances accuracy. Based on this insight, we propose ScreenSeekeR, a visual search method that utilizes the GUI knowledge of a strong planner to guide a cascaded search, achieving state-of-the-art performance with 48.1% without any additional training. We hope that our benchmark and findings will advance the development of GUI agents for professional settings.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "57f0694199b43ccbba9c0d4224bebd450f7c3af8",
+    "externalIds": {
+      "DBLP": "conf/aaai/LuCGYLWXRZLXL26",
+      "ArXiv": "2503.21620",
+      "DOI": "10.1609/aaai.v40i21.38816",
+      "CorpusId": 277349975
+    },
+    "title": "UI-R1: Enhancing Efficient Action Prediction of GUI Agents by Reinforcement Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2025,
+    "citationCount": 94,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.21620, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2352402291",
+        "name": "Zhengxi Lu"
+      },
+      {
+        "authorId": "2151078513",
+        "name": "Yuxiang Chai"
+      },
+      {
+        "authorId": "2352812326",
+        "name": "Yaxuan Guo"
+      },
+      {
+        "authorId": "2354008994",
+        "name": "Xiaojing Yin"
+      },
+      {
+        "authorId": "2313041768",
+        "name": "Liang Liu"
+      },
+      {
+        "authorId": "2353314544",
+        "name": "Hao Wang"
+      },
+      {
+        "authorId": "2352285695",
+        "name": "Guanjing Xiong"
+      },
+      {
+        "authorId": "2352276215",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "The recent DeepSeek-R1 has showcased the emergence of reasoning capabilities in large language models (LLMs) through reinforcement learning (RL) with rule-based rewards. Despite its success in language tasks, its application in multimodal domains, particularly in graphic user interface (GUI) agent tasks, remains under-explored. To address this gap, we propose UI-R1, the first framework to investigate how rule-based RL can enhance the reasoning capabilities of multimodal large language models (MLLMs) for GUI action prediction tasks. UI-R1 introduces a novel rule-based action reward scheme, enabling model optimization via policy-based algorithms such as Group Relative Policy Optimization (GRPO). To further improve efficiency at inference time, we present UI-R1-Efficient, a two-stage training paradigm that reduces reasoning length while boosting overall performance. In addition, we construct a compact yet high-quality dataset containing 2K challenging tasks across five prevalent mobile device action types. Experiments show that our proposed models (e.g., UI-R1-3B) achieve substantial improvements over the base model (Qwen2.5-VL-3B) on both in-domain (ID) and out-of-domain (OOD) tasks, with average accuracy gains of 18.3% on ScreenSpot, 6.0% on ScreenSpot-Pro, and 10.9% on ANDROIDCONTROL. Moreover, our efficient versions deliver competitive performance compared to considerably larger state-of-the-art models, underscoring the potential of reinforcement learning to advance GUI control and paving the way for future research in Human-Computer Interaction (HCI).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6254219f2e508f938becaa5920e68f361e489b73",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-15661",
+      "ArXiv": "2503.15661",
+      "DOI": "10.48550/arXiv.2503.15661",
+      "CorpusId": 277150577
+    },
+    "title": "UI-Vision: A Desktop-centric GUI Benchmark for Visual Perception and Interaction",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.15661, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2311507230",
+        "name": "Shravan Nayak"
+      },
+      {
+        "authorId": "2334357492",
+        "name": "Xiangru Jian"
+      },
+      {
+        "authorId": "2351409697",
+        "name": "Kevin Qinghong Lin"
+      },
+      {
+        "authorId": "2116899991",
+        "name": "Juan A. Rodriguez"
+      },
+      {
+        "authorId": "2292197874",
+        "name": "Montek Kalsi"
+      },
+      {
+        "authorId": "66736108",
+        "name": "Rabiul Awal"
+      },
+      {
+        "authorId": "2748188",
+        "name": "Nicolas Chapados"
+      },
+      {
+        "authorId": "2351072345",
+        "name": "M. T. ¨Ozsu"
+      },
+      {
+        "authorId": "2801949",
+        "name": "Aishwarya Agrawal"
+      },
+      {
+        "authorId": "2351057662",
+        "name": "David Vázquez"
+      },
+      {
+        "authorId": "2275240361",
+        "name": "Christopher Pal"
+      },
+      {
+        "authorId": "1784150",
+        "name": "Perouz Taslakian"
+      },
+      {
+        "authorId": "2921001",
+        "name": "Spandana Gella"
+      },
+      {
+        "authorId": "1818842",
+        "name": "Sai Rajeswar"
+      },
+      {
+        "authorId": "2351072785",
+        "name": "Human Annotator"
+      }
+    ],
+    "abstract": "Autonomous agents that navigate Graphical User Interfaces (GUIs) to automate tasks like document editing and file management can greatly enhance computer workflows. While existing research focuses on online settings, desktop environments, critical for many professional and everyday tasks, remain underexplored due to data collection challenges and licensing issues. We introduce UI-Vision, the first comprehensive, license-permissive benchmark for offline, fine-grained evaluation of computer use agents in real-world desktop environments. Unlike online benchmarks, UI-Vision provides: (i) dense, high-quality annotations of human demonstrations, including bounding boxes, UI labels, and action trajectories (clicks, drags, and keyboard inputs) across 83 software applications, and (ii) three fine-to-coarse grained tasks-Element Grounding, Layout Grounding, and Action Prediction-with well-defined metrics to rigorously evaluate agents' performance in desktop environments. Our evaluation reveals critical limitations in state-of-the-art models like UI-TARS-72B, including issues with understanding professional software, spatial reasoning, and complex actions like drag-and-drop. These findings highlight the challenges in developing fully autonomous computer use agents. By releasing UI-Vision as open-source, we aim to advance the development of more capable agents for real-world desktop tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0af4359948693c7aa60caf5e13aaab9d32fced92",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-12937",
+      "ArXiv": "2503.12937",
+      "DOI": "10.48550/arXiv.2503.12937",
+      "CorpusId": 277066741
+    },
+    "title": "R1-VL: Learning to Reason with Multimodal Large Language Models via Step-wise Group Relative Policy Optimization",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 263,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.12937, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276743977",
+        "name": "Jingyi Zhang"
+      },
+      {
+        "authorId": "2333251144",
+        "name": "Jiaxing Huang"
+      },
+      {
+        "authorId": "2268465257",
+        "name": "Huanjin Yao"
+      },
+      {
+        "authorId": "2337077326",
+        "name": "Shunyu Liu"
+      },
+      {
+        "authorId": "2344049806",
+        "name": "Xikun Zhang"
+      },
+      {
+        "authorId": "2237947102",
+        "name": "Shijian Lu"
+      },
+      {
+        "authorId": "2276069056",
+        "name": "Dacheng Tao"
+      }
+    ],
+    "abstract": "Recent studies generally enhance MLLMs'reasoning capabilities via supervised fine-tuning on high-quality chain-of-thought reasoning data, which often leads models to merely imitate successful reasoning paths without understanding what the wrong reasoning paths are. In this work, we aim to enhance the MLLMs'reasoning ability beyond passively imitating positive reasoning paths. To this end, we design Step-wise Group Relative Policy Optimization (StepGRPO), a new online reinforcement learning framework that enables MLLMs to self-improve reasoning ability via simple, effective and dense step-wise rewarding. Specifically, StepGRPO introduces two novel rule-based reasoning rewards: Step-wise Reasoning Accuracy Reward (StepRAR) and Step-wise Reasoning Validity Reward (StepRVR). StepRAR rewards the reasoning paths that contain necessary intermediate reasoning steps via a soft key-step matching technique, while StepRAR rewards reasoning paths that follow a well-structured and logically consistent reasoning process through a reasoning completeness and logic evaluation strategy. With the proposed StepGRPO, we introduce R1-VL, a series of MLLMs with outstanding capabilities in step-by-step reasoning. Extensive experiments over 8 benchmarks demonstrate the superiority of our methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a99dee9602e21a71526b9681d8dba37c55b66941",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2501-17161",
+      "ArXiv": "2501.17161",
+      "DOI": "10.48550/arXiv.2501.17161",
+      "CorpusId": 275932560
+    },
+    "title": "SFT Memorizes, RL Generalizes: A Comparative Study of Foundation Model Post-training",
+    "venue": "International Conference on Machine Learning",
+    "year": 2025,
+    "citationCount": 528,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.17161, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2218725693",
+        "name": "Tianzhe Chu"
+      },
+      {
+        "authorId": "119692515",
+        "name": "Yuexiang Zhai"
+      },
+      {
+        "authorId": "47987749",
+        "name": "Jihan Yang"
+      },
+      {
+        "authorId": "2143202419",
+        "name": "Shengbang Tong"
+      },
+      {
+        "authorId": "2282918539",
+        "name": "Saining Xie"
+      },
+      {
+        "authorId": "2265994815",
+        "name": "Dale Schuurmans"
+      },
+      {
+        "authorId": "2316407385",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2258551113",
+        "name": "Sergey Levine"
+      },
+      {
+        "authorId": "2255716385",
+        "name": "Yi Ma"
+      }
+    ],
+    "abstract": "Supervised fine-tuning (SFT) and reinforcement learning (RL) are widely used post-training techniques for foundation models. However, their roles in enhancing model generalization capabilities remain unclear. This paper studies the difference between SFT and RL on generalization and memorization, focusing on text-based rule variants and visual variants. We introduce GeneralPoints, an arithmetic reasoning card game, and adopt V-IRL, a real-world navigation environment, to assess how models trained with SFT and RL generalize to unseen variants in both textual and visual domains. We show that RL, especially when trained with an outcome-based reward, generalizes across both rule-based textual and visual variants. SFT, in contrast, tends to memorize training data and struggles to generalize out-of-distribution scenarios. Further analysis reveals that RL improves the model's underlying visual recognition capabilities, contributing to its enhanced generalization in the visual domain. Despite RL's superior generalization, we show that SFT remains essential for effective RL training; SFT stabilizes the model's output format, enabling subsequent RL to achieve its performance gains. These findings demonstrates the capability of RL for acquiring generalizable knowledge in complex, multi-modal tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "48adf25f6fda3711759e307c2e3aaab42f314854",
+    "externalIds": {
+      "ArXiv": "2412.10840",
+      "DBLP": "conf/aaai/XuCWL25",
+      "DOI": "10.48550/arXiv.2412.10840",
+      "CorpusId": 274776735
+    },
+    "title": "Attention-driven GUI Grounding: Leveraging Pretrained Multimodal Large Language Models without Fine-Tuning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 12,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.10840, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "150128927",
+        "name": "Hai-Ming Xu"
+      },
+      {
+        "authorId": "2335590084",
+        "name": "Qi Chen"
+      },
+      {
+        "authorId": "2304623450",
+        "name": "Lei Wang"
+      },
+      {
+        "authorId": "2243894782",
+        "name": "Lingqiao Liu"
+      }
+    ],
+    "abstract": "Recent advancements in Multimodal Large Language Models (MLLMs) have generated significant interest in their ability to autonomously interact with and interpret Graphical User Interfaces (GUIs). A major challenge in these systems is grounding—accurately identifying critical GUI components such as text or icons based on a GUI image and a corresponding text query. Traditionally, this task has relied on fine-tuning MLLMs with specialized training data to predict component locations directly. However, in this paper, we propose a novel Tuning-free Attention-driven Grounding (TAG) method that leverages the inherent attention patterns in pretrained MLLMs to accomplish this task without the need for additional fine-tuning. Our method involves identifying and aggregating attention maps from specific tokens within a carefully constructed query prompt. Applied to MiniCPM-Llama3-V 2.5, a state-of-the-art MLLM, our tuning-free approach achieves performance comparable to tuning-based methods, with notable success in text localization. Additionally, we demonstrate that our attention map-based grounding technique significantly outperforms direct localization predictions from MiniCPM-Llama3-V 2.5, highlighting the potential of using attention maps from pretrained MLLMs and paving the way for future innovations in this domain.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "40434390c260e577b23547c2d43cef1230d6610b",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2411-13591",
+      "ArXiv": "2411.13591",
+      "DOI": "10.48550/arXiv.2411.13591",
+      "CorpusId": 274165914
+    },
+    "title": "Improved GUI Grounding via Iterative Narrowing",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 10,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.13591, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2367103809",
+        "name": "A. Nguyen"
+      }
+    ],
+    "abstract": "Graphical User Interface (GUI) grounding plays a crucial role in enhancing the capabilities of Vision-Language Model (VLM) agents. While general VLMs, such as GPT-4V, demonstrate strong performance across various tasks, their proficiency in GUI grounding remains suboptimal. Recent studies have focused on fine-tuning these models specifically for zero-shot GUI grounding, yielding significant improvements over baseline performance. We introduce a visual prompting framework that employs an iterative narrowing mechanism to further improve the performance of both general and fine-tuned models in GUI grounding. For evaluation, we tested our method on a comprehensive benchmark comprising various UI platforms and provided the code to reproduce our results.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9ceadd197cea2cd1b45e12983d528daf2b24efaa",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2410-23218",
+      "ArXiv": "2410.23218",
+      "DOI": "10.48550/arXiv.2410.23218",
+      "CorpusId": 273696039
+    },
+    "title": "OS-ATLAS: A Foundation Action Model for Generalist GUI Agents",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 272,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.23218, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2307435055",
+        "name": "Zhiyong Wu"
+      },
+      {
+        "authorId": "2328403813",
+        "name": "Zhenyu Wu"
+      },
+      {
+        "authorId": "2330168859",
+        "name": "Fangzhi Xu"
+      },
+      {
+        "authorId": "2328335571",
+        "name": "Yian Wang"
+      },
+      {
+        "authorId": "2112455065",
+        "name": "Qiushi Sun"
+      },
+      {
+        "authorId": "2328303231",
+        "name": "Chengyou Jia"
+      },
+      {
+        "authorId": "2273946511",
+        "name": "Kanzhi Cheng"
+      },
+      {
+        "authorId": "2284245211",
+        "name": "Zichen Ding"
+      },
+      {
+        "authorId": "2283870581",
+        "name": "Liheng Chen"
+      },
+      {
+        "authorId": "2328308881",
+        "name": "Paul Pu Liang"
+      },
+      {
+        "authorId": "2266841675",
+        "name": "Yu Qiao"
+      }
+    ],
+    "abstract": "Existing efforts in building GUI agents heavily rely on the availability of robust commercial Vision-Language Models (VLMs) such as GPT-4o and GeminiProVision. Practitioners are often reluctant to use open-source VLMs due to their significant performance lag compared to their closed-source counterparts, particularly in GUI grounding and Out-Of-Distribution (OOD) scenarios. To facilitate future research in this area, we developed OS-Atlas - a foundational GUI action model that excels at GUI grounding and OOD agentic tasks through innovations in both data and modeling. We have invested significant engineering effort in developing an open-source toolkit for synthesizing GUI grounding data across multiple platforms, including Windows, Linux, MacOS, Android, and the web. Leveraging this toolkit, we are releasing the largest open-source cross-platform GUI grounding corpus to date, which contains over 13 million GUI elements. This dataset, combined with innovations in model training, provides a solid foundation for OS-Atlas to understand GUI screenshots and generalize to unseen interfaces. Through extensive evaluation across six benchmarks spanning three different platforms (mobile, desktop, and web), OS-Atlas demonstrates significant performance improvements over previous state-of-the-art models. Our evaluation also uncovers valuable insights into continuously improving and scaling the agentic capabilities of open-source VLMs.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "a15a4cabe7653a87efc3302552fbc88b25d19dc1",
+    "externalIds": {
+      "DBLP": "conf/iclr/GouWZXCS0025",
+      "ArXiv": "2410.05243",
+      "DOI": "10.48550/arXiv.2410.05243",
+      "CorpusId": 273186286
+    },
+    "title": "Navigating the Digital World as Humans Do: Universal Visual Grounding for GUI Agents",
+    "venue": "International Conference on Learning Representations",
+    "year": 2024,
+    "citationCount": 310,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.05243, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2277598691",
+        "name": "Boyu Gou"
+      },
+      {
+        "authorId": "2303708548",
+        "name": "Ruohan Wang"
+      },
+      {
+        "authorId": "2112670551",
+        "name": "Boyuan Zheng"
+      },
+      {
+        "authorId": "2324894740",
+        "name": "Yanan Xie"
+      },
+      {
+        "authorId": "2324841935",
+        "name": "Cheng Chang"
+      },
+      {
+        "authorId": "1406331721",
+        "name": "Yiheng Shu"
+      },
+      {
+        "authorId": "2278123075",
+        "name": "Huan Sun"
+      },
+      {
+        "authorId": "1758652",
+        "name": "Yu Su"
+      }
+    ],
+    "abstract": "Multimodal large language models (MLLMs) are transforming the capabilities of graphical user interface (GUI) agents, facilitating their transition from controlled simulations to complex, real-world applications across various platforms. However, the effectiveness of these agents hinges on the robustness of their grounding capability. Current GUI agents predominantly utilize text-based representations such as HTML or accessibility trees, which, despite their utility, often introduce noise, incompleteness, and increased computational overhead. In this paper, we advocate a human-like embodiment for GUI agents that perceive the environment entirely visually and directly perform pixel-level operations on the GUI. The key is visual grounding models that can accurately map diverse referring expressions of GUI elements to their coordinates on the GUI across different platforms. We show that a simple recipe, which includes web-based synthetic data and slight adaptation of the LLaVA architecture, is surprisingly effective for training such visual grounding models. We collect the largest dataset for GUI visual grounding so far, containing 10M GUI elements and their referring expressions over 1.3M screenshots, and use it to train UGround, a strong universal visual grounding model for GUI agents. Empirical results on six benchmarks spanning three categories (grounding, offline agent, and online agent) show that 1) UGround substantially outperforms existing visual grounding models for GUI agents, by up to 20% absolute, and 2) agents with UGround outperform state-of-the-art agents, despite the fact that existing agents use additional text-based input while ours only uses visual perception. These results provide strong support for the feasibility and promises of GUI agents that navigate the digital world as humans do.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c7d35995a9a4d49011cf47f130535e1391ebeebc",
+    "externalIds": {
+      "ArXiv": "2402.17553",
+      "DBLP": "conf/eccv/KapoorBRKKAS24",
+      "DOI": "10.48550/arXiv.2402.17553",
+      "CorpusId": 268031860
+    },
+    "title": "OmniACT: A Dataset and Benchmark for Enabling Multimodal Generalist Autonomous Agents for Desktop and Web",
+    "venue": "European Conference on Computer Vision",
+    "year": 2024,
+    "citationCount": 137,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.17553, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2287767175",
+        "name": "Raghav Kapoor"
+      },
+      {
+        "authorId": "2287828804",
+        "name": "Yash Butala"
+      },
+      {
+        "authorId": "94408074",
+        "name": "M. Russak"
+      },
+      {
+        "authorId": "23978705",
+        "name": "Jing Yu Koh"
+      },
+      {
+        "authorId": "2287834223",
+        "name": "Kiran Kamble"
+      },
+      {
+        "authorId": "2221313482",
+        "name": "Waseem Alshikh"
+      },
+      {
+        "authorId": "2280902225",
+        "name": "Ruslan Salakhutdinov"
+      }
+    ],
+    "abstract": "For decades, human-computer interaction has fundamentally been manual. Even today, almost all productive work done on the computer necessitates human input at every step. Autonomous virtual agents represent an exciting step in automating many of these menial tasks. Virtual agents would empower users with limited technical proficiency to harness the full possibilities of computer systems. They could also enable the efficient streamlining of numerous computer tasks, ranging from calendar management to complex travel bookings, with minimal human intervention. In this paper, we introduce OmniACT, the first-of-a-kind dataset and benchmark for assessing an agent's capability to generate executable programs to accomplish computer tasks. Our scope extends beyond traditional web automation, covering a diverse range of desktop applications. The dataset consists of fundamental tasks such as\"Play the next song\", as well as longer horizon tasks such as\"Send an email to John Doe mentioning the time and place to meet\". Specifically, given a pair of screen image and a visually-grounded natural language task, the goal is to generate a script capable of fully executing the task. We run several strong baseline language model agents on our benchmark. The strongest baseline, GPT-4, performs the best on our benchmark However, its performance level still reaches only 15% of the human proficiency in generating executable scripts capable of completing the task, demonstrating the challenge of our task for conventional web agents. Our benchmark provides a platform to measure and evaluate the progress of language model agents in automating computer tasks and motivates future work towards building multimodal models that bridge large language models and the visual grounding of computer screens.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f9b39a6a7e40986b46f7796f3a805d70d7e3931a",
+    "externalIds": {
+      "DBLP": "conf/acl/ChengSCX0Z024",
+      "ArXiv": "2401.10935",
+      "DOI": "10.48550/arXiv.2401.10935",
+      "CorpusId": 267069082
+    },
+    "title": "SeeClick: Harnessing GUI Grounding for Advanced Visual GUI Agents",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2024,
+    "citationCount": 459,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.10935, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2273946511",
+        "name": "Kanzhi Cheng"
+      },
+      {
+        "authorId": "2112455065",
+        "name": "Qiushi Sun"
+      },
+      {
+        "authorId": "2280366378",
+        "name": "Yougang Chu"
+      },
+      {
+        "authorId": "2143943979",
+        "name": "Fangzhi Xu"
+      },
+      {
+        "authorId": "2280200294",
+        "name": "Yantao Li"
+      },
+      {
+        "authorId": "2257123506",
+        "name": "Jianbing Zhang"
+      },
+      {
+        "authorId": "150358371",
+        "name": "Zhiyong Wu"
+      }
+    ],
+    "abstract": "Graphical User Interface (GUI) agents are designed to automate complex tasks on digital devices, such as smartphones and desktops. Most existing GUI agents interact with the environment through extracted structured data, which can be notably lengthy (e.g., HTML) and occasionally inaccessible (e.g., on desktops). To alleviate this issue, we propose a novel visual GUI agent -- SeeClick, which only relies on screenshots for task automation. In our preliminary study, we have discovered a key challenge in developing visual GUI agents: GUI grounding -- the capacity to accurately locate screen elements based on instructions. To tackle this challenge, we propose to enhance SeeClick with GUI grounding pre-training and devise a method to automate the curation of GUI grounding data. Along with the efforts above, we have also created ScreenSpot, the first realistic GUI grounding benchmark that encompasses mobile, desktop, and web environments. After pre-training, SeeClick demonstrates significant improvement in ScreenSpot over various baselines. Moreover, comprehensive evaluations on three widely used benchmarks consistently support our finding that advancements in GUI grounding directly correlate with enhanced performance in downstream GUI agent tasks. The model, data and code are available at https://github.com/njucckevin/SeeClick.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0d1c76d45afa012ded7ab741194baf142117c495",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18290",
+      "ArXiv": "2305.18290",
+      "DOI": "10.52202/075280-2338",
+      "CorpusId": 258959321
+    },
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "50465276",
+        "name": "Archit Sharma"
+      },
+      {
+        "authorId": "49688913",
+        "name": "E. Mitchell"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "0b4a8b1c98bd13ce0a6281bb1af3761f7f887235",
+    "externalIds": {
+      "DBLP": "conf/emnlp/LiLHZLG20",
+      "ArXiv": "2010.04295",
+      "ACL": "2020.emnlp-main.443",
+      "MAG": "3091990128",
+      "DOI": "10.18653/v1/2020.emnlp-main.443",
+      "CorpusId": 222272319
+    },
+    "title": "Widget Captioning: Generating Natural Language Description for Mobile User Interface Elements",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2020,
+    "citationCount": 149,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.emnlp-main.443.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.04295, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "98177814",
+        "name": "Y. Li"
+      },
+      {
+        "authorId": "2155119342",
+        "name": "Gang Li"
+      },
+      {
+        "authorId": "2265599",
+        "name": "Luheng He"
+      },
+      {
+        "authorId": "2923923",
+        "name": "Jingjie Zheng"
+      },
+      {
+        "authorId": "2144343731",
+        "name": "Hong Li"
+      },
+      {
+        "authorId": "1786384",
+        "name": "Zhiwei Guan"
+      }
+    ],
+    "abstract": "Natural language descriptions of user interface (UI) elements such as alternative text are crucial for accessibility and language-based interaction in general. Yet, these descriptions are constantly missing in mobile UIs. We propose widget captioning, a novel task for automatically generating language descriptions for UI elements from multimodal input including both the image and the structural representations of user interfaces. We collected a large-scale dataset for widget captioning with crowdsourcing. Our dataset contains 162,859 language phrases created by human workers for annotating 61,285 UI elements across 21,750 unique UI screens. We thoroughly analyze the dataset, and train and evaluate a set of deep model configurations to investigate how each feature modality as well as the choice of learning strategies impact the quality of predicted captions. The task formulation and the dataset as well as our benchmark models contribute a solid basis for this novel multimodal captioning task that connects language and user interfaces.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d9a8dfe020ee8c1afc94fca6f934876f85ad9c85",
+    "externalIds": {
+      "MAG": "3022955902",
+      "ArXiv": "2005.03776",
+      "DBLP": "conf/acl/LiHZZB20",
+      "ACL": "2020.acl-main.729",
+      "DOI": "10.18653/v1/2020.acl-main.729",
+      "CorpusId": 218571167
+    },
+    "title": "Mapping Natural Language Instructions to Mobile UI Action Sequences",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2020,
+    "citationCount": 256,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/2020.acl-main.729.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.03776, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2153471163",
+        "name": "Yang Li"
+      },
+      {
+        "authorId": "2412398",
+        "name": "Jiacong He"
+      },
+      {
+        "authorId": "48666864",
+        "name": "Xiaoxia Zhou"
+      },
+      {
+        "authorId": "40491350",
+        "name": "Yuan Zhang"
+      },
+      {
+        "authorId": "1387994164",
+        "name": "Jason Baldridge"
+      }
+    ],
+    "abstract": "We present a new problem: grounding natural language instructions to mobile user interface actions, and create three new datasets for it. For full task evaluation, we create PixelHelp, a corpus that pairs English instructions with actions performed by people on a mobile UI emulator. To scale training, we decouple the language and action data by (a) annotating action phrase spans in How-To instructions and (b) synthesizing grounded descriptions of actions for mobile user interfaces. We use a Transformer to extract action phrase tuples from long-range natural language instructions. A grounding Transformer then contextually represents UI objects using both their content and screen position and connects them to object descriptions. Given a starting screen and instruction, our model achieves 70.59% accuracy on predicting complete ground-truth action sequences in PixelHelp.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9ff93dfa8f445c932415d335c88852ef47f1201e",
+    "externalIds": {
+      "CorpusId": 276612236
+    },
+    "title": "Claude 3.7 Sonnet System Card",
+    "venue": "",
+    "year": null,
+    "citationCount": 138,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": []
+  }
+]

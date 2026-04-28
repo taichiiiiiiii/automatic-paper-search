@@ -1,0 +1,1622 @@
+[
+  {
+    "paperId": "f88a6f6fd6611543220482e6b3a5f379b7bf5049",
+    "externalIds": {
+      "DBLP": "conf/aaai/BellemareOGTM16",
+      "MAG": "2962847657",
+      "ArXiv": "1512.04860",
+      "DOI": "10.1609/aaai.v30i1.10303",
+      "CorpusId": 1907310
+    },
+    "title": "Increasing the Action Gap: New Operators for Reinforcement Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2015,
+    "citationCount": 163,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/10303/10162",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.04860, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "2273072",
+        "name": "Georg Ostrovski"
+      },
+      {
+        "authorId": "35099444",
+        "name": "A. Guez"
+      },
+      {
+        "authorId": "143640165",
+        "name": "P. Thomas"
+      },
+      {
+        "authorId": "1708654",
+        "name": "R. Munos"
+      }
+    ],
+    "abstract": "\n \n This paper introduces new optimality-preserving operators on Q-functions. We first describe an operator for tabular representations, the consistent Bellman operator, which incorporates a notion of local policy consistency. We show that this local consistency leads to an increase in the action gap at each state; increasing this gap, we argue, mitigates the undesirable effects of approximation and estimation errors on the induced greedy policies. This operator can also be applied to discretized continuous space and time problems, and we provide empirical results evidencing superior performance in this context. Extending the idea of a locally consistent operator, we then derive sufficient conditions for an operator to preserve optimality, leading to a family of operators which includes our consistent Bellman operator. As corollaries we provide a proof of optimality for Baird's advantage learning algorithm and derive other gap-increasing operators with interesting properties. We conclude with an empirical study on 60 Atari 2600 games illustrating the strong potential of these new operators.\n \n",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b59a0c0bb0e8d8dc631ec987322e47feda53fd55",
+    "externalIds": {
+      "DBLP": "journals/corr/SeijenMPMS15",
+      "MAG": "2952650731",
+      "ArXiv": "1512.04087",
+      "CorpusId": 1614477
+    },
+    "title": "True Online Temporal-Difference Learning",
+    "venue": "Journal of machine learning research",
+    "year": 2015,
+    "citationCount": 101,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.04087, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1748153",
+        "name": "H. V. Seijen"
+      },
+      {
+        "authorId": "1759633",
+        "name": "A. Mahmood"
+      },
+      {
+        "authorId": "1780797",
+        "name": "P. Pilarski"
+      },
+      {
+        "authorId": "40066857",
+        "name": "Marlos C. Machado"
+      },
+      {
+        "authorId": "1699645",
+        "name": "R. Sutton"
+      }
+    ],
+    "abstract": "The temporal-difference methods TD($\\lambda$) and Sarsa($\\lambda$) form a core part of modern reinforcement learning. Their appeal comes from their good performance, low computational cost, and their simple interpretation, given by their forward view. Recently, new versions of these methods were introduced, called true online TD($\\lambda$) and true online Sarsa($\\lambda$), respectively (van Seijen & Sutton, 2014). These new versions maintain an exact equivalence with the forward view at all times, whereas the traditional versions only approximate it for small step-sizes. We hypothesize that these true online methods not only have better theoretical properties, but also dominate the regular methods empirically. In this article, we put this hypothesis to the test by performing an extensive empirical comparison. Specifically, we compare the performance of true online TD($\\lambda$)/Sarsa($\\lambda$) with regular TD($\\lambda$)/Sarsa($\\lambda$) on random MRPs, a real-world myoelectric prosthetic arm, and a domain from the Arcade Learning Environment. We use linear function approximation with tabular, binary, and non-binary features. Our results suggest that the true online methods indeed dominate the regular methods. Across all domains/representations the learning speed of the true online methods are often better, but never worse than that of the regular methods. An additional advantage is that no choice between traces has to be made for the true online methods. Besides the empirical results, we provide an in-depth analysis of the theory behind true online temporal-difference learning. In addition, we show that new true online temporal-difference methods can be derived by making changes to the online forward view and then rewriting the update equations.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4c05d7caa357148f0bbd61720bdd35f0bc05eb81",
+    "externalIds": {
+      "DBLP": "conf/icml/WangSHHLF16",
+      "ArXiv": "1511.06581",
+      "MAG": "2951799221",
+      "CorpusId": 5389801
+    },
+    "title": "Dueling Network Architectures for Deep Reinforcement Learning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 4334,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.06581, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117966548",
+        "name": "Ziyun Wang"
+      },
+      {
+        "authorId": "1725157",
+        "name": "T. Schaul"
+      },
+      {
+        "authorId": "39357484",
+        "name": "Matteo Hessel"
+      },
+      {
+        "authorId": "7634925",
+        "name": "H. V. Hasselt"
+      },
+      {
+        "authorId": "1975889",
+        "name": "Marc Lanctot"
+      },
+      {
+        "authorId": "1737568",
+        "name": "Nando de Freitas"
+      }
+    ],
+    "abstract": "In recent years there have been many successes of using deep representations in reinforcement learning. Still, many of these applications use conventional architectures, such as convolutional networks, LSTMs, or auto-encoders. In this paper, we present a new neural network architecture for model-free reinforcement learning. Our dueling network represents two separate estimators: one for the state value function and one for the state-dependent action advantage function. The main benefit of this factoring is to generalize learning across actions without imposing any change to the underlying reinforcement learning algorithm. Our results show that this architecture leads to better policy evaluation in the presence of many similar-valued actions. Moreover, the dueling architecture enables our RL agent to outperform the state-of-the-art on the Atari 2600 domain.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "c6170fa90d3b2efede5a2e1660cb23e1c824f2ca",
+    "externalIds": {
+      "MAG": "2963477884",
+      "ArXiv": "1511.05952",
+      "DBLP": "journals/corr/SchaulQAS15",
+      "CorpusId": 13022595
+    },
+    "title": "Prioritized Experience Replay",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 4350,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.05952, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1725157",
+        "name": "T. Schaul"
+      },
+      {
+        "authorId": "34660073",
+        "name": "John Quan"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      }
+    ],
+    "abstract": "Experience replay lets online reinforcement learning agents remember and reuse experiences from the past. In prior work, experience transitions were uniformly sampled from a replay memory. However, this approach simply replays transitions at the same frequency that they were originally experienced, regardless of their significance. In this paper we develop a framework for prioritizing experience, so as to replay important transitions more frequently, and therefore learn more efficiently. We use prioritized experience replay in Deep Q-Networks (DQN), a reinforcement learning algorithm that achieved human-level performance across many Atari games. DQN with prioritized experience replay achieves a new state-of-the-art, outperforming DQN with uniform replay on 41 out of 49 games.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3b9732bb07dc99bde5e1f9f75251c6ea5039373e",
+    "externalIds": {
+      "MAG": "2155968351",
+      "DBLP": "conf/aaai/HasseltGS16",
+      "ArXiv": "1509.06461",
+      "DOI": "10.1609/aaai.v30i1.10295",
+      "CorpusId": 6208256
+    },
+    "title": "Deep Reinforcement Learning with Double Q-Learning",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2015,
+    "citationCount": 8927,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/10295/10154",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1509.06461, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7634925",
+        "name": "H. V. Hasselt"
+      },
+      {
+        "authorId": "35099444",
+        "name": "A. Guez"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      }
+    ],
+    "abstract": "\n \n The popular Q-learning algorithm is known to overestimate action values under certain conditions. It was not previously known whether, in practice, such overestimations are common, whether they harm performance, and whether they can generally be prevented. In this paper, we answer all these questions affirmatively. In particular, we first show that the recent DQN algorithm, which combines Q-learning with a deep neural network, suffers from substantial overestimations in some games in the Atari 2600 domain. We then show that the idea behind the Double Q-learning algorithm, which was introduced in a tabular setting, can be generalized to work with large-scale function approximation. We propose a specific adaptation to the DQN algorithm and show that the resulting algorithm not only reduces the observed overestimations, as hypothesized, but that this also leads to much better performance on several games.\n \n",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "024006d4c2a89f7acacc6e4438d156525b60a98f",
+    "externalIds": {
+      "MAG": "2173248099",
+      "DBLP": "journals/corr/LillicrapHPHETS15",
+      "ArXiv": "1509.02971",
+      "CorpusId": 16326763
+    },
+    "title": "Continuous control with deep reinforcement learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 15249,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1509.02971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2542999",
+        "name": "T. Lillicrap"
+      },
+      {
+        "authorId": "2323922",
+        "name": "Jonathan J. Hunt"
+      },
+      {
+        "authorId": "1863250",
+        "name": "A. Pritzel"
+      },
+      {
+        "authorId": "2801204",
+        "name": "N. Heess"
+      },
+      {
+        "authorId": "1968210",
+        "name": "Tom Erez"
+      },
+      {
+        "authorId": "2109481",
+        "name": "Yuval Tassa"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      }
+    ],
+    "abstract": "We adapt the ideas underlying the success of Deep Q-Learning to the continuous action domain. We present an actor-critic, model-free algorithm based on the deterministic policy gradient that can operate over continuous action spaces. Using the same learning algorithm, network architecture and hyper-parameters, our algorithm robustly solves more than 20 simulated physics tasks, including classic problems such as cartpole swing-up, dexterous manipulation, legged locomotion and car driving. Our algorithm is able to find policies whose performance is competitive with those found by a planning algorithm with full access to the dynamics of the domain and its derivatives. We further demonstrate that for many of the tasks the algorithm can learn policies end-to-end: directly from raw pixel inputs.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "4eb082956ea3f9b2d83936c41893e385d8cf8918",
+    "externalIds": {
+      "MAG": "1890963104",
+      "DBLP": "journals/corr/OngCH15",
+      "ArXiv": "1508.04186",
+      "CorpusId": 335836
+    },
+    "title": "Distributed Deep Q-Learning",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 74,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1508.04186, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34645200",
+        "name": "H. Ong"
+      },
+      {
+        "authorId": "1626124667",
+        "name": "Kevin Chavez"
+      },
+      {
+        "authorId": "97829218",
+        "name": "A. Hong"
+      }
+    ],
+    "abstract": "We propose a distributed deep learning model to successfully learn control policies directly from high-dimensional sensory input using reinforcement learning. The model is based on the deep Q-network, a convolutional neural network trained with a variant of Q-learning. Its input is raw pixels and its output is a value function estimating future rewards from taking an action given a system state. To distribute the deep Q-network training, we adapt the DistBelief software framework to the context of efficiently training reinforcement learning agents. As a result, the method is completely asynchronous and scales well with the number of machines. We demonstrate that the deep Q-network agent, receiving only the pixels and the game score as inputs, was able to achieve reasonable success on a simple game with minimal parameter tuning.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d5ed07113ddcd038062525a5a54550c012ac9a74",
+    "externalIds": {
+      "MAG": "1658008008",
+      "DBLP": "journals/corr/NairSBAFMPSBPLM15",
+      "ArXiv": "1507.04296",
+      "CorpusId": 8577212
+    },
+    "title": "Massively Parallel Methods for Deep Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 533,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1507.04296, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2055263037",
+        "name": "Arun Nair"
+      },
+      {
+        "authorId": "2577358",
+        "name": "Praveen Srinivasan"
+      },
+      {
+        "authorId": "40031167",
+        "name": "Sam Blackwell"
+      },
+      {
+        "authorId": "2318210",
+        "name": "Cagdas Alcicek"
+      },
+      {
+        "authorId": "35196851",
+        "name": "Rory Fearon"
+      },
+      {
+        "authorId": "39796080",
+        "name": "A. Maria"
+      },
+      {
+        "authorId": "2749418",
+        "name": "Vedavyas Panneershelvam"
+      },
+      {
+        "authorId": "2573615",
+        "name": "Mustafa Suleyman"
+      },
+      {
+        "authorId": "50388928",
+        "name": "Charlie Beattie"
+      },
+      {
+        "authorId": "48348688",
+        "name": "Stig Petersen"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      }
+    ],
+    "abstract": "We present the first massively distributed architecture for deep reinforcement learning. This architecture uses four main components: parallel actors that generate new behaviour; parallel learners that are trained from stored experience; a distributed neural network to represent the value function or behaviour policy; and a distributed store of experience. We used our architecture to implement the Deep Q-Network algorithm (DQN). Our distributed algorithm was applied to 49 games from Atari 2600 games from the Arcade Learning Environment, using identical hyperparameters. Our performance surpassed non-distributed DQN in 41 of the 49 games and also reduced the wall-time required to achieve these results by an order of magnitude on most games.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d316c82c12cf4c45f9e85211ef3d1fa62497bff8",
+    "externalIds": {
+      "MAG": "1191599655",
+      "DBLP": "journals/corr/SchulmanMLJA15",
+      "ArXiv": "1506.02438",
+      "CorpusId": 3075448
+    },
+    "title": "High-Dimensional Continuous Control Using Generalized Advantage Estimation",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 4342,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.02438, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "29912342",
+        "name": "Philipp Moritz"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "Policy gradient methods are an appealing approach in reinforcement learning because they directly optimize the cumulative reward and can straightforwardly be used with nonlinear function approximators such as neural networks. The two main challenges are the large number of samples typically required, and the difficulty of obtaining stable and steady improvement despite the nonstationarity of the incoming data. We address the first challenge by using value functions to substantially reduce the variance of policy gradient estimates at the cost of some bias, with an exponentially-weighted estimator of the advantage function that is analogous to TD(lambda). We address the second challenge by using trust region optimization procedure for both the policy and the value function, which are represented by neural networks. \nOur approach yields strong empirical results on highly challenging 3D locomotion tasks, learning running gaits for bipedal and quadrupedal simulated robots, and learning a policy for getting the biped to stand up from starting out lying on the ground. In contrast to a body of prior work that uses hand-crafted policy representations, our neural network policies map directly from raw kinematics to joint torques. Our algorithm is fully model-free, and the amount of simulated experience required for the learning tasks on 3D bipeds corresponds to 1-2 weeks of real time.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "b6b8a1b80891c96c28cc6340267b58186157e536",
+    "externalIds": {
+      "MAG": "2952125531",
+      "DBLP": "journals/jmlr/LevineFDA16",
+      "ArXiv": "1504.00702",
+      "DOI": "10.5555/2946645.2946684",
+      "CorpusId": 7242892
+    },
+    "title": "End-to-End Training of Deep Visuomotor Policies",
+    "venue": "Journal of machine learning research",
+    "year": 2015,
+    "citationCount": 3751,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1504.00702, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "Policy search methods can allow robots to learn control policies for a wide range of tasks, but practical applications of policy search often require hand-engineered components for perception, state estimation, and low-level control. In this paper, we aim to answer the following question: does training the perception and control systems jointly end-to-end provide better performance than training each component separately? To this end, we develop a method that can be used to learn policies that map raw image observations directly to torques at the robot's motors. The policies are represented by deep convolutional neural networks (CNNs) with 92,000 parameters, and are trained using a partially observed guided policy search method, which transforms policy search into supervised learning, with supervision provided by a simple trajectory-centric reinforcement learning method. We evaluate our method on a range of real-world manipulation tasks that require close coordination between vision and control, such as screwing a cap onto a bottle, and present simulated comparisons to a range of prior policy search methods.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "340f48901f72278f6bf78a04ee5b01df208cc508",
+    "externalIds": {
+      "MAG": "2145339207",
+      "DBLP": "journals/nature/MnihKSRVBGRFOPB15",
+      "DOI": "10.1038/nature14236",
+      "CorpusId": 205242740,
+      "PubMed": "25719670"
+    },
+    "title": "Human-level control through deep reinforcement learning",
+    "venue": "Nature",
+    "year": 2015,
+    "citationCount": 31293,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1038/nature14236?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1038/nature14236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "2228824",
+        "name": "Andrei A. Rusu"
+      },
+      {
+        "authorId": "144056327",
+        "name": "J. Veness"
+      },
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      },
+      {
+        "authorId": "145600108",
+        "name": "A. Fidjeland"
+      },
+      {
+        "authorId": "2273072",
+        "name": "Georg Ostrovski"
+      },
+      {
+        "authorId": "48348688",
+        "name": "Stig Petersen"
+      },
+      {
+        "authorId": "50388928",
+        "name": "Charlie Beattie"
+      },
+      {
+        "authorId": "49813280",
+        "name": "Amir Sadik"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "143776287",
+        "name": "Helen King"
+      },
+      {
+        "authorId": "2106164",
+        "name": "D. Kumaran"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "34313265",
+        "name": "S. Legg"
+      },
+      {
+        "authorId": "48987704",
+        "name": "D. Hassabis"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "449532187c94af3dd3aa55e16d2c50f7854d2199",
+    "externalIds": {
+      "MAG": "1771410628",
+      "ArXiv": "1502.05477",
+      "DBLP": "conf/icml/SchulmanLAJM15",
+      "CorpusId": 16046818
+    },
+    "title": "Trust Region Policy Optimization",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 7828,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.05477, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "29912342",
+        "name": "Philipp Moritz"
+      }
+    ],
+    "abstract": "In this article, we describe a method for optimizing control policies, with guaranteed monotonic improvement. By making several approximations to the theoretically-justified scheme, we develop a practical algorithm, called Trust Region Policy Optimization (TRPO). This algorithm is effective for optimizing large nonlinear policies such as neural networks. Our experiments demonstrate its robust performance on a wide variety of tasks: learning simulated robotic swimming, hopping, and walking gaits; and playing Atari games using images of the screen as input. Despite its approximations that deviate from the theory, TRPO tends to give monotonic improvement, with little tuning of hyperparameters.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "externalIds": {
+      "MAG": "2964121744",
+      "DBLP": "journals/corr/KingmaB14",
+      "ArXiv": "1412.6980",
+      "CorpusId": 6628106
+    },
+    "title": "Adam: A Method for Stochastic Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 165311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2c327af2071a572b1cfa640c7e39524d78a3f012",
+    "externalIds": {
+      "DBLP": "conf/gecco/KoutnikSG14",
+      "MAG": "2165776394",
+      "DOI": "10.1145/2576768.2598358",
+      "CorpusId": 16475533
+    },
+    "title": "Evolving deep unsupervised convolutional networks for vision-based reinforcement learning",
+    "venue": "Annual Conference on Genetic and Evolutionary Computation",
+    "year": 2014,
+    "citationCount": 116,
+    "openAccessPdf": {
+      "url": "http://www.idsia.ch/~koutnik/papers/koutnik2014gecco.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/2576768.2598358?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/2576768.2598358, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2865775",
+        "name": "Jan Koutník"
+      },
+      {
+        "authorId": "145341374",
+        "name": "J. Schmidhuber"
+      },
+      {
+        "authorId": "145842938",
+        "name": "Faustino J. Gomez"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2319a491378867c7049b3da055c5df60e1671158",
+    "externalIds": {
+      "DBLP": "journals/corr/MnihKSGAWR13",
+      "MAG": "1757796397",
+      "ArXiv": "1312.5602",
+      "CorpusId": 15238391
+    },
+    "title": "Playing Atari with Deep Reinforcement Learning",
+    "venue": "arXiv.org",
+    "year": 2013,
+    "citationCount": 13590,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1312.5602, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3255983",
+        "name": "Volodymyr Mnih"
+      },
+      {
+        "authorId": "2645384",
+        "name": "K. Kavukcuoglu"
+      },
+      {
+        "authorId": "145824029",
+        "name": "David Silver"
+      },
+      {
+        "authorId": "1753223",
+        "name": "Alex Graves"
+      },
+      {
+        "authorId": "2460849",
+        "name": "Ioannis Antonoglou"
+      },
+      {
+        "authorId": "1688276",
+        "name": "Daan Wierstra"
+      },
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      }
+    ],
+    "abstract": "We present the first deep learning model to successfully learn control policies directly from high-dimensional sensory input using reinforcement learning. The model is a convolutional neural network, trained with a variant of Q-learning, whose input is raw pixels and whose output is a value function estimating future rewards. We apply our method to seven Atari 2600 games from the Arcade Learning Environment, with no adjustment of the architecture or learning algorithm. We find that it outperforms all previous approaches on six of the games and surpasses a human expert on three of them.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "8729441d734782c3ed532a7d2d9611b438c0a09a",
+    "externalIds": {
+      "ArXiv": "1212.5701",
+      "MAG": "6908809",
+      "DBLP": "journals/corr/abs-1212-5701",
+      "CorpusId": 7365802
+    },
+    "title": "ADADELTA: An Adaptive Learning Rate Method",
+    "venue": "arXiv.org",
+    "year": 2012,
+    "citationCount": 6833,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1212.5701, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48799969",
+        "name": "Matthew D. Zeiler"
+      }
+    ],
+    "abstract": "We present a novel per-dimension learning rate method for gradient descent called ADADELTA. The method dynamically adapts over time using only first order information and has minimal computational overhead beyond vanilla stochastic gradient descent. The method requires no manual tuning of a learning rate and appears robust to noisy gradient information, different model architecture choices, various data modalities and selection of hyperparameters. We show promising results compared to other methods on the MNIST digit classification task using a single machine and on a large scale voice dataset in a distributed cluster environment.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f82e4ff4f003581330338aaae71f60316e58dd26",
+    "externalIds": {
+      "ArXiv": "1207.4708",
+      "DBLP": "journals/jair/BellemareNVB13",
+      "MAG": "2150468603",
+      "DOI": "10.1613/jair.3912",
+      "CorpusId": 1552061
+    },
+    "title": "The Arcade Learning Environment: An Evaluation Platform for General Agents",
+    "venue": "Journal of Artificial Intelligence Research",
+    "year": 2012,
+    "citationCount": 3282,
+    "openAccessPdf": {
+      "url": "https://jair.org/index.php/jair/article/download/10819/25823",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1207.4708, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1792298",
+        "name": "Marc G. Bellemare"
+      },
+      {
+        "authorId": "2294249",
+        "name": "Yavar Naddaf"
+      },
+      {
+        "authorId": "144056327",
+        "name": "J. Veness"
+      },
+      {
+        "authorId": "1687780",
+        "name": "Michael Bowling"
+      }
+    ],
+    "abstract": "In this article we introduce the Arcade Learning Environment (ALE): both a challenge problem and a platform and methodology for evaluating the development of general, domain-independent AI technology. ALE provides an interface to hundreds of Atari 2600 game environments, each one different, interesting, and designed to be a challenge for human players. ALE presents significant research challenges for reinforcement learning, model learning, model-based planning, imitation learning, transfer learning, and intrinsic motivation. Most importantly, it provides a rigorous testbed for evaluating and comparing approaches to these problems. We illustrate the promise of ALE by developing and benchmarking domain-independent agents designed using well-established AI techniques for both reinforcement learning and planning. In doing so, we also propose an evaluation methodology made possible by ALE, reporting empirical results on over 55 different games. All of the software, including the benchmark agents, is publicly available.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a75fe5ebd7bc2f0271b8a0742b70f29bbc4be3fa",
+    "externalIds": {
+      "MAG": "2024390895",
+      "DBLP": "conf/amcc/DegrisPS12",
+      "DOI": "10.1109/ACC.2012.6315022",
+      "CorpusId": 2940568
+    },
+    "title": "Model-Free reinforcement learning with continuous action in practice",
+    "venue": "American Control Conference",
+    "year": 2012,
+    "citationCount": 268,
+    "openAccessPdf": {
+      "url": "https://hal.inria.fr/hal-00764281/file/DegrisACC2012.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ACC.2012.6315022?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ACC.2012.6315022, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1804488",
+        "name": "T. Degris"
+      },
+      {
+        "authorId": "1780797",
+        "name": "P. Pilarski"
+      },
+      {
+        "authorId": "2247401508",
+        "name": "Richard S. Sutton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d171424c1c87afdd3d169b4df781797820eeec62",
+    "externalIds": {
+      "DBLP": "conf/ewrl/LiS11",
+      "MAG": "2152083440",
+      "DOI": "10.1007/978-3-642-29946-9_30",
+      "CorpusId": 7055436
+    },
+    "title": "MapReduce for Parallel Reinforcement Learning",
+    "venue": "European Workshop on Reinforcement Learning",
+    "year": 2011,
+    "citationCount": 30,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-29946-9_30?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-29946-9_30, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276894",
+        "name": "Yuxi Li"
+      },
+      {
+        "authorId": "1714772",
+        "name": "Dale Schuurmans"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "36f49b05d764bf5c10428b082c2d96c13c4203b9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1106-5730",
+      "MAG": "2951781666",
+      "ArXiv": "1106.5730",
+      "CorpusId": 6108215
+    },
+    "title": "Hogwild: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent",
+    "venue": "Neural Information Processing Systems",
+    "year": 2011,
+    "citationCount": 2354,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1106.5730, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9229182",
+        "name": "B. Recht"
+      },
+      {
+        "authorId": "1803218",
+        "name": "Christopher Ré"
+      },
+      {
+        "authorId": "144731788",
+        "name": "Stephen J. Wright"
+      },
+      {
+        "authorId": "47657030",
+        "name": "Feng Niu"
+      }
+    ],
+    "abstract": "Stochastic Gradient Descent (SGD) is a popular algorithm that can achieve state-of-the-art performance on a variety of machine learning tasks. Several researchers have recently proposed schemes to parallelize SGD, but all require performance-destroying memory locking and synchronization. This work aims to show using novel theoretical analysis, algorithms, and implementation that SGD can be implemented without any locking. We present an update scheme called HOGWILD! which allows processors access to shared memory with the possibility of overwriting each other's work. We show that when the associated optimization problem is sparse, meaning most gradient updates only modify small parts of the decision variable, then HOGWILD! achieves a nearly optimal rate of convergence. We demonstrate experimentally that HOGWILD! outperforms alternative schemes that use locking by an order of magnitude.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "413c1142de9d91804d6d11c67ff3fed59c9fc279",
+    "externalIds": {
+      "MAG": "2405601855",
+      "DBLP": "journals/jmlr/DuchiHS11",
+      "DOI": "10.5555/1953048.2021068",
+      "CorpusId": 538820
+    },
+    "title": "Adaptive Subgradient Methods for Online Learning and Stochastic Optimization",
+    "venue": "Journal of machine learning research",
+    "year": 2011,
+    "citationCount": 11244,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.5555/1953048.2021068?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.5555/1953048.2021068, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1734693",
+        "name": "John C. Duchi"
+      },
+      {
+        "authorId": "34840427",
+        "name": "Elad Hazan"
+      },
+      {
+        "authorId": "1740765",
+        "name": "Y. Singer"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "187f6831f2c5026375631a72159c1e96d785d0bd",
+    "externalIds": {
+      "DBLP": "conf/aamas/GroundsK07",
+      "MAG": "1981437899",
+      "DOI": "10.1145/1329125.1329179",
+      "CorpusId": 14084700
+    },
+    "title": "Parallel reinforcement learning with linear function approximation",
+    "venue": "Adaptive Agents and Multi-Agent Systems",
+    "year": 2007,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/1329125.1329179?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/1329125.1329179, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3451410",
+        "name": "Matthew Jon Grounds"
+      },
+      {
+        "authorId": "2380005",
+        "name": "D. Kudenko"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "282001869bd502c7917db8b32b75593addfbbc68",
+    "externalIds": {
+      "MAG": "166862392",
+      "DBLP": "conf/ecml/Riedmiller05",
+      "DOI": "10.1007/11564096_32",
+      "CorpusId": 6921329
+    },
+    "title": "Neural Fitted Q Iteration - First Experiences with a Data Efficient Neural Reinforcement Learning Method",
+    "venue": "European Conference on Machine Learning",
+    "year": 2005,
+    "citationCount": 1084,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/11564096_32.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/11564096_32?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/11564096_32, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3137672",
+        "name": "Martin A. Riedmiller"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "712ec1bd9287ac210a7630ce03ca2b0930ebd351",
+    "externalIds": {
+      "MAG": "2150339816",
+      "DBLP": "journals/ml/SinghJLS00",
+      "DOI": "10.1023/A:1007678930559",
+      "CorpusId": 1212267
+    },
+    "title": "Convergence Results for Single-Step On-Policy Reinforcement-Learning Algorithms",
+    "venue": "Machine-mediated learning",
+    "year": 2000,
+    "citationCount": 745,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1023/A:1007678930559.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1023/A:1007678930559?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1023/A:1007678930559, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1699868",
+        "name": "Satinder Singh"
+      },
+      {
+        "authorId": "35132120",
+        "name": "T. Jaakkola"
+      },
+      {
+        "authorId": "144885169",
+        "name": "M. Littman"
+      },
+      {
+        "authorId": "40868287",
+        "name": "Csaba Szepesvari"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "382f2d3c7e318c3ad2de028c6598a9700899ce80",
+    "externalIds": {
+      "MAG": "1515851193",
+      "CorpusId": 261579713
+    },
+    "title": "Introduction to Reinforcement Learning",
+    "venue": "",
+    "year": 1998,
+    "citationCount": 3280,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2238176724",
+        "name": "R. S. Sutton"
+      },
+      {
+        "authorId": "1730590",
+        "name": "A. Barto"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "2e9d221c206e9503ceb452302d68d10e293f2a10",
+    "externalIds": {
+      "DBLP": "journals/neco/HochreiterS97",
+      "MAG": "2064675550",
+      "DOI": "10.1162/neco.1997.9.8.1735",
+      "CorpusId": 1915014,
+      "PubMed": "9377276"
+    },
+    "title": "Long Short-Term Memory",
+    "venue": "Neural Computation",
+    "year": 1997,
+    "citationCount": 103621,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco.1997.9.8.1735?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco.1997.9.8.1735, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3308557",
+        "name": "Sepp Hochreiter"
+      },
+      {
+        "authorId": "145341374",
+        "name": "J. Schmidhuber"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "59b50a775542e87f078db35b868ac10ab43d4c75",
+    "externalIds": {
+      "MAG": "2021247827",
+      "DBLP": "journals/ras/Krose95",
+      "DOI": "10.1016/0921-8890(95)00026-C",
+      "CorpusId": 40597581
+    },
+    "title": "Learning from delayed rewards",
+    "venue": "Robotics Auton. Syst.",
+    "year": 1995,
+    "citationCount": 5435,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1016/0921-8890(95)00026-C?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/0921-8890(95)00026-C, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1804676",
+        "name": "B. Kröse"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "621c03cd67b0b7bac665f3c7887481b4b42f269c",
+    "externalIds": {
+      "MAG": "2147750403",
+      "DOI": "10.1023/A:1022689125041",
+      "CorpusId": 4449439
+    },
+    "title": "Asynchronous Stochastic Approximation and Q-Learning",
+    "venue": "Machine-mediated learning",
+    "year": 1994,
+    "citationCount": 873,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1023/A:1022689125041.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1023/A:1022689125041?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1023/A:1022689125041, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144224173",
+        "name": "J. Tsitsiklis"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "f3e10675b2ef79d8431b8011f909ee0d05e92d92",
+    "externalIds": {
+      "MAG": "2610686804",
+      "DBLP": "conf/icml/PengW94",
+      "DOI": "10.1007/BF00114731",
+      "CorpusId": 2568346
+    },
+    "title": "Incremental multi-step Q-learning",
+    "venue": "Machine-mediated learning",
+    "year": 1994,
+    "citationCount": 435,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/BF00114731.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/BF00114731?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/BF00114731, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47918185",
+        "name": "Jing Peng"
+      },
+      {
+        "authorId": "2116648700",
+        "name": "Ronald J. Williams"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "439c6f694f3315645eb2c7003e1f1bd6f052ec60",
+    "externalIds": {
+      "MAG": "1826343992",
+      "DBLP": "journals/ml/Tsitsiklis94",
+      "DOI": "10.1007/BF00993306",
+      "CorpusId": 61097167
+    },
+    "title": "Asynchronous stochastic approximation and Q-learning",
+    "venue": "Proceedings of 32nd IEEE Conference on Decision and Control",
+    "year": 1993,
+    "citationCount": 143,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007%2FBF00993306.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/BF00993306?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/BF00993306, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144224173",
+        "name": "J. Tsitsiklis"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e526a65b9ef5afb6639fd3a062f4045d24448232",
+    "externalIds": {
+      "DBLP": "journals/ml/Williams92",
+      "MAG": "2119717200",
+      "DOI": "10.1007/BF00992696",
+      "CorpusId": 19115634
+    },
+    "title": "Simple statistical gradient-following algorithms for connectionist reinforcement learning",
+    "venue": "Machine-mediated learning",
+    "year": 1992,
+    "citationCount": 1050,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/BF00992696.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/BF00992696?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/BF00992696, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116648700",
+        "name": "Ronald J. Williams"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "2441d81af0c0ea20dca72614adeaaf4760fcf9e0",
+    "externalIds": {
+      "MAG": "2119380668",
+      "DOI": "10.1109/CDC.1981.269319",
+      "CorpusId": 18588649
+    },
+    "title": "Distributed dynamic programming",
+    "venue": "1981 20th IEEE Conference on Decision and Control including the Symposium on Adaptive Processes",
+    "year": 1981,
+    "citationCount": 95,
+    "openAccessPdf": {
+      "url": "https://dspace.mit.edu/bitstream/1721.1/2798/1/P-1060-15609611.pdf",
+      "status": "GREEN",
+      "license": "CCBYNC",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CDC.1981.269319?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CDC.1981.269319, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1786249",
+        "name": "D. Bertsekas"
+      }
+    ],
+    "abstract": "We consider distributed algorithms for solving dynamic programming problems whereby several processors participate simultaneously in the computation while maintaining coordination by information exchange via communication links. A model of asynchronous distributed computation is developed which requires very weak assumptions on the ordering of computations, the timing of information exchange, the amount of local information needed at each computation node, and the initial conditions for the algorithm. The class of problems considered is very broad and includes shortest path problems, and finite and infinite horizon stochastic optimal control problems. When specialized to a shortest path problem the algorithm reduces to the algorithm originally implemented for routing of messages in the ARPANET.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "487198ee5c6ba1373fc6ea1d9b9a2fb439798ba1",
+    "externalIds": {
+      "MAG": "2562018939",
+      "CorpusId": 63195951
+    },
+    "title": "TORCS, The Open Racing Car Simulator, v1.3.5",
+    "venue": "",
+    "year": 2013,
+    "citationCount": 31,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "73151735",
+        "name": "Bernhard Wymann"
+      },
+      {
+        "authorId": "1720480",
+        "name": "Christos Dimitrakakis"
+      },
+      {
+        "authorId": "47247598",
+        "name": "Andrew Sumner"
+      },
+      {
+        "authorId": "52646609",
+        "name": "E. Espié"
+      },
+      {
+        "authorId": "52530659",
+        "name": "Christophe Guionneau"
+      },
+      {
+        "authorId": "2520096",
+        "name": "Rémi Coulom"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "b9c4d931665ec87c16fcd44cae8fdaec1215e81e",
+    "externalIds": {
+      "MAG": "2727840223",
+      "CorpusId": 16920486
+    },
+    "title": "TORCS, The Open Racing Car Simulator",
+    "venue": "",
+    "year": 2005,
+    "citationCount": 517,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "52646609",
+        "name": "E. Espié"
+      },
+      {
+        "authorId": "52530659",
+        "name": "Christophe Guionneau"
+      },
+      {
+        "authorId": "73151735",
+        "name": "Bernhard Wymann"
+      },
+      {
+        "authorId": "1720480",
+        "name": "Christos Dimitrakakis"
+      },
+      {
+        "authorId": "2520096",
+        "name": "Rémi Coulom"
+      },
+      {
+        "authorId": "47247598",
+        "name": "Andrew Sumner"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "97efafdb4a3942ab3efba53ded7413199f79c054",
+    "externalIds": {
+      "MAG": "2121863487",
+      "DBLP": "journals/tnn/SuttonB98",
+      "DOI": "10.1109/TNN.1998.712192",
+      "CorpusId": 60035920
+    },
+    "title": "Reinforcement Learning: An Introduction",
+    "venue": "IEEE Trans. Neural Networks",
+    "year": 1998,
+    "citationCount": 42404,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TNN.1998.712192?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TNN.1998.712192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238176724",
+        "name": "R. S. Sutton"
+      },
+      {
+        "authorId": "1730590",
+        "name": "A. Barto"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "24da3011dfdefbdcee20d12ca3c2a348ad6f3aad",
+    "externalIds": {
+      "CorpusId": 7353554
+    },
+    "title": "An Analysis of Temporal-Difference Learning with Function Approximation",
+    "venue": "",
+    "year": 1998,
+    "citationCount": 1576,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144224173",
+        "name": "J. Tsitsiklis"
+      },
+      {
+        "authorId": "1731282",
+        "name": "Benjamin Van Roy"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7a09464f26e18a25a948baaa736270bfb84b5e12",
+    "externalIds": {
+      "MAG": "134707420",
+      "CorpusId": 59872172
+    },
+    "title": "On-line Q-learning using connectionist systems",
+    "venue": "",
+    "year": 1994,
+    "citationCount": 1788,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "3466704",
+        "name": "Gavin Adrian Rummery"
+      },
+      {
+        "authorId": "145387873",
+        "name": "M. Niranjan"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "4e9d797427cd56be90932d6092fc3b6282dfb96f",
+    "externalIds": {
+      "DBLP": "journals/neco/JaakkolaJS94",
+      "DOI": "10.1162/neco.1994.6.6.1185",
+      "CorpusId": 6042780
+    },
+    "title": "On the Convergence of Stochastic Iterative Dynamic Programming Algorithms",
+    "venue": "Neural Computation",
+    "year": 1994,
+    "citationCount": 1121,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1162/neco.1994.6.6.1185?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1162/neco.1994.6.6.1185, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35132120",
+        "name": "T. Jaakkola"
+      },
+      {
+        "authorId": "1694621",
+        "name": "Michael I. Jordan"
+      },
+      {
+        "authorId": "1699868",
+        "name": "Satinder Singh"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bf485a9a4ad17212d05fce564d5a6d4eaf840df4",
+    "externalIds": {
+      "MAG": "1595483645",
+      "DBLP": "phd/basesearch/Lin24a",
+      "CorpusId": 60875658
+    },
+    "title": "Reinforcement Learning for Robots Using Neural Networks",
+    "venue": "",
+    "year": 1992,
+    "citationCount": 1077,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "39263338",
+        "name": "Longxin Lin"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6bc8db0c7444d9c07aad440393b2fd300fb3595c",
+    "externalIds": {
+      "MAG": "1993411524",
+      "DOI": "10.1080/09540099108946587",
+      "CorpusId": 18972907
+    },
+    "title": "Function Optimization using Connectionist Reinforcement Learning Algorithms",
+    "venue": "",
+    "year": 1991,
+    "citationCount": 422,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1080/09540099108946587?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1080/09540099108946587, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2116648700",
+        "name": "Ronald J. Williams"
+      },
+      {
+        "authorId": "47918185",
+        "name": "Jing Peng"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

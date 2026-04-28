@@ -1,0 +1,1711 @@
+[
+  {
+    "paperId": "dbe11b3601b2f37e07f567ea088c54336549519d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2601-20307",
+      "ArXiv": "2601.20307",
+      "DOI": "10.1145/3774904.3792348",
+      "CorpusId": 285102011
+    },
+    "title": "Delayed Feedback Modeling for Post-Click Gross Merchandise Volume Prediction: Benchmark, Insights and Approaches",
+    "venue": "Proceedings of the ACM Web Conference 2026",
+    "year": 2026,
+    "citationCount": 1,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.20307, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2307301649",
+        "name": "Xinyu Li"
+      },
+      {
+        "authorId": "2361117032",
+        "name": "Sishuo Chen"
+      },
+      {
+        "authorId": "2118935955",
+        "name": "Guipeng Xv"
+      },
+      {
+        "authorId": "2407329038",
+        "name": "Li Zhang"
+      },
+      {
+        "authorId": "2344993462",
+        "name": "Mingxuan Luo"
+      },
+      {
+        "authorId": "2154453281",
+        "name": "Zhangming Chan"
+      },
+      {
+        "authorId": "2381989866",
+        "name": "Xiangrong Sheng"
+      },
+      {
+        "authorId": "2408363159",
+        "name": "Han Zhu"
+      },
+      {
+        "authorId": "2407422410",
+        "name": "Jian Xu"
+      },
+      {
+        "authorId": "2146252569",
+        "name": "Chen Lin"
+      }
+    ],
+    "abstract": "The prediction objectives of online advertisement ranking models are evolving from probabilistic metrics like conversion rate (CVR) to numerical business metrics like post-click gross merchandise volume (GMV). Unlike the well-studied delayed feedback problem in CVR prediction, delayed feedback modeling for GMV prediction remains unexplored and poses greater challenges, as GMV is a continuous target, and a single click can lead to multiple purchases that cumulatively form the label. To bridge the research gap, we establish TRACE, a GMV prediction benchmark containing complete transaction sequences rising from each user click, which supports delayed feedback modeling in an online streaming manner. Our analysis and exploratory experiments on TRACE reveal two key insights: (1) the rapid evolution of the GMV label distribution necessitates modeling delayed feedback under online streaming training; (2) the label distribution of repurchase samples substantially differs from that of single-purchase samples, highlighting the need for separate modeling. Motivated by these findings, we propose RepurchasE-Aware Dual-branch prEdictoR (READER), a novel GMV modeling paradigm that selectively activates expert parameters according to repurchase predictions produced by a router. Moreover, READER dynamically calibrates the regression target to mitigate under-estimation caused by incomplete labels. Experimental results show that READER yields superior performance on TRACE over baselines, achieving a 2.19% improvement in terms of accuracy. We believe that our study will open up a new avenue for studying online delayed feedback modeling for GMV prediction, and our TRACE benchmark with the gathered insights will facilitate future research and application in this promising direction. Our code and dataset are available at https://github.com/alimama-tech/OnlineGMV.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9a1389299d19dcf5b253aac4f46d1b7851e5f53d",
+    "externalIds": {
+      "ArXiv": "2508.15217",
+      "DBLP": "journals/corr/abs-2508-15217",
+      "DOI": "10.1145/3746252.3761580",
+      "CorpusId": 280699996
+    },
+    "title": "See Beyond a Single View: Multi-Attribution Learning Leads to Better Conversion Rate Prediction",
+    "venue": "International Conference on Information and Knowledge Management",
+    "year": 2025,
+    "citationCount": 4,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.15217, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2361117032",
+        "name": "Sishuo Chen"
+      },
+      {
+        "authorId": "2154453281",
+        "name": "Zhangming Chan"
+      },
+      {
+        "authorId": "51055667",
+        "name": "Xiang-Rong Sheng"
+      },
+      {
+        "authorId": "2309137667",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2281787037",
+        "name": "Shengnan Chen"
+      },
+      {
+        "authorId": "2376395927",
+        "name": "Chenghuan Hou"
+      },
+      {
+        "authorId": "2154088540",
+        "name": "Han Zhu"
+      },
+      {
+        "authorId": "2274191010",
+        "name": "Jian Xu"
+      },
+      {
+        "authorId": "2376521581",
+        "name": "Bo Zheng"
+      }
+    ],
+    "abstract": "Conversion rate (CVR) prediction is a core component of online advertising systems, where the attribution mechanisms-rules for allocating conversion credit across user touchpoints-fundamentally determine label generation and model optimization. While many industrial platforms support diverse attribution mechanisms (e.g., First-Click, Last-Click, Linear, and Data-Driven Multi-Touch Attribution), conventional approaches restrict model training to labels from a single production-critical attribution mechanism, discarding complementary signals in alternative attribution perspectives. To address this limitation, we propose a novel Multi-Attribution Learning (MAL) framework for CVR prediction that integrates signals from multiple attribution perspectives to better capture the underlying patterns driving user conversions. Specifically, MAL is a joint learning framework consisting of two core components: the Attribution Knowledge Aggregator (AKA) and the Primary Target Predictor (PTP). AKA is implemented as a multi-task learner that integrates knowledge extracted from diverse attribution labels. PTP, in contrast, focuses on the task of generating well-calibrated conversion probabilities that align with the system-optimized attribution metric (e.g., CVR under the Last-Click attribution), ensuring direct compatibility with industrial deployment requirements. Additionally, we propose CAT, a novel training strategy that leverages the Cartesian product of all attribution label combinations to generate enriched supervision signals. This design substantially enhances the performance of the attribution knowledge aggregator. Empirical evaluations demonstrate the superiority of MAL over single-attribution learning baselines, achieving +0.51% GAUC improvement on offline metrics. Online experiments demonstrate that MAL achieved a +2.6% increase in ROI (Return on Investment).",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "71366a2db41eca8dae10dc043bf013940e5e493c",
+    "externalIds": {
+      "DBLP": "conf/cikm/ZhuFZJWHDWZGYCC25",
+      "ArXiv": "2507.15551",
+      "DOI": "10.1145/3746252.3761507",
+      "CorpusId": 280017849
+    },
+    "title": "RankMixer: Scaling Up Ranking Models in Industrial Recommenders",
+    "venue": "International Conference on Information and Knowledge Management",
+    "year": 2025,
+    "citationCount": 49,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.15551, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2372142326",
+        "name": "Jie Zhu"
+      },
+      {
+        "authorId": "2368665827",
+        "name": "Zhifang Fan"
+      },
+      {
+        "authorId": "2372143563",
+        "name": "Xiaoxie Zhu"
+      },
+      {
+        "authorId": "2372127475",
+        "name": "Yuchen Jiang"
+      },
+      {
+        "authorId": "2372197043",
+        "name": "Hangyu Wang"
+      },
+      {
+        "authorId": "2306954111",
+        "name": "Xintian Han"
+      },
+      {
+        "authorId": "2372050168",
+        "name": "Haoran Ding"
+      },
+      {
+        "authorId": "2372125366",
+        "name": "Xinmin Wang"
+      },
+      {
+        "authorId": "2359686770",
+        "name": "Wenlin Zhao"
+      },
+      {
+        "authorId": "2367790250",
+        "name": "Zhen Gong"
+      },
+      {
+        "authorId": "2304157849",
+        "name": "Hui Yang"
+      },
+      {
+        "authorId": "2344750486",
+        "name": "Zheng Chai"
+      },
+      {
+        "authorId": "2344807298",
+        "name": "Zhe Chen"
+      },
+      {
+        "authorId": "2345068091",
+        "name": "Yuchao Zheng"
+      },
+      {
+        "authorId": "2367745452",
+        "name": "Qiwei Chen"
+      },
+      {
+        "authorId": "2368377001",
+        "name": "Feng Zhang"
+      },
+      {
+        "authorId": "2292731926",
+        "name": "Xun Zhou"
+      },
+      {
+        "authorId": "2336038821",
+        "name": "Peng Xu"
+      },
+      {
+        "authorId": "2342649052",
+        "name": "Xiao Yang"
+      },
+      {
+        "authorId": "2346152328",
+        "name": "Di Wu"
+      },
+      {
+        "authorId": "2282544016",
+        "name": "Zuotao Liu"
+      }
+    ],
+    "abstract": "Recent progress on large language models (LLMs) has spurred interest in scaling up recommendation systems, yet two practical obstacles remain. First, training and serving cost on industrial Recommenders must respect strict latency bounds and high QPS demands. Second, most human-designed feature-crossing modules in ranking models were inherited from the CPU era and fail to exploit modern GPUs, resulting in low Model Flops Utilization (MFU) and poor scalability. We introduce RankMixer, a hardware-aware model design tailored towards a unified and scalable feature-interaction architecture. RankMixer retains the transformer's high parallelism while replacing quadratic self-attention with multi-head token mixing module for higher efficiency. Besides, RankMixer maintains both the modeling for distinct feature subspaces and cross-feature-space interactions with Per-token FFNs. We further extend it to one billion parameters with a Sparse-MoE variant for higher ROI. A dynamic routing strategy is adapted to address the inadequacy and imbalance of experts training. Experiments show RankMixer's superior scaling abilities on a trillion-scale production dataset. By replacing previously diverse handcrafted low-MFU modules with RankMixer, we boost the model MFU from 4.5% to 45%, and scale our online ranking model parameters by two orders of magnitude while maintaining roughly the same inference latency. We verify RankMixer's universality with online A/B tests across two core application scenarios (Recommendation and Advertisement). Finally, we launch 1B Dense-Parameters RankMixer for full traffic serving without increasing the serving cost, which improves user active days by 0.3% and total in-app usage duration by 1.08%.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "16490db45fc6da97ef1d9706ec65c7453f100954",
+    "externalIds": {
+      "ArXiv": "2505.09861",
+      "DBLP": "journals/corr/abs-2505-09861",
+      "DOI": "10.48550/arXiv.2505.09861",
+      "CorpusId": 278636299
+    },
+    "title": "LiDDA: Data Driven Attribution at LinkedIn",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.09861, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2361510269",
+        "name": "John Bencina"
+      },
+      {
+        "authorId": "2708523",
+        "name": "E. Aykutlug"
+      },
+      {
+        "authorId": "2328013580",
+        "name": "Yue Chen"
+      },
+      {
+        "authorId": "2302994936",
+        "name": "Zerui Zhang"
+      },
+      {
+        "authorId": "2361502914",
+        "name": "Stephanie Sorenson"
+      },
+      {
+        "authorId": "2338977749",
+        "name": "Shao Tang"
+      },
+      {
+        "authorId": "3651127",
+        "name": "Changshuai Wei"
+      }
+    ],
+    "abstract": "Data Driven Attribution, which assigns conversion credits to marketing interactions based on causal patterns learned from data, is the foundation of modern marketing intelligence and vital to any marketing businesses and advertising platform. In this paper, we introduce a unified transformer-based attribution approach that can handle member-level data, aggregate-level data, and integration of external macro factors. We detail the large scale implementation of the approach at LinkedIn, showcasing significant impact. We also share learning and insights that are broadly applicable to the marketing and ad tech fields.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6ab7d27787903d78d7222340fd92f03ecd77eeac",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2408-05430",
+      "ArXiv": "2408.05430",
+      "DOI": "10.1145/3690624.3709416",
+      "CorpusId": 271854999
+    },
+    "title": "HoME: Hierarchy of Multi-Gate Experts for Multi-Task Learning at Kuaishou",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2024,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.05430, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2315949558",
+        "name": "Xu Wang"
+      },
+      {
+        "authorId": "2316050568",
+        "name": "Jiangxia Cao"
+      },
+      {
+        "authorId": "2068057294",
+        "name": "Zhiyi Fu"
+      },
+      {
+        "authorId": "20029557",
+        "name": "Kun Gai"
+      },
+      {
+        "authorId": "2315935391",
+        "name": "Guorui Zhou"
+      }
+    ],
+    "abstract": "In this paper, we present the practical problems and the lessons learned at short-video services from Kuaishou. In industry, a widely-used multi-task framework is the Mixture-of-Experts (MoE) paradigm, which always introduces some shared and specific experts for each task and then uses gate networks to measure related experts' contributions. Although the MoE achieves remarkable improvements, we still observe three anomalies that seriously affect model performances in our iteration: (1) Expert Collapse: We found that experts' output distributions are significantly different, and some experts have over 90% zero activations with ReLU, making it hard for gate networks to assign fair weights to balance experts. (2) Expert Degradation: Ideally, the shared-expert aims to provide predictive information for all tasks simultaneously. Nevertheless, we find that some shared-experts are occupied by only one task, which indicates that shared-experts lost their ability but degenerated into some specific-experts. (3) Expert Underfitting: In our services, we have dozens of behavior tasks that need to be predicted, but we find that some data-sparse prediction tasks tend to ignore their specific-experts and assign large weights to shared-experts. The reason might be that the shared-experts can perceive more gradient updates and knowledge from dense tasks, while specific-experts easily fall into underfitting due to their sparse behaviors. Motivated by those observations, we propose HoME to achieve a simple, efficient and balanced MoE system for multi-task learning. Specifically, we conduct three insightful modifications: (1) Expert normalization&Swish mechanism to align expert output distributions and avoid expert collapse. (2) Hierarchy mask mechanism to enhance sharing efficiency between tasks to reduce occupancy issues and away from expert degradation. (3) Feature-gate&Self-gate mechanisms to ensure each expert could obtain appropriate gradient to maximize its effectiveness. To our knowledge, this paper is the first work to focus on improving multi-task MoE system stability, and we conduct extensive offline&online (average improves 0.52% GAUC offline & 0.954% play-time per user online) experiments and ablation analyses to demonstrate our HoME effectiveness. From March 2024, our HoME has been widely deployed on various services at Kuaishou, supporting 400 Million active users daily.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c4786675bf2f89fcc51f4e2af1e5c35f633a028c",
+    "externalIds": {
+      "DBLP": "conf/aaai/Liu0G024",
+      "DOI": "10.1609/aaai.v38i8.28726",
+      "CorpusId": 268692892
+    },
+    "title": "Online Conversion Rate Prediction via Multi-Interval Screening and Synthesizing under Delayed Feedback",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2024,
+    "citationCount": 5,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/28726/29402",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1609/aaai.v38i8.28726?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1609/aaai.v38i8.28726, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2260817753",
+        "name": "Qiming Liu"
+      },
+      {
+        "authorId": "2125319109",
+        "name": "Xiang Ao"
+      },
+      {
+        "authorId": "2366646008",
+        "name": "Yuyao Guo"
+      },
+      {
+        "authorId": "2158548",
+        "name": "Qing He"
+      }
+    ],
+    "abstract": "Due to the widespread adoption of the cost-per-action(CPA) display strategy that demands a real-time conversion rate prediction(CVR), delayed feedback is becoming one of the major challenges in online advertising. As the true labels of a significant quantity of samples are only available after long delays, the observed training data are usually biased, harming the performance of models. Recent studies show integrating models with varying waiting windows to observe true labels is beneficial, but the aggregation framework remains far from reaching a consensus. In this work, we propose the Multi-Interval Screening and Synthesizing model (MISS for short) for online CVR prediction. We first design a multi-interval screening model with various output heads to produce accurate and distinctive estimates. Then a light-weight synthesizing model with an assembled training pipeline is applied to thoroughly exploit the knowledge and relationship among heads, obtaining reliable predictions. Extensive experiments on two real-world advertising datasets validate the effectiveness of our model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5f8d3f84e2090d873cc25d3bbc249a4025510a07",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2308-04768",
+      "ArXiv": "2308.04768",
+      "DOI": "10.1145/3583780.3615475",
+      "CorpusId": 260736009
+    },
+    "title": "Entire Space Cascade Delayed Feedback Modeling for Effective Conversion Rate Prediction",
+    "venue": "International Conference on Information and Knowledge Management",
+    "year": 2023,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2308.04768",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2308.04768, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118525361",
+        "name": "Yunfeng Zhao"
+      },
+      {
+        "authorId": "2228048557",
+        "name": "Xu Yan"
+      },
+      {
+        "authorId": "2132661037",
+        "name": "Xiaoqiang Gui"
+      },
+      {
+        "authorId": "2061463",
+        "name": "Shuguang Han"
+      },
+      {
+        "authorId": "51055667",
+        "name": "Xiang-Rong Sheng"
+      },
+      {
+        "authorId": "2195316265",
+        "name": "Guoxian Yu"
+      },
+      {
+        "authorId": "2181196048",
+        "name": "Jufeng Chen"
+      },
+      {
+        "authorId": "145160047",
+        "name": "Zhao Xu"
+      },
+      {
+        "authorId": "51050306",
+        "name": "Bo-yin Zheng"
+      }
+    ],
+    "abstract": "Conversion rate (CVR) prediction is an essential task for e-commerce platforms. However, refunds frequently occur after conversion in online shopping systems, which drives us to pay attention to effective conversion for building healthier services. This paper defines the probability of item purchasing without any subsequent refund as an effective conversion rate (ECVR). A simple paradigm for ECVR prediction is to decompose it into two sub-tasks: CVR prediction and post-conversion refund rate (RFR) prediction. However, RFR prediction suffers from data sparsity (DS) and sample selection bias (SSB) issues, as refund behaviors are only available after user purchase. Furthermore, there is delayed feedback in both sequentially dependent conversion and refund events, named cascade delayed feedback (CDF). Previous studies mainly focus on tackling DS and SSB or delayed feedback for a single event. To jointly tackle these issues in ECVR prediction, we propose an Entire space CAscade Delayed feedback modeling (ECAD) method. Specifically, ECAD deals with DS and SSB by constructing two tasks including CVR and conversion&refund rate (CVRFR) predictions using the entire space modeling framework. In addition, it carefully schedules auxiliary tasks to leverage both conversion and refund time within data to alleviate CDF. Experiments on the offline industrial dataset and online A/B testing demonstrate the effectiveness of ECAD. ECAD has been deployed in the Xianyu recommender system of Alibaba, contributing to a significant improvement of ECVR.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5b07bf69ed3d49df7d5ec13765273a00426917c2",
+    "externalIds": {
+      "ArXiv": "2304.04959",
+      "DBLP": "journals/corr/abs-2304-04959",
+      "DOI": "10.1145/3580305.3599769",
+      "CorpusId": 258060230
+    },
+    "title": "AdaTT: Adaptive Task-to-Task Fusion Network for Multitask Learning in Recommendations",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2023,
+    "citationCount": 26,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2304.04959",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2304.04959, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2035489",
+        "name": "Danwei Li"
+      },
+      {
+        "authorId": "2213642070",
+        "name": "Zhengyu Zhang"
+      },
+      {
+        "authorId": "2087092426",
+        "name": "Siyang Yuan"
+      },
+      {
+        "authorId": "2214283820",
+        "name": "Mingze Gao"
+      },
+      {
+        "authorId": "90638610",
+        "name": "Weilin Zhang"
+      },
+      {
+        "authorId": "3255649",
+        "name": "Chaofei Yang"
+      },
+      {
+        "authorId": "2213909613",
+        "name": "Xi Liu"
+      },
+      {
+        "authorId": "2791531",
+        "name": "Jiyan Yang"
+      }
+    ],
+    "abstract": "Multi-task learning (MTL) aims to enhance the performance and efficiency of machine learning models by simultaneously training them on multiple tasks. However, MTL research faces two challenges: 1) effectively modeling the relationships between tasks to enable knowledge sharing, and 2) jointly learning task-specific and shared knowledge. In this paper, we present a novel model called Adaptive Task-to-Task Fusion Network (AdaTT) to address both challenges. AdaTT is a deep fusion network built with task-specific and optional shared fusion units at multiple levels. By leveraging a residual mechanism and a gating mechanism for task-to-task fusion, these units adaptively learn both shared knowledge and task-specific knowledge. To evaluate AdaTT's performance, we conduct experiments on a public benchmark and an industrial recommendation dataset using various task groups. Results demonstrate AdaTT significantly outperforms existing state-of-the-art baselines. Furthermore, our end-to-end experiments reveal that the model exhibits better performance compared to alternatives.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "db7206ab13202eafdd19a31d1b24b701c3e65fe8",
+    "externalIds": {
+      "DBLP": "conf/cikm/ZhangSZJHDZ22",
+      "ArXiv": "2209.06053",
+      "DOI": "10.1145/3511808.3557479",
+      "CorpusId": 252904885
+    },
+    "title": "Towards Understanding the Overfitting Phenomenon of Deep Click-Through Rate Models",
+    "venue": "International Conference on Information and Knowledge Management",
+    "year": 2022,
+    "citationCount": 56,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.06053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2156123128",
+        "name": "Zhaorui Zhang"
+      },
+      {
+        "authorId": "51055667",
+        "name": "Xiang-Rong Sheng"
+      },
+      {
+        "authorId": "1591127778",
+        "name": "Yujing Zhang"
+      },
+      {
+        "authorId": "47198170",
+        "name": "Biye Jiang"
+      },
+      {
+        "authorId": "2061463",
+        "name": "Shuguang Han"
+      },
+      {
+        "authorId": "2642895",
+        "name": "Hongbo Deng"
+      },
+      {
+        "authorId": "2087232182",
+        "name": "Bo Zheng"
+      }
+    ],
+    "abstract": "Deep learning techniques have been applied widely in industrial recommendation systems. However, far less attention has been paid on the overfitting problem of models in recommendation systems, which, on the contrary, is recognized as a critical issue for deep neural networks. In the context of Click-Through Rate (CTR) prediction, we observe an interesting one-epoch overfitting problem: the model performance exhibits a dramatic degradation at the beginning of the second epoch. Such a phenomenon has been witnessed widely in real-world applications of CTR models. Thereby, the best performance is usually achieved by training with only one epoch. To understand the underlying factors behind the one-epoch phenomenon, we conduct extensive experiments on the production data set collected from the display advertising system of Alibaba. The results show that the model structure, the optimization algorithm with a fast convergence rate, and the feature sparsity are closely related to the one-epoch phenomenon. We also provide a likely hypothesis for explaining such a phenomenon and conduct a set of proof-of-concept experiments. We hope this work can shed light on the future research on training more epochs for better performance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7bb809775af3560ad53d3255c37e215865c063d1",
+    "externalIds": {
+      "ArXiv": "2208.06164",
+      "DBLP": "conf/kdd/ShengGCYHDJXZ23",
+      "DOI": "10.1145/3580305.3599851",
+      "CorpusId": 251554849
+    },
+    "title": "Joint Optimization of Ranking and Calibration with Contextualized Hybrid Model",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2022,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2208.06164",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2208.06164, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51055667",
+        "name": "Xiang-Rong Sheng"
+      },
+      {
+        "authorId": "26334354",
+        "name": "Jingyue Gao"
+      },
+      {
+        "authorId": "2218322732",
+        "name": "Yueyao Cheng"
+      },
+      {
+        "authorId": "2108975133",
+        "name": "Siran Yang"
+      },
+      {
+        "authorId": "2061463",
+        "name": "Shuguang Han"
+      },
+      {
+        "authorId": "2642895",
+        "name": "Hongbo Deng"
+      },
+      {
+        "authorId": "2117772986",
+        "name": "Yuning Jiang"
+      },
+      {
+        "authorId": "2117049789",
+        "name": "Jian Xu"
+      },
+      {
+        "authorId": "2093245720",
+        "name": "Bo Zheng"
+      }
+    ],
+    "abstract": "Despite the development of ranking optimization techniques, pointwise loss remains the dominating approach for click-through rate prediction. It can be attributed to the calibration ability of the pointwise loss since the prediction can be viewed as the click probability. In practice, a CTR prediction model is also commonly assessed with the ranking ability. To optimize the ranking ability, ranking loss (e.g., pairwise or listwise loss) can be adopted as they usually achieve better rankings than pointwise loss. Previous studies have experimented with a direct combination of the two losses to obtain the benefit from both losses and observed an improved performance. However, previous studies break the meaning of output logit as the click-through rate, which may lead to sub-optimal solutions. To address this issue, we propose an approach that can Jointly optimize the Ranking and Calibration abilities (JRC for short). JRC improves the ranking ability by contrasting the logit value for the sample with different labels and constrains the predicted probability to be a function of the logit subtraction. We further show that JRC consolidates the interpretation of logits, where the logits model the joint distribution. With such an interpretation, we prove that JRC approximately optimizes the contextualized hybrid discriminative-generative objective. Experiments on public and industrial datasets and online A/B testing show that our approach improves both ranking and calibration abilities. Since May 2022, JRC has been deployed on the display advertising platform of Alibaba and has obtained significant performance improvements.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8f27e82f89857b91d31c8eaa08ef03fa8155a971",
+    "externalIds": {
+      "DBLP": "conf/sigir/WangCLHCYLC22",
+      "ArXiv": "2204.05125",
+      "DOI": "10.1145/3477495.3531972",
+      "CorpusId": 248085237
+    },
+    "title": "ESCM2: Entire Space Counterfactual Multi-Task Model for Post-Click Conversion Rate Estimation",
+    "venue": "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": 2022,
+    "citationCount": 119,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2204.05125",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2204.05125, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144221741",
+        "name": "Hao Wang"
+      },
+      {
+        "authorId": "48861902",
+        "name": "Tai-Wei Chang"
+      },
+      {
+        "authorId": "2115347033",
+        "name": "Tianqiao Liu"
+      },
+      {
+        "authorId": "3068086",
+        "name": "Jia-Bin Huang"
+      },
+      {
+        "authorId": "2162399554",
+        "name": "Zhichao Chen"
+      },
+      {
+        "authorId": "2148890704",
+        "name": "Chao-hui Yu"
+      },
+      {
+        "authorId": "2162105882",
+        "name": "Ruopeng Li"
+      },
+      {
+        "authorId": "48980295",
+        "name": "Wei Chu"
+      }
+    ],
+    "abstract": "Accurate estimation of post-click conversion rate is critical for building recommender systems, which has long been confronted with sample selection bias and data sparsity issues. Methods in the Entire Space Multi-task Model (ESMM) family leverage the sequential pattern of user actions, \\ie $impression\\rightarrow click \\rightarrow conversion$ to address data sparsity issue. However, they still fail to ensure the unbiasedness of CVR estimates. In this paper, we theoretically demonstrate that ESMM suffers from the following two problems: (1) Inherent Estimation Bias (IEB) for CVR estimation, where the CVR estimate is inherently higher than the ground truth; (2) Potential Independence Priority (PIP) for CTCVR estimation, where ESMM might overlook the causality from click to conversion. To this end, we devise a principled approach named Entire Space Counterfactual Multi-task Modelling (ESCM$^2$), which employs a counterfactual risk miminizer as a regularizer in ESMM to address both IEB and PIP issues simultaneously. Extensive experiments on offline datasets and online environments demonstrate that our proposed ESCM$^2$ can largely mitigate the inherent IEB and PIP issues and achieve better performance than baseline models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4347a41d63b224f1530d29ae702213fb87a5b3c3",
+    "externalIds": {
+      "ArXiv": "2202.06472",
+      "DBLP": "conf/www/ChenJZWLXZ22",
+      "DOI": "10.1145/3485447.3511965",
+      "CorpusId": 246823526
+    },
+    "title": "Asymptotically Unbiased Estimation for Delayed Feedback Modeling via Label Correction",
+    "venue": "The Web Conference",
+    "year": 2022,
+    "citationCount": 31,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2202.06472",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.06472, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2354387063",
+        "name": "Yu Chen"
+      },
+      {
+        "authorId": "2154554478",
+        "name": "Jiaqi Jin"
+      },
+      {
+        "authorId": "2155731387",
+        "name": "Hui Zhao"
+      },
+      {
+        "authorId": "2145012431",
+        "name": "Pengjie Wang"
+      },
+      {
+        "authorId": "2158133006",
+        "name": "Guojun Liu"
+      },
+      {
+        "authorId": "2117049789",
+        "name": "Jian Xu"
+      },
+      {
+        "authorId": "2093245720",
+        "name": "Bo Zheng"
+      }
+    ],
+    "abstract": "Alleviating the delayed feedback problem is of crucial importance for the conversion rate(CVR) prediction in online advertising. Previous delayed feedback modeling methods using an observation window to balance the trade-off between waiting for accurate labels and consuming fresh feedback. Moreover, to estimate CVR upon the freshly observed but biased distribution with fake negatives, the importance sampling is widely used to reduce the distribution bias. While effective, we argue that previous approaches falsely treat fake negative samples as real negative during the importance weighting and have not fully utilized the observed positive samples, leading to suboptimal performance. In this work, we propose a new method, DElayed Feedback modeling with UnbiaSed Estimation, (DEFUSE), which aim to respectively correct the importance weights of the immediate positive, the fake negative, the real negative, and the delay positive samples at finer granularity. Specifically, we propose a two-step optimization approach that first infers the probability of fake negatives among observed negatives before applying importance sampling. To fully exploit the ground-truth immediate positives from the observed distribution, we further develop a bi-distribution modeling framework to jointly model the unbiased immediate positives and the biased delay conversions. Experimental results on both public and our industrial datasets validate the superiority of DEFUSE. Codes are available at https://github.com/ychen216/DEFUSE.git.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "96a1a24fb75635bd5a27b8e4034d0faef5f99ad5",
+    "externalIds": {
+      "DBLP": "journals/tmlr/LiuJDJ22",
+      "ArXiv": "2202.03091",
+      "CorpusId": 246634577
+    },
+    "title": "Auto-Lambda: Disentangling Dynamic Task Relationships",
+    "venue": "Trans. Mach. Learn. Res.",
+    "year": 2022,
+    "citationCount": 100,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2202.03091, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48641424",
+        "name": "Shikun Liu"
+      },
+      {
+        "authorId": "2055291154",
+        "name": "Stephen James"
+      },
+      {
+        "authorId": "2052135690",
+        "name": "A. Davison"
+      },
+      {
+        "authorId": "144596772",
+        "name": "Edward Johns"
+      }
+    ],
+    "abstract": "Understanding the structure of multiple related tasks allows for multi-task learning to improve the generalisation ability of one or all of them. However, it usually requires training each pairwise combination of tasks together in order to capture task relationships, at an extremely high computational cost. In this work, we learn task relationships via an automated weighting framework, named Auto-Lambda. Unlike previous methods where task relationships are assumed to be fixed, Auto-Lambda is a gradient-based meta learning framework which explores continuous, dynamic task relationships via task-specific weightings, and can optimise any choice of combination of tasks through the formulation of a meta-loss; where the validation loss automatically influences task weightings throughout training. We apply the proposed framework to both multi-task and auxiliary learning problems in computer vision and robotics, and show that Auto-Lambda achieves state-of-the-art performance, even when compared to optimisation strategies designed specifically for each problem and data domain. Finally, we observe that Auto-Lambda can discover interesting learning behaviors, leading to new insights in multi-task learning. Code is available at https://github.com/lorenmt/auto-lambda.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d1fa4d55b2ec463ba78d8d61644a5b26a73df8af",
+    "externalIds": {
+      "DBLP": "conf/kdd/YaoGZCB22",
+      "ArXiv": "2201.00689",
+      "DOI": "10.1145/3534678.3539108",
+      "CorpusId": 245650418
+    },
+    "title": "CausalMTA: Eliminating the User Confounding Bias for Causal Multi-touch Attribution",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2021,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2201.00689",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2201.00689, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144068230",
+        "name": "Di Yao"
+      },
+      {
+        "authorId": "2057185610",
+        "name": "Chang Gong"
+      },
+      {
+        "authorId": "2152839391",
+        "name": "Lei Zhang"
+      },
+      {
+        "authorId": "2118530017",
+        "name": "Sheng Chen"
+      },
+      {
+        "authorId": "1805245",
+        "name": "Jingping Bi"
+      }
+    ],
+    "abstract": "Multi-touch attribution (MTA), aiming to estimate the contribution of each advertisement touchpoint in conversion journeys, is essential for budget allocation and automatically advertising. Existing methods first train a model to predict the conversion probability of the advertisement journeys with historical data and calculate the attribution of each touchpoint by using the results counterfactual predictions. An assumption of these works is the conversion prediction model is unbiased. It can give accurate predictions on any randomly assigned journey, including both the factual and counterfactual ones. Nevertheless, this assumption does not always hold as the user preferences act as the common cause for both ad generation and user conversion, involving the confounding bias and leading to an out-of-distribution (OOD) problem in the counterfactual prediction. In this paper, we define the causal MTA task and propose CausalMTA to solve this problem. It systemically eliminates the confounding bias from both static and dynamic perspectives and learn an unbiased conversion prediction model using historical data. We also provide a theoretical analysis to prove the effectiveness of CausalMTA with sufficient ad journeys. Extensive experiments on both synthetic and real data in Alibaba advertising platform show that CausalMTA can not only achieve better prediction performance than the state-of-the-art method but also generate meaningful attribution credits across different advertising channels.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "c6fa4dac4a8b243ef556df3da5a03d85466fcdf4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2109-04617",
+      "ArXiv": "2109.04617",
+      "CorpusId": 237485414
+    },
+    "title": "Efficiently Identifying Task Groupings for Multi-Task Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2109.04617, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "71436992",
+        "name": "Christopher Fifty"
+      },
+      {
+        "authorId": "2142862",
+        "name": "Ehsan Amid"
+      },
+      {
+        "authorId": "48634137",
+        "name": "Zhe Zhao"
+      },
+      {
+        "authorId": "10909315",
+        "name": "Tianhe Yu"
+      },
+      {
+        "authorId": "1508890387",
+        "name": "Rohan Anil"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "Multi-task learning can leverage information learned by one task to benefit the training of other tasks. Despite this capacity, naively training all tasks together in one model often degrades performance, and exhaustively searching through combinations of task groupings can be prohibitively expensive. As a result, efficiently identifying the tasks that would benefit from training together remains a challenging design question without a clear solution. In this paper, we suggest an approach to select which tasks should train together in multi-task learning models. Our method determines task groupings in a single run by training all tasks together and quantifying the effect to which one task's gradient would affect another task's loss. On the large-scale Taskonomy computer vision dataset, we find this method can decrease test loss by 10.0% compared to simply training all tasks together while operating 11.6 times faster than a state-of-the-art task grouping method.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "59e76a7cac4a79a6c0dc1f609a116d1ebdc894c9",
+    "externalIds": {
+      "ArXiv": "2104.14121",
+      "DBLP": "conf/kdd/GuSFZZ21",
+      "DOI": "10.1145/3447548.3467086",
+      "CorpusId": 233443987
+    },
+    "title": "Real Negatives Matter: Continuous Training with Real Negatives for Delayed Feedback Modeling",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2021,
+    "citationCount": 39,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2104.14121",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.14121, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2057717445",
+        "name": "Siyu Gu"
+      },
+      {
+        "authorId": "51055667",
+        "name": "Xiang-Rong Sheng"
+      },
+      {
+        "authorId": "2109755002",
+        "name": "Ying Fan"
+      },
+      {
+        "authorId": "9330280",
+        "name": "Guorui Zhou"
+      },
+      {
+        "authorId": "150345697",
+        "name": "Xiaoqiang Zhu"
+      }
+    ],
+    "abstract": "One of the difficulties of conversion rate (CVR) prediction is that the conversions can delay and take place long after the clicks. The delayed feedback poses a challenge: fresh data are beneficial to continuous training but may not have complete label information at the time they are ingested into the training pipeline. To balance model freshness and label certainty, previous methods set a short waiting window or even do not wait for the conversion signal. If conversion happens outside the waiting window, this sample will be duplicated and ingested into the training pipeline with a positive label. However, these methods have some issues. First, they assume the observed feature distribution remains the same as the actual distribution. But this assumption does not hold due to the ingestion of duplicated samples. Second, the certainty of the conversion action only comes from the positives. But the positives are scarce as conversions are sparse in commercial systems. These issues induce bias during the modeling of delayed feedback. In this paper, we propose DElayed FEedback modeling with Real negatives (DEFER) method to address these issues. The proposed method ingests real negative samples into the training pipeline. The ingestion of real negatives ensures the observed feature distribution is equivalent to the actual distribution, thus reducing the bias. The ingestion of real negatives also brings more certainty information of the conversion. To correct the distribution shift, DEFER employs importance sampling to weigh the loss function. Experimental results on industrial datasets validate the superiority of DEFER. DEFER have been deployed in the display advertising system of Alibaba, obtaining over 6.0% improvement on CVR in several scenarios. The code and data in this paper are now open-sourced (https://github.com/gusuperstar/defer.git).",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "b6ea68793f84d2f2011c4e15bc724b062a55ee73",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2012-03245",
+      "MAG": "3110889227",
+      "ArXiv": "2012.03245",
+      "DOI": "10.1609/aaai.v35i5.16587",
+      "CorpusId": 227333826
+    },
+    "title": "Capturing Delayed Feedback in Conversion Rate Prediction via Elapsed-Time Sampling",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2020,
+    "citationCount": 43,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/16587/16394",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.03245, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1510730409",
+        "name": "Jia-Qi Yang"
+      },
+      {
+        "authorId": "2144439296",
+        "name": "Xiang Li"
+      },
+      {
+        "authorId": "2061463",
+        "name": "Shuguang Han"
+      },
+      {
+        "authorId": "2066168334",
+        "name": "Tao Zhuang"
+      },
+      {
+        "authorId": "1721819",
+        "name": "De-chuan Zhan"
+      },
+      {
+        "authorId": "47923642",
+        "name": "Xiaoyi Zeng"
+      },
+      {
+        "authorId": "2072375351",
+        "name": "Bin Tong"
+      }
+    ],
+    "abstract": "Conversion rate (CVR) prediction is one of the most critical tasks for digital display advertising. Commercial systems often require to update models in an online learning manner to catch up with the evolving data distribution. However, conversions usually do not happen immediately after user clicks. This may result in inaccurate labeling, which is called delayed feedback problem. In previous studies, delayed feedback problem is handled either by waiting positive label for a long period of time, or by consuming the negative sample on its arrival and then insert a positive duplicate when conversion happens later. Indeed, there is a trade-off between waiting for more accurate labels and utilizing fresh data, which is not considered in existing works. To strike a balance in this trade-off, we propose Elapsed-Time Sampling Delayed Feedback Model (ES-DFM), which models the relationship between the observed conversion distribution and the true conversion distribution. Then we optimize the expectation of true conversion distribution via importance sampling under the elapsed-time sampling distribution. We further estimate the importance weight for each instance, which is used as the weight of loss function in CVR prediction. To demonstrate the effectiveness of ES-DFM, we conduct extensive experiments on a public data and a private industrial dataset. Experimental results confirm that our method consistently outperforms the previous state-of-the-art results.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "8a24033bc0a9e69859b023caa4183ac9d9235656",
+    "externalIds": {
+      "ArXiv": "2012.11403",
+      "DBLP": "conf/icdm/KumarGPCVS20",
+      "DOI": "10.1109/ICDMW51313.2020.00020",
+      "CorpusId": 229340072
+    },
+    "title": "CAMTA: Causal Attention Model for Multi-touch Attribution",
+    "venue": "2020 International Conference on Data Mining Workshops (ICDMW)",
+    "year": 2020,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2012.11403",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.11403, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": null,
+        "name": "Sachin Kumar"
+      },
+      {
+        "authorId": "153561223",
+        "name": "Garima Gupta"
+      },
+      {
+        "authorId": "144990181",
+        "name": "Ranjitha Prasad"
+      },
+      {
+        "authorId": "48415127",
+        "name": "Arnab Chatterjee"
+      },
+      {
+        "authorId": "3213990",
+        "name": "L. Vig"
+      },
+      {
+        "authorId": "143725466",
+        "name": "Gautam M. Shroff"
+      }
+    ],
+    "abstract": "Advertising channels have evolved from conventional print media, billboards and radio-advertising to online digital advertising (ad), where the users are exposed to a sequence of ad campaigns via social networks, display ads, search etc. While advertisers revisit the design of ad campaigns to concurrently serve the requirements emerging out of new ad channels, it is also critical for advertisers to estimate the contribution from touch-points (view, clicks, converts) on different channels, based on the sequence of customer actions. This process of contribution measurement is often referred to as multi-touch attribution (MTA). In this work, we propose CAMTA, a novel deep recurrent neural network architecture which is a causal attribution mechanism for user-personalised MTA in the context of observational data. CAMTA minimizes the selection bias in channel assignment across time-steps and touchpoints. Furthermore, it utilizes the users' pre-conversion actions in a principled way in order to predict per-channel attribution. To quantitatively benchmark the proposed MTA model, we employ the real-world Criteo dataset and demonstrate the superior performance of CAMTA with respect to prediction accuracy as compared to several baselines. In addition, we provide results for budget allocation and user-behaviour modeling on the predicted channel attribution.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "e411c86943c38aa6f0c43638b6ca72d7661da9f9",
+    "externalIds": {
+      "ArXiv": "2010.08244",
+      "MAG": "3093414268",
+      "DBLP": "journals/corr/abs-2010-08244",
+      "CorpusId": 223956810
+    },
+    "title": "Auxiliary Task Reweighting for Minimum-data Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 42,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.08244, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1596823732",
+        "name": "Baifeng Shi"
+      },
+      {
+        "authorId": "50196944",
+        "name": "Judy Hoffman"
+      },
+      {
+        "authorId": "2903226",
+        "name": "Kate Saenko"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "46485395",
+        "name": "Huijuan Xu"
+      }
+    ],
+    "abstract": "Supervised learning requires a large amount of training data, limiting its application where labeled data is scarce. To compensate for data scarcity, one possible method is to utilize auxiliary tasks to provide additional supervision for the main task. Assigning and optimizing the importance weights for different auxiliary tasks remains an crucial and largely understudied research question. In this work, we propose a method to automatically reweight auxiliary tasks in order to reduce the data requirement on the main task. Specifically, we formulate the weighted likelihood function of auxiliary tasks as a surrogate prior for the main task. By adjusting the auxiliary task weights to minimize the divergence between the surrogate prior and the true prior of the main task, we obtain a more accurate prior estimation, achieving the goal of minimizing the required amount of training data for the main task and avoiding a costly grid search. In multiple experimental settings (e.g. semi-supervised learning, multi-label classification), we demonstrate that our algorithm can effectively utilize limited labeled data of the main task with the benefit of auxiliary tasks compared with previous task reweighting methods. We also show that under extreme cases with only a few extra examples (e.g. few-shot domain adaptation), our algorithm results in significant improvement over the baseline.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "78d9f4a6bc0f53d0594a752f0934a3689b4460d8",
+    "externalIds": {
+      "DBLP": "conf/iclr/WangTF021",
+      "MAG": "3092189037",
+      "ArXiv": "2010.05874",
+      "CorpusId": 222291168
+    },
+    "title": "Gradient Vaccine: Investigating and Improving Multi-task Optimization in Massively Multilingual Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 238,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2010.05874, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2257550085",
+        "name": "Zirui Wang"
+      },
+      {
+        "authorId": "145317727",
+        "name": "Yulia Tsvetkov"
+      },
+      {
+        "authorId": "2345617",
+        "name": "Orhan Firat"
+      },
+      {
+        "authorId": "145144022",
+        "name": "Yuan Cao"
+      }
+    ],
+    "abstract": "Massively multilingual models subsuming tens or even hundreds of languages pose great challenges to multi-task optimization. While it is a common practice to apply a language-agnostic procedure optimizing a joint multilingual task objective, how to properly characterize and take advantage of its underlying problem structure for improving optimization efficiency remains under-explored. In this paper, we attempt to peek into the black-box of multilingual optimization through the lens of loss function geometry. We find that gradient similarity measured along the optimization trajectory is an important signal, which correlates well with not only language proximity but also the overall model performance. Such observation helps us to identify a critical limitation of existing gradient-based multi-task learning methods, and thus we derive a simple and scalable optimization procedure, named Gradient Vaccine, which encourages more geometrically aligned parameter updates for close tasks. Empirically, our method obtains significant model performance gains on multilingual machine translation and XTREME benchmark tasks for multilingual language models. Our work reveals the importance of properly measuring and utilizing language proximity in multilingual optimization, and has broader implications for multi-task learning beyond multilingual modeling.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0182197c3996d11867ef650b66a2ddf1efa6f631",
+    "externalIds": {
+      "MAG": "3087931390",
+      "DBLP": "conf/recsys/TangLZG20",
+      "DOI": "10.1145/3383313.3412236",
+      "CorpusId": 221784966
+    },
+    "title": "Progressive Layered Extraction (PLE): A Novel Multi-Task Learning (MTL) Model for Personalized Recommendations",
+    "venue": "ACM Conference on Recommender Systems",
+    "year": 2020,
+    "citationCount": 717,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3383313.3412236?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3383313.3412236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2049462469",
+        "name": "Hongyan Tang"
+      },
+      {
+        "authorId": "2319676273",
+        "name": "Junning Liu"
+      },
+      {
+        "authorId": "2152527896",
+        "name": "Ming Zhao"
+      },
+      {
+        "authorId": "1630380410",
+        "name": "Xudong Gong"
+      }
+    ],
+    "abstract": "Multi-task learning (MTL) has been successfully applied to many recommendation applications. However, MTL models often suffer from performance degeneration with negative transfer due to the complex and competing task correlation in real-world recommender systems. Moreover, through extensive experiments across SOTA MTL models, we have observed an interesting seesaw phenomenon that performance of one task is often improved by hurting the performance of some other tasks. To address these issues, we propose a Progressive Layered Extraction (PLE) model with a novel sharing structure design. PLE separates shared components and task-specific components explicitly and adopts a progressive routing mechanism to extract and separate deeper semantic knowledge gradually, improving efficiency of joint representation learning and information routing across tasks in a general setup. We apply PLE to both complicatedly correlated and normally correlated tasks, ranging from two-task cases to multi-task cases on a real-world Tencent video recommendation dataset with 1 billion samples, and results show that PLE outperforms state-of-the-art MTL models significantly under different task correlations and task-group size. Furthermore, online evaluation of PLE on a large-scale content recommendation platform at Tencent manifests 2.23% increase in view-count and 1.84% increase in watch time compared to SOTA MTL models, which is a significant improvement and demonstrates the effectiveness of PLE. Finally, extensive offline experiments on public benchmark datasets demonstrate that PLE can be applied to a variety of scenarios besides recommendations to eliminate the seesaw phenomenon. PLE now has been deployed to the online video recommender system in Tencent successfully.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "449c5660d637741f7aa7ff42549c32b43c9968bf",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2001-06782",
+      "MAG": "2997359900",
+      "ArXiv": "2001.06782",
+      "CorpusId": 210839011
+    },
+    "title": "Gradient Surgery for Multi-Task Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 1743,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2001.06782, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "10909315",
+        "name": "Tianhe Yu"
+      },
+      {
+        "authorId": "2121434953",
+        "name": "Saurabh Kumar"
+      },
+      {
+        "authorId": "2129458064",
+        "name": "Abhishek Gupta"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      },
+      {
+        "authorId": "1944801",
+        "name": "Karol Hausman"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While deep learning and deep reinforcement learning (RL) systems have demonstrated impressive results in domains such as image classification, game playing, and robotic control, data efficiency remains a major challenge. Multi-task learning has emerged as a promising approach for sharing structure across multiple tasks to enable more efficient learning. However, the multi-task setting presents a number of optimization challenges, making it difficult to realize large efficiency gains compared to learning tasks independently. The reasons why multi-task learning is so challenging compared to single-task learning are not fully understood. In this work, we identify a set of three conditions of the multi-task optimization landscape that cause detrimental gradient interference, and develop a simple yet general approach for avoiding such interference between task gradients. We propose a form of gradient surgery that projects a task's gradient onto the normal plane of the gradient of any other task that has a conflicting gradient. On a series of challenging multi-task supervised and multi-task RL problems, this approach leads to substantial gains in efficiency and performance. Further, it is model-agnostic and can be combined with previously-proposed multi-task architectures for enhanced performance.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "f6b956d5ea11b18cd59a42d2bf2791fc0ab8671f",
+    "externalIds": {
+      "MAG": "2902347140",
+      "ArXiv": "1812.02224",
+      "DBLP": "journals/corr/abs-1812-02224",
+      "CorpusId": 53579309
+    },
+    "title": "Adapting Auxiliary Losses Using Gradient Similarity",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 175,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1812.02224, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "24742854",
+        "name": "Yunshu Du"
+      },
+      {
+        "authorId": "144792148",
+        "name": "Wojciech M. Czarnecki"
+      },
+      {
+        "authorId": "35880964",
+        "name": "Siddhant M. Jayakumar"
+      },
+      {
+        "authorId": "1996134",
+        "name": "Razvan Pascanu"
+      },
+      {
+        "authorId": "40627523",
+        "name": "Balaji Lakshminarayanan"
+      }
+    ],
+    "abstract": "One approach to deal with the statistical inefficiency of neural networks is to rely on auxiliary losses that help to build useful representations. However, it is not always trivial to know if an auxiliary task will be helpful for the main task and when it could start hurting. We propose to use the cosine similarity between gradients of tasks as an adaptive weight to detect when an auxiliary loss is helpful to the main loss. We show that our approach is guaranteed to converge to critical points of the main task and demonstrate the practical usefulness of the proposed algorithm in a few domains: multi-task supervised learning on subsets of ImageNet, reinforcement learning on gridworld, and reinforcement learning on Atari games.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "35dbaeadbe0a4bb8325f14d9eca1aad8b1b53acb",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1809-02230",
+      "MAG": "2891461957",
+      "ArXiv": "1809.02230",
+      "CorpusId": 52175685
+    },
+    "title": "Deep Neural Net with Attention for Multi-channel Multi-touch Attribution",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 38,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.02230, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2120049649",
+        "name": "Ning Li"
+      },
+      {
+        "authorId": "82632442",
+        "name": "Sai Kumar Arava"
+      },
+      {
+        "authorId": "2113540941",
+        "name": "Chen Dong"
+      },
+      {
+        "authorId": "1491237329",
+        "name": "Zhenyu Yan"
+      },
+      {
+        "authorId": "21956354",
+        "name": "Abhishek Pani"
+      }
+    ],
+    "abstract": "Customers are usually exposed to online digital advertisement channels, such as email marketing, display advertising, paid search engine marketing, along their way to purchase or subscribe products( aka. conversion). The marketers track all the customer journey data and try to measure the effectiveness of each advertising channel. The inference about the influence of each channel plays an important role in budget allocation and inventory pricing decisions. Several simplistic rule-based strategies and data-driven algorithmic strategies have been widely used in marketing field, but they do not address the issues, such as channel interaction, time dependency, user characteristics. In this paper, we propose a novel attribution algorithm based on deep learning to assess the impact of each advertising channel. We present Deep Neural Net With Attention multi-touch attribution model (DNAMTA) model in a supervised learning fashion of predicting if a series of events leads to conversion, and it leads us to have a deep understanding of the dynamic interaction effects between media channels. DNAMTA also incorporates user-context information, such as user demographics and behavior, as control variables to reduce the estimation biases of media effects. We used computational experiment of large real world marketing dataset to demonstrate that our proposed model is superior to existing methods in both conversion prediction and media channel influence evaluation.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "af8a8dcb74561d52d904f7bc4afcc747e079b702",
+    "externalIds": {
+      "MAG": "2809290718",
+      "DBLP": "conf/kdd/MaZYCHC18",
+      "DOI": "10.1145/3219819.3220007",
+      "CorpusId": 50770252
+    },
+    "title": "Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2018,
+    "citationCount": 1541,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3219819.3220007",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3219819.3220007?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3219819.3220007, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47793019",
+        "name": "Jiaqi W. Ma"
+      },
+      {
+        "authorId": "48634137",
+        "name": "Zhe Zhao"
+      },
+      {
+        "authorId": "2838461",
+        "name": "Xinyang Yi"
+      },
+      {
+        "authorId": "2144168512",
+        "name": "Jilin Chen"
+      },
+      {
+        "authorId": "2217278",
+        "name": "Lichan Hong"
+      },
+      {
+        "authorId": "2226805",
+        "name": "Ed H. Chi"
+      }
+    ],
+    "abstract": "Neural-based multi-task learning has been successfully used in many real-world large-scale applications such as recommendation systems. For example, in movie recommendations, beyond providing users movies which they tend to purchase and watch, the system might also optimize for users liking the movies afterwards. With multi-task learning, we aim to build a single model that learns these multiple goals and tasks simultaneously. However, the prediction quality of commonly used multi-task models is often sensitive to the relationships between tasks. It is therefore important to study the modeling tradeoffs between task-specific objectives and inter-task relationships. In this work, we propose a novel multi-task learning approach, Multi-gate Mixture-of-Experts (MMoE), which explicitly learns to model task relationships from data. We adapt the Mixture-of-Experts (MoE) structure to multi-task learning by sharing the expert submodels across all tasks, while also having a gating network trained to optimize each task. To validate our approach on data with different levels of task relatedness, we first apply it to a synthetic dataset where we control the task relatedness. We show that the proposed approach performs better than baseline methods when the tasks are less related. We also show that the MMoE structure results in an additional trainability benefit, depending on different levels of randomness in the training data and model initialization. Furthermore, we demonstrate the performance improvements by MMoE on real tasks including a binary classification benchmark, and a large-scale content recommendation system at Google.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "28e73fe5a3ca2891fa04dbf9fcc6ab4965a68182",
+    "externalIds": {
+      "MAG": "2799125281",
+      "DBLP": "conf/sigir/MaZHWHZG18",
+      "ArXiv": "1804.07931",
+      "DOI": "10.1145/3209978.3210104",
+      "CorpusId": 5067648
+    },
+    "title": "Entire Space Multi-Task Model: An Effective Approach for Estimating Post-Click Conversion Rate",
+    "venue": "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": 2018,
+    "citationCount": 509,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3209978.3210104",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.07931, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115573737",
+        "name": "Xiao Ma"
+      },
+      {
+        "authorId": "2111200383",
+        "name": "Liqin Zhao"
+      },
+      {
+        "authorId": "2115501103",
+        "name": "Guan Huang"
+      },
+      {
+        "authorId": "2108386556",
+        "name": "Zhi Wang"
+      },
+      {
+        "authorId": "152980173",
+        "name": "Zelin Hu"
+      },
+      {
+        "authorId": "150345697",
+        "name": "Xiaoqiang Zhu"
+      },
+      {
+        "authorId": "20029557",
+        "name": "Kun Gai"
+      }
+    ],
+    "abstract": "Estimating post-click conversion rate (CVR) accurately is crucial for ranking systems in industrial applications such as recommendation and advertising. Conventional CVR modeling applies popular deep learning methods and achieves state-of-the-art performance. However it encounters several task-specific problems in practice, making CVR modeling challenging. For example, conventional CVR models are trained with samples of clicked impressions while utilized to make inference on the entire space with samples of all impressions. This causes a sample selection bias problem. Besides, there exists an extreme data sparsity problem, making the model fitting rather difficult. In this paper, we model CVR in a brand-new perspective by making good use of sequential pattern of user actions, i.e., impression -> click -> conversion. The proposed Entire Space Multi-task Model (ESMM) can eliminate the two problems simultaneously by i) modeling CVR directly over the entire space, ii) employing a feature representation transfer learning strategy. Experiments on dataset gathered from Taobao's recommender system demonstrate that ESMM significantly outperforms competitive methods. We also release a sampling version of this dataset to enable future research. To the best of our knowledge, this is the first public dataset which contains samples with sequential dependence of click and conversion labels for CVR modeling.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "39667784085b83191b58c361d60d518a9e9f373d",
+    "externalIds": {
+      "MAG": "3106181667",
+      "DBLP": "conf/kdd/ZhuLZLHLG18",
+      "ArXiv": "1801.02294",
+      "DOI": "10.1145/3219819.3219826",
+      "CorpusId": 25648541
+    },
+    "title": "Learning Tree-based Deep Model for Recommender Systems",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2018,
+    "citationCount": 332,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1801.02294",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.02294, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115313387",
+        "name": "Han Zhu"
+      },
+      {
+        "authorId": "2939772",
+        "name": "Pengye Zhang"
+      },
+      {
+        "authorId": "91119265",
+        "name": "Guozheng Li"
+      },
+      {
+        "authorId": "2109654559",
+        "name": "Jie He"
+      },
+      {
+        "authorId": "2118384236",
+        "name": "Han Li"
+      },
+      {
+        "authorId": "2258714480",
+        "name": "Kun Gai"
+      }
+    ],
+    "abstract": "Model-based methods for recommender systems have been studied extensively in recent years. In systems with large corpus, however, the calculation cost for the learnt model to predict all user-item preferences is tremendous, which makes full corpus retrieval extremely difficult. To overcome the calculation barriers, models such as matrix factorization resort to inner product form (i.e., model user-item preference as the inner product of user, item latent factors) and indexes to facilitate efficient approximate k-nearest neighbor searches. However, it still remains challenging to incorporate more expressive interaction forms between user and item features, e.g., interactions through deep neural networks, because of the calculation cost. In this paper, we focus on the problem of introducing arbitrary advanced models to recommender systems with large corpus. We propose a novel tree-based method which can provide logarithmic complexity w.r.t. corpus size even with more expressive models such as deep neural networks. Our main idea is to predict user interests from coarse to fine by traversing tree nodes in a top-down fashion and making decisions for each user-node pair. We also show that the tree structure can be jointly learnt towards better compatibility with users' interest distribution and hence facilitate both training and prediction. Experimental evaluations with two large-scale real-world datasets show that the proposed method significantly outperforms traditional methods. Online A/B test results in Taobao display advertising platform also demonstrate the effectiveness of the proposed method in production environments.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "7ad66cba3b7e3abae7ef33122588512a146f7f77",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhangY17aa",
+      "ArXiv": "1707.08114",
+      "MAG": "3141797743",
+      "DOI": "10.1109/TKDE.2021.3070203",
+      "CorpusId": 11311635
+    },
+    "title": "A Survey on Multi-Task Learning",
+    "venue": "IEEE Transactions on Knowledge and Data Engineering",
+    "year": 2017,
+    "citationCount": 2848,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1707.08114",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.08114, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46867608",
+        "name": "Yu Zhang"
+      },
+      {
+        "authorId": "152290618",
+        "name": "Qiang Yang"
+      }
+    ],
+    "abstract": "Multi-Task Learning (MTL) is a learning paradigm in machine learning and its aim is to leverage useful information contained in multiple related tasks to help improve the generalization performance of all the tasks. In this paper, we give a survey for MTL from the perspective of algorithmic modeling, applications and theoretical analyses. For algorithmic modeling, we give a definition of MTL and then classify different MTL algorithms into five categories, including feature learning approach, low-rank approach, task clustering approach, task relation learning approach and decomposition approach as well as discussing the characteristics of each approach. In order to improve the performance of learning tasks further, MTL can be combined with other learning paradigms including semi-supervised learning, active learning, unsupervised learning, reinforcement learning, multi-view learning and graphical models. When the number of tasks is large or the data dimensionality is high, we review online, parallel and distributed MTL models as well as dimensionality reduction and feature hashing to reveal their computational and storage advantages. Many real-world applications use MTL to boost their performance and we review representative works in this paper. Finally, we present theoretical analyses and discuss several future directions for MTL.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "externalIds": {
+      "MAG": "2964121744",
+      "DBLP": "journals/corr/KingmaB14",
+      "ArXiv": "1412.6980",
+      "CorpusId": 6628106
+    },
+    "title": "Adam: A Method for Stochastic Optimization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 165311,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6980, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2503659",
+        "name": "Jimmy Ba"
+      }
+    ],
+    "abstract": "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9eed333dcaade2c1dd32590eff6b0c0e670a5674",
+    "externalIds": {
+      "DBLP": "conf/kdd/Chapelle14",
+      "MAG": "2021866613",
+      "DOI": "10.1145/2623330.2623634",
+      "CorpusId": 14993056
+    },
+    "title": "Modeling delayed feedback in display advertising",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2014,
+    "citationCount": 199,
+    "openAccessPdf": {
+      "url": "http://olivier.chapelle.cc/pub/delayedConv.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/2623330.2623634?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/2623330.2623634, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1730609",
+        "name": "O. Chapelle"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "09c397be5c654041d55451022396b2ed26f0f56a",
+    "externalIds": {
+      "DBLP": "conf/kdd/ShaoL11",
+      "MAG": "2027839911",
+      "DOI": "10.1145/2020408.2020453",
+      "CorpusId": 7084036
+    },
+    "title": "Data-driven multi-touch attribution models",
+    "venue": "Knowledge Discovery and Data Mining",
+    "year": 2011,
+    "citationCount": 136,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/2020408.2020453?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/2020408.2020453, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1819046",
+        "name": "Xuhui Shao"
+      },
+      {
+        "authorId": "47681365",
+        "name": "Lexin Li"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "161ffb54a3fdf0715b198bb57bd22f910242eb49",
+    "externalIds": {
+      "MAG": "2914746235",
+      "DBLP": "journals/ml/Caruana97",
+      "DOI": "10.1023/A:1007379606734",
+      "CorpusId": 45998148
+    },
+    "title": "Multitask Learning",
+    "venue": "Machine-mediated learning",
+    "year": 1997,
+    "citationCount": 8276,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1023/A:1007379606734.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1023/A:1007379606734?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1023/A:1007379606734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145727186",
+        "name": "R. Caruana"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c31face5300b7e4462559ab9c1b4c805b23f7b72",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-15113",
+      "DOI": "10.48550/arXiv.2507.15113",
+      "CorpusId": 280671888
+    },
+    "title": "Click A, Buy B: Rethinking Conversion Attribution in E- Commerce Recommendations",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 2,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.48550/arXiv.2507.15113?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.48550/arXiv.2507.15113, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2188263320",
+        "name": "Xiangyu Zeng"
+      },
+      {
+        "authorId": "2376132543",
+        "name": "Amit Jaspal"
+      },
+      {
+        "authorId": "2312266980",
+        "name": "Bin Liu"
+      },
+      {
+        "authorId": "2376132431",
+        "name": "Goutham Panneeru"
+      },
+      {
+        "authorId": "2373596003",
+        "name": "Ken Huang"
+      },
+      {
+        "authorId": "2376131817",
+        "name": "Nicolas Bievre"
+      },
+      {
+        "authorId": "2376131071",
+        "name": "Mohit Jaggi"
+      },
+      {
+        "authorId": "2376131126",
+        "name": "Prathap Maniraju"
+      },
+      {
+        "authorId": "2312019060",
+        "name": "A. Jain"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c8e842c976dfc1f4b243ffe691508f1767a2d068",
+    "externalIds": {
+      "DBLP": "conf/nips/SongZCY022",
+      "DOI": "10.52202/068431-2729",
+      "CorpusId": 258509493
+    },
+    "title": "Efficient and Effective Multi-task Grouping via Meta Learning on Task Combinations",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 46,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.52202/068431-2729?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.52202/068431-2729, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2042704761",
+        "name": "Xiaozhuang Song"
+      },
+      {
+        "authorId": "2111073463",
+        "name": "Shun Zheng"
+      },
+      {
+        "authorId": "2075436482",
+        "name": "W. Cao"
+      },
+      {
+        "authorId": "2116508870",
+        "name": "James J. Q. Yu"
+      },
+      {
+        "authorId": "143901037",
+        "name": "J. Bian"
+      }
+    ],
+    "abstract": "As a longstanding learning paradigm, multi-task learning has been widely applied into a variety of machine learning applications. Nonetheless, identifying which tasks should be learned together is still a challenging fundamental problem because the possible task combinations grow exponentially with the number of tasks, and existing solutions heavily relying on heuristics may probably lead to ineffective groupings with severe performance degradation. To bridge this gap, we develop a systematic multi-task grouping framework with a new meta-learning problem on task combinations, which is to predict the per-task performance gains of multi-task learning over single-task learning for any combination. Our underlying assumption is that no matter how large the space of task combinations is, the relationships between task combinations and performance gains lie in some low-dimensional manifolds and thus can be learnable. Accordingly, we develop a neural meta learner, MTG-Net, to capture these relationships, and design an active learning strategy to progressively select meta-training samples. In this way, even with limited meta samples, MTG-Net holds the potential to produce reasonable gain estimations on arbitrary task combinations. Extensive experiments on diversified multi-task scenarios demonstrate the efficiency and effectiveness of our method. Specifically, in a large-scale evaluation with 27 tasks, which produce over one hundred million task combinations, our method almost doubles the performance obtained by the existing best solution given roughly the same computational cost. Data and code are available at https://github.com/ShawnKS/MTG-Net .",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "bc0203c04bd77cf5103b5fee268b6ee89d8d714e",
+    "externalIds": {
+      "MAG": "2991420892",
+      "DBLP": "conf/nips/LinBKH19",
+      "CorpusId": 209436782
+    },
+    "title": "Adaptive Auxiliary Task Weighting for Reinforcement Learning",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 132,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2115252655",
+        "name": "Xingyu Lin"
+      },
+      {
+        "authorId": "9624884",
+        "name": "H. Baweja"
+      },
+      {
+        "authorId": "1717890",
+        "name": "G. Kantor"
+      },
+      {
+        "authorId": "145641013",
+        "name": "David Held"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "4938d880852f5af0bdffbaf8f5353998fc883428",
+    "externalIds": {
+      "CorpusId": 260505876
+    },
+    "title": "and Solutions",
+    "venue": "",
+    "year": 2015,
+    "citationCount": 37,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "87373574",
+        "name": "L. Daniel"
+      },
+      {
+        "authorId": "2084985710",
+        "name": "Heald"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]

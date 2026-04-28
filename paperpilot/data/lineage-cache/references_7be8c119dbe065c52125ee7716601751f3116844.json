@@ -1,0 +1,1375 @@
+[
+  {
+    "paperId": "43f2ad297941db230c089ba353efc3f281ab678c",
+    "externalIds": {
+      "MAG": "3033156098",
+      "CorpusId": 226096901
+    },
+    "title": "5分で分かる!? 有名論文ナナメ読み：Jacob Devlin et al. : BERT : Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "",
+    "year": 2020,
+    "citationCount": 13593,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "136309159",
+        "name": "知秀 柴田"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "8323c591e119eb09b28b29fd6c7bc76bd889df7a",
+    "externalIds": {
+      "MAG": "2973727699",
+      "ArXiv": "1909.08053",
+      "DBLP": "journals/corr/abs-1909-08053",
+      "CorpusId": 202660670
+    },
+    "title": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 2687,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.08053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1911755",
+        "name": "M. Shoeybi"
+      },
+      {
+        "authorId": "66870756",
+        "name": "M. Patwary"
+      },
+      {
+        "authorId": "41158993",
+        "name": "Raul Puri"
+      },
+      {
+        "authorId": "3081566",
+        "name": "P. LeGresley"
+      },
+      {
+        "authorId": "48991386",
+        "name": "J. Casper"
+      },
+      {
+        "authorId": "2301680",
+        "name": "Bryan Catanzaro"
+      }
+    ],
+    "abstract": "Recent work in language modeling demonstrates that training large transformer models advances the state of the art in Natural Language Processing applications. However, very large models can be quite difficult to train due to memory constraints. In this work, we present our techniques for training very large transformer models and implement a simple, efficient intra-layer model parallel approach that enables training transformer models with billions of parameters. Our approach does not require a new compiler or library changes, is orthogonal and complimentary to pipeline model parallelism, and can be fully implemented with the insertion of a few communication operations in native PyTorch. We illustrate this approach by converging transformer based models up to 8.3 billion parameters using 512 GPUs. We sustain 15.1 PetaFLOPs across the entire application with 76% scaling efficiency when compared to a strong single GPU baseline that sustains 39 TeraFLOPs, which is 30% of peak FLOPs. To demonstrate that large language models can further advance the state of the art (SOTA), we train an 8.3 billion parameter transformer language model similar to GPT-2 and a 3.9 billion parameter model similar to BERT. We show that careful attention to the placement of layer normalization in BERT-like models is critical to achieving increased performance as the model size grows. Using the GPT-2 model we achieve SOTA results on the WikiText103 (10.8 compared to SOTA perplexity of 15.8) and LAMBADA (66.5% compared to SOTA accuracy of 63.2%) datasets. Our BERT model achieves SOTA results on the RACE dataset (90.9% compared to SOTA accuracy of 89.4%).",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "077f8329a7b6fa3b7c877a57b81eb6c18b5f87de",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1907-11692",
+      "ArXiv": "1907.11692",
+      "MAG": "2965373594",
+      "CorpusId": 198953378
+    },
+    "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 29343,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1907.11692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "11323179",
+        "name": "Yinhan Liu"
+      },
+      {
+        "authorId": "40511414",
+        "name": "Myle Ott"
+      },
+      {
+        "authorId": "39589154",
+        "name": "Naman Goyal"
+      },
+      {
+        "authorId": "3048577",
+        "name": "Jingfei Du"
+      },
+      {
+        "authorId": "144863691",
+        "name": "Mandar Joshi"
+      },
+      {
+        "authorId": "50536468",
+        "name": "Danqi Chen"
+      },
+      {
+        "authorId": "39455775",
+        "name": "Omer Levy"
+      },
+      {
+        "authorId": "35084211",
+        "name": "M. Lewis"
+      },
+      {
+        "authorId": "1982950",
+        "name": "Luke Zettlemoyer"
+      },
+      {
+        "authorId": "1759422",
+        "name": "Veselin Stoyanov"
+      }
+    ],
+    "abstract": "Language model pretraining has led to significant performance gains but careful comparison between different approaches is challenging. Training is computationally expensive, often done on private datasets of different sizes, and, as we will show, hyperparameter choices have significant impact on the final results. We present a replication study of BERT pretraining (Devlin et al., 2019) that carefully measures the impact of many key hyperparameters and training data size. We find that BERT was significantly undertrained, and can match or exceed the performance of every model published after it. Our best model achieves state-of-the-art results on GLUE, RACE and SQuAD. These results highlight the importance of previously overlooked design choices, and raise questions about the source of recently reported improvements. We release our models and code.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e0c6abdbdecf04ffac65c440da77fb9d66bb474c",
+    "externalIds": {
+      "MAG": "2950813464",
+      "DBLP": "journals/corr/abs-1906-08237",
+      "ArXiv": "1906.08237",
+      "CorpusId": 195069387
+    },
+    "title": "XLNet: Generalized Autoregressive Pretraining for Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 9310,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.08237, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "35729970",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "143712374",
+        "name": "J. Carbonell"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      }
+    ],
+    "abstract": "With the capability of modeling bidirectional contexts, denoising autoencoding based pretraining like BERT achieves better performance than pretraining approaches based on autoregressive language modeling. However, relying on corrupting the input with masks, BERT neglects dependency between the masked positions and suffers from a pretrain-finetune discrepancy. In light of these pros and cons, we propose XLNet, a generalized autoregressive pretraining method that (1) enables learning bidirectional contexts by maximizing the expected likelihood over all permutations of the factorization order and (2) overcomes the limitations of BERT thanks to its autoregressive formulation. Furthermore, XLNet integrates ideas from Transformer-XL, the state-of-the-art autoregressive model, into pretraining. Empirically, under comparable experiment settings, XLNet outperforms BERT on 20 tasks, often by a large margin, including question answering, natural language inference, sentiment analysis, and document ranking.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9ae4aa0ccb45c564af422d2bc419f141c74eefd8",
+    "externalIds": {
+      "MAG": "2948961293",
+      "DBLP": "conf/acl/LuoJBG19",
+      "ArXiv": "1906.01702",
+      "ACL": "P19-1144",
+      "DOI": "10.18653/v1/P19-1144",
+      "CorpusId": 174799480
+    },
+    "title": "Improving Neural Language Models by Segmenting, Attending, and Predicting the Future",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 14,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1144.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.01702, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1944274",
+        "name": "Hongyin Luo"
+      },
+      {
+        "authorId": "2108236714",
+        "name": "Lan Jiang"
+      },
+      {
+        "authorId": "2083259",
+        "name": "Yonatan Belinkov"
+      },
+      {
+        "authorId": "145898106",
+        "name": "James R. Glass"
+      }
+    ],
+    "abstract": "Common language models typically predict the next word given the context. In this work, we propose a method that improves language modeling by learning to align the given context and the following phrase. The model does not require any linguistic annotation of phrase segmentation. Instead, we define syntactic heights and phrase segmentation rules, enabling the model to automatically induce phrases, recognize their task-specific heads, and generate phrase embeddings in an unsupervised learning manner. Our method can easily be applied to language models with different network architectures since an independent module is used for phrase induction and context-phrase alignment, and no change is required in the underlying language modeling network. Experiments have shown that our model outperformed several strong baseline models on different data sets. We achieved a new state-of-the-art performance of 17.4 perplexity on the Wikitext-103 dataset. Additionally, visualizing the outputs of the phrase induction module showed that our model is able to learn approximate phrase-level structural knowledge without any annotation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "ad7129af0644dbcafa9aa2f111cb76526ea444a1",
+    "externalIds": {
+      "MAG": "2971008823",
+      "DBLP": "conf/nips/ZellersHRBFRC19",
+      "ArXiv": "1905.12616",
+      "CorpusId": 168169824
+    },
+    "title": "Defending Against Neural Fake News",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 1219,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1905.12616, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2545335",
+        "name": "Rowan Zellers"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "2516777",
+        "name": "Hannah Rashkin"
+      },
+      {
+        "authorId": "3312309",
+        "name": "Yonatan Bisk"
+      },
+      {
+        "authorId": "143787583",
+        "name": "Ali Farhadi"
+      },
+      {
+        "authorId": "3268360",
+        "name": "Franziska Roesner"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Recent progress in natural language generation has raised dual-use concerns. While applications like summarization and translation are positive, the underlying technology also might enable adversaries to generate neural fake news: targeted propaganda that closely mimics the style of real news. \nModern computer security relies on careful threat modeling: identifying potential threats and vulnerabilities from an adversary's point of view, and exploring potential mitigations to these threats. Likewise, developing robust defenses against neural fake news requires us first to carefully investigate and characterize the risks of these models. We thus present a model for controllable text generation called Grover. Given a headline like `Link Found Between Vaccines and Autism,' Grover can generate the rest of the article; humans find these generations to be more trustworthy than human-written disinformation. \nDeveloping robust verification techniques against generators like Grover is critical. We find that best current discriminators can classify neural fake news from real, human-written, news with 73% accuracy, assuming access to a moderate level of training data. Counterintuitively, the best defense against Grover turns out to be Grover itself, with 92% accuracy, demonstrating the importance of public release of strong generators. We investigate these results further, showing that exposure bias -- and sampling strategies that alleviate its effects -- both leave artifacts that similar discriminators can pick up on. We conclude by discussing ethical issues regarding the technology, and plan to release Grover publicly, helping pave the way for better detection of neural fake news.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "cd63025532a62fa245a02ec05e32ac4d23089631",
+    "externalIds": {
+      "MAG": "2936652946",
+      "ArXiv": "1904.08378",
+      "DBLP": "journals/corr/abs-1904-08378",
+      "CorpusId": 119296728
+    },
+    "title": "Dynamic Evaluation of Transformer Language Models",
+    "venue": "arXiv.org",
+    "year": 2019,
+    "citationCount": 46,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.08378, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "9340968",
+        "name": "Ben Krause"
+      },
+      {
+        "authorId": "26432578",
+        "name": "Emmanuel Kahembwe"
+      },
+      {
+        "authorId": "145797336",
+        "name": "Iain Murray"
+      },
+      {
+        "authorId": "145086187",
+        "name": "S. Renals"
+      }
+    ],
+    "abstract": "This research note combines two methods that have recently improved the state of the art in language modeling: Transformers and dynamic evaluation. Transformers use stacked layers of self-attention that allow them to capture long range dependencies in sequential data. Dynamic evaluation fits models to the recent sequence history, allowing them to assign higher probabilities to re-occurring sequential patterns. By applying dynamic evaluation to Transformer-XL models, we improve the state of the art on enwik8 from 0.99 to 0.94 bits/char, text8 from 1.08 to 1.04 bits/char, and WikiText-103 from 18.3 to 16.4 perplexity points.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c4744a7c2bb298e4a52289a1e085c71cc3d37bc6",
+    "externalIds": {
+      "ArXiv": "1901.02860",
+      "DBLP": "conf/acl/DaiYYCLS19",
+      "MAG": "2964110616",
+      "ACL": "P19-1285",
+      "DOI": "10.18653/v1/P19-1285",
+      "CorpusId": 57759363
+    },
+    "title": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 4275,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P19-1285.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1901.02860, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422912",
+        "name": "Zihang Dai"
+      },
+      {
+        "authorId": "2109512754",
+        "name": "Zhilin Yang"
+      },
+      {
+        "authorId": "35729970",
+        "name": "Yiming Yang"
+      },
+      {
+        "authorId": "143712374",
+        "name": "J. Carbonell"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      }
+    ],
+    "abstract": "Transformers have a potential of learning longer-term dependency, but are limited by a fixed-length context in the setting of language modeling. We propose a novel neural architecture Transformer-XL that enables learning dependency beyond a fixed length without disrupting temporal coherence. It consists of a segment-level recurrence mechanism and a novel positional encoding scheme. Our method not only enables capturing longer-term dependency, but also resolves the context fragmentation problem. As a result, Transformer-XL learns dependency that is 80% longer than RNNs and 450% longer than vanilla Transformers, achieves better performance on both short and long sequences, and is up to 1,800+ times faster than vanilla Transformers during evaluation. Notably, we improve the state-of-the-art results of bpc/perplexity to 0.99 on enwiki8, 1.08 on text8, 18.3 on WikiText-103, 21.8 on One Billion Word, and 54.5 on Penn Treebank (without finetuning). When trained only on WikiText-103, Transformer-XL manages to generate reasonably coherent, novel text articles with thousands of tokens. Our code, pretrained models, and hyperparameters are available in both Tensorflow and PyTorch.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d170bd486e4c0fe82601e322b0e9e0dde63ab299",
+    "externalIds": {
+      "MAG": "2894175714",
+      "DBLP": "conf/iclr/BaevskiA19",
+      "ArXiv": "1809.10853",
+      "CorpusId": 52892477
+    },
+    "title": "Adaptive Input Representations for Neural Language Modeling",
+    "venue": "International Conference on Learning Representations",
+    "year": 2018,
+    "citationCount": 430,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1809.10853, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51428394",
+        "name": "Alexei Baevski"
+      },
+      {
+        "authorId": "2325985",
+        "name": "Michael Auli"
+      }
+    ],
+    "abstract": "We introduce adaptive input representations for neural language modeling which extend the adaptive softmax of Grave et al. (2017) to input representations of variable capacity. There are several choices on how to factorize the input and output layers, and whether to model words, characters or sub-word units. We perform a systematic comparison of popular choices for a self-attentional architecture. Our experiments show that models equipped with adaptive embeddings are more than twice as fast to train than the popular character input CNN while having a lower number of parameters. On the WikiText-103 benchmark we achieve 18.7 perplexity, an improvement of 10.5 perplexity compared to the previously best published result and on the Billion Word benchmark, we achieve 23.02 perplexity.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e941e9a078a1fdbaba1d72af19a0b9800c6625d8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1808-04776",
+      "MAG": "2885421725",
+      "ArXiv": "1808.04776",
+      "ACL": "W18-5713",
+      "DOI": "10.18653/v1/W18-5713",
+      "CorpusId": 52006529
+    },
+    "title": "Retrieve and Refine: Improved Sequence Generation Models For Dialogue",
+    "venue": "SCAI@EMNLP",
+    "year": 2018,
+    "citationCount": 207,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/W18-5713.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1808.04776, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145183709",
+        "name": "J. Weston"
+      },
+      {
+        "authorId": "31461304",
+        "name": "Emily Dinan"
+      },
+      {
+        "authorId": "143622869",
+        "name": "Alexander H. Miller"
+      }
+    ],
+    "abstract": "Sequence generation models for dialogue are known to have several problems: they tend to produce short, generic sentences that are uninformative and unengaging. Retrieval models on the other hand can surface interesting responses, but are restricted to the given retrieval set leading to erroneous replies that cannot be tuned to the specific context. In this work we develop a model that combines the two approaches to avoid both their deficiencies: first retrieve a response and then refine it – the final sequence generator treating the retrieval as additional context. We show on the recent ConvAI2 challenge task our approach produces responses superior to both standard retrieval and generation models in human evaluations.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2d2fec2f82cfd5db2be7087bfa6fd18ab348760e",
+    "externalIds": {
+      "MAG": "2804989836",
+      "DBLP": "conf/nips/Orhan18",
+      "ArXiv": "1805.08709",
+      "CorpusId": 46897785
+    },
+    "title": "A Simple Cache Model for Image Recognition",
+    "venue": "Neural Information Processing Systems",
+    "year": 2018,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1805.08709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3296664",
+        "name": "Emin Orhan"
+      }
+    ],
+    "abstract": "Training large-scale image recognition models is computationally expensive. This raises the question of whether there might be simple ways to improve the test performance of an already trained model without having to re-train or fine-tune it with new data. Here, we show that, surprisingly, this is indeed possible. The key observation we make is that the layers of a deep network close to the output layer contain independent, easily extractable class-relevant information that is not contained in the output layer itself. We propose to extract this extra class-relevant information using a simple key-value cache memory to improve the classification performance of the model at test time. Our cache memory is directly inspired by a similar cache model previously proposed for language modeling (Grave et al., 2017). This cache component does not require any training or fine-tuning; it can be applied to any pre-trained model and, by properly setting only two hyper-parameters, leads to significant improvements in its classification performance. Improvements are observed across several architectures and datasets. In the cache component, using features extracted from layers close to the output (but not from the output layer itself) as keys leads to the largest improvements. Concatenating features from multiple layers to form keys can further improve performance over using single-layer features as keys. The cache component also has a regularizing effect, a simple consequence of which is that it substantially increases the robustness of models against adversarial attacks.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d05e553f9bc3eb11d6a4a17766fb65d595fc7768",
+    "externalIds": {
+      "DBLP": "conf/aaai/GuWCL18",
+      "MAG": "2788330850",
+      "DOI": "10.1609/aaai.v32i1.12013",
+      "CorpusId": 19206366
+    },
+    "title": "Search Engine Guided Neural Machine Translation",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2018,
+    "citationCount": 184,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/12013/11872",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1609/aaai.v32i1.12013?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1609/aaai.v32i1.12013, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3016273",
+        "name": "Jiatao Gu"
+      },
+      {
+        "authorId": "1683878",
+        "name": "Yong Wang"
+      },
+      {
+        "authorId": "1979489",
+        "name": "Kyunghyun Cho"
+      },
+      {
+        "authorId": "2052674293",
+        "name": "V. Li"
+      }
+    ],
+    "abstract": "\n \n In this paper, we extend an attention-based neural machine translation (NMT) model by allowing it to access an entire training set of parallel sentence pairs even after training. The proposed approach consists of two stages. In the first stage –retrieval stage–, an off-the-shelf, black-box search engine is used to retrieve a small subset of sentence pairs from a training set given a source sentence. These pairs are further filtered based on a fuzzy matching score based on edit distance. In the second stage–translation stage–, a novel translation model, called search engine guided NMT (SEG-NMT), seamlessly uses both the source sentence and a set of retrieved sentence pairs to perform the translation. Empirical evaluation on three language pairs (En-Fr, En-De, and En-Es) shows that the proposed approach significantly outperforms the baseline approach and the improvement is more significant when more relevant sentence pairs were retrieved.\n \n",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f089993c8beeac15bd3fc562e96ff0983c6d0499",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1804-07705",
+      "ArXiv": "1804.07705",
+      "MAG": "2798540241",
+      "CorpusId": 5036936
+    },
+    "title": "Lightweight Adaptive Mixture of Neural and N-gram Language Models",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1804.07705, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152918929",
+        "name": "A. Bakhtin"
+      },
+      {
+        "authorId": "3149531",
+        "name": "Arthur Szlam"
+      },
+      {
+        "authorId": "1706809",
+        "name": "Marc'Aurelio Ranzato"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      }
+    ],
+    "abstract": "It is often the case that the best performing language model is an ensemble of a neural language model with n-grams. In this work, we propose a method to improve how these two models are combined. By using a small network which predicts the mixture weight between the two models, we adapt their relative importance at each time step. Because the gating network is small, it trains quickly on small amounts of held out data, and does not add overhead at scoring time. Our experiments carried out on the One Billion Word benchmark show a significant improvement over the state of the art ensemble without retraining of the basic modules.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2b50026b7b1054ef8e3643fcd7ef89d7b278a068",
+    "externalIds": {
+      "MAG": "2793165286",
+      "DBLP": "journals/corr/abs-1803-04765",
+      "ArXiv": "1803.04765",
+      "CorpusId": 3882460
+    },
+    "title": "Deep k-Nearest Neighbors: Towards Confident, Interpretable and Robust Deep Learning",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 560,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.04765, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2367796356",
+        "name": "Nicolas Papernot"
+      },
+      {
+        "authorId": "144061974",
+        "name": "P. Mcdaniel"
+      }
+    ],
+    "abstract": "Deep neural networks (DNNs) enable innovative applications of machine learning like image recognition, machine translation, or malware detection. However, deep learning is often criticized for its lack of robustness in adversarial settings (e.g., vulnerability to adversarial inputs) and general inability to rationalize its predictions. In this work, we exploit the structure of deep learning to enable new learning-based inference and decision strategies that achieve desirable properties such as robustness and interpretability. We take a first step in this direction and introduce the Deep k-Nearest Neighbors (DkNN). This hybrid classifier combines the k-nearest neighbors algorithm with representations of the data learned by each layer of the DNN: a test input is compared to its neighboring training points according to the distance that separates them in the representations. We show the labels of these neighboring points afford confidence estimates for inputs outside the model's training manifold, including on malicious inputs like adversarial examples--and therein provides protections against inputs that are outside the models understanding. This is because the nearest neighbors can be used to estimate the nonconformity of, i.e., the lack of support for, a prediction in the training data. The neighbors also constitute human-interpretable explanations of predictions. We evaluate the DkNN algorithm on several datasets, and show the confidence estimates accurately identify inputs outside the model, and that the explanations provided by nearest neighbors are intuitive and useful in understanding model failures.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "8dda1115ad021f96b4504ba38811fbbf144ea26e",
+    "externalIds": {
+      "ArXiv": "1802.09502",
+      "MAG": "2788475065",
+      "DBLP": "journals/corr/abs-1802-09502",
+      "CorpusId": 28597313
+    },
+    "title": "Retrieval-Augmented Convolutional Neural Networks for Improved Robustness against Adversarial Examples",
+    "venue": "arXiv.org",
+    "year": 2018,
+    "citationCount": 20,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.09502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109914894",
+        "name": "Jake Zhao"
+      },
+      {
+        "authorId": "1979489",
+        "name": "Kyunghyun Cho"
+      }
+    ],
+    "abstract": "We propose a retrieval-augmented convolutional network and propose to train it with local mixup, a novel variant of the recently proposed mixup algorithm. The proposed hybrid architecture combining a convolutional network and an off-the-shelf retrieval engine was designed to mitigate the adverse effect of off-manifold adversarial examples, while the proposed local mixup addresses on-manifold ones by explicitly encouraging the classifier to locally behave linearly on the data manifold. Our evaluation of the proposed approach against five readily-available adversarial attacks on three datasets--CIFAR-10, SVHN and ImageNet--demonstrate the improved robustness compared to the vanilla convolutional network.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2ed4ebe1878fd8e421f24e1aac76fbdc89e9d381",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1711-02604",
+      "MAG": "2952568826",
+      "ArXiv": "1711.02604",
+      "CorpusId": 9975560
+    },
+    "title": "Unbounded cache model for online language modeling with open vocabulary",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 73,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.02604, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "5723508",
+        "name": "Moustapha Cissé"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      }
+    ],
+    "abstract": "Recently, continuous cache models were proposed as extensions to recurrent neural network language models, to adapt their predictions to local changes in the data distribution. These models only capture the local context, of up to a few thousands tokens. In this paper, we propose an extension of continuous cache models, which can scale to larger contexts. In particular, we use a large scale non-parametric memory component that stores all the hidden activations seen in the past. We leverage recent advances in approximate nearest neighbor search and quantization algorithms to store millions of representations while searching them efficiently. We conduct extensive experiments showing that our approach significantly improves the perplexity of pre-trained language models on new distributions, and can scale efficiently to much larger contexts than previously proposed local cache models.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "f4faa5a838afb1d6d15b77d2c122818e4b6d642b",
+    "externalIds": {
+      "MAG": "2756540778",
+      "DBLP": "journals/tacl/GuuHOL18",
+      "ArXiv": "1709.08878",
+      "ACL": "Q18-1031",
+      "DOI": "10.1162/tacl_a_00030",
+      "CorpusId": 2318481
+    },
+    "title": "Generating Sentences by Editing Prototypes",
+    "venue": "Transactions of the Association for Computational Linguistics",
+    "year": 2017,
+    "citationCount": 324,
+    "openAccessPdf": {
+      "url": "http://www.mitpressjournals.org/doi/pdf/10.1162/tacl_a_00030",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1709.08878, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2091768",
+        "name": "Kelvin Guu"
+      },
+      {
+        "authorId": "3056528",
+        "name": "Tatsunori B. Hashimoto"
+      },
+      {
+        "authorId": "153163779",
+        "name": "Yonatan Oren"
+      },
+      {
+        "authorId": "145419642",
+        "name": "Percy Liang"
+      }
+    ],
+    "abstract": "We propose a new generative language model for sentences that first samples a prototype sentence from the training corpus and then edits it into a new sentence. Compared to traditional language models that generate from scratch either left-to-right or by first sampling a latent sentence vector, our prototype-then-edit model improves perplexity on language modeling and generates higher quality outputs according to human evaluation. Furthermore, the model gives rise to a latent edit vector that captures interpretable semantics such as sentence similarity and sentence-level analogies.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+    "externalIds": {
+      "MAG": "2950858113",
+      "ArXiv": "1706.03762",
+      "DBLP": "journals/corr/VaswaniSPUJGKP17",
+      "CorpusId": 13756489
+    },
+    "title": "Attention is All you Need",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 174088,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1706.03762, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40348417",
+        "name": "Ashish Vaswani"
+      },
+      {
+        "authorId": "1846258",
+        "name": "Noam Shazeer"
+      },
+      {
+        "authorId": "3877127",
+        "name": "Niki Parmar"
+      },
+      {
+        "authorId": "39328010",
+        "name": "Jakob Uszkoreit"
+      },
+      {
+        "authorId": "145024664",
+        "name": "Llion Jones"
+      },
+      {
+        "authorId": "19177000",
+        "name": "Aidan N. Gomez"
+      },
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "3443442",
+        "name": "I. Polosukhin"
+      }
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "29092f0deaac3898e43b3f094bf15d82b6a99afd",
+    "externalIds": {
+      "ArXiv": "1703.03129",
+      "DBLP": "journals/corr/KaiserNRB17",
+      "MAG": "2583010282",
+      "CorpusId": 12122362
+    },
+    "title": "Learning to Remember Rare Events",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 387,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.03129, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40527594",
+        "name": "Lukasz Kaiser"
+      },
+      {
+        "authorId": "7624658",
+        "name": "Ofir Nachum"
+      },
+      {
+        "authorId": "39788470",
+        "name": "Aurko Roy"
+      },
+      {
+        "authorId": "1751569",
+        "name": "Samy Bengio"
+      }
+    ],
+    "abstract": "Despite recent advances, memory-augmented deep neural networks are still limited when it comes to life-long and one-shot learning, especially in remembering rare events. We present a large-scale life-long memory module for use in deep learning. The module exploits fast nearest-neighbor algorithms for efficiency and thus scales to large memory sizes. Except for the nearest-neighbor query, the module is fully differentiable and trained end-to-end with no extra supervision. It operates in a life-long manner, i.e., without the need to reset it during training. \nOur memory module can be easily added to any part of a supervised neural network. To show its versatility we add it to a number of networks, from simple convolutional ones tested on image classification to deep sequence-to-sequence and recurrent-convolutional models. In all cases, the enhanced network gains the ability to remember and do life-long one-shot learning. Our module remembers training examples shown many thousands of steps in the past and it can successfully generalize from them. We set new state-of-the-art for one-shot learning on the Omniglot dataset and demonstrate, for the first time, life-long one-shot learning in recurrent neural networks on a large-scale machine translation task.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2cbb8de53759e75411bc528518947a3094fbce3a",
+    "externalIds": {
+      "MAG": "2998702515",
+      "DBLP": "journals/tbd/JohnsonDJ21",
+      "ArXiv": "1702.08734",
+      "DOI": "10.1109/tbdata.2019.2921572",
+      "CorpusId": 926364
+    },
+    "title": "Billion-Scale Similarity Search with GPUs",
+    "venue": "IEEE Transactions on Big Data",
+    "year": 2017,
+    "citationCount": 5044,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1702.08734",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.08734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115354049",
+        "name": "Jeff Johnson"
+      },
+      {
+        "authorId": "3271933",
+        "name": "Matthijs Douze"
+      },
+      {
+        "authorId": "1681054",
+        "name": "H. Jégou"
+      }
+    ],
+    "abstract": "Similarity search finds application in database systems handling complex data such as images or videos, which are typically represented by high-dimensional features and require specific indexing structures. This paper tackles the problem of better utilizing GPUs for this task. While GPUs excel at data parallel tasks such as distance computation, prior approaches in this domain are bottlenecked by algorithms that expose less parallelism, such as <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq1-2921572.gif\"/></alternatives></inline-formula>-min selection, or make poor use of the memory hierarchy. We propose a novel design for <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq2-2921572.gif\"/></alternatives></inline-formula>-selection. We apply it in different similarity search scenarios, by optimizing brute-force, approximate and compressed-domain search based on product quantization. In all these setups, we outperform the state of the art by large margins. Our implementation operates at up to 55 percent of theoretical peak performance, enabling a nearest neighbor implementation that is 8.5 × faster than prior GPU state of the art. It enables the construction of a high accuracy <inline-formula><tex-math notation=\"LaTeX\">$k$</tex-math><alternatives><mml:math><mml:mi>k</mml:mi></mml:math><inline-graphic xlink:href=\"johnson-ieq3-2921572.gif\"/></alternatives></inline-formula>-NN graph on 95 million images from the <sc>Yfcc100M</sc> dataset in 35 minutes, and of a graph connecting 1 billion vectors in less than 12 hours on 4 Maxwell Titan X GPUs. We have open-sourced our approach for the sake of comparison and reproducibility.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2d7782c225e0fc123d6e227f2cb253e58279ac73",
+    "externalIds": {
+      "DBLP": "conf/iclr/GraveJU17",
+      "MAG": "2571859396",
+      "ArXiv": "1612.04426",
+      "CorpusId": 8693672
+    },
+    "title": "Improving Neural Language Models with a Continuous Cache",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 308,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.04426, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "1746841",
+        "name": "Nicolas Usunier"
+      }
+    ],
+    "abstract": "We propose an extension to neural network language models to adapt their prediction to the recent history. Our model is a simplified version of memory augmented networks, which stores past hidden activations as memory and accesses them through a dot product with the current hidden activation. This mechanism is very efficient and scales to very large memory sizes. We also draw a link between the use of external memory in neural network and cache models used with count based language models. We demonstrate on several language model datasets that our approach performs significantly better than recent memory augmented networks.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "efbd381493bb9636f489b965a2034d529cd56bcd",
+    "externalIds": {
+      "ArXiv": "1609.07843",
+      "MAG": "2525332836",
+      "DBLP": "journals/corr/MerityXBS16",
+      "CorpusId": 16299141
+    },
+    "title": "Pointer Sentinel Mixture Models",
+    "venue": "International Conference on Learning Representations",
+    "year": 2016,
+    "citationCount": 3902,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.07843, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3375440",
+        "name": "Stephen Merity"
+      },
+      {
+        "authorId": "2228109",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "40518045",
+        "name": "James Bradbury"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      }
+    ],
+    "abstract": "Recent neural network sequence models with softmax classifiers have achieved their best language modeling performance only with very large hidden states and large vocabularies. Even then they struggle to predict rare or unseen words even if the context makes the prediction unambiguous. We introduce the pointer sentinel mixture architecture for neural sequence models which has the ability to either reproduce a word from the recent context or produce a word from a standard softmax classifier. Our pointer sentinel-LSTM model achieves state of the art language modeling performance on the Penn Treebank (70.9 perplexity) while using far fewer parameters than a standard softmax LSTM. In order to evaluate how well language models can exploit longer contexts and deal with more realistic vocabularies and larger corpora we also introduce the freely available WikiText corpus.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9ec499af9b85f30bdbdd6cdfbb07d484808c526a",
+    "externalIds": {
+      "MAG": "2519314406",
+      "DBLP": "journals/corr/GraveJCGJ16",
+      "ArXiv": "1609.04309",
+      "CorpusId": 6483732
+    },
+    "title": "Efficient softmax approximation for GPUs",
+    "venue": "International Conference on Machine Learning",
+    "year": 2016,
+    "citationCount": 292,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.04309, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "5723508",
+        "name": "Moustapha Cissé"
+      },
+      {
+        "authorId": "2529182",
+        "name": "David Grangier"
+      },
+      {
+        "authorId": "1681054",
+        "name": "H. Jégou"
+      }
+    ],
+    "abstract": "We propose an approximate strategy to efficiently train neural network based language models over very large vocabularies. Our approach, called adaptive softmax, circumvents the linear dependency on the vocabulary size by exploiting the unbalanced word distribution to form clusters that explicitly minimize the expectation of computational complexity. Our approach further reduces the computational cost by exploiting the specificities of modern architectures and matrix-matrix vector operations, making it particularly suited for graphical processing units. Our experiments carried out on standard benchmarks, such as EuroParl and One Billion Word, show that our approach brings a large gain in efficiency over standard approximations while achieving an accuracy close to that of the full softmax.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "63e39cdf1ad884da6bc69096bb3413b5b1100559",
+    "externalIds": {
+      "DBLP": "journals/corr/PressW16",
+      "MAG": "2963347649",
+      "ArXiv": "1608.05859",
+      "ACL": "E17-2025",
+      "DOI": "10.18653/V1/E17-2025",
+      "CorpusId": 836219
+    },
+    "title": "Using the Output Embedding to Improve Language Models",
+    "venue": "Conference of the European Chapter of the Association for Computational Linguistics",
+    "year": 2016,
+    "citationCount": 806,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/E17-2025.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1608.05859, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "40170001",
+        "name": "Ofir Press"
+      },
+      {
+        "authorId": "145128145",
+        "name": "Lior Wolf"
+      }
+    ],
+    "abstract": "We study the topmost weight matrix of neural network language models. We show that this matrix constitutes a valid word embedding. When training language models, we recommend tying the input embedding and this output embedding. We analyze the resulting update rules and show that the tied embedding evolves in a more similar way to the output embedding than to the input embedding in the untied model. We also offer a new method of regularizing the output embedding. Our methods lead to a significant reduction in perplexity, as we are able to show on a variety of neural network language models. Finally, we show that weight tying can reduce the size of neural translation models to less than half of their original size without harming their performance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1518039b5001f1836565215eb047526b3ac7f462",
+    "externalIds": {
+      "DBLP": "conf/acl/SennrichHB16a",
+      "ACL": "P16-1162",
+      "MAG": "1816313093",
+      "ArXiv": "1508.07909",
+      "DOI": "10.18653/v1/P16-1162",
+      "CorpusId": 1114678
+    },
+    "title": "Neural Machine Translation of Rare Words with Subword Units",
+    "venue": "Annual Meeting of the Association for Computational Linguistics",
+    "year": 2015,
+    "citationCount": 8619,
+    "openAccessPdf": {
+      "url": "https://www.aclweb.org/anthology/P16-1162.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1508.07909, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2082372",
+        "name": "Rico Sennrich"
+      },
+      {
+        "authorId": "2259100",
+        "name": "B. Haddow"
+      },
+      {
+        "authorId": "2539211",
+        "name": "Alexandra Birch"
+      }
+    ],
+    "abstract": "Neural machine translation (NMT) models typically operate with a fixed vocabulary, but translation is an open-vocabulary problem. Previous work addresses the translation of out-of-vocabulary words by backing off to a dictionary. In this paper, we introduce a simpler and more effective approach, making the NMT model capable of open-vocabulary translation by encoding rare and unknown words as sequences of subword units. This is based on the intuition that various word classes are translatable via smaller units than words, for instance names (via character copying or transliteration), compounds (via compositional translation), and cognates and loanwords (via phonological and morphological transformations). We discuss the suitability of different word segmentation techniques, including simple character n-gram models and a segmentation based on the byte pair encoding compression algorithm, and empirically show that subword models improve over a back-off dictionary baseline for the WMT 15 translation tasks English-German and English-Russian by 1.1 and 1.3 BLEU, respectively.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "0e6824e137847be0599bb0032e37042ed2ef5045",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhuKZSUTF15",
+      "ArXiv": "1506.06724",
+      "MAG": "2949433733",
+      "DOI": "10.1109/ICCV.2015.11",
+      "CorpusId": 6866988
+    },
+    "title": "Aligning Books and Movies: Towards Story-Like Visual Explanations by Watching Movies and Reading Books",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 2729,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1506.06724",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.06724, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334885409",
+        "name": "Yukun Zhu"
+      },
+      {
+        "authorId": "3450996",
+        "name": "Ryan Kiros"
+      },
+      {
+        "authorId": "1804104",
+        "name": "R. Zemel"
+      },
+      {
+        "authorId": "145124475",
+        "name": "R. Salakhutdinov"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      }
+    ],
+    "abstract": "Books are a rich source of both fine-grained information, how a character, an object or a scene looks like, as well as high-level semantics, what someone is thinking, feeling and how these states evolve through a story. This paper aims to align books to their movie releases in order to provide rich descriptive explanations for visual content that go semantically far beyond the captions available in the current datasets. To align movies and books we propose a neural sentence embedding that is trained in an unsupervised way from a large corpus of books, as well as a video-text neural embedding for computing similarities between movie clips and sentences in the book. We propose a context-aware CNN to combine information from multiple sources. We demonstrate good quantitative performance for movie/book alignment and show several qualitative examples that showcase the diversity of tasks our model can be used for.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "0de0294aaa9fcc9ce0b435680c2a145562e9f4a4",
+    "externalIds": {
+      "MAG": "2153330999",
+      "CorpusId": 4340293
+    },
+    "title": "An efficient memory-based morphosyntactic tagger and parser for Dutch",
+    "venue": "The Clinician",
+    "year": 2007,
+    "citationCount": 229,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "145977875",
+        "name": "Antal van den Bosch"
+      },
+      {
+        "authorId": "38124302",
+        "name": "Bertjan Busser"
+      },
+      {
+        "authorId": "2387085",
+        "name": "S. Canisius"
+      },
+      {
+        "authorId": "1735272",
+        "name": "Walter Daelemans"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "6c2b28f9354f667cd5bd07afc0471d8334430da7",
+    "externalIds": {
+      "MAG": "2140679639",
+      "DBLP": "conf/nips/BengioDV00",
+      "CorpusId": 221275765
+    },
+    "title": "A Neural Probabilistic Language Model",
+    "venue": "Journal of machine learning research",
+    "year": 2003,
+    "citationCount": 7756,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1751762",
+        "name": "Yoshua Bengio"
+      },
+      {
+        "authorId": "36037226",
+        "name": "Réjean Ducharme"
+      },
+      {
+        "authorId": "120247189",
+        "name": "Pascal Vincent"
+      },
+      {
+        "authorId": "1909943744",
+        "name": "Christian Janvin"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6082156a2270b6567ebdc85f6570ffacc3d903c2",
+    "externalIds": {
+      "MAG": "1551773846",
+      "DBLP": "conf/acl-vlc/DaelemansZBG96",
+      "ACL": "W96-0102",
+      "ArXiv": "cmp-lg/9607012",
+      "CorpusId": 505
+    },
+    "title": "MBT: A Memory-Based Part of Speech Tagger-Generator",
+    "venue": "VLC@COLING",
+    "year": 1996,
+    "citationCount": 421,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/cmp-lg/9607012, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1735272",
+        "name": "Walter Daelemans"
+      },
+      {
+        "authorId": "3316623",
+        "name": "Jakub Zavrel"
+      },
+      {
+        "authorId": "2561559",
+        "name": "P. Berck"
+      },
+      {
+        "authorId": "47567800",
+        "name": "Steven Gillis"
+      }
+    ],
+    "abstract": "We introduce a memory-based approach to part of speech tagging. Memory-based learning is a form of supervised learning based on similarity-based reasoning. The part of speech tag of a word in a particular context is extrapolated from the most similar cases held in memory. Supervised learning approaches are useful when a tagged corpus is available as an example of the desired output of the tagger. Based on such a corpus, the tagger-generator automatically builds a tagger which is able to tag new text the same way, diminishing development time for the construction of a tagger considerably. Memory-based tagging shares this advantage with other statistical or machine learning approaches. Additional advantages specific to a memory-based approach include (i) the relatively small tagged corpus size sufficient for training, (ii) incremental learning, (iii) explanation capabilities, (iv) flexible integration of information in case representations, (v) its non-parametric nature, (vi) reasonably good results on unknown words without morphological analysis, and (vii) fast learning and tagging. In this paper we show that a large-scale application of the memory-based approach is feasible: we obtain a tagging accuracy that is on a par with that of known statistical approaches, and with attractive space and time complexity properties when using IGTree, a tree-based formalism for indexing and searching huge case bases. The use of IGTree has as additional advantage that optimal context size for disambiguation is dynamically computed. 1 I n t r o d u c t i o n Part of Speech (POS) tagging is a process in which syntactic categories are assigned to words. It can be seen as a mapping from sentences to strings of tags. Automatic tagging is useful for a number of applications: as a preprocessing stage to parsing, in information retrieval, in text to speech systems, in corpus linguistics, etc. The two factors determining the syntactic category of a word are its lexical probability (e.g. without context, man is more probably a noun than a verb), and its contextual probability (e.g. after a pronoun, man is more probably a verb than a noun, as in they man the boats). Several approaches have been proposed to construct automatic taggers. Most work on statistical methods has used n-gram models or Hidden Markov Model-based taggers (e.g. Church, 1988; DeRose, 1988; Cutting et al. 1992; Merialdo, 1994, etc.). In",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+    "externalIds": {
+      "MAG": "2951055169",
+      "ACL": "N19-1423",
+      "DBLP": "journals/corr/abs-1810-04805",
+      "ArXiv": "1810.04805",
+      "DOI": "10.18653/v1/N19-1423",
+      "CorpusId": 52967399
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "venue": "North American Chapter of the Association for Computational Linguistics",
+    "year": 2019,
+    "citationCount": 113539,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1810.04805, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39172707",
+        "name": "Jacob Devlin"
+      },
+      {
+        "authorId": "1744179",
+        "name": "Ming-Wei Chang"
+      },
+      {
+        "authorId": "2544107",
+        "name": "Kenton Lee"
+      },
+      {
+        "authorId": "3259253",
+        "name": "Kristina Toutanova"
+      }
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "9405cc0d6169988371b2755e573cc28650d14dfe",
+    "externalIds": {
+      "MAG": "2955855238",
+      "CorpusId": 160025533
+    },
+    "title": "Language Models are Unsupervised Multitask Learners",
+    "venue": "",
+    "year": 2019,
+    "citationCount": 28234,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "49387725",
+        "name": "Jeff Wu"
+      },
+      {
+        "authorId": "48422824",
+        "name": "R. Child"
+      },
+      {
+        "authorId": "150970919",
+        "name": "D. Luan"
+      },
+      {
+        "authorId": "2698777",
+        "name": "Dario Amodei"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9819b600a828a57e1cde047bbe710d3446b30da5",
+    "externalIds": {
+      "MAG": "179875071",
+      "DBLP": "conf/interspeech/MikolovKBCK10",
+      "DOI": "10.21437/Interspeech.2010-343",
+      "CorpusId": 17048224
+    },
+    "title": "Recurrent neural network based language model",
+    "venue": "Interspeech",
+    "year": 2010,
+    "citationCount": 6090,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.21437/Interspeech.2010-343?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.21437/Interspeech.2010-343, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      },
+      {
+        "authorId": "2245567",
+        "name": "M. Karafiát"
+      },
+      {
+        "authorId": "1816892",
+        "name": "Lukáš Burget"
+      },
+      {
+        "authorId": "1899242",
+        "name": "J. Černocký"
+      },
+      {
+        "authorId": "2803071",
+        "name": "S. Khudanpur"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  }
+]

@@ -1,0 +1,1869 @@
+[
+  {
+    "paperId": "66fd82f5fb0e4b6c1c78482c00c858bad26b92f9",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2510-22319",
+      "ArXiv": "2510.22319",
+      "DOI": "10.48550/arXiv.2510.22319",
+      "CorpusId": 282388496
+    },
+    "title": "GRPO-Guard: Mitigating Implicit Over-Optimization in Flow Matching via Regulated Clipping",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.22319, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2387955122",
+        "name": "Jing Wang"
+      },
+      {
+        "authorId": "2342646262",
+        "name": "Jiajun Liang"
+      },
+      {
+        "authorId": "2387865088",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2376443117",
+        "name": "Henglin Liu"
+      },
+      {
+        "authorId": "2269171464",
+        "name": "Gongye Liu"
+      },
+      {
+        "authorId": "2303628037",
+        "name": "Jun Zheng"
+      },
+      {
+        "authorId": "2387862223",
+        "name": "Wanyuan Pang"
+      },
+      {
+        "authorId": "2316551117",
+        "name": "Ao Ma"
+      },
+      {
+        "authorId": "2114111123",
+        "name": "Zhenyu Xie"
+      },
+      {
+        "authorId": "2305033532",
+        "name": "Xintao Wang"
+      },
+      {
+        "authorId": "2398723293",
+        "name": "Meng Wang"
+      },
+      {
+        "authorId": "2276606835",
+        "name": "Pengfei Wan"
+      },
+      {
+        "authorId": "2316243710",
+        "name": "Xiaodan Liang"
+      }
+    ],
+    "abstract": "Recently, GRPO-based reinforcement learning has shown remarkable progress in optimizing flow-matching models, effectively improving their alignment with task-specific rewards. Within these frameworks, the policy update relies on importance-ratio clipping to constrain overconfident positive and negative gradients. However, in practice, we observe a systematic shift in the importance-ratio distribution-its mean falls below 1 and its variance differs substantially across timesteps. This left-shifted and inconsistent distribution prevents positive-advantage samples from entering the clipped region, causing the mechanism to fail in constraining overconfident positive updates. As a result, the policy model inevitably enters an implicit over-optimization stage-while the proxy reward continues to increase, essential metrics such as image quality and text-prompt alignment deteriorate sharply, ultimately making the learned policy impractical for real-world use. To address this issue, we introduce GRPO-Guard, a simple yet effective enhancement to existing GRPO frameworks. Our method incorporates ratio normalization, which restores a balanced and step-consistent importance ratio, ensuring that PPO clipping properly constrains harmful updates across denoising timesteps. In addition, a gradient reweighting strategy equalizes policy gradients over noise conditions, preventing excessive updates from particular timestep regions. Together, these designs act as a regulated clipping mechanism, stabilizing optimization and substantially mitigating implicit over-optimization without relying on heavy KL regularization. Extensive experiments on multiple diffusion backbones (e.g., SD3.5M, Flux.1-dev) and diverse proxy tasks demonstrate that GRPO-Guard significantly reduces over-optimization while maintaining or even improving generation quality.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "940e8712b2540f6037548ba49b205d1325148bb3",
+    "externalIds": {
+      "ArXiv": "2510.21890",
+      "DBLP": "journals/corr/abs-2510-21890",
+      "DOI": "10.48550/arXiv.2510.21890",
+      "CorpusId": 282389535
+    },
+    "title": "The Principles of Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 39,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.21890, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153892533",
+        "name": "Chieh-Hsin Lai"
+      },
+      {
+        "authorId": "2299946245",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "2302788380",
+        "name": "Dongjun Kim"
+      },
+      {
+        "authorId": "2253398841",
+        "name": "Yuki Mitsufuji"
+      },
+      {
+        "authorId": "2302797121",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "This monograph presents the core principles that have guided the development of diffusion models, tracing their origins and showing how diverse formulations arise from shared mathematical ideas. Diffusion modeling starts by defining a forward process that gradually corrupts data into noise, linking the data distribution to a simple prior through a continuum of intermediate distributions. The goal is to learn a reverse process that transforms noise back into data while recovering the same intermediates. We describe three complementary views. The variational view, inspired by variational autoencoders, sees diffusion as learning to remove noise step by step. The score-based view, rooted in energy-based modeling, learns the gradient of the evolving data distribution, indicating how to nudge samples toward more likely regions. The flow-based view, related to normalizing flows, treats generation as following a smooth path that moves samples from noise to data under a learned velocity field. These perspectives share a common backbone: a time-dependent velocity field whose flow transports a simple prior to the data. Sampling then amounts to solving a differential equation that evolves noise into data along a continuous trajectory. On this foundation, the monograph discusses guidance for controllable generation, efficient numerical solvers, and diffusion-motivated flow-map models that learn direct mappings between arbitrary times. It provides a conceptual and mathematically grounded understanding of diffusion models for readers with basic deep-learning knowledge.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "72d702e7e290c5a3223c42342e54f1b3e5dbf526",
+    "externalIds": {
+      "ArXiv": "2509.25050",
+      "DBLP": "journals/corr/abs-2509-25050",
+      "DOI": "10.48550/arXiv.2509.25050",
+      "CorpusId": 281674600
+    },
+    "title": "Advantage Weighted Matching: Aligning RL with Pretraining in Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 21,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.25050, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2238955619",
+        "name": "Shuchen Xue"
+      },
+      {
+        "authorId": "2382920979",
+        "name": "Chongjian Ge"
+      },
+      {
+        "authorId": "2293406059",
+        "name": "Shilong Zhang"
+      },
+      {
+        "authorId": "2374500166",
+        "name": "Yichen Li"
+      },
+      {
+        "authorId": "2238992725",
+        "name": "Zhi-Ming Ma"
+      }
+    ],
+    "abstract": "Reinforcement Learning (RL) has emerged as a central paradigm for advancing Large Language Models (LLMs), where pre-training and RL post-training share the same log-likelihood formulation. In contrast, recent RL approaches for diffusion models, most notably Denoising Diffusion Policy Optimization (DDPO), optimize an objective different from the pretraining objectives--score/flow matching loss. In this work, we establish a novel theoretical analysis: DDPO is an implicit form of score/flow matching with noisy targets, which increases variance and slows convergence. Building on this analysis, we introduce \\textbf{Advantage Weighted Matching (AWM)}, a policy-gradient method for diffusion. It uses the same score/flow-matching loss as pretraining to obtain a lower-variance objective and reweights each sample by its advantage. In effect, AWM raises the influence of high-reward samples and suppresses low-reward ones while keeping the modeling objective identical to pretraining. This unifies pretraining and RL conceptually and practically, is consistent with policy-gradient theory, reduces variance, and yields faster convergence. This simple yet effective design yields substantial benefits: on GenEval, OCR, and PickScore benchmarks, AWM delivers up to a $24\\times$ speedup over Flow-GRPO (which builds on DDPO), when applied to Stable Diffusion 3.5 Medium and FLUX, without compromising generation quality. Code is available at https://github.com/scxue/advantage_weighted_matching.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "96b7b18af643fffceeac93b739d3418bd3e42645",
+    "externalIds": {
+      "ArXiv": "2509.16117",
+      "DBLP": "journals/corr/abs-2509-16117",
+      "DOI": "10.48550/arXiv.2509.16117",
+      "CorpusId": 281411162
+    },
+    "title": "DiffusionNFT: Online Diffusion Reinforcement with Forward Process",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 67,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.16117, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1864036526",
+        "name": "Kaiwen Zheng"
+      },
+      {
+        "authorId": "2257328842",
+        "name": "Huayu Chen"
+      },
+      {
+        "authorId": "2364353756",
+        "name": "Haotian Ye"
+      },
+      {
+        "authorId": "2338962955",
+        "name": "Haoxiang Wang"
+      },
+      {
+        "authorId": "2288856236",
+        "name": "Qinsheng Zhang"
+      },
+      {
+        "authorId": "2342407392",
+        "name": "Kai Jiang"
+      },
+      {
+        "authorId": "2245088111",
+        "name": "Hang Su"
+      },
+      {
+        "authorId": "2302797121",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2257164913",
+        "name": "Jun Zhu"
+      },
+      {
+        "authorId": "2269736504",
+        "name": "Mingying Liu"
+      }
+    ],
+    "abstract": "Online reinforcement learning (RL) has been central to post-training language models, but its extension to diffusion models remains challenging due to intractable likelihoods. Recent works discretize the reverse sampling process to enable GRPO-style training, yet they inherit fundamental drawbacks, including solver restrictions, forward-reverse inconsistency, and complicated integration with classifier-free guidance (CFG). We introduce Diffusion Negative-aware FineTuning (DiffusionNFT), a new online RL paradigm that optimizes diffusion models directly on the forward process via flow matching. DiffusionNFT contrasts positive and negative generations to define an implicit policy improvement direction, naturally incorporating reinforcement signals into the supervised learning objective. This formulation enables training with arbitrary black-box solvers, eliminates the need for likelihood estimation, and requires only clean images rather than sampling trajectories for policy optimization. DiffusionNFT is up to $25\\times$ more efficient than FlowGRPO in head-to-head comparisons, while being CFG-free. For instance, DiffusionNFT improves the GenEval score from 0.24 to 0.98 within 1k steps, while FlowGRPO achieves 0.95 with over 5k steps and additional CFG employment. By leveraging multiple reward models, DiffusionNFT significantly boosts the performance of SD3.5-Medium in every benchmark tested.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "b7ba318b26aeaa3c9d5ffd3952c3658949b74a5f",
+    "externalIds": {
+      "ArXiv": "2509.06040",
+      "DBLP": "journals/corr/abs-2509-06040",
+      "DOI": "10.48550/arXiv.2509.06040",
+      "CorpusId": 281203001
+    },
+    "title": "BranchGRPO: Stable and Efficient GRPO with Structured Branching in Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 35,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.06040, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2334523550",
+        "name": "Yuming Li"
+      },
+      {
+        "authorId": "2379681963",
+        "name": "Yikai Wang"
+      },
+      {
+        "authorId": "2215602791",
+        "name": "Yuying Zhu"
+      },
+      {
+        "authorId": "2316676258",
+        "name": "Zhongyu Zhao"
+      },
+      {
+        "authorId": "2268759683",
+        "name": "Ming Lu"
+      },
+      {
+        "authorId": "2331326229",
+        "name": "Qi She"
+      },
+      {
+        "authorId": "2332857566",
+        "name": "Shanghang Zhang"
+      }
+    ],
+    "abstract": "Recent progress in aligning image and video generative models with Group Relative Policy Optimization (GRPO) has improved human preference alignment, but existing variants remain inefficient due to sequential rollouts and large numbers of sampling steps, unreliable credit assignment: sparse terminal rewards are uniformly propagated across timesteps, failing to capture the varying criticality of decisions during denoising. In this paper, we present BranchGRPO, a method that restructures the rollout process into a branching tree, where shared prefixes amortize computation and pruning removes low-value paths and redundant depths. BranchGRPO introduces three contributions: (1) a branching scheme that amortizes rollout cost through shared prefixes while preserving exploration diversity; (2) a reward fusion and depth-wise advantage estimator that transforms sparse terminal rewards into dense step-level signals; and (3) pruning strategies that cut gradient computation but leave forward rollouts and exploration unaffected. On HPDv2.1 image alignment, BranchGRPO improves alignment scores by up to \\textbf{16\\%} over DanceGRPO, while reducing per-iteration training time by nearly \\textbf{55\\%}. A hybrid variant, BranchGRPO-Mix, further accelerates training to 4.7x faster than DanceGRPO without degrading alignment. On WanX video generation, it further achieves higher Video-Align scores with sharper and temporally consistent frames compared to DanceGRPO. Codes are available at \\href{https://fredreic1849.github.io/BranchGRPO-Webpage/}{BranchGRPO}.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "2affa73c5527e5e0cc8ffa378744f1f9c65dbf1e",
+    "externalIds": {
+      "ArXiv": "2509.05952",
+      "DBLP": "journals/corr/abs-2509-05952",
+      "DOI": "10.48550/arXiv.2509.05952",
+      "CorpusId": 281204361
+    },
+    "title": "Coefficients-Preserving Sampling for Reinforcement Learning with Flow Matching",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 29,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.05952, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2256589017",
+        "name": "Feng Wang"
+      },
+      {
+        "authorId": "2349950570",
+        "name": "Zihao Yu"
+      }
+    ],
+    "abstract": "Reinforcement Learning (RL) has recently emerged as a powerful technique for improving image and video generation in Diffusion and Flow Matching models, specifically for enhancing output quality and alignment with prompts. A critical step for applying online RL methods on Flow Matching is the introduction of stochasticity into the deterministic framework, commonly realized by Stochastic Differential Equation (SDE). Our investigation reveals a significant drawback to this approach: SDE-based sampling introduces pronounced noise artifacts in the generated images, which we found to be detrimental to the reward learning process. A rigorous theoretical analysis traces the origin of this noise to an excess of stochasticity injected during inference. To address this, we draw inspiration from Denoising Diffusion Implicit Models (DDIM) to reformulate the sampling process. Our proposed method, Coefficients-Preserving Sampling (CPS), eliminates these noise artifacts. This leads to more accurate reward modeling, ultimately enabling faster and more stable convergence for reinforcement learning-based optimizers like Flow-GRPO and Dance-GRPO. Code will be released at https://github.com/IamCreateAI/FlowCPS",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "701fa19a19f9996f5d322e13e8c7427324338a06",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2508-04324",
+      "ArXiv": "2508.04324",
+      "DOI": "10.48550/arXiv.2508.04324",
+      "CorpusId": 280536418
+    },
+    "title": "TempFlow-GRPO: When Timing Matters for GRPO in Flow Models",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 55,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.04324, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2349952598",
+        "name": "Xiaoxuan He"
+      },
+      {
+        "authorId": "2182294169",
+        "name": "Siming Fu"
+      },
+      {
+        "authorId": "2334983893",
+        "name": "Yuke Zhao"
+      },
+      {
+        "authorId": "2375086835",
+        "name": "Wanli Li"
+      },
+      {
+        "authorId": "2375132989",
+        "name": "Jian Yang"
+      },
+      {
+        "authorId": "2325875475",
+        "name": "Dacheng Yin"
+      },
+      {
+        "authorId": "2352102004",
+        "name": "Fengyun Rao"
+      },
+      {
+        "authorId": "2243445798",
+        "name": "Bo Zhang"
+      }
+    ],
+    "abstract": "Recent flow matching models for text-to-image generation have achieved remarkable quality, yet their integration with reinforcement learning for human preference alignment remains suboptimal, hindering fine-grained reward-based optimization. We observe that the key impediment to effective GRPO training of flow models is the temporal uniformity assumption in existing approaches: sparse terminal rewards with uniform credit assignment fail to capture the varying criticality of decisions across generation timesteps, resulting in inefficient exploration and suboptimal convergence. To remedy this shortcoming, we introduce \\textbf{TempFlow-GRPO} (Temporal Flow GRPO), a principled GRPO framework that captures and exploits the temporal structure inherent in flow-based generation. TempFlow-GRPO introduces three key innovations: (i) a trajectory branching mechanism that provides process rewards by concentrating stochasticity at designated branching points, enabling precise credit assignment without requiring specialized intermediate reward models; (ii) a noise-aware weighting scheme that modulates policy optimization according to the intrinsic exploration potential of each timestep, prioritizing learning during high-impact early stages while ensuring stable refinement in later phases; and (iii) a seed group strategy that controls for initialization effects to isolate exploration contributions. These innovations endow the model with temporally-aware optimization that respects the underlying generative dynamics, leading to state-of-the-art performance in human preference alignment and text-to-image benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "20309e3e9934742961623b1acf459bf247954016",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2507-21802",
+      "ArXiv": "2507.21802",
+      "DOI": "10.48550/arXiv.2507.21802",
+      "CorpusId": 280337225
+    },
+    "title": "MixGRPO: Unlocking Flow-based GRPO Efficiency with Mixed ODE-SDE",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 96,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.21802, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2373749736",
+        "name": "Junzhe Li"
+      },
+      {
+        "authorId": "2374078222",
+        "name": "Yutao Cui"
+      },
+      {
+        "authorId": "2295003422",
+        "name": "Tao Huang"
+      },
+      {
+        "authorId": "2322988469",
+        "name": "Yi-Ting Ma"
+      },
+      {
+        "authorId": "2375323401",
+        "name": "Chun Fan"
+      },
+      {
+        "authorId": "2373751034",
+        "name": "Miles Yang"
+      },
+      {
+        "authorId": "2375371350",
+        "name": "Zhao Zhong"
+      }
+    ],
+    "abstract": "Although GRPO substantially enhances flow matching models in human preference alignment of image generation, methods such as FlowGRPO and DanceGRPO still exhibit inefficiency due to the necessity of sampling and optimizing over all denoising steps specified by the Markov Decision Process (MDP). In this paper, we propose $\\textbf{MixGRPO}$, a novel framework that leverages the flexibility of mixed sampling strategies through the integration of stochastic differential equations (SDE) and ordinary differential equations (ODE). This streamlines the optimization process within the MDP to improve efficiency and boost performance. Specifically, MixGRPO introduces a sliding window mechanism, using SDE sampling and GRPO-guided optimization only within the window, while applying ODE sampling outside. This design confines sampling randomness to the time-steps within the window, thereby reducing the optimization overhead, and allowing for more focused gradient updates to accelerate convergence. Additionally, as time-steps beyond the sliding window are not involved in optimization, higher-order solvers are supported for faster sampling. So we present a faster variant, termed $\\textbf{MixGRPO-Flash}$, which further improves training efficiency while achieving comparable performance. MixGRPO exhibits substantial gains across multiple dimensions of human preference alignment, outperforming DanceGRPO in both effectiveness and efficiency, with nearly 50% lower training time. Notably, MixGRPO-Flash further reduces training time by 71%.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "16cf8e8b67b5a2a2c03c93d4b398404c2436687e",
+    "externalIds": {
+      "ArXiv": "2507.21053",
+      "DBLP": "journals/corr/abs-2507-21053",
+      "DOI": "10.48550/arXiv.2507.21053",
+      "CorpusId": 280323254
+    },
+    "title": "Flow Matching Policy Gradients",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 45,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.21053, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2306066645",
+        "name": "David McAllister"
+      },
+      {
+        "authorId": "2338889811",
+        "name": "Songwei Ge"
+      },
+      {
+        "authorId": "2242880086",
+        "name": "Brent Yi"
+      },
+      {
+        "authorId": "2359652583",
+        "name": "Chung Min Kim"
+      },
+      {
+        "authorId": "2271523560",
+        "name": "Ethan Weber"
+      },
+      {
+        "authorId": "2337083924",
+        "name": "Hongsuk Choi"
+      },
+      {
+        "authorId": "2374431266",
+        "name": "Haiwen Feng"
+      },
+      {
+        "authorId": "20615377",
+        "name": "Angjoo Kanazawa"
+      }
+    ],
+    "abstract": "Flow-based generative models, including diffusion models, excel at modeling continuous distributions in high-dimensional spaces. In this work, we introduce Flow Policy Optimization (FPO), a simple on-policy reinforcement learning algorithm that brings flow matching into the policy gradient framework. FPO casts policy optimization as maximizing an advantage-weighted ratio computed from the conditional flow matching loss, in a manner compatible with the popular PPO-clip framework. It sidesteps the need for exact likelihood computation while preserving the generative capabilities of flow-based models. Unlike prior approaches for diffusion-based reinforcement learning that bind training to a specific sampling method, FPO is agnostic to the choice of diffusion or flow integration at both training and inference time. We show that FPO can train diffusion-style policies from scratch in a variety of continuous control tasks. We find that flow-based models can capture multimodal action distributions and achieve higher performance than Gaussian policies, particularly in under-conditioned settings.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "32566efe68955837f5d677cde1cddff09dbad381",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-07818",
+      "ArXiv": "2505.07818",
+      "DOI": "10.48550/arXiv.2505.07818",
+      "CorpusId": 278534432
+    },
+    "title": "DanceGRPO: Unleashing GRPO on Visual Generation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 224,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.07818, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2292486781",
+        "name": "Zeyue Xue"
+      },
+      {
+        "authorId": "2295685180",
+        "name": "Jie Wu"
+      },
+      {
+        "authorId": "2296727303",
+        "name": "Yu Gao"
+      },
+      {
+        "authorId": "2360838945",
+        "name": "Fangyuan Kong"
+      },
+      {
+        "authorId": "2352404831",
+        "name": "Lingting Zhu"
+      },
+      {
+        "authorId": "2287768783",
+        "name": "Mengzhao Chen"
+      },
+      {
+        "authorId": "2360881881",
+        "name": "Zhiheng Liu"
+      },
+      {
+        "authorId": "2335767700",
+        "name": "Wei Liu"
+      },
+      {
+        "authorId": "2356856580",
+        "name": "Qiushan Guo"
+      },
+      {
+        "authorId": "2295680253",
+        "name": "Weilin Huang"
+      },
+      {
+        "authorId": "2360710127",
+        "name": "Ping Luo"
+      }
+    ],
+    "abstract": "Recent advances in generative AI have revolutionized visual content creation, yet aligning model outputs with human preferences remains a critical challenge. While Reinforcement Learning (RL) has emerged as a promising approach for fine-tuning generative models, existing methods like DDPO and DPOK face fundamental limitations - particularly their inability to maintain stable optimization when scaling to large and diverse prompt sets, severely restricting their practical utility. This paper presents DanceGRPO, a framework that addresses these limitations through an innovative adaptation of Group Relative Policy Optimization (GRPO) for visual generation tasks. Our key insight is that GRPO's inherent stability mechanisms uniquely position it to overcome the optimization challenges that plague prior RL-based approaches on visual generation. DanceGRPO establishes several significant advances: First, it demonstrates consistent and stable policy optimization across multiple modern generative paradigms, including both diffusion models and rectified flows. Second, it maintains robust performance when scaling to complex, real-world scenarios encompassing three key tasks and four foundation models. Third, it shows remarkable versatility in optimizing for diverse human preferences as captured by five distinct reward models assessing image/video aesthetics, text-image alignment, video motion quality, and binary feedback. Our comprehensive experiments reveal that DanceGRPO outperforms baseline methods by up to 181\\% across multiple established benchmarks, including HPS-v2.1, CLIP Score, VideoAlign, and GenEval. Our results establish DanceGRPO as a robust and versatile solution for scaling Reinforcement Learning from Human Feedback (RLHF) tasks in visual generation, offering new insights into harmonizing reinforcement learning and visual synthesis.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "16c38a5b7d7d8487c9e03e7231330445eb64e5b1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2505-05470",
+      "ArXiv": "2505.05470",
+      "DOI": "10.48550/arXiv.2505.05470",
+      "CorpusId": 278394068
+    },
+    "title": "Flow-GRPO: Training Flow Matching Models via Online RL",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 327,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.05470, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2285060791",
+        "name": "Jie Liu"
+      },
+      {
+        "authorId": "2269171464",
+        "name": "Gongye Liu"
+      },
+      {
+        "authorId": "2342646262",
+        "name": "Jiajun Liang"
+      },
+      {
+        "authorId": "2357852532",
+        "name": "Yangguang Li"
+      },
+      {
+        "authorId": "2359774530",
+        "name": "Jiaheng Liu"
+      },
+      {
+        "authorId": "2305033532",
+        "name": "Xintao Wang"
+      },
+      {
+        "authorId": "2276606835",
+        "name": "Pengfei Wan"
+      },
+      {
+        "authorId": "2332361648",
+        "name": "Di Zhang"
+      },
+      {
+        "authorId": "2336864797",
+        "name": "Wanli Ouyang"
+      }
+    ],
+    "abstract": "We propose Flow-GRPO, the first method to integrate online policy gradient reinforcement learning (RL) into flow matching models. Our approach uses two key strategies: (1) an ODE-to-SDE conversion that transforms a deterministic Ordinary Differential Equation (ODE) into an equivalent Stochastic Differential Equation (SDE) that matches the original model's marginal distribution at all timesteps, enabling statistical sampling for RL exploration; and (2) a Denoising Reduction strategy that reduces training denoising steps while retaining the original number of inference steps, significantly improving sampling efficiency without sacrificing performance. Empirically, Flow-GRPO is effective across multiple text-to-image tasks. For compositional generation, RL-tuned SD3.5-M generates nearly perfect object counts, spatial relations, and fine-grained attributes, increasing GenEval accuracy from $63\\%$ to $95\\%$. In visual text rendering, accuracy improves from $59\\%$ to $92\\%$, greatly enhancing text generation. Flow-GRPO also achieves substantial gains in human preference alignment. Notably, very little reward hacking occurred, meaning rewards did not increase at the cost of appreciable image quality or diversity degradation.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "78a6748e26fff8ead21327eb4384112a88cbd6a1",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2503-05236",
+      "ArXiv": "2503.05236",
+      "DOI": "10.48550/arXiv.2503.05236",
+      "CorpusId": 276885050
+    },
+    "title": "Unified Reward Model for Multimodal Understanding and Generation",
+    "venue": "arXiv.org",
+    "year": 2025,
+    "citationCount": 128,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.05236, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2267308173",
+        "name": "Yibin Wang"
+      },
+      {
+        "authorId": "12862495",
+        "name": "Yuhang Zang"
+      },
+      {
+        "authorId": "2382886356",
+        "name": "Hao Li"
+      },
+      {
+        "authorId": "2334445793",
+        "name": "Cheng Jin"
+      },
+      {
+        "authorId": "2267494294",
+        "name": "Jiaqi Wang"
+      }
+    ],
+    "abstract": "Recent advances in human preference alignment have significantly improved multimodal generation and understanding. A key approach is to train reward models that provide supervision signals for preference optimization. However, existing reward models are often task-specific, limiting their adaptability across diverse visual applications. We also argue that a reward model that jointly learning to assess multiple vision tasks may foster a synergistic effect, where improved image understanding enhances image generation assessment, and refined image evaluation benefits video assessment through better frame analysis. To this end, this paper proposes UnifiedReward, the first unified reward model for multimodal understanding and generation assessment. It supports both pairwise ranking and pointwise scoring, providing effective reward signals for vision model preference alignment. Specifically, (1) we first train UnifiedReward on our constructed large-scale human preference dataset, which covers both image and video generation/understanding tasks. (2) Then, we leverage it to automatically construct high-quality pairwise preference data from vision models by progressively filtering their outputs through our two-stage strategy, i.e., pair ranking and point sifting. (3) Finally, we use these data to align vision models with human preferences via Direct Preference Optimization (DPO). Experimental results show that jointly learning to assess diverse visual tasks yields substantial mutual benefits. We further apply our pipeline to both vision understanding and generation, achieving consistent improvements across each domain.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "41a66997ce0a366bba3becf7c3f37c9aebb13fbd",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2403-03206",
+      "ArXiv": "2403.03206",
+      "DOI": "10.48550/arXiv.2403.03206",
+      "CorpusId": 268247980
+    },
+    "title": "Scaling Rectified Flow Transformers for High-Resolution Image Synthesis",
+    "venue": "International Conference on Machine Learning",
+    "year": 2024,
+    "citationCount": 3561,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.03206, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35175531",
+        "name": "Patrick Esser"
+      },
+      {
+        "authorId": "3411322",
+        "name": "Sumith Kulal"
+      },
+      {
+        "authorId": "119843260",
+        "name": "A. Blattmann"
+      },
+      {
+        "authorId": "2316859494",
+        "name": "Rahim Entezari"
+      },
+      {
+        "authorId": "2188737195",
+        "name": "Jonas Muller"
+      },
+      {
+        "authorId": "2289994508",
+        "name": "Harry Saini"
+      },
+      {
+        "authorId": "2290013499",
+        "name": "Yam Levi"
+      },
+      {
+        "authorId": "2053482699",
+        "name": "Dominik Lorenz"
+      },
+      {
+        "authorId": "40562186",
+        "name": "Axel Sauer"
+      },
+      {
+        "authorId": "2290014125",
+        "name": "Frederic Boesel"
+      },
+      {
+        "authorId": "2221125727",
+        "name": "Dustin Podell"
+      },
+      {
+        "authorId": "102541178",
+        "name": "Tim Dockhorn"
+      },
+      {
+        "authorId": "2221127565",
+        "name": "Zion English"
+      },
+      {
+        "authorId": "2221126982",
+        "name": "Kyle Lacey"
+      },
+      {
+        "authorId": "2290014122",
+        "name": "Alex Goodwin"
+      },
+      {
+        "authorId": "2290014387",
+        "name": "Yannik Marek"
+      },
+      {
+        "authorId": "1660819540",
+        "name": "Robin Rombach"
+      }
+    ],
+    "abstract": "Diffusion models create data from noise by inverting the forward paths of data towards noise and have emerged as a powerful generative modeling technique for high-dimensional, perceptual data such as images and videos. Rectified flow is a recent generative model formulation that connects data and noise in a straight line. Despite its better theoretical properties and conceptual simplicity, it is not yet decisively established as standard practice. In this work, we improve existing noise sampling techniques for training rectified flow models by biasing them towards perceptually relevant scales. Through a large-scale study, we demonstrate the superior performance of this approach compared to established diffusion formulations for high-resolution text-to-image synthesis. Additionally, we present a novel transformer-based architecture for text-to-image generation that uses separate weights for the two modalities and enables a bidirectional flow of information between image and text tokens, improving text comprehension, typography, and human preference ratings. We demonstrate that this architecture follows predictable scaling trends and correlates lower validation loss to improved text-to-image synthesis as measured by various metrics and human evaluations. Our largest models outperform state-of-the-art models, and we will make our experimental data, code, and model weights publicly available.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "35b142ea69598e6241f0011312128031df55895c",
+    "externalIds": {
+      "ArXiv": "2402.03300",
+      "DBLP": "journals/corr/abs-2402-03300",
+      "DOI": "10.48550/arXiv.2402.03300",
+      "CorpusId": 267412607
+    },
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "venue": "arXiv.org",
+    "year": 2024,
+    "citationCount": 5683,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.03300, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144485528",
+        "name": "Zhihong Shao"
+      },
+      {
+        "authorId": "144202874",
+        "name": "Peiyi Wang"
+      },
+      {
+        "authorId": "2278223869",
+        "name": "Qihao Zhu"
+      },
+      {
+        "authorId": "2274917091",
+        "name": "R. Xu"
+      },
+      {
+        "authorId": "2258088582",
+        "name": "Jun-Mei Song"
+      },
+      {
+        "authorId": "1680884",
+        "name": "Mingchuan Zhang"
+      },
+      {
+        "authorId": "2278599324",
+        "name": "Y. K. Li"
+      },
+      {
+        "authorId": "49176273",
+        "name": "Yu Wu"
+      },
+      {
+        "authorId": "2278834796",
+        "name": "Daya Guo"
+      }
+    ],
+    "abstract": "Mathematical reasoning poses a significant challenge for language models due to its complex and structured nature. In this paper, we introduce DeepSeekMath 7B, which continues pre-training DeepSeek-Coder-Base-v1.5 7B with 120B math-related tokens sourced from Common Crawl, together with natural language and code data. DeepSeekMath 7B has achieved an impressive score of 51.7% on the competition-level MATH benchmark without relying on external toolkits and voting techniques, approaching the performance level of Gemini-Ultra and GPT-4. Self-consistency over 64 samples from DeepSeekMath 7B achieves 60.9% on MATH. The mathematical reasoning capability of DeepSeekMath is attributed to two key factors: First, we harness the significant potential of publicly available web data through a meticulously engineered data selection pipeline. Second, we introduce Group Relative Policy Optimization (GRPO), a variant of Proximal Policy Optimization (PPO), that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "516a4c05883d4dc130bb7a638ad8e427b6756aac",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2311-18828",
+      "ArXiv": "2311.18828",
+      "DOI": "10.1109/CVPR52733.2024.00632",
+      "CorpusId": 265506768
+    },
+    "title": "One-Step Diffusion with Distribution Matching Distillation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 710,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2311.18828",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.18828, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2068568214",
+        "name": "Tianwei Yin"
+      },
+      {
+        "authorId": "2268761379",
+        "name": "Michael Gharbi"
+      },
+      {
+        "authorId": "2268806125",
+        "name": "Richard Zhang"
+      },
+      {
+        "authorId": "2268760396",
+        "name": "Eli Shechtman"
+      },
+      {
+        "authorId": "2268759923",
+        "name": "Frédo Durand"
+      },
+      {
+        "authorId": "2268759945",
+        "name": "William T. Freeman"
+      },
+      {
+        "authorId": "2268818883",
+        "name": "Taesung Park"
+      }
+    ],
+    "abstract": "Diffusion models generate high-quality images but require dozens of forward passes. We introduce Distribution Matching Distillation (DMD), a procedure to transform a diffusion model into a one-step image generator with minimal impact on image quality. We enforce the one-step image generator match the diffusion model at distribution level, by minimizing an approximate KL divergence whose gradient can be expressed as the difference between 2 score functions, one of the target distribution and the other of the synthetic distribution being produced by our one-step generator. The score functions are parameterized as two diffusion models trained separately on each distribution. Combined with a simple regression loss matching the large-scale structure of the multi-step diffusion outputs, our method outperforms all published few-step diffusion approaches, reaching 2.62 FID on ImageNet 64×64 and 11.49 FID on zero-shot COCO-30k, comparable to Stable Diffusion but orders of magnitude faster. Utilizing FP16 inference, our model can generate images at 20 FPS on modern hardware.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "f5275c61736781d236abe6700b822f1ea62f982e",
+    "externalIds": {
+      "ArXiv": "2311.12908",
+      "DBLP": "conf/cvpr/WallaceDRZLPEXJ24",
+      "DOI": "10.1109/CVPR52733.2024.00786",
+      "CorpusId": 265352136
+    },
+    "title": "Diffusion Model Alignment Using Direct Preference Optimization",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 661,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2311.12908",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2311.12908, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "152823401",
+        "name": "Bram Wallace"
+      },
+      {
+        "authorId": "2267728871",
+        "name": "Meihua Dang"
+      },
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "2249592181",
+        "name": "Linqi Zhou"
+      },
+      {
+        "authorId": "2261494043",
+        "name": "Aaron Lou"
+      },
+      {
+        "authorId": "3234247",
+        "name": "Senthil Purushwalkam"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "2267728986",
+        "name": "Caiming Xiong"
+      },
+      {
+        "authorId": "2708940",
+        "name": "Shafiq R. Joty"
+      },
+      {
+        "authorId": "2265756339",
+        "name": "Nikhil Naik"
+      }
+    ],
+    "abstract": "Large language models (LLMs) are fine-tuned using human comparison data with Reinforcement Learning from Human Feedback (RLHF) methods to make them better aligned with users' preferences. In contrast to LLMs, human preference learning has not been widely explored in text-to-image diffusion models; the best existing approach is to fine-tune a pretrained model using carefully curated high quality images and captions to improve visual appeal and text alignment. We propose Diffusion-DPO, a method to align diffusion models to human preferences by directly optimizing on human comparison data. Diffusion-DPO is adapted from the recently developed Direct Preference Optimization (DPO) [36], a simpler alternative to RLHF which directly optimizes a policy that best satisfies human preferences under a classification objective. We re-formulate DPO to account for a diffusion model notion of likelihood, utilizing the evidence lower bound to derive a differentiable objective. Using the Pick-a-Pic dataset of 851K crowdsourced pairwise preferences, we fine-tune the base model of the state-of-the-art Stable Diffusion XL (SDXL)-1.0 model with Diffusion-DPO. Our fine-tuned base model significantly outperforms both base SDXL-1.0 and the larger SDXL-1.0 model consisting of an additional refinement model in human evaluation, improving visual appeal and prompt alignment. We also develop a variant that uses AI feedback and has comparable performance to training on human preferences, opening the door for scaling of diffusion model alignment methods.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "7ee862c9de83ded9358deec49e3d5b951d59ca4c",
+    "externalIds": {
+      "ArXiv": "2310.11513",
+      "DBLP": "conf/nips/GhoshHS23",
+      "DOI": "10.48550/arXiv.2310.11513",
+      "CorpusId": 264288728
+    },
+    "title": "GenEval: An Object-Focused Framework for Evaluating Text-to-Image Alignment",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 710,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.11513, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2143028576",
+        "name": "Dhruba Ghosh"
+      },
+      {
+        "authorId": "2259915495",
+        "name": "H. Hajishirzi"
+      },
+      {
+        "authorId": "2259918151",
+        "name": "Ludwig Schmidt"
+      }
+    ],
+    "abstract": "Recent breakthroughs in diffusion models, multimodal pretraining, and efficient finetuning have led to an explosion of text-to-image generative models. Given human evaluation is expensive and difficult to scale, automated methods are critical for evaluating the increasingly large number of new models. However, most current automated evaluation metrics like FID or CLIPScore only offer a holistic measure of image quality or image-text alignment, and are unsuited for fine-grained or instance-level analysis. In this paper, we introduce GenEval, an object-focused framework to evaluate compositional image properties such as object co-occurrence, position, count, and color. We show that current object detection models can be leveraged to evaluate text-to-image models on a variety of generation tasks with strong human agreement, and that other discriminative vision models can be linked to this pipeline to further verify properties like object color. We then evaluate several open-source text-to-image models and analyze their relative generative capabilities on our benchmark. We find that recent models demonstrate significant improvement on these tasks, though they are still lacking in complex capabilities such as spatial relations and attribute binding. Finally, we demonstrate how GenEval might be used to help discover existing failure modes, in order to inform development of the next generation of text-to-image models. Our code to run the GenEval framework is publicly available at https://github.com/djghosh13/geneval.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "d8008ace077d72ccd277be795c720e9381623c10",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2306-09341",
+      "ArXiv": "2306.09341",
+      "DOI": "10.48550/arXiv.2306.09341",
+      "CorpusId": 259171771
+    },
+    "title": "Human Preference Score v2: A Solid Benchmark for Evaluating Human Preferences of Text-to-Image Synthesis",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 708,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2306.09341",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2306.09341, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2124853327",
+        "name": "Xiaoshi Wu"
+      },
+      {
+        "authorId": "2214829805",
+        "name": "Yiming Hao"
+      },
+      {
+        "authorId": "11837959",
+        "name": "Keqiang Sun"
+      },
+      {
+        "authorId": "2137372287",
+        "name": "Yixiong Chen"
+      },
+      {
+        "authorId": "2075369514",
+        "name": "Feng Zhu"
+      },
+      {
+        "authorId": "145638781",
+        "name": "Rui Zhao"
+      },
+      {
+        "authorId": "47893312",
+        "name": "Hongsheng Li"
+      }
+    ],
+    "abstract": "Recent text-to-image generative models can generate high-fidelity images from text inputs, but the quality of these generated images cannot be accurately evaluated by existing evaluation metrics. To address this issue, we introduce Human Preference Dataset v2 (HPD v2), a large-scale dataset that captures human preferences on images from a wide range of sources. HPD v2 comprises 798,090 human preference choices on 433,760 pairs of images, making it the largest dataset of its kind. The text prompts and images are deliberately collected to eliminate potential bias, which is a common issue in previous datasets. By fine-tuning CLIP on HPD v2, we obtain Human Preference Score v2 (HPS v2), a scoring model that can more accurately predict human preferences on generated images. Our experiments demonstrate that HPS v2 generalizes better than previous metrics across various image distributions and is responsive to algorithmic improvements of text-to-image generative models, making it a preferable evaluation metric for these models. We also investigate the design of the evaluation prompts for text-to-image generative models, to make the evaluation stable, fair and easy-to-use. Finally, we establish a benchmark for text-to-image generative models using HPS v2, which includes a set of recent text-to-image models from the academic, community and industry. The code and dataset is available at https://github.com/tgxs002/HPSv2 .",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "0d1c76d45afa012ded7ab741194baf142117c495",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-18290",
+      "ArXiv": "2305.18290",
+      "DOI": "10.52202/075280-2338",
+      "CorpusId": 258959321
+    },
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 8206,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.18290, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102801230",
+        "name": "Rafael Rafailov"
+      },
+      {
+        "authorId": "50465276",
+        "name": "Archit Sharma"
+      },
+      {
+        "authorId": "49688913",
+        "name": "E. Mitchell"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "144783904",
+        "name": "Christopher D. Manning"
+      },
+      {
+        "authorId": "46881670",
+        "name": "Chelsea Finn"
+      }
+    ],
+    "abstract": "While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "a553bf27d801d09f667fe121c0ba9632257f364b",
+    "externalIds": {
+      "DBLP": "conf/nips/FanWDLRBAG0L23",
+      "ArXiv": "2305.16381",
+      "DOI": "10.48550/arXiv.2305.16381",
+      "CorpusId": 258947323
+    },
+    "title": "DPOK: Reinforcement Learning for Fine-tuning Text-to-Image Diffusion Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 370,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2305.16381",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.16381, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2344807639",
+        "name": "Ying Fan"
+      },
+      {
+        "authorId": "145695607",
+        "name": "Olivia Watkins"
+      },
+      {
+        "authorId": "144894286",
+        "name": "Yuqing Du"
+      },
+      {
+        "authorId": "2143855835",
+        "name": "Hao Liu"
+      },
+      {
+        "authorId": "2060597867",
+        "name": "M. Ryu"
+      },
+      {
+        "authorId": "145646162",
+        "name": "Craig Boutilier"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1678622",
+        "name": "M. Ghavamzadeh"
+      },
+      {
+        "authorId": "2115495251",
+        "name": "Kangwook Lee"
+      },
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      }
+    ],
+    "abstract": "Learning from human feedback has been shown to improve text-to-image models. These techniques first learn a reward function that captures what humans care about in the task and then improve the models based on the learned reward function. Even though relatively simple approaches (e.g., rejection sampling based on reward scores) have been investigated, fine-tuning text-to-image models with the reward function remains challenging. In this work, we propose using online reinforcement learning (RL) to fine-tune text-to-image models. We focus on diffusion models, defining the fine-tuning task as an RL problem, and updating the pre-trained text-to-image diffusion models using policy gradient to maximize the feedback-trained reward. Our approach, coined DPOK, integrates policy optimization with KL regularization. We conduct an analysis of KL regularization for both RL fine-tuning and supervised fine-tuning. In our experiments, we show that DPOK is generally superior to supervised fine-tuning with respect to both image-text alignment and image quality. Our code is available at https://github.com/google-research/google-research/tree/master/dpok.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d8c78221e4366d6a72a6b3e41e35b706cc45c01d",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2305-13301",
+      "ArXiv": "2305.13301",
+      "DOI": "10.48550/arXiv.2305.13301",
+      "CorpusId": 258833251
+    },
+    "title": "Training Diffusion Models with Reinforcement Learning",
+    "venue": "International Conference on Learning Representations",
+    "year": 2023,
+    "citationCount": 799,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2305.13301",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.13301, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2069483822",
+        "name": "Kevin Black"
+      },
+      {
+        "authorId": "35163402",
+        "name": "Michael Janner"
+      },
+      {
+        "authorId": "15394275",
+        "name": "Yilun Du"
+      },
+      {
+        "authorId": "2000906",
+        "name": "Ilya Kostrikov"
+      },
+      {
+        "authorId": "1736651",
+        "name": "S. Levine"
+      }
+    ],
+    "abstract": "Diffusion models are a class of flexible generative models trained with an approximation to the log-likelihood objective. However, most use cases of diffusion models are not concerned with likelihoods, but instead with downstream objectives such as human-perceived image quality or drug effectiveness. In this paper, we investigate reinforcement learning methods for directly optimizing diffusion models for such objectives. We describe how posing denoising as a multi-step decision-making problem enables a class of policy gradient algorithms, which we refer to as denoising diffusion policy optimization (DDPO), that are more effective than alternative reward-weighted likelihood approaches. Empirically, DDPO is able to adapt text-to-image diffusion models to objectives that are difficult to express via prompting, such as image compressibility, and those derived from human feedback, such as aesthetic quality. Finally, we show that DDPO can improve prompt-image alignment using feedback from a vision-language model without the need for additional data collection or human annotation. The project's website can be found at http://rl-diffusion.github.io .",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "11c8911f787eed34e6f058d5d36287d45c54c961",
+    "externalIds": {
+      "DBLP": "conf/nips/KingmaG23",
+      "ArXiv": "2303.00848",
+      "DOI": "10.52202/075280-2858",
+      "CorpusId": 260332161
+    },
+    "title": "Understanding Diffusion Objectives as the ELBO with Simple Data Augmentation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2023,
+    "citationCount": 285,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.00848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "9659905",
+        "name": "Ruiqi Gao"
+      }
+    ],
+    "abstract": "To achieve the highest perceptual quality, state-of-the-art diffusion models are optimized with objectives that typically look very different from the maximum likelihood and the Evidence Lower Bound (ELBO) objectives. In this work, we reveal that diffusion model objectives are actually closely related to the ELBO. Specifically, we show that all commonly used diffusion model objectives equate to a weighted integral of ELBOs over different noise levels, where the weighting depends on the specific objective used. Under the condition of monotonic weighting, the connection is even closer: the diffusion objective then equals the ELBO, combined with simple data augmentation, namely Gaussian noise perturbation. We show that this condition holds for a number of state-of-the-art diffusion models. In experiments, we explore new monotonic weightings and demonstrate their effectiveness, achieving state-of-the-art FID scores on the high-resolution ImageNet benchmark.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1e4b6567ff66de6cdcbe58c863538241e2f62b45",
+    "externalIds": {
+      "ArXiv": "2302.12192",
+      "DBLP": "journals/corr/abs-2302-12192",
+      "DOI": "10.48550/arXiv.2302.12192",
+      "CorpusId": 257102772
+    },
+    "title": "Aligning Text-to-Image Models using Human Feedback",
+    "venue": "arXiv.org",
+    "year": 2023,
+    "citationCount": 437,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2302.12192",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.12192, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3436470",
+        "name": "Kimin Lee"
+      },
+      {
+        "authorId": "2143855835",
+        "name": "Hao Liu"
+      },
+      {
+        "authorId": "2060597867",
+        "name": "M. Ryu"
+      },
+      {
+        "authorId": "145695607",
+        "name": "Olivia Watkins"
+      },
+      {
+        "authorId": "144894286",
+        "name": "Yuqing Du"
+      },
+      {
+        "authorId": "145646162",
+        "name": "Craig Boutilier"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      },
+      {
+        "authorId": "1678622",
+        "name": "M. Ghavamzadeh"
+      },
+      {
+        "authorId": "2046135",
+        "name": "S. Gu"
+      }
+    ],
+    "abstract": "Deep generative models have shown impressive results in text-to-image synthesis. However, current text-to-image models often generate images that are inadequately aligned with text prompts. We propose a fine-tuning method for aligning such models using human feedback, comprising three stages. First, we collect human feedback assessing model output alignment from a set of diverse text prompts. We then use the human-labeled image-text dataset to train a reward function that predicts human feedback. Lastly, the text-to-image model is fine-tuned by maximizing reward-weighted likelihood to improve image-text alignment. Our method generates objects with specified colors, counts and backgrounds more accurately than the pre-trained model. We also analyze several design choices and find that careful investigations on such design choices are important in balancing the alignment-fidelity tradeoffs. Our results demonstrate the potential for learning from human feedback to significantly improve text-to-image models.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c5434eef64f3275d821ba24bfa3818bfc10649fb",
+    "externalIds": {
+      "DBLP": "conf/icml/Fan023",
+      "ArXiv": "2301.13362",
+      "DOI": "10.48550/arXiv.2301.13362",
+      "CorpusId": 256415971
+    },
+    "title": "Optimizing DDPM Sampling with Shortcut Fine-Tuning",
+    "venue": "International Conference on Machine Learning",
+    "year": 2023,
+    "citationCount": 95,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2301.13362",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2301.13362, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2344807639",
+        "name": "Ying Fan"
+      },
+      {
+        "authorId": "2115495251",
+        "name": "Kangwook Lee"
+      }
+    ],
+    "abstract": "In this study, we propose Shortcut Fine-Tuning (SFT), a new approach for addressing the challenge of fast sampling of pretrained Denoising Diffusion Probabilistic Models (DDPMs). SFT advocates for the fine-tuning of DDPM samplers through the direct minimization of Integral Probability Metrics (IPM), instead of learning the backward diffusion process. This enables samplers to discover an alternative and more efficient sampling shortcut, deviating from the backward diffusion process. Inspired by a control perspective, we propose a new algorithm SFT-PG: Shortcut Fine-Tuning with Policy Gradient, and prove that under certain assumptions, gradient descent of diffusion models with respect to IPM is equivalent to performing policy gradient. To our best knowledge, this is the first attempt to utilize reinforcement learning (RL) methods to train diffusion models. Through empirical evaluation, we demonstrate that our fine-tuning method can further enhance existing fast DDPM samplers, resulting in sample quality comparable to or even surpassing that of the full-step model across various datasets.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "baa4f95081e9663fb045d145acc70049ace16ac9",
+    "externalIds": {
+      "DBLP": "journals/ijautcomp/LuZBCLZ25",
+      "ArXiv": "2211.01095",
+      "DOI": "10.1007/s11633-025-1562-4",
+      "CorpusId": 253254916
+    },
+    "title": "DPM-Solver++: Fast Solver for Guided Sampling of Diffusion Probabilistic Models",
+    "venue": "Machine Intelligence Research",
+    "year": 2022,
+    "citationCount": 960,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2211.01095, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "102517285",
+        "name": "Cheng Lu"
+      },
+      {
+        "authorId": "2120327644",
+        "name": "Yuhao Zhou"
+      },
+      {
+        "authorId": "2071898125",
+        "name": "Fan Bao"
+      },
+      {
+        "authorId": "2276707",
+        "name": "Jianfei Chen"
+      },
+      {
+        "authorId": "2399563",
+        "name": "Chongxuan Li"
+      },
+      {
+        "authorId": "2155220672",
+        "name": "Jun Zhu"
+      }
+    ],
+    "abstract": "Diffusion probabilistic models (DPMs) have achieved impressive success in high-resolution image synthesis, especially in recent large-scale text-to-image generation applications. An essential technique for improving the sample quality of DPMs is guided sampling, which usually needs a large guidance scale to obtain the best sample quality. The commonly-used fast sampler for guided sampling is denoising diffusion implicit models (DDIM), a first-order diffusion ordinary differential equation (ODE) solver that generally needs 100 to 250 steps for high-quality samples. Although recent works propose dedicated high-order solvers and achieve a further speedup for sampling without guidance, their effectiveness for guided sampling has not been well-tested before. In this work, we demonstrate that previous high-order fast samplers suffer from instability issues, and they even become slower than DDIM when the guidance scale grows larger. To further speed up guided sampling, we propose DPM-Solver++, a high-order solver for the guided sampling of DPMs. DPM-Solver++ solves the diffusion ODE with the data prediction model and adopts thresholding methods to keep the solution matches training data distribution. We further propose a multistep variant of DPM-Solver++ to address the instability issue by reducing the effective step size. Experiments show that DPM-Solver++ can generate high-quality samples within only 15 to 20 steps for guided sampling by pixel-space and latent-space DPMs.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "af68f10ab5078bfc519caae377c90ee6d9c504e9",
+    "externalIds": {
+      "ArXiv": "2210.02747",
+      "DBLP": "journals/corr/abs-2210-02747",
+      "CorpusId": 252734897
+    },
+    "title": "Flow Matching for Generative Modeling",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 4088,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2210.02747, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3232072",
+        "name": "Y. Lipman"
+      },
+      {
+        "authorId": "51466615",
+        "name": "Ricky T. Q. Chen"
+      },
+      {
+        "authorId": "1405681873",
+        "name": "Heli Ben-Hamu"
+      },
+      {
+        "authorId": "1729762",
+        "name": "Maximilian Nickel"
+      },
+      {
+        "authorId": "123542315",
+        "name": "Matt Le"
+      }
+    ],
+    "abstract": "We introduce a new paradigm for generative modeling built on Continuous Normalizing Flows (CNFs), allowing us to train CNFs at unprecedented scale. Specifically, we present the notion of Flow Matching (FM), a simulation-free approach for training CNFs based on regressing vector fields of fixed conditional probability paths. Flow Matching is compatible with a general family of Gaussian probability paths for transforming between noise and data samples -- which subsumes existing diffusion paths as specific instances. Interestingly, we find that employing FM with diffusion paths results in a more robust and stable alternative for training diffusion models. Furthermore, Flow Matching opens the door to training CNFs with other, non-diffusion probability paths. An instance of particular interest is using Optimal Transport (OT) displacement interpolation to define the conditional probability paths. These paths are more efficient than diffusion paths, provide faster training and sampling, and result in better generalization. Training CNFs using Flow Matching on ImageNet leads to consistently better performance than alternative diffusion-based methods in terms of both likelihood and sample quality, and allows fast and reliable sample generation using off-the-shelf numerical ODE solvers.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "244054a4254a2147e43a3dad9c124b9b7eb4a04a",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2209-03003",
+      "ArXiv": "2209.03003",
+      "DOI": "10.48550/arXiv.2209.03003",
+      "CorpusId": 252111177
+    },
+    "title": "Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow",
+    "venue": "International Conference on Learning Representations",
+    "year": 2022,
+    "citationCount": 2728,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2209.03003",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2209.03003, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46521757",
+        "name": "Xingchao Liu"
+      },
+      {
+        "authorId": "29777869",
+        "name": "Chengyue Gong"
+      },
+      {
+        "authorId": "2165566517",
+        "name": "Qiang Liu"
+      }
+    ],
+    "abstract": "We present rectified flow, a surprisingly simple approach to learning (neural) ordinary differential equation (ODE) models to transport between two empirically observed distributions \\pi_0 and \\pi_1, hence providing a unified solution to generative modeling and domain transfer, among various other tasks involving distribution transport. The idea of rectified flow is to learn the ODE to follow the straight paths connecting the points drawn from \\pi_0 and \\pi_1 as much as possible. This is achieved by solving a straightforward nonlinear least squares optimization problem, which can be easily scaled to large models without introducing extra parameters beyond standard supervised learning. The straight paths are special and preferred because they are the shortest paths between two points, and can be simulated exactly without time discretization and hence yield computationally efficient models. We show that the procedure of learning a rectified flow from data, called rectification, turns an arbitrary coupling of \\pi_0 and \\pi_1 to a new deterministic coupling with provably non-increasing convex transport costs. In addition, recursively applying rectification allows us to obtain a sequence of flows with increasingly straight paths, which can be simulated accurately with coarse time discretization in the inference phase. In empirical studies, we show that rectified flow performs superbly on image generation, image-to-image translation, and domain adaptation. In particular, on image generation and translation, our method yields nearly straight flows that give high quality results even with a single Euler discretization step.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "af9f365ed86614c800f082bd8eb14be76072ad16",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2207-12598",
+      "ArXiv": "2207.12598",
+      "DOI": "10.48550/arXiv.2207.12598",
+      "CorpusId": 249145348
+    },
+    "title": "Classifier-Free Diffusion Guidance",
+    "venue": "arXiv.org",
+    "year": 2022,
+    "citationCount": 6044,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2207.12598",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2207.12598, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      }
+    ],
+    "abstract": "Classifier guidance is a recently introduced method to trade off mode coverage and sample fidelity in conditional diffusion models post training, in the same spirit as low temperature sampling or truncation in other types of generative models. Classifier guidance combines the score estimate of a diffusion model with the gradient of an image classifier and thereby requires training an image classifier separate from the diffusion model. It also raises the question of whether guidance can be performed without a classifier. We show that guidance can be indeed performed by a pure generative model without such a classifier: in what we call classifier-free guidance, we jointly train a conditional and an unconditional diffusion model, and we combine the resulting conditional and unconditional score estimates to attain a trade-off between sample quality and diversity similar to that obtained using classifier guidance.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9695824d7a01fad57ba9c01d7d76a519d78d65e7",
+    "externalIds": {
+      "ArXiv": "2205.11487",
+      "DBLP": "journals/corr/abs-2205-11487",
+      "DOI": "10.48550/arXiv.2205.11487",
+      "CorpusId": 248986576
+    },
+    "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
+    "venue": "Neural Information Processing Systems",
+    "year": 2022,
+    "citationCount": 8123,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2205.11487",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2205.11487, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "51497543",
+        "name": "Chitwan Saharia"
+      },
+      {
+        "authorId": "144333684",
+        "name": "William Chan"
+      },
+      {
+        "authorId": "2054003577",
+        "name": "Saurabh Saxena"
+      },
+      {
+        "authorId": "2111917831",
+        "name": "Lala Li"
+      },
+      {
+        "authorId": "21040156",
+        "name": "Jay Whang"
+      },
+      {
+        "authorId": "40081727",
+        "name": "Emily L. Denton"
+      },
+      {
+        "authorId": "81419386",
+        "name": "Seyed Kamyar Seyed Ghasemipour"
+      },
+      {
+        "authorId": "143990191",
+        "name": "Burcu Karagol Ayan"
+      },
+      {
+        "authorId": "1982213",
+        "name": "S. S. Mahdavi"
+      },
+      {
+        "authorId": "143826364",
+        "name": "Raphael Gontijo Lopes"
+      },
+      {
+        "authorId": "2887364",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1793739",
+        "name": "David J. Fleet"
+      },
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      }
+    ],
+    "abstract": "We present Imagen, a text-to-image diffusion model with an unprecedented degree of photorealism and a deep level of language understanding. Imagen builds on the power of large transformer language models in understanding text and hinges on the strength of diffusion models in high-fidelity image generation. Our key discovery is that generic large language models (e.g. T5), pretrained on text-only corpora, are surprisingly effective at encoding text for image synthesis: increasing the size of the language model in Imagen boosts both sample fidelity and image-text alignment much more than increasing the size of the image diffusion model. Imagen achieves a new state-of-the-art FID score of 7.27 on the COCO dataset, without ever training on COCO, and human raters find Imagen samples to be on par with the COCO data itself in image-text alignment. To assess text-to-image models in greater depth, we introduce DrawBench, a comprehensive and challenging benchmark for text-to-image models. With DrawBench, we compare Imagen with recent methods including VQ-GAN+CLIP, Latent Diffusion Models, and DALL-E 2, and find that human raters prefer Imagen over other models in side-by-side comparisons, both in terms of sample quality and image-text alignment. See https://imagen.research.google/ for an overview of the results.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "94bcd712aed610b8eaeccc57136d65ec988356f2",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2107-00630",
+      "ArXiv": "2107.00630",
+      "CorpusId": 235694314
+    },
+    "title": "Variational Diffusion Models",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 1454,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.00630, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117266525",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2117261512",
+        "name": "Tim Salimans"
+      },
+      {
+        "authorId": "2117259766",
+        "name": "Ben Poole"
+      },
+      {
+        "authorId": "2112615253",
+        "name": "Jonathan Ho"
+      }
+    ],
+    "abstract": "Diffusion-based generative models have demonstrated a capacity for perceptually impressive synthesis, but can they also be great likelihood-based models? We answer this in the affirmative, and introduce a family of diffusion-based generative models that obtain state-of-the-art likelihoods on standard image density estimation benchmarks. Unlike other diffusion-based models, our method allows for efficient optimization of the noise schedule jointly with the rest of the model. We show that the variational lower bound (VLB) simplifies to a remarkably short expression in terms of the signal-to-noise ratio of the diffused data, thereby improving our theoretical understanding of this model class. Using this insight, we prove an equivalence between several models proposed in the literature. In addition, we show that the continuous-time VLB is invariant to the noise schedule, except for the signal-to-noise ratio at its endpoints. This enables us to learn a noise schedule that minimizes the variance of the resulting VLB estimator, leading to faster optimization. Combining these advances with architectural improvements, we obtain state-of-the-art likelihoods on image density estimation benchmarks, outperforming autoregressive models that have dominated these benchmarks for many years, with often significantly faster optimization. In addition, we show how to use the model as part of a bits-back compression scheme, and demonstrate lossless compression rates close to the theoretical optimum. Code is available at https://github.com/google-research/vdm .",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "38b0567e83386ddc294d6c81b541deacbd8e3c2a",
+    "externalIds": {
+      "DBLP": "conf/emnlp/HesselHFBC21",
+      "ACL": "2021.emnlp-main.595",
+      "ArXiv": "2104.08718",
+      "DOI": "10.18653/v1/2021.emnlp-main.595",
+      "CorpusId": 233296711
+    },
+    "title": "CLIPScore: A Reference-free Evaluation Metric for Image Captioning",
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "year": 2021,
+    "citationCount": 2671,
+    "openAccessPdf": {
+      "url": "https://aclanthology.org/2021.emnlp-main.595.pdf",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.08718, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2689239",
+        "name": "Jack Hessel"
+      },
+      {
+        "authorId": "14487640",
+        "name": "Ari Holtzman"
+      },
+      {
+        "authorId": "39191185",
+        "name": "Maxwell Forbes"
+      },
+      {
+        "authorId": "39227408",
+        "name": "Ronan Le Bras"
+      },
+      {
+        "authorId": "1699545",
+        "name": "Yejin Choi"
+      }
+    ],
+    "abstract": "Image captioning has conventionally relied on reference-based automatic evaluations, where machine captions are compared against captions written by humans. This is in contrast to the reference-free manner in which humans assess caption quality. In this paper, we report the surprising empirical finding that CLIP (Radford et al., 2021), a cross-modal model pretrained on 400M image+caption pairs from the web, can be used for robust automatic evaluation of image captioning without the need for references. Experiments spanning several corpora demonstrate that our new reference-free metric, CLIPScore, achieves the highest correlation with human judgements, outperforming existing reference-based metrics like CIDEr and SPICE. Information gain experiments demonstrate that CLIPScore, with its tight focus on image-text compatibility, is complementary to existing reference-based metrics that emphasize text-text similarities. Thus, we also present a reference-augmented version, RefCLIPScore, which achieves even higher correlation. Beyond literal description tasks, several case studies reveal domains where CLIPScore performs well (clip-art images, alt-text rating), but also where it is relatively weaker in comparison to reference-based metrics, e.g., news captions that require richer contextual knowledge.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "9cf6f42806a35fd1d410dbc34d8e8df73a29d094",
+    "externalIds": {
+      "ArXiv": "2101.09258",
+      "DBLP": "conf/nips/SongDME21",
+      "CorpusId": 235352469
+    },
+    "title": "Maximum Likelihood Training of Score-Based Diffusion Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 867,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2101.09258, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "49089615",
+        "name": "Conor Durkan"
+      },
+      {
+        "authorId": "145797336",
+        "name": "Iain Murray"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      }
+    ],
+    "abstract": "Score-based diffusion models synthesize samples by reversing a stochastic process that diffuses data to noise, and are trained by minimizing a weighted combination of score matching losses. The log-likelihood of score-based diffusion models can be tractably computed through a connection to continuous normalizing flows, but log-likelihood is not directly optimized by the weighted combination of score matching losses. We show that for a specific weighting scheme, the objective upper bounds the negative log-likelihood, thus enabling approximate maximum likelihood training of score-based diffusion models. We empirically observe that maximum likelihood training consistently improves the likelihood of score-based diffusion models across multiple datasets, stochastic processes, and model architectures. Our best models achieve negative log-likelihoods of 2.83 and 3.76 bits/dim on CIFAR-10 and ImageNet 32x32 without any data augmentation, on a par with state-of-the-art autoregressive models on these tasks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "633e2fbfc0b21e959a244100937c5853afca4853",
+    "externalIds": {
+      "ArXiv": "2011.13456",
+      "DBLP": "journals/corr/abs-2011-13456",
+      "MAG": "3110257065",
+      "CorpusId": 227209335
+    },
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "venue": "International Conference on Learning Representations",
+    "year": 2020,
+    "citationCount": 10140,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.13456, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "115504645",
+        "name": "Yang Song"
+      },
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "1726807",
+        "name": "Diederik P. Kingma"
+      },
+      {
+        "authorId": "2109224633",
+        "name": "Abhishek Kumar"
+      },
+      {
+        "authorId": "2490652",
+        "name": "Stefano Ermon"
+      },
+      {
+        "authorId": "16443937",
+        "name": "Ben Poole"
+      }
+    ],
+    "abstract": "Creating noise from data is easy; creating data from noise is generative modeling. We present a stochastic differential equation (SDE) that smoothly transforms a complex data distribution to a known prior distribution by slowly injecting noise, and a corresponding reverse-time SDE that transforms the prior distribution back into the data distribution by slowly removing the noise. Crucially, the reverse-time SDE depends only on the time-dependent gradient field (\\aka, score) of the perturbed data distribution. By leveraging advances in score-based generative modeling, we can accurately estimate these scores with neural networks, and use numerical SDE solvers to generate samples. We show that this framework encapsulates previous approaches in score-based generative modeling and diffusion probabilistic modeling, allowing for new sampling procedures and new modeling capabilities. In particular, we introduce a predictor-corrector framework to correct errors in the evolution of the discretized reverse-time SDE. We also derive an equivalent neural ODE that samples from the same distribution as the SDE, but additionally enables exact likelihood computation, and improved sampling efficiency. In addition, we provide a new way to solve inverse problems with score-based models, as demonstrated with experiments on class-conditional generation, image inpainting, and colorization. Combined with multiple architectural improvements, we achieve record-breaking performance for unconditional image generation on CIFAR-10 with an Inception score of 9.89 and FID of 2.20, a competitive likelihood of 2.99 bits/dim, and demonstrate high fidelity generation of 1024 x 1024 images for the first time from a score-based generative model.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "5c126ae3421f05768d8edd97ecd44b1364e2c99a",
+    "externalIds": {
+      "DBLP": "conf/nips/HoJA20",
+      "MAG": "3100572490",
+      "ArXiv": "2006.11239",
+      "CorpusId": 219955663
+    },
+    "title": "Denoising Diffusion Probabilistic Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 29734,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2006.11239, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2126278",
+        "name": "Jonathan Ho"
+      },
+      {
+        "authorId": "1623995772",
+        "name": "Ajay Jain"
+      },
+      {
+        "authorId": "1689992",
+        "name": "P. Abbeel"
+      }
+    ],
+    "abstract": "We present high quality image synthesis results using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics. Our best results are obtained by training on a weighted variational bound designed according to a novel connection between diffusion probabilistic models and denoising score matching with Langevin dynamics, and our models naturally admit a progressive lossy decompression scheme that can be interpreted as a generalization of autoregressive decoding. On the unconditional CIFAR10 dataset, we obtain an Inception score of 9.46 and a state-of-the-art FID score of 3.17. On 256x256 LSUN, we obtain sample quality similar to ProgressiveGAN. Our implementation is available at this https URL",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "d07284a6811f1b2745d91bdb06b040b57f226882",
+    "externalIds": {
+      "MAG": "2950541952",
+      "DBLP": "conf/iclr/LoshchilovH19",
+      "CorpusId": 53592270
+    },
+    "title": "Decoupled Weight Decay Regularization",
+    "venue": "International Conference on Learning Representations",
+    "year": 2017,
+    "citationCount": 33053,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1678656",
+        "name": "I. Loshchilov"
+      },
+      {
+        "authorId": "144661829",
+        "name": "F. Hutter"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "dce6f9d4017b1785979e7520fd0834ef8cf02f4b",
+    "externalIds": {
+      "MAG": "2736601468",
+      "DBLP": "journals/corr/SchulmanWDRK17",
+      "ArXiv": "1707.06347",
+      "CorpusId": 28695052
+    },
+    "title": "Proximal Policy Optimization Algorithms",
+    "venue": "arXiv.org",
+    "year": 2017,
+    "citationCount": 26838,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.06347, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47971768",
+        "name": "John Schulman"
+      },
+      {
+        "authorId": "143909660",
+        "name": "Filip Wolski"
+      },
+      {
+        "authorId": "6515819",
+        "name": "Prafulla Dhariwal"
+      },
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2067138712",
+        "name": "Oleg Klimov"
+      }
+    ],
+    "abstract": "We propose a new family of policy gradient methods for reinforcement learning, which alternate between sampling data through interaction with the environment, and optimizing a \"surrogate\" objective function using stochastic gradient ascent. Whereas standard policy gradient methods perform one gradient update per data sample, we propose a novel objective function that enables multiple epochs of minibatch updates. The new methods, which we call proximal policy optimization (PPO), have some of the benefits of trust region policy optimization (TRPO), but they are much simpler to implement, more general, and have better sample complexity (empirically). Our experiments test PPO on a collection of benchmark tasks, including simulated robotic locomotion and Atari game playing, and we show that PPO outperforms other online policy gradient methods, and overall strikes a favorable balance between sample complexity, simplicity, and wall-time.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "2dcef55a07f8607a819c21fe84131ea269cc2e3c",
+    "externalIds": {
+      "MAG": "2129069237",
+      "DBLP": "journals/corr/Sohl-DicksteinW15",
+      "ArXiv": "1503.03585",
+      "CorpusId": 14888175
+    },
+    "title": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 9689,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1503.03585, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1407546424",
+        "name": "Jascha Narain Sohl-Dickstein"
+      },
+      {
+        "authorId": "2144479710",
+        "name": "Eric A. Weiss"
+      },
+      {
+        "authorId": "2333223",
+        "name": "Niru Maheswaranathan"
+      },
+      {
+        "authorId": "25769960",
+        "name": "S. Ganguli"
+      }
+    ],
+    "abstract": "A central problem in machine learning involves modeling complex data-sets using highly flexible families of probability distributions in which learning, sampling, inference, and evaluation are still analytically or computationally tractable. Here, we develop an approach that simultaneously achieves both flexibility and tractability. The essential idea, inspired by non-equilibrium statistical physics, is to systematically and slowly destroy structure in a data distribution through an iterative forward diffusion process. We then learn a reverse diffusion process that restores structure in data, yielding a highly flexible and tractable generative model of the data. This approach allows us to rapidly learn, sample from, and evaluate probabilities in deep generative models with thousands of layers or time steps, as well as to compute conditional and posterior probabilities under the learned model. We additionally release an open source reference implementation of the algorithm.",
+    "_is_influential": true,
+    "_intents": []
+  },
+  {
+    "paperId": "f657f01c94c62117145c579700cb03beafc2fe9c",
+    "externalIds": {
+      "MAG": "1579096296",
+      "DOI": "10.1007/978-3-540-68829-7_21",
+      "CorpusId": 7341613
+    },
+    "title": "Stochastic differential equations",
+    "venue": "",
+    "year": 2012,
+    "citationCount": 1676,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-540-68829-7_21?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-540-68829-7_21, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2782155",
+        "name": "N. Halidias"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  }
+]
