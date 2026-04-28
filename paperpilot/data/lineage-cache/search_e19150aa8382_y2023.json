@@ -1,0 +1,2148 @@
+[
+  {
+    "paperId": "e1799aaf23c12af6932dc0ef3dfb1638f01413d1",
+    "externalIds": {
+      "DBLP": "journals/tog/WangSLSBS19",
+      "MAG": "2785053089",
+      "ArXiv": "1801.07829",
+      "DOI": "10.1145/3326362",
+      "CorpusId": 94822
+    },
+    "title": "Dynamic Graph CNN for Learning on Point Clouds",
+    "venue": "ACM Transactions on Graphics",
+    "year": 2018,
+    "citationCount": 7383,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3326362",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1801.07829, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2118462083",
+        "name": "Yue Wang"
+      },
+      {
+        "authorId": "1409692637",
+        "name": "Yongbin Sun"
+      },
+      {
+        "authorId": "2117940996",
+        "name": "Ziwei Liu"
+      },
+      {
+        "authorId": "1934849",
+        "name": "S. Sarma"
+      },
+      {
+        "authorId": "1732570",
+        "name": "M. Bronstein"
+      },
+      {
+        "authorId": "1932072",
+        "name": "J. Solomon"
+      }
+    ],
+    "abstract": "Point clouds provide a flexible geometric representation suitable for countless applications in computer graphics; they also comprise the raw output of most 3D data acquisition devices. While hand-designed features on point clouds have long been proposed in graphics and vision, however, the recent overwhelming success of convolutional neural networks (CNNs) for image analysis suggests the value of adapting insight from CNN to the point cloud world. Point clouds inherently lack topological information, so designing a model to recover topology can enrich the representation power of point clouds. To this end, we propose a new neural network module dubbed EdgeConv suitable for CNN-based high-level tasks on point clouds, including classification and segmentation. EdgeConv acts on graphs dynamically computed in each layer of the network. It is differentiable and can be plugged into existing architectures. Compared to existing modules operating in extrinsic space or treating each point independently, EdgeConv has several appealing properties: It incorporates local neighborhood information; it can be stacked applied to learn global shape properties; and in multi-layer systems affinity in feature space captures semantic characteristics over potentially long distances in the original embedding. We show the performance of our model on standard benchmarks, including ModelNet40, ShapeNetPart, and S3DIS."
+  },
+  {
+    "paperId": "1a0912bb76777469295bb2c059faee907e7f3258",
+    "externalIds": {
+      "ArXiv": "1703.06870",
+      "CorpusId": 54465873
+    },
+    "title": "Mask R-CNN",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 31572,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.06870, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2082991",
+        "name": "Georgia Gkioxari"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We present a conceptually simple, flexible, and general framework for object instance segmentation. Our approach efficiently detects objects in an image while simultaneously generating a high-quality segmentation mask for each instance. The method, called Mask R-CNN, extends Faster R-CNN by adding a branch for predicting an object mask in parallel with the existing branch for bounding box recognition. Mask R-CNN is simple to train and adds only a small overhead to Faster R-CNN, running at 5 fps. Moreover, Mask R-CNN is easy to generalize to other tasks, e.g., allowing us to estimate human poses in the same framework. We show top results in all three tracks of the COCO suite of challenges, including instance segmentation, bounding-box object detection, and person keypoint detection. Without tricks, Mask R-CNN outperforms all existing, single-model entries on every task, including the COCO 2016 challenge winners. We hope our simple and effective approach will serve as a solid baseline and help ease future research in instance-level recognition. Code will be made available."
+  },
+  {
+    "paperId": "04957e40d47ca89d38653e97f728883c0ad26e5d",
+    "externalIds": {
+      "MAG": "2949552253",
+      "DBLP": "conf/cvpr/CaiV18",
+      "ArXiv": "1712.00726",
+      "DOI": "10.1109/CVPR.2018.00644",
+      "CorpusId": 206596979
+    },
+    "title": "Cascade R-CNN: Delving Into High Quality Object Detection",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 6021,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1712.00726",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1712.00726, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1773408",
+        "name": "Zhaowei Cai"
+      },
+      {
+        "authorId": "1699559",
+        "name": "N. Vasconcelos"
+      }
+    ],
+    "abstract": "In object detection, an intersection over union (IoU) threshold is required to define positives and negatives. An object detector, trained with low IoU threshold, e.g. 0.5, usually produces noisy detections. However, detection performance tends to degrade with increasing the IoU thresholds. Two main factors are responsible for this: 1) overfitting during training, due to exponentially vanishing positive samples, and 2) inference-time mismatch between the IoUs for which the detector is optimal and those of the input hypotheses. A multi-stage object detection architecture, the Cascade R-CNN, is proposed to address these problems. It consists of a sequence of detectors trained with increasing IoU thresholds, to be sequentially more selective against close false positives. The detectors are trained stage by stage, leveraging the observation that the output of a detector is a good distribution for training the next higher quality detector. The resampling of progressively improved hypotheses guarantees that all detectors have a positive set of examples of equivalent size, reducing the overfitting problem. The same cascade procedure is applied at inference, enabling a closer match between the hypotheses and the detector quality of each stage. A simple implementation of the Cascade R-CNN is shown to surpass all single-model object detectors on the challenging COCO dataset. Experiments also show that the Cascade R-CNN is widely applicable across detector architectures, achieving consistent gains independently of the baseline detector strength. The code is available at https://github.com/zhaoweicai/cascade-rcnn."
+  },
+  {
+    "paperId": "0084f3cb0a1754272151c5268a783f24bf5676a0",
+    "externalIds": {
+      "PubMedCentral": "8010506",
+      "DBLP": "journals/jbd/AlzubaidiZHADAS21a",
+      "DOI": "10.1186/s40537-021-00444-8",
+      "CorpusId": 232434552,
+      "PubMed": "33816053"
+    },
+    "title": "Review of deep learning: concepts, CNN architectures, challenges, applications, future directions",
+    "venue": "Journal of Big Data",
+    "year": 2021,
+    "citationCount": 6372,
+    "openAccessPdf": {
+      "url": "https://journalofbigdata.springeropen.com/counter/pdf/10.1186/s40537-021-00444-8",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC8010506, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2281247548",
+        "name": "Laith Alzubaidi"
+      },
+      {
+        "authorId": "1754598",
+        "name": "Jinglan Zhang"
+      },
+      {
+        "authorId": "2073994643",
+        "name": "A. Humaidi"
+      },
+      {
+        "authorId": "1409267833",
+        "name": "Ayad Al-dujaili"
+      },
+      {
+        "authorId": "145013346",
+        "name": "Y. Duan"
+      },
+      {
+        "authorId": "1410016448",
+        "name": "O. Al-Shamma"
+      },
+      {
+        "authorId": "2146732191",
+        "name": "José I. Santamaría"
+      },
+      {
+        "authorId": "1412407676",
+        "name": "M. Fadhel"
+      },
+      {
+        "authorId": "1412958882",
+        "name": "Muthana Al-Amidie"
+      },
+      {
+        "authorId": "144121680",
+        "name": "Laith Farhan"
+      }
+    ],
+    "abstract": "In the last few years, the deep learning (DL) computing paradigm has been deemed the Gold Standard in the machine learning (ML) community. Moreover, it has gradually become the most widely used computational approach in the field of ML, thus achieving outstanding results on several complex cognitive tasks, matching or even beating those provided by human performance. One of the benefits of DL is the ability to learn massive amounts of data. The DL field has grown fast in the last few years and it has been extensively used to successfully address a wide range of traditional applications. More importantly, DL has outperformed well-known ML techniques in many domains, e.g., cybersecurity, natural language processing, bioinformatics, robotics and control, and medical information processing, among many others. Despite it has been contributed several works reviewing the State-of-the-Art on DL, all of them only tackled one aspect of the DL, which leads to an overall lack of knowledge about it. Therefore, in this contribution, we propose using a more holistic approach in order to provide a more suitable starting point from which to develop a full understanding of DL. Specifically, this review attempts to provide a more comprehensive survey of the most important aspects of DL and including those enhancements recently added to the field. In particular, this paper outlines the importance of DL, presents the types of DL techniques and networks. It then presents convolutional neural networks (CNNs) which the most utilized DL network type and describes the development of CNNs architectures together with their main features, e.g., starting with the AlexNet network and closing with the High-Resolution network (HR.Net). Finally, we further present the challenges and suggested solutions to help researchers understand the existing research gaps. It is followed by a list of the major DL applications. Computational tools including FPGA, GPU, and CPU are summarized along with a description of their influence on DL. The paper ends with the evolution matrix, benchmark datasets, and summary and conclusion."
+  },
+  {
+    "paperId": "7ffdbc358b63378f07311e883dddacc9faeeaf4b",
+    "externalIds": {
+      "ArXiv": "1504.08083",
+      "CorpusId": 206770307
+    },
+    "title": "Fast R-CNN",
+    "venue": "",
+    "year": 2015,
+    "citationCount": 28144,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1504.08083, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "This paper proposes Fast R-CNN, a clean and fast framework for object detection. Compared to traditional R-CNN, and its accelerated version SPPnet, Fast R-CNN trains networks using a multi-task loss in a single training stage. The multi-task loss simplifies learning and improves detection accuracy. Unlike SPPnet, all network layers can be updated during fine-tuning. We show that this difference has practical ramifications for very deep networks, such as VGG16, where mAP suffers when only the fully-connected layers are updated. Compared to\"slow\"R-CNN, Fast R-CNN is 9x faster at training VGG16 for detection, 213x faster at test-time, and achieves a significantly higher mAP on PASCAL VOC 2012. Compared to SPPnet, Fast R-CNN trains VGG16 3x faster, tests 10x faster, and is more accurate. Fast R-CNN is implemented in Python and C++ and is available under the open-source MIT License at https://github.com/rbgirshick/fast-rcnn"
+  },
+  {
+    "paperId": "424561d8585ff8ebce7d5d07de8dbf7aae5e7270",
+    "externalIds": {
+      "MAG": "2953106684",
+      "ArXiv": "1506.01497",
+      "DBLP": "journals/pami/RenHG017",
+      "DOI": "10.1109/TPAMI.2016.2577031",
+      "CorpusId": 10328909,
+      "PubMed": "27295650"
+    },
+    "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2015,
+    "citationCount": 71967,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1506.01497",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.01497, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "2032184078",
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "State-of-the-art object detection networks depend on region proposal algorithms to hypothesize object locations. Advances like SPPnet and Fast R-CNN have reduced the running time of these detection networks, exposing region proposal computation as a bottleneck. In this work, we introduce a Region Proposal Network (RPN) that shares full-image convolutional features with the detection network, thus enabling nearly cost-free region proposals. An RPN is a fully convolutional network that simultaneously predicts object bounds and objectness scores at each position. The RPN is trained end-to-end to generate high-quality region proposals, which are used by Fast R-CNN for detection. We further merge RPN and Fast R-CNN into a single network by sharing their convolutional features---using the recently popular terminology of neural networks with 'attention' mechanisms, the RPN component tells the unified network where to look. For the very deep VGG-16 model, our detection system has a frame rate of 5fps (including all steps) on a GPU, while achieving state-of-the-art object detection accuracy on PASCAL VOC 2007, 2012, and MS COCO datasets with only 300 proposals per image. In ILSVRC and COCO 2015 competitions, Faster R-CNN and RPN are the foundations of the 1st-place winning entries in several tracks. Code has been made publicly available"
+  },
+  {
+    "paperId": "c02b909a514af6b9255315e2d50112845ca5ed0e",
+    "externalIds": {
+      "MAG": "2883780447",
+      "DBLP": "conf/eccv/MaZZS18",
+      "ArXiv": "1807.11164",
+      "DOI": "10.1007/978-3-030-01264-9_8",
+      "CorpusId": 51880435
+    },
+    "title": "ShuffleNet V2: Practical Guidelines for Efficient CNN Architecture Design",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 6213,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1807.11164, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2068605434",
+        "name": "Ningning Ma"
+      },
+      {
+        "authorId": "50875121",
+        "name": "Xiangyu Zhang"
+      },
+      {
+        "authorId": "16215052",
+        "name": "Haitao Zheng"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Currently, the neural network architecture design is mostly guided by the indirect metric of computation complexity, i.e., FLOPs. However, the direct metric, e.g., speed, also depends on the other factors such as memory access cost and platform characterics. Thus, this work proposes to evaluate the direct metric on the target platform, beyond only considering FLOPs. Based on a series of controlled experiments, this work derives several practical guidelines for efficient network design. Accordingly, a new architecture is presented, called ShuffleNet V2. Comprehensive ablation experiments verify that our model is the state-of-the-art in terms of speed and accuracy tradeoff."
+  },
+  {
+    "paperId": "b771c57b8fc242ba589d449e04e982e0577b1c54",
+    "externalIds": {
+      "DBLP": "conf/cvpr/WangLWCHY20",
+      "MAG": "3042011474",
+      "ArXiv": "1911.11929",
+      "DOI": "10.1109/CVPRW50498.2020.00203",
+      "CorpusId": 208310312
+    },
+    "title": "CSPNet: A New Backbone that can Enhance Learning Capability of CNN",
+    "venue": "2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2019,
+    "citationCount": 4014,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1911.11929",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1911.11929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2423297",
+        "name": "Chien-Yao Wang"
+      },
+      {
+        "authorId": "1704678",
+        "name": "H. Liao"
+      },
+      {
+        "authorId": "1432235646",
+        "name": "I-Hau Yeh"
+      },
+      {
+        "authorId": "31609618",
+        "name": "Yueh-Hua Wu"
+      },
+      {
+        "authorId": "1430763462",
+        "name": "Ping-Yang Chen"
+      },
+      {
+        "authorId": "144717607",
+        "name": "J. Hsieh"
+      }
+    ],
+    "abstract": "Neural networks have enabled state-of-the-art approaches to achieve incredible results on computer vision tasks such as object detection. However, such success greatly relies on costly computation resources, which hinders people with cheap devices from appreciating the advanced technology. In this paper, we propose Cross Stage Partial Network (CSPNet) to mitigate the problem that previous works require heavy inference computations from the network architecture perspective. We attribute the problem to the duplicate gradient information within network optimization. The proposed networks respect the variability of the gradients by integrating feature maps from the beginning and the end of a network stage, which, in our experiments, reduces computations by 20% with equivalent or even superior accuracy on the ImageNet dataset, and significantly outperforms state-of-the-art approaches in terms of AP50 on the MS COCO object detection dataset. The CSPNet is easy to implement and general enough to cope with architectures based on ResNet, ResNeXt, and DenseNet."
+  },
+  {
+    "paperId": "0c00a328fa7cd56ee60338c54e89bd48310db80b",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhangZCM016",
+      "MAG": "3099906833",
+      "ArXiv": "1608.03981",
+      "DOI": "10.1109/TIP.2017.2662206",
+      "CorpusId": 996788,
+      "PubMed": "28166495"
+    },
+    "title": "Beyond a Gaussian Denoiser: Residual Learning of Deep CNN for Image Denoising",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2016,
+    "citationCount": 8171,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1608.03981",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1608.03981, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144110274",
+        "name": "K. Zhang"
+      },
+      {
+        "authorId": "1724520",
+        "name": "W. Zuo"
+      },
+      {
+        "authorId": "39773686",
+        "name": "Yunjin Chen"
+      },
+      {
+        "authorId": "1803714",
+        "name": "Deyu Meng"
+      },
+      {
+        "authorId": "36685537",
+        "name": "Lei Zhang"
+      }
+    ],
+    "abstract": "The discriminative model learning for image denoising has been recently attracting considerable attentions due to its favorable denoising performance. In this paper, we take one step forward by investigating the construction of feed-forward denoising convolutional neural networks (DnCNNs) to embrace the progress in very deep architecture, learning algorithm, and regularization method into image denoising. Specifically, residual learning and batch normalization are utilized to speed up the training process as well as boost the denoising performance. Different from the existing discriminative denoising models which usually train a specific model for additive white Gaussian noise at a certain noise level, our DnCNN model is able to handle Gaussian denoising with unknown noise level (i.e., blind Gaussian denoising). With the residual learning strategy, DnCNN implicitly removes the latent clean image in the hidden layers. This property motivates us to train a single DnCNN model to tackle with several general image denoising tasks, such as Gaussian denoising, single image super-resolution, and JPEG image deblocking. Our extensive experiments demonstrate that our DnCNN model can not only exhibit high effectiveness in several general image denoising tasks, but also be efficiently implemented by benefiting from GPU computing."
+  },
+  {
+    "paperId": "a29b7a000e6e1a2907ce6ae24a03aba5d9ef873f",
+    "externalIds": {
+      "MAG": "2253429366",
+      "DBLP": "journals/corr/ShinRGLXNYMS16",
+      "PubMedCentral": "4890616",
+      "ArXiv": "1602.03409",
+      "DOI": "10.1109/TMI.2016.2528162",
+      "CorpusId": 3333267,
+      "PubMed": "26886976"
+    },
+    "title": "Deep Convolutional Neural Networks for Computer-Aided Detection: CNN Architectures, Dataset Characteristics and Transfer Learning",
+    "venue": "IEEE Transactions on Medical Imaging",
+    "year": 2016,
+    "citationCount": 5000,
+    "openAccessPdf": {
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4890616",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1602.03409, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1797022",
+        "name": "Hoo-Chang Shin"
+      },
+      {
+        "authorId": "144531567",
+        "name": "H. Roth"
+      },
+      {
+        "authorId": "39703662",
+        "name": "Mingchen Gao"
+      },
+      {
+        "authorId": "50706692",
+        "name": "Le Lu"
+      },
+      {
+        "authorId": "1742135",
+        "name": "Ziyue Xu"
+      },
+      {
+        "authorId": "37754137",
+        "name": "Isabella Nogues"
+      },
+      {
+        "authorId": "1722252",
+        "name": "Jianhua Yao"
+      },
+      {
+        "authorId": "1691549",
+        "name": "D. Mollura"
+      },
+      {
+        "authorId": "2388128104",
+        "name": "R. Summers"
+      }
+    ],
+    "abstract": "Remarkable progress has been made in image recognition, primarily due to the availability of large-scale annotated datasets and deep convolutional neural networks (CNNs). CNNs enable learning data-driven, highly representative, hierarchical image features from sufficient training data. However, obtaining datasets as comprehensively annotated as ImageNet in the medical imaging domain remains a challenge. There are currently three major techniques that successfully employ CNNs to medical image classification: training the CNN from scratch, using off-the-shelf pre-trained CNN features, and conducting unsupervised CNN pre-training with supervised fine-tuning. Another effective method is transfer learning, i.e., fine-tuning CNN models pre-trained from natural image dataset to medical image tasks. In this paper, we exploit three important, but previously understudied factors of employing deep convolutional neural networks to computer-aided detection problems. We first explore and evaluate different CNN architectures. The studied models contain 5 thousand to 160 million parameters, and vary in numbers of layers. We then evaluate the influence of dataset scale and spatial image context on performance. Finally, we examine when and why transfer learning from pre-trained ImageNet (via fine-tuning) can be useful. We study two specific computer-aided detection (CADe) problems, namely thoraco-abdominal lymph node (LN) detection and interstitial lung disease (ILD) classification. We achieve the state-of-the-art performance on the mediastinal LN detection, and report the first five-fold cross-validation classification results on predicting axial CT slices with ILD categories. Our extensive empirical evaluation, CNN model analysis and valuable insights can be extended to the design of high performance CAD systems for other medical imaging tasks."
+  },
+  {
+    "paperId": "7c2bcf6f32b05a04cd3444c030db743e5666af88",
+    "externalIds": {
+      "DBLP": "journals/corr/KamnitsasLNSKMR16",
+      "ArXiv": "1603.05959",
+      "MAG": "2301358467",
+      "DOI": "10.1016/j.media.2016.10.004",
+      "CorpusId": 148067,
+      "PubMed": "27865153"
+    },
+    "title": "Efficient multi‐scale 3D CNN with fully connected CRF for accurate brain lesion segmentation",
+    "venue": "Medical Image Anal.",
+    "year": 2016,
+    "citationCount": 3279,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.media.2016.10.004",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1603.05959, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3371321",
+        "name": "K. Kamnitsas"
+      },
+      {
+        "authorId": "1779917",
+        "name": "C. Ledig"
+      },
+      {
+        "authorId": "1880918",
+        "name": "V. Newcombe"
+      },
+      {
+        "authorId": "143728908",
+        "name": "Joanna P. Simpson"
+      },
+      {
+        "authorId": "31549738",
+        "name": "A. D. Kane"
+      },
+      {
+        "authorId": "1756983",
+        "name": "D. Menon"
+      },
+      {
+        "authorId": "1717710",
+        "name": "D. Rueckert"
+      },
+      {
+        "authorId": "1709824",
+        "name": "Ben Glocker"
+      }
+    ],
+    "abstract": "HIGHLIGHTSAn efficient 11‐layers deep, multi‐scale, 3D CNN architecture.A novel training strategy that significantly boosts performance.The first employment of a 3D fully connected CRF for post‐processing.State‐of‐the‐art performance on three challenging lesion segmentation tasks.New insights into the automatically learned intermediate representations. ABSTRACT We propose a dual pathway, 11‐layers deep, three‐dimensional Convolutional Neural Network for the challenging task of brain lesion segmentation. The devised architecture is the result of an in‐depth analysis of the limitations of current networks proposed for similar applications. To overcome the computational burden of processing 3D medical scans, we have devised an efficient and effective dense training scheme which joins the processing of adjacent image patches into one pass through the network while automatically adapting to the inherent class imbalance present in the data. Further, we analyze the development of deeper, thus more discriminative 3D CNNs. In order to incorporate both local and larger contextual information, we employ a dual pathway architecture that processes the input images at multiple scales simultaneously. For post‐processing of the network's soft segmentation, we use a 3D fully connected Conditional Random Field which effectively removes false positives. Our pipeline is extensively evaluated on three challenging tasks of lesion segmentation in multi‐channel MRI patient data with traumatic brain injuries, brain tumours, and ischemic stroke. We improve on the state‐of‐the‐art for all three applications, with top ranking performance on the public benchmarks BRATS 2015 and ISLES 2015. Our method is computationally efficient, which allows its adoption in a variety of research and clinical settings. The source code of our implementation is made publicly available."
+  },
+  {
+    "paperId": "6270baedeba28001cd1b563a199335720d6e0fe0",
+    "externalIds": {
+      "DBLP": "journals/corr/RazavianASC14",
+      "ArXiv": "1403.6382",
+      "MAG": "2062118960",
+      "DOI": "10.1109/CVPRW.2014.131",
+      "CorpusId": 6383532
+    },
+    "title": "CNN Features Off-the-Shelf: An Astounding Baseline for Recognition",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition Workshops",
+    "year": 2014,
+    "citationCount": 5079,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1403.6382.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1403.6382, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2835963",
+        "name": "A. Razavian"
+      },
+      {
+        "authorId": "2622491",
+        "name": "Hossein Azizpour"
+      },
+      {
+        "authorId": "50626295",
+        "name": "Josephine Sullivan"
+      },
+      {
+        "authorId": "153120475",
+        "name": "S. Carlsson"
+      }
+    ],
+    "abstract": "Recent results indicate that the generic descriptors extracted from the convolutional neural networks are very powerful. This paper adds to the mounting evidence that this is indeed the case. We report on a series of experiments conducted for different recognition tasks using the publicly available code and model of the OverFeat network which was trained to perform object classification on ILSVRC13. We use features extracted from the OverFeat network as a generic image representation to tackle the diverse range of recognition tasks of object image classification, scene recognition, fine grained recognition, attribute detection and image retrieval applied to a diverse set of datasets. We selected these tasks and datasets as they gradually move further away from the original task and data the OverFeat network was trained to solve. Astonishingly, we report consistent superior results compared to the highly tuned state-of-the-art systems in all the visual classification tasks on various datasets. For instance retrieval it consistently outperforms low memory footprint methods except for sculptures dataset. The results are achieved using a linear SVM classifier (or L2 distance in case of retrieval) applied to a feature representation of size 4096 extracted from a layer in the net. The representations are further modified using simple augmentation techniques e.g. jittering. The results strongly suggest that features obtained from deep learning with convolutional nets should be the primary candidate in most visual recognition tasks."
+  },
+  {
+    "paperId": "f971a22287ead6aa23ecd84a4afd8efca57cee3c",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ArandjelovicGTP16",
+      "MAG": "2179042386",
+      "ArXiv": "1511.07247",
+      "DOI": "10.1109/CVPR.2016.572",
+      "CorpusId": 44604205
+    },
+    "title": "NetVLAD: CNN Architecture for Weakly Supervised Place Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 3102,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1511.07247",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.07247, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299479",
+        "name": "Relja Arandjelović"
+      },
+      {
+        "authorId": "3413968",
+        "name": "Petr Gronát"
+      },
+      {
+        "authorId": "34395018",
+        "name": "A. Torii"
+      },
+      {
+        "authorId": "1758039",
+        "name": "T. Pajdla"
+      },
+      {
+        "authorId": "1782755",
+        "name": "Josef Sivic"
+      }
+    ],
+    "abstract": "We tackle the problem of large scale visual place recognition, where the task is to quickly and accurately recognize the location of a given query photograph. We present the following three principal contributions. First, we develop a convolutional neural network (CNN) architecture that is trainable in an end-to-end manner directly for the place recognition task. The main component of this architecture, NetVLAD, is a new generalized VLAD layer, inspired by the \"Vector of Locally Aggregated Descriptors\" image representation commonly used in image retrieval. The layer is readily pluggable into any CNN architecture and amenable to training via backpropagation. Second, we develop a training procedure, based on a new weakly supervised ranking loss, to learn parameters of the architecture in an end-to-end manner from images depicting the same places over time downloaded from Google Street View Time Machine. Finally, we show that the proposed architecture significantly outperforms non-learnt image representations and off-the-shelf CNN descriptors on two challenging place recognition benchmarks, and improves over current state of-the-art compact image representations on standard image retrieval benchmarks."
+  },
+  {
+    "paperId": "01c9fd4c011a580e106dd4a8d4e86299acac8564",
+    "externalIds": {
+      "MAG": "2995695852",
+      "ArXiv": "1912.11035",
+      "DBLP": "journals/corr/abs-1912-11035",
+      "DOI": "10.1109/cvpr42600.2020.00872",
+      "CorpusId": 209444798
+    },
+    "title": "CNN-Generated Images Are Surprisingly Easy to Spot… for Now",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 1396,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1912.11035",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1912.11035, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "12782331",
+        "name": "Sheng-Yu Wang"
+      },
+      {
+        "authorId": "39231399",
+        "name": "Oliver Wang"
+      },
+      {
+        "authorId": "2844849",
+        "name": "Richard Zhang"
+      },
+      {
+        "authorId": "144956994",
+        "name": "Andrew Owens"
+      },
+      {
+        "authorId": "1763086",
+        "name": "Alexei A. Efros"
+      }
+    ],
+    "abstract": "In this work we ask whether it is possible to create a \"universal\" detector for telling apart real images from these generated by a CNN, regardless of architecture or dataset used. To test this, we collect a dataset consisting of fake images generated by 11 different CNN-based image generator models, chosen to span the space of commonly used architectures today (ProGAN, StyleGAN, BigGAN, CycleGAN, StarGAN, GauGAN, DeepFakes, cascaded refinement networks, implicit maximum likelihood estimation, second-order attention super-resolution, seeing-in-the-dark). We demonstrate that, with careful pre- and post-processing and data augmentation, a standard image classifier trained on only one specific CNN generator (ProGAN) is able to generalize surprisingly well to unseen architectures, datasets, and training methods (including the just released StyleGAN2). Our findings suggest the intriguing possibility that today's CNN-generated images share some common systematic flaws, preventing them from achieving realistic image synthesis."
+  },
+  {
+    "paperId": "6d5f423164cd5ef9324281652987c8a65009e98e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/SunZJKXZTLYW021",
+      "MAG": "3110402800",
+      "ArXiv": "2011.12450",
+      "DOI": "10.1109/CVPR46437.2021.01422",
+      "CorpusId": 227162412
+    },
+    "title": "Sparse R-CNN: End-to-End Object Detection with Learnable Proposals",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 1431,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2011.12450",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.12450, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2075416446",
+        "name": "Pei Sun"
+      },
+      {
+        "authorId": "1807746211",
+        "name": "Rufeng Zhang"
+      },
+      {
+        "authorId": "2146417774",
+        "name": "Yi Jiang"
+      },
+      {
+        "authorId": "145868988",
+        "name": "Tao Kong"
+      },
+      {
+        "authorId": "1490695028",
+        "name": "Chenfeng Xu"
+      },
+      {
+        "authorId": "144267500",
+        "name": "Wei Zhan"
+      },
+      {
+        "authorId": "1680165",
+        "name": "M. Tomizuka"
+      },
+      {
+        "authorId": "143900005",
+        "name": "Lei Li"
+      },
+      {
+        "authorId": "51305314",
+        "name": "Zehuan Yuan"
+      },
+      {
+        "authorId": "1906061249",
+        "name": "Changhu Wang"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      }
+    ],
+    "abstract": "We present Sparse R-CNN, a purely sparse method for object detection in images. Existing works on object detection heavily rely on dense object candidates, such as k anchor boxes pre-defined on all grids of image feature map of size H × W. In our method, however, a fixed sparse set of learned object proposals, total length of N, are provided to object recognition head to perform classification and location. By eliminating HWk (up to hundreds of thousands) hand-designed object candidates to N (e.g. 100) learnable proposals, Sparse R-CNN completely avoids all efforts related to object candidates design and many-to-one label assignment. More importantly, final predictions are directly output without non-maximum suppression post-procedure. Sparse R-CNN demonstrates accuracy, run-time and training convergence performance on par with the well-established detector baselines on the challenging COCO dataset, e.g., achieving 45.0 AP in standard 3× training schedule and running at 22 fps using ResNet-50 FPN model. We hope our work could inspire re-thinking the convention of dense prior in object detectors. The code is available at: https://github.com/PeizeSun/SparseR-CNN."
+  },
+  {
+    "paperId": "bc626a52664e948a0ffb2b95d0e1e6377a01171a",
+    "externalIds": {
+      "MAG": "2949530802",
+      "DBLP": "journals/corr/abs-1906-09756",
+      "ArXiv": "1906.09756",
+      "DOI": "10.1109/TPAMI.2019.2956516",
+      "CorpusId": 195345409,
+      "PubMed": "31794388"
+    },
+    "title": "Cascade R-CNN: High Quality Object Detection and Instance Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2019,
+    "citationCount": 1797,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/tpami.2019.2956516",
+      "status": "BRONZE",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.09756, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1773408",
+        "name": "Zhaowei Cai"
+      },
+      {
+        "authorId": "1699559",
+        "name": "N. Vasconcelos"
+      }
+    ],
+    "abstract": "In object detection, the intersection over union (IoU) threshold is frequently used to define positives/negatives. The threshold used to train a detector defines its quality. While the commonly used threshold of 0.5 leads to noisy (low-quality) detections, detection performance frequently degrades for larger thresholds. This paradox of high-quality detection has two causes: 1) overfitting, due to vanishing positive samples for large thresholds, and 2) inference-time quality mismatch between detector and test hypotheses. A multi-stage object detection architecture, the Cascade R-CNN, composed of a sequence of detectors trained with increasing IoU thresholds, is proposed to address these problems. The detectors are trained sequentially, using the output of a detector as training set for the next. This resampling progressively improves hypotheses quality, guaranteeing a positive training set of equivalent size for all detectors and minimizing overfitting. The same cascade is applied at inference, to eliminate quality mismatches between hypotheses and detectors. An implementation of the Cascade R-CNN without bells or whistles achieves state-of-the-art performance on the COCO dataset, and significantly improves high-quality detection on generic and specific object datasets, including VOC, KITTI, CityPerson, and WiderFace. Finally, the Cascade R-CNN is generalized to instance segmentation, with nontrivial improvements over the Mask R-CNN."
+  },
+  {
+    "paperId": "59d8c68de09da69a608ceb149f40114f5538c5b1",
+    "externalIds": {
+      "DBLP": "conf/icassp/HersheyCEGJMPPS17",
+      "ArXiv": "1609.09430",
+      "MAG": "2526050071",
+      "DOI": "10.1109/ICASSP.2017.7952132",
+      "CorpusId": 8810481
+    },
+    "title": "CNN architectures for large-scale audio classification",
+    "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+    "year": 2016,
+    "citationCount": 2908,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1609.09430",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.09430, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50781940",
+        "name": "Shawn Hershey"
+      },
+      {
+        "authorId": "1680841",
+        "name": "Sourish Chaudhuri"
+      },
+      {
+        "authorId": "1745455",
+        "name": "D. Ellis"
+      },
+      {
+        "authorId": "3116662",
+        "name": "J. Gemmeke"
+      },
+      {
+        "authorId": "35996413",
+        "name": "A. Jansen"
+      },
+      {
+        "authorId": "2107422370",
+        "name": "R. C. Moore"
+      },
+      {
+        "authorId": "2114994",
+        "name": "M. Plakal"
+      },
+      {
+        "authorId": "47380012",
+        "name": "D. Platt"
+      },
+      {
+        "authorId": "2278009",
+        "name": "R. Saurous"
+      },
+      {
+        "authorId": "2535887",
+        "name": "Bryan Seybold"
+      },
+      {
+        "authorId": "145290352",
+        "name": "M. Slaney"
+      },
+      {
+        "authorId": "39571582",
+        "name": "Ron J. Weiss"
+      },
+      {
+        "authorId": "12812321",
+        "name": "K. Wilson"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) have proven very effective in image classification and show promise for audio. We use various CNN architectures to classify the soundtracks of a dataset of 70M training videos (5.24 million hours) with 30,871 video-level labels. We examine fully connected Deep Neural Networks (DNNs), AlexNet [1], VGG [2], Inception [3], and ResNet [4]. We investigate varying the size of both training set and label vocabulary, finding that analogs of the CNNs used in image classification do well on our audio classification task, and larger training and label sets help up to a point. A model using embeddings from these classifiers does much better than raw features on the Audio Set [5] Acoustic Event Detection (AED) classification task."
+  },
+  {
+    "paperId": "a23a4b04c487585792ecf45bce4ea43aa71bac2f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2303-14978",
+      "ArXiv": "2303.14978",
+      "DOI": "10.1109/CVPR52729.2023.01383",
+      "CorpusId": 257766648
+    },
+    "title": "Learned Image Compression with Mixed Transformer-CNN Architectures",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 418,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2303.14978",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2303.14978, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2140269898",
+        "name": "Jinming Liu"
+      },
+      {
+        "authorId": "3294614",
+        "name": "Heming Sun"
+      },
+      {
+        "authorId": "1788294",
+        "name": "J. Katto"
+      }
+    ],
+    "abstract": "Learned image compression (LIC) methods have exhibited promising progress and superior rate-distortion performance compared with classical image compression standards. Most existing LIC methods are Convolutional Neural Networks-based (CNN-based) or Transformer-based, which have different advantages. Exploiting both advantages is a point worth exploring, which has two challenges: 1) how to effectively fuse the two methods? 2) how to achieve higher performance with a suitable complexity? In this paper, we propose an efficient parallel Transformer-CNN Mixture (TCM) block with a controllable complexity to incorporate the local modeling ability of CNN and the non-local modeling ability of transformers to improve the overall architecture of image compression models. Besides, inspired by the recent progress of entropy estimation models and attention modules, we propose a channel-wise entropy model with parameter-efficient swin-transformer-based attention (SWAtten) modules by using channel squeezing. Experimental results demonstrate our proposed method achieves state-of-the-art rate-distortion performances on three different resolution datasets (i.e., Kodak, Tecnick, CLIC Professional Validation) compared to existing LIC methods. The code is at https://github.com/jmliu206/LIC_TCM."
+  },
+  {
+    "paperId": "84d440eac8a3fb52ea5708e4943d02fc3fcfe009",
+    "externalIds": {
+      "CorpusId": 206771194
+    },
+    "title": "Mask R-CNN",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 1982,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at http://www.cs.sfu.ca/CourseCentral/820/li/material/source/papers/Mask-R-CNN-ICCV-2017.pdf, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2082991",
+        "name": "Georgia Gkioxari"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": null
+  },
+  {
+    "paperId": "32a69681c103807704f71b838454c7924ceec5ce",
+    "externalIds": {
+      "MAG": "2929738993",
+      "ArXiv": "1904.02701",
+      "DBLP": "journals/corr/abs-1904-02701",
+      "DOI": "10.1109/CVPR.2019.00091",
+      "CorpusId": 102354217
+    },
+    "title": "Libra R-CNN: Towards Balanced Learning for Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 1477,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1904.02701",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1904.02701, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49968574",
+        "name": "Jiangmiao Pang"
+      },
+      {
+        "authorId": "152568027",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "1788070",
+        "name": "Jianping Shi"
+      },
+      {
+        "authorId": "46854729",
+        "name": "H. Feng"
+      },
+      {
+        "authorId": "3001348",
+        "name": "Wanli Ouyang"
+      },
+      {
+        "authorId": "1807606",
+        "name": "Dahua Lin"
+      }
+    ],
+    "abstract": "Compared with model architectures, the training process, which is also crucial to the success of detectors, has received relatively less attention in object detection. In this work, we carefully revisit the standard training practice of detectors, and find that the detection performance is often limited by the imbalance during the training process, which generally consists in three levels - sample level, feature level, and objective level. To mitigate the adverse effects caused thereby, we propose Libra R-CNN, a simple but effective framework towards balanced learning for object detection. It integrates three novel components: IoU-balanced sampling, balanced feature pyramid, and balanced L1 loss, respectively for reducing the imbalance at sample, feature, and objective level. Benefitted from the overall balanced design, Libra R-CNN significantly improves the detection performance. Without bells and whistles, it achieves 2.5 points and 2.0 points higher Average Precision (AP) than FPN Faster R-CNN and RetinaNet respectively on MSCOCO."
+  },
+  {
+    "paperId": "198fb07ae84ca36f98a362058fb8a90e214bea06",
+    "externalIds": {
+      "DBLP": "conf/cvpr/Wang0LHD24",
+      "ArXiv": "2307.09283",
+      "DOI": "10.1109/CVPR52733.2024.01506",
+      "CorpusId": 259951457
+    },
+    "title": "Rep ViT: Revisiting Mobile CNN From ViT Perspective",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2023,
+    "citationCount": 552,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2307.09283",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2307.09283, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2211980511",
+        "name": "Ao Wang"
+      },
+      {
+        "authorId": "2155552964",
+        "name": "Hui Chen"
+      },
+      {
+        "authorId": "1818920",
+        "name": "Zijia Lin"
+      },
+      {
+        "authorId": "2271473387",
+        "name": "Hengjun Pu"
+      },
+      {
+        "authorId": "38329336",
+        "name": "Guiguang Ding"
+      }
+    ],
+    "abstract": "Recently, lightweight Vision Transformers (ViTs) demon-strate superior performance and lower latency, compared with lightweight Convolutional Neural Networks (CNNs), on resource-constrained mobile devices. Researchers have discovered many structural connections be-tween lightweight ViTs and lightweight CNNs. However, the notable architectural disparities in the block structure, macro, and micro designs between them have not been adequately examined. In this study, we revisit the efficient design of lightweight CNNs from ViT perspective and emphasize their promising prospect for mobile devices. Specifically, we incrementally enhance the mobile-friendliness of a standard lightweight CNN, i.e., MobileNetV3, by integrating the efficient architectural designs of lightweight ViTs. This ends up with a new family of pure lightweight CNNs, namely RepViT. Extensive experiments show that RepViT outperforms existing state-of-the-art lightweight ViTs and exhibits favorable latency in various vision tasks. Notably, on ImageNet, RepViT achieves over 80% top-1 accuracy with 1.0 ms latency on an iPhone 12, which is the first time for a lightweight model, to the best of our knowledge. Besides, when RepViT meets SAM, our RepViT-SAM can achieve nearly 10x faster inference than the advanced MobileSAM. Codes and models are available at https://github.com/THU-MIG/RepViT."
+  },
+  {
+    "paperId": "e248ac3596d48ce338244624c2fd194dc0651bc6",
+    "externalIds": {
+      "DBLP": "journals/tip/ZhangZZ18",
+      "ArXiv": "1710.04026",
+      "MAG": "2764207251",
+      "DOI": "10.1109/TIP.2018.2839891",
+      "CorpusId": 10514149,
+      "PubMed": "29993717"
+    },
+    "title": "FFDNet: Toward a Fast and Flexible Solution for CNN-Based Image Denoising",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2017,
+    "citationCount": 2540,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1710.04026",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.04026, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144110274",
+        "name": "K. Zhang"
+      },
+      {
+        "authorId": "1724520",
+        "name": "W. Zuo"
+      },
+      {
+        "authorId": "36685537",
+        "name": "Lei Zhang"
+      }
+    ],
+    "abstract": "Due to the fast inference and good performance, discriminative learning methods have been widely studied in image denoising. However, these methods mostly learn a specific model for each noise level, and require multiple models for denoising images with different noise levels. They also lack flexibility to deal with spatially variant noise, limiting their applications in practical denoising. To address these issues, we present a fast and flexible denoising convolutional neural network, namely FFDNet, with a tunable noise level map as the input. The proposed FFDNet works on downsampled sub-images, achieving a good trade-off between inference speed and denoising performance. In contrast to the existing discriminative denoisers, FFDNet enjoys several desirable properties, including: 1) the ability to handle a wide range of noise levels (i.e., [0, 75]) effectively with a single network; 2) the ability to remove spatially variant noise by specifying a non-uniform noise level map; and 3) faster speed than benchmark BM3D even on CPU without sacrificing denoising performance. Extensive experiments on synthetic and real noisy images are conducted to evaluate FFDNet in comparison with state-of-the-art denoisers. The results show that FFDNet is effective and efficient, making it highly attractive for practical denoising applications."
+  },
+  {
+    "paperId": "04a7cab83c5b1b5dd13dcb8632fae3f24150f873",
+    "externalIds": {
+      "MAG": "2964115968",
+      "DBLP": "conf/cvpr/Chen0SDG18",
+      "ArXiv": "1803.03243",
+      "DOI": "10.1109/CVPR.2018.00352",
+      "CorpusId": 3780471
+    },
+    "title": "Domain Adaptive Faster R-CNN for Object Detection in the Wild",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2018,
+    "citationCount": 1510,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1803.03243",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.03243, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1596827301",
+        "name": "Yuhua Chen"
+      },
+      {
+        "authorId": "98280253",
+        "name": "Wen Li"
+      },
+      {
+        "authorId": "7593607",
+        "name": "Christos Sakaridis"
+      },
+      {
+        "authorId": "1778526",
+        "name": "Dengxin Dai"
+      },
+      {
+        "authorId": "1681236",
+        "name": "L. Gool"
+      }
+    ],
+    "abstract": "Object detection typically assumes that training and test data are drawn from an identical distribution, which, however, does not always hold in practice. Such a distribution mismatch will lead to a significant performance drop. In this work, we aim to improve the cross-domain robustness of object detection. We tackle the domain shift on two levels: 1) the image-level shift, such as image style, illumination, etc., and 2) the instance-level shift, such as object appearance, size, etc. We build our approach based on the recent state-of-the-art Faster R-CNN model, and design two domain adaptation components, on image level and instance level, to reduce the domain discrepancy. The two domain adaptation components are based on $$-divergence theory, and are implemented by learning a domain classifier in adversarial training manner. The domain classifiers on different levels are further reinforced with a consistency regularization to learn a domain-invariant region proposal network (RPN) in the Faster R-CNN model. We evaluate our newly proposed approach using multiple datasets including Cityscapes, KITTI, SIM10K, etc. The results demonstrate the effectiveness of our proposed approach for robust object detection in various domain shift scenarios."
+  },
+  {
+    "paperId": "f0035ac7656226b653d475e57a1397c4ce7106b4",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2108-05699",
+      "ArXiv": "2108.05699",
+      "DOI": "10.1109/ICCV48922.2021.00350",
+      "CorpusId": 236986829
+    },
+    "title": "Oriented R-CNN for Object Detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 1062,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2108.05699",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.05699, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2149195518",
+        "name": "Xingxing Xie"
+      },
+      {
+        "authorId": "144592996",
+        "name": "Gong Cheng"
+      },
+      {
+        "authorId": "2115640316",
+        "name": "Jiabao Wang"
+      },
+      {
+        "authorId": "2227434",
+        "name": "Xiwen Yao"
+      },
+      {
+        "authorId": "7181955",
+        "name": "Junwei Han"
+      }
+    ],
+    "abstract": "Current state-of-the-art two-stage detectors generate oriented proposals through time-consuming schemes. This diminishes the detectors’ speed, thereby becoming the computational bottleneck in advanced oriented object detection systems. This work proposes an effective and simple oriented object detection framework, termed Oriented R-CNN, which is a general two-stage oriented detector with promising accuracy and efficiency. To be specific, in the first stage, we propose an oriented Region Proposal Network (oriented RPN) that directly generates high-quality oriented proposals in a nearly cost-free manner. The second stage is oriented R-CNN head for refining oriented Regions of Interest (oriented RoIs) and recognizing them. Without tricks, oriented R-CNN with ResNet50 achieves state-of-the-art detection accuracy on two commonly-used datasets for oriented object detection including DOTA (75.87% mAP) and HRSC2016 (96.50% mAP), while having a speed of 15.1 FPS with the image size of 1024×1024 on a single RTX 2080Ti. We hope our work could inspire rethinking the design of oriented detectors and serve as a baseline for oriented object detection. Code is available at https://github.com/jbwang1997/OBBDetection."
+  },
+  {
+    "paperId": "25b9153473ae156113f6fd2dd9a28c2d2f104a8f",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1902-06701",
+      "MAG": "2914331134",
+      "ArXiv": "1902.06701",
+      "DOI": "10.1109/LGRS.2019.2918719",
+      "CorpusId": 67750620
+    },
+    "title": "HybridSN: Exploring 3-D–2-D CNN Feature Hierarchy for Hyperspectral Image Classification",
+    "venue": "IEEE Geoscience and Remote Sensing Letters",
+    "year": 2019,
+    "citationCount": 1424,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1902.06701",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1902.06701, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1842981",
+        "name": "S. K. Roy"
+      },
+      {
+        "authorId": "2060128834",
+        "name": "Gopal Krishna"
+      },
+      {
+        "authorId": "34992579",
+        "name": "S. Dubey"
+      },
+      {
+        "authorId": "1759420",
+        "name": "B. Chaudhuri"
+      }
+    ],
+    "abstract": "Hyperspectral image (HSI) classification is widely used for the analysis of remotely sensed images. Hyperspectral imagery includes varying bands of images. Convolutional neural network (CNN) is one of the most frequently used deep learning-based methods for visual data processing. The use of CNN for HSI classification is also visible in recent works. These approaches are mostly based on 2-D CNN. On the other hand, the HSI classification performance is highly dependent on both spatial and spectral information. Very few methods have used the 3-D-CNN because of increased computational complexity. This letter proposes a hybrid spectral CNN (HybridSN) for HSI classification. In general, the HybridSN is a spectral–spatial 3-D-CNN followed by spatial 2-D-CNN. The 3-D-CNN facilitates the joint spatial–spectral feature representation from a stack of spectral bands. The 2-D-CNN on top of the 3-D-CNN further learns more abstract-level spatial representation. Moreover, the use of hybrid CNNs reduces the complexity of the model compared to the use of 3-D-CNN alone. To test the performance of this hybrid approach, very rigorous HSI classification experiments are performed over Indian Pines, University of Pavia, and Salinas Scene remote sensing data sets. The results are compared with the state-of-the-art hand-crafted as well as end-to-end deep learning-based methods. A very satisfactory performance is obtained using the proposed HybridSN for HSI classification. The source code can be found at https://github.com/gokriznastic/HybridSN."
+  },
+  {
+    "paperId": "5aadc8c5638bc86516dadd66d841e5b8ac3b4f03",
+    "externalIds": {
+      "MAG": "3124539583",
+      "DOI": "10.1016/J.ISPRSJPRS.2020.12.010",
+      "CorpusId": 233788057
+    },
+    "title": "Review on Convolutional Neural Networks (CNN) in vegetation remote sensing",
+    "venue": "Isprs Journal of Photogrammetry and Remote Sensing",
+    "year": 2021,
+    "citationCount": 1509,
+    "openAccessPdf": {
+      "url": "https://publikationen.bibliothek.kit.edu/1000128705/99843899",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/J.ISPRSJPRS.2020.12.010?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/J.ISPRSJPRS.2020.12.010, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2617037",
+        "name": "Teja Kattenborn"
+      },
+      {
+        "authorId": "50143313",
+        "name": "J. Leitloff"
+      },
+      {
+        "authorId": "114155539",
+        "name": "Felix Schiefer"
+      },
+      {
+        "authorId": "1786581",
+        "name": "S. Hinz"
+      }
+    ],
+    "abstract": "Abstract Identifying and characterizing vascular plants in time and space is required in various disciplines, e.g. in forestry, conservation and agriculture. Remote sensing emerged as a key technology revealing both spatial and temporal vegetation patterns. Harnessing the ever growing streams of remote sensing data for the increasing demands on vegetation assessments and monitoring requires efficient, accurate and flexible methods for data analysis. In this respect, the use of deep learning methods is trend-setting, enabling high predictive accuracy, while learning the relevant data features independently in an end-to-end fashion. Very recently, a series of studies have demonstrated that the deep learning method of Convolutional Neural Networks (CNN) is very effective to represent spatial patterns enabling to extract a wide array of vegetation properties from remote sensing imagery. This review introduces the principles of CNN and distils why they are particularly suitable for vegetation remote sensing. The main part synthesizes current trends and developments, including considerations about spectral resolution, spatial grain, different sensors types, modes of reference data generation, sources of existing reference data, as well as CNN approaches and architectures. The literature review showed that CNN can be applied to various problems, including the detection of individual plants or the pixel-wise segmentation of vegetation classes, while numerous studies have evinced that CNN outperform shallow machine learning methods. Several studies suggest that the ability of CNN to exploit spatial patterns particularly facilitates the value of very high spatial resolution data. The modularity in the common deep learning frameworks allows a high flexibility for the adaptation of architectures, whereby especially multi-modal or multi-temporal applications can benefit. An increasing availability of techniques for visualizing features learned by CNNs will not only contribute to interpret but to learn from such models and improve our understanding of remotely sensed signals of vegetation. Although CNN has not been around for long, it seems obvious that they will usher in a new era of vegetation remote sensing."
+  },
+  {
+    "paperId": "dc8861b4ab6799be542829ae1ace13f23cf807cd",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhangZGZ17",
+      "ArXiv": "1704.03264",
+      "MAG": "2951070760",
+      "DOI": "10.1109/cvpr.2017.300",
+      "CorpusId": 1900475
+    },
+    "title": "Learning Deep CNN Denoiser Prior for Image Restoration",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 2067,
+    "openAccessPdf": {
+      "url": "http://ira.lib.polyu.edu.hk/bitstream/10397/105643/1/Zhang_Learning_Deep_Cnn.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.03264, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144110274",
+        "name": "K. Zhang"
+      },
+      {
+        "authorId": "1724520",
+        "name": "W. Zuo"
+      },
+      {
+        "authorId": "2476317",
+        "name": "Shuhang Gu"
+      },
+      {
+        "authorId": "36685537",
+        "name": "Lei Zhang"
+      }
+    ],
+    "abstract": "Model-based optimization methods and discriminative learning methods have been the two dominant strategies for solving various inverse problems in low-level vision. Typically, those two kinds of methods have their respective merits and drawbacks, e.g., model-based optimization methods are flexible for handling different inverse problems but are usually time-consuming with sophisticated priors for the purpose of good performance, in the meanwhile, discriminative learning methods have fast testing speed but their application range is greatly restricted by the specialized task. Recent works have revealed that, with the aid of variable splitting techniques, denoiser prior can be plugged in as a modular part of model-based optimization methods to solve other inverse problems (e.g., deblurring). Such an integration induces considerable advantage when the denoiser is obtained via discriminative learning. However, the study of integration with fast discriminative denoiser prior is still lacking. To this end, this paper aims to train a set of fast and effective CNN (convolutional neural network) denoisers and integrate them into model-based optimization method to solve other inverse problems. Experimental results demonstrate that the learned set of denoisers can not only achieve promising Gaussian denoising results but also can be used as prior to deliver good performance for various low-level vision applications."
+  },
+  {
+    "paperId": "3f597b13442e5c8b7badc773efdabf772d66cb86",
+    "externalIds": {
+      "PubMedCentral": "10799524",
+      "DBLP": "journals/bmcmi/SrinivasanFMRSS24",
+      "DOI": "10.1186/s12880-024-01195-7",
+      "CorpusId": 267042555,
+      "PubMed": "38243215"
+    },
+    "title": "A hybrid deep CNN model for brain tumor image multi-classification",
+    "venue": "BMC Medical Imaging",
+    "year": 2024,
+    "citationCount": 135,
+    "openAccessPdf": {
+      "url": "https://bmcmedimaging.biomedcentral.com/counter/pdf/10.1186/s12880-024-01195-7",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC10799524, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2274790236",
+        "name": "Saravanan Srinivasan"
+      },
+      {
+        "authorId": "2197854524",
+        "name": "Divya Francis"
+      },
+      {
+        "authorId": "2025122321",
+        "name": "S. Mathivanan"
+      },
+      {
+        "authorId": "2274171960",
+        "name": "Hariharan Rajadurai"
+      },
+      {
+        "authorId": "1729459809",
+        "name": "Basu Dev Shivahare"
+      },
+      {
+        "authorId": "2257013846",
+        "name": "Mohd Asif Shah"
+      }
+    ],
+    "abstract": "The current approach to diagnosing and classifying brain tumors relies on the histological evaluation of biopsy samples, which is invasive, time-consuming, and susceptible to manual errors. These limitations underscore the pressing need for a fully automated, deep-learning-based multi-classification system for brain malignancies. This article aims to leverage a deep convolutional neural network (CNN) to enhance early detection and presents three distinct CNN models designed for different types of classification tasks. The first CNN model achieves an impressive detection accuracy of 99.53% for brain tumors. The second CNN model, with an accuracy of 93.81%, proficiently categorizes brain tumors into five distinct types: normal, glioma, meningioma, pituitary, and metastatic. Furthermore, the third CNN model demonstrates an accuracy of 98.56% in accurately classifying brain tumors into their different grades. To ensure optimal performance, a grid search optimization approach is employed to automatically fine-tune all the relevant hyperparameters of the CNN models. The utilization of large, publicly accessible clinical datasets results in robust and reliable classification outcomes. This article conducts a comprehensive comparison of the proposed models against classical models, such as AlexNet, DenseNet121, ResNet-101, VGG-19, and GoogleNet, reaffirming the superiority of the deep CNN-based approach in advancing the field of brain tumor classification and early detection."
+  },
+  {
+    "paperId": "226fd7ef0d7ba2f4007225286511255116fc9b0d",
+    "externalIds": {
+      "DBLP": "journals/staeors/LiuCDL22",
+      "DOI": "10.1109/jstars.2022.3177235",
+      "CorpusId": 249030261
+    },
+    "title": "A CNN-Transformer Network With Multiscale Context Aggregation for Fine-Grained Cropland Change Detection",
+    "venue": "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing",
+    "year": 2022,
+    "citationCount": 359,
+    "openAccessPdf": {
+      "url": "https://ieeexplore.ieee.org/ielx7/4609443/4609444/09780164.pdf",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/jstars.2022.3177235?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/jstars.2022.3177235, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2152968633",
+        "name": "Mengxi Liu"
+      },
+      {
+        "authorId": "2166161931",
+        "name": "Zhuoqun Chai"
+      },
+      {
+        "authorId": "6754517",
+        "name": "Haojun Deng"
+      },
+      {
+        "authorId": "2112430305",
+        "name": "Rong Liu"
+      }
+    ],
+    "abstract": "Nonagriculturalization incidents are serious threats to local agricultural ecosystem and global food security. Remote sensing change detection (CD) can provide an effective approach for in-time detection and prevention of such incidents. However, existing CD methods are difficult to deal with the large intraclass differences of cropland changes in high-resolution images. In addition, traditional CNN based models are plagued by the loss of long-range context information, and the high computational complexity brought by deep layers. Therefore, in this article, we propose a CNN-transformer network with multiscale context aggregation (MSCANet), which combines the merits of CNN and transformer to fulfill efficient and effective cropland CD. In the MSCANet, a CNN-based feature extractor is first utilized to capture hierarchical features, then a transformer-based MSCA is designed to encode and aggregate context information. Finally, a multibranch prediction head with three CNN classifiers is applied to obtain change maps, to enhance the supervision for deep layers. Besides, for the lack of CD dataset with fine-grained cropland change of interest, we also provide a new cropland change detection dataset, which contains 600 pairs of 512 × 512 bi-temporal images with the spatial resolution of 0.5–2m. Comparative experiments with several CD models prove the effectiveness of the MSCANet, with the highest F1 of 64.67% on the high-resolution semantic CD dataset, and of 71.29% on CLCD."
+  },
+  {
+    "paperId": "ec350899ddc5f83dc9185a3516209ca3f6cc6d78",
+    "externalIds": {
+      "MAG": "2952328806",
+      "DBLP": "journals/pami/RadenovicTC19",
+      "ArXiv": "1711.02512",
+      "DOI": "10.1109/TPAMI.2018.2846566",
+      "CorpusId": 6426453,
+      "PubMed": "29994246"
+    },
+    "title": "Fine-Tuning CNN Image Retrieval with No Human Annotation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2017,
+    "citationCount": 1527,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.02512, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2708577",
+        "name": "Filip Radenovic"
+      },
+      {
+        "authorId": "1706195",
+        "name": "Giorgos Tolias"
+      },
+      {
+        "authorId": "1700928",
+        "name": "Ondřej Chum"
+      }
+    ],
+    "abstract": "Image descriptors based on activations of Convolutional Neural Networks (CNNs) have become dominant in image retrieval due to their discriminative power, compactness of representation, and search efficiency. Training of CNNs, either from scratch or fine-tuning, requires a large amount of annotated data, where a high quality of annotation is often crucial. In this work, we propose to fine-tune CNNs for image retrieval on a large collection of unordered images in a fully automated manner. Reconstructed 3D models obtained by the state-of-the-art retrieval and structure-from-motion methods guide the selection of the training data. We show that both hard-positive and hard-negative examples, selected by exploiting the geometry and the camera positions available from the 3D models, enhance the performance of particular-object retrieval. CNN descriptor whitening discriminatively learned from the same training data outperforms commonly used PCA whitening. We propose a novel trainable Generalized-Mean (GeM) pooling layer that generalizes max and average pooling and show that it boosts retrieval performance. Applying the proposed method to the VGG network achieves state-of-the-art performance on the standard benchmarks: Oxford Buildings, Paris, and Holidays datasets."
+  },
+  {
+    "paperId": "5383ee00a5c0c3372081fccfeceb812b7854c9ea",
+    "externalIds": {
+      "MAG": "2780740184",
+      "DBLP": "journals/corr/abs-1712-06080",
+      "ArXiv": "1712.06080",
+      "DOI": "10.1609/aaai.v32i1.12301",
+      "CorpusId": 9164115
+    },
+    "title": "Spatial As Deep: Spatial CNN for Traffic Scene Understanding",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2017,
+    "citationCount": 1180,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/12301/12160",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1712.06080, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "14214933",
+        "name": "Xingang Pan"
+      },
+      {
+        "authorId": "1788070",
+        "name": "Jianping Shi"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      },
+      {
+        "authorId": "31843833",
+        "name": "Xiaogang Wang"
+      },
+      {
+        "authorId": "50295995",
+        "name": "Xiaoou Tang"
+      }
+    ],
+    "abstract": "\n \n Convolutional neural networks (CNNs) are usually built by stacking convolutional operations layer-by-layer. Although CNN has shown strong capability to extract semantics from raw pixels, its capacity to capture spatial relationships of pixels across rows and columns of an image is not fully explored. These relationships are important to learn semantic objects with strong shape priors but weak appearance coherences, such as traffic lanes, which are often occluded or not even painted on the road surface as shown in Fig. 1 (a). In this paper, we propose Spatial CNN (SCNN), which generalizes traditional deep layer-by-layer convolutions to slice-by-slice convolutions within feature maps, thus enabling message passings between pixels across rows and columns in a layer. Such SCNN is particular suitable for long continuous shape structure or large objects, with strong spatial relationship but less appearance clues, such as traffic lanes, poles, and wall. We apply SCNN on a newly released very challenging traffic lane detection dataset and Cityscapse dataset. The results show that SCNN could learn the spatial relationship for structure output and significantly improves the performance. We show that SCNN outperforms the recurrent neural network (RNN) based ReNet and MRF+CNN (MRFNet) in the lane detection dataset by 8.7% and 4.6% respectively. Moreover, our SCNN won the 1st place on the TuSimple Benchmark Lane Detection Challenge, with an accuracy of 96.53%.\n \n"
+  },
+  {
+    "paperId": "efc669f75ad0ed2033e7c499ae2d6c8dab7489ce",
+    "externalIds": {
+      "ArXiv": "2012.15712",
+      "DBLP": "conf/aaai/DengSLZZL21",
+      "DOI": "10.1609/aaai.v35i2.16207",
+      "CorpusId": 229923684
+    },
+    "title": "Voxel R-CNN: Towards High Performance Voxel-based 3D Object Detection",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2020,
+    "citationCount": 1121,
+    "openAccessPdf": {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/download/16207/16014",
+      "status": "GOLD",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2012.15712, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2087218319",
+        "name": "Jiajun Deng"
+      },
+      {
+        "authorId": "2072683588",
+        "name": "Shaoshuai Shi"
+      },
+      {
+        "authorId": "51249725",
+        "name": "Pei-Cian Li"
+      },
+      {
+        "authorId": "38272296",
+        "name": "Wen-gang Zhou"
+      },
+      {
+        "authorId": "2124819888",
+        "name": "Yanyong Zhang"
+      },
+      {
+        "authorId": "2108508109",
+        "name": "Houqiang Li"
+      }
+    ],
+    "abstract": "Recent advances on 3D object detection heavily rely on how the 3D data are represented, i.e., voxel-based or point-based representation. Many existing high performance 3D detectors are point-based because this structure can better retain precise point positions. Nevertheless, point-level features lead to high computation overheads due to unordered storage. In contrast, the voxel-based structure is better suited for feature extraction but often yields lower accuracy because the input data are divided into grids. In this paper, we take a slightly different viewpoint --- we find that precise positioning of raw points is not essential for high performance 3D object detection and that the coarse voxel granularity can also offer sufficient detection accuracy. Bearing this view in mind, we devise a simple but effective voxel-based framework, named Voxel R-CNN. By taking full advantage of voxel features in a two-stage approach, our method achieves comparable detection accuracy with state-of-the-art point-based models, but at a fraction of the computation cost. Voxel R-CNN consists of a 3D backbone network, a 2D bird-eye-view (BEV) Region Proposal Network, and a detect head. A voxel RoI pooling is devised to extract RoI features directly from voxel features for further refinement. Extensive experiments are conducted on the widely used KITTI Dataset and the more recent Waymo Open Dataset. Our results show that compared to existing voxel-based methods, Voxel R-CNN delivers a higher detection accuracy while maintaining a real-time frame processing rate, i.e., at a speed of 25 FPS on an NVIDIA RTX 2080 Ti GPU. The code is available at https://github.com/djiajunustc/Voxel-R-CNN."
+  },
+  {
+    "paperId": "61827838932597591901992a4d3a86b71b42ac69",
+    "externalIds": {
+      "DOI": "10.3390/su15075930",
+      "CorpusId": 257861968
+    },
+    "title": "A Study of CNN and Transfer Learning in Medical Imaging: Advantages, Challenges, Future Scope",
+    "venue": "Sustainability",
+    "year": 2023,
+    "citationCount": 468,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2071-1050/15/7/5930/pdf?version=1680083110",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/su15075930?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/su15075930, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2053556668",
+        "name": "A. Salehi"
+      },
+      {
+        "authorId": "2152490091",
+        "name": "Shakir Khan"
+      },
+      {
+        "authorId": "2104357582",
+        "name": "Gaurav Gupta"
+      },
+      {
+        "authorId": "2211664188",
+        "name": "Bayan Alabduallah"
+      },
+      {
+        "authorId": "144504922",
+        "name": "Abrar Almjally"
+      },
+      {
+        "authorId": "51893312",
+        "name": "Hadeel Alsolai"
+      },
+      {
+        "authorId": "3147849",
+        "name": "Tamanna Siddiqui"
+      },
+      {
+        "authorId": "2213254124",
+        "name": "A. Mellit"
+      }
+    ],
+    "abstract": "This paper presents a comprehensive study of Convolutional Neural Networks (CNN) and transfer learning in the context of medical imaging. Medical imaging plays a critical role in the diagnosis and treatment of diseases, and CNN-based models have demonstrated significant improvements in image analysis and classification tasks. Transfer learning, which involves reusing pre-trained CNN models, has also shown promise in addressing challenges related to small datasets and limited computational resources. This paper reviews the advantages of CNN and transfer learning in medical imaging, including improved accuracy, reduced time and resource requirements, and the ability to address class imbalances. It also discusses challenges, such as the need for large and diverse datasets, and the limited interpretability of deep learning models. What factors contribute to the success of these networks? How are they fashioned, exactly? What motivated them to build the structures that they did? Finally, the paper presents current and future research directions and opportunities, including the development of specialized architectures and the exploration of new modalities and applications for medical imaging using CNN and transfer learning techniques. Overall, the paper highlights the significant potential of CNN and transfer learning in the field of medical imaging, while also acknowledging the need for continued research and development to overcome existing challenges and limitations."
+  },
+  {
+    "paperId": "020c3cd5ad2a639cc90bb422d43d1d385d1984e7",
+    "externalIds": {
+      "DOI": "10.31763/ijrcs.v2i4.888",
+      "CorpusId": 258029303
+    },
+    "title": "Understanding of Convolutional Neural Network (CNN): A Review",
+    "venue": "International Journal of Robotics and Control Systems",
+    "year": 2023,
+    "citationCount": 265,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.31763/ijrcs.v2i4.888",
+      "status": "CLOSED",
+      "license": "CCBYSA",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.31763/ijrcs.v2i4.888?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.31763/ijrcs.v2i4.888, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "66129975",
+        "name": "Purwono Purwono"
+      },
+      {
+        "authorId": "2183849931",
+        "name": "Alfian Ma’arif"
+      },
+      {
+        "authorId": "9698535",
+        "name": "Wahyu Rahmaniar"
+      },
+      {
+        "authorId": "2156301938",
+        "name": "H. I. K. Fathurrahman"
+      },
+      {
+        "authorId": "9081311",
+        "name": "A. Frisky"
+      },
+      {
+        "authorId": "1723383407",
+        "name": "Qazi Mazhar ul Haq"
+      }
+    ],
+    "abstract": "The application of deep learning technology has increased rapidly in recent years. Technologies in deep learning increasingly emulate natural human abilities, such as knowledge learning, problem-solving, and decision-making. In general, deep learning can carry out self-training without repetitive programming by humans. Convolutional neural networks (CNNs) are deep learning algorithms commonly used in wide applications. CNN is often used for image classification, segmentation, object detection, video processing, natural language processing, and speech recognition. CNN has four layers: convolution layer, pooling layer, fully connected layer, and non-linear layer. The convolutional layer uses kernel filters to calculate the convolution of the input image by extracting the fundamental features. The pooling layer combines two successive convolutional layers. The third layer is the fully connected layer, commonly called the convolutional output layer. The activation function defines the output of a neural network, such as 'yes' or 'no'. The most common and popular CNN activation functions are Sigmoid, Tanh, ReLU, Leaky ReLU, Noisy ReLU, and Parametric Linear Units. The organization and function of the visual cortex greatly influence CNN architecture because it is designed to resemble the neuronal connections in the human brain. Some of the popular CNN architectures are LeNet, AlexNet and VGGNet."
+  },
+  {
+    "paperId": "b47a0d14f223c324a15a482f88487cc87cd913c5",
+    "externalIds": {
+      "ArXiv": "2312.07935",
+      "DOI": "10.1016/j.aiia.2024.07.001",
+      "CorpusId": 266191181
+    },
+    "title": "Comparing YOLOv8 and Mask R-CNN for instance segmentation in complex orchard environments",
+    "venue": "Artificial Intelligence in Agriculture",
+    "year": 2023,
+    "citationCount": 224,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1016/j.aiia.2024.07.001",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2312.07935, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2240132532",
+        "name": "Ranjan Sapkota"
+      },
+      {
+        "authorId": "2134996999",
+        "name": "Dawood Ahmed"
+      },
+      {
+        "authorId": "2872408",
+        "name": "M. Karkee"
+      }
+    ],
+    "abstract": "Instance segmentation is an important image processing operation for agricultural automation, providing precise delineation of individual objects within images and enabling tasks such as selective harvesting and precision pruning. This study compares the one stage YOLOv8 model with the two stage Mask R CNN model for instance segmentation under varying orchard conditions across two datasets. Dataset 1, collected in the dormant season, contains images of apple trees without foliage and was used to train multi object segmentation models delineating branches and trunks. Dataset 2, collected in the early growing season, includes canopy images with green foliage and immature apples and was used to train single object segmentation models delineating fruitlets. Results showed YOLOv8 outperformed Mask R CNN with higher precision and near perfect recall at a confidence threshold of 0.5. For Dataset 1, YOLOv8 achieved precision 0.90 and recall 0.95 compared to 0.81 and 0.81 for Mask R CNN. For Dataset 2, YOLOv8 reached precision 0.93 and recall 0.97 compared to 0.85 and 0.88. Inference times were also lower for YOLOv8, at 10.9 ms and 7.8 ms, versus 15.6 ms and 12.8 ms for Mask R CNN. These findings demonstrate superior accuracy and efficiency of YOLOv8 for real time orchard automation tasks such as robotic harvesting and fruit thinning."
+  },
+  {
+    "paperId": "0597aba86088282423e7c2d2deb6fca4075e7a91",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-1803-01229",
+      "MAG": "2794022343",
+      "ArXiv": "1803.01229",
+      "DOI": "10.1016/j.neucom.2018.09.013",
+      "CorpusId": 3686035
+    },
+    "title": "GAN-based Synthetic Medical Image Augmentation for increased CNN Performance in Liver Lesion Classification",
+    "venue": "Neurocomputing",
+    "year": 2018,
+    "citationCount": 1814,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1803.01229",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1803.01229, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1403035701",
+        "name": "Maayan Frid-Adar"
+      },
+      {
+        "authorId": "143804345",
+        "name": "I. Diamant"
+      },
+      {
+        "authorId": "2254984480",
+        "name": "E. Klang"
+      },
+      {
+        "authorId": "1911773",
+        "name": "M. Amitai"
+      },
+      {
+        "authorId": "34508613",
+        "name": "J. Goldberger"
+      },
+      {
+        "authorId": "143942875",
+        "name": "H. Greenspan"
+      }
+    ],
+    "abstract": "Abstract Deep learning methods, and in particular convolutional neural networks (CNNs), have led to an enormous breakthrough in a wide range of computer vision tasks, primarily by using large-scale annotated datasets. However, obtaining such datasets in the medical domain remains a challenge. In this paper, we present methods for generating synthetic medical images using recently presented deep learning Generative Adversarial Networks (GANs). Furthermore, we show that generated medical images can be used for synthetic data augmentation, and improve the performance of CNN for medical image classification. Our novel method is demonstrated on a limited dataset of computed tomography (CT) images of 182 liver lesions (53 cysts, 64 metastases and 65 hemangiomas). We first exploit GAN architectures for synthesizing high quality liver lesion ROIs. Then we present a novel scheme for liver lesion classification using CNN. Finally, we train the CNN using classic data augmentation and our synthetic data augmentation and compare performance. In addition, we explore the quality of our synthesized examples using visualization and expert assessment. The classification performance using only classic data augmentation yielded 78.6% sensitivity and 88.4% specificity. By adding the synthetic data augmentation the results increased to 85.7% sensitivity and 92.4% specificity. We believe that this approach to synthetic data augmentation can generalize to other medical classification applications and thus support radiologists’ efforts to improve diagnosis."
+  },
+  {
+    "paperId": "2ba0905746f38a0409941cf0300b4cb4b95c2dc2",
+    "externalIds": {
+      "MAG": "2920326761",
+      "DBLP": "journals/corr/abs-1903-00241",
+      "ArXiv": "1903.00241",
+      "DOI": "10.1109/CVPR.2019.00657",
+      "CorpusId": 67856179
+    },
+    "title": "Mask Scoring R-CNN",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 1012,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1903.00241, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2109606861",
+        "name": "Zhaojin Huang"
+      },
+      {
+        "authorId": "47033130",
+        "name": "Lichao Huang"
+      },
+      {
+        "authorId": "2183266",
+        "name": "Yongchao Gong"
+      },
+      {
+        "authorId": "48908475",
+        "name": "Chang Huang"
+      },
+      {
+        "authorId": "2443233",
+        "name": "Xinggang Wang"
+      }
+    ],
+    "abstract": "Letting a deep network be aware of the quality of its own predictions is an interesting yet important problem. In the task of instance segmentation, the confidence of instance classification is used as mask quality score in most instance segmentation frameworks. However, the mask quality, quantified as the IoU between the instance mask and its ground truth, is usually not well correlated with classification score. In this paper, we study this problem and propose Mask Scoring R-CNN which contains a network block to learn the quality of the predicted instance masks. The proposed network block takes the instance feature and the corresponding predicted mask together to regress the mask IoU. The mask scoring strategy calibrates the misalignment between mask quality and mask score, and improves instance segmentation performance by prioritizing more accurate mask predictions during COCO AP evaluation. By extensive evaluations on the COCO dataset, Mask Scoring R-CNN brings consistent and noticeable gain with different models and outperforms the state-of-the-art Mask R-CNN. We hope our simple and effective approach will provide a new direction for improving instance segmentation. The source code of our method is available at \\url{https://github.com/zjhuang22/maskscoring_rcnn}."
+  },
+  {
+    "paperId": "79c42feb4144dc50d1ffd7c15420f65e0f36d630",
+    "externalIds": {
+      "DBLP": "conf/pkdd/SunkaraL22",
+      "ArXiv": "2208.03641",
+      "DOI": "10.48550/arXiv.2208.03641",
+      "CorpusId": 251402434
+    },
+    "title": "No More Strided Convolutions or Pooling: A New CNN Building Block for Low-Resolution Images and Small Objects",
+    "venue": "ECML/PKDD",
+    "year": 2022,
+    "citationCount": 659,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2208.03641",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2208.03641, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2094264955",
+        "name": "Raja Sunkara"
+      },
+      {
+        "authorId": "144238694",
+        "name": "Tie Luo"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) have made resounding success in many computer vision tasks such as image classification and object detection. However, their performance degrades rapidly on tougher tasks where images are of low resolution or objects are small. In this paper, we point out that this roots in a defective yet common design in existing CNN architectures, namely the use of strided convolution and/or pooling layers, which results in a loss of fine-grained information and learning of less effective feature representations. To this end, we propose a new CNN building block called SPD-Conv in place of each strided convolution layer and each pooling layer (thus eliminates them altogether). SPD-Conv is comprised of a space-to-depth (SPD) layer followed by a non-strided convolution (Conv) layer, and can be applied in most if not all CNN architectures. We explain this new design under two most representative computer vision tasks: object detection and image classification. We then create new CNN architectures by applying SPD-Conv to YOLOv5 and ResNet, and empirically show that our approach significantly outperforms state-of-the-art deep learning models, especially on tougher tasks with low-resolution images and small objects. We have open-sourced our code at https://github.com/LabSAINT/SPD-Conv."
+  },
+  {
+    "paperId": "7de5044fa5bbd9bce905647a8e4a6a354863ca3c",
+    "externalIds": {
+      "MAG": "2807784740",
+      "DBLP": "conf/3dim/MehtaRCFSXT17",
+      "ArXiv": "1611.09813",
+      "DOI": "10.1109/3DV.2017.00064",
+      "CorpusId": 17012729
+    },
+    "title": "Monocular 3D Human Pose Estimation in the Wild Using Improved CNN Supervision",
+    "venue": "International Conference on 3D Vision",
+    "year": 2016,
+    "citationCount": 1284,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.09813",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.09813, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39503308",
+        "name": "Dushyant Mehta"
+      },
+      {
+        "authorId": "2933543",
+        "name": "Helge Rhodin"
+      },
+      {
+        "authorId": "1863006",
+        "name": "D. Casas"
+      },
+      {
+        "authorId": "1717736",
+        "name": "P. Fua"
+      },
+      {
+        "authorId": "7651044",
+        "name": "Oleksandr Sotnychenko"
+      },
+      {
+        "authorId": "9765909",
+        "name": "Weipeng Xu"
+      },
+      {
+        "authorId": "1680185",
+        "name": "C. Theobalt"
+      }
+    ],
+    "abstract": "We propose a CNN-based approach for 3D human body pose estimation from single RGB images that addresses the issue of limited generalizability of models trained solely on the starkly limited publicly available 3D pose data. Using only the existing 3D pose data and 2D pose data, we show state-of-the-art performance on established benchmarks through transfer of learned features, while also generalizing to in-the-wild scenes. We further introduce a new training set for human body pose estimation from monocular images of real humans that has the ground truth captured with a multi-camera marker-less motion capture system. It complements existing corpora with greater diversity in pose, human appearance, clothing, occlusion, and viewpoints, and enables an increased scope of augmentation. We also contribute a new benchmark that covers outdoor and indoor scenes, and demonstrate that our 3D pose dataset shows better in-the-wild performance than existing annotated data, which is further improved in conjunction with transfer learning from 2D pose data. All in all, we argue that the use of transfer learning of representations in tandem with algorithmic and data contributions is crucial for general 3D body pose estimation."
+  },
+  {
+    "paperId": "8356d155d730e374f4db6dfd03d19a7b66c348a8",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2103-03024",
+      "ArXiv": "2103.03024",
+      "DOI": "10.1007/978-3-030-87199-4_16",
+      "CorpusId": 232110575
+    },
+    "title": "CoTr: Efficiently Bridging CNN and Transformer for 3D Medical Image Segmentation",
+    "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+    "year": 2021,
+    "citationCount": 667,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2103.03024",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.03024, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2154709897",
+        "name": "Yutong Xie"
+      },
+      {
+        "authorId": "49049926",
+        "name": "Jianpeng Zhang"
+      },
+      {
+        "authorId": "12459603",
+        "name": "Chunhua Shen"
+      },
+      {
+        "authorId": "144344681",
+        "name": "Yong Xia"
+      }
+    ],
+    "abstract": "Convolutional neural networks (CNNs) have been the de facto standard for nowadays 3D medical image segmentation. The convolutional operations used in these networks, however, inevitably have limitations in modeling the long-range dependency due to their inductive bias of locality and weight sharing. Although Transformer was born to address this issue, it suffers from extreme computational and spatial complexities in processing high-resolution 3D feature maps. In this paper, we propose a novel framework that efficiently bridges a {\\bf Co}nvolutional neural network and a {\\bf Tr}ansformer {\\bf (CoTr)} for accurate 3D medical image segmentation. Under this framework, the CNN is constructed to extract feature representations and an efficient deformable Transformer (DeTrans) is built to model the long-range dependency on the extracted feature maps. Different from the vanilla Transformer which treats all image positions equally, our DeTrans pays attention only to a small set of key positions by introducing the deformable self-attention mechanism. Thus, the computational and spatial complexities of DeTrans have been greatly reduced, making it possible to process the multi-scale and high-resolution feature maps, which are usually of paramount importance for image segmentation. We conduct an extensive evaluation on the Multi-Atlas Labeling Beyond the Cranial Vault (BCV) dataset that covers 11 major human organs. The results indicate that our CoTr leads to a substantial performance improvement over other CNN-based, transformer-based, and hybrid methods on the 3D multi-organ segmentation task. Code is available at \\def\\UrlFont{\\rm\\small\\ttfamily} \\url{https://github.com/YtongXie/CoTr}"
+  },
+  {
+    "paperId": "fbb6c557c0f44701f510c70581f625a5d2743194",
+    "externalIds": {
+      "MAG": "2948490758",
+      "DOI": "10.1016/J.ENERGY.2019.05.230",
+      "CorpusId": 195394929
+    },
+    "title": "Predicting residential energy consumption using CNN-LSTM neural networks",
+    "venue": "Energy",
+    "year": 2019,
+    "citationCount": 1260,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/J.ENERGY.2019.05.230?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/J.ENERGY.2019.05.230, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2115511688",
+        "name": "T. Kim"
+      },
+      {
+        "authorId": "1723666",
+        "name": "Sung-Bae Cho"
+      }
+    ],
+    "abstract": "Abstract The rapid increase in human population and development in technology have sharply raised power consumption in today's world. Since electricity is consumed simultaneously as it is generated at the power plant, it is important to accurately predict the energy consumption in advance for stable power supply. In this paper, we propose a CNN-LSTM neural network that can extract spatial and temporal features to effectively predict the housing energy consumption. Experiments have shown that the CNN-LSTM neural network, which combines convolutional neural network (CNN) and long short-term memory (LSTM), can extract complex features of energy consumption. The CNN layer can extract the features between several variables affecting energy consumption, and the LSTM layer is appropriate for modeling temporal information of irregular trends in time series components. The proposed CNN-LSTM method achieves almost perfect prediction performance for electric energy consumption that was previously difficult to predict. Also, it records the smallest value of root mean square error compared to the conventional forecasting methods for the dataset on individual household power consumption. The empirical analysis of the variables confirms what affects to forecast the power consumption most."
+  },
+  {
+    "paperId": "e492bb0eac377799630d60a580bcaa5247d1a7a6",
+    "externalIds": {
+      "DOI": "10.3390/electronics12010232",
+      "CorpusId": 255709601
+    },
+    "title": "A Deep Learning-Based Phishing Detection System Using CNN, LSTM, and LSTM-CNN",
+    "venue": "Electronics",
+    "year": 2023,
+    "citationCount": 197,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2079-9292/12/1/232/pdf?version=1672799252",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/electronics12010232?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/electronics12010232, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2088993396",
+        "name": "Zainab Alshingiti"
+      },
+      {
+        "authorId": "2200519866",
+        "name": "Rabeah Alaqel"
+      },
+      {
+        "authorId": "2072917",
+        "name": "J. Al-Muhtadi"
+      },
+      {
+        "authorId": "1723383407",
+        "name": "Qazi Mazhar ul Haq"
+      },
+      {
+        "authorId": "144256139",
+        "name": "Kashif Saleem"
+      },
+      {
+        "authorId": "2200219689",
+        "name": "Muhammad Hamza Faheem"
+      }
+    ],
+    "abstract": "In terms of the Internet and communication, security is the fundamental challenging aspect. There are numerous ways to harm the security of internet users; the most common is phishing, which is a type of attack that aims to steal or misuse a user’s personal information, including account information, identity, passwords, and credit card details. Phishers gather information about the users through mimicking original websites that are indistinguishable to the eye. Sensitive information about the users may be accessed and they might be subject to financial harm or identity theft. Therefore, there is a strong need to develop a system that efficiently detects phishing websites. Three distinct deep learning-based techniques are proposed in this paper to identify phishing websites, including long short-term memory (LSTM) and convolutional neural network (CNN) for comparison, and lastly an LSTM–CNN-based approach. Experimental findings demonstrate the accuracy of the suggested techniques, i.e., 99.2%, 97.6%, and 96.8% for CNN, LSTM–CNN, and LSTM, respectively. The proposed phishing detection method demonstrated by the CNN-based system is superior."
+  },
+  {
+    "paperId": "4ddb95f58631698d65823cd06649d9cc9f4cf715",
+    "externalIds": {
+      "MAG": "2996583130",
+      "DBLP": "conf/iccv/YanCXWLL19",
+      "ArXiv": "1909.13032",
+      "DOI": "10.1109/ICCV.2019.00967",
+      "CorpusId": 203593939
+    },
+    "title": "Meta R-CNN: Towards General Solver for Instance-Level Low-Shot Learning",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 587,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.13032, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2117851634",
+        "name": "Xiaopeng Yan"
+      },
+      {
+        "authorId": "49865638",
+        "name": "Ziliang Chen"
+      },
+      {
+        "authorId": "2064635258",
+        "name": "Anni Xu"
+      },
+      {
+        "authorId": "2108169476",
+        "name": "Xiaoxi Wang"
+      },
+      {
+        "authorId": "40250403",
+        "name": "Xiaodan Liang"
+      },
+      {
+        "authorId": "1737218",
+        "name": "Liang Lin"
+      }
+    ],
+    "abstract": "Resembling the rapid learning capability of human, low-shot learning empowers vision systems to understand new concepts by training with few samples. Leading approaches derived from meta-learning on images with a single visual object. Obfuscated by a complex background and multiple objects in one image, they are hard to promote the research of low-shot object detection/segmentation. In this work, we present a flexible and general methodology to achieve these tasks. Our work extends Faster /Mask R-CNN by proposing meta-learning over RoI (Region-of-Interest) features instead of a full image feature. This simple spirit disentangles multi-object information merged with the background, without bells and whistles, enabling Faster /Mask R-CNN turn into a meta-learner to achieve the tasks. Specifically, we introduce a Predictor-head Remodeling Network (PRN) that shares its main backbone with Faster /Mask R-CNN. PRN receives images containing low-shot objects with their bounding boxes or masks to infer their class attentive vectors. The vectors take channel-wise soft-attention on RoI features, remodeling those R-CNN predictor heads to detect or segment the objects consistent with the classes these vectors represent. In our experiments, Meta R-CNN yields the new state of the art in low-shot object detection and improves low-shot object segmentation by Mask R-CNN. Code: \\url{https://yanxp.github.io/metarcnn.html}."
+  },
+  {
+    "paperId": "5f9feabb665e20899c9b4a98d82afb017dfca323",
+    "externalIds": {
+      "PubMedCentral": "8838761",
+      "DBLP": "journals/sensors/XuZSRHWY22",
+      "DOI": "10.3390/s22031215",
+      "CorpusId": 246668034,
+      "PubMed": "35161961"
+    },
+    "title": "Crack Detection and Comparison Study Based on Faster R-CNN and Mask R-CNN",
+    "venue": "Italian National Conference on Sensors",
+    "year": 2022,
+    "citationCount": 302,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/1424-8220/22/3/1215/pdf?version=1644460512",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://pmc.ncbi.nlm.nih.gov/articles/PMC8838761, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145189828",
+        "name": "Xiangyang Xu"
+      },
+      {
+        "authorId": "2218650856",
+        "name": "Mian Zhao"
+      },
+      {
+        "authorId": "73536730",
+        "name": "P. Shi"
+      },
+      {
+        "authorId": "96231873",
+        "name": "Ruiqi Ren"
+      },
+      {
+        "authorId": "47023321",
+        "name": "Xuhui He"
+      },
+      {
+        "authorId": "2148953379",
+        "name": "Xiaojun Wei"
+      },
+      {
+        "authorId": "2115537406",
+        "name": "Hao Yang"
+      }
+    ],
+    "abstract": "The intelligent crack detection method is an important guarantee for the realization of intelligent operation and maintenance, and it is of great significance to traffic safety. In recent years, the recognition of road pavement cracks based on computer vision has attracted increasing attention. With the technological breakthroughs of general deep learning algorithms in recent years, detection algorithms based on deep learning and convolutional neural networks have achieved better results in the field of crack recognition. In this paper, deep learning is investigated to intelligently detect road cracks, and Faster R-CNN and Mask R-CNN are compared and analyzed. The results show that the joint training strategy is very effective, and we are able to ensure that both Faster R-CNN and Mask R-CNN complete the crack detection task when trained with only 130+ images and can outperform YOLOv3. However, the joint training strategy causes a degradation in the effectiveness of the bounding box detected by Mask R-CNN."
+  },
+  {
+    "paperId": "3d3f789a56dca288b2c8e23ef047a2b342184950",
+    "externalIds": {
+      "MAG": "2104657103",
+      "DBLP": "conf/iccv/LinRM15",
+      "ArXiv": "1504.07889",
+      "DOI": "10.1109/ICCV.2015.170",
+      "CorpusId": 1331231
+    },
+    "title": "Bilinear CNN Models for Fine-Grained Visual Recognition",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 2037,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1504.07889, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2144284",
+        "name": "Tsung-Yu Lin"
+      },
+      {
+        "authorId": "2895705",
+        "name": "Aruni RoyChowdhury"
+      },
+      {
+        "authorId": "35208858",
+        "name": "Subhransu Maji"
+      }
+    ],
+    "abstract": "We propose bilinear models, a recognition architecture that consists of two feature extractors whose outputs are multiplied using outer product at each location of the image and pooled to obtain an image descriptor. This architecture can model local pairwise feature interactions in a translationally invariant manner which is particularly useful for fine-grained categorization. It also generalizes various orderless texture descriptors such as the Fisher vector, VLAD and O2P. We present experiments with bilinear models where the feature extractors are based on convolutional neural networks. The bilinear form simplifies gradient computation and allows end-to-end training of both networks using image labels only. Using networks initialized from the ImageNet dataset followed by domain specific fine-tuning we obtain 84.1% accuracy of the CUB-200-2011 dataset requiring only category labels at training time. We present experiments and visualizations that analyze the effects of fine-tuning and the choice two networks on the speed and accuracy of the models. Results show that the architecture compares favorably to the existing state of the art on a number of fine-grained datasets while being substantially simpler and easier to train. Moreover, our most accurate model is fairly efficient running at 8 frames/sec on a NVIDIA Tesla K40 GPU. The source code for the complete system will be made available at http://vis-www.cs.umass.edu/bcnn."
+  },
+  {
+    "paperId": "b5bb7e12a15b57b4d307e742da127a74596d0c7c",
+    "externalIds": {
+      "MAG": "2904483377",
+      "DBLP": "journals/tip/LiZSC19",
+      "DOI": "10.1109/TIP.2018.2886767",
+      "CorpusId": 58560770,
+      "PubMed": "30571627"
+    },
+    "title": "Occlusion Aware Facial Expression Recognition Using CNN With Attention Mechanism",
+    "venue": "IEEE Transactions on Image Processing",
+    "year": 2019,
+    "citationCount": 777,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TIP.2018.2886767?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TIP.2018.2886767, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2154403324",
+        "name": "Yong Li"
+      },
+      {
+        "authorId": "3050780",
+        "name": "Jiabei Zeng"
+      },
+      {
+        "authorId": "145455919",
+        "name": "S. Shan"
+      },
+      {
+        "authorId": "46772547",
+        "name": "Xilin Chen"
+      }
+    ],
+    "abstract": "Facial expression recognition in the wild is challenging due to various unconstrained conditions. Although existing facial expression classifiers have been almost perfect on analyzing constrained frontal faces, they fail to perform well on partially occluded faces that are common in the wild. In this paper, we propose a convolution neutral network (CNN) with attention mechanism (ACNN) that can perceive the occlusion regions of the face and focus on the most discriminative un-occluded regions. ACNN is an end-to-end learning framework. It combines the multiple representations from facial regions of interest (ROIs). Each representation is weighed via a proposed gate unit that computes an adaptive weight from the region itself according to the unobstructedness and importance. Considering different RoIs, we introduce two versions of ACNN: patch-based ACNN (pACNN) and global–local-based ACNN (gACNN). pACNN only pays attention to local facial patches. gACNN integrates local representations at patch-level with global representation at image-level. The proposed ACNNs are evaluated on both real and synthetic occlusions, including a self-collected facial expression dataset with real-world occlusions, the two largest in-the-wild facial expression datasets (RAF-DB and AffectNet) and their modifications with synthesized facial occlusions. Experimental results show that ACNNs improve the recognition accuracy on both the non-occluded faces and occluded faces. Visualization results demonstrate that, compared with the CNN without Gate Unit, ACNNs are capable of shifting the attention from the occluded patches to other related but unobstructed ones. ACNNs also outperform other state-of-the-art methods on several widely used in-the-lab facial expression datasets under the cross-dataset evaluation protocol."
+  },
+  {
+    "paperId": "bb021eab61401dd82b79dd562703a4ef5e660bbd",
+    "externalIds": {
+      "DBLP": "journals/bspc/ZhaoMC19",
+      "MAG": "2889717020",
+      "DOI": "10.1016/j.bspc.2018.08.035",
+      "CorpusId": 53016344
+    },
+    "title": "Speech emotion recognition using deep 1D & 2D CNN LSTM networks",
+    "venue": "Biomedical Signal Processing and Control",
+    "year": 2019,
+    "citationCount": 941,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1016/j.bspc.2018.08.035?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1016/j.bspc.2018.08.035, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2130177099",
+        "name": "Jianfeng Zhao"
+      },
+      {
+        "authorId": "2067697110",
+        "name": "Xia Mao"
+      },
+      {
+        "authorId": "35153304",
+        "name": "Lijiang Chen"
+      }
+    ],
+    "abstract": "Abstract We aimed at learning deep emotion features to recognize speech emotion. Two convolutional neural network and long short-term memory (CNN LSTM) networks, one 1D CNN LSTM network and one 2D CNN LSTM network, were constructed to learn local and global emotion-related features from speech and log-mel spectrogram respectively. The two networks have the similar architecture, both consisting of four local feature learning blocks (LFLBs) and one long short-term memory (LSTM) layer. LFLB, which mainly contains one convolutional layer and one max-pooling layer, is built for learning local correlations along with extracting hierarchical correlations. LSTM layer is adopted to learn long-term dependencies from the learned local features. The designed networks, combinations of the convolutional neural network (CNN) and LSTM, can take advantage of the strengths of both networks and overcome the shortcomings of them, and are evaluated on two benchmark databases. The experimental results show that the designed networks achieve excellent performance on the task of recognizing speech emotion, especially the 2D CNN LSTM network outperforms the traditional approaches, Deep Belief Network (DBN) and CNN on the selected databases. The 2D CNN LSTM network achieves recognition accuracies of 95.33% and 95.89% on Berlin EmoDB of speaker-dependent and speaker-independent experiments respectively, which compare favourably to the accuracy of 91.6% and 92.9% obtained by traditional approaches; and also yields recognition accuracies of 89.16% and 52.14% on IEMOCAP database of speaker-dependent and speaker-independent experiments, which are much higher than the accuracy of 73.78% and 40.02% obtained by DBN and CNN."
+  },
+  {
+    "paperId": "4cc5ac4a27a4c33722173c8b42aab1009b7bb793",
+    "externalIds": {
+      "DBLP": "conf/midl/LuoHSWZ22",
+      "ArXiv": "2112.04894",
+      "CorpusId": 245005751
+    },
+    "title": "Semi-Supervised Medical Image Segmentation via Cross Teaching between CNN and Transformer",
+    "venue": "International Conference on Medical Imaging with Deep Learning",
+    "year": 2021,
+    "citationCount": 315,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2112.04894, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1932191260",
+        "name": "Xiangde Luo"
+      },
+      {
+        "authorId": "2145917899",
+        "name": "Minhao Hu"
+      },
+      {
+        "authorId": "145147423",
+        "name": "Tao Song"
+      },
+      {
+        "authorId": "2107886449",
+        "name": "Guotai Wang"
+      },
+      {
+        "authorId": "48692127",
+        "name": "Shaoting Zhang"
+      }
+    ],
+    "abstract": "Recently, deep learning with Convolutional Neural Networks (CNNs) and Transformers has shown encouraging results in fully supervised medical image segmentation. However, it is still challenging for them to achieve good performance with limited annotations for training. In this work, we present a very simple yet efficient framework for semi-supervised medical image segmentation by introducing the cross teaching between CNN and Transformer. Specifically, we simplify the classical deep co-training from consistency regularization to cross teaching, where the prediction of a network is used as the pseudo label to supervise the other network directly end-to-end. Considering the difference in learning paradigm between CNN and Transformer, we introduce the Cross Teaching between CNN and Transformer rather than just using CNNs. Experiments on a public benchmark show that our method outperforms eight existing semi-supervised learning methods just with a simpler framework. Notably, this work may be the first attempt to combine CNN and transformer for semi-supervised medical image segmentation and achieve promising results on a public benchmark. The code will be released at: https://github.com/HiLab-git/SSL4MIS."
+  },
+  {
+    "paperId": "63ec561c22d22210fe77bd7ad801dac442366b05",
+    "externalIds": {
+      "ArXiv": "2108.09017",
+      "DBLP": "conf/iccv/QiaoZLQWZ21",
+      "DOI": "10.1109/ICCV48922.2021.00856",
+      "CorpusId": 237260129
+    },
+    "title": "DeFRCN: Decoupled Faster R-CNN for Few-Shot Object Detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 296,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2108.09017",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.09017, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "8597567",
+        "name": "Limeng Qiao"
+      },
+      {
+        "authorId": "2109933474",
+        "name": "Yuxuan Zhao"
+      },
+      {
+        "authorId": "2109822791",
+        "name": "Zhiyuan Li"
+      },
+      {
+        "authorId": "2004204769",
+        "name": "Xi Qiu"
+      },
+      {
+        "authorId": "2110430704",
+        "name": "Jianan Wu"
+      },
+      {
+        "authorId": "2115811693",
+        "name": "Chi Zhang"
+      }
+    ],
+    "abstract": "Few-shot object detection, which aims at detecting novel objects rapidly from extremely few annotated examples of previously unseen classes, has attracted significant research interest in the community. Most existing approaches employ the Faster R-CNN as basic detection framework, yet, due to the lack of tailored considerations for data-scarce scenario, their performance is often not satisfactory. In this paper, we look closely into the conventional Faster R-CNN and analyze its contradictions from two orthogonal perspectives, namely multi-stage (RPN vs. RCNN) and multi-task (classification vs. localization). To resolve these issues, we propose a simple yet effective architecture, named Decoupled Faster R-CNN (DeFRCN). To be concrete, we extend Faster R-CNN by introducing Gradient Decoupled Layer for multistage decoupling and Prototypical Calibration Block for multi-task decoupling. The former is a novel deep layer with redefining the feature-forward operation and gradient-backward operation for decoupling its subsequent layer and preceding layer, and the latter is an offline prototype-based classification model with taking the proposals from detector as input and boosting the original classification scores with additional pairwise scores for calibration. Extensive experiments on multiple benchmarks show our framework is remarkably superior to other existing approaches and establishes a new state-of-the-art in few-shot literature 1."
+  },
+  {
+    "paperId": "327109fdbc6291c231dc4a7c3c2515e77202f894",
+    "externalIds": {
+      "DOI": "10.3390/electronics10202470",
+      "CorpusId": 242826183
+    },
+    "title": "CNN Variants for Computer Vision: History, Architecture, Application, Challenges and Future Scope",
+    "venue": "Electronics",
+    "year": 2021,
+    "citationCount": 792,
+    "openAccessPdf": {
+      "url": "https://www.mdpi.com/2079-9292/10/20/2470/pdf?version=1633955851",
+      "status": "GOLD",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.3390/electronics10202470?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.3390/electronics10202470, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "70675870",
+        "name": "Dulari Bhatt"
+      },
+      {
+        "authorId": "144350339",
+        "name": "Chirag I. Patel"
+      },
+      {
+        "authorId": "69915242",
+        "name": "Hardik N. Talsania"
+      },
+      {
+        "authorId": "2070427277",
+        "name": "Jigar Patel"
+      },
+      {
+        "authorId": "2138460273",
+        "name": "Rasmika Vaghela"
+      },
+      {
+        "authorId": "47706103",
+        "name": "Sharnil Pandya"
+      },
+      {
+        "authorId": "9179008",
+        "name": "Kirit J. Modi"
+      },
+      {
+        "authorId": "3424424",
+        "name": "H. Ghayvat"
+      }
+    ],
+    "abstract": "Computer vision is becoming an increasingly trendy word in the area of image processing. With the emergence of computer vision applications, there is a significant demand to recognize objects automatically. Deep CNN (convolution neural network) has benefited the computer vision community by producing excellent results in video processing, object recognition, picture classification and segmentation, natural language processing, speech recognition, and many other fields. Furthermore, the introduction of large amounts of data and readily available hardware has opened new avenues for CNN study. Several inspirational concepts for the progress of CNN have been investigated, including alternative activation functions, regularization, parameter optimization, and architectural advances. Furthermore, achieving innovations in architecture results in a tremendous enhancement in the capacity of the deep CNN. Significant emphasis has been given to leveraging channel and spatial information, with a depth of architecture and information processing via multi-path. This survey paper focuses mainly on the primary taxonomy and newly released deep CNN architectures, and it divides numerous recent developments in CNN architectures into eight groups. Spatial exploitation, multi-path, depth, breadth, dimension, channel boosting, feature-map exploitation, and attention-based CNN are the eight categories. The main contribution of this manuscript is in comparing various architectural evolutions in CNN by its architectural change, strengths, and weaknesses. Besides, it also includes an explanation of the CNN’s components, the strengths and weaknesses of various CNN variants, research gap or open challenges, CNN applications, and the future research direction."
+  }
+]
