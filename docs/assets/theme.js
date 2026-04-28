@@ -628,6 +628,14 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     if (p.is_focus) card.classList.add("node-card--focus");
     // #61: fade non-matching cards when a search query is active.
     if (matchSet && !matchSet.has(p.id)) card.classList.add("node-card--filtered");
+    // #67: citation-heat — log-normalised 0..1 weight that the CSS
+    // turns into border thickness + halo intensity. 500k cite ceiling
+    // matches the most-cited DL papers (~226k for ResNet, ~174k for
+    // Attention). Use --card-heat as a CSS custom property so styles
+    // can compose it however they want.
+    const cit = typeof p.citation_count === "number" ? p.citation_count : 0;
+    const heat = cit > 0 ? Math.min(1, Math.log10(cit + 1) / Math.log10(500001)) : 0;
+    card.style.setProperty("--card-heat", heat.toFixed(3));
 
     const tier = p.venue_tier === "A+" ? "aplus" : p.venue_tier === "A" ? "a" : "preprint";
     const venue = PP.formatVenue(p.venue, p.year);
