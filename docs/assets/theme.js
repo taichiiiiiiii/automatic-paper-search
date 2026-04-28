@@ -27,8 +27,8 @@ const RELATION_LABEL_JA = {
   ablation: "分析", baseline_only: "比較", contrasts: "対立",
 };
 
-const NODE_W = 240;
-const NODE_H = 132;
+const NODE_W = 260;
+const NODE_H = 168;
 const ROW_GAP = 80;        // vertical gap between year rows
 const SIBLING_GAP = 28;    // horizontal gap between within-year siblings
 const PADDING = 56;

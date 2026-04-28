@@ -1,0 +1,1821 @@
+[
+  {
+    "paperId": "0f304db595d7bd0727c82ca706141c97b32d7388",
+    "externalIds": {
+      "MAG": "2893080932",
+      "DOI": "10.1167/18.10.1244",
+      "CorpusId": 150094951
+    },
+    "title": "Interpreting Visual Representations of Neural Networks via Network Dissection",
+    "venue": "Journal of Vision",
+    "year": 2018,
+    "citationCount": 9,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1167/18.10.1244",
+      "status": "GOLD",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1167/18.10.1244?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1167/18.10.1244, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "144159726",
+        "name": "David Bau"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ccd99008d942b890cecd308a31ba61240eac9e54",
+    "externalIds": {
+      "MAG": "2952623462",
+      "ArXiv": "1711.10370",
+      "DBLP": "journals/corr/abs-1711-10370",
+      "DOI": "10.1109/CVPR.2018.00445",
+      "CorpusId": 4308965
+    },
+    "title": "Learning to Segment Every Thing",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 305,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1711.10370",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.10370, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2874347",
+        "name": "Ronghang Hu"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "Most methods for object instance segmentation require all training examples to be labeled with segmentation masks. This requirement makes it expensive to annotate new categories and has restricted instance segmentation models to ~100 well-annotated classes. The goal of this paper is to propose a new partially supervised training paradigm, together with a novel weight transfer function, that enables training instance segmentation models on a large set of categories all of which have box annotations, but only a small fraction of which have mask annotations. These contributions allow us to train Mask R-CNN to detect and segment 3000 visual concepts using box annotations from the Visual Genome dataset and mask annotations from the 80 classes in the COCO dataset. We evaluate our approach in a controlled study on the COCO dataset. This work is a first step towards instance segmentation models that have broad comprehension of the visual world.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "642897c7d92262f9f40a1d6192d34c33487ac227",
+    "externalIds": {
+      "MAG": "2952786484",
+      "DBLP": "conf/cvpr/PengXLJZJYS18",
+      "ArXiv": "1711.07240",
+      "DOI": "10.1109/CVPR.2018.00647",
+      "CorpusId": 3521345
+    },
+    "title": "MegDet: A Large Mini-Batch Object Detector",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 334,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1711.07240",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.07240, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2113567716",
+        "name": "Chao Peng"
+      },
+      {
+        "authorId": "15727192",
+        "name": "Tete Xiao"
+      },
+      {
+        "authorId": "6000385",
+        "name": "Zeming Li"
+      },
+      {
+        "authorId": "2117772986",
+        "name": "Yuning Jiang"
+      },
+      {
+        "authorId": "50875121",
+        "name": "Xiangyu Zhang"
+      },
+      {
+        "authorId": "49104216",
+        "name": "Kai Jia"
+      },
+      {
+        "authorId": "2116565951",
+        "name": "Gang Yu"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "The development of object detection in the era of deep learning, from R-CNN [11], Fast/Faster R-CNN [10, 31] to recent Mask R-CNN [14] and RetinaNet [24], mainly come from novel network, new framework, or loss design. However, mini-batch size, a key factor for the training of deep neural networks, has not been well studied for object detection. In this paper, we propose a Large Mini-Batch Object Detector (MegDet) to enable the training with a large minibatch size up to 256, so that we can effectively utilize at most 128 GPUs to significantly shorten the training time. Technically, we suggest a warmup learning rate policy and Cross-GPU Batch Normalization, which together allow us to successfully train a large mini-batch detector in much less time (e.g., from 33 hours to 4 hours), and achieve even better accuracy. The MegDet is the backbone of our submission (mmAP 52.5%) to COCO 2017 Challenge, where we won the 1st place of Detection task.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "c5f1b2df8b4ad9a50671709f062ffd8674bb9dc5",
+    "externalIds": {
+      "MAG": "2963081790",
+      "DBLP": "journals/pami/ZhouBO019",
+      "ArXiv": "1711.05611",
+      "DOI": "10.1109/TPAMI.2018.2858759",
+      "CorpusId": 5766545,
+      "PubMed": "30040625"
+    },
+    "title": "Interpreting Deep Visual Representations via Network Dissection",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2017,
+    "citationCount": 357,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/tpami.2018.2858759",
+      "status": "BRONZE",
+      "license": "publisher-specific-oa",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.05611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "144159726",
+        "name": "David Bau"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "The success of recent deep convolutional neural networks (CNNs) depends on learning hidden representations that can summarize the important factors of variation behind the data. In this work, we describe Network Dissection, a method that interprets networks by providing meaningful labels to their individual units. The proposed method quantifies the interpretability of CNN representations by evaluating the alignment between individual hidden units and visual semantic concepts. By identifying the best alignments, units are given interpretable labels ranging from colors, materials, textures, parts, objects and scenes. The method reveals that deep representations are more transparent and interpretable than they would be under a random equivalently powerful basis. We apply our approach to interpret and compare the latent representations of several network architectures trained to solve a wide range of supervised and self-supervised tasks. We then examine factors affecting the network interpretability such as the number of the training iterations, regularizations, different initialization parameters, as well as networks depth and width. Finally we show that the interpreted units can be used to provide explicit explanations of a given CNN prediction for an image. Our results highlight that interpretability is an important property of deep neural networks that provides new insights into what hierarchical structures can learn.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "2a5667702b0f1ff77dde8fb3e2e10d4e05e8de9d",
+    "externalIds": {
+      "MAG": "2737258237",
+      "DBLP": "conf/cvpr/ZhouZPFB017",
+      "DOI": "10.1109/CVPR.2017.544",
+      "CorpusId": 5636055
+    },
+    "title": "Scene Parsing through ADE20K Dataset",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 3781,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2017.544?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2017.544, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "47940821",
+        "name": "Hang Zhao"
+      },
+      {
+        "authorId": "143872936",
+        "name": "Xavier Puig"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      },
+      {
+        "authorId": "2063937685",
+        "name": "Adela Barriuso"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "744464cd6fa8341633cd3b5d378faab18a3b543a",
+    "externalIds": {
+      "MAG": "2952857044",
+      "ArXiv": "1704.05796",
+      "DBLP": "journals/corr/BauZKOT17",
+      "DOI": "10.1109/CVPR.2017.354",
+      "CorpusId": 378410
+    },
+    "title": "Network Dissection: Quantifying Interpretability of Deep Visual Representations",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 1717,
+    "openAccessPdf": {
+      "url": "https://dspace.mit.edu/bitstream/1721.1/124985/2/final-network-dissection.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCSA",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1704.05796, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144159726",
+        "name": "David Bau"
+      },
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "2556428",
+        "name": "A. Khosla"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "We propose a general framework called Network Dissection for quantifying the interpretability of latent representations of CNNs by evaluating the alignment between individual hidden units and a set of semantic concepts. Given any CNN model, the proposed method draws on a data set of concepts to score the semantics of hidden units at each intermediate convolutional layer. The units with semantics are labeled across a broad range of visual concepts including objects, parts, scenes, textures, materials, and colors. We use the proposed method to test the hypothesis that interpretability is an axis-independent property of the representation space, then we apply the method to compare the latent representations of various networks when trained to solve different classification problems. We further analyze the effect of training iterations, compare networks trained with different initializations, and measure the effect of dropout and batch normalization on the interpretability of deep visual representations. We demonstrate that the proposed method can shed light on characteristics of CNN models and training methods that go beyond measurements of their discriminative power.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "af1765c5fa55a13f33bbca91a73c9e93d77b6056",
+    "externalIds": {
+      "DBLP": "journals/corr/Ioffe17",
+      "MAG": "2963300719",
+      "ArXiv": "1702.03275",
+      "CorpusId": 6961711
+    },
+    "title": "Batch Renormalization: Towards Reducing Minibatch Dependence in Batch-Normalized Models",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 589,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1702.03275, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      }
+    ],
+    "abstract": "Batch Normalization is quite effective at accelerating and improving the training of deep models. However, its effectiveness diminishes when the training minibatches are small, or do not consist of independent samples. We hypothesize that this is due to the dependence of model layer inputs on all the examples in the minibatch, and different activations being produced between training and inference. We propose Batch Renormalization, a simple and effective extension to ensure that the training and inference models generate the same outputs that depend on individual examples rather than the entire minibatch. Models trained with Batch Renormalization perform substantially better than batchnorm when training with small or non-i.i.d. minibatches. At the same time, Batch Renormalization retains the benefits of batchnorm such as insensitivity to initialization and training efficiency.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "394b103969eac939c2dfb7ef6de518a4f57679b6",
+    "externalIds": {
+      "DBLP": "journals/corr/TeichmannWZCU16",
+      "MAG": "2951916398",
+      "ArXiv": "1612.07695",
+      "DOI": "10.1109/IVS.2018.8500504",
+      "CorpusId": 5064446
+    },
+    "title": "MultiNet: Real-time Joint Semantic Reasoning for Autonomous Driving",
+    "venue": "2018 IEEE Intelligent Vehicles Symposium (IV)",
+    "year": 2016,
+    "citationCount": 760,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.07695",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.07695, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2583072",
+        "name": "M. Teichmann"
+      },
+      {
+        "authorId": "2110621689",
+        "name": "Michael Weber"
+      },
+      {
+        "authorId": "1797014",
+        "name": "Johann Marius Zöllner"
+      },
+      {
+        "authorId": "1745672",
+        "name": "R. Cipolla"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      }
+    ],
+    "abstract": "While most approaches to semantic reasoning have focused on improving performance, in this paper we argue that computational times are very important in order to enable real time applications such as autonomous driving. Towards this goal, we present an approach to joint classification, detection and semantic segmentation using a unified architecture where the encoder is shared amongst the three tasks. Our approach is very simple, can be trained end-to-end and performs extremely well in the challenging KITTI dataset. Our approach is also very efficient, allowing us to perform inference at more then 23 frames per second. Training scripts and trained weights to reproduce our results can be found here: https://github.com/MarvinTeichmann/MultiNet",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2a94c84383ee3de5e6211d43d16e7de387f68878",
+    "externalIds": {
+      "ArXiv": "1612.03144",
+      "DBLP": "conf/cvpr/LinDGHHB17",
+      "MAG": "2565639579",
+      "DOI": "10.1109/CVPR.2017.106",
+      "CorpusId": 10716717
+    },
+    "title": "Feature Pyramid Networks for Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 26438,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.03144",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1790580",
+        "name": "Bharath Hariharan"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      }
+    ],
+    "abstract": "Feature pyramids are a basic component in recognition systems for detecting objects at different scales. But pyramid representations have been avoided in recent object detectors that are based on deep convolutional networks, partially because they are slow to compute and memory intensive. In this paper, we exploit the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to construct feature pyramids with marginal extra cost. A top-down architecture with lateral connections is developed for building high-level semantic feature maps at all scales. This architecture, called a Feature Pyramid Network (FPN), shows significant improvement as a generic feature extractor in several applications. Using a basic Faster R-CNN system, our method achieves state-of-the-art single-model results on the COCO detection benchmark without bells and whistles, surpassing all existing single-model entries including those from the COCO 2016 challenge winners. In addition, our method can run at 5 FPS on a GPU and thus is a practical and accurate solution to multi-scale object detection. Code will be made publicly available.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1031a69923b80ad01cf3fbb703d10757a80e699b",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhaoSQWJ16",
+      "ArXiv": "1612.01105",
+      "MAG": "2560023338",
+      "DOI": "10.1109/CVPR.2017.660",
+      "CorpusId": 5299559
+    },
+    "title": "Pyramid Scene Parsing Network",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 13971,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.01105",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.01105, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3459894",
+        "name": "Hengshuang Zhao"
+      },
+      {
+        "authorId": "1788070",
+        "name": "Jianping Shi"
+      },
+      {
+        "authorId": "50844674",
+        "name": "Xiaojuan Qi"
+      },
+      {
+        "authorId": "31843833",
+        "name": "Xiaogang Wang"
+      },
+      {
+        "authorId": "1729056",
+        "name": "Jiaya Jia"
+      }
+    ],
+    "abstract": "Scene parsing is challenging for unrestricted open vocabulary and diverse scenes. In this paper, we exploit the capability of global context information by different-region-based context aggregation through our pyramid pooling module together with the proposed pyramid scene parsing network (PSPNet). Our global prior representation is effective to produce good quality results on the scene parsing task, while PSPNet provides a superior framework for pixel-level prediction. The proposed approach achieves state-of-the-art performance on various datasets. It came first in ImageNet scene parsing challenge 2016, PASCAL VOC 2012 benchmark and Cityscapes benchmark. A single PSPNet yields the new record of mIoU accuracy 85.4% on PASCAL VOC 2012 and accuracy 80.2% on Cityscapes.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "de4ee92cfad3734ca820d004bc9ee75fc9dcfbf4",
+    "externalIds": {
+      "DBLP": "conf/cvpr/LinMSR17",
+      "MAG": "2951402970",
+      "ArXiv": "1611.06612",
+      "DOI": "10.1109/CVPR.2017.549",
+      "CorpusId": 5696978
+    },
+    "title": "RefineNet: Multi-path Refinement Networks for High-Resolution Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 3081,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1611.06612",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.06612, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2604251",
+        "name": "Guosheng Lin"
+      },
+      {
+        "authorId": "34761498",
+        "name": "Anton Milan"
+      },
+      {
+        "authorId": "1780381",
+        "name": "Chunhua Shen"
+      },
+      {
+        "authorId": "145950884",
+        "name": "I. Reid"
+      }
+    ],
+    "abstract": "Recently, very deep convolutional neural networks (CNNs) have shown outstanding performance in object recognition and have also been the first choice for dense classification problems such as semantic segmentation. However, repeated subsampling operations like pooling or convolution striding in deep CNNs lead to a significant decrease in the initial image resolution. Here, we present RefineNet, a generic multi-path refinement network that explicitly exploits all the information available along the down-sampling process to enable high-resolution prediction using long-range residual connections. In this way, the deeper layers that capture high-level semantic features can be directly refined using fine-grained features from earlier convolutions. The individual components of RefineNet employ residual connections following the identity mapping mindset, which allows for effective end-to-end training. Further, we introduce chained residual pooling, which captures rich background context in an efficient manner. We carry out comprehensive experiments and set new state-of-the-art results on seven public datasets. In particular, we achieve an intersection-over-union score of 83.4 on the challenging PASCAL VOC 2012 dataset, which is the best reported result to date.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "f6e0856b4a9199fa968ac00da612a9407b5cb85c",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XieGDTH17",
+      "MAG": "2953328958",
+      "ArXiv": "1611.05431",
+      "DOI": "10.1109/CVPR.2017.634",
+      "CorpusId": 8485068
+    },
+    "title": "Aggregated Residual Transformations for Deep Neural Networks",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 11565,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1611.05431",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1611.05431, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1817030",
+        "name": "Saining Xie"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "144035504",
+        "name": "Z. Tu"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      }
+    ],
+    "abstract": "We present a simple, highly modularized network architecture for image classification. Our network is constructed by repeating a building block that aggregates a set of transformations with the same topology. Our simple design results in a homogeneous, multi-branch architecture that has only a few hyper-parameters to set. This strategy exposes a new dimension, which we call cardinality (the size of the set of transformations), as an essential factor in addition to the dimensions of depth and width. On the ImageNet-1K dataset, we empirically show that even under the restricted condition of maintaining complexity, increasing cardinality is able to improve classification accuracy. Moreover, increasing cardinality is more effective than going deeper or wider when we increase the capacity. Our models, named ResNeXt, are the foundations of our entry to the ILSVRC 2016 classification task in which we secured 2nd place. We further investigate ResNeXt on an ImageNet-5K set and the COCO detection set, also showing better results than its ResNet counterpart. The code and models are publicly available online.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "922197906907dc0a5e1b51fae40d3149333ecacf",
+    "externalIds": {
+      "MAG": "2510182739",
+      "ArXiv": "1609.02132",
+      "DBLP": "journals/corr/Kokkinos16",
+      "DOI": "10.1109/CVPR.2017.579",
+      "CorpusId": 8070108
+    },
+    "title": "UberNet: Training a Universal Convolutional Neural Network for Low-, Mid-, and High-Level Vision Using Diverse Datasets and Limited Memory",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 722,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1609.02132",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1609.02132, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      }
+    ],
+    "abstract": "In this work we train in an end-to-end manner a convolutional neural network (CNN) that jointly handles low-, mid-, and high-level vision tasks in a unified architecture. Such a network can act like a swiss knife for vision tasks, we call it an UberNet to indicate its overarching nature. The main contribution of this work consists in handling challenges that emerge when scaling up to many tasks. We introduce techniques that facilitate (i) training a deep architecture while relying on diverse training sets and (ii) training many (potentially unlimited) tasks with a limited memory budget. This allows us to train in an end-to-end manner a unified CNN architecture that jointly handles (a) boundary detection (b) normal estimation (c) saliency estimation (d) semantic segmentation (e) human part segmentation (f) semantic boundary detection, (g) region proposal generation and object detection. We obtain competitive performance while jointly addressing all tasks in 0.7 seconds on a GPU. Our system will be made publicly available.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "cab372bc3824780cce20d9dd1c22d4df39ed081a",
+    "externalIds": {
+      "ArXiv": "1606.00915",
+      "MAG": "2952865063",
+      "DBLP": "journals/pami/ChenPKMY18",
+      "DOI": "10.1109/TPAMI.2017.2699184",
+      "CorpusId": 3429309,
+      "PubMed": "28463186"
+    },
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 20749,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1606.00915",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.00915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7 percent mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c8c494ee5488fe20e0aa01bddf3fc4632086d654",
+    "externalIds": {
+      "DBLP": "journals/corr/CordtsORREBFRS16",
+      "MAG": "2953139137",
+      "ArXiv": "1604.01685",
+      "DOI": "10.1109/CVPR.2016.350",
+      "CorpusId": 502946
+    },
+    "title": "The Cityscapes Dataset for Semantic Urban Scene Understanding",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 13373,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1604.01685",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1604.01685, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2841796",
+        "name": "Marius Cordts"
+      },
+      {
+        "authorId": "144187309",
+        "name": "Mohamed Omran"
+      },
+      {
+        "authorId": "39940699",
+        "name": "Sebastian Ramos"
+      },
+      {
+        "authorId": "3393153",
+        "name": "Timo Rehfeld"
+      },
+      {
+        "authorId": "1765022",
+        "name": "Markus Enzweiler"
+      },
+      {
+        "authorId": "1798000",
+        "name": "Rodrigo Benenson"
+      },
+      {
+        "authorId": "145582788",
+        "name": "Uwe Franke"
+      },
+      {
+        "authorId": "145920814",
+        "name": "S. Roth"
+      },
+      {
+        "authorId": "48920094",
+        "name": "B. Schiele"
+      }
+    ],
+    "abstract": "Visual understanding of complex urban street scenes is an enabling factor for a wide range of applications. Object detection has benefited enormously from large-scale datasets, especially in the context of deep learning. For semantic urban scene understanding, however, no current dataset adequately captures the complexity of real-world urban scenes. To address this, we introduce Cityscapes, a benchmark suite and large-scale dataset to train and test approaches for pixel-level and instance-level semantic labeling. Cityscapes is comprised of a large, diverse set of stereo video sequences recorded in streets from 50 different cities. 5000 of these images have high quality pixel-level annotations, 20 000 additional images have coarse annotations to enable methods that leverage large volumes of weakly-labeled data. Crucially, our effort exceeds previous attempts in terms of dataset size, annotation richness, scene variability, and complexity. Our accompanying empirical study provides an in-depth analysis of the dataset characteristics, as well as a performance evaluation of several state-of-the-art approaches based on our benchmark.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "31f9eb39d840821979e5df9f34a6e92dd9c879f2",
+    "externalIds": {
+      "ArXiv": "1512.04150",
+      "MAG": "2295107390",
+      "DBLP": "journals/corr/ZhouKLOT15",
+      "DOI": "10.1109/CVPR.2016.319",
+      "CorpusId": 6789015
+    },
+    "title": "Learning Deep Features for Discriminative Localization",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 10480,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1512.04150",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.04150, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "2556428",
+        "name": "A. Khosla"
+      },
+      {
+        "authorId": "2677488",
+        "name": "Àgata Lapedriza"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "In this work, we revisit the global average pooling layer proposed in [13], and shed light on how it explicitly enables the convolutional neural network (CNN) to have remarkable localization ability despite being trained on imagelevel labels. While this technique was previously proposed as a means for regularizing training, we find that it actually builds a generic localizable deep representation that exposes the implicit attention of CNNs on an image. Despite the apparent simplicity of global average pooling, we are able to achieve 37.1% top-5 error for object localization on ILSVRC 2014 without training on any bounding box annotation. We demonstrate in a variety of experiments that our network is able to localize the discriminative image regions despite just being trained for solving classification task1.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2c03df8b48bf3fa39054345bafabfeff15bfd11d",
+    "externalIds": {
+      "DBLP": "conf/cvpr/HeZRS16",
+      "MAG": "2949650786",
+      "ArXiv": "1512.03385",
+      "DOI": "10.1109/cvpr.2016.90",
+      "CorpusId": 206594692
+    },
+    "title": "Deep Residual Learning for Image Recognition",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 226101,
+    "openAccessPdf": {
+      "url": "https://repositorio.unal.edu.co/bitstream/unal/81443/1/98670607.2022.pdf",
+      "status": "GREEN",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1512.03385, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1771551",
+        "name": "X. Zhang"
+      },
+      {
+        "authorId": "3080683",
+        "name": "Shaoqing Ren"
+      },
+      {
+        "authorId": null,
+        "name": "Jian Sun"
+      }
+    ],
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers - 8× deeper than VGG nets [40] but still having lower complexity. An ensemble of these residual nets achieves 3.57% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "7f5fc84819c0cf94b771fe15141f65b123f7b8ec",
+    "externalIds": {
+      "ArXiv": "1511.07122",
+      "DBLP": "journals/corr/YuK15",
+      "MAG": "2286929393",
+      "CorpusId": 17127188
+    },
+    "title": "Multi-Scale Context Aggregation by Dilated Convolutions",
+    "venue": "International Conference on Learning Representations",
+    "year": 2015,
+    "citationCount": 9315,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.07122, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1807197",
+        "name": "F. Yu"
+      },
+      {
+        "authorId": "145231047",
+        "name": "V. Koltun"
+      }
+    ],
+    "abstract": "State-of-the-art models for semantic segmentation are based on adaptations of convolutional networks that had originally been designed for image classification. However, dense prediction and image classification are structurally different. In this work, we develop a new convolutional network module that is specifically designed for dense prediction. The presented module uses dilated convolutions to systematically aggregate multi-scale contextual information without losing resolution. The architecture is based on the fact that dilated convolutions support exponential expansion of the receptive field without loss of resolution or coverage. We show that the presented context module increases the accuracy of state-of-the-art semantic segmentation systems. In addition, we examine the adaptation of image classification networks to dense prediction and show that simplifying the adapted network can increase accuracy.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "eb33ae08bbc4918eeaf12b70af00345e1eeb63ad",
+    "externalIds": {
+      "ArXiv": "1511.05175",
+      "DBLP": "journals/corr/ElhoseinyEBE15",
+      "MAG": "2222082930",
+      "CorpusId": 1836355
+    },
+    "title": "Convolutional Models for Joint Object Categorization and Pose Estimation",
+    "venue": "arXiv.org",
+    "year": 2015,
+    "citationCount": 13,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.05175, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2257193024",
+        "name": "Mohamed Elhoseiny"
+      },
+      {
+        "authorId": "1403837151",
+        "name": "Tarek El-Gaaly"
+      },
+      {
+        "authorId": "145823936",
+        "name": "A. Bakry"
+      },
+      {
+        "authorId": "145159523",
+        "name": "A. Elgammal"
+      }
+    ],
+    "abstract": "In the task of Object Recognition, there exists a dichotomy between the categorization of objects and estimating object pose, where the former necessitates a view-invariant representation, while the latter requires a representation capable of capturing pose information over different categories of objects. With the rise of deep architectures, the prime focus has been on object category recognition. Deep learning methods have achieved wide success in this task. In contrast, object pose regression using these approaches has received relatively much less attention. In this paper we show how deep architectures, specifically Convolutional Neural Networks (CNN), can be adapted to the task of simultaneous categorization and pose estimation of objects. We investigate and analyze the layers of various CNN models and extensively compare between them with the goal of discovering how the layers of distributed representations of CNNs represent object pose information and how this contradicts with object category representations. We extensively experiment on two recent large and challenging multi-view datasets. Our models achieve better than state-of-the-art performance on both datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b0c065cd43aa7280e766b5dcbcc7e26abce59330",
+    "externalIds": {
+      "MAG": "1910657905",
+      "DBLP": "journals/pami/BadrinarayananK17",
+      "ArXiv": "1511.00561",
+      "DOI": "10.1109/TPAMI.2016.2644615",
+      "CorpusId": 60814714,
+      "PubMed": "28060704"
+    },
+    "title": "SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2015,
+    "citationCount": 17789,
+    "openAccessPdf": {
+      "url": "https://doi.org/10.1109/tpami.2016.2644615",
+      "status": "HYBRID",
+      "license": "CCBY",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.00561, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2442177",
+        "name": "Vijay Badrinarayanan"
+      },
+      {
+        "authorId": "47645184",
+        "name": "Alex Kendall"
+      },
+      {
+        "authorId": "1745672",
+        "name": "R. Cipolla"
+      }
+    ],
+    "abstract": "We present a novel and practical deep fully convolutional neural network architecture for semantic pixel-wise segmentation termed SegNet. This core trainable segmentation engine consists of an encoder network, a corresponding decoder network followed by a pixel-wise classification layer. The architecture of the encoder network is topologically identical to the 13 convolutional layers in the VGG16 network [1] . The role of the decoder network is to map the low resolution encoder feature maps to full input resolution feature maps for pixel-wise classification. The novelty of SegNet lies is in the manner in which the decoder upsamples its lower resolution input feature map(s). Specifically, the decoder uses pooling indices computed in the max-pooling step of the corresponding encoder to perform non-linear upsampling. This eliminates the need for learning to upsample. The upsampled maps are sparse and are then convolved with trainable filters to produce dense feature maps. We compare our proposed architecture with the widely adopted FCN [2] and also with the well known DeepLab-LargeFOV [3] , DeconvNet [4] architectures. This comparison reveals the memory versus accuracy trade-off involved in achieving good segmentation performance. SegNet was primarily motivated by scene understanding applications. Hence, it is designed to be efficient both in terms of memory and computational time during inference. It is also significantly smaller in the number of trainable parameters than other competing architectures and can be trained end-to-end using stochastic gradient descent. We also performed a controlled benchmark of SegNet and other architectures on both road scenes and SUN RGB-D indoor scene segmentation tasks. These quantitative assessments show that SegNet provides good performance with competitive inference time and most efficient inference memory-wise as compared to other architectures. We also provide a Caffe implementation of SegNet and a web demo at http://mi.eng.cam.ac.uk/projects/segnet/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "cf986bfe13a24d4739f95df3a856a3c6e4ed4c1c",
+    "externalIds": {
+      "MAG": "2952637581",
+      "DBLP": "conf/iccv/NohHH15",
+      "ArXiv": "1505.04366",
+      "DOI": "10.1109/ICCV.2015.178",
+      "CorpusId": 623137
+    },
+    "title": "Learning Deconvolution Network for Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2015,
+    "citationCount": 4337,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1505.04366",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1505.04366, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2018393",
+        "name": "Hyeonwoo Noh"
+      },
+      {
+        "authorId": "2241528",
+        "name": "Seunghoon Hong"
+      },
+      {
+        "authorId": "40030651",
+        "name": "Bohyung Han"
+      }
+    ],
+    "abstract": "We propose a novel semantic segmentation algorithm by learning a deep deconvolution network. We learn the network on top of the convolutional layers adopted from VGG 16-layer net. The deconvolution network is composed of deconvolution and unpooling layers, which identify pixelwise class labels and predict segmentation masks. We apply the trained network to each proposal in an input image, and construct the final semantic segmentation map by combining the results from all proposals in a simple manner. The proposed algorithm mitigates the limitations of the existing methods based on fully convolutional networks by integrating deep deconvolution network and proposal-wise prediction, our segmentation method typically identifies detailed structures and handles objects in multiple scales naturally. Our network demonstrates outstanding performance in PASCAL VOC 2012 dataset, and we achieve the best accuracy (72.5%) among the methods trained without using Microsoft COCO dataset through ensemble with the fully convolutional network.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "995c5f5e62614fcb4d2796ad2faab969da51713e",
+    "externalIds": {
+      "MAG": "1836465849",
+      "ArXiv": "1502.03167",
+      "DBLP": "conf/icml/IoffeS15",
+      "CorpusId": 5808102
+    },
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "venue": "International Conference on Machine Learning",
+    "year": 2015,
+    "citationCount": 46486,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1502.03167, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2054165706",
+        "name": "Sergey Ioffe"
+      },
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      }
+    ],
+    "abstract": "Training Deep Neural Networks is complicated by the fact that the distribution of each layer's inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities. We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs. Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization, and in some cases eliminates the need for Dropout. Applied to a state-of-the-art image classification model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a significant margin. Using an ensemble of batch-normalized networks, we improve upon the best published result on ImageNet classification: reaching 4.82% top-5 test error, exceeding the accuracy of human raters.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "39ad6c911f3351a3b390130a6e4265355b4d593b",
+    "externalIds": {
+      "MAG": "1923697677",
+      "DBLP": "journals/corr/ChenPKMY14",
+      "ArXiv": "1412.7062",
+      "CorpusId": 1996665
+    },
+    "title": "Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 5217,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.7062, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "Deep Convolutional Neural Networks (DCNNs) have recently shown state of the art performance in high level vision tasks, such as image classification and object detection. This work brings together methods from DCNNs and probabilistic graphical models for addressing the task of pixel-level classification (also called \"semantic image segmentation\"). We show that responses at the final layer of DCNNs are not sufficiently localized for accurate object segmentation. This is due to the very invariance properties that make DCNNs good for high level tasks. We overcome this poor localization property of deep networks by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF). Qualitatively, our \"DeepLab\" system is able to localize segment boundaries at a level of accuracy which is beyond previous methods. Quantitatively, our method sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 71.6% IOU accuracy in the test set. We show how these results can be obtained efficiently: Careful network re-purposing and a novel application of the 'hole' algorithm from the wavelet community allow dense computation of neural net responses at 8 frames per second on a modern GPU.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "401192b00b650adfa5ac49de59b720e1c81f1410",
+    "externalIds": {
+      "MAG": "1899185266",
+      "DBLP": "journals/corr/ZhouKLOT14",
+      "ArXiv": "1412.6856",
+      "CorpusId": 8217340
+    },
+    "title": "Object Detectors Emerge in Deep Scene CNNs",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 1319,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1412.6856, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "2556428",
+        "name": "A. Khosla"
+      },
+      {
+        "authorId": "2677488",
+        "name": "Àgata Lapedriza"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "With the success of new computational architectures for visual processing, such as convolutional neural networks (CNN) and access to image databases with millions of labeled examples (e.g., ImageNet, Places), the state of the art in computer vision is advancing rapidly. One important factor for continued progress is to understand the representations that are learned by the inner layers of these deep architectures. Here we show that object detectors emerge from training CNNs to perform scene classification. As scenes are composed of objects, the CNN for scene classification automatically discovers meaningful objects detectors, representative of the learned scene categories. With object detectors emerging as a result of learning to recognize scenes, our work demonstrates that the same network can perform both scene recognition and object localization in a single forward-pass, without ever having been explicitly taught the notion of objects.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "9667f8264745b626c6173b1310e2ff0298b09cfc",
+    "externalIds": {
+      "DBLP": "conf/nips/ZhouLXTO14",
+      "MAG": "2134670479",
+      "CorpusId": 1849990
+    },
+    "title": "Learning Deep Features for Scene Recognition using Places Database",
+    "venue": "Neural Information Processing Systems",
+    "year": 2014,
+    "citationCount": 3085,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "2677488",
+        "name": "Àgata Lapedriza"
+      },
+      {
+        "authorId": "40599257",
+        "name": "Jianxiong Xiao"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      },
+      {
+        "authorId": "143868587",
+        "name": "A. Oliva"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cb3a2ddcf305e2ec0f6b94af13d1e631ed261bdc",
+    "externalIds": {
+      "MAG": "1905829557",
+      "DBLP": "conf/iccv/EigenF15",
+      "ArXiv": "1411.4734",
+      "DOI": "10.1109/ICCV.2015.304",
+      "CorpusId": 102496818
+    },
+    "title": "Predicting Depth, Surface Normals and Semantic Labels with a Common Multi-scale Convolutional Architecture",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2014,
+    "citationCount": 2825,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1411.4734",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.4734, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2060028",
+        "name": "D. Eigen"
+      },
+      {
+        "authorId": "2276554",
+        "name": "R. Fergus"
+      }
+    ],
+    "abstract": "In this paper we address three different computer vision tasks using a single basic architecture: depth prediction, surface normal estimation, and semantic labeling. We use a multiscale convolutional network that is able to adapt easily to each task using only small modifications, regressing from the input image to the output map directly. Our method progressively refines predictions using a sequence of scales, and captures many image details without any superpixels or low-level segmentation. We achieve state-of-the-art performance on benchmarks for all three tasks.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6fc6803df5f9ae505cae5b2f178ade4062c768d0",
+    "externalIds": {
+      "DBLP": "journals/corr/ShelhamerLD16",
+      "MAG": "2952632681",
+      "ArXiv": "1411.4038",
+      "DOI": "10.1109/CVPR.2015.7298965",
+      "CorpusId": 1629541
+    },
+    "title": "Fully convolutional networks for semantic segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 41592,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1411.4038",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.4038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1782282",
+        "name": "Evan Shelhamer"
+      },
+      {
+        "authorId": "2117314646",
+        "name": "Jonathan Long"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "Convolutional networks are powerful visual models that yield hierarchies of features. We show that convolutional networks by themselves, trained end-to-end, pixels-to-pixels, exceed the state-of-the-art in semantic segmentation. Our key insight is to build “fully convolutional” networks that take input of arbitrary size and produce correspondingly-sized output with efficient inference and learning. We define and detail the space of fully convolutional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models. We adapt contemporary classification networks (AlexNet [20], the VGG net [31], and GoogLeNet [32]) into fully convolutional networks and transfer their learned representations by fine-tuning [3] to the segmentation task. We then define a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed segmentations. Our fully convolutional network achieves state-of-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one fifth of a second for a typical image.",
+    "_is_influential": true,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "e15cf50aa89fee8535703b9f9512fca5bfc43327",
+    "externalIds": {
+      "DBLP": "journals/corr/SzegedyLJSRAEVR14",
+      "MAG": "2097117768",
+      "ArXiv": "1409.4842",
+      "DOI": "10.1109/CVPR.2015.7298594",
+      "CorpusId": 206592484
+    },
+    "title": "Going deeper with convolutions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 47004,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1409.4842",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.4842, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2574060",
+        "name": "Christian Szegedy"
+      },
+      {
+        "authorId": "2157222093",
+        "name": "Wei Liu"
+      },
+      {
+        "authorId": "39978391",
+        "name": "Yangqing Jia"
+      },
+      {
+        "authorId": "3142556",
+        "name": "P. Sermanet"
+      },
+      {
+        "authorId": "144828948",
+        "name": "Scott E. Reed"
+      },
+      {
+        "authorId": "1838674",
+        "name": "Dragomir Anguelov"
+      },
+      {
+        "authorId": "1761978",
+        "name": "D. Erhan"
+      },
+      {
+        "authorId": "2657155",
+        "name": "Vincent Vanhoucke"
+      },
+      {
+        "authorId": "39863668",
+        "name": "A. Rabinovich"
+      }
+    ],
+    "abstract": "We propose a deep convolutional neural network architecture codenamed Inception that achieves the new state of the art for classification and detection in the ImageNet Large-Scale Visual Recognition Challenge 2014 (ILSVRC14). The main hallmark of this architecture is the improved utilization of the computing resources inside the network. By a carefully crafted design, we increased the depth and width of the network while keeping the computational budget constant. To optimize quality, the architectural decisions were based on the Hebbian principle and the intuition of multi-scale processing. One particular incarnation used in our submission for ILSVRC14 is called GoogLeNet, a 22 layers deep network, the quality of which is assessed in the context of classification and detection.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "eb42cf88027de515750f230b23b1a057dc782108",
+    "externalIds": {
+      "MAG": "2949429431",
+      "ArXiv": "1409.1556",
+      "DBLP": "journals/corr/SimonyanZ14a",
+      "CorpusId": 14124313
+    },
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "venue": "International Conference on Learning Representations",
+    "year": 2014,
+    "citationCount": 110767,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.1556, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34838386",
+        "name": "K. Simonyan"
+      },
+      {
+        "authorId": "1688869",
+        "name": "Andrew Zisserman"
+      }
+    ],
+    "abstract": "In this work we investigate the effect of the convolutional network depth on its accuracy in the large-scale image recognition setting. Our main contribution is a thorough evaluation of networks of increasing depth using an architecture with very small (3x3) convolution filters, which shows that a significant improvement on the prior-art configurations can be achieved by pushing the depth to 16-19 weight layers. These findings were the basis of our ImageNet Challenge 2014 submission, where our team secured the first and the second places in the localisation and classification tracks respectively. We also show that our representations generalise well to other datasets, where they achieve state-of-the-art results. We have made our two best-performing ConvNet models publicly available to facilitate further research on the use of deep visual representations in computer vision.",
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "3419ccd5c94d301ee08d716d037f0c3c6a62e78e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/MottaghiCLCLFUY14",
+      "MAG": "2125215748",
+      "DOI": "10.1109/CVPR.2014.119",
+      "CorpusId": 6529084
+    },
+    "title": "The Role of Context for Object Detection and Semantic Segmentation in the Wild",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 1614,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.119?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.119, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3012475",
+        "name": "Roozbeh Mottaghi"
+      },
+      {
+        "authorId": "48283662",
+        "name": "Xianjie Chen"
+      },
+      {
+        "authorId": "144799773",
+        "name": "Xiaobai Liu"
+      },
+      {
+        "authorId": "2853939",
+        "name": "Nam-Gyu Cho"
+      },
+      {
+        "authorId": "50112753",
+        "name": "Seong-Whan Lee"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "caf202fd5833b1ef635923e79608e1a48d7539f9",
+    "externalIds": {
+      "DBLP": "journals/corr/ChenMLFUY14",
+      "MAG": "2951329458",
+      "ArXiv": "1406.2031",
+      "DOI": "10.1109/CVPR.2014.254",
+      "CorpusId": 2256682
+    },
+    "title": "Detect What You Can: Detecting and Representing Objects Using Holistic Models and Body Parts",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 726,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1406.2031",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1406.2031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48283662",
+        "name": "Xianjie Chen"
+      },
+      {
+        "authorId": "3012475",
+        "name": "Roozbeh Mottaghi"
+      },
+      {
+        "authorId": "144799773",
+        "name": "Xiaobai Liu"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      },
+      {
+        "authorId": "2422559",
+        "name": "R. Urtasun"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "Detecting objects becomes difficult when we need to deal with large shape deformation, occlusion and low resolution. We propose a novel approach to i) handle large deformations and partial occlusions in animals (as examples of highly deformable objects), ii) describe them in terms of body parts, and iii) detect them when their body parts are hard to detect (e.g., animals depicted at low resolution). We represent the holistic object and body parts separately and use a fully connected model to arrange templates for the holistic object and body parts. Our model automatically decouples the holistic object or body parts from the model when they are hard to detect. This enables us to represent a large number of holistic object and body part combinations to better deal with different \"detectability\" patterns caused by deformations, occlusion and/or low resolution. We apply our method to the six animal categories in the PASCAL VOC dataset and show that our method significantly improves state-of-the-art (by 4.1% AP) and provides a richer representation for objects. During training we use annotations for body parts (e.g., head, torso, etc.), making use of a new dataset of fully annotated object parts for PASCAL VOC 2010, which provides a mask for each part.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "18c125ce0f64e85577f7d30132cf0e92ec664bf4",
+    "externalIds": {
+      "MAG": "2918062363",
+      "ArXiv": "1311.3618",
+      "DBLP": "journals/corr/CimpoiMKMV13",
+      "DOI": "10.1109/CVPR.2014.461",
+      "CorpusId": 4309276
+    },
+    "title": "Describing Textures in the Wild",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2013,
+    "citationCount": 3467,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1311.3618",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1311.3618, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2543016",
+        "name": "Mircea Cimpoi"
+      },
+      {
+        "authorId": "35208858",
+        "name": "Subhransu Maji"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "2920190",
+        "name": "S. Mohamed"
+      },
+      {
+        "authorId": "1687524",
+        "name": "A. Vedaldi"
+      }
+    ],
+    "abstract": "Patterns and textures are key characteristics of many natural objects: a shirt can be striped, the wings of a butterfly can be veined, and the skin of an animal can be scaly. Aiming at supporting this dimension in image understanding, we address the problem of describing textures with semantic attributes. We identify a vocabulary of forty-seven texture terms and use them to describe a large dataset of patterns collected \"in the wild\". The resulting Describable Textures Dataset (DTD) is a basis to seek the best representation for recognizing describable texture attributes in images. We port from object recognition to texture recognition the Improved Fisher Vector (IFV) and Deep Convolutional-network Activation Features (DeCAF), and show that surprisingly, they both outperform specialized texture descriptors not only on our problem, but also in established material recognition datasets. We also show that our describable attributes are excellent texture descriptors, transferring between datasets and tasks, in particular, combined with IFV and DeCAF, they significantly outperform the state-of-the-art by more than 10% on both FMD and KTH-TIPS-2b benchmarks. We also demonstrate that they produce intuitive descriptions of materials and Internet images.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1a2a770d23b4a171fa81de62a78a3deb0588f238",
+    "externalIds": {
+      "ArXiv": "1311.2901",
+      "MAG": "2952186574",
+      "DBLP": "journals/corr/ZeilerF13",
+      "DOI": "10.1007/978-3-319-10590-1_53",
+      "CorpusId": 3960646
+    },
+    "title": "Visualizing and Understanding Convolutional Networks",
+    "venue": "European Conference on Computer Vision",
+    "year": 2013,
+    "citationCount": 16932,
+    "openAccessPdf": {
+      "url": "https://link.springer.com/content/pdf/10.1007/978-3-319-10590-1_53.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1311.2901, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48799969",
+        "name": "Matthew D. Zeiler"
+      },
+      {
+        "authorId": "2276554",
+        "name": "R. Fergus"
+      }
+    ],
+    "abstract": "Large Convolutional Network models have recently demonstrated impressive classification performance on the ImageNet benchmark Krizhevsky et al. [18]. However there is no clear understanding of why they perform so well, or how they might be improved. In this paper we explore both issues. We introduce a novel visualization technique that gives insight into the function of intermediate feature layers and the operation of the classifier. Used in a diagnostic role, these visualizations allow us to find model architectures that outperform Krizhevsky et al on the ImageNet classification benchmark. We also perform an ablation study to discover the performance contribution from different model layers. We show our ImageNet model generalizes well to other datasets: when the softmax classifier is retrained, it convincingly beats the current state-of-the-art results on Caltech-101 and Caltech-256 datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "fbc980c37cb34a8275621a496ac49a39f5a333b6",
+    "externalIds": {
+      "MAG": "2130364361",
+      "DBLP": "journals/netsci/BrandesRMW13",
+      "DOI": "10.1017/nws.2013.2",
+      "CorpusId": 3923305
+    },
+    "title": "What is network science?",
+    "venue": "Network Science",
+    "year": 2013,
+    "citationCount": 3066,
+    "openAccessPdf": {
+      "url": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/C0794B28C613757F09C3FB315500E3A1/S2050124213000027a.pdf/div-class-title-what-is-network-science-div.pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1017/nws.2013.2?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1017/nws.2013.2, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1689559",
+        "name": "U. Brandes"
+      },
+      {
+        "authorId": "31684379",
+        "name": "G. Robins"
+      },
+      {
+        "authorId": "16161486",
+        "name": "Ann McCranie"
+      },
+      {
+        "authorId": "35345313",
+        "name": "S. Wasserman"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "abd1c342495432171beb7ca8fd9551ef13cbd0ff",
+    "externalIds": {
+      "DBLP": "conf/nips/KrizhevskySH12",
+      "MAG": "2618530766",
+      "DOI": "10.1145/3065386",
+      "CorpusId": 195908774
+    },
+    "title": "ImageNet classification with deep convolutional neural networks",
+    "venue": "Communications of the ACM",
+    "year": 2012,
+    "citationCount": 128378,
+    "openAccessPdf": {
+      "url": "http://dl.acm.org/ft_gateway.cfm?id=3065386&type=pdf",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3065386?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3065386, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2064160",
+        "name": "A. Krizhevsky"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "d743430cb2329caa5d446c17fc9ec07f5e916ab0",
+    "externalIds": {
+      "MAG": "2141200610",
+      "DBLP": "conf/iccv/ZeilerTF11",
+      "DOI": "10.1109/ICCV.2011.6126474",
+      "CorpusId": 975170
+    },
+    "title": "Adaptive deconvolutional networks for mid and high level feature learning",
+    "venue": "Vision",
+    "year": 2011,
+    "citationCount": 1290,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2011.6126474?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2011.6126474, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48799969",
+        "name": "Matthew D. Zeiler"
+      },
+      {
+        "authorId": "144639556",
+        "name": "Graham W. Taylor"
+      },
+      {
+        "authorId": "2276554",
+        "name": "R. Fergus"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "18ccd8bd64b50c1b6a83a71792fd808da7076bc9",
+    "externalIds": {
+      "DBLP": "conf/iccv/MaireYP11",
+      "MAG": "2127251585",
+      "DOI": "10.1109/ICCV.2011.6126490",
+      "CorpusId": 13031234
+    },
+    "title": "Object detection and segmentation from joint embedding of parts and pixels",
+    "venue": "Vision",
+    "year": 2011,
+    "citationCount": 65,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2011.6126490?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2011.6126490, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "2107881808",
+        "name": "Stella X. Yu"
+      },
+      {
+        "authorId": "1690922",
+        "name": "P. Perona"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "a538b05ebb01a40323997629e171c91aa28b8e2f",
+    "externalIds": {
+      "MAG": "1665214252",
+      "DBLP": "conf/icml/NairH10",
+      "CorpusId": 15539264
+    },
+    "title": "Rectified Linear Units Improve Restricted Boltzmann Machines",
+    "venue": "International Conference on Machine Learning",
+    "year": 2010,
+    "citationCount": 18605,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2073603971",
+        "name": "Vinod Nair"
+      },
+      {
+        "authorId": "1695689",
+        "name": "Geoffrey E. Hinton"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ba6e446a9c0aeb181e420dfb42c4c0d0a2742b28",
+    "externalIds": {
+      "MAG": "2071527584",
+      "DBLP": "conf/cvpr/LiuSAR10",
+      "DOI": "10.1109/CVPR.2010.5540207",
+      "CorpusId": 1965245
+    },
+    "title": "Exploring features in a Bayesian framework for material recognition",
+    "venue": "2010 IEEE Computer Society Conference on Computer Vision and Pattern Recognition",
+    "year": 2010,
+    "citationCount": 266,
+    "openAccessPdf": {
+      "url": "https://dspace.mit.edu/bitstream/1721.1/69562/2/Adelson-2010-Exploring%20features%20in%20a%20Bayesian%20framework%20for%20material%20recognition.pdf",
+      "status": "GREEN",
+      "license": "CCBYNC",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2010.5540207?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2010.5540207, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1681442",
+        "name": "Ce Liu"
+      },
+      {
+        "authorId": "2240195",
+        "name": "Lavanya Sharan"
+      },
+      {
+        "authorId": "145358192",
+        "name": "E. Adelson"
+      },
+      {
+        "authorId": "1680975",
+        "name": "R. Rosenholtz"
+      }
+    ],
+    "abstract": "We are interested in identifying the material category, e.g. glass, metal, fabric, plastic or wood, from a single image of a surface. Unlike other visual recognition tasks in computer vision, it is difficult to find good, reliable features that can tell material categories apart. Our strategy is to use a rich set of low and mid-level features that capture various aspects of material appearance. We propose an augmented Latent Dirichlet Allocation (aLDA) model to combine these features under a Bayesian generative framework and learn an optimal combination of features. Experimental results show that our system performs material recognition reasonably well on a challenging material database, outperforming state-of-the-art material/texture recognition systems.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "d2c733e34d48784a37d717fe43d9e93277a8c53e",
+    "externalIds": {
+      "DBLP": "conf/cvpr/DengDSLL009",
+      "MAG": "2108598243",
+      "DOI": "10.1109/CVPR.2009.5206848",
+      "CorpusId": 57246310
+    },
+    "title": "ImageNet: A large-scale hierarchical image database",
+    "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2009,
+    "citationCount": 72462,
+    "openAccessPdf": {
+      "url": "http://www.image-net.org/papers/imagenet_cvpr09.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2009.5206848?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2009.5206848, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "153302678",
+        "name": "Jia Deng"
+      },
+      {
+        "authorId": "144847596",
+        "name": "Wei Dong"
+      },
+      {
+        "authorId": "2166511",
+        "name": "R. Socher"
+      },
+      {
+        "authorId": "2040091191",
+        "name": "Li-Jia Li"
+      },
+      {
+        "authorId": "94451829",
+        "name": "K. Li"
+      },
+      {
+        "authorId": "48004138",
+        "name": "Li Fei-Fei"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background",
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "efb97398a378bdb1d3cf5061802fcf3613477497",
+    "externalIds": {
+      "DBLP": "conf/iccv/KokkinosM05",
+      "MAG": "2137223622",
+      "DOI": "10.1109/ICCV.2005.35",
+      "CorpusId": 10787144
+    },
+    "title": "An expectation maximization approach to the synergy between image segmentation and object categorization",
+    "venue": "Tenth IEEE International Conference on Computer Vision (ICCV'05) Volume 1",
+    "year": 2005,
+    "citationCount": 17,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2005.35?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2005.35, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1750686",
+        "name": "P. Maragos"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "847d6ece37d22430a0d9e061b5dc1d1b8c679055",
+    "externalIds": {
+      "MAG": "2115240329",
+      "DBLP": "conf/nips/KeelerRL90",
+      "CorpusId": 894091
+    },
+    "title": "Integrated Segmentation and Recognition of Hand-Printed Numerals",
+    "venue": "Neural Information Processing Systems",
+    "year": 1990,
+    "citationCount": 176,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1952587",
+        "name": "J. Keeler"
+      },
+      {
+        "authorId": "2681887",
+        "name": "D. Rumelhart"
+      },
+      {
+        "authorId": "1787377",
+        "name": "W. Leow"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  }
+]

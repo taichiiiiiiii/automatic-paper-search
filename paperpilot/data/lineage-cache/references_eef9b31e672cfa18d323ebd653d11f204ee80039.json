@@ -1,0 +1,2776 @@
+[
+  {
+    "paperId": "f531733697754b45d57dd0fb9fed00ff577b0f97",
+    "externalIds": {
+      "DBLP": "conf/iccv/ChengNNA21",
+      "ArXiv": "2108.12517",
+      "DOI": "10.1109/ICCV48922.2021.00942",
+      "CorpusId": 237352900
+    },
+    "title": "SIGN: Spatial-information Incorporated Generative Network for Generalized Zero-shot Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 68,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2108.12517",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.12517, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33896010",
+        "name": "Jiaxin Cheng"
+      },
+      {
+        "authorId": "144358194",
+        "name": "Soumyaroop Nandi"
+      },
+      {
+        "authorId": "145603129",
+        "name": "P. Natarajan"
+      },
+      {
+        "authorId": "17806729",
+        "name": "Wael AbdAlmageed"
+      }
+    ],
+    "abstract": "Unlike conventional zero-shot classification, zero-shot semantic segmentation predicts a class label at the pixel level instead of the image level. When solving zero-shot semantic segmentation problems, the need for pixel-level prediction with surrounding context motivates us to incorporate spatial information using positional encoding. We improve standard positional encoding by introducing the concept of Relative Positional Encoding, which integrates spatial information at the feature level and can handle arbitrary image sizes. Furthermore, while self-training is widely used in zero-shot semantic segmentation to generate pseudo-labels, we propose a new knowledge-distillation-inspired self-training strategy, namely Annealed Self-Training, which can automatically assign different importance to pseudo-labels to improve performance. We systematically study the proposed Relative Positional Encoding and Annealed Self-Training in a comprehensive experimental evaluation, and our empirical results confirm the effectiveness of our method on three benchmark datasets.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "result"
+    ]
+  },
+  {
+    "paperId": "f7f36acdc79bd57fffe337c2baccb6e39b5be9f2",
+    "externalIds": {
+      "DBLP": "conf/iccv/BaekOH21",
+      "ArXiv": "2108.06536",
+      "DOI": "10.1109/ICCV48922.2021.00940",
+      "CorpusId": 237091069
+    },
+    "title": "Exploiting a Joint Embedding Space for Generalized Zero-Shot Semantic Segmentation",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2021,
+    "citationCount": 91,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/2108.06536",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2108.06536, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "101456890",
+        "name": "Donghyeon Baek"
+      },
+      {
+        "authorId": "1564629398",
+        "name": "Youngmin Oh"
+      },
+      {
+        "authorId": "38723538",
+        "name": "Bumsub Ham"
+      }
+    ],
+    "abstract": "We address the problem of generalized zero-shot semantic segmentation (GZS3) predicting pixel-wise semantic labels for seen and unseen classes. Most GZS3 methods adopt a generative approach that synthesizes visual features of unseen classes from corresponding semantic ones (e.g., word2vec) to train novel classifiers for both seen and unseen classes. Although generative methods show decent performance, they have two limitations: (1) the visual features are biased towards seen classes; (2) the classifier should be retrained whenever novel unseen classes appear. We propose a discriminative approach to address these limitations in a unified framework. To this end, we leverage visual and semantic encoders to learn a joint embedding space, where the semantic encoder transforms semantic features to semantic prototypes that act as centers for visual features of corresponding classes. Specifically, we introduce boundary-aware regression (BAR) and semantic consistency (SC) losses to learn discriminative features. Our approach to exploiting the joint embedding space, together with BAR and SC terms, alleviates the seen bias problem. At test time, we avoid the retraining process by exploiting semantic prototypes as a nearest-neighbor (NN) classifier. To further alleviate the bias problem, we also propose an inference technique, dubbed Apollonius calibration (AC), that modulates the decision boundary of the NN classifier to the Apollonius circle adaptively. Experimental results demonstrate the effectiveness of our framework, achieving a new state of the art on standard benchmarks.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "1fee10d582a821d47d4486c5a958e3ffdf861d38",
+    "externalIds": {
+      "ArXiv": "2107.14228",
+      "DBLP": "journals/pami/QiKWGZTLJ23",
+      "DOI": "10.1109/TPAMI.2022.3227513",
+      "CorpusId": 236493436,
+      "PubMed": "37015515"
+    },
+    "title": "Open World Entity Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2021,
+    "citationCount": 100,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2107.14228",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.14228, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49231213",
+        "name": "Lu Qi"
+      },
+      {
+        "authorId": "1859486",
+        "name": "Jason Kuen"
+      },
+      {
+        "authorId": "2154458079",
+        "name": "Yi Wang"
+      },
+      {
+        "authorId": "2174964",
+        "name": "Jiuxiang Gu"
+      },
+      {
+        "authorId": "3459894",
+        "name": "Hengshuang Zhao"
+      },
+      {
+        "authorId": "143635540",
+        "name": "Philip H. S. Torr"
+      },
+      {
+        "authorId": "2112754968",
+        "name": "Zhe Lin"
+      },
+      {
+        "authorId": "1729056",
+        "name": "Jiaya Jia"
+      }
+    ],
+    "abstract": "We introduce a new image segmentation task, called Entity Segmentation (ES), which aims to segment all visual entities (objects and stuffs) in an image without predicting their semantic labels. By removing the need of class label prediction, the models trained for such task can focus more on improving segmentation quality. It has many practical applications such as image manipulation and editing where the quality of segmentation masks is crucial but class labels are less important. We conduct the first-ever study to investigate the feasibility of convolutional center-based representation to segment things and stuffs in a unified manner, and show that such representation fits exceptionally well in the context of ES. More specifically, we propose a CondInst-like fully-convolutional architecture with two novel modules specifically designed to exploit the class-agnostic and non-overlapping requirements of ES. Experiments show that the models designed and trained for ES significantly outperforms popular class-specific panoptic segmentation models in terms of segmentation quality. Moreover, an ES model can be easily trained on a combination of multiple datasets without the need to resolve label conflicts in dataset merging, and the model trained for ES on one or more datasets can generalize very well to other test datasets of unseen domains. The code has been released at https://github.com/dvlab-research/Entity.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "260ad39a1dac4b451019e2bf17925f4df8e3b69a",
+    "externalIds": {
+      "DBLP": "conf/nips/ChengSK21",
+      "ArXiv": "2107.06278",
+      "CorpusId": 235829267
+    },
+    "title": "Per-Pixel Classification is Not All You Need for Semantic Segmentation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 1993,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2107.06278, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "50563570",
+        "name": "Bowen Cheng"
+      },
+      {
+        "authorId": "2068227",
+        "name": "A. Schwing"
+      },
+      {
+        "authorId": "144843400",
+        "name": "Alexander Kirillov"
+      }
+    ],
+    "abstract": "Modern approaches typically formulate semantic segmentation as a per-pixel classification task, while instance-level segmentation is handled with an alternative mask classification. Our key insight: mask classification is sufficiently general to solve both semantic- and instance-level segmentation tasks in a unified manner using the exact same model, loss, and training procedure. Following this observation, we propose MaskFormer, a simple mask classification model which predicts a set of binary masks, each associated with a single global class label prediction. Overall, the proposed mask classification-based method simplifies the landscape of effective approaches to semantic and panoptic segmentation tasks and shows excellent empirical results. In particular, we observe that MaskFormer outperforms per-pixel classification baselines when the number of classes is large. Our mask classification-based method outperforms both current state-of-the-art semantic (55.6 mIoU on ADE20K) and panoptic segmentation (52.7 PQ on COCO) models.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "262654ac1d13cf8d8b204594f4a88d3e04f3dd37",
+    "externalIds": {
+      "ArXiv": "2106.14855",
+      "DBLP": "journals/corr/abs-2106-14855",
+      "CorpusId": 235658076
+    },
+    "title": "K-Net: Towards Unified Image Segmentation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 461,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.14855, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2108037927",
+        "name": "Wenwei Zhang"
+      },
+      {
+        "authorId": "49968574",
+        "name": "Jiangmiao Pang"
+      },
+      {
+        "authorId": "152568027",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "1717179",
+        "name": "Chen Change Loy"
+      }
+    ],
+    "abstract": "Semantic, instance, and panoptic segmentations have been addressed using different and specialized frameworks despite their underlying connections. This paper presents a unified, simple, and effective framework for these essentially similar tasks. The framework, named K-Net, segments both instances and semantic categories consistently by a group of learnable kernels, where each kernel is responsible for generating a mask for either a potential instance or a stuff class. To remedy the difficulties of distinguishing various instances, we propose a kernel update strategy that enables each kernel dynamic and conditional on its meaningful group in the input image. K-Net can be trained in an end-to-end manner with bipartite matching, and its training and inference are naturally NMS-free and box-free. Without bells and whistles, K-Net surpasses all previous published state-of-the-art single-model results of panoptic segmentation on MS COCO test-dev split and semantic segmentation on ADE20K val split with 55.2% PQ and 54.3% mIoU, respectively. Its instance segmentation performance is also on par with Cascade Mask R-CNN on MS COCO with 60%-90% faster inference speeds. Code and models will be released at https://github.com/ZwwWayne/K-Net/.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d589c4945fa64b583bd9885484a3fc996ed05604",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-06360",
+      "ArXiv": "2106.06360",
+      "CorpusId": 235417450
+    },
+    "title": "Conterfactual Generative Zero-Shot Semantic Segmentation",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 11,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2106.06360, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "71883944",
+        "name": "Feihong Shen"
+      },
+      {
+        "authorId": "40940512",
+        "name": "Jun Liu"
+      },
+      {
+        "authorId": "2067770617",
+        "name": "Ping Hu"
+      }
+    ],
+    "abstract": "zero-shot learning is an essential part of computer vision. As a classical downstream task, zero-shot semantic segmentation has been studied because of its applicant value. One of the popular zero-shot semantic segmentation methods is based on the generative model Most new proposed works added structures on the same architecture to enhance this model. However, we found that, from the view of causal inference, the result of the original model has been influenced by spurious statistical relationships. Thus the performance of the prediction shows severe bias. In this work, we consider counterfactual methods to avoid the confounder in the original model. Based on this method, we proposed a new framework for zero-shot semantic segmentation. Our model is compared with baseline models on two real-world datasets, Pascal-VOC and Pascal-Context. The experiment results show proposed models can surpass previous confounded models and can still make use of additional structures to improve the performance. We also design a simple structure based on Graph Convolutional Networks (GCN) in this work.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "e3d7778a47c6cab4ea1ef3ee9d19ec1510c15c60",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2105-15203",
+      "ArXiv": "2105.15203",
+      "CorpusId": 235254713
+    },
+    "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+    "venue": "Neural Information Processing Systems",
+    "year": 2021,
+    "citationCount": 7942,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2105.15203, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "41020000",
+        "name": "Enze Xie"
+      },
+      {
+        "authorId": "71074736",
+        "name": "Wenhai Wang"
+      },
+      {
+        "authorId": "1751019",
+        "name": "Zhiding Yu"
+      },
+      {
+        "authorId": "2047844",
+        "name": "Anima Anandkumar"
+      },
+      {
+        "authorId": "2974008",
+        "name": "J. Álvarez"
+      },
+      {
+        "authorId": "47571885",
+        "name": "Ping Luo"
+      }
+    ],
+    "abstract": "We present SegFormer, a simple, efficient yet powerful semantic segmentation framework which unifies Transformers with lightweight multilayer perception (MLP) decoders. SegFormer has two appealing features: 1) SegFormer comprises a novel hierarchically structured Transformer encoder which outputs multiscale features. It does not need positional encoding, thereby avoiding the interpolation of positional codes which leads to decreased performance when the testing resolution differs from training. 2) SegFormer avoids complex decoders. The proposed MLP decoder aggregates information from different layers, and thus combining both local attention and global attention to render powerful representations. We show that this simple and lightweight design is the key to efficient segmentation on Transformers. We scale our approach up to obtain a series of models from SegFormer-B0 to SegFormer-B5, reaching significantly better performance and efficiency than previous counterparts. For example, SegFormer-B4 achieves 50.3% mIoU on ADE20K with 64M parameters, being 5x smaller and 2.2% better than the previous best method. Our best model, SegFormer-B5, achieves 84.0% mIoU on Cityscapes validation set and shows excellent zero-shot robustness on Cityscapes-C. Code will be released at: github.com/NVlabs/SegFormer.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9720098966d8ad66cea24460990548ae755ded3a",
+    "externalIds": {
+      "ArXiv": "2104.11692",
+      "DBLP": "conf/cvpr/PastoreCXMAC21",
+      "DOI": "10.1109/CVPRW53098.2021.00303",
+      "CorpusId": 233387814
+    },
+    "title": "A Closer Look at Self-training for Zero-Label Semantic Segmentation",
+    "venue": "2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+    "year": 2021,
+    "citationCount": 78,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2104.11692",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.11692, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2266072226",
+        "name": "G. Pastore"
+      },
+      {
+        "authorId": "10200050",
+        "name": "Fabio Cermelli"
+      },
+      {
+        "authorId": "3370667",
+        "name": "Yongqin Xian"
+      },
+      {
+        "authorId": "38286801",
+        "name": "Massimiliano Mancini"
+      },
+      {
+        "authorId": "2893664",
+        "name": "Zeynep Akata"
+      },
+      {
+        "authorId": "1752593147",
+        "name": "Barbara Caputo"
+      }
+    ],
+    "abstract": "Being able to segment unseen classes not observed during training is an important technical challenge in deep learning, because of its potential to reduce the expensive annotation required for semantic segmentation. Prior zero-label semantic segmentation works approach this task by learning visual-semantic embeddings or generative models. However, they are prone to overfitting on the seen classes because there is no training signal for them. In this paper, we study the challenging generalized zero-label semantic segmentation task where the model has to segment both seen and unseen classes at test time. We assume that pixels of unseen classes could be present in the training images but without being annotated. Our idea is to capture the latent information on unseen classes by supervising the model with self-produced pseudo-labels for unlabeled pixels. We propose a consistency regularizer to filter out noisy pseudo-labels by taking the intersections of the pseudo-labels generated from different augmentations of the same image. Our framework generates pseudo-labels and then retrain the model with human-annotated and pseudo-labelled data. This procedure is repeated for several iterations. As a result, our approach achieves the new state-of-the-art on PascalVOC12 and COCO-stuff datasets in the challenging generalized zero-label semantic segmentation setting, surpassing other existing methods addressing this task with more complex strategies. Code can be found at https://github.com/giuseppepastore10/STRICT.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background",
+      "result"
+    ]
+  },
+  {
+    "paperId": "8aec21de38661bc10764242c0772310ffaa9c6cd",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ZhengWQZC21",
+      "ArXiv": "2104.06601",
+      "DOI": "10.1109/CVPR46437.2021.00262",
+      "CorpusId": 233231251
+    },
+    "title": "Zero-Shot Instance Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2021,
+    "citationCount": 67,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2104.06601",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2104.06601, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2199302271",
+        "name": "Ye Zheng"
+      },
+      {
+        "authorId": "151485379",
+        "name": "Jiahong Wu"
+      },
+      {
+        "authorId": "2112437065",
+        "name": "Yongqiang Qin"
+      },
+      {
+        "authorId": "1966966",
+        "name": "Faen Zhang"
+      },
+      {
+        "authorId": "2088904258",
+        "name": "Li Cui"
+      }
+    ],
+    "abstract": "Deep learning has significantly improved the precision of instance segmentation with abundant labeled data. However, in many areas like medical and manufacturing, collecting sufficient data is extremely hard and labeling this data requires high professional skills. We follow this motivation and propose a new task set named zero-shot instance segmentation (ZSI). In the training phase of ZSI, the model is trained with seen data, while in the testing phase, it is used to segment all seen and unseen instances. We first formulate the ZSI task and propose a method to tackle the challenge, which consists of Zero-shot Detector, Semantic Mask Head, Background Aware RPN and Synchronized Background Strategy. We present a new benchmark for zero-shot instance segmentation based on the MS-COCO dataset. The extensive empirical results in this benchmark show that our method not only surpasses the state-of-the-art results in zero-shot object detection task but also achieves promising performance on ZSI. Our approach will serve as a solid baseline and facilitate future research in zero-shot instance segmentation. Code available at $\\color{Magenta}{\\text{ZSI}}$.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4",
+    "externalIds": {
+      "DBLP": "conf/icml/RadfordKHRGASAM21",
+      "ArXiv": "2103.00020",
+      "CorpusId": 231591445
+    },
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 47396,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2103.00020, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "38909097",
+        "name": "Alec Radford"
+      },
+      {
+        "authorId": "2110935237",
+        "name": "Jong Wook Kim"
+      },
+      {
+        "authorId": "2004021329",
+        "name": "Chris Hallacy"
+      },
+      {
+        "authorId": "1992922591",
+        "name": "A. Ramesh"
+      },
+      {
+        "authorId": "40087786",
+        "name": "Gabriel Goh"
+      },
+      {
+        "authorId": "144517868",
+        "name": "S. Agarwal"
+      },
+      {
+        "authorId": "144864359",
+        "name": "G. Sastry"
+      },
+      {
+        "authorId": "119609682",
+        "name": "Amanda Askell"
+      },
+      {
+        "authorId": "2051714782",
+        "name": "Pamela Mishkin"
+      },
+      {
+        "authorId": "2115193883",
+        "name": "Jack Clark"
+      },
+      {
+        "authorId": "2064404342",
+        "name": "Gretchen Krueger"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      }
+    ],
+    "abstract": "State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background",
+      "result"
+    ]
+  },
+  {
+    "paperId": "141a5033d9994242b18bb3b217e79582f1ee9306",
+    "externalIds": {
+      "ArXiv": "2102.05918",
+      "DBLP": "conf/icml/JiaYXCPPLSLD21",
+      "CorpusId": 231879586
+    },
+    "title": "Scaling Up Visual and Vision-Language Representation Learning With Noisy Text Supervision",
+    "venue": "International Conference on Machine Learning",
+    "year": 2021,
+    "citationCount": 5358,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2102.05918, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2082436672",
+        "name": "Chao Jia"
+      },
+      {
+        "authorId": "2781059",
+        "name": "Yinfei Yang"
+      },
+      {
+        "authorId": "2327118351",
+        "name": "Ye Xia"
+      },
+      {
+        "authorId": "2109060286",
+        "name": "Yi-Ting Chen"
+      },
+      {
+        "authorId": "27456119",
+        "name": "Zarana Parekh"
+      },
+      {
+        "authorId": "143950636",
+        "name": "Hieu Pham"
+      },
+      {
+        "authorId": "2827616",
+        "name": "Quoc V. Le"
+      },
+      {
+        "authorId": "2305450",
+        "name": "Yun-Hsuan Sung"
+      },
+      {
+        "authorId": "2110121852",
+        "name": "Zhen Li"
+      },
+      {
+        "authorId": "2066508193",
+        "name": "Tom Duerig"
+      }
+    ],
+    "abstract": "Pre-trained representations are becoming crucial for many NLP and perception tasks. While representation learning in NLP has transitioned to training on raw text without human annotations, visual and vision-language representations still rely heavily on curated training datasets that are expensive or require expert knowledge. For vision applications, representations are mostly learned using datasets with explicit class labels such as ImageNet or OpenImages. For vision-language, popular datasets like Conceptual Captions, MSCOCO, or CLIP all involve a non-trivial data collection (and cleaning) process. This costly curation process limits the size of datasets and hence hinders the scaling of trained models. In this paper, we leverage a noisy dataset of over one billion image alt-text pairs, obtained without expensive filtering or post-processing steps in the Conceptual Captions dataset. A simple dual-encoder architecture learns to align visual and language representations of the image and text pairs using a contrastive loss. We show that the scale of our corpus can make up for its noise and leads to state-of-the-art representations even with such a simple learning scheme. Our visual representation achieves strong performance when transferred to classification tasks such as ImageNet and VTAB. The aligned visual and language representations enables zero-shot image classification and also set new state-of-the-art results on Flickr30K and MSCOCO image-text retrieval benchmarks, even when compared with more sophisticated cross-attention models. The representations also enable cross-modality search with complex text and text + image queries.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "497d765b1eccbc9e99a37592a1860744559695db",
+    "externalIds": {
+      "MAG": "3110226019",
+      "DBLP": "journals/corr/abs-2011-10678",
+      "ArXiv": "2011.10678",
+      "DOI": "10.1109/CVPR46437.2021.01416",
+      "CorpusId": 227126502
+    },
+    "title": "Open-Vocabulary Object Detection Using Captions",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2020,
+    "citationCount": 575,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2011.10678",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2011.10678, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2778637",
+        "name": "Alireza Zareian"
+      },
+      {
+        "authorId": "2722334",
+        "name": "Kevin Dela Rosa"
+      },
+      {
+        "authorId": "1811433",
+        "name": "D. Hu"
+      },
+      {
+        "authorId": "9546964",
+        "name": "Shih-Fu Chang"
+      }
+    ],
+    "abstract": "Despite the remarkable accuracy of deep neural networks in object detection, they are costly to train and scale due to supervision requirements. Particularly, learning more object categories typically requires proportionally more bounding box annotations. Weakly supervised and zero-shot learning techniques have been explored to scale object detectors to more categories with less supervision, but they have not been as successful and widely adopted as supervised models. In this paper, we put forth a novel formulation of the object detection problem, namely open-vocabulary object detection, which is more general, more practical, and more effective than weakly supervised and zero-shot approaches. We propose a new method to train object detectors using bounding box annotations for a limited set of object categories, as well as image-caption pairs that cover a larger variety of objects at a significantly lower cost. We show that the proposed method can detect and localize objects for which no bounding box annotation is provided during training, at a significantly higher accuracy than zero-shot approaches. Meanwhile, objects with bounding box annotation can be detected almost as accurately as supervised methods, which is significantly better than weakly supervised baselines. Accordingly, we establish a new state of the art for scalable object detection.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "c3383cbad3cbd663656ffbd517dec8c5ba8466a5",
+    "externalIds": {
+      "MAG": "3092960051",
+      "DBLP": "conf/mm/TianWFZM20",
+      "DOI": "10.1145/3394171.3413990",
+      "CorpusId": 222278671
+    },
+    "title": "Cap2Seg: Inferring Semantic and Spatial Context from Captions for Zero-Shot Image Segmentation",
+    "venue": "ACM Multimedia",
+    "year": 2020,
+    "citationCount": 16,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1145/3394171.3413990?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1145/3394171.3413990, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1993660574",
+        "name": "Guiyu Tian"
+      },
+      {
+        "authorId": "2146514526",
+        "name": "Shuailong Wang"
+      },
+      {
+        "authorId": "2109020722",
+        "name": "Jie Feng"
+      },
+      {
+        "authorId": "2116636135",
+        "name": "Li Zhou"
+      },
+      {
+        "authorId": "145353089",
+        "name": "Yadong Mu"
+      }
+    ],
+    "abstract": "Zero-shot image segmentation refers to the task of segmenting pixels from specific unseen semantic class. Previous methods mainly rely on historic segmentation tasks, such as using semantic embedding or word embedding of class names to infer a new segmentation model. In this work we describe Cap2Seg, a novel solution of zero-shot image segmentation that harnesses accompanying image captions for intelligently inferring spatial and semantic context for the zero-shot image segmentation task. As our main insight, image captions often implicitly entail the occurrence of a new class in an image and its most-confident spatial distribution. We define a contextual entailment question (CEQ) that tailors BERT-like text models. In specific, the proposed networks for inferring unseen classes consists of three branches (global / local / semi-global), which infer labels of unseen class from image level, image-stripe level or pixel level respectively. Comprehensive experiments and ablation studies are conducted on two image benchmarks, COCO-stuff and Pascal VOC. All clearly demonstrate the effectiveness of the proposed Cap2Seg, including a set of hardest unseen classes (i.e., image captions do not literally contain the class names and direct matching for inference fails).",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "5858074dbb70a7cffd4df40dda72a0bf5c47e961",
+    "externalIds": {
+      "ArXiv": "2009.12232",
+      "DBLP": "journals/tnn/GuZNZZ23",
+      "MAG": "3088431063",
+      "DOI": "10.1109/TNNLS.2022.3145962",
+      "CorpusId": 221949329,
+      "PubMed": "35143403"
+    },
+    "title": "From Pixel to Patch: Synthesize Context-Aware Features for Zero-Shot Semantic Segmentation",
+    "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": 2020,
+    "citationCount": 24,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2009.12232",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2009.12232, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "148427191",
+        "name": "Zhangxuan Gu"
+      },
+      {
+        "authorId": "2108884952",
+        "name": "Siyuan Zhou"
+      },
+      {
+        "authorId": "1716055",
+        "name": "Li Niu"
+      },
+      {
+        "authorId": "1806179720",
+        "name": "Zihan Zhao"
+      },
+      {
+        "authorId": "2108911758",
+        "name": "Liqing Zhang"
+      }
+    ],
+    "abstract": "Zero-shot learning (ZSL) has been actively studied for image classification tasks to relieve the burden of annotating image labels. Interestingly, the semantic segmentation task requires more labor-intensive pixel-wise annotation, but zero-shot semantic segmentation has not attracted extensive research interest. Thus, we focus on zero-shot semantic segmentation that aims to segment unseen objects with only category-level semantic representations provided for unseen categories. In this article, we propose a novel context-aware feature generation network (CaGNet) that can synthesize context-aware pixel-wise visual features for unseen categories based on category-level semantic representations and pixel-wise contextual information. The synthesized features are used to fine-tune the classifier to enable segmenting of unseen objects. Furthermore, we extend pixel-wise feature generation and fine-tuning to patch-wise feature generation and fine-tuning, which additionally considers the interpixel relationship. Experimental results on Pascal-VOC, Pascal-context, and COCO-stuff show that our method significantly outperforms the existing zero-shot semantic segmentation methods.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "cb009fb9de457878a996390ebc493875501d8d1f",
+    "externalIds": {
+      "MAG": "3106029750",
+      "DBLP": "conf/mm/GuZ00Z20",
+      "ArXiv": "2008.06893",
+      "DOI": "10.1145/3394171.3413593",
+      "CorpusId": 221217836
+    },
+    "title": "Context-aware Feature Generation For Zero-shot Semantic Segmentation",
+    "venue": "ACM Multimedia",
+    "year": 2020,
+    "citationCount": 162,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/2008.06893",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2008.06893, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "148427191",
+        "name": "Zhangxuan Gu"
+      },
+      {
+        "authorId": "2108884952",
+        "name": "Siyuan Zhou"
+      },
+      {
+        "authorId": "1716055",
+        "name": "Li Niu"
+      },
+      {
+        "authorId": "1806179720",
+        "name": "Zihan Zhao"
+      },
+      {
+        "authorId": "2108911758",
+        "name": "Liqing Zhang"
+      }
+    ],
+    "abstract": "Existing semantic segmentation models heavily rely on dense pixel-wise annotations. To reduce the annotation pressure, we focus on a challenging task named zero-shot semantic segmentation, which aims to segment unseen objects with zero annotations. This task can be accomplished by transferring knowledge across categories via semantic word embeddings. In this paper, we propose a novel context-aware feature generation method for zero-shot segmentation named CaGNet. In particular, with the observation that a pixel-wise feature highly depends on its contextual information, we insert a contextual module in a segmentation network to capture the pixel-wise contextual information, which guides the process of generating more diverse and context-aware features from semantic word embeddings. Our method achieves state-of-the-art results on three benchmark datasets for zero-shot segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "962dc29fdc3fbdc5930a10aba114050b82fe5a3e",
+    "externalIds": {
+      "MAG": "3096609285",
+      "DBLP": "conf/eccv/CarionMSUKZ20",
+      "ArXiv": "2005.12872",
+      "DOI": "10.1007/978-3-030-58452-8_13",
+      "CorpusId": 218889832
+    },
+    "title": "End-to-End Object Detection with Transformers",
+    "venue": "European Conference on Computer Vision",
+    "year": 2020,
+    "citationCount": 17822,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2005.12872, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3422899",
+        "name": "Nicolas Carion"
+      },
+      {
+        "authorId": "1403239967",
+        "name": "Francisco Massa"
+      },
+      {
+        "authorId": "2282478",
+        "name": "Gabriel Synnaeve"
+      },
+      {
+        "authorId": "1746841",
+        "name": "Nicolas Usunier"
+      },
+      {
+        "authorId": "144843400",
+        "name": "Alexander Kirillov"
+      },
+      {
+        "authorId": "2134433",
+        "name": "Sergey Zagoruyko"
+      }
+    ],
+    "abstract": "We present a new method that views object detection as a direct set prediction problem. Our approach streamlines the detection pipeline, effectively removing the need for many hand-designed components like a non-maximum suppression procedure or anchor generation that explicitly encode our prior knowledge about the task. The main ingredients of the new framework, called DEtection TRansformer or DETR, are a set-based global loss that forces unique predictions via bipartite matching, and a transformer encoder-decoder architecture. Given a fixed small set of learned object queries, DETR reasons about the relations of the objects and the global image context to directly output the final set of predictions in parallel. The new model is conceptually simple and does not require a specialized library, unlike many other modern detectors. DETR demonstrates accuracy and run-time performance on par with the well-established and highly-optimized Faster RCNN baseline on the challenging COCO object detection dataset. Moreover, DETR can be easily generalized to produce panoptic segmentation in a unified manner. We show that it significantly outperforms competitive baselines. Training code and pretrained models are available at this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "a88c914f5a738d38f02790bb5de41453bf17bde1",
+    "externalIds": {
+      "MAG": "2976122994",
+      "DBLP": "conf/eccv/YuanCW20",
+      "ArXiv": "1909.11065",
+      "DOI": "10.1007/978-3-030-58539-6_11",
+      "CorpusId": 202734362
+    },
+    "title": "Object-Contextual Representations for Semantic Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2019,
+    "citationCount": 1655,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1909.11065, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "49521390",
+        "name": "Yuhui Yuan"
+      },
+      {
+        "authorId": "46772547",
+        "name": "Xilin Chen"
+      },
+      {
+        "authorId": "2109534192",
+        "name": "Jingdong Wang"
+      }
+    ],
+    "abstract": "In this paper, we address the semantic segmentation problem with a focus on the context aggregation strategy. Our motivation is that the label of a pixel is the category of the object that the pixel belongs to. We present a simple yet effective approach, object-contextual representations, characterizing a pixel by exploiting the representation of the corresponding object class. First, we learn object regions under the supervision of the ground-truth segmentation. Second, we compute the object region representation by aggregating the representations of the pixels lying in the object region. Last, % the representation similarity we compute the relation between each pixel and each object region, and augment the representation of each pixel with the object-contextual representation which is a weighted aggregation of all the object region representations according to their relations with the pixel. We empirically demonstrate that the proposed approach achieves competitive performance on various challenging semantic segmentation benchmarks: Cityscapes, ADE20K, LIP, PASCAL-Context, and COCO-Stuff. Cityscapes, ADE20K, LIP, PASCAL-Context and COCO-Stuff. Our submission \"HRNet + OCR + SegFix\" achieves the 1-st place on the Cityscapes leaderboard by the time of submission. Code is available at: this https URL and this https URL.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ff24ced52576b5da970c1397227e2c14933e7891",
+    "externalIds": {
+      "MAG": "2947628551",
+      "DBLP": "conf/nips/BucherVCP19",
+      "ArXiv": "1906.00817",
+      "CorpusId": 173990618
+    },
+    "title": "Zero-Shot Semantic Segmentation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2019,
+    "citationCount": 393,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1906.00817, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "48326034",
+        "name": "Max Bucher"
+      },
+      {
+        "authorId": "2142754750",
+        "name": "Tuan-Hung Vu"
+      },
+      {
+        "authorId": "51021910",
+        "name": "M. Cord"
+      },
+      {
+        "authorId": "144565371",
+        "name": "P. Pérez"
+      }
+    ],
+    "abstract": "Semantic segmentation models are limited in their ability to scale to large numbers of object classes. In this paper, we introduce the new task of zero-shot semantic segmentation: learning pixel-wise classifiers for never-seen object categories with zero training examples. To this end, we present a novel architecture, ZS3Net, combining a deep visual segmentation model with an approach to generate visual representations from semantic word embeddings. By this way, ZS3Net addresses pixel classification tasks where both seen and unseen categories are faced at test time (so called \"generalized\" zero-shot classification). Performance is further improved by a self-training step that relies on automatic pseudo-labeling of pixels from unseen classes. On the two standard segmentation datasets, Pascal-VOC and Pascal-Context, we propose zero-shot benchmarks and set competitive baselines. For complex scenes as ones in the Pascal-Context dataset, we extend our approach by using a graph-context encoding to fully leverage spatial context priors coming from class-wise segmentation maps.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ea8d6c2de162e0f9ad89af7b950333cb29e94622",
+    "externalIds": {
+      "DBLP": "conf/cvpr/XianC0SA19",
+      "MAG": "2924485953",
+      "DOI": "10.1109/CVPR.2019.00845",
+      "CorpusId": 108379906
+    },
+    "title": "Semantic Projection Network for Zero- and Few-Label Semantic Segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2019,
+    "citationCount": 285,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2019.00845?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2019.00845, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3370667",
+        "name": "Yongqin Xian"
+      },
+      {
+        "authorId": "31658768",
+        "name": "Subhabrata Choudhury"
+      },
+      {
+        "authorId": "48479348",
+        "name": "Yang He"
+      },
+      {
+        "authorId": "48920094",
+        "name": "B. Schiele"
+      },
+      {
+        "authorId": "2893664",
+        "name": "Zeynep Akata"
+      }
+    ],
+    "abstract": "Semantic segmentation is one of the most fundamental problems in computer vision and pixel-level labelling in this context is particularly expensive. Hence, there have been several attempts to reduce the annotation effort such as learning from image level labels and bounding box annotations. In this paper we take this one step further and focus on the challenging task of zero- and few-shot learning of semantic segmentation. We define this task as image segmentation by assigning a label to every pixel even though either no labeled sample of that class was present during training, i.e. zero-label semantic segmentation, or only a few labeled samples were present, i.e. few-label semantic segmentation.Our goal is to transfer the knowledge from previously seen classes to novel classes. Our proposed semantic projection network (SPNet) achieves this goal by incorporating a class-level semantic information into any network designed for semantic segmentation, in an end-to-end manner. We also propose a benchmark for this task on the challenging COCO-Stuff and PASCAL VOC12 datasets. Our model is effective in segmenting novel classes, i.e. alleviating expensive dense annotations, but also in adapting to novel classes without forgetting its prior knowledge, i.e. generalized zero- and few-label semantic segmentation.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "62c1a6558a2a0d5fd6df4c0fec99dd9027d1c448",
+    "externalIds": {
+      "MAG": "2889280005",
+      "DBLP": "conf/eccv/JiBSN18",
+      "DOI": "10.1007/978-3-030-01225-0_43",
+      "CorpusId": 52963415
+    },
+    "title": "End-to-End Joint Semantic Segmentation of Actors and Actions in Video",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 36,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-030-01225-0_43?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-030-01225-0_43, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2547290",
+        "name": "Jingwei Ji"
+      },
+      {
+        "authorId": "8983218",
+        "name": "S. Buch"
+      },
+      {
+        "authorId": "144106940",
+        "name": "Á. Soto"
+      },
+      {
+        "authorId": "9200530",
+        "name": "Juan Carlos Niebles"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "9217e28b2273eb3b26e4e9b7b498b4661e6e09f5",
+    "externalIds": {
+      "ArXiv": "1802.02611",
+      "MAG": "2787091153",
+      "DBLP": "journals/corr/abs-1802-02611",
+      "DOI": "10.1007/978-3-030-01234-2_49",
+      "CorpusId": 3638670
+    },
+    "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+    "venue": "European Conference on Computer Vision",
+    "year": 2018,
+    "citationCount": 16313,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1802.02611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "1844940337",
+        "name": "Yukun Zhu"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "3302320",
+        "name": "Florian Schroff"
+      },
+      {
+        "authorId": "2595180",
+        "name": "Hartwig Adam"
+      }
+    ],
+    "abstract": "Spatial pyramid pooling module or encode-decoder structure are used in deep neural networks for semantic segmentation task. The former networks are able to encode multi-scale contextual information by probing the incoming features with filters or pooling operations at multiple rates and multiple effective fields-of-view, while the latter networks can capture sharper object boundaries by gradually recovering the spatial information. In this work, we propose to combine the advantages from both methods. Specifically, our proposed model, DeepLabv3+, extends DeepLabv3 by adding a simple yet effective decoder module to refine the segmentation results especially along object boundaries. We further explore the Xception model and apply the depthwise separable convolution to both Atrous Spatial Pyramid Pooling and decoder modules, resulting in a faster and stronger encoder-decoder network. We demonstrate the effectiveness of the proposed model on PASCAL VOC 2012 and Cityscapes datasets, achieving the test set performance of 89.0\\% and 82.1\\% without any post-processing. Our paper is accompanied with a publicly available reference implementation of the proposed models in Tensorflow at \\url{this https URL}.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "ccd99008d942b890cecd308a31ba61240eac9e54",
+    "externalIds": {
+      "MAG": "2952623462",
+      "ArXiv": "1711.10370",
+      "DBLP": "journals/corr/abs-1711-10370",
+      "DOI": "10.1109/CVPR.2018.00445",
+      "CorpusId": 4308965
+    },
+    "title": "Learning to Segment Every Thing",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 305,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1711.10370",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1711.10370, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2874347",
+        "name": "Ronghang Hu"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "Most methods for object instance segmentation require all training examples to be labeled with segmentation masks. This requirement makes it expensive to annotate new categories and has restricted instance segmentation models to ~100 well-annotated classes. The goal of this paper is to propose a new partially supervised training paradigm, together with a novel weight transfer function, that enables training instance segmentation models on a large set of categories all of which have box annotations, but only a small fraction of which have mask annotations. These contributions allow us to train Mask R-CNN to detect and segment 3000 visual concepts using box annotations from the Visual Genome dataset and mask annotations from the 80 classes in the COCO dataset. We evaluate our approach in a controlled study on the COCO dataset. This work is a first step towards instance segmentation models that have broad comprehension of the visual world.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8cc4a4bc7f9a989130d5ac129d24426a444fe161",
+    "externalIds": {
+      "ArXiv": "1710.04837",
+      "DBLP": "journals/corr/abs-1710-04837",
+      "MAG": "2765434781",
+      "DOI": "10.1109/MSP.2017.2763441",
+      "CorpusId": 784912
+    },
+    "title": "Recent Advances in Zero-Shot Recognition: Toward Data-Efficient Understanding of Visual Content",
+    "venue": "IEEE Signal Processing Magazine",
+    "year": 2017,
+    "citationCount": 185,
+    "openAccessPdf": {
+      "url": "https://qmro.qmul.ac.uk/xmlui/bitstream/123456789/32388/2/Gong%20Recent%20Advances%20in%20Zero-shot%202018%20Accepted.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1710.04837, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "35782003",
+        "name": "Yanwei Fu"
+      },
+      {
+        "authorId": "145406421",
+        "name": "T. Xiang"
+      },
+      {
+        "authorId": "2283318306",
+        "name": "Yu-Gang Jiang"
+      },
+      {
+        "authorId": "145905953",
+        "name": "X. Xue"
+      },
+      {
+        "authorId": "144398147",
+        "name": "L. Sigal"
+      },
+      {
+        "authorId": "144784813",
+        "name": "S. Gong"
+      }
+    ],
+    "abstract": "With the recent renaissance of deep convolutional neural networks (CNNs), encouraging breakthroughs have been achieved on the supervised recognition tasks, where each class has sufficient and fully annotated training data. However, to scale the recognition to a large number of classes with few or no training samples for each class remains an unsolved problem. One approach is to develop models capable of recognizing unseen categories without any training instances, or zero-shot recognition/learning. This article provides a comprehensive review of existing zero-shot recognition techniques covering various aspects ranging from representations of models, data sets, and evaluation settings. We also overview related recognition tasks including one-shot and open-set recognition, which can be used as natural extensions of zero-shot recognition when a limited number of class samples become available or when zero-shot recognition is implemented in a real-world setting. We highlight the limitations of existing approaches and point out future research directions in this existing new research area.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "79cfb51a51fc093f66aac8e858afe2e14d4a1f20",
+    "externalIds": {
+      "MAG": "2950100464",
+      "DBLP": "journals/corr/abs-1708-02002",
+      "DOI": "10.1109/ICCV.2017.324",
+      "CorpusId": 47252984
+    },
+    "title": "Focal Loss for Dense Object Detection",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 30995,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1708.02002",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/ICCV.2017.324?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/ICCV.2017.324, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "47316088",
+        "name": "Priya Goyal"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "2a5667702b0f1ff77dde8fb3e2e10d4e05e8de9d",
+    "externalIds": {
+      "MAG": "2737258237",
+      "DBLP": "conf/cvpr/ZhouZPFB017",
+      "DOI": "10.1109/CVPR.2017.544",
+      "CorpusId": 5636055
+    },
+    "title": "Scene Parsing through ADE20K Dataset",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2017,
+    "citationCount": 3781,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2017.544?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2017.544, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "47940821",
+        "name": "Hang Zhao"
+      },
+      {
+        "authorId": "143872936",
+        "name": "Xavier Puig"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      },
+      {
+        "authorId": "2063937685",
+        "name": "Adela Barriuso"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background",
+      "result"
+    ]
+  },
+  {
+    "paperId": "ffe28f6bf0e9e6bbca6313319aa1a5409d283d9b",
+    "externalIds": {
+      "DBLP": "journals/corr/XianLSA17",
+      "ArXiv": "1707.00600",
+      "MAG": "2725671465",
+      "DOI": "10.1109/TPAMI.2018.2857768",
+      "CorpusId": 4852047,
+      "PubMed": "30028691"
+    },
+    "title": "Zero-Shot Learning—A Comprehensive Evaluation of the Good, the Bad and the Ugly",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2017,
+    "citationCount": 1812,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1707.00600",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1707.00600, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3370667",
+        "name": "Yongqin Xian"
+      },
+      {
+        "authorId": "1787591",
+        "name": "Christoph H. Lampert"
+      },
+      {
+        "authorId": "48920094",
+        "name": "B. Schiele"
+      },
+      {
+        "authorId": "2893664",
+        "name": "Zeynep Akata"
+      }
+    ],
+    "abstract": "Due to the importance of zero-shot learning, i.e., classifying images where there is a lack of labeled training data, the number of proposed approaches has recently increased steadily. We argue that it is time to take a step back and to analyze the status quo of the area. The purpose of this paper is three-fold. First, given the fact that there is no agreed upon zero-shot learning benchmark, we first define a new benchmark by unifying both the evaluation protocols and data splits of publicly available datasets used for this task. This is an important contribution as published results are often not comparable and sometimes even flawed due to, e.g., pre-training on zero-shot test classes. Moreover, we propose a new zero-shot learning dataset, the Animals with Attributes 2 (AWA2) dataset which we make publicly available both in terms of image features and the images themselves. Second, we compare and analyze a significant number of the state-of-the-art methods in depth, both in the classic zero-shot setting but also in the more realistic generalized zero-shot setting. Finally, we discuss in detail the limitations of the current status of the area which can be taken as a basis for advancing it.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "268da7a23078849e10ae8209d0bb1e5b98ab5244",
+    "externalIds": {
+      "DBLP": "conf/iccv/ZhaoPZF017",
+      "MAG": "2604254608",
+      "ArXiv": "1703.08769",
+      "DOI": "10.1109/ICCV.2017.221",
+      "CorpusId": 902985
+    },
+    "title": "Open Vocabulary Scene Parsing",
+    "venue": "IEEE International Conference on Computer Vision",
+    "year": 2017,
+    "citationCount": 139,
+    "openAccessPdf": {
+      "url": "https://dspace.mit.edu/bitstream/1721.1/123479/2/ICCV_openvoc.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCSA",
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.08769, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47940821",
+        "name": "Hang Zhao"
+      },
+      {
+        "authorId": "143872936",
+        "name": "Xavier Puig"
+      },
+      {
+        "authorId": "145291669",
+        "name": "Bolei Zhou"
+      },
+      {
+        "authorId": "37895334",
+        "name": "S. Fidler"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "Recognizing arbitrary objects in the wild has been a challenging problem due to the limitations of existing classification models and datasets. In this paper, we propose a new task that aims at parsing scenes with a large and open vocabulary, and several evaluation metrics are explored for this problem. Our approach is a joint image pixel and word concept embeddings framework, where word concepts are connected by semantic relations. We validate the open vocabulary prediction ability of our framework on ADE20K dataset which covers a wide variety of scenes and objects. We further explore the trained joint embedding space to show its interpretability.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1a0912bb76777469295bb2c059faee907e7f3258",
+    "externalIds": {
+      "ArXiv": "1703.06870",
+      "CorpusId": 54465873
+    },
+    "title": "Mask R-CNN",
+    "venue": "",
+    "year": 2017,
+    "citationCount": 31572,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.06870, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "2082991",
+        "name": "Georgia Gkioxari"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      }
+    ],
+    "abstract": "We present a conceptually simple, flexible, and general framework for object instance segmentation. Our approach efficiently detects objects in an image while simultaneously generating a high-quality segmentation mask for each instance. The method, called Mask R-CNN, extends Faster R-CNN by adding a branch for predicting an object mask in parallel with the existing branch for bounding box recognition. Mask R-CNN is simple to train and adds only a small overhead to Faster R-CNN, running at 5 fps. Moreover, Mask R-CNN is easy to generalize to other tasks, e.g., allowing us to estimate human poses in the same framework. We show top results in all three tracks of the COCO suite of challenges, including instance segmentation, bounding-box object detection, and person keypoint detection. Without tricks, Mask R-CNN outperforms all existing, single-model entries on every task, including the COCO 2016 challenge winners. We hope our simple and effective approach will serve as a solid baseline and help ease future research in instance-level recognition. Code will be made available.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "ff7bcaa4556cb13fc7bf03e477172493546172cd",
+    "externalIds": {
+      "DBLP": "journals/corr/KendallG17",
+      "MAG": "2600383743",
+      "ArXiv": "1703.04977",
+      "CorpusId": 71134
+    },
+    "title": "What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?",
+    "venue": "Neural Information Processing Systems",
+    "year": 2017,
+    "citationCount": 5800,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1703.04977, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "47645184",
+        "name": "Alex Kendall"
+      },
+      {
+        "authorId": "2681954",
+        "name": "Y. Gal"
+      }
+    ],
+    "abstract": "There are two major types of uncertainty one can model. Aleatoric uncertainty captures noise inherent in the observations. On the other hand, epistemic uncertainty accounts for uncertainty in the model - uncertainty which can be explained away given enough data. Traditionally it has been difficult to model epistemic uncertainty in computer vision, but with new Bayesian deep learning tools this is now possible. We study the benefits of modeling epistemic vs. aleatoric uncertainty in Bayesian deep learning models for vision tasks. For this we present a Bayesian deep learning framework combining input-dependent aleatoric uncertainty together with epistemic uncertainty. We study models under the framework with per-pixel semantic segmentation and depth regression tasks. Further, our explicit uncertainty formulation leads to new loss functions for these tasks, which can be interpreted as learned attenuation. This makes the loss more robust to noisy data, also giving new state-of-the-art results on segmentation and depth regression benchmarks.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "0095b9f73c000f2609fc81ffb7769df7cd77bda1",
+    "externalIds": {
+      "DBLP": "conf/cvpr/CaesarUF18",
+      "ArXiv": "1612.03716",
+      "MAG": "2950053619",
+      "DOI": "10.1109/CVPR.2018.00132",
+      "CorpusId": 4396518
+    },
+    "title": "COCO-Stuff: Thing and Stuff Classes in Context",
+    "venue": "2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 1659,
+    "openAccessPdf": {
+      "url": "https://www.pure.ed.ac.uk/ws/files/64278722/caesar18cvpr.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03716, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3078154",
+        "name": "Holger Caesar"
+      },
+      {
+        "authorId": "1823362",
+        "name": "J. Uijlings"
+      },
+      {
+        "authorId": "143865718",
+        "name": "V. Ferrari"
+      }
+    ],
+    "abstract": "Semantic classes can be either things (objects with a well-defined shape, e.g. car, person) or stuff (amorphous background regions, e.g. grass, sky). While lots of classification and detection works focus on thing classes, less attention has been given to stuff classes. Nonetheless, stuff classes are important as they allow to explain important aspects of an image, including (1) scene type; (2) which thing classes are likely to be present and their location (through contextual reasoning); (3) physical attributes, material types and geometric properties of the scene. To understand stuff and things in context we introduce COCO-Stuff1, which augments all 164K images of the COCO 2017 dataset with pixel-wise annotations for 91 stuff classes. We introduce an efficient stuff annotation protocol based on superpixels, which leverages the original thing annotations. We quantify the speed versus quality trade-off of our protocol and explore the relation between annotation time and boundary complexity. Furthermore, we use COCO-Stuff to analyze: (a) the importance of stuff and thing classes in terms of their surface cover and how frequently they are mentioned in image captions; (b) the spatial relations between stuff and things, highlighting the rich contextual relations that make our dataset unique; (c) the performance of a modern semantic segmentation method on stuff and thing classes, and whether stuff is easier to segment than things.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result"
+    ]
+  },
+  {
+    "paperId": "5feb32a73dd1bd9e13f84a7b3344497a5545106b",
+    "externalIds": {
+      "DBLP": "journals/corr/JoulinGBDJM16",
+      "MAG": "2563351168",
+      "ArXiv": "1612.03651",
+      "CorpusId": 16196524
+    },
+    "title": "FastText.zip: Compressing text classification models",
+    "venue": "arXiv.org",
+    "year": 2016,
+    "citationCount": 1327,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03651, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2319608",
+        "name": "Armand Joulin"
+      },
+      {
+        "authorId": "3024698",
+        "name": "Edouard Grave"
+      },
+      {
+        "authorId": "2329288",
+        "name": "Piotr Bojanowski"
+      },
+      {
+        "authorId": "3271933",
+        "name": "Matthijs Douze"
+      },
+      {
+        "authorId": "1681054",
+        "name": "H. Jégou"
+      },
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      }
+    ],
+    "abstract": "We consider the problem of producing compact architectures for text classification, such that the full model fits in a limited amount of memory. After considering different solutions inspired by the hashing literature, we propose a method built upon product quantization to store the word embeddings. While the original technique leads to a loss in accuracy, we adapt this method to circumvent the quantization artifacts. As a result, our approach produces a text classifier, derived from the fastText approach, which at test time requires only a fraction of the memory compared to the original one, without noticeably sacrificing the quality in terms of classification accuracy. Our experiments carried out on several benchmarks show that our approach typically requires two orders of magnitude less memory than fastText while being only slightly inferior with respect to accuracy. As a result, it outperforms the state of the art by a good margin in terms of the compromise between memory usage and accuracy.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "2a94c84383ee3de5e6211d43d16e7de387f68878",
+    "externalIds": {
+      "ArXiv": "1612.03144",
+      "DBLP": "conf/cvpr/LinDGHHB17",
+      "MAG": "2565639579",
+      "DOI": "10.1109/CVPR.2017.106",
+      "CorpusId": 10716717
+    },
+    "title": "Feature Pyramid Networks for Object Detection",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 26438,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.03144",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.03144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      },
+      {
+        "authorId": "2983898",
+        "name": "Ross B. Girshick"
+      },
+      {
+        "authorId": "39353098",
+        "name": "Kaiming He"
+      },
+      {
+        "authorId": "1790580",
+        "name": "Bharath Hariharan"
+      },
+      {
+        "authorId": "50172592",
+        "name": "Serge J. Belongie"
+      }
+    ],
+    "abstract": "Feature pyramids are a basic component in recognition systems for detecting objects at different scales. But pyramid representations have been avoided in recent object detectors that are based on deep convolutional networks, partially because they are slow to compute and memory intensive. In this paper, we exploit the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to construct feature pyramids with marginal extra cost. A top-down architecture with lateral connections is developed for building high-level semantic feature maps at all scales. This architecture, called a Feature Pyramid Network (FPN), shows significant improvement as a generic feature extractor in several applications. Using a basic Faster R-CNN system, our method achieves state-of-the-art single-model results on the COCO detection benchmark without bells and whistles, surpassing all existing single-model entries including those from the COCO 2016 challenge winners. In addition, our method can run at 5 FPS on a GPU and thus is a practical and accurate solution to multi-scale object detection. Code will be made publicly available.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "1031a69923b80ad01cf3fbb703d10757a80e699b",
+    "externalIds": {
+      "DBLP": "journals/corr/ZhaoSQWJ16",
+      "ArXiv": "1612.01105",
+      "MAG": "2560023338",
+      "DOI": "10.1109/CVPR.2017.660",
+      "CorpusId": 5299559
+    },
+    "title": "Pyramid Scene Parsing Network",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 13971,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1612.01105",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1612.01105, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3459894",
+        "name": "Hengshuang Zhao"
+      },
+      {
+        "authorId": "1788070",
+        "name": "Jianping Shi"
+      },
+      {
+        "authorId": "50844674",
+        "name": "Xiaojuan Qi"
+      },
+      {
+        "authorId": "31843833",
+        "name": "Xiaogang Wang"
+      },
+      {
+        "authorId": "1729056",
+        "name": "Jiaya Jia"
+      }
+    ],
+    "abstract": "Scene parsing is challenging for unrestricted open vocabulary and diverse scenes. In this paper, we exploit the capability of global context information by different-region-based context aggregation through our pyramid pooling module together with the proposed pyramid scene parsing network (PSPNet). Our global prior representation is effective to produce good quality results on the scene parsing task, while PSPNet provides a superior framework for pixel-level prediction. The proposed approach achieves state-of-the-art performance on various datasets. It came first in ImageNet scene parsing challenge 2016, PASCAL VOC 2012 benchmark and Cityscapes benchmark. A single PSPNet yields the new record of mIoU accuracy 85.4% on PASCAL VOC 2012 and accuracy 80.2% on Cityscapes.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "1b7829db2d8007e553d3f583bffb961cc44acf94",
+    "externalIds": {
+      "MAG": "2417254599",
+      "DBLP": "journals/pami/Pont-TusetM16",
+      "DOI": "10.1109/TPAMI.2015.2481406",
+      "CorpusId": 9879481,
+      "PubMed": "26415155"
+    },
+    "title": "Supervised Evaluation of Image Segmentation and Object Proposal Techniques",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 144,
+    "openAccessPdf": {
+      "url": "https://upcommons.upc.edu/bitstream/2117/91116/6/PontMarquesPAMI2015.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCND",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPAMI.2015.2481406?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPAMI.2015.2481406, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1403171438",
+        "name": "J. Pont-Tuset"
+      },
+      {
+        "authorId": "34854725",
+        "name": "F. Marqués"
+      }
+    ],
+    "abstract": "This paper tackles the supervised evaluation of image segmentation and object proposal algorithms. It surveys, structures, and deduplicates the measures used to compare both segmentation results and object proposals with a ground truth database; and proposes a new measure: the precision-recall for objects and parts. To compare the quality of these measures, eight state-of-the-art object proposal techniques are analyzed and two quantitative meta-measures involving nine state of the art segmentation methods are presented. The meta-measures consist in assuming some plausible hypotheses about the results and assessing how well each measure reflects these hypotheses. As a conclusion of the performed experiments, this paper proposes the tandem of precision-recall curves for boundaries and for objects-and-parts as the tool of choice for the supervised evaluation of image segmentation. We make the datasets and code of all the measures publicly available.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "50004c086ffd6a201a4b782281aaa930fbfe6ecf",
+    "externalIds": {
+      "MAG": "2432481613",
+      "ArXiv": "1606.04797",
+      "DBLP": "conf/3dim/MilletariNA16",
+      "DOI": "10.1109/3DV.2016.79",
+      "CorpusId": 206429151
+    },
+    "title": "V-Net: Fully Convolutional Neural Networks for Volumetric Medical Image Segmentation",
+    "venue": "International Conference on 3D Vision",
+    "year": 2016,
+    "citationCount": 10517,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1606.04797",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.04797, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1877512",
+        "name": "Fausto Milletarì"
+      },
+      {
+        "authorId": "145587209",
+        "name": "N. Navab"
+      },
+      {
+        "authorId": "145774206",
+        "name": "Seyed-Ahmad Ahmadi"
+      }
+    ],
+    "abstract": "Convolutional Neural Networks (CNNs) have been recently employed to solve problems from both the computer vision and medical image analysis fields. Despite their popularity, most approaches are only able to process 2D images while most medical data used in clinical practice consists of 3D volumes. In this work we propose an approach to 3D image segmentation based on a volumetric, fully convolutional, neural network. Our CNN is trained end-to-end on MRI volumes depicting prostate, and learns to predict segmentation for the whole volume at once. We introduce a novel objective function, that we optimise during training, based on Dice coefficient. In this way we can deal with situations where there is a strong imbalance between the number of foreground and background voxels. To cope with the limited number of annotated volumes available for training, we augment the data applying random non-linear transformations and histogram matching. We show in our experimental evaluation that our approach achieves good performances on challenging test data while requiring only a fraction of the processing time needed by other previous methods.",
+    "_is_influential": false,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "cab372bc3824780cce20d9dd1c22d4df39ed081a",
+    "externalIds": {
+      "ArXiv": "1606.00915",
+      "MAG": "2952865063",
+      "DBLP": "journals/pami/ChenPKMY18",
+      "DOI": "10.1109/TPAMI.2017.2699184",
+      "CorpusId": 3429309,
+      "PubMed": "28463186"
+    },
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2016,
+    "citationCount": 20749,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1606.00915",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1606.00915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34192119",
+        "name": "Liang-Chieh Chen"
+      },
+      {
+        "authorId": "2776496",
+        "name": "G. Papandreou"
+      },
+      {
+        "authorId": "2010660",
+        "name": "Iasonas Kokkinos"
+      },
+      {
+        "authorId": "1702318",
+        "name": "K. Murphy"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": "In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7 percent mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "6f90c5d50ad1eba4dd82d5cc8e57ab1f9c25d6c3",
+    "externalIds": {
+      "DBLP": "conf/cvpr/Al-HalahTS16",
+      "ArXiv": "1610.04787",
+      "MAG": "2441043183",
+      "DOI": "10.1109/CVPR.2016.643",
+      "CorpusId": 10169241
+    },
+    "title": "Recovering the Missing Link: Predicting Class-Attribute Associations for Unsupervised Zero-Shot Learning",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2016,
+    "citationCount": 104,
+    "openAccessPdf": {
+      "url": "https://arxiv.org/pdf/1610.04787",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1610.04787, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1390024605",
+        "name": "Ziad Al-Halah"
+      },
+      {
+        "authorId": "2103464",
+        "name": "Makarand Tapaswi"
+      },
+      {
+        "authorId": "1742325",
+        "name": "R. Stiefelhagen"
+      }
+    ],
+    "abstract": "Collecting training images for all visual categories is not only expensive but also impractical. Zero-shot learning (ZSL), especially using attributes, offers a pragmatic solution to this problem. However, at test time most attribute-based methods require a full description of attribute associations for each unseen class. Providing these associations is time consuming and often requires domain specific knowledge. In this work, we aim to carry out attribute-based zero-shot classification in an unsupervised manner. We propose an approach to learn relations that couples class embeddings with their corresponding attributes. Given only the name of an unseen class, the learned relationship model is used to automatically predict the class-attribute associations. Furthermore, our model facilitates transferring attributes across data sets without additional effort. Integrating knowledge from multiple sources results in a significant additional improvement in performance. We evaluate on two public data sets: Animals with Attributes and aPascal/aYahoo. Our approach outperforms state-of the-art methods in both predicting class-attribute associations and unsupervised ZSL by a large margin.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b2a5c3744eea40c76d0359e517026e8ed6c922ff",
+    "externalIds": {
+      "DBLP": "conf/cvpr/ZhangS16",
+      "ArXiv": "1511.04512",
+      "MAG": "2405223529",
+      "DOI": "10.1109/CVPR.2016.649",
+      "CorpusId": 229339
+    },
+    "title": "Zero-Shot Learning via Joint Latent Similarity Embedding",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2015,
+    "citationCount": 363,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1511.04512",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1511.04512, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "7969330",
+        "name": "Ziming Zhang"
+      },
+      {
+        "authorId": "1699322",
+        "name": "Venkatesh Saligrama"
+      }
+    ],
+    "abstract": "Zero-shot recognition (ZSR) deals with the problem of predicting class labels for target domain instances based on source domain side information (e.g. attributes) of unseen classes. We formulate ZSR as a binary prediction problem. Our resulting classifier is class-independent. It takes an arbitrary pair of source and target domain instances as input and predicts whether or not they come from the same class, i.e. whether there is a match. We model the posterior probability of a match since it is a sufficient statistic and propose a latent probabilistic model in this context. We develop a joint discriminative learning framework based on dictionary learning to jointly learn the parameters of our model for both domains, which ultimately leads to our class-independent classifier. Many of the existing embedding methods can be viewed as special cases of our probabilistic model. On ZSR our method shows 4.90% improvement over the state-of-the-art in accuracy averaged across four benchmark datasets. We also adapt ZSR method for zero-shot retrieval and show 22.45% improvement accordingly in mean average precision (mAP).",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "6b8d0df903496699e52b4daee5d1815b7b784cf7",
+    "externalIds": {
+      "DBLP": "journals/corr/PinheiroCD15",
+      "MAG": "2953236957",
+      "ArXiv": "1506.06204",
+      "CorpusId": 140529
+    },
+    "title": "Learning to Segment Object Candidates",
+    "venue": "Neural Information Processing Systems",
+    "year": 2015,
+    "citationCount": 815,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1506.06204, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2708655",
+        "name": "Pedro H. O. Pinheiro"
+      },
+      {
+        "authorId": "2939803",
+        "name": "R. Collobert"
+      },
+      {
+        "authorId": "3127283",
+        "name": "Piotr Dollár"
+      }
+    ],
+    "abstract": "Recent object detection systems rely on two critical steps: (1) a set of object proposals is predicted as efficiently as possible, and (2) this set of candidate proposals is then passed to an object classifier. Such approaches have been shown they can be fast, while achieving the state of the art in detection performance. In this paper, we propose a new way to generate object proposals, introducing an approach based on a discriminative convolutional network. Our model is trained jointly with two objectives: given an image patch, the first part of the system outputs a class-agnostic segmentation mask, while the second part of the system outputs the likelihood of the patch being centered on a full object. At test time, the model is efficiently applied on the whole test image and generates a set of segmentation masks, each of them being assigned with a corresponding object likelihood score. We show that our model yields significant improvements over state-of-the-art object proposal algorithms. In particular, compared to previous approaches, our model obtains substantially higher object recall using fewer proposals. We also show that our model is able to generalize to unseen categories it has not seen during training. Unlike all previous approaches for generating object masks, we do not rely on edges, superpixels, or any other form of low-level segmentation.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "6fc6803df5f9ae505cae5b2f178ade4062c768d0",
+    "externalIds": {
+      "DBLP": "journals/corr/ShelhamerLD16",
+      "MAG": "2952632681",
+      "ArXiv": "1411.4038",
+      "DOI": "10.1109/CVPR.2015.7298965",
+      "CorpusId": 1629541
+    },
+    "title": "Fully convolutional networks for semantic segmentation",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 41592,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1411.4038",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1411.4038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1782282",
+        "name": "Evan Shelhamer"
+      },
+      {
+        "authorId": "2117314646",
+        "name": "Jonathan Long"
+      },
+      {
+        "authorId": "1753210",
+        "name": "Trevor Darrell"
+      }
+    ],
+    "abstract": "Convolutional networks are powerful visual models that yield hierarchies of features. We show that convolutional networks by themselves, trained end-to-end, pixels-to-pixels, exceed the state-of-the-art in semantic segmentation. Our key insight is to build “fully convolutional” networks that take input of arbitrary size and produce correspondingly-sized output with efficient inference and learning. We define and detail the space of fully convolutional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models. We adapt contemporary classification networks (AlexNet [20], the VGG net [31], and GoogLeNet [32]) into fully convolutional networks and transfer their learned representations by fine-tuning [3] to the segmentation task. We then define a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed segmentations. Our fully convolutional network achieves state-of-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one fifth of a second for a typical image.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "caccc069e658ea397c9faf673e74c959c734ff53",
+    "externalIds": {
+      "MAG": "185523300",
+      "DBLP": "journals/corr/AkataLS14",
+      "ArXiv": "1409.8403",
+      "DOI": "10.1109/CVPR.2015.7298911",
+      "CorpusId": 11617315
+    },
+    "title": "Evaluation of output embeddings for fine-grained image classification",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 1079,
+    "openAccessPdf": {
+      "url": "http://arxiv.org/pdf/1409.8403",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.8403, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2893664",
+        "name": "Zeynep Akata"
+      },
+      {
+        "authorId": "144828948",
+        "name": "Scott E. Reed"
+      },
+      {
+        "authorId": "47215599",
+        "name": "D. Walter"
+      },
+      {
+        "authorId": "1697141",
+        "name": "Honglak Lee"
+      },
+      {
+        "authorId": "48920094",
+        "name": "B. Schiele"
+      }
+    ],
+    "abstract": "Image classification has advanced significantly in recent years with the availability of large-scale image sets. However, fine-grained classification remains a major challenge due to the annotation cost of large numbers of fine-grained categories. This project shows that compelling classification performance can be achieved on such categories even without labeled training data. Given image and class embeddings, we learn a compatibility function such that matching embeddings are assigned a higher score than mismatching ones; zero-shot classification of an image proceeds by finding the label yielding the highest joint compatibility score. We use state-of-the-art image features and focus on different supervised attributes and unsupervised output embeddings either derived from hierarchies or learned from unlabeled text corpora. We establish a substantially improved state-of-the-art on the Animals with Attributes and Caltech-UCSD Birds datasets. Most encouragingly, we demonstrate that purely unsupervised output embeddings (learned from Wikipedia and improved with finegrained text) achieve compelling results, even outperforming the previous supervised state-of-the-art. By combining different output embeddings, we further improve results.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "018e730f8947173e1140210d4d1760d05c9d3854",
+    "externalIds": {
+      "MAG": "2109933951",
+      "DBLP": "journals/corr/JayaramanG14",
+      "ArXiv": "1409.4327",
+      "CorpusId": 166607
+    },
+    "title": "Zero-shot recognition with unreliable attributes",
+    "venue": "Neural Information Processing Systems",
+    "year": 2014,
+    "citationCount": 301,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1409.4327, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144348441",
+        "name": "Dinesh Jayaraman"
+      },
+      {
+        "authorId": "1794409",
+        "name": "K. Grauman"
+      }
+    ],
+    "abstract": "In principle, zero-shot learning makes it possible to train a recognition model simply by specifying the category's attributes. For example, with classifiers for generic attributes like striped and four-legged, one can construct a classifier for the zebra category by enumerating which properties it possesses—even without providing zebra training images. In practice, however, the standard zero-shot paradigm suffers because attribute predictions in novel images are hard to get right. We propose a novel random forest approach to train zero-shot models that explicitly accounts for the unreliability of attribute predictions. By leveraging statistics about each attribute's error tendencies, our method obtains more robust discriminative models for the unseen classes. We further devise extensions to handle the few-shot scenario and unreliable attribute descriptions. On three datasets, we demonstrate the benefit for visual category learning with zero or few training examples, a critical domain for rare categories or categories defined on the fly.",
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "d6714ee0a3c3c5ead3d681d4bec8e60f042928ef",
+    "externalIds": {
+      "DBLP": "conf/cvpr/MensinkGS14",
+      "MAG": "1999818274",
+      "DOI": "10.1109/CVPR.2014.313",
+      "CorpusId": 9214350
+    },
+    "title": "COSTA: Co-Occurrence Statistics for Zero-Shot Classification",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 247,
+    "openAccessPdf": {
+      "url": "https://pure.uva.nl/ws/files/17209170/MensinkCVPR2014.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.313?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.313, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1722052",
+        "name": "Thomas Mensink"
+      },
+      {
+        "authorId": "2304222",
+        "name": "E. Gavves"
+      },
+      {
+        "authorId": "145404204",
+        "name": "Cees G. M. Snoek"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "83d1118c2b2995a3e0cf9b6159e4c59e85cabb7e",
+    "externalIds": {
+      "MAG": "1991367009",
+      "DBLP": "conf/cvpr/ArbelaezPBMM14",
+      "DOI": "10.1109/CVPR.2014.49",
+      "CorpusId": 4517687
+    },
+    "title": "Multiscale Combinatorial Grouping",
+    "venue": "2014 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2014,
+    "citationCount": 1180,
+    "openAccessPdf": {
+      "url": "https://upcommons.upc.edu/bitstream/2117/26949/1/MCG_CVPR2014.pdf",
+      "status": "GREEN",
+      "license": "other-oa",
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2014.49?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2014.49, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1778133",
+        "name": "Pablo Arbeláez"
+      },
+      {
+        "authorId": "1403171438",
+        "name": "J. Pont-Tuset"
+      },
+      {
+        "authorId": "2065306202",
+        "name": "Jonathan T. Barron"
+      },
+      {
+        "authorId": "34854725",
+        "name": "F. Marqués"
+      },
+      {
+        "authorId": "153652147",
+        "name": "J. Malik"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "be2f5d8a7e6b415f1e22cee7dfd9be56b1afd8be",
+    "externalIds": {
+      "MAG": "93016980",
+      "ArXiv": "1312.5650",
+      "DBLP": "journals/corr/NorouziMBSSFCD13",
+      "CorpusId": 1926319
+    },
+    "title": "Zero-Shot Learning by Convex Combination of Semantic Embeddings",
+    "venue": "International Conference on Learning Representations",
+    "year": 2013,
+    "citationCount": 979,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1312.5650, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144739074",
+        "name": "Mohammad Norouzi"
+      },
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      },
+      {
+        "authorId": "1751569",
+        "name": "Samy Bengio"
+      },
+      {
+        "authorId": "1740765",
+        "name": "Y. Singer"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "2279670",
+        "name": "Andrea Frome"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "Abstract: Several recent publications have proposed methods for mapping images into continuous semantic embedding spaces. In some cases the embedding space is trained jointly with the image transformation. In other cases the semantic embedding space is established by an independent natural language processing task, and then the image transformation into that space is learned in a second stage. Proponents of these image embedding systems have stressed their advantages over the traditional \\nway{} classification framing of image understanding, particularly in terms of the promise for zero-shot learning -- the ability to correctly annotate images of previously unseen object categories. In this paper, we propose a simple method for constructing an image embedding system from any existing \\nway{} image classifier and a semantic word embedding model, which contains the $\\n$ class labels in its vocabulary. Our method maps images into the semantic embedding space via convex combination of the class label embedding vectors, and requires no additional training. We show that this simple and direct method confers many of the advantages associated with more complex image embedding schemes, and indeed outperforms state of the art methods on the ImageNet zero-shot learning task.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4aa4069693bee00d1b0759ca3df35e59284e9845",
+    "externalIds": {
+      "MAG": "2123024445",
+      "DBLP": "conf/nips/FromeCSBDRM13",
+      "CorpusId": 261138
+    },
+    "title": "DeViSE: A Deep Visual-Semantic Embedding Model",
+    "venue": "Neural Information Processing Systems",
+    "year": 2013,
+    "citationCount": 3012,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "2279670",
+        "name": "Andrea Frome"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "1789737",
+        "name": "Jonathon Shlens"
+      },
+      {
+        "authorId": "1751569",
+        "name": "Samy Bengio"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      },
+      {
+        "authorId": "1706809",
+        "name": "Marc'Aurelio Ranzato"
+      },
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "87f40e6f3022adbc1f1905e3e506abad05a9964f",
+    "externalIds": {
+      "ArXiv": "1310.4546",
+      "MAG": "2950133940",
+      "DBLP": "conf/nips/MikolovSCCD13",
+      "CorpusId": 16447573
+    },
+    "title": "Distributed Representations of Words and Phrases and their Compositionality",
+    "venue": "Neural Information Processing Systems",
+    "year": 2013,
+    "citationCount": 35089,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/1310.4546, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2047446108",
+        "name": "Tomas Mikolov"
+      },
+      {
+        "authorId": "1701686",
+        "name": "I. Sutskever"
+      },
+      {
+        "authorId": "2118440152",
+        "name": "Kai Chen"
+      },
+      {
+        "authorId": "32131713",
+        "name": "G. Corrado"
+      },
+      {
+        "authorId": "49959210",
+        "name": "J. Dean"
+      }
+    ],
+    "abstract": "The recently introduced continuous Skip-gram model is an efficient method for learning high-quality distributed vector representations that capture a large number of precise syntactic and semantic word relationships. In this paper we present several extensions that improve both the quality of the vectors and the training speed. By subsampling of the frequent words we obtain significant speedup and also learn more regular word representations. We also describe a simple alternative to the hierarchical softmax called negative sampling. \n \nAn inherent limitation of word representations is their indifference to word order and their inability to represent idiomatic phrases. For example, the meanings of \"Canada\" and \"Air\" cannot be easily combined to obtain \"Air Canada\". Motivated by this example, we present a simple method for finding phrases in text, and show that learning good vector representations for millions of phrases is possible.",
+    "_is_influential": true,
+    "_intents": [
+      "methodology"
+    ]
+  },
+  {
+    "paperId": "a45ec977363157d40f4c57b8c98d7aa15ec6fd7a",
+    "externalIds": {
+      "DBLP": "conf/cvpr/KankuekulKTH12",
+      "MAG": "2123921497",
+      "DOI": "10.1109/CVPR.2012.6248112",
+      "CorpusId": 8220073
+    },
+    "title": "Online incremental attribute-based zero-shot learning",
+    "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+    "year": 2012,
+    "citationCount": 108,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2012.6248112?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2012.6248112, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1820693",
+        "name": "Pichai Kankuekul"
+      },
+      {
+        "authorId": "1711160",
+        "name": "Aram Kawewong"
+      },
+      {
+        "authorId": "2641676",
+        "name": "S. Tangruamsub"
+      },
+      {
+        "authorId": "145658096",
+        "name": "O. Hasegawa"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "c30b9fb837e912ccf3919fdb64e9543fca57799e",
+    "externalIds": {
+      "MAG": "2077071968",
+      "DBLP": "conf/cvpr/RohrbachSS11",
+      "DOI": "10.1109/CVPR.2011.5995627",
+      "CorpusId": 14700310
+    },
+    "title": "Evaluating knowledge transfer and zero-shot learning in a large-scale setting",
+    "venue": "Computer Vision and Pattern Recognition",
+    "year": 2011,
+    "citationCount": 376,
+    "openAccessPdf": {
+      "url": "http://edoc.mpg.de/get.epl?fid=100938&did=618780&ver=0",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2011.5995627?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2011.5995627, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34849128",
+        "name": "Marcus Rohrbach"
+      },
+      {
+        "authorId": "144421225",
+        "name": "Michael Stark"
+      },
+      {
+        "authorId": "48920094",
+        "name": "B. Schiele"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "0e5a262bf59b68ba8a7a1103d16fa33a9f5ffc28",
+    "externalIds": {
+      "DBLP": "journals/pami/ArbelaezMFM11",
+      "MAG": "2110158442",
+      "DOI": "10.1109/TPAMI.2010.161",
+      "CorpusId": 206764694,
+      "PubMed": "20733228"
+    },
+    "title": "Contour Detection and Hierarchical Image Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2011,
+    "citationCount": 5719,
+    "openAccessPdf": {
+      "url": "http://www.cs.berkeley.edu/%7Emalik/papers/arbelaezMFM-pami2010.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/TPAMI.2010.161?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/TPAMI.2010.161, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "1778133",
+        "name": "Pablo Arbeláez"
+      },
+      {
+        "authorId": "145854440",
+        "name": "M. Maire"
+      },
+      {
+        "authorId": "143800213",
+        "name": "Charless C. Fowlkes"
+      },
+      {
+        "authorId": "143751119",
+        "name": "Jitendra Malik"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "ffeb684b193afd21aefc5a6b05fb3616cc99418e",
+    "externalIds": {
+      "MAG": "1865725639",
+      "DBLP": "conf/eccv/FergusBWT10",
+      "DOI": "10.1007/978-3-642-15549-9_55",
+      "CorpusId": 7086636
+    },
+    "title": "Semantic Label Sharing for Learning with Many Categories",
+    "venue": "European Conference on Computer Vision",
+    "year": 2010,
+    "citationCount": 141,
+    "openAccessPdf": {
+      "url": "https://dspace.mit.edu/bitstream/1721.1/64732/1/Torralba_Semantic%20label.pdf",
+      "status": "GREEN",
+      "license": "CCBYNCSA",
+      "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-3-642-15549-9_55?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-3-642-15549-9_55, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2276554",
+        "name": "R. Fergus"
+      },
+      {
+        "authorId": "2084916713",
+        "name": "Hector Bernal"
+      },
+      {
+        "authorId": "30400079",
+        "name": "Yair Weiss"
+      },
+      {
+        "authorId": "143805211",
+        "name": "A. Torralba"
+      }
+    ],
+    "abstract": "In an object recognition scenario with tens of thousands of categories, even a small number of labels per category leads to a very large number of total labels required. We propose a simple method of label sharing between semantically similar categories. We leverage the WordNet hierarchy to define semantic distance between any two categories and use this semantic distance to share labels. Our approach can be used with any classifier. Experimental results on a range of datasets, upto 80 million images and 75,000 categories in size, show that despite the simplicity of the approach, it leads to significant improvements in performance.",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4a4b5ae5793696b861aa009932e7a121d36ad67a",
+    "externalIds": {
+      "DBLP": "conf/cvpr/RohrbachSSGS10",
+      "MAG": "1992454046",
+      "DOI": "10.1109/CVPR.2010.5540121",
+      "CorpusId": 8181220
+    },
+    "title": "What helps where – and why? Semantic relatedness for knowledge transfer",
+    "venue": "2010 IEEE Computer Society Conference on Computer Vision and Pattern Recognition",
+    "year": 2010,
+    "citationCount": 314,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.2010.5540121?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.2010.5540121, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "34849128",
+        "name": "Marcus Rohrbach"
+      },
+      {
+        "authorId": "144421225",
+        "name": "Michael Stark"
+      },
+      {
+        "authorId": "3081065",
+        "name": "György Szarvas"
+      },
+      {
+        "authorId": "1730400",
+        "name": "Iryna Gurevych"
+      },
+      {
+        "authorId": "48920094",
+        "name": "B. Schiele"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3a9b175324ba11bc0e16c0633912d897b2fac4e2",
+    "externalIds": {
+      "DBLP": "journals/ijcv/EveringhamGWWZ10",
+      "MAG": "2031489346",
+      "DOI": "10.1007/s11263-009-0275-4",
+      "CorpusId": 4246903
+    },
+    "title": "The Pascal Visual Object Classes (VOC) Challenge",
+    "venue": "International Journal of Computer Vision",
+    "year": 2010,
+    "citationCount": 15973,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/s11263-009-0275-4?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/s11263-009-0275-4, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "3056091",
+        "name": "M. Everingham"
+      },
+      {
+        "authorId": "2246990749",
+        "name": "L. V. Gool"
+      },
+      {
+        "authorId": "2248834687",
+        "name": "Christopher K. I. Williams"
+      },
+      {
+        "authorId": "33652486",
+        "name": "J. Winn"
+      },
+      {
+        "authorId": "2252432062",
+        "name": "A. Zisserman"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "result"
+    ]
+  },
+  {
+    "paperId": "36507947d26ca86b2f88e1532482954886d1b88a",
+    "externalIds": {
+      "MAG": "2505760979",
+      "DBLP": "reference/mm/X08fj",
+      "DOI": "10.1007/978-0-387-78414-4_108",
+      "CorpusId": 10698317
+    },
+    "title": "Medical Image Segmentation",
+    "venue": "Encyclopedia of Multimedia",
+    "year": 2009,
+    "citationCount": 260,
+    "openAccessPdf": {
+      "url": "http://www.cse.lehigh.edu/~huang/Chapt10_CRC.pdf",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1007/978-0-387-78414-4_108?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1007/978-0-387-78414-4_108, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2249967240",
+        "name": "Xiaolei Huang"
+      },
+      {
+        "authorId": "2249270914",
+        "name": "Gavriil Tsechpenakis"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "862db6c4800e8e3e4c9ea5ba957c844e27f7b62b",
+    "externalIds": {
+      "MAG": "2106582716",
+      "DBLP": "conf/cvpr/DengMS99",
+      "DOI": "10.1109/CVPR.1999.784719",
+      "CorpusId": 5638609
+    },
+    "title": "Color image segmentation",
+    "venue": "Proceedings. 1999 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (Cat. No PR00149)",
+    "year": 1999,
+    "citationCount": 739,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.1999.784719?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.1999.784719, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "143634361",
+        "name": "Yining Deng"
+      },
+      {
+        "authorId": "50591689",
+        "name": "B. S. Manjunath"
+      },
+      {
+        "authorId": "145822222",
+        "name": "H. Shin"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "b94c7ff9532ab26c3aedbee3988ec4c7a237c173",
+    "externalIds": {
+      "MAG": "2121947440",
+      "DBLP": "journals/pami/ShiM00",
+      "DOI": "10.1109/CVPR.1997.609407",
+      "CorpusId": 14848918
+    },
+    "title": "Normalized cuts and image segmentation",
+    "venue": "Proceedings of IEEE Computer Society Conference on Computer Vision and Pattern Recognition",
+    "year": 1997,
+    "citationCount": 17802,
+    "openAccessPdf": {
+      "url": "http://www.cs.berkeley.edu/~malik/papers/SM-ncut.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/CVPR.1997.609407?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/CVPR.1997.609407, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "46865129",
+        "name": "Jianbo Shi"
+      },
+      {
+        "authorId": "153652147",
+        "name": "J. Malik"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "e043cb12be3d202d323b5289cea04616bcf45c24",
+    "externalIds": {
+      "MAG": "2098152234",
+      "DBLP": "journals/pami/ZhuY96",
+      "DOI": "10.1109/34.537343",
+      "CorpusId": 35561340
+    },
+    "title": "Region Competition: Unifying Snakes, Region Growing, and Bayes/MDL for Multiband Image Segmentation",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 1996,
+    "citationCount": 2307,
+    "openAccessPdf": {
+      "url": "",
+      "status": "CLOSED",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1109/34.537343?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1109/34.537343, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "145380991",
+        "name": "Song-Chun Zhu"
+      },
+      {
+        "authorId": "145081362",
+        "name": "A. Yuille"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "68c03788224000794d5491ab459be0b2a2c38677",
+    "externalIds": {
+      "DBLP": "conf/naacl/Miller92",
+      "MAG": "2081580037",
+      "ACL": "H92-1116",
+      "DOI": "10.1145/219717.219748",
+      "CorpusId": 1671874
+    },
+    "title": "WordNet: A Lexical Database for English",
+    "venue": "Human Language Technology - The Baltic Perspectiv",
+    "year": 1995,
+    "citationCount": 17433,
+    "openAccessPdf": {
+      "url": "https://dl.acm.org/doi/pdf/10.1145/219717.219748",
+      "status": "BRONZE",
+      "license": null,
+      "disclaimer": "Notice: Paper or abstract available at https://aclanthology.org/H92-1116, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "144096985",
+        "name": "G. Miller"
+      }
+    ],
+    "abstract": "Because meaningful sentences are composed of meaningful words, any system that hopes to process natural languages as people do must have information about words and their meanings. This information is traditionally provided through dictionaries, and machine-readable dictionaries are now widely available. But dictionary entries evolved for the convenience of human readers, not for machines. WordNet1 provides a more effective combination of traditional lexicographic information and modern computing. WordNet is an online lexical database designed for use under program control. English nouns, verbs, adjectives, and adverbs are organized into sets of synonyms, each representing a lexicalized concept. Semantic relations link the synonym sets [4].",
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "8b37258659bcdbc380b1e6c4e22cce9ea06397a1",
+    "externalIds": {
+      "MAG": "2156406284",
+      "DOI": "10.1037/0033-295X.94.2.115",
+      "CorpusId": 8054340,
+      "PubMed": "3575582"
+    },
+    "title": "Recognition-by-components: a theory of human image understanding.",
+    "venue": "Psychology Review",
+    "year": 1987,
+    "citationCount": 6033,
+    "openAccessPdf": {
+      "url": "http://geon.usc.edu/~biederman/publications/Biederman_RBC_1987.pdf",
+      "status": "GREEN",
+      "license": null,
+      "disclaimer": "Notice: The following paper fields have been elided by the publisher: {'abstract'}. Paper or abstract available at https://api.unpaywall.org/v2/10.1037/0033-295X.94.2.115?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1037/0033-295X.94.2.115, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+    },
+    "authors": [
+      {
+        "authorId": "2299972",
+        "name": "I. Biederman"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "4cc7401df83ff6d280fdf472a4fba473d1104217",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2104-13921",
+      "CorpusId": 233423486
+    },
+    "title": "Zero-Shot Detection via Vision and Language Knowledge Distillation",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 89,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "10734287",
+        "name": "Xiuye Gu"
+      },
+      {
+        "authorId": "33493200",
+        "name": "Tsung-Yi Lin"
+      },
+      {
+        "authorId": "7987770",
+        "name": "Weicheng Kuo"
+      },
+      {
+        "authorId": "50355189",
+        "name": "Yin Cui"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  },
+  {
+    "paperId": "acb2d427a3669b0bec85d0d1c8d8a9a09340967c",
+    "externalIds": {
+      "DBLP": "journals/corr/abs-2106-03746",
+      "CorpusId": 235358266
+    },
+    "title": "Efficient Training of Visual Transformers with Small-Size Datasets",
+    "venue": "arXiv.org",
+    "year": 2021,
+    "citationCount": 28,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1646872838",
+        "name": "Yahui Liu"
+      },
+      {
+        "authorId": "1716310",
+        "name": "E. Sangineto"
+      },
+      {
+        "authorId": "145001706",
+        "name": "Wei Bi"
+      },
+      {
+        "authorId": "1703601",
+        "name": "N. Sebe"
+      },
+      {
+        "authorId": "49305855",
+        "name": "B. Lepri"
+      },
+      {
+        "authorId": "7405787",
+        "name": "Marco De Nadai"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "888a154c5660b08ea1cf61b78d8b3ad21a0bf2ad",
+    "externalIds": {
+      "DBLP": "conf/nips/LiW020",
+      "MAG": "3104749918",
+      "CorpusId": 227276353
+    },
+    "title": "Consistent Structural Relation Learning for Zero-Shot Segmentation",
+    "venue": "Neural Information Processing Systems",
+    "year": 2020,
+    "citationCount": 88,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1390793590",
+        "name": "Peike Li"
+      },
+      {
+        "authorId": "49020088",
+        "name": "Yunchao Wei"
+      },
+      {
+        "authorId": "7179962",
+        "name": "Yi Yang"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": []
+  },
+  {
+    "paperId": "30a57656c42fb4e8c4f4876004cf80ce6e755663",
+    "externalIds": {
+      "CorpusId": 12345366
+    },
+    "title": "Image Segmentation by Data-driven Markov Chain Monte Carlo",
+    "venue": "",
+    "year": 2002,
+    "citationCount": 697,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "144035504",
+        "name": "Z. Tu"
+      },
+      {
+        "authorId": "145380991",
+        "name": "Song-Chun Zhu"
+      },
+      {
+        "authorId": "144154486",
+        "name": "Harry Shum"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": false,
+    "_intents": [
+      "background"
+    ]
+  },
+  {
+    "paperId": "3fd90098551bf88c7509521adf1c0ba9b5dfeb57",
+    "externalIds": {
+      "CorpusId": 7016601
+    },
+    "title": "Attribute-Based Classification for Zero-Shot Visual Object Categorization",
+    "venue": "",
+    "year": null,
+    "citationCount": 1652,
+    "openAccessPdf": {
+      "url": "",
+      "status": null,
+      "license": null
+    },
+    "authors": [
+      {
+        "authorId": "1787591",
+        "name": "Christoph H. Lampert"
+      },
+      {
+        "authorId": "1748758",
+        "name": "H. Nickisch"
+      },
+      {
+        "authorId": "1734990",
+        "name": "S. Harmeling"
+      }
+    ],
+    "abstract": null,
+    "_is_influential": true,
+    "_intents": [
+      "methodology",
+      "background"
+    ]
+  }
+]
