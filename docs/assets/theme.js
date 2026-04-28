@@ -400,10 +400,19 @@ function layoutChronological(nodes) {
     const row = byYear.get(year);
     const xStart = YEAR_LABEL_W + PADDING / 2;
     const y = PADDING + rowIdx * (NODE_H + ROW_GAP);
+    // #64: classify the year row so the axis can highlight 5- and 10-
+    // year boundaries. decade-major (year % 10 == 0) > decade (% 5 == 0)
+    // > regular > unknown.
+    let importance = "regular";
+    if (year !== UNKNOWN_YEAR) {
+      if (year % 10 === 0) importance = "decade-major";
+      else if (year % 5 === 0) importance = "decade";
+    }
     yearLabels.push({
       label: year === UNKNOWN_YEAR ? "Unknown" : String(year),
       y: y + NODE_H / 2,
       isUnknown: year === UNKNOWN_YEAR,
+      importance,
     });
     row.forEach((n, i) => {
       positioned.push({
@@ -499,16 +508,23 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
   // Year axis (left gutter): a short tick + label per row.
   const axis = document.createElementNS(SVG_NS, "g");
   axis.setAttribute("class", "chrono-axis");
-  for (const { label, y, isUnknown } of yearLabels) {
+  for (const { label, y, isUnknown, importance } of yearLabels) {
     const text = document.createElementNS(SVG_NS, "text");
-    text.setAttribute("class", `year-label${isUnknown ? " year-label--unknown" : ""}`);
+    const cls = ["year-label"];
+    if (isUnknown) cls.push("year-label--unknown");
+    if (importance === "decade") cls.push("year-label--decade");
+    if (importance === "decade-major") cls.push("year-label--decade-major");
+    text.setAttribute("class", cls.join(" "));
     text.setAttribute("x", PADDING);
     text.setAttribute("y", y + 4);
     text.textContent = label;
     axis.appendChild(text);
 
     const tick = document.createElementNS(SVG_NS, "line");
-    tick.setAttribute("class", "year-tick");
+    const tickCls = ["year-tick"];
+    if (importance === "decade") tickCls.push("year-tick--decade");
+    if (importance === "decade-major") tickCls.push("year-tick--decade-major");
+    tick.setAttribute("class", tickCls.join(" "));
     tick.setAttribute("x1", YEAR_LABEL_W - 8);
     tick.setAttribute("y1", y);
     tick.setAttribute("x2", totalW - PADDING);
