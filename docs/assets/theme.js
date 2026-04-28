@@ -152,6 +152,15 @@ function slugFromLocation() {
   return raw && SLUG_RE.test(raw) ? raw : null;
 }
 
+// #65: ?node=<paperId> permalink. paperIds are 40-char hex digests
+// (S2 Corpus IDs); validate before using so a bad URL can't poison
+// later DOM lookups via attribute selectors.
+const NODE_ID_RE = /^[a-f0-9]{8,64}$/i;
+function focusNodeFromLocation() {
+  const raw = new URLSearchParams(window.location.search).get("node");
+  return raw && NODE_ID_RE.test(raw) ? raw : null;
+}
+
 function renderPicker() {
   if (!els.picker) return;
   if (state.manifest.length === 0) {
@@ -256,6 +265,36 @@ async function init() {
   setupYearRange();
   bindYearRange();
   render();
+
+  // #65: if the URL carried a ?node=, scroll to it and highlight after
+  // the SVG has had a frame to paint. Two requestAnimationFrame ticks
+  // give the foreignObjects time to lay out before we measure.
+  const requestedNode = focusNodeFromLocation();
+  if (requestedNode) {
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      focusNode(requestedNode)
+    ));
+  }
+}
+
+// #65: scroll target node into view + reuse the hover-highlight pipeline
+// to draw attention to it and its incident edges.
+function focusNode(nodeId) {
+  const fo = document.querySelector(`foreignObject[data-node-id="${nodeId}"]`);
+  if (!fo) return; // node not in this theme — silently noop
+  const svgX = parseFloat(fo.getAttribute("x")) || 0;
+  const svgY = parseFloat(fo.getAttribute("y")) || 0;
+  // foreignObject coords are in the SVG viewport — convert to page coords.
+  const svg = els.svg;
+  const ctm = svg.getScreenCTM();
+  if (ctm) {
+    const pageX = svgX * ctm.a + svgY * ctm.c + ctm.e;
+    const pageY = svgX * ctm.b + svgY * ctm.d + ctm.f;
+    const targetX = pageX + window.scrollX - window.innerWidth / 2 + NODE_W / 2;
+    const targetY = pageY + window.scrollY - window.innerHeight / 2 + NODE_H / 2;
+    window.scrollTo({ left: Math.max(0, targetX), top: Math.max(0, targetY), behavior: "smooth" });
+  }
+  highlightNode(nodeId);
 }
 
 // #62: derive min/max from the loaded data and seed the two range inputs.
