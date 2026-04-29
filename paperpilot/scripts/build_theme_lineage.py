@@ -30,7 +30,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
 import sys
 import unicodedata
 from collections.abc import Callable
@@ -51,6 +50,12 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     to_node,
 )
 from paperpilot.utils.config_loader import load_env  # noqa: E402
+from paperpilot.utils.github import (  # noqa: E402
+    fetch_repo_stars,
+    load_curated_map,
+    parse_github_repo_url,
+    search_repo_by_title,
+)
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 
@@ -417,157 +422,6 @@ _GITHUB_CACHE_TTL_DAYS = 7
 # 60/h overall (10/min for search) so the operator should set
 # PAPERPILOT_GITHUB_TOKEN for bulk regen.
 _GITHUB_DEFAULT_BUDGET = 80
-# Title-similarity threshold for accepting a GitHub Search hit. Above
-# this the paper title and the repo name/description are similar enough
-# that the match is treated as authoritative; below this we skip rather
-# than risk a false positive.
-_TITLE_SIM_THRESHOLD = 0.55
-_PAPER_REPOS_FILE = ROOT / "paperpilot" / "data" / "paper_repos.json"
-# GitHub URL slug allowlist — owner and repo segments must be alnum + a
-# small set of separators. Mirrors the strict allowlist GitHubSignal
-# uses, which is the SSRF / path-traversal hardening for any value we
-# eventually slot into a github.com URL.
-_GH_SLUG_RE = re.compile(r"^[A-Za-z0-9._-]+$")
-
-
-def _load_curated_map(path: Path | None = None) -> dict[str, str]:
-    """Read paper_repos.json and return arxiv_id -> 'owner/repo'.
-
-    The ``_meta`` key (if present) is documentation for human readers
-    and is filtered out before returning. Malformed entries (non-string
-    or repos that fail the slug regex) are dropped silently so a typo
-    never breaks the build.
-    """
-    p = path or _PAPER_REPOS_FILE
-    if not p.exists():
-        return {}
-    try:
-        raw = json.loads(p.read_text())
-    except (OSError, json.JSONDecodeError) as exc:
-        logger.warning("paper_repos.json unreadable (%s); skipping curated layer", exc)
-        return {}
-    if not isinstance(raw, dict):
-        return {}
-    out: dict[str, str] = {}
-    for ax, repo in raw.items():
-        if ax.startswith("_"):
-            continue
-        if not isinstance(repo, str) or "/" not in repo:
-            continue
-        owner, _, name = repo.partition("/")
-        if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
-            continue
-        out[ax] = repo
-    return out
-
-
-_TOKEN_RE = re.compile(r"[a-z0-9]{3,}")
-
-
-def _title_similarity(paper_title: str, candidate: str) -> float:
-    """Token-overlap similarity in [0, 1] for filtering GitHub search hits.
-
-    Tokens are ASCII alnum runs of length >= 3, lowercased. Returns the
-    Jaccard index between the two token sets; substring containment is
-    treated as a perfect 1.0 to handle cases like a repo named exactly
-    "segment-anything" matching the paper title "Segment Anything".
-    """
-    pt = (paper_title or "").lower()
-    ct = (candidate or "").lower()
-    if not pt or not ct:
-        return 0.0
-    # Normalised contains (strip non-alnum so "segment-anything" matches
-    # "segment anything"): treat full containment as a definitive hit,
-    # but only when BOTH sides have >= 6 alnum chars. The minimum length
-    # avoids `"fcn" in "fullyconvolutionalnetworks"` style false-positive
-    # 1.0 scores on a curt repo name appearing inside a longer title.
-    pn = re.sub(r"[^a-z0-9]", "", pt)
-    cn = re.sub(r"[^a-z0-9]", "", ct)
-    if (
-        len(pn) >= 6
-        and len(cn) >= 6
-        and (pn in cn or cn in pn)
-    ):
-        return 1.0
-    pa = set(_TOKEN_RE.findall(pt))
-    pb = set(_TOKEN_RE.findall(ct))
-    if not pa or not pb:
-        return 0.0
-    return len(pa & pb) / len(pa | pb)
-
-
-def _search_repo_by_title(
-    title: str, *, github_token: str | None = None
-) -> str | None:
-    """Best-effort 'owner/repo' resolution via GitHub /search/repositories.
-
-    Returns ``None`` when no candidate clears ``_TITLE_SIM_THRESHOLD``.
-    Skips empty / very short titles to avoid noise. The query is the
-    bare title trimmed to 80 chars — quoting the whole string would
-    over-constrain the search; we let GitHub's own ranking surface the
-    best candidates and filter via the similarity check.
-    """
-    cleaned = (title or "").strip()
-    if len(cleaned) < 8:
-        return None
-    headers = {"Accept": "application/vnd.github+json"}
-    if github_token:
-        headers["Authorization"] = f"Bearer {github_token}"
-    r = request_with_retry(
-        "GET",
-        "https://api.github.com/search/repositories",
-        params={
-            "q": cleaned[:80],
-            "sort": "stars",
-            "order": "desc",
-            "per_page": 5,
-        },
-        headers=headers,
-        timeout=10,
-    )
-    if r is None or r.status_code != 200:
-        return None
-    items = (r.json() or {}).get("items") or []
-    for item in items:
-        full_name = item.get("full_name") or ""
-        if "/" not in full_name:
-            continue
-        owner, _, name = full_name.partition("/")
-        if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
-            continue
-        sim = max(
-            _title_similarity(cleaned, item.get("name") or ""),
-            _title_similarity(cleaned, item.get("description") or ""),
-        )
-        if sim >= _TITLE_SIM_THRESHOLD:
-            return full_name
-    return None
-
-
-def _fetch_repo_stars(
-    repo_full: str, *, github_token: str | None = None
-) -> int | None:
-    """GET /repos/{owner}/{repo} -> stargazer count. None on failure."""
-    if not repo_full or "/" not in repo_full:
-        return None
-    owner, _, name = repo_full.partition("/")
-    if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
-        return None
-    headers = {"Accept": "application/vnd.github+json"}
-    if github_token:
-        headers["Authorization"] = f"Bearer {github_token}"
-    r = request_with_retry(
-        "GET",
-        f"https://api.github.com/repos/{owner}/{name}",
-        headers=headers,
-        timeout=10,
-    )
-    if r is None or r.status_code != 200:
-        return None
-    try:
-        return int((r.json() or {}).get("stargazers_count") or 0)
-    except (ValueError, TypeError, AttributeError):
-        return None
 
 
 def _enrich_github_stars(
@@ -609,9 +463,9 @@ def _enrich_github_stars(
             cache = {}
 
     if curated is None:
-        curated = _load_curated_map()
-    fetch = fetch_stars or _fetch_repo_stars
-    search = search_repo or _search_repo_by_title
+        curated = load_curated_map()
+    fetch = fetch_stars or fetch_repo_stars
+    search = search_repo or search_repo_by_title
 
     fresh_cutoff = (
         datetime.now(timezone.utc) - timedelta(days=_GITHUB_CACHE_TTL_DAYS)
@@ -625,11 +479,24 @@ def _enrich_github_stars(
             continue
         cached = cache.get(ax)
         if cached and cached.get("fetched_at", "") >= fresh_cutoff:
-            stars = int(cached.get("stars") or 0)
+            # A corrupted cache entry (e.g. stars="abc" or stars=[1,2])
+            # would crash the enrichment loop here; fall back to 0 so
+            # the run continues and the entry is refreshed on next pass.
+            try:
+                stars = int(cached.get("stars") or 0)
+            except (ValueError, TypeError):
+                stars = 0
             if stars > 0:
                 node["github_stars"] = stars
-                if cached.get("url"):
-                    node["github_url"] = cached["url"]
+                cached_url = cached.get("url")
+                # Re-validate the cached URL through the same parser the
+                # write path uses. A poisoned cache entry (corrupt file
+                # or attacker-supplied) cannot inject ``javascript:`` /
+                # ``data:`` / off-host URLs into the generated
+                # lineage.json this way — only well-formed
+                # ``https://github.com/owner/repo`` URLs survive.
+                if cached_url and parse_github_repo_url(cached_url):
+                    node["github_url"] = cached_url
                 enriched += 1
             continue
         targets.append((node, ax))

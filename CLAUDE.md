@@ -101,7 +101,7 @@ automatic-paper-search/
     │   ├── venue_signal.py              # 学会採択 (arXiv comment regex)
     │   ├── citation_signal.py           # S2 /paper/batch
     │   ├── author_signal.py             # S2 /author/batch (h-index)
-    │   ├── github_signal.py             # PwC + GitHub Stars (log-scale)
+    │   ├── github_signal.py             # 共有 utils.github 経由で curated map → GitHub Search → GitHub Stars (log-scale)
     │   ├── follow_signal.py             # 著者/組織ウォッチリスト (day-1 authority)
     │   └── keyword_signal.py            # match_count / 3 * 100
     ├── exporters/                       # 出力
@@ -131,6 +131,7 @@ automatic-paper-search/
     │   ├── dedup.py                     # dedup + seen_ids 管理
     │   ├── rate_limiter.py              # 同期 sleep ベース
     │   ├── http.py                      # 指数バックオフ retry
+    │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
     ├── tests/                           # pytest テスト（カバレッジ 97%）
