@@ -793,6 +793,13 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     fo.setAttribute("y", p._y);
     fo.setAttribute("width", NODE_W);
     fo.setAttribute("height", NODE_H);
+    // Let the ★ FOCUS badge (top: -10px) and the citation-heat box-shadow
+    // halo render outside the foreignObject's NODE_W × NODE_H viewport.
+    // Without this, those decorations get clipped at the card edge.
+    // ROW_GAP=80 and SIBLING_GAP=28 leave plenty of clearance for the
+    // ~10–22 px overhangs.
+    fo.setAttribute("overflow", "visible");
+    fo.style.overflow = "visible";
     fo.dataset.nodeId = p.id;
     const card = document.createElement("div");
     card.setAttribute("xmlns", XHTML_NS);

@@ -750,6 +750,11 @@ function drawSvg(positioned, edges) {
     fo.setAttribute("y", p._y);
     fo.setAttribute("width", NODE_W);
     fo.setAttribute("height", NODE_H);
+    // Let the ★ FOCUS badge (top: -10px) and box-shadow halos render
+    // outside the foreignObject's viewport — without this they get
+    // clipped at the card edge.
+    fo.setAttribute("overflow", "visible");
+    fo.style.overflow = "visible";
 
     const card = document.createElement("div");
     card.setAttribute("xmlns", XHTML_NS);
