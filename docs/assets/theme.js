@@ -28,11 +28,17 @@ const RELATION_LABEL_JA = {
 };
 
 const NODE_W = 260;
-// #63 → #79: 168 → 192 → 216. The TLDR row pushed long-title cards
-// to ~207 px, which clipped the meta line (📖 / ⭐) at the bottom of
-// the foreignObject. 216 gives a 24 px buffer for cards with 3-line
-// title + 2-line TLDR + multi-author + meta together.
-const NODE_H = 216;
+// Match `.node-card--theme { min-height: 200px }`. Earlier #79 used
+// 216 to leave a buffer for tall cards that would otherwise clip
+// inside the foreignObject viewport, but #93 enabled
+// `foreignObject overflow="visible"` so cards can grow beyond the
+// declared height without clipping. The 16 px buffer was visible as
+// a "frame mismatch" — edges connected at the bottom of the
+// foreignObject (216) instead of the visible card bottom (200),
+// leaving 16 px of empty space between the card border and the
+// edge endpoint. Aligning NODE_H to the actual card height makes
+// edges land exactly on the card's bottom edge.
+const NODE_H = 200;
 const ROW_GAP = 80;        // vertical gap between year rows
 const SIBLING_GAP = 28;    // horizontal gap between within-year siblings
 const PADDING = 56;
