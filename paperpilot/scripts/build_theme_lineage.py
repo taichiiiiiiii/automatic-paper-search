@@ -32,7 +32,7 @@ import hashlib
 import json
 import sys
 import unicodedata
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -41,6 +41,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from paperpilot.models import Paper  # noqa: E402
 from paperpilot.scripts._common import theme_slug  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
@@ -48,6 +49,8 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     fetch_related,
     to_node,
 )
+from paperpilot.signals.github_signal import GitHubSignal  # noqa: E402
+from paperpilot.utils.config_loader import load_env  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 
@@ -387,6 +390,148 @@ def discover_seeds(
     return candidates[:top_n]
 
 
+# ---------- GitHub stars enrichment ----------
+
+# Conference lineage gets stars from papers.json (Stage 2 catalog), but the
+# theme pipeline crawls S2 directly so to_node() always sees stars=0.
+# This post-pass mirrors GitHubSignal's flow (PwC paper -> repo -> GitHub
+# star count) over the assembled node set, with a 7-day disk cache so the
+# weekly cron does not re-resolve every paper from scratch.
+_GITHUB_CACHE_FILE = "github_stars.json"
+_GITHUB_CACHE_TTL_DAYS = 7
+# Default budget covers a typical theme (~50–60 nodes) without burning
+# GitHub's hourly quota. Each lookup is up to 3 HTTP calls (PwC paper,
+# PwC repos, GitHub API) — 80 lookups → ~240 calls, well inside the
+# 5000/h PAT limit. Without a PAT (60/h) the budget will be partial;
+# the operator should set PAPERPILOT_GITHUB_TOKEN for bulk regen.
+_GITHUB_DEFAULT_BUDGET = 80
+
+
+def _enrich_github_stars(
+    nodes: dict[str, dict],
+    *,
+    max_lookups: int = _GITHUB_DEFAULT_BUDGET,
+    github_token: str | None = None,
+    signal: GitHubSignal | None = None,
+) -> int:
+    """Resolve GitHub stars for theme nodes that have an arxiv_id.
+
+    Side-effects: mutates ``nodes`` in-place, setting ``github_stars`` and
+    optionally ``github_url`` on entries whose paper resolves to a GitHub
+    repository. Persists a JSON cache at
+    ``CACHE_DIR/github_stars.json`` so subsequent runs reuse fresh
+    lookups (TTL = ``_GITHUB_CACHE_TTL_DAYS``).
+
+    Returns the count of nodes whose ``github_stars`` ended up > 0
+    (cache hits + freshly resolved). Failures degrade silently — a
+    theme is still publishable with stars=0 if PwC / GitHub is down.
+    """
+    cache_path = CACHE_DIR / _GITHUB_CACHE_FILE
+    cache: dict[str, dict] = {}
+    if cache_path.exists():
+        try:
+            cache = json.loads(cache_path.read_text())
+        except (OSError, json.JSONDecodeError):
+            cache = {}
+
+    fresh_cutoff = (
+        datetime.now(timezone.utc) - timedelta(days=_GITHUB_CACHE_TTL_DAYS)
+    ).isoformat()
+
+    enriched = 0
+    targets: list[tuple[dict, str]] = []  # (node, arxiv_id)
+    for node in nodes.values():
+        ax = node.get("arxiv_id")
+        if not ax:
+            continue
+        cached = cache.get(ax)
+        if cached and cached.get("fetched_at", "") >= fresh_cutoff:
+            stars = int(cached.get("stars") or 0)
+            if stars > 0:
+                node["github_stars"] = stars
+                if cached.get("url"):
+                    node["github_url"] = cached["url"]
+                enriched += 1
+            continue
+        targets.append((node, ax))
+
+    if not targets:
+        return enriched
+
+    if signal is None:
+        signal = GitHubSignal(
+            config={"max_lookups": max_lookups},
+            github_token=github_token,
+        )
+
+    # Slice to the lookup budget BEFORE handing papers to the signal.
+    # GitHubSignal.enrich_batch caps internally, but it still returns the
+    # full list — papers past the budget come back with the dataclass
+    # default github_stars=0 yet were never queried. If we cached those,
+    # they would be suppressed for 7 days even though they could have a
+    # repo. Slicing here means cache writes only cover papers we actually
+    # asked PwC + GitHub about; the rest re-enter the queue next run.
+    looked_up = targets[:max_lookups]
+
+    # GitHubSignal expects Paper dataclass instances. Only arxiv_id matters
+    # for the lookup; the rest is filler. published_date is required by
+    # the dataclass — date.today() is fine since the signal does not look
+    # at it.
+    proxies = [
+        Paper(
+            title="",
+            authors=[],
+            abstract="",
+            url="",
+            published_date=date.today(),
+            source="s2",
+            arxiv_id=ax,
+        )
+        for (_, ax) in looked_up
+    ]
+
+    try:
+        enriched_papers = signal.enrich_batch(proxies)
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("github stars enrichment failed: %s", exc)
+        return enriched
+
+    fetched_ts = datetime.now(timezone.utc).isoformat()
+    proxy_by_ax = {
+        paper.arxiv_id: paper
+        for paper in enriched_papers
+        if paper.arxiv_id
+    }
+    for node, ax in looked_up:
+        paper = proxy_by_ax.get(ax)
+        if paper is None:
+            continue
+        stars = int(paper.github_stars or 0)
+        # Cache the result regardless — caching 0 prevents weekly
+        # re-querying papers without GitHub repos.
+        cache[ax] = {
+            "stars": stars,
+            "url": paper.github_url or None,
+            "fetched_at": fetched_ts,
+        }
+        if stars > 0:
+            node["github_stars"] = stars
+            if paper.github_url:
+                node["github_url"] = paper.github_url
+            enriched += 1
+
+    # Atomic write so concurrent theme runs don't tear the cache.
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = cache_path.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(cache, ensure_ascii=False, indent=2))
+        tmp.replace(cache_path)
+    except OSError as exc:
+        logger.warning("failed to persist github_stars cache: %s", exc)
+
+    return enriched
+
+
 # ---------- Build pipeline ----------
 
 
@@ -587,6 +732,23 @@ def build_theme_lineage(
         logger.info(
             "cross-node pass added %d edges (in-graph citations not seen by BFS)",
             cross_added,
+        )
+
+    # GitHub stars enrichment (issue #89). Conference lineage pulls stars
+    # from papers.json; the theme pipeline crawls S2 directly so every
+    # node had stars=0 — the ⭐ row in the viewer never rendered. Look up
+    # via PwC + GitHub for nodes that carry an arxiv_id, with a 7-day
+    # disk cache so the weekly cron doesn't re-query the whole graph.
+    try:
+        env = load_env()
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("load_env failed (skipping github stars): %s", exc)
+        env = {}
+    github_token = (env or {}).get("github_token")
+    github_added = _enrich_github_stars(nodes, github_token=github_token)
+    if github_added:
+        logger.info(
+            "github stars: enriched %d nodes (cache + fresh)", github_added
         )
 
     # Stage 4: drop edges with empty rationale (matches build_lineage policy).

@@ -1330,3 +1330,282 @@ def test_build_cross_node_skips_non_influential_in_graph_refs(
     assert ("seed2", "seed1") not in edge_pairs, (
         "non-influential cross-node ref must not produce an edge"
     )
+
+
+# ---- GitHub stars enrichment (#89) ----
+#
+# The theme pipeline used to leave every node with github_stars=0 because
+# to_node() falls back to 0 when no catalog_stars is provided, and the
+# theme builder has no Stage-2 catalog. _enrich_github_stars patches that
+# in via PwC + GitHub. Tests below pin the contract: arxiv_id required,
+# cache TTL respected, mutation in-place, atomic write, budget passed
+# through to GitHubSignal.
+
+
+def _make_fake_signal(stars_by_arxiv: dict[str, tuple[int, str | None]]):
+    """Build a stub GitHubSignal whose enrich_batch sets stars/url per arxiv.
+
+    Each entry in ``stars_by_arxiv`` maps arxiv_id -> (stars, url). Papers
+    whose arxiv_id is not in the map keep stars=0 (the dataclass default).
+    """
+    signal = MagicMock()
+
+    def fake_enrich_batch(papers):
+        for p in papers:
+            entry = stars_by_arxiv.get(p.arxiv_id or "")
+            if entry is None:
+                continue
+            stars, url = entry
+            p.github_stars = stars
+            p.github_url = url
+        return papers
+
+    signal.enrich_batch.side_effect = fake_enrich_batch
+    return signal
+
+
+def test_enrich_github_stars_skips_nodes_without_arxiv_id(tmp_path, monkeypatch):
+    """Nodes with no arxiv_id must not even reach the signal — PwC needs it."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {
+        "p1": {"id": "p1", "github_stars": 0},
+        "p2": {"id": "p2", "github_stars": 0, "arxiv_id": ""},
+    }
+    signal = MagicMock()
+    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    assert enriched == 0
+    signal.enrich_batch.assert_not_called()
+
+
+def test_enrich_github_stars_populates_stars_and_url(tmp_path, monkeypatch):
+    """Resolved nodes must have stars + github_url written into the dict."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {
+        "p1": {"id": "p1", "github_stars": 0, "arxiv_id": "1610.04256"},
+        "p2": {"id": "p2", "github_stars": 0},  # no arxiv_id, untouched
+    }
+    signal = _make_fake_signal({
+        "1610.04256": (1234, "https://github.com/owner/repo"),
+    })
+    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    assert enriched == 1
+    assert nodes["p1"]["github_stars"] == 1234
+    assert nodes["p1"]["github_url"] == "https://github.com/owner/repo"
+    assert nodes["p2"]["github_stars"] == 0
+    assert "github_url" not in nodes["p2"]
+
+
+def test_enrich_github_stars_caches_results_to_disk(tmp_path, monkeypatch):
+    """Cache file must persist arxiv_id -> stars/url with a fetched_at timestamp."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {"p1": {"id": "p1", "arxiv_id": "1610.04256", "github_stars": 0}}
+    signal = _make_fake_signal({"1610.04256": (42, "https://github.com/x/y")})
+    build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+
+    cache = json.loads((tmp_path / "github_stars.json").read_text())
+    assert "1610.04256" in cache
+    entry = cache["1610.04256"]
+    assert entry["stars"] == 42
+    assert entry["url"] == "https://github.com/x/y"
+    assert entry["fetched_at"]  # ISO timestamp
+
+
+def test_enrich_github_stars_uses_fresh_cache_without_calling_signal(
+    tmp_path, monkeypatch
+):
+    """A within-TTL cache hit must short-circuit the lookup entirely."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    # Pre-populate the cache with a recent entry.
+    from datetime import datetime, timezone
+    fresh_ts = datetime.now(timezone.utc).isoformat()
+    (tmp_path / "github_stars.json").write_text(json.dumps({
+        "2103.00020": {
+            "stars": 999,
+            "url": "https://github.com/cached/repo",
+            "fetched_at": fresh_ts,
+        }
+    }))
+    nodes = {"p1": {"id": "p1", "arxiv_id": "2103.00020", "github_stars": 0}}
+    signal = MagicMock()
+    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    assert enriched == 1
+    assert nodes["p1"]["github_stars"] == 999
+    assert nodes["p1"]["github_url"] == "https://github.com/cached/repo"
+    signal.enrich_batch.assert_not_called()
+
+
+def test_enrich_github_stars_refreshes_stale_cache(tmp_path, monkeypatch):
+    """Cache entries older than the TTL must be refetched, not used."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    # Stale entry from 30 days ago — beyond the 7d TTL.
+    from datetime import datetime, timedelta, timezone
+    stale_ts = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    (tmp_path / "github_stars.json").write_text(json.dumps({
+        "1706.03762": {
+            "stars": 100,
+            "url": "https://github.com/old/repo",
+            "fetched_at": stale_ts,
+        }
+    }))
+    nodes = {"p1": {"id": "p1", "arxiv_id": "1706.03762", "github_stars": 0}}
+    signal = _make_fake_signal({
+        "1706.03762": (5000, "https://github.com/new/repo"),
+    })
+    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    assert enriched == 1
+    assert nodes["p1"]["github_stars"] == 5000  # fresh value, not cached 100
+    assert nodes["p1"]["github_url"] == "https://github.com/new/repo"
+    signal.enrich_batch.assert_called_once()
+
+
+def test_enrich_github_stars_caches_zero_stars(tmp_path, monkeypatch):
+    """Papers without a GitHub repo (stars=0) must still be cached so the
+    next run does not re-query them."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {"p1": {"id": "p1", "arxiv_id": "1234.5678", "github_stars": 0}}
+    # Signal returns no entry for this arxiv_id; stars stays 0.
+    signal = _make_fake_signal({})
+    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    assert enriched == 0
+    cache = json.loads((tmp_path / "github_stars.json").read_text())
+    assert cache["1234.5678"]["stars"] == 0
+
+
+def test_enrich_github_stars_no_op_when_no_arxiv_nodes(tmp_path, monkeypatch):
+    """Empty target list must not instantiate or call the signal."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {"p1": {"id": "p1", "github_stars": 0}}
+    signal = MagicMock()
+    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    assert enriched == 0
+    signal.enrich_batch.assert_not_called()
+    # No cache file should be written when there's nothing to record.
+    assert not (tmp_path / "github_stars.json").exists()
+
+
+def test_enrich_github_stars_invoked_by_pipeline(tmp_path, monkeypatch):
+    """End-to-end: build_theme_lineage must call _enrich_github_stars after
+    node assembly so the JSON ships with stars populated."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+    seed = {
+        **_mk_s2_paper("seed1", year=2017),
+        "externalIds": {"ArXiv": "1701.06538"},
+    }
+    parent = {
+        **_mk_s2_paper("p_parent", year=2014),
+        "externalIds": {"ArXiv": "1409.0473"},
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response([seed])
+        return _mk_s2_search_response([])
+
+    captured = {}
+
+    def fake_enrich(nodes, **kw):
+        captured["called"] = True
+        captured["arxiv_ids"] = sorted(
+            n.get("arxiv_id") for n in nodes.values() if n.get("arxiv_id")
+        )
+        # Mutate to simulate a successful enrichment.
+        for node in nodes.values():
+            if node.get("arxiv_id") == "1701.06538":
+                node["github_stars"] = 5000
+                node["github_url"] = "https://github.com/google/moe"
+        return 1
+
+    monkeypatch.setattr(build_theme_lineage, "_enrich_github_stars", fake_enrich)
+
+    with (
+        patch.object(
+            build_theme_lineage, "request_with_retry", side_effect=fake_rwr
+        ),
+        patch.object(
+            build_theme_lineage, "fetch_related", return_value=[parent]
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Mixture of Experts",
+            depth=1, seeds_count=1, width=2, since_year=None,
+        )
+
+    assert captured.get("called") is True
+    assert "1701.06538" in captured["arxiv_ids"]
+    assert "1409.0473" in captured["arxiv_ids"]
+
+    payload = json.loads(out_path.read_text())
+    seed_node = next(n for n in payload["nodes"] if n["id"] == "seed1")
+    assert seed_node["github_stars"] == 5000
+    assert seed_node["github_url"] == "https://github.com/google/moe"
+
+
+def test_enrich_github_stars_handles_corrupt_cache_file(tmp_path, monkeypatch):
+    """A malformed cache file must not crash the run; treat as empty."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    (tmp_path / "github_stars.json").write_text("not-json{{{")
+    nodes = {"p1": {"id": "p1", "arxiv_id": "1234.5678", "github_stars": 0}}
+    signal = _make_fake_signal({"1234.5678": (7, "https://github.com/a/b")})
+    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    assert enriched == 1
+    assert nodes["p1"]["github_stars"] == 7
+
+
+def test_enrich_github_stars_does_not_cache_papers_past_budget(
+    tmp_path, monkeypatch
+):
+    """Papers past max_lookups must be left alone in the cache, not stamped
+    as 0-star — otherwise they'd be suppressed for the full TTL window
+    despite never having been queried.
+
+    The bug surfaces when a theme has more arxiv-tagged nodes than the
+    lookup budget: GitHubSignal.enrich_batch returns the full list (its
+    internal budget short-circuits but it still returns `papers`), so
+    untouched papers come back with the dataclass default github_stars=0.
+    Slicing ``targets`` to ``max_lookups`` BEFORE the signal call is what
+    keeps the cache honest about which arxiv_ids were actually looked up.
+    """
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {
+        "p1": {"id": "p1", "arxiv_id": "ax-1", "github_stars": 0},
+        "p2": {"id": "p2", "arxiv_id": "ax-2", "github_stars": 0},
+        "p3": {"id": "p3", "arxiv_id": "ax-3", "github_stars": 0},
+    }
+    seen_proxies: list = []
+
+    def fake_enrich_batch(papers):
+        seen_proxies.extend(papers)
+        # Pretend only the first paper resolved to a repo. The other two
+        # come back with the dataclass default github_stars=0 — same shape
+        # as a budget-skipped paper in the real GitHubSignal.
+        if papers:
+            papers[0].github_stars = 99
+            papers[0].github_url = "https://github.com/a/b"
+        return papers
+
+    signal = MagicMock()
+    signal.enrich_batch.side_effect = fake_enrich_batch
+
+    build_theme_lineage._enrich_github_stars(
+        nodes, max_lookups=1, signal=signal
+    )
+
+    # Only one Paper proxy should have been built — slicing happens
+    # BEFORE constructing proxies, so the signal never even sees the
+    # over-budget arxiv ids.
+    assert len(seen_proxies) == 1
+    assert seen_proxies[0].arxiv_id == "ax-1"
+
+    cache = json.loads((tmp_path / "github_stars.json").read_text())
+    assert "ax-1" in cache
+    # ax-2 and ax-3 must NOT be in the cache — they would otherwise be
+    # stamped stars=0 and locked out for the full TTL despite never
+    # having been queried.
+    assert "ax-2" not in cache
+    assert "ax-3" not in cache
