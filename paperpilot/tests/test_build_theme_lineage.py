@@ -1486,6 +1486,46 @@ def test_enrich_github_stars_uses_fresh_cache_without_resolving(
     fetch.assert_not_called()
 
 
+def test_enrich_github_stars_drops_poisoned_cache_url(tmp_path, monkeypatch):
+    """A corrupt or attacker-supplied cache entry with a non-github URL
+    must not be propagated into the generated lineage.json — the
+    cached URL is re-validated through ``parse_github_repo_url``
+    before being assigned to the node."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    from datetime import datetime, timezone
+    fresh_ts = datetime.now(timezone.utc).isoformat()
+    (tmp_path / "github_stars.json").write_text(json.dumps({
+        # Stars value is real but the URL has been swapped for a
+        # ``javascript:`` payload — the kind of thing a poisoned cache
+        # could contain.
+        "1234.5678": {
+            "stars": 42,
+            "url": "javascript:alert('xss')",
+            "fetched_at": fresh_ts,
+        },
+        # A separately poisoned entry pointing at a non-github host.
+        "9999.99": {
+            "stars": 99,
+            "url": "https://evil.example.com/owner/repo",
+            "fetched_at": fresh_ts,
+        },
+    }))
+    nodes = {
+        "a": {"id": "a", "arxiv_id": "1234.5678", "github_stars": 0},
+        "b": {"id": "b", "arxiv_id": "9999.99", "github_stars": 0},
+    }
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated={}, search_repo=MagicMock(), fetch_stars=MagicMock(),
+    )
+    # Stars survive (cache value is still useful) but the malformed
+    # URLs are dropped so they cannot reach the rendered viewer.
+    assert enriched == 2
+    assert nodes["a"]["github_stars"] == 42
+    assert "github_url" not in nodes["a"]
+    assert nodes["b"]["github_stars"] == 99
+    assert "github_url" not in nodes["b"]
+
+
 def test_enrich_github_stars_refreshes_stale_cache(tmp_path, monkeypatch):
     """Cache entries older than the TTL must be refetched, not used."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
@@ -1655,156 +1695,12 @@ def test_enrich_github_stars_does_not_cache_papers_past_budget(
     assert "ax-3" not in cache
 
 
-# ---- Helper unit tests ----
-
-
-def test_load_curated_map_filters_meta_and_invalid_repos(tmp_path):
-    """_meta key and malformed values must be silently dropped."""
-    p = tmp_path / "paper_repos.json"
-    p.write_text(json.dumps({
-        "_meta": {"comment": "ignored"},
-        "1234.5678": "owner/repo",
-        "9999.99": "no-slash-here",                  # invalid: no '/'
-        "1111.22": "owner/../traversal",             # invalid: bad chars
-        "2222.33": 123,                              # invalid: not str
-    }))
-    out = build_theme_lineage._load_curated_map(p)
-    assert out == {"1234.5678": "owner/repo"}
-
-
-def test_title_similarity_substring_match_is_full():
-    """Full normalised containment counts as a perfect 1.0."""
-    s = build_theme_lineage._title_similarity(
-        "Segment Anything", "segment-anything"
-    )
-    assert s == 1.0
-
-
-def test_title_similarity_low_for_unrelated_titles():
-    """Unrelated titles must score well below the acceptance threshold."""
-    s = build_theme_lineage._title_similarity(
-        "Segment Anything", "Awesome Machine Learning Papers"
-    )
-    assert s < build_theme_lineage._TITLE_SIM_THRESHOLD
-
-
-def test_title_similarity_jaccard_partial_overlap():
-    """Token overlap should produce a positive but sub-1 similarity score."""
-    s = build_theme_lineage._title_similarity(
-        "Mask Former for Semantic Segmentation",
-        "Mask R-CNN",
-    )
-    assert 0.0 < s < 1.0
-
-
-def test_search_repo_skips_low_similarity_hit(monkeypatch):
-    """A high-stars but unrelated GitHub repo must NOT be returned."""
-    fake_resp = MagicMock()
-    fake_resp.status_code = 200
-    fake_resp.json = lambda: {
-        "items": [
-            {
-                "full_name": "awesome/awesome-list",
-                "name": "awesome-list",
-                "description": "A curated list of awesome things",
-            }
-        ]
-    }
-    monkeypatch.setattr(
-        build_theme_lineage, "request_with_retry",
-        lambda *a, **kw: fake_resp,
-    )
-    out = build_theme_lineage._search_repo_by_title(
-        "Segment Anything Model", github_token=None,
-    )
-    assert out is None
-
-
-def test_search_repo_returns_high_similarity_hit(monkeypatch):
-    """A near-identical-name hit must be returned as 'owner/repo'."""
-    fake_resp = MagicMock()
-    fake_resp.status_code = 200
-    fake_resp.json = lambda: {
-        "items": [
-            {
-                "full_name": "facebookresearch/segment-anything",
-                "name": "segment-anything",
-                "description": "The Segment Anything Model (SAM)",
-            }
-        ]
-    }
-    monkeypatch.setattr(
-        build_theme_lineage, "request_with_retry",
-        lambda *a, **kw: fake_resp,
-    )
-    out = build_theme_lineage._search_repo_by_title(
-        "Segment Anything", github_token=None,
-    )
-    assert out == "facebookresearch/segment-anything"
-
-
-def test_search_repo_rejects_path_traversal_in_repo_name(monkeypatch):
-    """A response with a malformed full_name (e.g. '../etc') must be skipped."""
-    fake_resp = MagicMock()
-    fake_resp.status_code = 200
-    fake_resp.json = lambda: {
-        "items": [
-            {
-                "full_name": "owner/../traversal",
-                "name": "segment-anything",
-                "description": "bad",
-            },
-        ]
-    }
-    monkeypatch.setattr(
-        build_theme_lineage, "request_with_retry",
-        lambda *a, **kw: fake_resp,
-    )
-    out = build_theme_lineage._search_repo_by_title(
-        "Segment Anything", github_token=None,
-    )
-    assert out is None
-
-
-def test_search_repo_skips_short_titles(monkeypatch):
-    """Titles shorter than 8 chars must short-circuit (would return noise)."""
-    called = MagicMock()
-    monkeypatch.setattr(build_theme_lineage, "request_with_retry", called)
-    assert build_theme_lineage._search_repo_by_title("BERT") is None
-    called.assert_not_called()
-
-
-def test_fetch_repo_stars_returns_count(monkeypatch):
-    """Successful 200 response must yield int stargazers_count."""
-    fake_resp = MagicMock()
-    fake_resp.status_code = 200
-    fake_resp.json = lambda: {"stargazers_count": 12345}
-    monkeypatch.setattr(
-        build_theme_lineage, "request_with_retry",
-        lambda *a, **kw: fake_resp,
-    )
-    assert build_theme_lineage._fetch_repo_stars("owner/repo") == 12345
-
-
-def test_fetch_repo_stars_rejects_invalid_repo_strings():
-    """SSRF / path-traversal hardening: malformed repo args must return None."""
-    assert build_theme_lineage._fetch_repo_stars("") is None
-    assert build_theme_lineage._fetch_repo_stars("noslash") is None
-    assert build_theme_lineage._fetch_repo_stars("owner/../etc") is None
-    assert build_theme_lineage._fetch_repo_stars("owner/repo with space") is None
-
-
-def test_title_similarity_minimum_length_guard():
-    """A short normalised candidate (e.g. 'fcn') must NOT score 1.0 just by
-    being a substring of a longer paper title — that would let any 3-letter
-    repo name match unrelated papers."""
-    s = build_theme_lineage._title_similarity(
-        "Fully Convolutional Networks for Semantic Segmentation",  # has 'fcn' in tokens
-        "fcn",
-    )
-    # Substring match is gated by len >= 6, so this falls back to Jaccard
-    # (no token overlap → 0.0) rather than a false 1.0.
-    assert s < 1.0
+# Note: helper-level unit tests (load_curated_map / title_similarity /
+# search_repo_by_title / fetch_repo_stars) live in
+# paperpilot/tests/test_utils_github.py since those primitives moved
+# into paperpilot/utils/github.py for #92. The orchestration tests
+# below (which exercise _enrich_github_stars + the pipeline integration)
+# stay here because they are theme-pipeline specific.
 
 
 def test_enrich_github_stars_counts_curated_and_search_separately(

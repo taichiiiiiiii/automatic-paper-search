@@ -1,46 +1,60 @@
-"""GitHub Stars signal via Papers with Code lookup.
+"""GitHub Stars signal via curated map + GitHub Search.
 
-Flow per paper:
-  arxiv_id -> Papers with Code API -> github URL -> GitHub API -> stars
+Flow per paper (Stage 2 of the pipeline):
+
+    arxiv_id -> curated map ('owner/repo')
+                  ↓ miss
+                title -> GitHub /search/repositories
+                  ↓ no high-similarity hit
+                None  ← skip, signal stays at 0
+
+    repo_full   -> GitHub /repos/{owner}/{repo} -> stargazers_count
+                -> log-scaled to [0, 100]
+
+History: this signal used to call Papers with Code (`PWC_BASE`) for the
+arxiv_id → owner/repo translation. PwC was permanently shut down in
+2026 and now 302-redirects to huggingface.co/papers/trending. PR for
+issue #92 replaces the PwC chain with the same curated + search
+resolvers used by the theme family-tree builder, both consuming
+``paperpilot/utils/github`` so the SSRF / path-traversal hardening
+lives in one place.
 
 Star score (design doc §4.3, Table 12):
-  score = log(stars + 1) / log(MAX_STARS + 1) * 100
-  with MAX_STARS = 10000
+
+    score = log(stars + 1) / log(MAX_STARS + 1) * 100
+    with MAX_STARS = 10000
 
 Budget semantics:
-  `max_lookups` caps the number of *papers* we attempt to resolve. Each
-  resolved paper issues up to 3 HTTP calls (PwC paper -> PwC repos ->
-  GitHub API), so the actual HTTP call upper bound is roughly
-  `max_lookups * 3`. Papers missing arxiv_id are skipped without
-  charging the budget so the top-scoring papers always get a lookup.
+    ``max_lookups`` caps the number of *papers* attempted. Each
+    resolved paper issues 1 GitHub API call when the curated map hits
+    and 2 calls when the search fallback runs (search + repo fetch).
+    Worst case: ``max_lookups * 2`` HTTP calls — still well inside the
+    5000/h authenticated PAT limit. Papers missing arxiv_id are skipped
+    without charging the budget so the top-scoring papers always get a
+    lookup.
 
-Both APIs are rate limited; we stop after the budget is exhausted to
-keep runs fast. Failures degrade silently (score stays 0).
+``is_official`` is set to True only for curated entries (the
+``paperpilot/data/paper_repos.json`` map is hand-curated to point at
+the canonical author-affiliated repository). Search-fallback hits are
+treated as best-effort matches and stay non-official.
+
+Failures degrade silently (score stays 0) — the pipeline continues so a
+GitHub outage never blocks Stage 2.
 """
 
 from __future__ import annotations
 
 import math
-import re
-from urllib.parse import urlparse
 
 from ..models import Paper
-from ..utils.http import request_with_retry
+from ..utils.github import fetch_repo_stars, load_curated_map, search_repo_by_title
 from ..utils.logger import get_logger
 from .base import AbstractSignal
 
 logger = get_logger(__name__)
 
-PWC_BASE = "https://paperswithcode.com/api/v1"
-GH_API = "https://api.github.com"
-TIMEOUT = 10
 MAX_STARS = 10_000
 _LOG_DENOM = math.log(MAX_STARS + 1)
-
-# SSRF / path-traversal hardening: only accept clean github.com URLs whose
-# owner/repo look like GitHub's allowed identifier set.
-_GH_NETLOC = {"github.com", "www.github.com"}
-_REPO_SEGMENT_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
 def _stars_to_score(stars: int) -> float:
@@ -57,12 +71,19 @@ class GitHubSignal(AbstractSignal):
     def __init__(self, config: dict, github_token: str | None = None) -> None:
         super().__init__(config)
         self.max_lookups = int(self.config.get("max_lookups", 50))
-        self._gh_headers = {"Accept": "application/vnd.github+json"}
-        if github_token:
-            self._gh_headers["Authorization"] = f"Bearer {github_token}"
+        self._github_token = github_token
+        # Loaded once per signal instance — paper_repos.json is small
+        # (~30 entries today, dozens at most expected) so a per-call
+        # read would be wasteful, but reloading per pipeline run is
+        # important so curated map updates take effect on the next run.
+        self._curated = load_curated_map()
 
     def enrich_batch(self, papers: list[Paper]) -> list[Paper]:
-        # Rank-order matters: high-score-so-far papers get the lookup budget first.
+        # Rank-order matters: high-score-so-far papers get the lookup
+        # budget first. With curated + search the per-paper cost is
+        # roughly even (1–2 HTTP calls), but the prioritisation still
+        # protects coverage of the most promising papers under tight
+        # budgets.
         ordered = sorted(
             papers,
             key=lambda p: p.venue_score + p.keyword_score,
@@ -81,10 +102,15 @@ class GitHubSignal(AbstractSignal):
     def enrich_one(self, paper: Paper) -> Paper:
         if not paper.arxiv_id:
             return paper
+        # Fail-Safe (CLAUDE.md absolute rule §10): a single hiccup must
+        # not break the rest of the batch. Network errors are already
+        # absorbed inside the helpers (they return None), so an
+        # exception here implies a logic bug worth a WARNING — louder
+        # than the pre-#92 DEBUG level so regressions surface in CI logs.
         try:
-            result = self._lookup(paper.arxiv_id)
+            result = self._lookup(paper.arxiv_id, paper.title)
         except Exception as e:
-            logger.debug("github lookup failed for %s: %s", paper.arxiv_id, e)
+            logger.warning("github lookup failed for %s: %s", paper.arxiv_id, e)
             return paper
 
         if result is None:
@@ -100,85 +126,28 @@ class GitHubSignal(AbstractSignal):
 
     # ---- helpers ----
 
-    def _lookup(self, arxiv_id: str) -> tuple[str | None, int, bool] | None:
-        """Resolve arxiv_id -> (github_url, stars, is_official) via Papers with Code."""
-        # Step 1: PwC paper lookup
-        r = request_with_retry(
-            "GET", f"{PWC_BASE}/papers/", params={"arxiv_id": arxiv_id}, timeout=TIMEOUT
-        )
-        if r is None or r.status_code != 200:
-            return None
-        results = (r.json() or {}).get("results") or []
-        if not results:
-            return None
-        pwc_id = results[0].get("id")
-        if not pwc_id:
-            return None
+    def _lookup(
+        self, arxiv_id: str, title: str | None
+    ) -> tuple[str | None, int, bool] | None:
+        """Resolve arxiv_id (+ title fallback) -> (github_url, stars, is_official).
 
-        # Step 2: PwC repositories
-        r = request_with_retry(
-            "GET", f"{PWC_BASE}/papers/{pwc_id}/repositories/", timeout=TIMEOUT
-        )
-        if r is None or r.status_code != 200:
-            return None
-        repos = (r.json() or {}).get("results") or []
-        if not repos:
-            return None
-
-        # Prefer the official repo, fall back to highest-starred.
-        repos.sort(
-            key=lambda r: (bool(r.get("is_official")), int(r.get("stars") or 0)),
-            reverse=True,
-        )
-        best = repos[0]
-        gh_url = best.get("url")
-        stars = int(best.get("stars") or 0)
-        is_official = bool(best.get("is_official"))
-
-        # Step 3: refresh stars from GitHub directly (PwC stars can be stale).
-        fresh = self._fetch_github_stars(gh_url)
-        if fresh is not None:
-            stars = fresh
-        return gh_url, stars, is_official
-
-    def _fetch_github_stars(self, repo_url: str | None) -> int | None:
-        """Resolve owner/repo from a URL strictly and fetch stargazer count.
-
-        Defensive against SSRF (non-github hosts) and path traversal
-        (slashes / unicode / control chars in owner/repo segments).
+        Curated entries are treated as ``is_official=True`` because the
+        map is hand-maintained to point at the canonical author repo.
+        Search-fallback hits are best-effort matches and stay non-official.
         """
-        owner_repo = _parse_github_repo_url(repo_url)
-        if owner_repo is None:
-            return None
-        owner, repo = owner_repo
-        r = request_with_retry(
-            "GET",
-            f"{GH_API}/repos/{owner}/{repo}",
-            headers=self._gh_headers,
-            timeout=TIMEOUT,
-        )
-        if r is None or r.status_code != 200:
-            return None
-        return int((r.json() or {}).get("stargazers_count") or 0)
+        # 1. Curated map (authoritative).
+        repo_full: str | None = self._curated.get(arxiv_id)
+        is_official = bool(repo_full)
 
+        # 2. GitHub Search fallback when the curated map misses.
+        if not repo_full:
+            repo_full = search_repo_by_title(
+                title or "", github_token=self._github_token
+            )
+        if not repo_full:
+            return None
 
-def _parse_github_repo_url(url: str | None) -> tuple[str, str] | None:
-    """Strict parse of a GitHub URL -> (owner, repo). None on any deviation."""
-    if not url:
-        return None
-    try:
-        parsed = urlparse(url)
-    except ValueError:
-        return None
-    if parsed.scheme not in {"http", "https"}:
-        return None
-    if parsed.netloc.lower() not in _GH_NETLOC:
-        return None
-    segments = [s for s in parsed.path.split("/") if s]
-    if len(segments) < 2:
-        return None
-    owner = segments[0]
-    repo = segments[1].removesuffix(".git")
-    if not (_REPO_SEGMENT_RE.match(owner) and _REPO_SEGMENT_RE.match(repo)):
-        return None
-    return owner, repo
+        stars = fetch_repo_stars(repo_full, github_token=self._github_token)
+        if stars is None or stars <= 0:
+            return None
+        return f"https://github.com/{repo_full}", stars, is_official
