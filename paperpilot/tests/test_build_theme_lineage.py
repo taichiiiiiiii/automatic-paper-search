@@ -1332,76 +1332,125 @@ def test_build_cross_node_skips_non_influential_in_graph_refs(
     )
 
 
-# ---- GitHub stars enrichment (#89) ----
+# ---- GitHub stars enrichment (#89, refactored after PwC shutdown) ----
 #
-# The theme pipeline used to leave every node with github_stars=0 because
-# to_node() falls back to 0 when no catalog_stars is provided, and the
-# theme builder has no Stage-2 catalog. _enrich_github_stars patches that
-# in via PwC + GitHub. Tests below pin the contract: arxiv_id required,
-# cache TTL respected, mutation in-place, atomic write, budget passed
-# through to GitHubSignal.
+# Resolution order: paperpilot/data/paper_repos.json (curated) → GitHub
+# Search by paper title (similarity-filtered). The earlier PwC-based
+# flow was removed when paperswithcode.com was decommissioned in 2026.
 
 
-def _make_fake_signal(stars_by_arxiv: dict[str, tuple[int, str | None]]):
-    """Build a stub GitHubSignal whose enrich_batch sets stars/url per arxiv.
+def _make_fake_resolvers(
+    *,
+    repos_by_ax: dict[str, str] | None = None,
+    repos_by_title: dict[str, str] | None = None,
+    stars_by_repo: dict[str, int] | None = None,
+):
+    """Build fake (curated, search_repo, fetch_stars) resolvers for tests.
 
-    Each entry in ``stars_by_arxiv`` maps arxiv_id -> (stars, url). Papers
-    whose arxiv_id is not in the map keep stars=0 (the dataclass default).
+    - ``repos_by_ax`` is the curated mapping passed as the ``curated``
+      parameter to ``_enrich_github_stars``.
+    - ``repos_by_title`` is consulted by the fake ``search_repo``
+      (substring match against the candidate title, lowercased).
+    - ``stars_by_repo`` is consulted by the fake ``fetch_stars``
+      (returns ``None`` for unmapped repos so the function under test
+      can exercise the "fetched but no stars" branch).
     """
-    signal = MagicMock()
+    repos_by_title = repos_by_title or {}
+    stars_by_repo = stars_by_repo or {}
 
-    def fake_enrich_batch(papers):
-        for p in papers:
-            entry = stars_by_arxiv.get(p.arxiv_id or "")
-            if entry is None:
-                continue
-            stars, url = entry
-            p.github_stars = stars
-            p.github_url = url
-        return papers
+    def fake_search(title, *, github_token=None):
+        t = (title or "").lower()
+        for needle, repo in repos_by_title.items():
+            if needle.lower() in t:
+                return repo
+        return None
 
-    signal.enrich_batch.side_effect = fake_enrich_batch
-    return signal
+    def fake_fetch(repo_full, *, github_token=None):
+        if repo_full in stars_by_repo:
+            return stars_by_repo[repo_full]
+        return None
+
+    return repos_by_ax or {}, fake_search, fake_fetch
 
 
 def test_enrich_github_stars_skips_nodes_without_arxiv_id(tmp_path, monkeypatch):
-    """Nodes with no arxiv_id must not even reach the signal — PwC needs it."""
+    """Nodes with no arxiv_id must not trigger any resolver."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {
         "p1": {"id": "p1", "github_stars": 0},
         "p2": {"id": "p2", "github_stars": 0, "arxiv_id": ""},
     }
-    signal = MagicMock()
-    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    search = MagicMock(return_value=None)
+    fetch = MagicMock(return_value=None)
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated={}, search_repo=search, fetch_stars=fetch,
+    )
     assert enriched == 0
-    signal.enrich_batch.assert_not_called()
+    search.assert_not_called()
+    fetch.assert_not_called()
 
 
-def test_enrich_github_stars_populates_stars_and_url(tmp_path, monkeypatch):
-    """Resolved nodes must have stars + github_url written into the dict."""
+def test_enrich_github_stars_uses_curated_map_first(tmp_path, monkeypatch):
+    """A curated arxiv_id -> repo entry must skip the search step entirely."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {
-        "p1": {"id": "p1", "github_stars": 0, "arxiv_id": "1610.04256"},
-        "p2": {"id": "p2", "github_stars": 0},  # no arxiv_id, untouched
+        "p1": {
+            "id": "p1", "github_stars": 0,
+            "arxiv_id": "2304.02643",
+            "title": "Segment Anything",
+        },
     }
-    signal = _make_fake_signal({
-        "1610.04256": (1234, "https://github.com/owner/repo"),
-    })
-    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={"2304.02643": "facebookresearch/segment-anything"},
+        stars_by_repo={"facebookresearch/segment-anything": 46000},
+    )
+    search_mock = MagicMock(side_effect=search)
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated=curated, search_repo=search_mock, fetch_stars=fetch,
+    )
     assert enriched == 1
-    assert nodes["p1"]["github_stars"] == 1234
-    assert nodes["p1"]["github_url"] == "https://github.com/owner/repo"
-    assert nodes["p2"]["github_stars"] == 0
-    assert "github_url" not in nodes["p2"]
+    assert nodes["p1"]["github_stars"] == 46000
+    assert nodes["p1"]["github_url"] == (
+        "https://github.com/facebookresearch/segment-anything"
+    )
+    # Curated hit short-circuits the search call.
+    search_mock.assert_not_called()
+
+
+def test_enrich_github_stars_falls_back_to_search(tmp_path, monkeypatch):
+    """When the arxiv_id is not in the curated map, search_repo must be called."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {
+        "p1": {
+            "id": "p1", "github_stars": 0,
+            "arxiv_id": "9999.99999",
+            "title": "Some Niche Paper",
+        },
+    }
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={},
+        repos_by_title={"some niche paper": "owner/some-niche-paper"},
+        stars_by_repo={"owner/some-niche-paper": 12},
+    )
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+    )
+    assert enriched == 1
+    assert nodes["p1"]["github_stars"] == 12
+    assert nodes["p1"]["github_url"] == "https://github.com/owner/some-niche-paper"
 
 
 def test_enrich_github_stars_caches_results_to_disk(tmp_path, monkeypatch):
     """Cache file must persist arxiv_id -> stars/url with a fetched_at timestamp."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {"p1": {"id": "p1", "arxiv_id": "1610.04256", "github_stars": 0}}
-    signal = _make_fake_signal({"1610.04256": (42, "https://github.com/x/y")})
-    build_theme_lineage._enrich_github_stars(nodes, signal=signal)
-
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={"1610.04256": "x/y"},
+        stars_by_repo={"x/y": 42},
+    )
+    build_theme_lineage._enrich_github_stars(
+        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+    )
     cache = json.loads((tmp_path / "github_stars.json").read_text())
     assert "1610.04256" in cache
     entry = cache["1610.04256"]
@@ -1410,12 +1459,11 @@ def test_enrich_github_stars_caches_results_to_disk(tmp_path, monkeypatch):
     assert entry["fetched_at"]  # ISO timestamp
 
 
-def test_enrich_github_stars_uses_fresh_cache_without_calling_signal(
+def test_enrich_github_stars_uses_fresh_cache_without_resolving(
     tmp_path, monkeypatch
 ):
-    """A within-TTL cache hit must short-circuit the lookup entirely."""
+    """A within-TTL cache hit must short-circuit both curated and search."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
-    # Pre-populate the cache with a recent entry.
     from datetime import datetime, timezone
     fresh_ts = datetime.now(timezone.utc).isoformat()
     (tmp_path / "github_stars.json").write_text(json.dumps({
@@ -1426,18 +1474,21 @@ def test_enrich_github_stars_uses_fresh_cache_without_calling_signal(
         }
     }))
     nodes = {"p1": {"id": "p1", "arxiv_id": "2103.00020", "github_stars": 0}}
-    signal = MagicMock()
-    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    search = MagicMock()
+    fetch = MagicMock()
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated={}, search_repo=search, fetch_stars=fetch,
+    )
     assert enriched == 1
     assert nodes["p1"]["github_stars"] == 999
     assert nodes["p1"]["github_url"] == "https://github.com/cached/repo"
-    signal.enrich_batch.assert_not_called()
+    search.assert_not_called()
+    fetch.assert_not_called()
 
 
 def test_enrich_github_stars_refreshes_stale_cache(tmp_path, monkeypatch):
     """Cache entries older than the TTL must be refetched, not used."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
-    # Stale entry from 30 days ago — beyond the 7d TTL.
     from datetime import datetime, timedelta, timezone
     stale_ts = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
     (tmp_path / "github_stars.json").write_text(json.dumps({
@@ -1448,38 +1499,47 @@ def test_enrich_github_stars_refreshes_stale_cache(tmp_path, monkeypatch):
         }
     }))
     nodes = {"p1": {"id": "p1", "arxiv_id": "1706.03762", "github_stars": 0}}
-    signal = _make_fake_signal({
-        "1706.03762": (5000, "https://github.com/new/repo"),
-    })
-    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={"1706.03762": "new/repo"},
+        stars_by_repo={"new/repo": 5000},
+    )
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+    )
     assert enriched == 1
-    assert nodes["p1"]["github_stars"] == 5000  # fresh value, not cached 100
+    assert nodes["p1"]["github_stars"] == 5000  # fresh, not stale 100
     assert nodes["p1"]["github_url"] == "https://github.com/new/repo"
-    signal.enrich_batch.assert_called_once()
 
 
-def test_enrich_github_stars_caches_zero_stars(tmp_path, monkeypatch):
-    """Papers without a GitHub repo (stars=0) must still be cached so the
-    next run does not re-query them."""
+def test_enrich_github_stars_caches_zero_when_no_repo_found(
+    tmp_path, monkeypatch
+):
+    """Papers neither in the curated map nor matched by search must be
+    cached as stars=0 so we don't re-query them every week."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {"p1": {"id": "p1", "arxiv_id": "1234.5678", "github_stars": 0}}
-    # Signal returns no entry for this arxiv_id; stars stays 0.
-    signal = _make_fake_signal({})
-    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    curated, search, fetch = _make_fake_resolvers()  # all empty
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+    )
     assert enriched == 0
     cache = json.loads((tmp_path / "github_stars.json").read_text())
     assert cache["1234.5678"]["stars"] == 0
+    assert cache["1234.5678"]["url"] is None
 
 
 def test_enrich_github_stars_no_op_when_no_arxiv_nodes(tmp_path, monkeypatch):
-    """Empty target list must not instantiate or call the signal."""
+    """Empty target list must skip resolvers and not write a cache file."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {"p1": {"id": "p1", "github_stars": 0}}
-    signal = MagicMock()
-    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    search = MagicMock()
+    fetch = MagicMock()
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated={}, search_repo=search, fetch_stars=fetch,
+    )
     assert enriched == 0
-    signal.enrich_batch.assert_not_called()
-    # No cache file should be written when there's nothing to record.
+    search.assert_not_called()
+    fetch.assert_not_called()
     assert not (tmp_path / "github_stars.json").exists()
 
 
@@ -1514,7 +1574,6 @@ def test_enrich_github_stars_invoked_by_pipeline(tmp_path, monkeypatch):
         captured["arxiv_ids"] = sorted(
             n.get("arxiv_id") for n in nodes.values() if n.get("arxiv_id")
         )
-        # Mutate to simulate a successful enrichment.
         for node in nodes.values():
             if node.get("arxiv_id") == "1701.06538":
                 node["github_stars"] = 5000
@@ -1551,8 +1610,13 @@ def test_enrich_github_stars_handles_corrupt_cache_file(tmp_path, monkeypatch):
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     (tmp_path / "github_stars.json").write_text("not-json{{{")
     nodes = {"p1": {"id": "p1", "arxiv_id": "1234.5678", "github_stars": 0}}
-    signal = _make_fake_signal({"1234.5678": (7, "https://github.com/a/b")})
-    enriched = build_theme_lineage._enrich_github_stars(nodes, signal=signal)
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={"1234.5678": "a/b"},
+        stars_by_repo={"a/b": 7},
+    )
+    enriched = build_theme_lineage._enrich_github_stars(
+        nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+    )
     assert enriched == 1
     assert nodes["p1"]["github_stars"] == 7
 
@@ -1560,16 +1624,10 @@ def test_enrich_github_stars_handles_corrupt_cache_file(tmp_path, monkeypatch):
 def test_enrich_github_stars_does_not_cache_papers_past_budget(
     tmp_path, monkeypatch
 ):
-    """Papers past max_lookups must be left alone in the cache, not stamped
-    as 0-star — otherwise they'd be suppressed for the full TTL window
-    despite never having been queried.
+    """Papers past max_lookups must NOT be stamped 0 in the cache.
 
-    The bug surfaces when a theme has more arxiv-tagged nodes than the
-    lookup budget: GitHubSignal.enrich_batch returns the full list (its
-    internal budget short-circuits but it still returns `papers`), so
-    untouched papers come back with the dataclass default github_stars=0.
-    Slicing ``targets`` to ``max_lookups`` BEFORE the signal call is what
-    keeps the cache honest about which arxiv_ids were actually looked up.
+    Otherwise the entry would be suppressed for the full TTL window
+    despite never having been queried.
     """
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     nodes = {
@@ -1577,35 +1635,203 @@ def test_enrich_github_stars_does_not_cache_papers_past_budget(
         "p2": {"id": "p2", "arxiv_id": "ax-2", "github_stars": 0},
         "p3": {"id": "p3", "arxiv_id": "ax-3", "github_stars": 0},
     }
-    seen_proxies: list = []
-
-    def fake_enrich_batch(papers):
-        seen_proxies.extend(papers)
-        # Pretend only the first paper resolved to a repo. The other two
-        # come back with the dataclass default github_stars=0 — same shape
-        # as a budget-skipped paper in the real GitHubSignal.
-        if papers:
-            papers[0].github_stars = 99
-            papers[0].github_url = "https://github.com/a/b"
-        return papers
-
-    signal = MagicMock()
-    signal.enrich_batch.side_effect = fake_enrich_batch
-
-    build_theme_lineage._enrich_github_stars(
-        nodes, max_lookups=1, signal=signal
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={
+            "ax-1": "a/r1",
+            "ax-2": "a/r2",
+            "ax-3": "a/r3",
+        },
+        stars_by_repo={"a/r1": 99, "a/r2": 88, "a/r3": 77},
     )
-
-    # Only one Paper proxy should have been built — slicing happens
-    # BEFORE constructing proxies, so the signal never even sees the
-    # over-budget arxiv ids.
-    assert len(seen_proxies) == 1
-    assert seen_proxies[0].arxiv_id == "ax-1"
-
+    fetch_mock = MagicMock(side_effect=fetch)
+    build_theme_lineage._enrich_github_stars(
+        nodes, max_lookups=1, curated=curated,
+        search_repo=search, fetch_stars=fetch_mock,
+    )
+    assert fetch_mock.call_count == 1  # only the first paper resolved
     cache = json.loads((tmp_path / "github_stars.json").read_text())
     assert "ax-1" in cache
-    # ax-2 and ax-3 must NOT be in the cache — they would otherwise be
-    # stamped stars=0 and locked out for the full TTL despite never
-    # having been queried.
     assert "ax-2" not in cache
     assert "ax-3" not in cache
+
+
+# ---- Helper unit tests ----
+
+
+def test_load_curated_map_filters_meta_and_invalid_repos(tmp_path):
+    """_meta key and malformed values must be silently dropped."""
+    p = tmp_path / "paper_repos.json"
+    p.write_text(json.dumps({
+        "_meta": {"comment": "ignored"},
+        "1234.5678": "owner/repo",
+        "9999.99": "no-slash-here",                  # invalid: no '/'
+        "1111.22": "owner/../traversal",             # invalid: bad chars
+        "2222.33": 123,                              # invalid: not str
+    }))
+    out = build_theme_lineage._load_curated_map(p)
+    assert out == {"1234.5678": "owner/repo"}
+
+
+def test_title_similarity_substring_match_is_full():
+    """Full normalised containment counts as a perfect 1.0."""
+    s = build_theme_lineage._title_similarity(
+        "Segment Anything", "segment-anything"
+    )
+    assert s == 1.0
+
+
+def test_title_similarity_low_for_unrelated_titles():
+    """Unrelated titles must score well below the acceptance threshold."""
+    s = build_theme_lineage._title_similarity(
+        "Segment Anything", "Awesome Machine Learning Papers"
+    )
+    assert s < build_theme_lineage._TITLE_SIM_THRESHOLD
+
+
+def test_title_similarity_jaccard_partial_overlap():
+    """Token overlap should produce a positive but sub-1 similarity score."""
+    s = build_theme_lineage._title_similarity(
+        "Mask Former for Semantic Segmentation",
+        "Mask R-CNN",
+    )
+    assert 0.0 < s < 1.0
+
+
+def test_search_repo_skips_low_similarity_hit(monkeypatch):
+    """A high-stars but unrelated GitHub repo must NOT be returned."""
+    fake_resp = MagicMock()
+    fake_resp.status_code = 200
+    fake_resp.json = lambda: {
+        "items": [
+            {
+                "full_name": "awesome/awesome-list",
+                "name": "awesome-list",
+                "description": "A curated list of awesome things",
+            }
+        ]
+    }
+    monkeypatch.setattr(
+        build_theme_lineage, "request_with_retry",
+        lambda *a, **kw: fake_resp,
+    )
+    out = build_theme_lineage._search_repo_by_title(
+        "Segment Anything Model", github_token=None,
+    )
+    assert out is None
+
+
+def test_search_repo_returns_high_similarity_hit(monkeypatch):
+    """A near-identical-name hit must be returned as 'owner/repo'."""
+    fake_resp = MagicMock()
+    fake_resp.status_code = 200
+    fake_resp.json = lambda: {
+        "items": [
+            {
+                "full_name": "facebookresearch/segment-anything",
+                "name": "segment-anything",
+                "description": "The Segment Anything Model (SAM)",
+            }
+        ]
+    }
+    monkeypatch.setattr(
+        build_theme_lineage, "request_with_retry",
+        lambda *a, **kw: fake_resp,
+    )
+    out = build_theme_lineage._search_repo_by_title(
+        "Segment Anything", github_token=None,
+    )
+    assert out == "facebookresearch/segment-anything"
+
+
+def test_search_repo_rejects_path_traversal_in_repo_name(monkeypatch):
+    """A response with a malformed full_name (e.g. '../etc') must be skipped."""
+    fake_resp = MagicMock()
+    fake_resp.status_code = 200
+    fake_resp.json = lambda: {
+        "items": [
+            {
+                "full_name": "owner/../traversal",
+                "name": "segment-anything",
+                "description": "bad",
+            },
+        ]
+    }
+    monkeypatch.setattr(
+        build_theme_lineage, "request_with_retry",
+        lambda *a, **kw: fake_resp,
+    )
+    out = build_theme_lineage._search_repo_by_title(
+        "Segment Anything", github_token=None,
+    )
+    assert out is None
+
+
+def test_search_repo_skips_short_titles(monkeypatch):
+    """Titles shorter than 8 chars must short-circuit (would return noise)."""
+    called = MagicMock()
+    monkeypatch.setattr(build_theme_lineage, "request_with_retry", called)
+    assert build_theme_lineage._search_repo_by_title("BERT") is None
+    called.assert_not_called()
+
+
+def test_fetch_repo_stars_returns_count(monkeypatch):
+    """Successful 200 response must yield int stargazers_count."""
+    fake_resp = MagicMock()
+    fake_resp.status_code = 200
+    fake_resp.json = lambda: {"stargazers_count": 12345}
+    monkeypatch.setattr(
+        build_theme_lineage, "request_with_retry",
+        lambda *a, **kw: fake_resp,
+    )
+    assert build_theme_lineage._fetch_repo_stars("owner/repo") == 12345
+
+
+def test_fetch_repo_stars_rejects_invalid_repo_strings():
+    """SSRF / path-traversal hardening: malformed repo args must return None."""
+    assert build_theme_lineage._fetch_repo_stars("") is None
+    assert build_theme_lineage._fetch_repo_stars("noslash") is None
+    assert build_theme_lineage._fetch_repo_stars("owner/../etc") is None
+    assert build_theme_lineage._fetch_repo_stars("owner/repo with space") is None
+
+
+def test_title_similarity_minimum_length_guard():
+    """A short normalised candidate (e.g. 'fcn') must NOT score 1.0 just by
+    being a substring of a longer paper title — that would let any 3-letter
+    repo name match unrelated papers."""
+    s = build_theme_lineage._title_similarity(
+        "Fully Convolutional Networks for Semantic Segmentation",  # has 'fcn' in tokens
+        "fcn",
+    )
+    # Substring match is gated by len >= 6, so this falls back to Jaccard
+    # (no token overlap → 0.0) rather than a false 1.0.
+    assert s < 1.0
+
+
+def test_enrich_github_stars_counts_curated_and_search_separately(
+    tmp_path, monkeypatch, caplog
+):
+    """Resolution-path counters must reflect WHERE the repo came from,
+    not whether the eventual fetch returned > 0 stars. A curated repo
+    that returned 0 stars must still count as a curated hit so the log
+    line is not misleading."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {
+        "p1": {"id": "p1", "arxiv_id": "ax-curated-zero", "title": "x" * 20},
+        "p2": {"id": "p2", "arxiv_id": "ax-search", "title": "Searchable Paper Name"},
+    }
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={"ax-curated-zero": "owner/private-repo"},
+        repos_by_title={"searchable paper name": "owner/found-by-search"},
+        # private-repo returns 0 stars; found-by-search returns 50.
+        stars_by_repo={"owner/private-repo": 0, "owner/found-by-search": 50},
+    )
+    with caplog.at_level(logging.INFO, logger="paperpilot.scripts.build_theme_lineage"):
+        build_theme_lineage._enrich_github_stars(
+            nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+        )
+    log = " ".join(r.message for r in caplog.records)
+    # Curated hit counts even when stars=0 — this is the regression guard.
+    assert "curated=1" in log
+    assert "search=1" in log
+    # Only one paper actually had stars > 0, so the third tally reads 1.
+    assert "stars>0=1" in log
