@@ -30,9 +30,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 import unicodedata
-from datetime import date, datetime, timedelta, timezone
+from collections.abc import Callable
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -41,7 +43,6 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from paperpilot.models import Paper  # noqa: E402
 from paperpilot.scripts._common import theme_slug  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
@@ -49,7 +50,6 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     fetch_related,
     to_node,
 )
-from paperpilot.signals.github_signal import GitHubSignal  # noqa: E402
 from paperpilot.utils.config_loader import load_env  # noqa: E402
 from paperpilot.utils.http import request_with_retry  # noqa: E402
 from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
@@ -394,17 +394,180 @@ def discover_seeds(
 
 # Conference lineage gets stars from papers.json (Stage 2 catalog), but the
 # theme pipeline crawls S2 directly so to_node() always sees stars=0.
-# This post-pass mirrors GitHubSignal's flow (PwC paper -> repo -> GitHub
-# star count) over the assembled node set, with a 7-day disk cache so the
-# weekly cron does not re-resolve every paper from scratch.
+# This post-pass resolves arxiv_id -> GitHub repo via two layers and then
+# fetches the live star count from the GitHub API:
+#
+#   1. paperpilot/data/paper_repos.json — curated arxiv_id -> "owner/repo"
+#      mapping. Hand-maintained, 100% accurate within coverage.
+#   2. GitHub Search — paper title fed into /search/repositories with a
+#      title-similarity filter so a "Segment Anything" paper does not
+#      accidentally pick up a tutorial repo.
+#
+# Why not Papers with Code: PwC was permanently shut down in 2026 (every
+# paperswithcode.com URL 302-redirects to huggingface.co/papers/trending,
+# and the production-media data dumps return TLS errors / 404). The HF
+# papers endpoint does not expose a githubRepo field, so we cannot just
+# swap one third-party for another.
 _GITHUB_CACHE_FILE = "github_stars.json"
 _GITHUB_CACHE_TTL_DAYS = 7
 # Default budget covers a typical theme (~50–60 nodes) without burning
-# GitHub's hourly quota. Each lookup is up to 3 HTTP calls (PwC paper,
-# PwC repos, GitHub API) — 80 lookups → ~240 calls, well inside the
-# 5000/h PAT limit. Without a PAT (60/h) the budget will be partial;
-# the operator should set PAPERPILOT_GITHUB_TOKEN for bulk regen.
+# GitHub's hourly quota. Curated hits use 1 GitHub API call each; search
+# fallbacks use 2 (search + repo). 80 lookups -> at most ~160 calls, well
+# inside the 5000/h PAT limit. Without a PAT the unauthenticated cap is
+# 60/h overall (10/min for search) so the operator should set
+# PAPERPILOT_GITHUB_TOKEN for bulk regen.
 _GITHUB_DEFAULT_BUDGET = 80
+# Title-similarity threshold for accepting a GitHub Search hit. Above
+# this the paper title and the repo name/description are similar enough
+# that the match is treated as authoritative; below this we skip rather
+# than risk a false positive.
+_TITLE_SIM_THRESHOLD = 0.55
+_PAPER_REPOS_FILE = ROOT / "paperpilot" / "data" / "paper_repos.json"
+# GitHub URL slug allowlist — owner and repo segments must be alnum + a
+# small set of separators. Mirrors the strict allowlist GitHubSignal
+# uses, which is the SSRF / path-traversal hardening for any value we
+# eventually slot into a github.com URL.
+_GH_SLUG_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+
+
+def _load_curated_map(path: Path | None = None) -> dict[str, str]:
+    """Read paper_repos.json and return arxiv_id -> 'owner/repo'.
+
+    The ``_meta`` key (if present) is documentation for human readers
+    and is filtered out before returning. Malformed entries (non-string
+    or repos that fail the slug regex) are dropped silently so a typo
+    never breaks the build.
+    """
+    p = path or _PAPER_REPOS_FILE
+    if not p.exists():
+        return {}
+    try:
+        raw = json.loads(p.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("paper_repos.json unreadable (%s); skipping curated layer", exc)
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    out: dict[str, str] = {}
+    for ax, repo in raw.items():
+        if ax.startswith("_"):
+            continue
+        if not isinstance(repo, str) or "/" not in repo:
+            continue
+        owner, _, name = repo.partition("/")
+        if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
+            continue
+        out[ax] = repo
+    return out
+
+
+_TOKEN_RE = re.compile(r"[a-z0-9]{3,}")
+
+
+def _title_similarity(paper_title: str, candidate: str) -> float:
+    """Token-overlap similarity in [0, 1] for filtering GitHub search hits.
+
+    Tokens are ASCII alnum runs of length >= 3, lowercased. Returns the
+    Jaccard index between the two token sets; substring containment is
+    treated as a perfect 1.0 to handle cases like a repo named exactly
+    "segment-anything" matching the paper title "Segment Anything".
+    """
+    pt = (paper_title or "").lower()
+    ct = (candidate or "").lower()
+    if not pt or not ct:
+        return 0.0
+    # Normalised contains (strip non-alnum so "segment-anything" matches
+    # "segment anything"): treat full containment as a definitive hit,
+    # but only when BOTH sides have >= 6 alnum chars. The minimum length
+    # avoids `"fcn" in "fullyconvolutionalnetworks"` style false-positive
+    # 1.0 scores on a curt repo name appearing inside a longer title.
+    pn = re.sub(r"[^a-z0-9]", "", pt)
+    cn = re.sub(r"[^a-z0-9]", "", ct)
+    if (
+        len(pn) >= 6
+        and len(cn) >= 6
+        and (pn in cn or cn in pn)
+    ):
+        return 1.0
+    pa = set(_TOKEN_RE.findall(pt))
+    pb = set(_TOKEN_RE.findall(ct))
+    if not pa or not pb:
+        return 0.0
+    return len(pa & pb) / len(pa | pb)
+
+
+def _search_repo_by_title(
+    title: str, *, github_token: str | None = None
+) -> str | None:
+    """Best-effort 'owner/repo' resolution via GitHub /search/repositories.
+
+    Returns ``None`` when no candidate clears ``_TITLE_SIM_THRESHOLD``.
+    Skips empty / very short titles to avoid noise. The query is the
+    bare title trimmed to 80 chars — quoting the whole string would
+    over-constrain the search; we let GitHub's own ranking surface the
+    best candidates and filter via the similarity check.
+    """
+    cleaned = (title or "").strip()
+    if len(cleaned) < 8:
+        return None
+    headers = {"Accept": "application/vnd.github+json"}
+    if github_token:
+        headers["Authorization"] = f"Bearer {github_token}"
+    r = request_with_retry(
+        "GET",
+        "https://api.github.com/search/repositories",
+        params={
+            "q": cleaned[:80],
+            "sort": "stars",
+            "order": "desc",
+            "per_page": 5,
+        },
+        headers=headers,
+        timeout=10,
+    )
+    if r is None or r.status_code != 200:
+        return None
+    items = (r.json() or {}).get("items") or []
+    for item in items:
+        full_name = item.get("full_name") or ""
+        if "/" not in full_name:
+            continue
+        owner, _, name = full_name.partition("/")
+        if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
+            continue
+        sim = max(
+            _title_similarity(cleaned, item.get("name") or ""),
+            _title_similarity(cleaned, item.get("description") or ""),
+        )
+        if sim >= _TITLE_SIM_THRESHOLD:
+            return full_name
+    return None
+
+
+def _fetch_repo_stars(
+    repo_full: str, *, github_token: str | None = None
+) -> int | None:
+    """GET /repos/{owner}/{repo} -> stargazer count. None on failure."""
+    if not repo_full or "/" not in repo_full:
+        return None
+    owner, _, name = repo_full.partition("/")
+    if not _GH_SLUG_RE.match(owner) or not _GH_SLUG_RE.match(name):
+        return None
+    headers = {"Accept": "application/vnd.github+json"}
+    if github_token:
+        headers["Authorization"] = f"Bearer {github_token}"
+    r = request_with_retry(
+        "GET",
+        f"https://api.github.com/repos/{owner}/{name}",
+        headers=headers,
+        timeout=10,
+    )
+    if r is None or r.status_code != 200:
+        return None
+    try:
+        return int((r.json() or {}).get("stargazers_count") or 0)
+    except (ValueError, TypeError, AttributeError):
+        return None
 
 
 def _enrich_github_stars(
@@ -412,19 +575,30 @@ def _enrich_github_stars(
     *,
     max_lookups: int = _GITHUB_DEFAULT_BUDGET,
     github_token: str | None = None,
-    signal: GitHubSignal | None = None,
+    curated: dict[str, str] | None = None,
+    fetch_stars: Callable[..., int | None] | None = None,
+    search_repo: Callable[..., str | None] | None = None,
 ) -> int:
     """Resolve GitHub stars for theme nodes that have an arxiv_id.
 
-    Side-effects: mutates ``nodes`` in-place, setting ``github_stars`` and
-    optionally ``github_url`` on entries whose paper resolves to a GitHub
-    repository. Persists a JSON cache at
+    Resolution order (per node, until a repo is found):
+      1. ``curated[arxiv_id]`` — hand-maintained mapping in
+         ``paperpilot/data/paper_repos.json``.
+      2. ``search_repo(title)`` — GitHub Search by paper title with a
+         title-similarity filter (``_TITLE_SIM_THRESHOLD``) to avoid
+         false positives on common-word titles.
+
+    Once a repo is resolved, ``fetch_stars`` returns the live stargazer
+    count. The trio of resolvers is exposed as parameters for tests; the
+    defaults wire up the real GitHub API.
+
+    Side-effects: mutates ``nodes`` in-place, setting ``github_stars``
+    and ``github_url`` on resolved entries. Persists a JSON cache at
     ``CACHE_DIR/github_stars.json`` so subsequent runs reuse fresh
     lookups (TTL = ``_GITHUB_CACHE_TTL_DAYS``).
 
-    Returns the count of nodes whose ``github_stars`` ended up > 0
-    (cache hits + freshly resolved). Failures degrade silently — a
-    theme is still publishable with stars=0 if PwC / GitHub is down.
+    Returns the count of nodes whose final ``github_stars`` > 0
+    (cache hits + freshly resolved).
     """
     cache_path = CACHE_DIR / _GITHUB_CACHE_FILE
     cache: dict[str, dict] = {}
@@ -433,6 +607,11 @@ def _enrich_github_stars(
             cache = json.loads(cache_path.read_text())
         except (OSError, json.JSONDecodeError):
             cache = {}
+
+    if curated is None:
+        curated = _load_curated_map()
+    fetch = fetch_stars or _fetch_repo_stars
+    search = search_repo or _search_repo_by_title
 
     fresh_cutoff = (
         datetime.now(timezone.utc) - timedelta(days=_GITHUB_CACHE_TTL_DAYS)
@@ -458,67 +637,72 @@ def _enrich_github_stars(
     if not targets:
         return enriched
 
-    if signal is None:
-        signal = GitHubSignal(
-            config={"max_lookups": max_lookups},
-            github_token=github_token,
-        )
-
-    # Slice to the lookup budget BEFORE handing papers to the signal.
-    # GitHubSignal.enrich_batch caps internally, but it still returns the
-    # full list — papers past the budget come back with the dataclass
-    # default github_stars=0 yet were never queried. If we cached those,
-    # they would be suppressed for 7 days even though they could have a
-    # repo. Slicing here means cache writes only cover papers we actually
-    # asked PwC + GitHub about; the rest re-enter the queue next run.
+    # Slice to the lookup budget BEFORE issuing any API call. Papers past
+    # the budget are NOT cached as 0 — they re-enter the queue on the
+    # next run instead of being suppressed for the full TTL window.
     looked_up = targets[:max_lookups]
 
-    # GitHubSignal expects Paper dataclass instances. Only arxiv_id matters
-    # for the lookup; the rest is filler. published_date is required by
-    # the dataclass — date.today() is fine since the signal does not look
-    # at it.
-    proxies = [
-        Paper(
-            title="",
-            authors=[],
-            abstract="",
-            url="",
-            published_date=date.today(),
-            source="s2",
-            arxiv_id=ax,
-        )
-        for (_, ax) in looked_up
-    ]
-
-    try:
-        enriched_papers = signal.enrich_batch(proxies)
-    except Exception as exc:  # pragma: no cover - defensive
-        logger.warning("github stars enrichment failed: %s", exc)
-        return enriched
-
     fetched_ts = datetime.now(timezone.utc).isoformat()
-    proxy_by_ax = {
-        paper.arxiv_id: paper
-        for paper in enriched_papers
-        if paper.arxiv_id
-    }
+    # Tally resolution paths separately from fetch outcomes:
+    #   curated_hits / search_hits  → which layer found a repo
+    #   stars_positive               → how many of those resolved repos
+    #                                  ended up with stars > 0
+    # Bookkeeping at resolution time (rather than inside a stars > 0
+    # branch) means the log line stays correct even when a curated
+    # repo turned out to be private / deleted / 0-starred.
+    curated_hits = 0
+    search_hits = 0
+    stars_positive = 0
     for node, ax in looked_up:
-        paper = proxy_by_ax.get(ax)
-        if paper is None:
-            continue
-        stars = int(paper.github_stars or 0)
-        # Cache the result regardless — caching 0 prevents weekly
-        # re-querying papers without GitHub repos.
+        # 1. Curated map (authoritative).
+        repo_full = curated.get(ax)
+        if repo_full:
+            curated_hits += 1
+        else:
+            # 2. GitHub Search fallback for everything else.
+            try:
+                repo_full = search(node.get("title") or "", github_token=github_token)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("search_repo failed for %s: %s", ax, exc)
+                repo_full = None
+            if repo_full:
+                search_hits += 1
+
+        stars = 0
+        url: str | None = None
+        if repo_full:
+            try:
+                fetched = fetch(repo_full, github_token=github_token)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("fetch_stars failed for %s: %s", repo_full, exc)
+                fetched = None
+            if fetched is not None and fetched > 0:
+                stars = int(fetched)
+                url = f"https://github.com/{repo_full}"
+                stars_positive += 1
+
+        # Cache the result regardless of stars value — caching 0 prevents
+        # weekly re-querying for papers without a public GitHub repo.
         cache[ax] = {
             "stars": stars,
-            "url": paper.github_url or None,
+            "url": url,
             "fetched_at": fetched_ts,
         }
         if stars > 0:
             node["github_stars"] = stars
-            if paper.github_url:
-                node["github_url"] = paper.github_url
+            if url:
+                node["github_url"] = url
             enriched += 1
+
+    if curated_hits or search_hits:
+        logger.info(
+            "github stars resolution: curated=%d, search=%d, stars>0=%d "
+            "(of %d looked up)",
+            curated_hits,
+            search_hits,
+            stars_positive,
+            len(looked_up),
+        )
 
     # Atomic write so concurrent theme runs don't tear the cache.
     try:
