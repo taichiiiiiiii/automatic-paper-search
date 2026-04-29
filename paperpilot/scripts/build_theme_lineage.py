@@ -477,10 +477,17 @@ def _title_similarity(paper_title: str, candidate: str) -> float:
     if not pt or not ct:
         return 0.0
     # Normalised contains (strip non-alnum so "segment-anything" matches
-    # "segment anything"): treat full containment as a definitive hit.
+    # "segment anything"): treat full containment as a definitive hit,
+    # but only when BOTH sides have >= 6 alnum chars. The minimum length
+    # avoids `"fcn" in "fullyconvolutionalnetworks"` style false-positive
+    # 1.0 scores on a curt repo name appearing inside a longer title.
     pn = re.sub(r"[^a-z0-9]", "", pt)
     cn = re.sub(r"[^a-z0-9]", "", ct)
-    if pn and cn and (pn in cn or cn in pn):
+    if (
+        len(pn) >= 6
+        and len(cn) >= 6
+        and (pn in cn or cn in pn)
+    ):
         return 1.0
     pa = set(_TOKEN_RE.findall(pt))
     pb = set(_TOKEN_RE.findall(ct))
@@ -636,20 +643,30 @@ def _enrich_github_stars(
     looked_up = targets[:max_lookups]
 
     fetched_ts = datetime.now(timezone.utc).isoformat()
+    # Tally resolution paths separately from fetch outcomes:
+    #   curated_hits / search_hits  → which layer found a repo
+    #   stars_positive               → how many of those resolved repos
+    #                                  ended up with stars > 0
+    # Bookkeeping at resolution time (rather than inside a stars > 0
+    # branch) means the log line stays correct even when a curated
+    # repo turned out to be private / deleted / 0-starred.
     curated_hits = 0
     search_hits = 0
+    stars_positive = 0
     for node, ax in looked_up:
         # 1. Curated map (authoritative).
         repo_full = curated.get(ax)
-        # 2. GitHub Search fallback for everything else.
-        if not repo_full:
+        if repo_full:
+            curated_hits += 1
+        else:
+            # 2. GitHub Search fallback for everything else.
             try:
                 repo_full = search(node.get("title") or "", github_token=github_token)
             except Exception as exc:  # pragma: no cover - defensive
                 logger.debug("search_repo failed for %s: %s", ax, exc)
                 repo_full = None
-        else:
-            curated_hits += 1
+            if repo_full:
+                search_hits += 1
 
         stars = 0
         url: str | None = None
@@ -662,8 +679,7 @@ def _enrich_github_stars(
             if fetched is not None and fetched > 0:
                 stars = int(fetched)
                 url = f"https://github.com/{repo_full}"
-                if not curated.get(ax):
-                    search_hits += 1
+                stars_positive += 1
 
         # Cache the result regardless of stars value — caching 0 prevents
         # weekly re-querying for papers without a public GitHub repo.
@@ -680,9 +696,11 @@ def _enrich_github_stars(
 
     if curated_hits or search_hits:
         logger.info(
-            "github stars resolution: curated=%d, search=%d (of %d looked up)",
+            "github stars resolution: curated=%d, search=%d, stars>0=%d "
+            "(of %d looked up)",
             curated_hits,
             search_hits,
+            stars_positive,
             len(looked_up),
         )
 

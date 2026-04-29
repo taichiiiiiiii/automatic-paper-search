@@ -1792,3 +1792,46 @@ def test_fetch_repo_stars_rejects_invalid_repo_strings():
     assert build_theme_lineage._fetch_repo_stars("noslash") is None
     assert build_theme_lineage._fetch_repo_stars("owner/../etc") is None
     assert build_theme_lineage._fetch_repo_stars("owner/repo with space") is None
+
+
+def test_title_similarity_minimum_length_guard():
+    """A short normalised candidate (e.g. 'fcn') must NOT score 1.0 just by
+    being a substring of a longer paper title — that would let any 3-letter
+    repo name match unrelated papers."""
+    s = build_theme_lineage._title_similarity(
+        "Fully Convolutional Networks for Semantic Segmentation",  # has 'fcn' in tokens
+        "fcn",
+    )
+    # Substring match is gated by len >= 6, so this falls back to Jaccard
+    # (no token overlap → 0.0) rather than a false 1.0.
+    assert s < 1.0
+
+
+def test_enrich_github_stars_counts_curated_and_search_separately(
+    tmp_path, monkeypatch, caplog
+):
+    """Resolution-path counters must reflect WHERE the repo came from,
+    not whether the eventual fetch returned > 0 stars. A curated repo
+    that returned 0 stars must still count as a curated hit so the log
+    line is not misleading."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    nodes = {
+        "p1": {"id": "p1", "arxiv_id": "ax-curated-zero", "title": "x" * 20},
+        "p2": {"id": "p2", "arxiv_id": "ax-search", "title": "Searchable Paper Name"},
+    }
+    curated, search, fetch = _make_fake_resolvers(
+        repos_by_ax={"ax-curated-zero": "owner/private-repo"},
+        repos_by_title={"searchable paper name": "owner/found-by-search"},
+        # private-repo returns 0 stars; found-by-search returns 50.
+        stars_by_repo={"owner/private-repo": 0, "owner/found-by-search": 50},
+    )
+    with caplog.at_level(logging.INFO, logger="paperpilot.scripts.build_theme_lineage"):
+        build_theme_lineage._enrich_github_stars(
+            nodes, curated=curated, search_repo=search, fetch_stars=fetch,
+        )
+    log = " ".join(r.message for r in caplog.records)
+    # Curated hit counts even when stars=0 — this is the regression guard.
+    assert "curated=1" in log
+    assert "search=1" in log
+    # Only one paper actually had stars > 0, so the third tally reads 1.
+    assert "stars>0=1" in log
