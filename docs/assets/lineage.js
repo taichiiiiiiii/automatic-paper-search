@@ -312,7 +312,7 @@ function render() {
     ? layoutTree(nodes, edges, state.focusId)
     : layoutTimeline(nodes);
 
-  drawSvg(positioned, visibleEdges);
+  void drawSvg(positioned, visibleEdges);
 }
 
 // Show/hide chrome that only makes sense for specific layouts. Keeps the
@@ -630,7 +630,7 @@ function layoutTimeline(nodes) {
 
 // ---------------- SVG rendering ----------------
 
-function drawSvg(positioned, edges) {
+async function drawSvg(positioned, edges) {
   const posById = new Map(positioned.map((p) => [p.id, p]));
 
   if (positioned.length === 0) {
@@ -689,6 +689,94 @@ function drawSvg(positioned, edges) {
   }
   els.svg.appendChild(defs);
 
+  // Render nodes first so cards can be measured before edges are drawn.
+  // Lineage cards have no fixed height and vary from ~180 to ~260 px
+  // depending on title wrap, TLDR length, and metadata; using NODE_H
+  // for edge endpoints leaves the edge floating tens of pixels above
+  // (or below) the visible card bottom.
+  const nodeGroup = document.createElementNS(SVG_NS, "g");
+  nodeGroup.setAttribute("id", "nodes");
+  const foById = new Map();
+  for (const p of positioned) {
+    const fo = document.createElementNS(SVG_NS, "foreignObject");
+    fo.setAttribute("x", p._x);
+    fo.setAttribute("y", p._y);
+    fo.setAttribute("width", NODE_W);
+    fo.setAttribute("height", NODE_H);
+    // Let the ★ FOCUS badge (top: -10px) and box-shadow halos render
+    // outside the foreignObject's viewport — without this they get
+    // clipped at the card edge.
+    fo.setAttribute("overflow", "visible");
+    fo.style.overflow = "visible";
+    fo.dataset.nodeId = p.id;
+
+    const card = document.createElement("div");
+    card.setAttribute("xmlns", XHTML_NS);
+    card.className = "node-card";
+    if (p.id === state.focusId) card.classList.add("node-card--focus");
+    if (p.is_trending) card.classList.add("node-card--trending");
+    card.addEventListener("click", () => focusPaper(p.id));
+    card.addEventListener("mouseenter", () => highlightConnectedEdges(p.id, true));
+    card.addEventListener("mouseleave", () => highlightConnectedEdges(p.id, false));
+
+    const tier = p.venue_tier === "A+" ? "aplus"
+               : p.venue_tier === "A" ? "a"
+               : "preprint";
+    const venue = PP.formatVenue(p.venue, p.year);
+    const authors = (p.authors || []).slice(0, 2).join(", ") + ((p.authors || []).length > 2 ? ` +${p.authors.length - 2}` : "");
+    const kinds = (p.kinds || []).map((k) => `<span class="node-card__kind">${escapeHtml(k)}</span>`).join("");
+    const starStr = formatStars(p.github_stars);
+    const stars = starStr ? `<span class="node-card__stars">⭐${starStr}</span>` : "";
+    const trending = p.is_trending ? `<span class="trending-badge">📈 trending</span>` : "";
+
+    card.innerHTML = `
+      <div class="node-card__venue">
+        <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue)}</span>
+        ${trending}
+      </div>
+      <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
+      <div class="node-card__authors">${escapeHtml(authors)}</div>
+      <div class="node-card__tldr">${escapeHtml(p.tldr || "")}</div>
+      <div class="node-card__meta">
+        ${kinds}
+        ${stars}
+      </div>
+    `;
+    fo.appendChild(card);
+    nodeGroup.appendChild(fo);
+    foById.set(p.id, { fo, card });
+  }
+  els.svg.appendChild(nodeGroup);
+
+  // Wait for web fonts to finish loading before measuring — otherwise
+  // cards rendered with the system-font fallback measure shorter than
+  // their final state and edges land above the visible card bottom
+  // once fonts swap in.
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch { /* ignore */ }
+  }
+  await new Promise((r) => requestAnimationFrame(() => r()));
+
+  // Measure each card's actual rendered height, update the
+  // foreignObject `height` attribute to match (so the bounds match
+  // the visible card border), and stash the value on the positioned
+  // record so edges land on the visible card bottom rather than the
+  // static NODE_H slot.
+  for (const p of positioned) {
+    const entry = foById.get(p.id);
+    if (!entry) { p._actualH = NODE_H; continue; }
+    const h = Math.ceil(entry.card.getBoundingClientRect().height) || NODE_H;
+    p._actualH = h;
+    entry.fo.setAttribute("height", h);
+  }
+  // Cards taller than NODE_H push past the SVG bottom computed above —
+  // grow the canvas if needed so the last row isn't clipped.
+  const measuredH = Math.max(...positioned.map((p) => p._y + p._actualH)) + PADDING;
+  if (measuredH > H) {
+    els.svg.setAttribute("height", measuredH);
+    els.svg.setAttribute("viewBox", `0 0 ${W} ${measuredH}`);
+  }
+
   const edgeGroup = document.createElementNS(SVG_NS, "g");
   edgeGroup.setAttribute("id", "edges");
   for (const e of edges) {
@@ -696,7 +784,7 @@ function drawSvg(positioned, edges) {
     const b = posById.get(e.dst);
     if (!a || !b) continue;
     const ax = a._x + NODE_W / 2;
-    const ay = a._y + NODE_H;
+    const ay = a._y + (a._actualH ?? NODE_H);
     const bx = b._x + NODE_W / 2;
     const by = b._y;
     const midY = (ay + by) / 2;
@@ -740,58 +828,7 @@ function drawSvg(positioned, edges) {
       edgeGroup.appendChild(text);
     }
   }
-  els.svg.appendChild(edgeGroup);
-
-  const nodeGroup = document.createElementNS(SVG_NS, "g");
-  nodeGroup.setAttribute("id", "nodes");
-  for (const p of positioned) {
-    const fo = document.createElementNS(SVG_NS, "foreignObject");
-    fo.setAttribute("x", p._x);
-    fo.setAttribute("y", p._y);
-    fo.setAttribute("width", NODE_W);
-    fo.setAttribute("height", NODE_H);
-    // Let the ★ FOCUS badge (top: -10px) and box-shadow halos render
-    // outside the foreignObject's viewport — without this they get
-    // clipped at the card edge.
-    fo.setAttribute("overflow", "visible");
-    fo.style.overflow = "visible";
-
-    const card = document.createElement("div");
-    card.setAttribute("xmlns", XHTML_NS);
-    card.className = "node-card";
-    if (p.id === state.focusId) card.classList.add("node-card--focus");
-    if (p.is_trending) card.classList.add("node-card--trending");
-    card.addEventListener("click", () => focusPaper(p.id));
-    card.addEventListener("mouseenter", () => highlightConnectedEdges(p.id, true));
-    card.addEventListener("mouseleave", () => highlightConnectedEdges(p.id, false));
-
-    const tier = p.venue_tier === "A+" ? "aplus"
-               : p.venue_tier === "A" ? "a"
-               : "preprint";
-    const venue = PP.formatVenue(p.venue, p.year);
-    const authors = (p.authors || []).slice(0, 2).join(", ") + ((p.authors || []).length > 2 ? ` +${p.authors.length - 2}` : "");
-    const kinds = (p.kinds || []).map((k) => `<span class="node-card__kind">${escapeHtml(k)}</span>`).join("");
-    const starStr = formatStars(p.github_stars);
-    const stars = starStr ? `<span class="node-card__stars">⭐${starStr}</span>` : "";
-    const trending = p.is_trending ? `<span class="trending-badge">📈 trending</span>` : "";
-
-    card.innerHTML = `
-      <div class="node-card__venue">
-        <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue)}</span>
-        ${trending}
-      </div>
-      <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
-      <div class="node-card__authors">${escapeHtml(authors)}</div>
-      <div class="node-card__tldr">${escapeHtml(p.tldr || "")}</div>
-      <div class="node-card__meta">
-        ${kinds}
-        ${stars}
-      </div>
-    `;
-    fo.appendChild(card);
-    nodeGroup.appendChild(fo);
-  }
-  els.svg.appendChild(nodeGroup);
+  els.svg.insertBefore(edgeGroup, nodeGroup);
 }
 
 function markerClass(rel) {
