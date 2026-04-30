@@ -722,9 +722,14 @@ function computePagerank(nodes, edges, { damping = 0.85, iterations = 20 } = {})
   const rank = new Map(ids.map((id) => [id, 1 / N]));
   const out = new Map(ids.map((id) => [id, []]));
   const outDeg = new Map(ids.map((id) => [id, 0]));
-  for (const e of edges || []) {
+  // Drop stray edges before iterating so a stray endpoint can never make
+  // an in-graph node falsely look dangling (its other valid edges would
+  // still register, but we'd misrepresent its out-degree). build_theme_
+  // lineage.py emits closed graphs so this is mostly defensive, but it
+  // also lets the function be safely reused from other contexts.
+  const validEdges = (edges || []).filter((e) => out.has(e.dst) && rank.has(e.src));
+  for (const e of validEdges) {
     // Reverse direction: a child's vote flows to its parent.
-    if (!out.has(e.dst) || !rank.has(e.src)) continue;
     out.get(e.dst).push(e.src);
     outDeg.set(e.dst, outDeg.get(e.dst) + 1);
   }

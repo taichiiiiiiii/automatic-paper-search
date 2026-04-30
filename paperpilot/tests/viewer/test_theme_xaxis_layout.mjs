@@ -296,6 +296,26 @@ test("computePagerank returns empty Map for empty node list", () => {
   eq(pr.size, 0);
 });
 
+test("computePagerank ignores edges that reference nodes outside the graph", () => {
+  // Stray edges (e.g. a parent paper that isn't part of the theme node
+  // set) used to register a phantom out-degree on the in-graph endpoint
+  // and could flip an in-graph node into the dangling bucket. The valid-
+  // edge prefilter introduced alongside this test pins the behaviour:
+  // adding a stray edge must not change ranks for the rest of the graph.
+  const stray = [
+    ...EDGES,
+    { src: "MISSING_PARENT", dst: "P1", rel: "extends", conf: 0.5 },
+    { src: "P3", dst: "MISSING_CHILD", rel: "extends", conf: 0.5 },
+  ];
+  const baseline = T.computePagerank(NODES, EDGES);
+  const polluted = T.computePagerank(NODES, stray);
+  eq(polluted.size, NODES.length, "no phantom ids leak into the rank map");
+  // Each in-graph rank must match the clean run within fp tolerance.
+  for (const id of baseline.keys()) {
+    approx(polluted.get(id), baseline.get(id), 1e-6, `${id} rank drift`);
+  }
+});
+
 test("buildLayoutContext indexes parents per node correctly", () => {
   const ctx = T.buildLayoutContext(NODES, EDGES);
   const parentsOfP1 = [...ctx.parentsById.get("P1")];
