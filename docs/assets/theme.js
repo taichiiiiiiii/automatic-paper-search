@@ -178,6 +178,17 @@ const els = {
   xAxisHint: document.getElementById("x-axis-hint"),
   xAxisLegendLeft: document.getElementById("x-axis-legend-left"),
   xAxisLegendRight: document.getElementById("x-axis-legend-right"),
+  // On-demand theme submission UI.
+  reqForm: document.getElementById("theme-request"),
+  reqInput: document.getElementById("theme-request-input"),
+  reqSubmit: document.getElementById("theme-request-submit"),
+  reqHint: document.getElementById("theme-request-hint"),
+  progress: document.getElementById("theme-progress"),
+  progressTitle: document.getElementById("theme-progress-title"),
+  progressElapsed: document.getElementById("theme-progress-elapsed"),
+  progressBar: document.getElementById("theme-progress-bar"),
+  progressSteps: document.getElementById("theme-progress-steps"),
+  progressCancel: document.getElementById("theme-progress-cancel"),
   popover: document.getElementById("card-popover"),
   popVenue: document.getElementById("cp-venue"),
   popTitle: document.getElementById("cp-title"),
@@ -302,16 +313,230 @@ function showErrorHtml(safeHtml) {
   );
 }
 
+// ---- On-demand theme submission ---------------------------------------
+//
+// Posts the user-typed theme to /api/themes (CF Worker). The Worker
+// validates, dedupes against the manifest, rate-limits per IP, and
+// dispatches a GitHub Actions workflow that runs build_theme_lineage.py
+// and commits the result to develop. We then poll themes-manifest.json
+// until the new slug appears (Cloudflare Pages auto-deploys on push)
+// and redirect to ?theme=<slug>.
+
+const REQUEST_PATTERN = /^[A-Za-z0-9 _-]{2,80}$/;
+const POLL_INTERVAL_MS = 5000;
+const POLL_TIMEOUT_MS = 6 * 60 * 1000;        // 6 min hard cap
+const ESTIMATED_DURATION_MS = 3.5 * 60 * 1000; // tuned to typical run time
+
+const PROGRESS_STEPS = ["dispatch", "queue", "generate", "commit", "ready"];
+
+let progressState = null;
+
+function bindThemeRequest() {
+  if (!els.reqForm) return;
+  els.reqForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    submitTheme().catch((err) => {
+      console.error("[theme-request] submit failed:", err);
+      showRequestError("予期しないエラーが発生しました。再試行してください。");
+    });
+  });
+  if (els.progressCancel) {
+    els.progressCancel.addEventListener("click", cancelProgress);
+  }
+}
+
+function showRequestError(message) {
+  if (!els.reqHint) return;
+  els.reqHint.textContent = message;
+  els.reqHint.classList.add("theme-request__hint--error");
+  // Reset error styling after a few seconds so the form stops looking
+  // like it's permanently broken.
+  setTimeout(() => {
+    if (els.reqHint) {
+      els.reqHint.classList.remove("theme-request__hint--error");
+      els.reqHint.textContent = "2〜80 文字 / [A-Za-z0-9 _-] / 5回/時まで";
+    }
+  }, 6000);
+}
+
+async function submitTheme() {
+  const raw = (els.reqInput?.value || "").trim();
+  if (!REQUEST_PATTERN.test(raw)) {
+    showRequestError("テーマは 2〜80 文字、[A-Za-z0-9 _-] のみ使用できます。");
+    return;
+  }
+  els.reqSubmit.disabled = true;
+  els.reqInput.disabled = true;
+
+  // POST to the Worker. credentials: same-origin keeps the cookie /
+  // session story unchanged (we don't use either, but be explicit).
+  let resp;
+  try {
+    resp = await fetch("/api/themes", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ theme: raw }),
+      credentials: "same-origin",
+    });
+  } catch (e) {
+    showRequestError("送信できませんでした。ネットワーク接続を確認してください。");
+    els.reqSubmit.disabled = false;
+    els.reqInput.disabled = false;
+    return;
+  }
+  let data;
+  try {
+    data = await resp.json();
+  } catch {
+    data = { ok: false, status: "error", message: "invalid response" };
+  }
+
+  if (!data.ok && data.status === "rate_limited") {
+    showRequestError("レート制限に達しました (5回/時)。1 時間後にお試しください。");
+    els.reqSubmit.disabled = false;
+    els.reqInput.disabled = false;
+    return;
+  }
+  if (!data.ok && data.status === "invalid") {
+    showRequestError(data.message || "入力が無効です。");
+    els.reqSubmit.disabled = false;
+    els.reqInput.disabled = false;
+    return;
+  }
+  if (!data.ok) {
+    showRequestError(data.message || "サーバ側でエラーが発生しました。");
+    els.reqSubmit.disabled = false;
+    els.reqInput.disabled = false;
+    return;
+  }
+
+  if (data.status === "exists" && data.slug) {
+    // Slug already published — jump straight to it. SLUG_RE re-checked
+    // because the Worker's response could in theory be tampered with at
+    // the network layer.
+    if (SLUG_RE.test(data.slug)) {
+      window.location.href = `?theme=${encodeURIComponent(data.slug)}`;
+    }
+    return;
+  }
+
+  if (data.status === "queued" && data.slug && SLUG_RE.test(data.slug)) {
+    startProgress(data.slug, raw);
+    return;
+  }
+
+  showRequestError("不明な状態が返されました。");
+  els.reqSubmit.disabled = false;
+  els.reqInput.disabled = false;
+}
+
+function startProgress(slug, themeLabel) {
+  els.progress.hidden = false;
+  if (els.progressTitle) els.progressTitle.textContent = `「${themeLabel}」を生成中...`;
+  setProgressStep("dispatch");
+  progressState = {
+    slug,
+    startedAt: Date.now(),
+    cancelled: false,
+    timer: null,
+  };
+  // Step transitions are time-based estimates. We shift "queue" → "generate"
+  // → "commit" on a schedule because the Worker can't tell us the live
+  // workflow status without a second API hop. This stays accurate enough
+  // for the user-facing "what's happening now" because the median run
+  // time is fairly stable.
+  setTimeout(() => maybeAdvance("queue"), 5_000);
+  setTimeout(() => maybeAdvance("generate"), 30_000);
+  setTimeout(() => maybeAdvance("commit"), 150_000);
+  pollForCompletion(slug);
+  progressState.timer = setInterval(updateElapsed, 1000);
+  updateElapsed();
+}
+
+function maybeAdvance(step) {
+  if (!progressState || progressState.cancelled) return;
+  setProgressStep(step);
+}
+
+function setProgressStep(step) {
+  if (!els.progressSteps) return;
+  const idx = PROGRESS_STEPS.indexOf(step);
+  for (const li of els.progressSteps.querySelectorAll("li[data-step]")) {
+    const liIdx = PROGRESS_STEPS.indexOf(li.dataset.step);
+    li.classList.toggle("theme-progress__step--done", liIdx < idx);
+    li.classList.toggle("theme-progress__step--current", liIdx === idx);
+    li.classList.toggle("theme-progress__step--pending", liIdx > idx);
+  }
+  if (els.progressBar) {
+    const pct = Math.min(100, (idx / (PROGRESS_STEPS.length - 1)) * 100);
+    els.progressBar.style.width = `${pct}%`;
+  }
+}
+
+function updateElapsed() {
+  if (!progressState || !els.progressElapsed) return;
+  const elapsed = Date.now() - progressState.startedAt;
+  const m = Math.floor(elapsed / 60_000);
+  const s = Math.floor((elapsed % 60_000) / 1000);
+  els.progressElapsed.textContent = `経過 ${m}:${String(s).padStart(2, "0")}`;
+}
+
+async function pollForCompletion(slug) {
+  const startedAt = Date.now();
+  while (progressState && !progressState.cancelled) {
+    if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
+      showRequestError("生成がタイムアウトしました。後ほど再試行してください。");
+      cancelProgress();
+      return;
+    }
+    try {
+      // cache: no-store guarantees we don't keep seeing a stale manifest
+      // from the CDN. Even right after a CF Pages deploy the manifest
+      // can still be cached at the edge for ~30s.
+      const r = await fetch("themes-manifest.json", { cache: "no-store" });
+      if (r.ok) {
+        const data = await r.json();
+        if (Array.isArray(data) && data.some((e) => e?.slug === slug)) {
+          setProgressStep("ready");
+          // Tiny pause so the user sees the green "完了" tick.
+          setTimeout(() => {
+            window.location.href = `?theme=${encodeURIComponent(slug)}`;
+          }, 800);
+          return;
+        }
+      }
+    } catch {
+      // Transient network error — keep polling. The hard cap above will
+      // bail if the failure persists.
+    }
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+  }
+}
+
+function cancelProgress() {
+  if (progressState) {
+    progressState.cancelled = true;
+    if (progressState.timer) clearInterval(progressState.timer);
+  }
+  if (els.progress) els.progress.hidden = true;
+  if (els.reqSubmit) els.reqSubmit.disabled = false;
+  if (els.reqInput) els.reqInput.disabled = false;
+}
+
 async function init() {
   els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state" id="loading-msg">テーマを読み込み中...</p>`);
+
+  // Bind the on-demand submission form FIRST so it stays usable even
+  // when the manifest is empty (first-time visitor) or when the slug
+  // they asked for can't be loaded.
+  bindThemeRequest();
 
   state.manifest = await loadManifest();
   if (state.manifest.length === 0) {
     document.getElementById("loading-msg")?.remove();
     showErrorHtml(`
       <p>テーマがまだ生成されていません。</p>
-      <p><code>uv run python -m paperpilot.scripts.build_theme_lineage --theme "&lt;テーマ&gt;"</code>
-      を実行してから <code>uv run python -m paperpilot.scripts.generate_themes_manifest --themes-dir docs/themes</code> を実行してください。</p>
+      <p>上のフォームに研究テーマを入力すると自動生成できます。例: <em>Vision Transformer</em>, <em>Diffusion Model</em></p>
     `);
     return;
   }

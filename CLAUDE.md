@@ -75,7 +75,14 @@ automatic-paper-search/
 │   └── workflows/
 │       ├── collect-weekly.yml           # 毎週土曜 07:00 JST 深掘り（PAT に workflow scope 必要）
 │       ├── collect-daily-watch.yml      # 毎日 07:00 JST フォロー著者ウォッチ
+│       ├── regen-themes.yml             # 毎週日曜 09:00 JST 全テーマ再生成
+│       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（CF Worker から workflow_dispatch）
 │       └── publish.yml                  # PyPI trusted-publisher（release 発火）
+├── worker/                              # ★ Cloudflare Worker (theme submission API)
+│   ├── index.ts                         # POST /api/themes ハンドラ
+│   ├── slug.js                          # themeSlug() 共有 (Python と parity test)
+│   ├── index.test.mjs                   # node 単体テスト
+│   └── README.md                        # 設定 / デプロイ手順
 └── paperpilot/
     ├── collector.py                     # CLI エントリーポイント
     ├── config.yaml                      # 週次深掘り設定（秘匿情報なし）
@@ -499,6 +506,8 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
 14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
+    - **オンデマンド生成パス**: ユーザーが `/themes/` のフォームに入力 → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` workflow_dispatch → `build_theme_lineage.py` → `develop` へ commit → CF Pages 自動デプロイ。フロントは `themes-manifest.json` をポーリングして slug 出現で redirect。
+    - **slug 派生はの 3 か所で同期**: Python `theme_slug()`、JS `worker/slug.js`、フロント `SLUG_RE`。`paperpilot/tests/test_worker_slug_parity.py` が parity を pin。
     - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
     - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。
     - **出力 path は `theme_slug()` の戻り値のみで構成**。生 `--theme` 文字列を `Path()` 構築に渡してはならない（path traversal 防止）。
@@ -521,6 +530,13 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 | `S2_API_KEY` | Semantic Scholar | 任意 |
 | `CLAUDE_API_KEY` | 将来の Claude Provider 用 | 任意 |
 | `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗時通知 | 任意 |
+| `PAPERPILOT_GROQ_API_KEY` | テーマ家系図の LLM 分類 (Groq) | テーマ生成に必須 |
+
+CF Worker 側のシークレット (`wrangler secret put`):
+
+| 名前 | 用途 |
+|------|------|
+| `GH_DISPATCH_PAT` | `theme-on-demand.yml` を workflow_dispatch する PAT (`actions: write` のみ) |
 
 ### 注意
 
