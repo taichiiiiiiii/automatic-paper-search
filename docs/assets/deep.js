@@ -122,8 +122,16 @@ function bindPicker() {
   });
 }
 
-function showError(html) {
-  els.canvas.insertAdjacentHTML("beforeend", `<div class="empty-state">${html}</div>`);
+// SECURITY: ``safeHtml`` is interpolated raw into the DOM. Every caller
+// in this file passes a static template literal. Never feed untrusted
+// strings (URL params, fetch responses, user input) here without
+// escaping first via ``escapeHtml`` — that would be a stored /
+// reflected XSS sink.
+function showErrorHtml(safeHtml) {
+  els.canvas.insertAdjacentHTML(
+    "beforeend",
+    `<div class="empty-state">${safeHtml}</div>`,
+  );
 }
 
 async function init() {
@@ -144,7 +152,7 @@ async function init() {
 
   if (!state.data) {
     renderPicker();
-    showError(`
+    showErrorHtml(`
       <p><code>${escapeHtml(jsonName)}</code> の読み込みに失敗しました。</p>
       <p><code>python paperpilot/scripts/build_deep_lineage.py --arxiv-id &lt;id&gt;</code>
       を実行してから <code>python paperpilot/scripts/generate_deep_manifest.py --docs-dir docs/iclr-2026</code> を実行してください。</p>
@@ -155,7 +163,7 @@ async function init() {
   // Focus = the data root (what build_deep_lineage.py marked).
   state.focusId = state.data.root || state.data.nodes[0]?.id;
   if (!state.focusId) {
-    showError(`<p>表示可能なノードがありません</p>`);
+    showErrorHtml(`<p>表示可能なノードがありません</p>`);
     return;
   }
 
