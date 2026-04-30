@@ -28,11 +28,22 @@ const RELATION_LABEL_JA = {
   ablation: "分析", baseline_only: "比較", contrasts: "対立",
 };
 
-// X-axis modes. Order matches the <select id="x-axis-mode"> options in
-// docs/themes/index.html — DOM is the source of truth, this list is the
-// allowlist used to reject tampered values.
+// X-axis modes. theme.js is the source of truth — the toolbar pill group
+// is rendered from this list so labels / icons / order can never drift
+// from the layout logic.
 const X_AXIS_MODES = ["rank", "citation_log", "genealogy", "centrality", "venue", "novelty"];
 const DEFAULT_X_AXIS_MODE = "rank";
+
+// Pill button label + icon + tooltip per mode. The tooltip mirrors the
+// concise meaning shown in the canvas-top axis legend.
+const X_AXIS_BUTTON = {
+  rank:         { icon: "📊", label: "順位",   title: "年内の引用数ランキング (既定)" },
+  citation_log: { icon: "📈", label: "log引用", title: "log(引用数+1) — 連続軸" },
+  genealogy:    { icon: "🌳", label: "系譜",   title: "親論文の平均 X に寄せる" },
+  centrality:   { icon: "⭐", label: "中心性", title: "PageRank — テーマのハブ論文を左に" },
+  venue:        { icon: "🏛", label: "会議格", title: "Tier1 → Tier2 → Tier3 → 未査読" },
+  novelty:      { icon: "💥", label: "新規性", title: "supersedes/contrasts=破壊的、extends/successor=漸進的" },
+};
 
 // Footer hint text per mode. Updated dynamically when the user toggles the
 // selector so the legend stays honest about what the horizontal position
@@ -44,6 +55,18 @@ const X_AXIS_HINT = {
   centrality:   "Y 軸: 年 · X 軸: PageRank (左ほどテーマ中心のハブ論文) · ホバー → 分類理由",
   venue:        "Y 軸: 年 · X 軸: 会議格 (Tier1 → Tier2 → Tier3 → 未査読) · ホバー → 分類理由",
   novelty:      "Y 軸: 年 · X 軸: 新規性 ↔ 改良性 (左=破壊的、右=漸進的) · ホバー → 分類理由",
+};
+
+// Short "← left ... right →" pair shown in the canvas-top axis legend.
+// Kept separate from the verbose X_AXIS_HINT so the canvas legend stays
+// terse enough to scan at a glance.
+const X_AXIS_LEGEND = {
+  rank:         { left: "高被引用",       right: "低被引用" },
+  citation_log: { left: "log(高被引用)",  right: "log(低被引用)" },
+  genealogy:    { left: "同系統の親論文", right: "別系統 / 末葉" },
+  centrality:   { left: "テーマのハブ",   right: "周辺" },
+  venue:        { left: "Tier1 (一流)",   right: "未査読" },
+  novelty:      { left: "破壊的革新",     right: "漸進的改良" },
 };
 
 const NODE_W = 260;
@@ -153,6 +176,8 @@ const els = {
   exportPng: document.getElementById("export-png"),
   xAxisMode: document.getElementById("x-axis-mode"),
   xAxisHint: document.getElementById("x-axis-hint"),
+  xAxisLegendLeft: document.getElementById("x-axis-legend-left"),
+  xAxisLegendRight: document.getElementById("x-axis-legend-right"),
   popover: document.getElementById("card-popover"),
   popVenue: document.getElementById("cp-venue"),
   popTitle: document.getElementById("cp-title"),
@@ -578,36 +603,64 @@ function renderFilterChips() {
   }).join("");
 }
 
-// Sync the X-axis <select> value to state.xAxisMode and wire its change
-// handler. Called once from init() — splitting from initial set-up keeps
-// the listener from accumulating if init() ever re-runs.
+// Render the X-axis pill button group from X_AXIS_MODES + X_AXIS_BUTTON
+// and wire the click delegation. Called once from init() — splitting
+// from re-renders keeps the listener from accumulating if init() ever
+// re-runs.
 function bindXAxisMode() {
   if (!els.xAxisMode) return;
-  els.xAxisMode.value = state.xAxisMode;
-  els.xAxisMode.addEventListener("change", () => {
-    const next = els.xAxisMode.value;
-    // Allowlist guard: <select> values come from DOM and could be edited
-    // by extensions or the URL bar. Reject anything outside the known
-    // mode set instead of trusting the incoming string.
-    if (!X_AXIS_MODES.includes(next)) {
-      els.xAxisMode.value = state.xAxisMode;
-      return;
-    }
+  // Build the buttons. The header label inside the group element is
+  // preserved (HTML-side static node) so we only append after it.
+  const labelEl = els.xAxisMode.querySelector(".x-axis-group__label");
+  els.xAxisMode.innerHTML = "";
+  if (labelEl) els.xAxisMode.appendChild(labelEl);
+  for (const mode of X_AXIS_MODES) {
+    const meta = X_AXIS_BUTTON[mode];
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chip chip--xaxis";
+    btn.dataset.xaxis = mode;
+    btn.title = meta.title;
+    btn.setAttribute("aria-pressed", String(mode === state.xAxisMode));
+    // textContent (not innerHTML) — meta is a const map but treat it as
+    // untrusted to keep XSS-by-future-edit out of reach.
+    btn.textContent = `${meta.icon} ${meta.label}`;
+    els.xAxisMode.appendChild(btn);
+  }
+  // Click delegation on the group keeps a single listener regardless of
+  // how many buttons get rendered.
+  els.xAxisMode.addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip[data-xaxis]");
+    if (!btn) return;
+    const next = btn.dataset.xaxis;
+    // Allowlist guard: data-xaxis comes from DOM and could be tampered
+    // with. Reject anything outside the known mode set.
+    if (!X_AXIS_MODES.includes(next)) return;
+    if (next === state.xAxisMode) return;
     state.xAxisMode = next;
+    // Re-paint pressed state on every button so screen readers see the
+    // update synchronously, before the (potentially expensive) render().
+    for (const b of els.xAxisMode.querySelectorAll(".chip[data-xaxis]")) {
+      b.setAttribute("aria-pressed", String(b.dataset.xaxis === state.xAxisMode));
+    }
     savePrefs();
     render();
   });
 }
 
-// Refresh the footer hint so the on-screen legend matches the current
-// X-axis encoding. Called from render() (after the layout is applied)
-// so the hint never claims an encoding that isn't actually rendered.
+// Refresh both the footer hint and the canvas-top legend so the on-
+// screen description matches the current X-axis encoding. Called from
+// render() (after the layout is applied) so the legend never claims an
+// encoding that isn't actually rendered.
 function updateXAxisHint() {
-  if (!els.xAxisHint) return;
-  // textContent (not innerHTML) — the hint table is built from a static
-  // const map, but treat it as untrusted to keep XSS-by-future-edit
-  // out of reach.
-  els.xAxisHint.textContent = X_AXIS_HINT[state.xAxisMode] || X_AXIS_HINT[DEFAULT_X_AXIS_MODE];
+  // textContent (not innerHTML) — the hint maps are static consts, but
+  // treat them as untrusted to keep XSS-by-future-edit out of reach.
+  if (els.xAxisHint) {
+    els.xAxisHint.textContent = X_AXIS_HINT[state.xAxisMode] || X_AXIS_HINT[DEFAULT_X_AXIS_MODE];
+  }
+  const legend = X_AXIS_LEGEND[state.xAxisMode] || X_AXIS_LEGEND[DEFAULT_X_AXIS_MODE];
+  if (els.xAxisLegendLeft) els.xAxisLegendLeft.textContent = legend.left;
+  if (els.xAxisLegendRight) els.xAxisLegendRight.textContent = legend.right;
 }
 
 // Split from renderFilterChips() so re-rendering chips never accumulates
@@ -853,6 +906,72 @@ function layoutChronological(nodes, edges, mode = DEFAULT_X_AXIS_MODE) {
   return { positioned, yearLabels, totalW, totalH };
 }
 
+// Per-mode card metadata. Returns a Map<id, { kind, value }> describing
+// what visual treatment the card should pick up:
+//   - venue:      kind="tier",       value=1|2|3|undefined (venue_tier)
+//   - novelty:    kind="novelty",    value="disrupt"|"incremental"|"neutral"
+//   - genealogy:  kind="lineage",    value=stable hash of seed-ancestor id
+//                                    (CSS uses it as a hue offset)
+//   - centrality: handled by existing hubSet logic; nothing extra here
+// Other modes return an empty Map so cards stay in their default look.
+function computeModeData(nodes, edges, mode) {
+  const meta = new Map();
+  if (mode === "venue") {
+    for (const n of nodes) {
+      const t = typeof n.venue_tier === "number" && n.venue_tier > 0 ? n.venue_tier : null;
+      meta.set(n.id, { kind: "tier", value: t });
+    }
+    return meta;
+  }
+  if (mode === "novelty") {
+    const incoming = new Map(nodes.map((n) => [n.id, []]));
+    for (const e of edges) {
+      if (incoming.has(e.dst)) incoming.get(e.dst).push(e.rel);
+    }
+    for (const n of nodes) {
+      let disrupt = 0, incremental = 0;
+      for (const rel of incoming.get(n.id) || []) {
+        if (rel === "supersedes" || rel === "contrasts") disrupt += 1;
+        else if (rel === "successor" || rel === "extends" || rel === "ablation") incremental += 1;
+      }
+      let v = "neutral";
+      if (disrupt > incremental) v = "disrupt";
+      else if (incremental > disrupt) v = "incremental";
+      meta.set(n.id, { kind: "novelty", value: v });
+    }
+    return meta;
+  }
+  if (mode === "genealogy") {
+    // Walk each node up to its furthest ancestor reachable via parent
+    // edges; the ancestor id becomes the lineage bucket. Cards in the
+    // same bucket get the same hue offset.
+    const parents = new Map(nodes.map((n) => [n.id, []]));
+    for (const e of edges) {
+      if (parents.has(e.dst)) parents.get(e.dst).push(e.src);
+    }
+    const root = (id, seen = new Set()) => {
+      if (seen.has(id)) return id;
+      seen.add(id);
+      const ps = parents.get(id) || [];
+      if (ps.length === 0) return id;
+      // Pick the parent with the smallest id deterministically so the
+      // bucket assignment is stable across renders.
+      const sorted = [...ps].sort();
+      return root(sorted[0], seen);
+    };
+    for (const n of nodes) {
+      const ancestor = root(n.id);
+      // Hash the ancestor id to a 0..360 hue offset. Simple FNV-1a-ish
+      // string hash — quality is fine for visual bucketing.
+      let h = 0;
+      for (let i = 0; i < ancestor.length; i++) h = (h * 31 + ancestor.charCodeAt(i)) & 0xffff;
+      meta.set(n.id, { kind: "lineage", value: h % 360 });
+    }
+    return meta;
+  }
+  return meta;
+}
+
 // #83: rank nodes by total degree (in + out) and tag the top decile
 // as "hubs" so the viewer can mark them with a 👑 badge + thick border.
 // Returns a Set of node ids whose degree clears the 90th percentile.
@@ -886,6 +1005,12 @@ function render() {
   // #83: hub set computed against ALL edges (not just visible) so toggling
   // relation filters doesn't reshuffle which papers feel "important".
   state.hubSet = computeHubSet(nodes, edges || []);
+  // Per-mode supplemental data passed through to drawSvg so card classes
+  // can pick up signals that aren't visible in the layout itself
+  // (disrupt/incremental ratio for novelty, parent-group color for
+  // genealogy, etc.). Computed once per render so drawSvg stays a pure
+  // consumer.
+  state.modeData = computeModeData(nodes, edges || [], state.xAxisMode);
   // #61 / #62: combine search and year filters into a single match set
   // so drawSvg only needs one predicate. Filters are applied to nodes
   // (not the layout itself) so the chronological grid stays stable as
@@ -907,7 +1032,29 @@ function render() {
 
 // ---- SVG drawing ----
 
+// FLIP-style animation between renders: snapshot old positions, rebuild
+// SVG, set each surviving node's initial transform to its old slot, then
+// in the next paint flip to the new slot — CSS transition does the rest.
+// Edges intentionally don't animate; they redraw at the new positions and
+// the 250ms node glide is short enough that the mismatch reads as
+// "settling" rather than glitch.
+function snapshotNodePositions() {
+  const snap = new Map();
+  if (!els.svg) return snap;
+  for (const wrap of els.svg.querySelectorAll("g.node-wrap[data-node-id]")) {
+    const id = wrap.dataset.nodeId;
+    const tr = wrap.getAttribute("transform") || "";
+    const m = tr.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/);
+    if (m) snap.set(id, { x: parseFloat(m[1]), y: parseFloat(m[2]) });
+  }
+  return snap;
+}
+
 function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
+  // Capture before innerHTML="" wipes the DOM. Used by the FLIP block at
+  // the end of this function to animate cards from their old slot to
+  // their new one when only the X-axis mode (or filter) changed.
+  const oldPositions = snapshotNodePositions();
   els.svg.innerHTML = "";
   if (positioned.length === 0) {
     els.canvas.querySelector(".empty-state")?.remove();
@@ -920,6 +1067,10 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
   els.svg.setAttribute("width", totalW);
   els.svg.setAttribute("height", totalH);
   els.svg.setAttribute("viewBox", `0 0 ${totalW} ${totalH}`);
+  // Expose the active mode on the SVG element so CSS rules in style.css
+  // can light up mode-specific visual treatments (tier stripe, novelty
+  // tint, lineage hue) without per-card class soup.
+  els.svg.dataset.xaxisMode = state.xAxisMode || DEFAULT_X_AXIS_MODE;
 
   // Defs: arrow markers per relation type.
   const defs = document.createElementNS(SVG_NS, "defs");
@@ -1031,9 +1182,18 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
   const ng = document.createElementNS(SVG_NS, "g");
   ng.setAttribute("id", "nodes");
   for (const p of positioned) {
+    // Each node is now wrapped in a <g class="node-wrap"> with a translate
+    // transform; the FLIP block at the end of drawSvg uses this wrapper
+    // to animate position changes between renders. The inner foreignObject
+    // sits at (0, 0) so its CSS layout (the whole HTML card tree inside)
+    // doesn't shift around when we re-translate the wrapper.
+    const wrap = document.createElementNS(SVG_NS, "g");
+    wrap.setAttribute("class", "node-wrap");
+    wrap.setAttribute("transform", `translate(${p._x}, ${p._y})`);
+    wrap.dataset.nodeId = p.id;
     const fo = document.createElementNS(SVG_NS, "foreignObject");
-    fo.setAttribute("x", p._x);
-    fo.setAttribute("y", p._y);
+    fo.setAttribute("x", 0);
+    fo.setAttribute("y", 0);
     fo.setAttribute("width", NODE_W);
     fo.setAttribute("height", NODE_H);
     // Let the ★ FOCUS badge (top: -10px) and the citation-heat box-shadow
@@ -1050,6 +1210,17 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     if (p.is_focus) card.classList.add("node-card--focus");
     // #61: fade non-matching cards when a search query is active.
     if (matchSet && !matchSet.has(p.id)) card.classList.add("node-card--filtered");
+    // Mode-specific visual hooks computed by computeModeData(). The
+    // SVG-level data attribute (set after this loop) decides whether the
+    // CSS rules light up; here we just expose the per-card signals.
+    const modeMeta = state.modeData?.get(p.id);
+    if (modeMeta?.kind === "tier" && modeMeta.value) {
+      card.dataset.tier = String(modeMeta.value);
+    } else if (modeMeta?.kind === "novelty" && modeMeta.value !== "neutral") {
+      card.dataset.novelty = modeMeta.value;
+    } else if (modeMeta?.kind === "lineage" && typeof modeMeta.value === "number") {
+      card.style.setProperty("--lineage-hue", String(modeMeta.value));
+    }
     // #67: citation-heat — log-normalised 0..1 weight that the CSS
     // turns into border thickness + halo intensity. 500k cite ceiling
     // matches the most-cited DL papers (~226k for ResNet, ~174k for
@@ -1131,9 +1302,46 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     card.title = `クリックで ${tooltipBase} に開く`;
 
     fo.appendChild(card);
-    ng.appendChild(fo);
+    wrap.appendChild(fo);
+    ng.appendChild(wrap);
   }
   els.svg.appendChild(ng);
+
+  // FLIP: for nodes that survived the render, snap them back to their
+  // OLD position with the transition disabled, then on the next paint
+  // remove the override so the CSS transition glides them to the new
+  // position. Skips work if reduced-motion is on, or if there's nothing
+  // to compare against (first render).
+  if (oldPositions.size > 0
+      && !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+    const moves = [];
+    for (const wrap of ng.querySelectorAll("g.node-wrap[data-node-id]")) {
+      const id = wrap.dataset.nodeId;
+      const old = oldPositions.get(id);
+      if (!old) continue;
+      const tr = wrap.getAttribute("transform") || "";
+      const m = tr.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/);
+      if (!m) continue;
+      const nx = parseFloat(m[1]);
+      const ny = parseFloat(m[2]);
+      if (Math.abs(nx - old.x) < 0.5 && Math.abs(ny - old.y) < 0.5) continue;
+      moves.push({ wrap, old, target: { x: nx, y: ny } });
+    }
+    for (const { wrap, old } of moves) {
+      wrap.classList.add("node-wrap--no-tx");
+      wrap.setAttribute("transform", `translate(${old.x}, ${old.y})`);
+    }
+    // Force layout flush so the no-transition style is applied before
+    // we revert. getBoundingClientRect() is the standard "make the
+    // browser commit current styles right now" idiom.
+    if (moves.length > 0) void els.svg.getBoundingClientRect();
+    requestAnimationFrame(() => {
+      for (const { wrap, target } of moves) {
+        wrap.classList.remove("node-wrap--no-tx");
+        wrap.setAttribute("transform", `translate(${target.x}, ${target.y})`);
+      }
+    });
+  }
 
   // #66: paint the minimap with the same node positions, then bind
   // click/drag and a window-scroll viewport tracker. Late so coords
