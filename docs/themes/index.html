@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=21" />
+  <link rel="stylesheet" href="../assets/style.css?v=22" />
 </head>
 <body>
   <header class="hero">
@@ -35,17 +35,16 @@
       <span class="deep-picker__label">テーマ:</span>
       <select id="theme-picker" class="deep-picker__select" aria-label="Select theme"></select>
     </label>
-    <label class="deep-picker" for="x-axis-mode" title="横軸の意味を切り替えます">
-      <span class="deep-picker__label">📐 横軸:</span>
-      <select id="x-axis-mode" class="deep-picker__select" aria-label="X-axis encoding">
-        <option value="rank">引用ランク (年内・既定)</option>
-        <option value="citation_log">引用数 (log)</option>
-        <option value="genealogy">系譜近接 (親の平均 X)</option>
-        <option value="centrality">中心性 (PageRank)</option>
-        <option value="venue">会議格 (Tier1→Tier3)</option>
-        <option value="novelty">新規性 ↔ 改良性</option>
-      </select>
-    </label>
+    <div
+      class="x-axis-group lineage-toolbar__group"
+      id="x-axis-mode"
+      role="group"
+      aria-label="X-axis encoding"
+    >
+      <span class="x-axis-group__label" aria-hidden="true">📐 横軸</span>
+      <!-- Buttons populated by theme.js bindXAxisMode() so the canonical
+           list lives next to X_AXIS_MODES / X_AXIS_BUTTON_LABEL. -->
+    </div>
     <div class="theme-meta" id="theme-meta" aria-live="polite"></div>
     <label class="theme-search" for="theme-search-input">
       <span class="theme-search__icon" aria-hidden="true">🔍</span>
@@ -95,6 +94,18 @@
     <span class="legend__item"><span class="legend__swatch legend__swatch--contrasts"></span> Contrasts（対立）</span>
   </div>
 
+  <!-- Sticky axis legend: a one-line "← <left> ........ <right> →"
+       reminder of what the current X mode encodes. Sits between the
+       toolbar and canvas so it stays visible no matter how far the
+       user scrolls into the family tree. Updated by render(). -->
+  <div class="x-axis-legend" id="x-axis-legend" aria-live="polite">
+    <span class="x-axis-legend__arrow" aria-hidden="true">←</span>
+    <span class="x-axis-legend__left" id="x-axis-legend-left"></span>
+    <span class="x-axis-legend__rule" aria-hidden="true"></span>
+    <span class="x-axis-legend__right" id="x-axis-legend-right"></span>
+    <span class="x-axis-legend__arrow" aria-hidden="true">→</span>
+  </div>
+
   <div class="lineage-canvas" id="canvas">
     <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Theme chronological lineage graph"></svg>
   </div>
@@ -123,7 +134,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=21" defer></script>
-  <script src="../assets/theme.js?v=21" defer></script>
+  <script src="../assets/utils.js?v=22" defer></script>
+  <script src="../assets/theme.js?v=22" defer></script>
 </body>
 </html>

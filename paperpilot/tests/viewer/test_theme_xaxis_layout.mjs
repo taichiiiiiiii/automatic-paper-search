@@ -102,9 +102,12 @@ function loadThemeJs() {
       computePagerank,
       buildLayoutContext,
       scoreForMode,
+      computeModeData,
       X_AXIS_MODES,
       DEFAULT_X_AXIS_MODE,
       X_AXIS_HINT,
+      X_AXIS_BUTTON,
+      X_AXIS_LEGEND,
     };
   `;
   vm.runInContext(stripped + "\n" + probe, ctx, { filename: "theme.js" });
@@ -313,6 +316,56 @@ test("computePagerank ignores edges that reference nodes outside the graph", () 
   // Each in-graph rank must match the clean run within fp tolerance.
   for (const id of baseline.keys()) {
     approx(polluted.get(id), baseline.get(id), 1e-6, `${id} rank drift`);
+  }
+});
+
+test("X_AXIS_BUTTON has icon+label+title for every mode", () => {
+  for (const m of T.X_AXIS_MODES) {
+    const meta = T.X_AXIS_BUTTON[m];
+    truthy(meta && meta.icon && meta.label && meta.title, `missing button meta for ${m}`);
+  }
+});
+
+test("X_AXIS_LEGEND has left+right strings for every mode", () => {
+  for (const m of T.X_AXIS_MODES) {
+    const lg = T.X_AXIS_LEGEND[m];
+    truthy(lg && lg.left && lg.right, `missing legend for ${m}`);
+  }
+});
+
+test("computeModeData(venue) tags each node with its venue_tier", () => {
+  const meta = T.computeModeData(NODES, EDGES, "venue");
+  eq(meta.get("P0").value, 1);
+  eq(meta.get("P2").value, 2);
+  eq(meta.get("P4").value, 3);
+});
+
+test("computeModeData(novelty) labels P3 disrupt, P1 incremental, orphan P4 neutral", () => {
+  const meta = T.computeModeData(NODES, EDGES, "novelty");
+  eq(meta.get("P3").value, "disrupt", "incoming supersedes → disrupt");
+  eq(meta.get("P1").value, "incremental", "incoming extends → incremental");
+  eq(meta.get("P4").value, "neutral", "no incoming edges → neutral");
+});
+
+test("computeModeData(genealogy) groups nodes that share an ancestor under one hue", () => {
+  const meta = T.computeModeData(NODES, EDGES, "genealogy");
+  // P1, P2 both stem from P0; P3 stems from P1 → still P0 root.
+  const hP0 = meta.get("P0").value;
+  const hP1 = meta.get("P1").value;
+  const hP2 = meta.get("P2").value;
+  const hP3 = meta.get("P3").value;
+  eq(hP1, hP0);
+  eq(hP2, hP0);
+  eq(hP3, hP0);
+  // P4 (orphan) hashes from its own id, so it must differ from the
+  // P0 lineage to be useful as a visual bucket.
+  truthy(meta.get("P4").value !== hP0, "orphan should fall in a different bucket");
+});
+
+test("computeModeData returns empty Map for modes without per-card hooks", () => {
+  for (const m of ["rank", "citation_log", "centrality"]) {
+    const meta = T.computeModeData(NODES, EDGES, m);
+    eq(meta.size, 0, `${m} should not populate per-card hooks`);
   }
 });
 

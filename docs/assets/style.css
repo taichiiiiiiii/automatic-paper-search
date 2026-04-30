@@ -623,6 +623,149 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 .chip__dot--baseline   { background: var(--rel-baseline); }
 .chip__dot--contrasts  { background: var(--rel-contrasts); }
 
+/* X-axis encoding pill group — same visual language as relation chips
+   but borderless when inactive so the active mode reads as a clear
+   selection. */
+.x-axis-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.x-axis-group__label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.04em;
+  margin-right: 0.15rem;
+}
+.chip--xaxis {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.32rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  border-radius: 999px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.chip--xaxis:hover { color: var(--color-ink); border-color: var(--color-ink-muted); }
+.chip--xaxis[aria-pressed="true"] {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-surface);
+  box-shadow: 0 1px 0 0 var(--color-rule);
+}
+.chip--xaxis[aria-pressed="false"] { opacity: 0.55; }
+
+/* Sticky axis legend just above the SVG canvas. The thin rule between
+   the two endpoint phrases hints at the continuous nature of the X axis
+   without committing to a tick-and-number style scale (only some modes
+   are continuous). */
+.x-axis-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 var(--space-edge);
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.x-axis-legend__arrow {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.x-axis-legend__left,
+.x-axis-legend__right {
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+.x-axis-legend__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--color-ink-muted) 0%,
+    var(--color-rule) 50%,
+    var(--color-ink-muted) 100%
+  );
+  min-width: 4rem;
+}
+
+/* Smooth glide between X-axis modes: each node sits inside a <g
+   class="node-wrap"> with a translate transform that animates on
+   change. Uses CSS attr() animation via SVG's transform property —
+   modern browsers (Chrome 121+, Firefox 119+, Safari 17.4+) accept
+   transitioning the SVG transform attribute directly. The .node-wrap
+   --no-tx class disables the transition for the FLIP "snap-back" step
+   so the from-state is committed instantly. */
+g.node-wrap {
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+g.node-wrap.node-wrap--no-tx {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  g.node-wrap { transition: none; }
+}
+
+/* Mode-specific card decorations — keyed off the data-xaxis-mode flag
+   on #lineage-svg so swapping modes redresses every card together. The
+   hooks here are intentionally cheap (left stripes, tints, hue offsets)
+   so they don't compete with the existing focus / hub / heat visuals.
+   Each rule is scoped to its mode so an unrelated mode never accidentally
+   inherits another mode's decoration. */
+#lineage-svg[data-xaxis-mode="venue"] .node-card--theme {
+  position: relative;
+}
+#lineage-svg[data-xaxis-mode="venue"] .node-card--theme[data-tier]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--color-rule);
+}
+#lineage-svg[data-xaxis-mode="venue"] .node-card--theme[data-tier="1"]::before {
+  background: oklch(78% 0.13 85);  /* gold */
+}
+#lineage-svg[data-xaxis-mode="venue"] .node-card--theme[data-tier="2"]::before {
+  background: oklch(72% 0.02 270); /* silver */
+}
+#lineage-svg[data-xaxis-mode="venue"] .node-card--theme[data-tier="3"]::before {
+  background: oklch(58% 0.10 50);  /* bronze */
+}
+
+#lineage-svg[data-xaxis-mode="novelty"] .node-card--theme[data-novelty="disrupt"] {
+  box-shadow:
+    inset 3px 0 0 0 oklch(58% 0.20 25),
+    0 1px 0 0 var(--color-rule);
+}
+#lineage-svg[data-xaxis-mode="novelty"] .node-card--theme[data-novelty="incremental"] {
+  box-shadow:
+    inset 3px 0 0 0 oklch(62% 0.14 145),
+    0 1px 0 0 var(--color-rule);
+}
+
+#lineage-svg[data-xaxis-mode="genealogy"] .node-card--theme {
+  border-top: 2px solid oklch(70% 0.12 var(--lineage-hue, 0));
+}
+
 .legend[hidden], .lineage-toolbar__group[hidden] { display: none !important; }
 
 .legend {
