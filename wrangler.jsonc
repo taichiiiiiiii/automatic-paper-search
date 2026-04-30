@@ -2,13 +2,37 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "automatic-paper-search",
   "compatibility_date": "2026-04-21",
+  "main": "worker/index.ts",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "docs"
+    "directory": "docs",
+    // Worker is consulted first; if it returns a Response, that's what
+    // the user sees. Calling env.ASSETS.fetch() inside the worker hands
+    // control back to the static bundle for non-API paths.
+    "binding": "ASSETS"
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "vars": {
+    "GH_OWNER": "taichiiiiiiii",
+    "GH_REPO": "automatic-paper-search",
+    "GH_WORKFLOW_FILE": "theme-on-demand.yml",
+    "GH_REF": "develop"
+  },
+  // KV namespace for per-IP rate limiting on /api/themes. Created via:
+  //   wrangler kv namespace create RATE_LIMIT_KV
+  // The id below is a placeholder — replace with the value printed by
+  // the create command before deploying.
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT_KV",
+      "id": "REPLACE_WITH_ACTUAL_KV_ID"
+    }
   ]
+  // GH_DISPATCH_PAT is set as a secret via:
+  //   wrangler secret put GH_DISPATCH_PAT
+  // Fine-grained PAT scoped to this repo with `actions:write` only.
 }

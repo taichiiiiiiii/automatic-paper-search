@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=22" />
+  <link rel="stylesheet" href="../assets/style.css?v=23" />
 </head>
 <body>
   <header class="hero">
@@ -27,6 +27,59 @@
       古い論文ほど上、新しい論文ほど下。エッジは親 → 子で <em>supersedes / successor / extends / ablation / baseline / contrasts</em> を区別します。
       ホバーで LLM による分類理由が表示されます。データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で分類して生成。
     </p>
+
+    <!-- On-demand theme generation: POST to /api/themes (CF Worker) which
+         dispatches the theme-on-demand.yml workflow. The progress block
+         below it is hidden by default and toggled by theme.js. -->
+    <!-- novalidate: rely on JS validation so the bad-input message is
+         localised + styled consistently. The HTML pattern stays as a
+         hint to assistive tech / autofill. -->
+    <form class="theme-request" id="theme-request" autocomplete="off" novalidate>
+      <label class="theme-request__label" for="theme-request-input">
+        <span aria-hidden="true">✨</span>
+        テーマを自分で生成:
+      </label>
+      <input
+        id="theme-request-input"
+        class="theme-request__input"
+        type="text"
+        name="theme"
+        minlength="2"
+        maxlength="80"
+        pattern="[A-Za-z0-9 _\-]+"
+        placeholder="例: Vision Transformer / Graph Neural Network"
+        aria-describedby="theme-request-hint"
+      />
+      <button type="submit" class="theme-request__submit" id="theme-request-submit">
+        生成する
+      </button>
+      <span class="theme-request__hint" id="theme-request-hint">
+        2〜80 文字 / [A-Za-z0-9 _-] / 5回/時まで
+      </span>
+    </form>
+
+    <div class="theme-progress" id="theme-progress" hidden aria-live="polite">
+      <div class="theme-progress__head">
+        <span class="theme-progress__spinner" aria-hidden="true"></span>
+        <strong class="theme-progress__title" id="theme-progress-title">生成中...</strong>
+        <span class="theme-progress__elapsed" id="theme-progress-elapsed"></span>
+      </div>
+      <div class="theme-progress__bar" aria-hidden="true">
+        <div class="theme-progress__bar-fill" id="theme-progress-bar"></div>
+      </div>
+      <ul class="theme-progress__steps" id="theme-progress-steps">
+        <li data-step="dispatch">📨 ジョブを送信</li>
+        <li data-step="queue">⏳ Actions キュー待ち</li>
+        <li data-step="generate">🔍 S2 検索 + BFS + LLM 分類</li>
+        <li data-step="commit">📦 コミット + Cloudflare デプロイ</li>
+        <li data-step="ready">✅ 完了 → 自動でビューを開きます</li>
+      </ul>
+      <p class="theme-progress__cancel">
+        <button type="button" class="theme-progress__cancel-btn" id="theme-progress-cancel">
+          キャンセルして既存テーマを見る
+        </button>
+      </p>
+    </div>
   </header>
 
   <div class="lineage-toolbar">
@@ -134,7 +187,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=22" defer></script>
-  <script src="../assets/theme.js?v=22" defer></script>
+  <script src="../assets/utils.js?v=23" defer></script>
+  <script src="../assets/theme.js?v=23" defer></script>
 </body>
 </html>

@@ -1,0 +1,108 @@
+name: theme-on-demand
+# On-demand single-theme generation triggered by the public submission
+# form (CF Worker → workflow_dispatch). Generates one theme, refreshes
+# the manifest, commits to develop.
+#
+# Differences from regen-themes.yml:
+#   - takes a single `theme` input instead of iterating every existing
+#     theme; intentionally fast (~2-3 min) so the user is willing to wait
+#     on the page;
+#   - no scheduled run — only fires on dispatch;
+#   - includes a hardened input validator (length cap + pattern) before
+#     the Python script sees the user-supplied string. The Python side
+#     also normalises via theme_slug(), but defence-in-depth at the YAML
+#     layer keeps shell injection probes out of `run:` blocks entirely.
+
+on:
+  workflow_dispatch:
+    inputs:
+      theme:
+        description: 'Free-text theme to generate (max 80 chars, e.g. "Vision Transformer")'
+        required: true
+        type: string
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 8
+    steps:
+      - name: Validate input early
+        # Reject before checkout so a malformed dispatch doesn't burn a
+        # full job. Pattern allows letters/digits/space/hyphen/underscore;
+        # Python's theme_slug NFKD-normalises the rest, but anything that
+        # could shape-shift past the slugger (control chars, command
+        # substitution probes) is denied here.
+        env:
+          THEME_INPUT: ${{ github.event.inputs.theme }}
+        run: |
+          set -u
+          len=${#THEME_INPUT}
+          if [ "$len" -lt 2 ] || [ "$len" -gt 80 ]; then
+            echo "::error::theme length out of range (got $len chars, want 2..80)"
+            exit 1
+          fi
+          # Print via printf %s to avoid bash interpreting escape sequences
+          # in the user-supplied string.
+          if ! printf '%s' "$THEME_INPUT" | grep -Eq '^[A-Za-z0-9 _\-]+$'; then
+            echo "::error::theme contains characters outside [A-Za-z0-9 _-]"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          token: ${{ secrets.GH_PAT || github.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.7.x'
+
+      - name: uv sync
+        run: uv sync
+
+      - name: Generate theme lineage
+        # User input goes through env var only (never spliced into the
+        # shell command line) so command-substitution-style attacks are
+        # impossible here. Python side also defends.
+        env:
+          PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
+          PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
+          THEME_INPUT: ${{ github.event.inputs.theme }}
+        run: |
+          set -eu
+          uv run python -m paperpilot.scripts.build_theme_lineage \
+            --theme "$THEME_INPUT" \
+            --depth 1 --seeds 5 --width 8 --since-year 2018
+
+      - name: Refresh manifest
+        run: |
+          uv run python -m paperpilot.scripts.generate_themes_manifest \
+            --themes-dir docs/themes
+
+      - name: Commit + push if changed
+        env:
+          THEME_INPUT: ${{ github.event.inputs.theme }}
+        run: |
+          set -eu
+          git config user.email "actions@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          # Only the published JSONs — local lineage-cache is gitignored
+          # and must never end up in the public repo.
+          git add docs/themes/
+          if git diff --cached --quiet; then
+            echo "nothing changed — theme already exists"
+            exit 0
+          fi
+          # Commit message uses a literal $THEME_INPUT via env, not via
+          # interpolation, so a theme like "$(rm -rf ~)" would show up
+          # as a literal string in the commit.
+          msg=$(printf 'data(themes): on-demand generation of "%s"' "$THEME_INPUT")
+          git commit -m "$msg"
+          git push origin develop
