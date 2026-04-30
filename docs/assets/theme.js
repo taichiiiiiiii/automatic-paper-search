@@ -230,8 +230,16 @@ function renderHeader() {
   document.title = `${meta.theme || "Theme"} — Theme Lineage — PaperPilot`;
 }
 
-function showError(html) {
-  els.canvas.insertAdjacentHTML("beforeend", `<div class="empty-state">${html}</div>`);
+// SECURITY: ``safeHtml`` is interpolated raw into the DOM. Every caller
+// in this file passes a static template literal or pre-escapes via
+// ``escapeHtml(...)``. Never feed untrusted strings (URL params, fetch
+// responses, user input) here without escaping first — that would be a
+// stored / reflected XSS sink.
+function showErrorHtml(safeHtml) {
+  els.canvas.insertAdjacentHTML(
+    "beforeend",
+    `<div class="empty-state">${safeHtml}</div>`,
+  );
 }
 
 async function init() {
@@ -240,7 +248,7 @@ async function init() {
   state.manifest = await loadManifest();
   if (state.manifest.length === 0) {
     document.getElementById("loading-msg")?.remove();
-    showError(`
+    showErrorHtml(`
       <p>テーマがまだ生成されていません。</p>
       <p><code>uv run python -m paperpilot.scripts.build_theme_lineage --theme "&lt;テーマ&gt;"</code>
       を実行してから <code>uv run python -m paperpilot.scripts.generate_themes_manifest --themes-dir docs/themes</code> を実行してください。</p>
@@ -262,7 +270,7 @@ async function init() {
   if (!state.data) {
     renderPicker();
     bindPicker();
-    showError(`<p><code>${escapeHtml(state.currentSlug)}</code> の lineage.json が読み込めません。</p>`);
+    showErrorHtml(`<p><code>${escapeHtml(state.currentSlug)}</code> の lineage.json が読み込めません。</p>`);
     return;
   }
 
@@ -270,7 +278,7 @@ async function init() {
     renderPicker();
     bindPicker();
     renderHeader();
-    showError(`<p>このテーマにはノードがありません（検索結果が空だった可能性あり）。</p>`);
+    showErrorHtml(`<p>このテーマにはノードがありません（検索結果が空だった可能性あり）。</p>`);
     return;
   }
 
@@ -835,9 +843,16 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     // is on the node. arXiv ids may include a version suffix like
     // "1610.04256v2" — strip nothing; arxiv.org accepts both forms.
     let paperUrl = `https://www.semanticscholar.org/paper/${encodeURIComponent(p.id)}`;
-    if (p.arxiv_id && /^[\w./-]+$/.test(p.arxiv_id)) {
+    // Strict arXiv id form (matches deep.js ARXIV_RE). The previous
+    // permissive `[\w./-]+` would have accepted values like
+    // "../foo" — `encodeURIComponent` neutralises that, but the regex
+    // should still reflect the format we actually expect rather than
+    // imply any defence-in-depth it doesn't deliver.
+    const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
+    const DOI_RE = /^10\.\d{4,9}\/[A-Za-z0-9._;()/:-]+$/;
+    if (p.arxiv_id && ARXIV_RE.test(p.arxiv_id)) {
       paperUrl = `https://arxiv.org/abs/${encodeURIComponent(p.arxiv_id)}`;
-    } else if (p.doi && /^[\w./-]+$/.test(p.doi)) {
+    } else if (p.doi && DOI_RE.test(p.doi)) {
       paperUrl = `https://doi.org/${encodeURIComponent(p.doi)}`;
     }
     // #63: TLDR is the abstract head ≤ 140 chars — show it 2-line-clamped

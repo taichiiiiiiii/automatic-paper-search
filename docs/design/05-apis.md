@@ -7,8 +7,8 @@
 | arXiv API | 不要 | 3秒間隔（推奨） | 論文メタデータ取得 |
 | S2 API | env: S2_API_KEY（任意） | 無し:100req/5min、有:1req/sec | 論文/著者/引用（バッチ対応） |
 | OpenAlex API | env: OPENALEX_EMAIL（任意） | なし（1秒間隔推奨） | OA論文取得 |
-| PwC API | env: PWC_TOKEN（任意） | なし（常識的範囲） | 論文→GitHubリポジトリ対応 |
-| GitHub API | env: GITHUB_TOKEN（推奨） | 無:60req/h、有:5000req/h | Star数取得（GraphQL対応） |
+| ~~PwC API~~ | ~~env: PWC_TOKEN（任意）~~ | ~~なし（常識的範囲）~~ | **2026 廃止** — `paperpilot/utils/github.load_curated_map()` の curated map と GitHub Search API 経由の解決に置換（#92） |
+| GitHub API | env: PAPERPILOT_GITHUB_TOKEN（推奨） | 無:60req/h、有:5000req/h | Star数取得 + 論文→repo マッピング検索 |
 | OpenReview API | 不要 | なし | 学会採択データ取得 |
 | Altmetric API | 不要 | なし（商用はキー必要） | ソーシャルバズスコア |
 | Claude API | env: CLAUDE_API_KEY（必須） | Tier依存 | LLM要約・関連度判定 |
@@ -25,36 +25,66 @@
 | LLM API Error | Stage 3スコアのみで出力 | 最大1回 | ERROR |
 | LLM JSON壊れ | 【v2.0追加】3段階フォールバックパース→全失敗時はNone | 1回(Step3まで) | WARNING |
 
-## 6.3 Papers with Code APIエンドポイント仕様（v2.0新設）
-**【v2.0修正】 **PwC APIの具体的なリクエスト/レスポンス形式を追記。
+## 6.3 論文 → GitHub リポジトリ解決（PwC 廃止後の置換、#92 で導入）
+
+**Papers with Code は 2026 年に永続停止**（`paperswithcode.com/api/v1/...` は 302 → `huggingface.co/papers/trending`、データダンプも 404）。論文 ID → リポジトリ対応の取得は次の二段構えに置換した。共有実装は `paperpilot/utils/github.py` に集約され、`signals/github_signal.py`（Stage 2）と `scripts/build_theme_lineage.py`（テーマ家系図）の両方が同じ resolver を使う。
+
+### 6.3.1 Curated map（一次解決、authoritative）
 
 ```
-# 論文検索（arXiv IDから）
-GET https://paperswithcode.com/api/v1/papers/?arxiv_id=2604.02322
-Response: {
-  "count": 1,
-  "results": [{
-    "id": "attention-is-all-you-need",
-    "arxiv_id": "2604.02322",
-    "title": "...",
-    "url_abs": "https://arxiv.org/abs/2604.02322"
-  }]
+paperpilot/data/paper_repos.json
+{
+  "1706.03762": "tensorflow/tensor2tensor",   // arxiv_id -> 'owner/repo'
+  "2304.02643": "facebookresearch/segment-anything",
+  ...
 }
 ```
 
+- 著者公式 (`facebookresearch/`, `google-research/`, `openai/`, `NVlabs/` など) を優先
+- `_meta` キーはドキュメンテーション、ローダで除外
+- 各 owner / repo は `^[A-Za-z0-9][A-Za-z0-9._-]*$` の slug 正規表現で検証（leading dot 排除済）
+
+### 6.3.2 GitHub Search（フォールバック、best-effort）
+
+curated map ミス時に論文タイトルで GitHub repos を検索し、title-Jaccard 類似度 ≥ 0.55 のヒットを採用。
+
 ```
-# リポジトリ取得
-GET https://paperswithcode.com/api/v1/papers/{paper_id}/repositories/
-Response: {
-  "count": 2,
-  "results": [{
-    "url": "https://github.com/author/repo",
-    "stars": 1523,
-    "framework": "pytorch",
-    "is_official": true
-  }]
+GET https://api.github.com/search/repositories?q={title:80字}&sort=stars&order=desc&per_page=5
+Headers: Authorization: Bearer ${PAPERPILOT_GITHUB_TOKEN}  # 任意
+Response: { "items": [{ "full_name": "facebookresearch/segment-anything", ... }] }
+```
+
+`title_similarity()` は trim 後 6 文字以上の双方で alnum 正規化後の substring 包含を 1.0 として扱い、それ以外は token Jaccard。`_TITLE_SIM_THRESHOLD = 0.55` 未満のヒットは noise として捨てる。
+
+### 6.3.3 Stars 取得（最終段）
+
+```
+GET https://api.github.com/repos/{owner}/{name}
+Headers: Authorization: Bearer ${PAPERPILOT_GITHUB_TOKEN}  # 任意
+Response: { "stargazers_count": 42000, ... }
+```
+
+- owner / name は再度 slug 正規表現で再検証（defense-in-depth）
+- 失敗時 `None` を返してパイプライン継続（Fail-Safe §10）
+- `is_official_repo` は **curated 経由のみ True**、search fallback は False
+
+### 6.3.4 7 日ディスクキャッシュ（テーマ家系図のみ）
+
+```
+paperpilot/data/lineage-cache/github_stars.json
+{
+  "1706.03762": {
+    "stars": 42000,
+    "url": "https://github.com/tensorflow/tensor2tensor",
+    "fetched_at": "2026-04-29T..."
+  }
 }
 ```
+
+- TTL 7 日、`fetched_at` で判定
+- cache 読込時に `parse_github_repo_url()` で URL 再検証 → 不正値（`javascript:`、off-host 等）は無視
+- 0 stars はキャッシュするが node には書かない（次回再試行可能）
+- Stage 2 (`GitHubSignal`) はディスクキャッシュ無し（毎日のフレッシュ性を優先、HTTP コストは PAT で吸収）
 
 ## 6.4 Semantic Scholar バッチAPI（v2.1新設）
 **【v2.0修正】 **§4.3.1で参照されていたバッチAPIの仕様を追記。

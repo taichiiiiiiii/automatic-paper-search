@@ -312,7 +312,12 @@ function render() {
     ? layoutTree(nodes, edges, state.focusId)
     : layoutTimeline(nodes);
 
-  void drawSvg(positioned, visibleEdges);
+  // Surface unexpected rejections instead of silently dropping via
+  // `void` — a blank graph with no signal is worse than a console
+  // error during development.
+  drawSvg(positioned, visibleEdges).catch((err) => {
+    console.error("[lineage] drawSvg failed:", err);
+  });
 }
 
 // Show/hide chrome that only makes sense for specific layouts. Keeps the
