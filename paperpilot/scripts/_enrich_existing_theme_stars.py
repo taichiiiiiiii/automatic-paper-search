@@ -95,12 +95,14 @@ def main() -> int:
 
     for path in lineage_paths:
         slug = path.parent.name
-        # One corrupt lineage.json must not abort the remaining themes.
-        # Log the failure with the slug and continue.
+        # One bad lineage.json must not abort the remaining themes.
+        # Catch broadly because the failure modes are all "skip and
+        # move on" (corrupt JSON, missing keys, malformed node dicts).
+        # ``logger.exception`` captures the full traceback at ERROR.
         try:
             before, after = enrich_one(path, github_token=token)
-        except (OSError, json.JSONDecodeError) as exc:
-            logger.error("skipping %s: %s", slug, exc)
+        except Exception:
+            logger.exception("skipping %s", slug)
             continue
         logger.info(
             "%s: %d -> %d nodes with stars > 0 (delta=%+d)",

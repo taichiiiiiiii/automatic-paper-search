@@ -174,6 +174,13 @@ function slugFromLocation() {
 // (S2 Corpus IDs); validate before using so a bad URL can't poison
 // later DOM lookups via attribute selectors.
 const NODE_ID_RE = /^[a-f0-9]{8,64}$/i;
+
+// Strict arXiv id (mirrors deep.js ARXIV_RE) and DOI form. Used only
+// when constructing the click-through paperUrl per node — hoisted to
+// module scope so we don't re-compile the regexes once per render
+// cycle in the inner draw loop.
+const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
+const DOI_RE = /^10\.\d{4,9}\/[A-Za-z0-9._;()/:-]+$/;
 function focusNodeFromLocation() {
   const raw = new URLSearchParams(window.location.search).get("node");
   return raw && NODE_ID_RE.test(raw) ? raw : null;
@@ -843,13 +850,9 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     // is on the node. arXiv ids may include a version suffix like
     // "1610.04256v2" — strip nothing; arxiv.org accepts both forms.
     let paperUrl = `https://www.semanticscholar.org/paper/${encodeURIComponent(p.id)}`;
-    // Strict arXiv id form (matches deep.js ARXIV_RE). The previous
-    // permissive `[\w./-]+` would have accepted values like
-    // "../foo" — `encodeURIComponent` neutralises that, but the regex
-    // should still reflect the format we actually expect rather than
-    // imply any defence-in-depth it doesn't deliver.
-    const ARXIV_RE = /^\d{4}\.\d{4,5}(v\d+)?$/;
-    const DOI_RE = /^10\.\d{4,9}\/[A-Za-z0-9._;()/:-]+$/;
+    // ARXIV_RE / DOI_RE are hoisted to module scope (above) — strict
+    // forms ensure the id we splice into the link is shape-correct
+    // before encodeURIComponent runs.
     if (p.arxiv_id && ARXIV_RE.test(p.arxiv_id)) {
       paperUrl = `https://arxiv.org/abs/${encodeURIComponent(p.arxiv_id)}`;
     } else if (p.doi && DOI_RE.test(p.doi)) {
