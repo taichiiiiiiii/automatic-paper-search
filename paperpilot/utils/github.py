@@ -54,7 +54,7 @@ _PAPER_REPOS_FILE = _ROOT / "paperpilot" / "data" / "paper_repos.json"
 # this the paper title and the repo name/description are similar enough
 # that the match is treated as authoritative; below this we skip rather
 # than risk a false positive.
-TITLE_SIM_THRESHOLD = 0.55
+_TITLE_SIM_THRESHOLD = 0.55
 
 # GitHub URL slug allowlist — owner / repo segments must start with an
 # alphanumeric character (so values like ``..`` or ``.git`` cannot slip
@@ -139,7 +139,7 @@ def search_repo_by_title(
 ) -> str | None:
     """Best-effort ``owner/repo`` resolution via GitHub /search/repositories.
 
-    Returns ``None`` when no candidate clears ``TITLE_SIM_THRESHOLD``.
+    Returns ``None`` when no candidate clears ``_TITLE_SIM_THRESHOLD``.
     Skips empty / very short titles to avoid noise. The query is the
     bare title trimmed to 80 chars — quoting the whole string would
     over-constrain the search; we let GitHub's own ranking surface the
@@ -180,7 +180,7 @@ def search_repo_by_title(
             title_similarity(cleaned, item.get("name") or ""),
             title_similarity(cleaned, item.get("description") or ""),
         )
-        if sim >= TITLE_SIM_THRESHOLD:
+        if sim >= _TITLE_SIM_THRESHOLD:
             return full_name
     return None
 

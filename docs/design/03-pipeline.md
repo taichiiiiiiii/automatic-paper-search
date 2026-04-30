@@ -32,7 +32,7 @@
 | Signal | バッチAPI | バッチサイズ | v1.0比較 |
 |---|---|---|---|
 | VenueSignal | arXivコメント: ローカル処理（バッチ不要） | — | 変更なし |
-| GitHubSignal | PwC API: 個別 → GitHub GraphQL: 100件/req | 100件 | 200回→3回 |
+| GitHubSignal | curated map (一次) → GitHub Search by title (フォールバック) → GitHub /repos REST | 1〜2 calls/paper | PwC 廃止後 (#92) |
 | CitationSignal | S2 /paper/batch: 500件/req | 500件 | 200回→1回 |
 | AuthorSignal | S2 /author/batch: 500件/req | 500件 | 200回→1回 |
 | SocialSignal | Altmetric: 個別（バッチAPI無し） | 1件 | 変更なし |

@@ -110,7 +110,14 @@ class GitHubSignal(AbstractSignal):
         try:
             result = self._lookup(paper.arxiv_id, paper.title)
         except Exception as e:
-            logger.warning("github lookup failed for %s: %s", paper.arxiv_id, e)
+            # exc_info=True emits the full traceback at WARNING level
+            # so a logic bug (TypeError / AttributeError) is
+            # distinguishable from a transient network blip when
+            # grepping CI logs.
+            logger.warning(
+                "github lookup failed for %s: %s",
+                paper.arxiv_id, e, exc_info=True,
+            )
             return paper
 
         if result is None:

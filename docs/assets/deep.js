@@ -272,8 +272,13 @@ function render() {
   const visibleEdges = edges.filter((e) => state.visibleRelations.has(e.rel));
   const positioned = layoutTree(nodes, edges, state.focusId);
   // drawSvg returns a promise once fonts/layout settle so card heights
-  // and edge endpoints align after web fonts finish loading.
-  void drawSvg(positioned, visibleEdges);
+  // and edge endpoints align after web fonts finish loading. Surface
+  // any unexpected rejection in the console instead of silently
+  // dropping it via `void` — a blank graph with no signal is worse
+  // than a visible error during development.
+  drawSvg(positioned, visibleEdges).catch((err) => {
+    console.error("[deep] drawSvg failed:", err);
+  });
 }
 
 // ---------- Tree layout (unbounded depth) ----------

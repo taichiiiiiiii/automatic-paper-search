@@ -21,7 +21,7 @@ User/Cron  →  collector.py  →  PipelineRunner
                                     │      ├─→ VenueSignal.enrich_batch()    1回（ローカル）
                                     │      ├─→ CitationSignal.enrich_batch() 1回（S2 /paper/batch）
                                     │      ├─→ AuthorSignal.enrich_batch()   1回（S2 /author/batch）
-                                    │      ├─→ GitHubSignal.enrich_batch()   3回（PwC + GraphQL）
+                                    │      ├─→ GitHubSignal.enrich_batch()   1〜2 calls/paper（curated map → GitHub Search → /repos）
                                     │      ├─→ KeywordBoost.enrich_batch()   1回（ローカル）
                                     │      ├─→ compute_total_score()
                                     │      └─→ top_n(80)              → 80件
