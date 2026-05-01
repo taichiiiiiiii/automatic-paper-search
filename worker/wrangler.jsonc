@@ -1,0 +1,43 @@
+{
+  // Worker-only config for the on-demand theme submission API.
+  //
+  // Deploy with:
+  //   wrangler deploy --config worker/wrangler.jsonc
+  //
+  // Kept separate from the root wrangler.jsonc so the CF Pages git
+  // auto-deploy (which reads root) keeps working as a pure static
+  // deployment. Mixing Worker bindings into the root config previously
+  // blocked auto-deploy because the placeholder KV id failed validation.
+  //
+  // First-time setup:
+  //   1. wrangler kv namespace create RATE_LIMIT_KV
+  //      → paste the printed id into the kv_namespaces.id below
+  //   2. wrangler secret put GH_DISPATCH_PAT --config worker/wrangler.jsonc
+  //      → paste a fine-grained PAT scoped to this repo with actions:write only
+  //   3. wrangler deploy --config worker/wrangler.jsonc
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "automatic-paper-search-api",
+  "compatibility_date": "2026-04-21",
+  "main": "index.ts",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "GH_OWNER": "taichiiiiiiii",
+    "GH_REPO": "automatic-paper-search",
+    "GH_WORKFLOW_FILE": "theme-on-demand.yml",
+    "GH_REF": "develop"
+  },
+  // 32-zero placeholder — wrangler accepts the format but the binding
+  // will fail at runtime. Swap with the real id from
+  // `wrangler kv namespace create RATE_LIMIT_KV` before deploying.
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT_KV",
+      "id": "00000000000000000000000000000000"
+    }
+  ]
+}

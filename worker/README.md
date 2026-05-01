@@ -31,6 +31,19 @@ against the existing manifest, rate-limits per IP, and dispatches the
    │ redirect to ?theme=<slug>    │                            │
 ```
 
+## Config split
+
+The repo has TWO wrangler config files:
+
+| File | Purpose | How it deploys |
+|---|---|---|
+| `wrangler.jsonc` (root) | Static `docs/` bundle | CF git auto-deploy on push to `develop` |
+| `worker/wrangler.jsonc` | Worker `/api/themes` | `wrangler deploy --config worker/wrangler.jsonc` |
+
+They're separated because mixing Worker bindings into the root config broke
+CF's git auto-deploy (the validator rejected an unset KV id and silently
+blocked every push).
+
 ## Setup
 
 1. **Install wrangler** and authenticate:
@@ -46,28 +59,27 @@ against the existing manifest, rate-limits per IP, and dispatches the
    wrangler kv namespace create RATE_LIMIT_KV
    ```
 
-   Replace `REPLACE_WITH_ACTUAL_KV_ID` in `wrangler.jsonc` with the id
-   the command prints (something like
-   `id = "abc123…"`). Commit the change.
+   Replace the 32-zero placeholder in `worker/wrangler.jsonc` with the id
+   the command prints (something like `"id": "abc123…"`). Commit the change.
 
 3. **Mint a fine-grained GitHub PAT** scoped to this repo with the
    `Actions: read & write` permission, and store it as a Worker secret:
 
    ```bash
-   wrangler secret put GH_DISPATCH_PAT
+   wrangler secret put GH_DISPATCH_PAT --config worker/wrangler.jsonc
    ```
 
    The PAT is the only credential that can dispatch jobs — keep it
    tight (no other scopes, no other repos).
 
-4. **Deploy**:
+4. **Deploy the Worker**:
 
    ```bash
-   wrangler deploy
+   wrangler deploy --config worker/wrangler.jsonc
    ```
 
-   The same wrangler config also handles the static `docs/` bundle, so
-   one deploy ships both the Pages assets and the Worker.
+   This deploys ONLY the Worker. The static `docs/` bundle continues
+   auto-deploying via CF's git integration on every push to `develop`.
 
 ## Local development
 
