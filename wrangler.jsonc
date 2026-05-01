@@ -24,12 +24,16 @@
   },
   // KV namespace for per-IP rate limiting on /api/themes. Created via:
   //   wrangler kv namespace create RATE_LIMIT_KV
-  // The id below is a placeholder — replace with the value printed by
-  // the create command before deploying.
+  // The id below is a 32-zero placeholder so the wrangler/Pages validator
+  // accepts the file shape on push (CF Pages was erroring on a string id
+  // before, blocking the whole git auto-deploy). Swap in the real id
+  // emitted by `kv namespace create` before running `wrangler deploy`
+  // for the Worker — until then `/api/themes` will 500 (no KV bound)
+  // but the static site still deploys cleanly.
   "kv_namespaces": [
     {
       "binding": "RATE_LIMIT_KV",
-      "id": "REPLACE_WITH_ACTUAL_KV_ID"
+      "id": "00000000000000000000000000000000"
     }
   ]
   // GH_DISPATCH_PAT is set as a secret via:
