@@ -1,42 +1,30 @@
 {
+  // Root wrangler.jsonc — static assets ONLY.
+  //
+  // Why this stays minimal: Cloudflare's git integration (the auto-deploy
+  // hook that fires on push to develop) reads THIS file. Adding a
+  // `main: worker/index.ts` converted the project from a pure
+  // "Static Assets" deployment into a "Worker with Assets" deployment,
+  // and the validator started rejecting the placeholder KV id, silently
+  // blocking every push for ~3 commits before we noticed.
+  //
+  // The Worker config (main + bindings) lives at `worker/wrangler.jsonc`
+  // and is deployed manually via:
+  //
+  //   wrangler deploy --config worker/wrangler.jsonc
+  //
+  // That way the user-typed-theme API can be deployed deliberately while
+  // the static viewer keeps auto-publishing on every push.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "automatic-paper-search",
   "compatibility_date": "2026-04-21",
-  "main": "worker/index.ts",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "docs",
-    // Worker is consulted first; if it returns a Response, that's what
-    // the user sees. Calling env.ASSETS.fetch() inside the worker hands
-    // control back to the static bundle for non-API paths.
-    "binding": "ASSETS"
+    "directory": "docs"
   },
   "compatibility_flags": [
     "nodejs_compat"
-  ],
-  "vars": {
-    "GH_OWNER": "taichiiiiiiii",
-    "GH_REPO": "automatic-paper-search",
-    "GH_WORKFLOW_FILE": "theme-on-demand.yml",
-    "GH_REF": "develop"
-  },
-  // KV namespace for per-IP rate limiting on /api/themes. Created via:
-  //   wrangler kv namespace create RATE_LIMIT_KV
-  // The id below is a 32-zero placeholder so the wrangler/Pages validator
-  // accepts the file shape on push (CF Pages was erroring on a string id
-  // before, blocking the whole git auto-deploy). Swap in the real id
-  // emitted by `kv namespace create` before running `wrangler deploy`
-  // for the Worker — until then `/api/themes` will 500 (no KV bound)
-  // but the static site still deploys cleanly.
-  "kv_namespaces": [
-    {
-      "binding": "RATE_LIMIT_KV",
-      "id": "00000000000000000000000000000000"
-    }
   ]
-  // GH_DISPATCH_PAT is set as a secret via:
-  //   wrangler secret put GH_DISPATCH_PAT
-  // Fine-grained PAT scoped to this repo with `actions:write` only.
 }
