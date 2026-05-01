@@ -103,6 +103,7 @@ function loadThemeJs() {
       buildLayoutContext,
       scoreForMode,
       computeModeData,
+      venueTierBucket,
       X_AXIS_MODES,
       DEFAULT_X_AXIS_MODE,
       X_AXIS_HINT,
@@ -145,6 +146,9 @@ function truthy(v, msg) { if (!v) throw new Error(msg || `expected truthy, got $
 
 // ---- Fixtures ---------------------------------------------------------------
 
+// venue_tier values mirror the strings the Python pipeline emits
+// ("A+" / "A" / "preprint") so the venue-mode tests reflect real data.
+//
 // 5-paper toy lineage spanning 3 years. P0 (2017) is the seed; P1, P2 (2020)
 // extend P0; P3 (2024) supersedes P1; P4 (2024) is an orphan with no edges.
 //
@@ -157,11 +161,11 @@ function truthy(v, msg) { if (!v) throw new Error(msg || `expected truthy, got $
 // to citation fallback (~-1e-5), letting P4 (-5e-4) sort left and the
 // test fail loudly.
 const NODES = [
-  { id: "P0", title: "Seed",     year: 2017, citation_count: 1000, venue_tier: 1 },
-  { id: "P1", title: "Branch A", year: 2020, citation_count: 500,  venue_tier: 1 },
-  { id: "P2", title: "Branch B", year: 2020, citation_count: 100,  venue_tier: 2 },
-  { id: "P3", title: "Replacer", year: 2024, citation_count: 10,   venue_tier: 1 },
-  { id: "P4", title: "Orphan",   year: 2024, citation_count: 500,  venue_tier: 3 },
+  { id: "P0", title: "Seed",     year: 2017, citation_count: 1000, venue_tier: "A+" },
+  { id: "P1", title: "Branch A", year: 2020, citation_count: 500,  venue_tier: "A+" },
+  { id: "P2", title: "Branch B", year: 2020, citation_count: 100,  venue_tier: "A" },
+  { id: "P3", title: "Replacer", year: 2024, citation_count: 10,   venue_tier: "A+" },
+  { id: "P4", title: "Orphan",   year: 2024, citation_count: 500,  venue_tier: "preprint" },
 ];
 const EDGES = [
   { src: "P0", dst: "P1", rel: "extends", conf: 0.9 },
@@ -226,11 +230,11 @@ test("layoutChronological(centrality) puts the seed P0 leftmost in 2017", () => 
   eq(row2017[0].id, "P0");
 });
 
-test("layoutChronological(venue) Tier1 left, Tier3 right in 2024", () => {
+test("layoutChronological(venue) A+ left, preprint right in 2024", () => {
   const { positioned } = T.layoutChronological(NODES, EDGES, "venue");
   const row2024 = positioned.filter((p) => p.year === 2024).sort((a, b) => a._x - b._x);
-  eq(row2024[0].id, "P3", "Tier1 first");
-  eq(row2024[1].id, "P4", "Tier3 last");
+  eq(row2024[0].id, "P3", "A+ first");
+  eq(row2024[1].id, "P4", "preprint last");
 });
 
 test("layoutChronological(novelty) puts the disruptive supersedes-receiver P3 left of orphan P4", () => {
@@ -333,11 +337,27 @@ test("X_AXIS_LEGEND has left+right strings for every mode", () => {
   }
 });
 
-test("computeModeData(venue) tags each node with its venue_tier", () => {
+test("computeModeData(venue) maps tier strings to numeric buckets", () => {
   const meta = T.computeModeData(NODES, EDGES, "venue");
-  eq(meta.get("P0").value, 1);
-  eq(meta.get("P2").value, 2);
-  eq(meta.get("P4").value, 3);
+  eq(meta.get("P0").value, 1, "A+ → 1");
+  eq(meta.get("P2").value, 2, "A → 2");
+  eq(meta.get("P4").value, 3, "preprint → 3");
+});
+
+test("venueTierBucket maps known shapes correctly", () => {
+  eq(T.venueTierBucket("A+"), 1);
+  eq(T.venueTierBucket("a+"), 1, "case insensitive");
+  eq(T.venueTierBucket("aplus"), 1, "alternate spelling");
+  eq(T.venueTierBucket("A"), 2);
+  eq(T.venueTierBucket("preprint"), 3);
+  eq(T.venueTierBucket(""), 3, "empty → preprint bucket");
+  eq(T.venueTierBucket(null), 99, "null → unknown");
+  eq(T.venueTierBucket(undefined), 99, "undefined → unknown");
+  eq(T.venueTierBucket("workshop"), 99, "unknown string → 99");
+  eq(T.venueTierBucket(1), 1, "numeric pass-through");
+  eq(T.venueTierBucket(2), 2, "numeric pass-through");
+  eq(T.venueTierBucket(99), 99, "numeric out-of-range → 99");
+  eq(T.venueTierBucket(0), 99, "0 → 99 (no tier)");
 });
 
 test("computeModeData(novelty) labels P3 disrupt, P1 incremental, orphan P4 neutral", () => {

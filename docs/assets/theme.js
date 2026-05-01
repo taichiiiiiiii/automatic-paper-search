@@ -909,6 +909,27 @@ function bindFilterBar() {
 
 // ---- Layout ----
 
+// Map a node's venue_tier string to a sortable bucket id used by both
+// the venue-mode X-axis and the venue-mode card stripe CSS.
+//   "A+" / "aplus"   → 1 (top-tier conferences: NeurIPS, ICML, ICLR…)
+//   "A"  / "a"       → 2 (good conferences)
+//   "preprint" / "" / null → 3 (arXiv-only / unknown)
+//   number 1|2|3     → pass through (forward-compat for if the pipeline
+//                      ever emits numeric tiers)
+//   anything else    → 99 (sorts last; signals "unknown shape")
+function venueTierBucket(tier) {
+  if (typeof tier === "number") {
+    if (tier >= 1 && tier <= 3) return tier;
+    return 99;
+  }
+  if (typeof tier !== "string") return 99;
+  const t = tier.trim().toLowerCase();
+  if (t === "a+" || t === "aplus") return 1;
+  if (t === "a") return 2;
+  if (t === "preprint" || t === "") return 3;
+  return 99;
+}
+
 // Score a node for the given X-axis mode. Lower score = further left.
 // All scores are returned as plain numbers so the caller can sort with a
 // stable comparator. NaN / null are coerced to a large positive value so
@@ -947,11 +968,11 @@ function scoreForMode(node, mode, ctx) {
       return -r;
     }
     case "venue": {
-      // venue_tier 1 → left, 3 → right, 0/missing → far right.
-      // Tie-break with citation desc so the same tier stays readable.
-      const tier = typeof node.venue_tier === "number" && node.venue_tier > 0
-        ? node.venue_tier
-        : 99;
+      // venue_tier comes from build_*_lineage.py as a STRING — "A+" /
+      // "A" / "preprint" — not a numeric grade. Map to a sortable
+      // bucket (lower = further left). Tie-break with citation desc so
+      // a single tier reads in citation order.
+      const tier = venueTierBucket(node.venue_tier);
       const c = typeof node.citation_count === "number" ? node.citation_count : 0;
       return tier * 1e9 - c;
     }
@@ -1142,9 +1163,13 @@ function layoutChronological(nodes, edges, mode = DEFAULT_X_AXIS_MODE) {
 function computeModeData(nodes, edges, mode) {
   const meta = new Map();
   if (mode === "venue") {
+    // venue_tier is the STRING "A+" / "A" / "preprint" coming from
+    // build_*_lineage.py — translate to a bucket id 1/2/3 the CSS rules
+    // can target via [data-tier].
     for (const n of nodes) {
-      const t = typeof n.venue_tier === "number" && n.venue_tier > 0 ? n.venue_tier : null;
-      meta.set(n.id, { kind: "tier", value: t });
+      const bucket = venueTierBucket(n.venue_tier);
+      const value = bucket >= 1 && bucket <= 3 ? bucket : null;
+      meta.set(n.id, { kind: "tier", value });
     }
     return meta;
   }
