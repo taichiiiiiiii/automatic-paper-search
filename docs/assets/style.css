@@ -766,6 +766,71 @@ g.node-wrap.node-wrap--no-tx {
   border-top: 2px solid oklch(70% 0.12 var(--lineage-hue, 0));
 }
 
+/* Theme gallery: horizontal card row above the toolbar listing every
+   generated theme with its key stats. Cards stay readable down to ~6
+   per row at 1600px; below that they wrap. */
+.theme-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.8rem var(--space-edge) 0;
+}
+.theme-gallery[hidden] { display: none; }
+.theme-gallery__card {
+  flex: 0 1 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--color-ink);
+  transition: all 0.15s ease;
+  min-width: 0;
+}
+.theme-gallery__card:hover {
+  border-color: var(--color-ink-muted);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px oklch(50% 0.02 270 / 0.08);
+}
+.theme-gallery__card--active {
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border-color: var(--color-ink);
+}
+.theme-gallery__card--active:hover {
+  background: var(--color-ink);
+  color: var(--color-surface);
+}
+.theme-gallery__title {
+  font-family: var(--font-serif, var(--font-body));
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.theme-gallery__stats {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.04em;
+}
+.theme-gallery__card--active .theme-gallery__stats,
+.theme-gallery__card--active .theme-gallery__age {
+  color: oklch(80% 0.012 270);
+}
+.theme-gallery__age {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-ink-subtle);
+  letter-spacing: 0.04em;
+  font-style: italic;
+}
+
 /* On-demand theme submission form + progress UI ---------------------- */
 .theme-request {
   display: flex;
