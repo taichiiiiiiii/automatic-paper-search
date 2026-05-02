@@ -104,6 +104,10 @@ function loadThemeJs() {
       scoreForMode,
       computeModeData,
       venueTierBucket,
+      existingThemeMatch,
+      readUrlState,
+      syncUrlState,
+      state,
       X_AXIS_MODES,
       DEFAULT_X_AXIS_MODE,
       X_AXIS_HINT,
@@ -387,6 +391,36 @@ test("computeModeData returns empty Map for modes without per-card hooks", () =>
     const meta = T.computeModeData(NODES, EDGES, m);
     eq(meta.size, 0, `${m} should not populate per-card hooks`);
   }
+});
+
+test("existingThemeMatch returns slug for case-insensitive theme name match", () => {
+  // existingThemeMatch reads `state.manifest` — set it up for these tests.
+  T.state.manifest = [
+    { slug: "vision-transformer", theme: "Vision Transformer" },
+    { slug: "mixture-of-experts", theme: "Mixture of Experts" },
+    { slug: "rlhf", theme: "Reinforcement Learning from Human Feedback" },
+  ];
+  eq(T.existingThemeMatch("Vision Transformer"), "vision-transformer");
+  eq(T.existingThemeMatch("vision transformer"), "vision-transformer", "case insensitive");
+  eq(T.existingThemeMatch("VISION TRANSFORMER"), "vision-transformer");
+  eq(T.existingThemeMatch("  Mixture of Experts  "), "mixture-of-experts", "trims whitespace");
+});
+
+test("existingThemeMatch returns slug for slug match too (autocomplete handles either)", () => {
+  T.state.manifest = [
+    { slug: "vision-transformer", theme: "Vision Transformer" },
+  ];
+  eq(T.existingThemeMatch("vision-transformer"), "vision-transformer");
+  eq(T.existingThemeMatch("VISION-TRANSFORMER"), "vision-transformer");
+});
+
+test("existingThemeMatch returns null for non-matching input or empty manifest", () => {
+  T.state.manifest = [{ slug: "vision-transformer", theme: "Vision Transformer" }];
+  eq(T.existingThemeMatch("Graph Neural Network"), null, "unknown theme");
+  eq(T.existingThemeMatch(""), null, "empty input");
+  eq(T.existingThemeMatch("   "), null, "whitespace input");
+  T.state.manifest = [];
+  eq(T.existingThemeMatch("anything"), null, "empty manifest");
 });
 
 test("buildLayoutContext indexes parents per node correctly", () => {

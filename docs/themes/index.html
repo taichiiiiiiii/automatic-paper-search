@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=24" />
+  <link rel="stylesheet" href="../assets/style.css?v=25" />
 </head>
 <body>
   <header class="hero">
@@ -49,7 +49,14 @@
         pattern="[A-Za-z0-9 _\-]+"
         placeholder="例: Vision Transformer / Graph Neural Network"
         aria-describedby="theme-request-hint"
+        list="existing-themes-datalist"
+        autocomplete="off"
       />
+      <!-- Browser-native autocomplete dropdown populated by theme.js
+           bindThemeRequest() from the manifest. Lets the user pick an
+           existing theme without typing the full name (and the submit
+           handler short-circuits to redirect rather than dispatching). -->
+      <datalist id="existing-themes-datalist"></datalist>
       <button type="submit" class="theme-request__submit" id="theme-request-submit">
         生成する
       </button>
@@ -81,6 +88,12 @@
       </p>
     </div>
   </header>
+
+  <!-- Theme gallery: a horizontal card row that surfaces every
+       generated theme + its key stats so users can pick visually
+       instead of digging through the picker dropdown. Cards are
+       populated by theme.js renderThemeGallery() from the manifest. -->
+  <nav class="theme-gallery" id="theme-gallery" aria-label="Theme gallery"></nav>
 
   <div class="lineage-toolbar">
     <a class="layout-btn" href="../iclr-2026/lineage.html" title="ICLR 2026 全体ビューへ">← 学会別ビュー</a>
@@ -187,7 +200,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=24" defer></script>
-  <script src="../assets/theme.js?v=24" defer></script>
+  <script src="../assets/utils.js?v=25" defer></script>
+  <script src="../assets/theme.js?v=25" defer></script>
 </body>
 </html>
