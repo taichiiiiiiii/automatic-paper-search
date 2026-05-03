@@ -93,6 +93,66 @@ const STORAGE_KEY = "pp.theme.prefs";
 
 const UNKNOWN_YEAR = "__unknown__";
 
+// Plausible year window for academic publications. Anything outside this
+// range is treated as bad data and pushed to the Unknown bucket so it
+// can't visually collide with legitimate entries (e.g. a corrupted
+// year=0 / year=-1 / year=99999 wouldn't show up at the top of the
+// chronological axis next to real 1980-era papers). The lower bound is
+// generous (1900) so historical-reference cards (PRML, classic stats
+// textbooks) still render in the right row; the upper bound floats with
+// the calendar year so the viewer keeps working without source edits as
+// time passes.
+const MIN_PLAUSIBLE_YEAR = 1900;
+const MAX_PLAUSIBLE_YEAR = new Date().getFullYear() + 2;
+
+// Detect "year vs venue mismatch" — the venue string usually carries the
+// publication year (e.g. "NeurIPS 2022", "ICLR 2014"). When the year
+// field disagrees with the year embedded in the venue, the data has
+// been corrupted somewhere upstream (build_theme_lineage.py bug, partial
+// JSON merge, stale cache, etc.). We don't auto-correct (the venue
+// year could itself be wrong) but we surface a one-time warning so the
+// anomaly is visible to anyone with devtools open. Pure side effect;
+// layout proceeds with whatever year is in the data.
+const _venueWarnedFor = new Set();
+function checkVenueYearConsistency(node) {
+  if (!node || _venueWarnedFor.has(node.id)) return;
+  const v = typeof node.venue === "string" ? node.venue : "";
+  const m = v.match(/\b(19[5-9]\d|20\d{2})\b/);
+  if (!m) return;
+  const venueYear = parseInt(m[1], 10);
+  if (typeof node.year === "number" && Number.isInteger(node.year)
+      && Math.abs(venueYear - node.year) >= 2) {
+    _venueWarnedFor.add(node.id);
+    console.warn(
+      `[layout] node ${node.id}: year=${node.year} disagrees with venue ${JSON.stringify(v)} `
+      + `(venue suggests ${venueYear}). Layout will use year=${node.year}; check the source data.`
+    );
+  }
+}
+
+// Bucket key for a node's year. Returns the year (Number) when it's a
+// finite integer in the plausible range, otherwise the UNKNOWN_YEAR
+// sentinel. Surfaces a one-time console.warn for anomalies so silent
+// data corruption is observable to anyone with devtools open.
+const _yearWarnedFor = new Set();
+function bucketYear(year, nodeId) {
+  if (typeof year !== "number" || !Number.isFinite(year) || !Number.isInteger(year)) {
+    if (nodeId && !_yearWarnedFor.has(nodeId)) {
+      _yearWarnedFor.add(nodeId);
+      console.warn(`[layout] node ${nodeId}: year=${JSON.stringify(year)} is not an integer; bucketed as Unknown`);
+    }
+    return UNKNOWN_YEAR;
+  }
+  if (year < MIN_PLAUSIBLE_YEAR || year > MAX_PLAUSIBLE_YEAR) {
+    if (nodeId && !_yearWarnedFor.has(nodeId)) {
+      _yearWarnedFor.add(nodeId);
+      console.warn(`[layout] node ${nodeId}: year=${year} is out of plausible range [${MIN_PLAUSIBLE_YEAR}, ${MAX_PLAUSIBLE_YEAR}]; bucketed as Unknown`);
+    }
+    return UNKNOWN_YEAR;
+  }
+  return year;
+}
+
 function loadPrefs() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -1310,7 +1370,8 @@ function layoutChronological(nodes, edges, mode = DEFAULT_X_AXIS_MODE) {
   // bucket so the chronological viewer never silently drops them.
   const byYear = new Map();
   for (const n of nodes) {
-    const key = typeof n.year === "number" ? n.year : UNKNOWN_YEAR;
+    checkVenueYearConsistency(n);
+    const key = bucketYear(n.year, n.id);
     if (!byYear.has(key)) byYear.set(key, []);
     byYear.get(key).push(n);
   }

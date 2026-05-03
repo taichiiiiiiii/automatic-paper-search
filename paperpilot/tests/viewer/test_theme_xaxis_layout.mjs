@@ -104,6 +104,10 @@ function loadThemeJs() {
       scoreForMode,
       computeModeData,
       venueTierBucket,
+      bucketYear,
+      checkVenueYearConsistency,
+      MIN_PLAUSIBLE_YEAR,
+      MAX_PLAUSIBLE_YEAR,
       existingThemeMatch,
       readUrlState,
       syncUrlState,
@@ -390,6 +394,52 @@ test("computeModeData returns empty Map for modes without per-card hooks", () =>
   for (const m of ["rank", "citation_log", "centrality"]) {
     const meta = T.computeModeData(NODES, EDGES, m);
     eq(meta.size, 0, `${m} should not populate per-card hooks`);
+  }
+});
+
+test("bucketYear accepts integer years in plausible range", () => {
+  eq(T.bucketYear(2006), 2006);
+  eq(T.bucketYear(1986), 1986);
+  eq(T.bucketYear(T.MIN_PLAUSIBLE_YEAR), T.MIN_PLAUSIBLE_YEAR, "lower bound inclusive");
+  eq(T.bucketYear(T.MAX_PLAUSIBLE_YEAR), T.MAX_PLAUSIBLE_YEAR, "upper bound inclusive");
+});
+
+test("bucketYear rejects out-of-range years (rolled to Unknown bucket)", () => {
+  truthy(typeof T.bucketYear(0) === "string", "year=0 → Unknown sentinel");
+  truthy(typeof T.bucketYear(-1) === "string", "negative → Unknown");
+  truthy(typeof T.bucketYear(99999) === "string", "absurd → Unknown");
+  truthy(typeof T.bucketYear(T.MIN_PLAUSIBLE_YEAR - 1) === "string", "below min → Unknown");
+  truthy(typeof T.bucketYear(T.MAX_PLAUSIBLE_YEAR + 1) === "string", "above max → Unknown");
+});
+
+test("bucketYear rejects non-integers", () => {
+  truthy(typeof T.bucketYear(null) === "string");
+  truthy(typeof T.bucketYear(undefined) === "string");
+  truthy(typeof T.bucketYear("2022") === "string", "string number → Unknown");
+  truthy(typeof T.bucketYear(2022.5) === "string", "float → Unknown");
+  truthy(typeof T.bucketYear(NaN) === "string");
+  truthy(typeof T.bucketYear(Infinity) === "string");
+});
+
+test("checkVenueYearConsistency surfaces a warn when year disagrees with venue 4-digit", () => {
+  // Capture console.warn calls
+  const warns = [];
+  const orig = console.warn;
+  console.warn = (...args) => warns.push(args.join(" "));
+  try {
+    // Same year as venue → no warn
+    T.checkVenueYearConsistency({ id: "n1", year: 2022, venue: "NeurIPS 2022" });
+    eq(warns.length, 0, "matching year/venue → no warn");
+    // Mismatch → warn (Imagen-corruption scenario)
+    T.checkVenueYearConsistency({ id: "n2", year: 2006, venue: "NeurIPS 2022" });
+    truthy(warns.length > 0, "mismatch → warn fires");
+    truthy(warns[0].includes("disagrees with venue"), "warn mentions venue");
+    // Same node id → only warns once (idempotent)
+    const before = warns.length;
+    T.checkVenueYearConsistency({ id: "n2", year: 2006, venue: "NeurIPS 2022" });
+    eq(warns.length, before, "same node id → no duplicate warn");
+  } finally {
+    console.warn = orig;
   }
 });
 
