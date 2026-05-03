@@ -245,6 +245,13 @@ const els = {
   reqHint: document.getElementById("theme-request-hint"),
   reqDatalist: document.getElementById("existing-themes-datalist"),
   gallery: document.getElementById("theme-gallery"),
+  heroDetails: document.getElementById("hero-details"),
+  heroToggle: document.getElementById("hero-toggle"),
+  heroNewTheme: document.getElementById("hero-new-theme"),
+  slugFallback: document.getElementById("slug-fallback"),
+  slugFallbackMsg: document.getElementById("slug-fallback-msg"),
+  slugFallbackGenerate: document.getElementById("slug-fallback-generate"),
+  slugFallbackClose: document.getElementById("slug-fallback-close"),
   progress: document.getElementById("theme-progress"),
   progressTitle: document.getElementById("theme-progress-title"),
   progressElapsed: document.getElementById("theme-progress-elapsed"),
@@ -560,6 +567,72 @@ const PROGRESS_STEPS = ["dispatch", "queue", "generate", "commit", "ready"];
 
 let progressState = null;
 
+// Slug-fallback banner: shown when the URL ?theme=<slug> doesn't match
+// any known theme, so the user understands they're not looking at what
+// they asked for. Provides a one-click route into the new-theme form
+// pre-filled with the unknown slug, since "the user typed something
+// specific" is the strongest signal that they want to generate it.
+function showSlugFallback(requestedSlug, fallbackSlug) {
+  if (!els.slugFallback || !els.slugFallbackMsg) return;
+  // Slug → human-readable theme name where possible. The requested
+  // slug is foreign by definition (not in manifest), so we just escape
+  // it. The fallback name comes from the manifest entry we landed on.
+  const fallbackTheme = state.manifest.find((e) => e.slug === fallbackSlug)?.theme || fallbackSlug;
+  els.slugFallbackMsg.textContent =
+    `テーマ "${requestedSlug}" は存在しません。代わりに "${fallbackTheme}" を表示しています。`;
+  els.slugFallback.hidden = false;
+  if (els.slugFallbackGenerate) {
+    els.slugFallbackGenerate.onclick = () => {
+      // Open the hero details + pre-fill the form with the slug
+      // re-humanised (replace hyphens with spaces, title-case-ish).
+      if (els.heroDetails) els.heroDetails.hidden = false;
+      if (els.heroToggle) els.heroToggle.setAttribute("aria-expanded", "true");
+      if (els.heroNewTheme) els.heroNewTheme.setAttribute("aria-expanded", "true");
+      if (els.reqInput) {
+        const rehumanised = requestedSlug
+          .replace(/-/g, " ")
+          .replace(/\b[a-z]/g, (c) => c.toUpperCase());
+        els.reqInput.value = rehumanised;
+        requestAnimationFrame(() => els.reqInput.focus());
+      }
+      els.slugFallback.hidden = true;
+    };
+  }
+  if (els.slugFallbackClose) {
+    els.slugFallbackClose.onclick = () => { els.slugFallback.hidden = true; };
+  }
+}
+
+// Hero collapse / expand. Default closed so the canvas reaches the top
+// of the fold. Two entry points share the same toggle: the "ⓘ について"
+// button just opens the details, while "✨ 新規テーマ" both opens the
+// details and focuses the input — semantically identical, but the
+// dual UI nudges the user toward each separate use case.
+function bindHeroToggle() {
+  if (!els.heroDetails) return;
+  const setOpen = (open, focusInput = false) => {
+    els.heroDetails.hidden = !open;
+    for (const btn of [els.heroToggle, els.heroNewTheme].filter(Boolean)) {
+      btn.setAttribute("aria-expanded", String(open));
+    }
+    if (open && focusInput && els.reqInput) {
+      // Wait for the panel to actually paint before focusing.
+      requestAnimationFrame(() => els.reqInput.focus());
+    }
+  };
+  if (els.heroToggle) {
+    els.heroToggle.addEventListener("click", () => {
+      const isOpen = !els.heroDetails.hidden;
+      setOpen(!isOpen);
+    });
+  }
+  if (els.heroNewTheme) {
+    els.heroNewTheme.addEventListener("click", () => {
+      setOpen(true, true);
+    });
+  }
+}
+
 function bindThemeRequest() {
   if (!els.reqForm) return;
   els.reqForm.addEventListener("submit", (e) => {
@@ -800,6 +873,7 @@ async function init() {
   // when the manifest is empty (first-time visitor) or when the slug
   // they asked for can't be loaded.
   bindThemeRequest();
+  bindHeroToggle();
 
   state.manifest = await loadManifest();
   if (state.manifest.length === 0) {
@@ -818,6 +892,13 @@ async function init() {
   state.currentSlug = (requested && known.has(requested))
     ? requested
     : state.manifest[0].slug;
+  // If the requested slug exists but is unknown, surface a banner so
+  // the user knows the URL didn't match anything and we silently
+  // substituted. Don't fire when no theme= param was supplied — the
+  // first-manifest fallback is then the intended landing.
+  if (requested && !known.has(requested)) {
+    showSlugFallback(requested, state.currentSlug);
+  }
 
   state.data = await loadThemeLineage(state.currentSlug);
   document.getElementById("loading-msg")?.remove();

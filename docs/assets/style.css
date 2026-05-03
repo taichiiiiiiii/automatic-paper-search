@@ -63,6 +63,59 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
     radial-gradient(ellipse at 80% -10%, oklch(94% 0.03 80) 0%, transparent 60%),
     var(--color-surface);
 }
+/* Compact hero — used on data-heavy pages where the canvas should be
+   above the fold. Drops vertical padding to ~30% of the standard hero
+   and tightens the bottom margin. The expanded `.hero__details`
+   restores comfortable spacing for explanation text. */
+.hero--compact {
+  padding-top: calc(var(--space-section) * 0.35);
+  padding-bottom: calc(var(--space-section) * 0.25);
+}
+.hero--compact .hero__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+}
+.hero--compact .hero__title {
+  margin-bottom: 0;
+}
+.hero__toggle {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 0.32rem 0.7rem;
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  text-transform: none;
+}
+.hero__toggle + .hero__toggle { margin-left: 0; }
+.hero__toggle:hover { color: var(--color-ink); border-color: var(--color-ink-muted); }
+.hero__toggle--accent {
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border-color: var(--color-ink);
+}
+.hero__toggle--accent:hover { color: var(--color-surface); opacity: 0.85; }
+.hero__details {
+  margin-top: 1.4rem;
+  padding-top: 1.4rem;
+  border-top: 1px dashed var(--color-rule);
+  animation: hero-details-slide 0.18s ease-out;
+}
+.hero__details[hidden] { display: none; }
+@keyframes hero-details-slide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__details { animation: none; }
+}
 .hero__breadcrumb {
   font-family: var(--font-mono);
   font-size: var(--text-tag);
@@ -663,6 +716,21 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 }
 .chip--xaxis[aria-pressed="false"] { opacity: 0.55; }
 
+/* Mobile / narrow-viewport tweaks: enlarge touch targets so the chip
+   row is reliably tappable. Apple HIG asks for 44px, Material 48px;
+   here we settle on 36-40px because the canvas-first layout doesn't
+   leave room for a fully-padded toolbar on small screens. */
+@media (max-width: 768px) {
+  .chip--xaxis,
+  .chip--rel {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.74rem;
+  }
+  .x-axis-group__label {
+    font-size: 0.74rem;
+  }
+}
+
 /* Sticky axis legend just above the SVG canvas. The thin rule between
    the two endpoint phrases hints at the continuous nature of the X axis
    without committing to a tick-and-number style scale (only some modes
@@ -766,22 +834,63 @@ g.node-wrap.node-wrap--no-tx {
   border-top: 2px solid oklch(70% 0.12 var(--lineage-hue, 0));
 }
 
+/* Slug-fallback banner: a one-line warning that the URL ?theme=<slug>
+   didn't match any known theme, so we substituted the default. Action
+   button lets the user immediately fall through to the new-theme
+   generator with the slug pre-filled. */
+.slug-fallback {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0.6rem var(--space-edge) 0;
+  padding: 0.55rem 0.9rem;
+  background: oklch(96% 0.06 80);
+  border: 1px solid oklch(78% 0.13 80);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink);
+}
+.slug-fallback[hidden] { display: none; }
+.slug-fallback__icon { font-size: 1.05rem; }
+.slug-fallback__msg { flex: 1 1 auto; }
+.slug-fallback__cta {
+  padding: 0.32rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border: 1px solid var(--color-ink);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.slug-fallback__cta:hover { opacity: 0.85; }
+.slug-fallback__close {
+  background: transparent;
+  border: 0;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 0.3rem;
+}
+.slug-fallback__close:hover { color: var(--color-ink); }
+
 /* Theme gallery: horizontal card row above the toolbar listing every
    generated theme with its key stats. Cards stay readable down to ~6
    per row at 1600px; below that they wrap. */
 .theme-gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  padding: 0.8rem var(--space-edge) 0;
+  gap: 0.45rem;
+  padding: 0.6rem var(--space-edge) 0;
 }
 .theme-gallery[hidden] { display: none; }
 .theme-gallery__card {
-  flex: 0 1 220px;
+  flex: 0 1 200px;
   display: flex;
   flex-direction: column;
-  gap: 0.18rem;
-  padding: 0.6rem 0.85rem;
+  gap: 0.12rem;
+  padding: 0.45rem 0.75rem;
   background: var(--color-surface-elevated);
   border: 1px solid var(--color-rule);
   border-radius: 8px;
@@ -1929,6 +2038,28 @@ g.node-wrap.node-wrap--no-tx {
 .theme-export {
   display: inline-flex;
   gap: 0.4rem;
+}
+/* Floating variant: pinned to canvas top-right so the toolbar above
+   doesn't have to host these buttons. The canvas (.lineage-canvas)
+   is `position: relative` already (used by minimap), so absolute
+   positioning here latches onto it. z-index sits above the SVG so the
+   buttons remain clickable when the SVG content scrolls underneath. */
+.theme-export--floating {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 6;
+  background: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  padding: 4px 6px;
+  box-shadow: 0 1px 3px oklch(0% 0 0 / 0.06);
+}
+.theme-export--floating .theme-export__btn {
+  background: transparent;
+  border: 0;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.7rem;
 }
 .theme-export__btn {
   background: var(--color-bg);

@@ -10,62 +10,89 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=26" />
+  <link rel="stylesheet" href="../assets/style.css?v=27" />
 </head>
 <body>
-  <header class="hero">
+  <header class="hero hero--compact">
     <nav class="hero__breadcrumb" aria-label="breadcrumb">
       <a href="../">PaperPilot</a> &nbsp;/&nbsp;
       Theme Lineage
+      <button
+        type="button"
+        class="hero__toggle"
+        id="hero-toggle"
+        aria-expanded="false"
+        aria-controls="hero-details"
+        title="ヘッダ説明と新規テーマ生成フォームを開閉"
+      >
+        ⓘ について
+      </button>
+      <button
+        type="button"
+        class="hero__toggle hero__toggle--accent"
+        id="hero-new-theme"
+        aria-expanded="false"
+        aria-controls="hero-details"
+        title="新しいテーマを生成"
+      >
+        ✨ 新規テーマ
+      </button>
     </nav>
     <h1 class="hero__title"><em>Theme Lineage</em> — テーマで時系列家系図</h1>
-    <p class="hero__lede">
-      研究テーマ（例: <em>Mixture of Experts</em> / <em>Direct Preference Optimization</em>）を選ぶと、
-      <strong>Y 軸＝年</strong>（出現年が等間隔で並ぶ rank-based スケール）の家系図が描画されます。
-    </p>
-    <p class="hero__note">
-      古い論文ほど上、新しい論文ほど下。エッジは親 → 子で <em>supersedes / successor / extends / ablation / baseline / contrasts</em> を区別します。
-      ホバーで LLM による分類理由が表示されます。データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で分類して生成。
-    </p>
 
-    <!-- On-demand theme generation: POST to /api/themes (CF Worker) which
-         dispatches the theme-on-demand.yml workflow. The progress block
-         below it is hidden by default and toggled by theme.js. -->
-    <!-- novalidate: rely on JS validation so the bad-input message is
-         localised + styled consistently. The HTML pattern stays as a
-         hint to assistive tech / autofill. -->
-    <form class="theme-request" id="theme-request" autocomplete="off" novalidate>
-      <label class="theme-request__label" for="theme-request-input">
-        <span aria-hidden="true">✨</span>
-        テーマを自分で生成:
-      </label>
-      <input
-        id="theme-request-input"
-        class="theme-request__input"
-        type="text"
-        name="theme"
-        minlength="2"
-        maxlength="80"
-        pattern="[A-Za-z0-9 _\-]+"
-        placeholder="例: Vision Transformer / Graph Neural Network"
-        aria-describedby="theme-request-hint"
-        list="existing-themes-datalist"
-        autocomplete="off"
-      />
-      <!-- Browser-native autocomplete dropdown populated by theme.js
-           bindThemeRequest() from the manifest. Lets the user pick an
-           existing theme without typing the full name (and the submit
-           handler short-circuits to redirect rather than dispatching). -->
-      <datalist id="existing-themes-datalist"></datalist>
-      <button type="submit" class="theme-request__submit" id="theme-request-submit">
-        生成する
-      </button>
-      <span class="theme-request__hint" id="theme-request-hint">
-        2〜80 文字 / [A-Za-z0-9 _-] / 5回/時まで
-      </span>
-    </form>
+    <!-- Collapsible details: was always-visible 3-paragraph block + form
+         (above-fold issue). Now hidden by default; users open via the
+         "ⓘ について" or "✨ 新規テーマ" buttons in the breadcrumb. -->
+    <div class="hero__details" id="hero-details" hidden>
+      <p class="hero__lede">
+        研究テーマ（例: <em>Mixture of Experts</em> / <em>Direct Preference Optimization</em>）を選ぶと、
+        <strong>Y 軸＝年</strong>（出現年が等間隔で並ぶ rank-based スケール）の家系図が描画されます。
+      </p>
+      <p class="hero__note">
+        古い論文ほど上、新しい論文ほど下。エッジは親 → 子で <em>supersedes / successor / extends / ablation / baseline / contrasts</em> を区別します。
+        ホバーで LLM による分類理由が表示されます。データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で分類して生成。
+      </p>
 
-    <div class="theme-progress" id="theme-progress" hidden aria-live="polite">
+      <!-- On-demand theme generation: POST to /api/themes (CF Worker) which
+           dispatches the theme-on-demand.yml workflow. The progress block
+           below it is hidden by default and toggled by theme.js. -->
+      <!-- novalidate: rely on JS validation so the bad-input message is
+           localised + styled consistently. The HTML pattern stays as a
+           hint to assistive tech / autofill. -->
+      <form class="theme-request" id="theme-request" autocomplete="off" novalidate>
+        <label class="theme-request__label" for="theme-request-input">
+          <span aria-hidden="true">✨</span>
+          テーマを自分で生成:
+        </label>
+        <input
+          id="theme-request-input"
+          class="theme-request__input"
+          type="text"
+          name="theme"
+          minlength="2"
+          maxlength="80"
+          pattern="[A-Za-z0-9 _\-]+"
+          placeholder="例: Vision Transformer / Graph Neural Network"
+          aria-describedby="theme-request-hint"
+          list="existing-themes-datalist"
+          autocomplete="off"
+        />
+        <datalist id="existing-themes-datalist"></datalist>
+        <button type="submit" class="theme-request__submit" id="theme-request-submit">
+          生成する
+        </button>
+        <span class="theme-request__hint" id="theme-request-hint">
+          2〜80 文字 / [A-Za-z0-9 _-] / 5回/時まで
+        </span>
+      </form>
+    </div>
+
+  </header>
+
+  <!-- Progress block sits OUTSIDE the collapsible <header> so it remains
+       visible even when the user has the hero "details" panel closed.
+       Toggled by theme.js bindThemeRequest() / submitTheme(). -->
+  <div class="theme-progress" id="theme-progress" hidden aria-live="polite">
       <div class="theme-progress__head">
         <span class="theme-progress__spinner" aria-hidden="true"></span>
         <strong class="theme-progress__title" id="theme-progress-title">生成中...</strong>
@@ -87,7 +114,21 @@
         </button>
       </p>
     </div>
-  </header>
+
+  <!-- Slug-fallback notification: shown when ?theme=<unknown> made the
+       viewer fall back to the manifest's first entry. Toggled by
+       theme.js init(). Sits above the gallery so the user notices
+       before scanning the cards for their requested theme. -->
+  <div class="slug-fallback" id="slug-fallback" hidden role="status">
+    <span class="slug-fallback__icon" aria-hidden="true">⚠️</span>
+    <span class="slug-fallback__msg" id="slug-fallback-msg"></span>
+    <button type="button" class="slug-fallback__cta" id="slug-fallback-generate">
+      ✨ そのテーマを新規生成
+    </button>
+    <button type="button" class="slug-fallback__close" id="slug-fallback-close" aria-label="閉じる">
+      ✕
+    </button>
+  </div>
 
   <!-- Theme gallery: a horizontal card row that surfaces every
        generated theme + its key stats so users can pick visually
@@ -141,14 +182,6 @@
       <span class="year-range__max" id="year-range-max-label">—</span>
     </div>
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
-    <div class="theme-export" role="group" aria-label="Export">
-      <button id="export-svg" class="theme-export__btn" type="button" title="SVG をダウンロード">
-        📥 SVG
-      </button>
-      <button id="export-png" class="theme-export__btn" type="button" title="PNG をダウンロード">
-        📥 PNG
-      </button>
-    </div>
   </div>
 
   <div class="legend" aria-label="Relation type legend">
@@ -173,6 +206,18 @@
   </div>
 
   <div class="lineage-canvas" id="canvas">
+    <!-- Floating export toolbar — was crammed into the .lineage-toolbar
+         where it pushed the toolbar to wrap on 1280-1600px screens.
+         Pinned to the canvas top-right so it scales with the data area
+         and frees one row in the toolbar. -->
+    <div class="theme-export theme-export--floating" role="group" aria-label="Export">
+      <button id="export-svg" class="theme-export__btn" type="button" title="SVG をダウンロード">
+        📥 SVG
+      </button>
+      <button id="export-png" class="theme-export__btn" type="button" title="PNG をダウンロード">
+        📥 PNG
+      </button>
+    </div>
     <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Theme chronological lineage graph"></svg>
   </div>
 
@@ -200,7 +245,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=26" defer></script>
-  <script src="../assets/theme.js?v=26" defer></script>
+  <script src="../assets/utils.js?v=27" defer></script>
+  <script src="../assets/theme.js?v=27" defer></script>
 </body>
 </html>
