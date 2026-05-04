@@ -34,15 +34,17 @@ const RELATION_LABEL_JA = {
 const X_AXIS_MODES = ["rank", "citation_log", "genealogy", "centrality", "venue", "novelty"];
 const DEFAULT_X_AXIS_MODE = "rank";
 
-// Pill button label + icon + tooltip per mode. The tooltip mirrors the
-// concise meaning shown in the canvas-top axis legend.
+// Pill button label + icon + tooltip per mode. Labels intentionally
+// short (1-2 chars where possible) so the 6 pills fit on one line at
+// 1280px. The longer explanation lives in the title attribute (hover
+// tooltip) and the canvas-top axis legend below.
 const X_AXIS_BUTTON = {
-  rank:         { icon: "📊", label: "順位",   title: "年内の引用数ランキング (既定)" },
-  citation_log: { icon: "📈", label: "log引用", title: "log(引用数+1) — 連続軸" },
-  genealogy:    { icon: "🌳", label: "系譜",   title: "親論文の平均 X に寄せる" },
-  centrality:   { icon: "⭐", label: "中心性", title: "PageRank — テーマのハブ論文を左に" },
-  venue:        { icon: "🏛", label: "会議格", title: "Tier1 → Tier2 → Tier3 → 未査読" },
-  novelty:      { icon: "💥", label: "新規性", title: "supersedes/contrasts=破壊的、extends/successor=漸進的" },
+  rank:         { icon: "📊", label: "順位",   title: "年内の引用数ランキング (既定): 左ほど高被引用" },
+  citation_log: { icon: "📈", label: "log",   title: "log(引用数+1) — 連続軸で影響度を比較" },
+  genealogy:    { icon: "🌳", label: "系譜",   title: "親論文の平均 X 位置に寄せる: 同じ研究ラインが縦に並ぶ" },
+  centrality:   { icon: "⭐", label: "中心",   title: "PageRank: テーマのハブ論文ほど左に" },
+  venue:        { icon: "🏛", label: "会議",   title: "会議格 Tier1 → Tier2 → Tier3 → 未査読" },
+  novelty:      { icon: "💥", label: "新規",   title: "新規性: supersedes/contrasts = 破壊的革新、extends/successor = 漸進的改良" },
 };
 
 // Footer hint text per mode. Updated dynamically when the user toggles the
@@ -252,6 +254,9 @@ const els = {
   slugFallbackMsg: document.getElementById("slug-fallback-msg"),
   slugFallbackGenerate: document.getElementById("slug-fallback-generate"),
   slugFallbackClose: document.getElementById("slug-fallback-close"),
+  filtersToggle: document.getElementById("filters-toggle"),
+  filtersPanel: document.getElementById("filters-panel"),
+  filtersCount: document.getElementById("filters-count"),
   progress: document.getElementById("theme-progress"),
   progressTitle: document.getElementById("theme-progress-title"),
   progressElapsed: document.getElementById("theme-progress-elapsed"),
@@ -325,7 +330,13 @@ function renderPicker() {
     els.picker.hidden = true;
     return;
   }
-  els.picker.hidden = false;
+  // Honor an explicit aria-hidden="true" coming from the HTML
+  // (the picker dropdown was replaced by the visual theme-gallery row,
+  // but we still populate the options for bindPicker / external scripts
+  // that may read picker.value).
+  if (els.picker.getAttribute("aria-hidden") !== "true") {
+    els.picker.hidden = false;
+  }
   els.picker.innerHTML = state.manifest
     .map((e) => {
       const label = `${e.theme} — ${e.paper_count} papers`;
@@ -600,6 +611,56 @@ function showSlugFallback(requestedSlug, fallbackSlug) {
   }
   if (els.slugFallbackClose) {
     els.slugFallbackClose.onclick = () => { els.slugFallback.hidden = true; };
+  }
+}
+
+// Filter panel collapse / expand. Default closed; opens automatically
+// when init detects filter state in the URL (so a shared link with a
+// search query immediately reveals what's filtered). The badge shows
+// how many filters are currently non-default.
+function bindFiltersToggle() {
+  if (!els.filtersToggle || !els.filtersPanel) return;
+  const setOpen = (open) => {
+    els.filtersPanel.hidden = !open;
+    els.filtersToggle.setAttribute("aria-expanded", String(open));
+  };
+  els.filtersToggle.addEventListener("click", () => {
+    setOpen(els.filtersPanel.hidden);
+  });
+  // Auto-open if the URL contains any non-default filter state.
+  const auto = state.searchQuery
+    || (Number.isFinite(state.yearRange.min) && state.yearRange.min !== _yearDataExtents.min)
+    || (Number.isFinite(state.yearRange.max) && state.yearRange.max !== _yearDataExtents.max)
+    || hasNonDefaultRelations();
+  if (auto) setOpen(true);
+  updateFiltersBadge();
+}
+
+// Track default year extents so the URL-restored auto-open detector
+// can tell if the user actually narrowed the range. setupYearRange()
+// writes here once the data is loaded.
+const _yearDataExtents = { min: null, max: null };
+
+function hasNonDefaultRelations() {
+  const cur = [...state.visibleRelations].sort();
+  if (cur.length !== DEFAULT_RELATIONS.length) return true;
+  return !cur.every((r) => DEFAULT_RELATIONS.includes(r));
+}
+
+// "🔍 絞り込み (3)" — show the count of active filter dimensions
+// (search / year / relations) so the toggle hints at hidden state.
+function updateFiltersBadge() {
+  if (!els.filtersCount) return;
+  let n = 0;
+  if (state.searchQuery) n++;
+  if (Number.isFinite(state.yearRange.min) && state.yearRange.min !== _yearDataExtents.min) n++;
+  if (Number.isFinite(state.yearRange.max) && state.yearRange.max !== _yearDataExtents.max) n++;
+  if (hasNonDefaultRelations()) n++;
+  if (n === 0) {
+    els.filtersCount.hidden = true;
+  } else {
+    els.filtersCount.hidden = false;
+    els.filtersCount.textContent = String(n);
   }
 }
 
@@ -951,6 +1012,7 @@ async function init() {
   }
   bindYearRange();
   bindExport();
+  bindFiltersToggle();
   render();
 
   // #65: if the URL carried a ?node=, scroll to it and highlight after
@@ -1141,6 +1203,10 @@ function setupYearRange() {
   state.yearRange.max = maxY;
   if (els.yearMinLabel) els.yearMinLabel.textContent = String(minY);
   if (els.yearMaxLabel) els.yearMaxLabel.textContent = String(maxY);
+  // Remember data extents so updateFiltersBadge() can tell when the
+  // user has narrowed the range vs. left it on the full span.
+  _yearDataExtents.min = minY;
+  _yearDataExtents.max = maxY;
 }
 
 function bindYearRange() {
@@ -1156,6 +1222,7 @@ function bindYearRange() {
     if (els.yearMinLabel) els.yearMinLabel.textContent = String(lo);
     if (els.yearMaxLabel) els.yearMaxLabel.textContent = String(hi);
     syncUrlState();
+    updateFiltersBadge();
     clearTimeout(pending);
     pending = setTimeout(render, 80);
   };
@@ -1172,6 +1239,7 @@ function bindSearch() {
   els.searchInput.addEventListener("input", () => {
     state.searchQuery = els.searchInput.value || "";
     syncUrlState();
+    updateFiltersBadge();
     clearTimeout(pending);
     pending = setTimeout(render, 120);
   });
@@ -1246,6 +1314,7 @@ function bindXAxisMode() {
     }
     savePrefs();
     syncUrlState();
+    updateFiltersBadge();
     render();
   });
 }
@@ -1281,6 +1350,7 @@ function bindFilterBar() {
     btn.setAttribute("aria-pressed", state.visibleRelations.has(rel));
     savePrefs();
     syncUrlState();
+    updateFiltersBadge();
     render();
   });
 }

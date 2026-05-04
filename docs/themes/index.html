@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=27" />
+  <link rel="stylesheet" href="../assets/style.css?v=28" />
 </head>
 <body>
   <header class="hero hero--compact">
@@ -136,12 +136,13 @@
        populated by theme.js renderThemeGallery() from the manifest. -->
   <nav class="theme-gallery" id="theme-gallery" aria-label="Theme gallery"></nav>
 
+  <!-- Simplified toolbar: only the X-axis pills + the "詳細フィルタ"
+       toggle live above the fold. Theme picking is the gallery's job
+       (the dropdown was redundant); theme-meta stats already show on
+       the gallery card; search/year/relation filters fold behind the
+       toggle so first-time users see one clean row. -->
   <div class="lineage-toolbar">
-    <a class="layout-btn" href="../iclr-2026/lineage.html" title="ICLR 2026 全体ビューへ">← 学会別ビュー</a>
-    <label class="deep-picker" for="theme-picker">
-      <span class="deep-picker__label">テーマ:</span>
-      <select id="theme-picker" class="deep-picker__select" aria-label="Select theme"></select>
-    </label>
+    <a class="layout-btn" href="../iclr-2026/lineage.html" title="ICLR 2026 全体ビューへ">← 学会別</a>
     <div
       class="x-axis-group lineage-toolbar__group"
       id="x-axis-mode"
@@ -149,17 +150,35 @@
       aria-label="X-axis encoding"
     >
       <span class="x-axis-group__label" aria-hidden="true">📐 横軸</span>
-      <!-- Buttons populated by theme.js bindXAxisMode() so the canonical
-           list lives next to X_AXIS_MODES / X_AXIS_BUTTON_LABEL. -->
+      <!-- Buttons populated by theme.js bindXAxisMode(). -->
     </div>
-    <div class="theme-meta" id="theme-meta" aria-live="polite"></div>
+    <button
+      type="button"
+      id="filters-toggle"
+      class="filters-toggle"
+      aria-expanded="false"
+      aria-controls="filters-panel"
+      title="検索 / 年範囲 / 関係フィルタを開く"
+    >
+      🔍 絞り込み <span class="filters-toggle__count" id="filters-count" hidden></span>
+    </button>
+    <!-- Hidden picker kept for theme.js bindPicker() compatibility +
+         restored if user explicitly asks for it. Not visible. -->
+    <select id="theme-picker" hidden aria-hidden="true"></select>
+    <span id="theme-meta" hidden></span>
+  </div>
+
+  <!-- Collapsible filter panel — was 3 separate rows in the toolbar.
+       Toggled by #filters-toggle. Stays in the DOM (no display:none
+       on the inputs) so theme.js's bind*() functions keep working. -->
+  <div class="filters-panel" id="filters-panel" hidden>
     <label class="theme-search" for="theme-search-input">
       <span class="theme-search__icon" aria-hidden="true">🔍</span>
       <input
         id="theme-search-input"
         class="theme-search__input"
         type="search"
-        placeholder="タイトル / 著者で絞り込み"
+        placeholder="タイトル / 著者で検索"
         aria-label="Search papers by title or author"
         autocomplete="off"
       />
@@ -184,19 +203,11 @@
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
   </div>
 
-  <div class="legend" aria-label="Relation type legend">
-    <span class="legend__item"><span class="legend__swatch legend__swatch--supersedes"></span> Supersedes（置換）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--successor"></span> Successor（後継）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--extends"></span> Extends（拡張）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--ablation"></span> Ablation（成分分析）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--baseline"></span> Baseline（比較）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--contrasts"></span> Contrasts（対立）</span>
-  </div>
-
-  <!-- Sticky axis legend: a one-line "← <left> ........ <right> →"
-       reminder of what the current X mode encodes. Sits between the
-       toolbar and canvas so it stays visible no matter how far the
-       user scrolls into the family tree. Updated by render(). -->
+  <!-- Sticky axis legend: tells the user what the current X mode
+       encodes ("← <left> ─── <right> →"). The relation-type legend
+       (Supersedes/Successor/etc.) was removed — its 6 swatches were
+       redundant with the relation filter chips inside the filter panel
+       which carry the same color dot + count badge. -->
   <div class="x-axis-legend" id="x-axis-legend" aria-live="polite">
     <span class="x-axis-legend__arrow" aria-hidden="true">←</span>
     <span class="x-axis-legend__left" id="x-axis-legend-left"></span>
@@ -245,7 +256,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=27" defer></script>
-  <script src="../assets/theme.js?v=27" defer></script>
+  <script src="../assets/utils.js?v=28" defer></script>
+  <script src="../assets/theme.js?v=28" defer></script>
 </body>
 </html>
