@@ -581,6 +581,23 @@ function syncUrlState() {
   }
 }
 
+// Single helper that runs the "after a state mutation" duties: write
+// the URL, refresh the filter badge count, refresh the active-filter
+// chip row, and (by default) re-render the SVG. Six call sites used
+// to spell this out longhand; collapsing them here means future
+// additions to the pipeline (e.g. a new persistence target) only
+// touch one place.
+//
+// The two debounced sites (year slider, search input) pass
+// { render: false } and schedule their own debounced render so the
+// SVG isn't rebuilt on every keystroke.
+function commitStateChange({ render: doRender = true } = {}) {
+  syncUrlState();
+  updateFiltersBadge();
+  renderActiveFilters();
+  if (doRender) render();
+}
+
 // ---- On-demand theme submission ---------------------------------------
 //
 // Posts the user-typed theme to /api/themes (CF Worker). The Worker
@@ -873,10 +890,7 @@ function clearOneFilter(kind) {
     state.hideOrphans = false;
     if (els.orphanToggle) els.orphanToggle.checked = false;
   }
-  syncUrlState();
-  updateFiltersBadge();
-  renderActiveFilters();
-  render();
+  commitStateChange();
 }
 
 // Bind the orphan-hide checkbox + keep its label/(count) and checked
@@ -890,10 +904,7 @@ function bindOrphanToggle() {
   els.orphanToggle.checked = !!state.hideOrphans;
   els.orphanToggle.addEventListener("change", () => {
     state.hideOrphans = els.orphanToggle.checked;
-    syncUrlState();
-    updateFiltersBadge();
-    renderActiveFilters();
-    render();
+    commitStateChange();
   });
 }
 function updateOrphanToggleVisibility() {
@@ -1501,9 +1512,9 @@ function bindYearRange() {
     state.yearRange.max = hi;
     if (els.yearMinLabel) els.yearMinLabel.textContent = String(lo);
     if (els.yearMaxLabel) els.yearMaxLabel.textContent = String(hi);
-    syncUrlState();
-    updateFiltersBadge();
-    renderActiveFilters();
+    // Debounced render — keep URL/badge/chips in sync immediately so
+    // the user sees feedback, but coalesce SVG re-renders.
+    commitStateChange({ render: false });
     clearTimeout(pending);
     pending = setTimeout(render, 80);
   };
@@ -1519,9 +1530,8 @@ function bindSearch() {
   let pending = null;
   els.searchInput.addEventListener("input", () => {
     state.searchQuery = els.searchInput.value || "";
-    syncUrlState();
-    updateFiltersBadge();
-    renderActiveFilters();
+    // Debounced render — keystroke feedback should be cheap.
+    commitStateChange({ render: false });
     clearTimeout(pending);
     pending = setTimeout(render, 120);
   });
@@ -1595,10 +1605,7 @@ function bindXAxisMode() {
       b.setAttribute("aria-pressed", String(b.dataset.xaxis === state.xAxisMode));
     }
     savePrefs();
-    syncUrlState();
-    updateFiltersBadge();
-    renderActiveFilters();
-    render();
+    commitStateChange();
   });
 }
 
@@ -1632,10 +1639,7 @@ function bindFilterBar() {
     else state.visibleRelations.add(rel);
     btn.setAttribute("aria-pressed", state.visibleRelations.has(rel));
     savePrefs();
-    syncUrlState();
-    updateFiltersBadge();
-    renderActiveFilters();
-    render();
+    commitStateChange();
   });
 }
 
@@ -2054,68 +2058,62 @@ function snapshotNodePositions() {
   return snap;
 }
 
-function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
-  // Capture before innerHTML="" wipes the DOM. Used by the FLIP block at
-  // the end of this function to animate cards from their old slot to
-  // their new one when only the X-axis mode (or filter) changed.
-  const oldPositions = snapshotNodePositions();
-  els.svg.innerHTML = "";
-  if (positioned.length === 0) {
-    els.canvas.querySelector(".empty-state")?.remove();
-    els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state">表示できるノードがありません。</p>`);
-    return;
+// Arrow marker definitions per relation type. Edges reference these via
+// marker-end="url(#arrow-theme-<rel>)" so colour stays in sync with the
+// filter chips. Pure construction helper — no side effects beyond the
+// returned <defs> element.
+const _ARROW_SPECS = [
+  ["supersedes", "oklch(55% 0.14 75)", "filled"],
+  ["successor",  "oklch(72% 0.13 80)", "filled"],
+  ["extends",    "oklch(62% 0.14 145)", "filled"],
+  ["ablation",   "oklch(60% 0.13 240)", "hollow"],
+  ["baseline",   "oklch(60% 0.02 270)", "dot"],
+  ["contrasts",  "oklch(58% 0.20 25)", "cross"],
+];
+function buildArrowMarker(key, color, kind) {
+  const m = document.createElementNS(SVG_NS, "marker");
+  m.setAttribute("id", `arrow-theme-${key}`);
+  m.setAttribute("viewBox", "0 0 10 10");
+  m.setAttribute("refX", "9"); m.setAttribute("refY", "5");
+  m.setAttribute("markerWidth", "7"); m.setAttribute("markerHeight", "7");
+  m.setAttribute("orient", "auto-start-reverse");
+  let shape;
+  if (kind === "filled") {
+    shape = document.createElementNS(SVG_NS, "path");
+    shape.setAttribute("d", "M0,0 L10,5 L0,10 z");
+    shape.setAttribute("fill", color);
+  } else if (kind === "hollow") {
+    shape = document.createElementNS(SVG_NS, "circle");
+    shape.setAttribute("cx", "5"); shape.setAttribute("cy", "5"); shape.setAttribute("r", "3");
+    shape.setAttribute("fill", "white"); shape.setAttribute("stroke", color); shape.setAttribute("stroke-width", "1.5");
+  } else if (kind === "dot") {
+    shape = document.createElementNS(SVG_NS, "circle");
+    shape.setAttribute("cx", "5"); shape.setAttribute("cy", "5"); shape.setAttribute("r", "1.8");
+    shape.setAttribute("fill", color);
+  } else {
+    shape = document.createElementNS(SVG_NS, "path");
+    shape.setAttribute("d", "M0,0 L10,10 M10,0 L0,10");
+    shape.setAttribute("stroke", color); shape.setAttribute("stroke-width", "1.8");
+    shape.setAttribute("fill", "none");
   }
-  // Stale empty-state from prior renders.
-  els.canvas.querySelector(".empty-state")?.remove();
+  m.appendChild(shape);
+  return m;
+}
 
-  els.svg.setAttribute("width", totalW);
-  els.svg.setAttribute("height", totalH);
-  els.svg.setAttribute("viewBox", `0 0 ${totalW} ${totalH}`);
-  // Expose the active mode on the SVG element so CSS rules in style.css
-  // can light up mode-specific visual treatments (tier stripe, novelty
-  // tint, lineage hue) without per-card class soup.
-  els.svg.dataset.xaxisMode = state.xAxisMode || DEFAULT_X_AXIS_MODE;
+// === drawSvg helpers — split out from a 344-line god function so each
+// step has one responsibility and can be read on its own. The original
+// flow is preserved exactly:
+//   defs → year axis → edges → nodes (with FLIP setup) → minimap.
 
-  // Defs: arrow markers per relation type.
+function drawDefs(svg) {
   const defs = document.createElementNS(SVG_NS, "defs");
-  for (const [key, color, kind] of [
-    ["supersedes", "oklch(55% 0.14 75)", "filled"],
-    ["successor",  "oklch(72% 0.13 80)", "filled"],
-    ["extends",    "oklch(62% 0.14 145)", "filled"],
-    ["ablation",   "oklch(60% 0.13 240)", "hollow"],
-    ["baseline",   "oklch(60% 0.02 270)", "dot"],
-    ["contrasts",  "oklch(58% 0.20 25)", "cross"],
-  ]) {
-    const m = document.createElementNS(SVG_NS, "marker");
-    m.setAttribute("id", `arrow-theme-${key}`);
-    m.setAttribute("viewBox", "0 0 10 10");
-    m.setAttribute("refX", "9"); m.setAttribute("refY", "5");
-    m.setAttribute("markerWidth", "7"); m.setAttribute("markerHeight", "7");
-    m.setAttribute("orient", "auto-start-reverse");
-    let shape;
-    if (kind === "filled") {
-      shape = document.createElementNS(SVG_NS, "path");
-      shape.setAttribute("d", "M0,0 L10,5 L0,10 z");
-      shape.setAttribute("fill", color);
-    } else if (kind === "hollow") {
-      shape = document.createElementNS(SVG_NS, "circle");
-      shape.setAttribute("cx", "5"); shape.setAttribute("cy", "5"); shape.setAttribute("r", "3");
-      shape.setAttribute("fill", "white"); shape.setAttribute("stroke", color); shape.setAttribute("stroke-width", "1.5");
-    } else if (kind === "dot") {
-      shape = document.createElementNS(SVG_NS, "circle");
-      shape.setAttribute("cx", "5"); shape.setAttribute("cy", "5"); shape.setAttribute("r", "1.8");
-      shape.setAttribute("fill", color);
-    } else {
-      shape = document.createElementNS(SVG_NS, "path");
-      shape.setAttribute("d", "M0,0 L10,10 M10,0 L0,10");
-      shape.setAttribute("stroke", color); shape.setAttribute("stroke-width", "1.8");
-      shape.setAttribute("fill", "none");
-    }
-    m.appendChild(shape);
-    defs.appendChild(m);
+  for (const [key, color, kind] of _ARROW_SPECS) {
+    defs.appendChild(buildArrowMarker(key, color, kind));
   }
-  els.svg.appendChild(defs);
+  svg.appendChild(defs);
+}
 
+function drawYearAxis(svg, yearLabels, totalW) {
   // Year axis (left gutter): a short tick + label per row.
   const axis = document.createElementNS(SVG_NS, "g");
   axis.setAttribute("class", "chrono-axis");
@@ -2142,10 +2140,11 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     tick.setAttribute("y2", y);
     axis.appendChild(tick);
   }
-  els.svg.appendChild(axis);
+  svg.appendChild(axis);
+}
 
+function drawEdges(svg, positioned, edges, matchSet) {
   const posById = new Map(positioned.map((p) => [p.id, p]));
-
   // Edges (drawn before nodes so cards sit on top).
   const eg = document.createElementNS(SVG_NS, "g");
   eg.setAttribute("id", "edges");
@@ -2187,12 +2186,96 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     path.addEventListener("mouseleave", onEdgeLeave);
     eg.appendChild(path);
   }
-  els.svg.appendChild(eg);
+  svg.appendChild(eg);
+}
 
-  // Nodes
+function drawNodes(svg, positioned, matchSet) {
   const ng = document.createElementNS(SVG_NS, "g");
   ng.setAttribute("id", "nodes");
   for (const p of positioned) {
+    ng.appendChild(buildNodeWrapper(p, matchSet));
+  }
+  svg.appendChild(ng);
+  return ng;
+}
+
+// FLIP: for nodes that survived the render, snap them back to their
+// OLD position with the transition disabled, then on the next paint
+// remove the override so the CSS transition glides them to the new
+// position. Skips work if reduced-motion is on, or if there's nothing
+// to compare against (first render).
+function applyFlipAnimation(ng, oldPositions) {
+  if (oldPositions.size === 0) return;
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  const moves = [];
+  for (const wrap of ng.querySelectorAll("g.node-wrap[data-node-id]")) {
+    const id = wrap.dataset.nodeId;
+    const old = oldPositions.get(id);
+    if (!old) continue;
+    const tr = wrap.getAttribute("transform") || "";
+    const m = tr.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/);
+    if (!m) continue;
+    const nx = parseFloat(m[1]);
+    const ny = parseFloat(m[2]);
+    if (Math.abs(nx - old.x) < 0.5 && Math.abs(ny - old.y) < 0.5) continue;
+    moves.push({ wrap, old, target: { x: nx, y: ny } });
+  }
+  if (moves.length === 0) return;
+  for (const { wrap, old } of moves) {
+    wrap.classList.add("node-wrap--no-tx");
+    wrap.setAttribute("transform", `translate(${old.x}, ${old.y})`);
+  }
+  // Force layout flush so the no-transition style is applied before
+  // we revert. getBoundingClientRect() is the standard "make the
+  // browser commit current styles right now" idiom.
+  void els.svg.getBoundingClientRect();
+  requestAnimationFrame(() => {
+    for (const { wrap, target } of moves) {
+      wrap.classList.remove("node-wrap--no-tx");
+      wrap.setAttribute("transform", `translate(${target.x}, ${target.y})`);
+    }
+  });
+}
+
+// Orchestrator — formerly a 344-line god function. Now reads as a
+// shopping list of well-named helpers. Order matters (defs before
+// edges before nodes); FLIP needs the old DOM snapshot taken before
+// innerHTML="".
+function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
+  const oldPositions = snapshotNodePositions();
+  els.svg.innerHTML = "";
+  if (positioned.length === 0) {
+    els.canvas.querySelector(".empty-state")?.remove();
+    els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state">表示できるノードがありません。</p>`);
+    return;
+  }
+  els.canvas.querySelector(".empty-state")?.remove();
+
+  els.svg.setAttribute("width", totalW);
+  els.svg.setAttribute("height", totalH);
+  els.svg.setAttribute("viewBox", `0 0 ${totalW} ${totalH}`);
+  // Expose the active mode on the SVG element so CSS rules in style.css
+  // can light up mode-specific visual treatments (tier stripe, novelty
+  // tint, lineage hue) without per-card class soup.
+  els.svg.dataset.xaxisMode = state.xAxisMode || DEFAULT_X_AXIS_MODE;
+
+  drawDefs(els.svg);
+  drawYearAxis(els.svg, yearLabels, totalW);
+  drawEdges(els.svg, positioned, edges, matchSet);
+  const ng = drawNodes(els.svg, positioned, matchSet);
+  applyFlipAnimation(ng, oldPositions);
+
+  // #66: paint the minimap with the same node positions, then bind
+  // click/drag and a window-scroll viewport tracker. Late so coords
+  // are up-to-date.
+  drawMinimap(positioned, totalW, totalH);
+}
+
+// Build a single <g.node-wrap><foreignObject><div.node-card></div></fO></g>
+// DOM tree for one positioned paper. Extracted from drawSvg's per-node
+// loop (was the bulk of the 344-line god function). Returns the wrapper
+// <g>; caller appends it to the nodes group.
+function buildNodeWrapper(p, matchSet) {
     // Each node is now wrapped in a <g class="node-wrap"> with a translate
     // transform; the FLIP block at the end of drawSvg uses this wrapper
     // to animate position changes between renders. The inner foreignObject
@@ -2348,50 +2431,7 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
 
     fo.appendChild(card);
     wrap.appendChild(fo);
-    ng.appendChild(wrap);
-  }
-  els.svg.appendChild(ng);
-
-  // FLIP: for nodes that survived the render, snap them back to their
-  // OLD position with the transition disabled, then on the next paint
-  // remove the override so the CSS transition glides them to the new
-  // position. Skips work if reduced-motion is on, or if there's nothing
-  // to compare against (first render).
-  if (oldPositions.size > 0
-      && !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-    const moves = [];
-    for (const wrap of ng.querySelectorAll("g.node-wrap[data-node-id]")) {
-      const id = wrap.dataset.nodeId;
-      const old = oldPositions.get(id);
-      if (!old) continue;
-      const tr = wrap.getAttribute("transform") || "";
-      const m = tr.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/);
-      if (!m) continue;
-      const nx = parseFloat(m[1]);
-      const ny = parseFloat(m[2]);
-      if (Math.abs(nx - old.x) < 0.5 && Math.abs(ny - old.y) < 0.5) continue;
-      moves.push({ wrap, old, target: { x: nx, y: ny } });
-    }
-    for (const { wrap, old } of moves) {
-      wrap.classList.add("node-wrap--no-tx");
-      wrap.setAttribute("transform", `translate(${old.x}, ${old.y})`);
-    }
-    // Force layout flush so the no-transition style is applied before
-    // we revert. getBoundingClientRect() is the standard "make the
-    // browser commit current styles right now" idiom.
-    if (moves.length > 0) void els.svg.getBoundingClientRect();
-    requestAnimationFrame(() => {
-      for (const { wrap, target } of moves) {
-        wrap.classList.remove("node-wrap--no-tx");
-        wrap.setAttribute("transform", `translate(${target.x}, ${target.y})`);
-      }
-    });
-  }
-
-  // #66: paint the minimap with the same node positions, then bind
-  // click/drag and a window-scroll viewport tracker. Late so coords
-  // are up-to-date.
-  drawMinimap(positioned, totalW, totalH);
+    return wrap;
 }
 
 // #66: minimap — a small canvas that mirrors the SVG's node positions at
