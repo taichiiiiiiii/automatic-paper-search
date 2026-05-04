@@ -257,6 +257,8 @@ const els = {
   filtersToggle: document.getElementById("filters-toggle"),
   filtersPanel: document.getElementById("filters-panel"),
   filtersCount: document.getElementById("filters-count"),
+  onboarding: document.getElementById("onboarding-hint"),
+  onboardingDismiss: document.getElementById("onboarding-dismiss"),
   progress: document.getElementById("theme-progress"),
   progressTitle: document.getElementById("theme-progress-title"),
   progressElapsed: document.getElementById("theme-progress-elapsed"),
@@ -611,6 +613,47 @@ function showSlugFallback(requestedSlug, fallbackSlug) {
   }
   if (els.slugFallbackClose) {
     els.slugFallbackClose.onclick = () => { els.slugFallback.hidden = true; };
+  }
+}
+
+// First-visit onboarding hint pointing at the X-axis pill row.
+// Surfaces the most important interactive feature (mode switching)
+// since the rest of the chrome is intentionally minimal and the modes
+// are easy to overlook. Dismissed permanently once the user either
+// (a) clicks the explicit close button, or (b) switches a mode for
+// the first time — both signal "got it." Persistent in localStorage
+// so it doesn't re-pester returning users.
+const ONBOARDING_KEY = "pp.theme.onboarded";
+
+function showOnboardingHintIfFirstVisit() {
+  if (!els.onboarding || !els.xAxisMode) return;
+  let onboarded = false;
+  try { onboarded = localStorage.getItem(ONBOARDING_KEY) === "1"; } catch {}
+  if (onboarded) return;
+  // Position the hint just below the X-axis pill row using a
+  // requestAnimationFrame to make sure layout is settled.
+  requestAnimationFrame(() => {
+    const rect = els.xAxisMode.getBoundingClientRect();
+    els.onboarding.style.top = `${rect.bottom + window.scrollY + 8}px`;
+    els.onboarding.style.left = `${rect.left + window.scrollX + Math.min(60, rect.width / 4)}px`;
+    els.onboarding.hidden = false;
+  });
+}
+
+function dismissOnboarding() {
+  if (els.onboarding) els.onboarding.hidden = true;
+  try { localStorage.setItem(ONBOARDING_KEY, "1"); } catch {}
+}
+
+function bindOnboardingDismiss() {
+  if (els.onboardingDismiss) {
+    els.onboardingDismiss.addEventListener("click", dismissOnboarding);
+  }
+  // Also dismiss on first mode switch (the user discovered the feature).
+  if (els.xAxisMode) {
+    els.xAxisMode.addEventListener("click", (e) => {
+      if (e.target.closest(".chip[data-xaxis]")) dismissOnboarding();
+    }, { once: true });
   }
 }
 
@@ -1013,7 +1056,9 @@ async function init() {
   bindYearRange();
   bindExport();
   bindFiltersToggle();
+  bindOnboardingDismiss();
   render();
+  showOnboardingHintIfFirstVisit();
 
   // #65: if the URL carried a ?node=, scroll to it and highlight after
   // the SVG has had a frame to paint. Two requestAnimationFrame ticks
@@ -1863,7 +1908,14 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     path.setAttribute("d", d);
     path.setAttribute("class", `edge edge--${mc}`);
     path.setAttribute("marker-end", `url(#arrow-theme-${mc})`);
-    if (typeof e.conf === "number") path.style.strokeOpacity = String(0.5 + e.conf * 0.5);
+    if (typeof e.conf === "number") {
+      // Map confidence (0..1) to BOTH opacity (0.5..1.0) and stroke
+      // width (1.0..2.5px). Width gives the visual a clear "this edge
+      // is more strongly classified" cue at a glance — opacity alone
+      // was hard to compare across edges (review #113).
+      path.style.strokeOpacity = String(0.5 + e.conf * 0.5);
+      path.style.strokeWidth = String((1 + e.conf * 1.5).toFixed(2));
+    }
     path.dataset.rel = e.rel;
     path.dataset.rationale = e.rationale || "";
     path.dataset.conf = e.conf ?? "";
