@@ -2005,20 +2005,27 @@ function computeOrphanSet(nodes, edges) {
 function render() {
   const { nodes, edges } = state.data;
   const visibleEdges = (edges || []).filter((e) => state.visibleRelations.has(e.rel));
-  const layout = layoutChronological(nodes, edges || [], state.xAxisMode);
-  updateXAxisHint();
-  // #83: hub set computed against ALL edges (not just visible) so toggling
-  // relation filters doesn't reshuffle which papers feel "important".
+  // #83 / orphan: compute once against the FULL node+edge set so toggling
+  // hide-orphans doesn't reshuffle which papers count as hubs/orphans.
   state.hubSet = computeHubSet(nodes, edges || []);
   state.orphanSet = computeOrphanSet(nodes, edges || []);
   updateOrphanToggleVisibility();
+  // When the user opted to hide orphans we drop them from the nodes
+  // list passed to layoutChronological — otherwise the layout reserves
+  // a (now empty) row for any year that contained only orphans, leaving
+  // an awkward year-label-with-no-cards strip near the top.
+  const visibleNodes = state.hideOrphans
+    ? nodes.filter((n) => !state.orphanSet.has(n.id))
+    : nodes;
+  const layout = layoutChronological(visibleNodes, edges || [], state.xAxisMode);
+  updateXAxisHint();
   renderActiveFilters();
   // Per-mode supplemental data passed through to drawSvg so card classes
   // can pick up signals that aren't visible in the layout itself
   // (disrupt/incremental ratio for novelty, parent-group color for
   // genealogy, etc.). Computed once per render so drawSvg stays a pure
   // consumer.
-  state.modeData = computeModeData(nodes, edges || [], state.xAxisMode);
+  state.modeData = computeModeData(visibleNodes, edges || [], state.xAxisMode);
   // #61 / #62: combine search and year filters into a single match set
   // so drawSvg only needs one predicate. Filters are applied to nodes
   // (not the layout itself) so the chronological grid stays stable as
@@ -2027,7 +2034,7 @@ function render() {
     || state.yearRange.min != null || state.yearRange.max != null;
   const matchSet = hasFilter
     ? new Set(
-        nodes
+        visibleNodes
           .filter((n) =>
             matchesSearch(n, state.searchQuery)
               && matchesYear(n, state.yearRange.min, state.yearRange.max),
@@ -2368,8 +2375,10 @@ function buildNodeWrapper(p, matchSet) {
     // disconnected" apart from real hubs/leaves.
     const isOrphan = state.orphanSet?.has(p.id);
     if (isOrphan) card.classList.add("node-card--orphan");
-    // Hide entirely when user opted to via state.hideOrphans.
-    if (isOrphan && state.hideOrphans) card.classList.add("node-card--orphan-hidden");
+    // Note: when state.hideOrphans is true, render() drops orphans
+    // from visibleNodes upstream so this code path doesn't even run
+    // for them. The .node-card--orphan-hidden class is no longer
+    // applied here (kept in CSS only as legacy belt-and-braces).
     const orphanHtml = isOrphan
       ? `<span class="node-card__orphan" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
       : "";
