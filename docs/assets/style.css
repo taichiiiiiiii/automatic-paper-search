@@ -758,6 +758,27 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 }
 .filters-toggle__count[hidden] { display: none; }
 
+/* Orphan toggle inside the filter panel — hides papers with no edge
+   in the lineage. The whole control is hidden when there are no
+   orphans in the current theme. */
+.orphan-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--color-ink);
+  user-select: none;
+}
+.orphan-toggle[hidden] { display: none; }
+.orphan-toggle:hover { border-color: var(--color-ink-muted); }
+.orphan-toggle input { accent-color: var(--color-ink); }
+
 /* Active-filter chips: shown beneath the toolbar whenever any
    non-default filter is active. Each chip names its dimension and
    has a per-chip [×] to clear just that one. The "すべて解除" button
@@ -2253,6 +2274,32 @@ g.node-wrap.node-wrap--no-tx {
 }
 .edge--filtered {
   opacity: 0.15 !important;
+}
+
+/* Orphan cards: papers with no edge in the lineage (LLM judged all
+   candidate relations `unrelated`). Visually deprioritised — dashed
+   border + slightly faded — so they're clearly "in the data but
+   disconnected" without disappearing entirely. The 🔗 badge in the
+   venue row carries an explainer tooltip. The --orphan-hidden class
+   below is set when the user opts to hide them via the filter panel. */
+.node-card--orphan {
+  border-style: dashed !important;
+  opacity: 0.78;
+}
+.node-card--orphan-hidden {
+  display: none !important;
+}
+.node-card__orphan {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  color: var(--color-ink-muted);
+  cursor: help;
+}
+/* Hide the connecting wrapper too when --orphan-hidden is on, so the
+   foreignObject's reserved layout slot doesn't leave a phantom gap. */
+g.node-wrap:has(.node-card--orphan-hidden) {
+  display: none;
 }
 
 /* #61: search input styled to match the existing toolbar pill aesthetic. */

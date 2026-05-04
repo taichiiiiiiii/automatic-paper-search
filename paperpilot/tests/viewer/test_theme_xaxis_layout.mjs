@@ -103,6 +103,7 @@ function loadThemeJs() {
       buildLayoutContext,
       scoreForMode,
       computeModeData,
+      computeOrphanSet,
       venueTierBucket,
       bucketYear,
       checkVenueYearConsistency,
@@ -441,6 +442,28 @@ test("checkVenueYearConsistency surfaces a warn when year disagrees with venue 4
   } finally {
     console.warn = orig;
   }
+});
+
+test("computeOrphanSet flags nodes with no incident edge", () => {
+  // P0..P3 are connected via EDGES; P4 (Orphan) has no incident edge.
+  const orphans = T.computeOrphanSet(NODES, EDGES);
+  eq(orphans.size, 1);
+  truthy(orphans.has("P4"), "P4 (orphan) detected");
+  truthy(!orphans.has("P0"), "P0 not orphan");
+  truthy(!orphans.has("P3"), "P3 (has incoming supersedes) not orphan");
+});
+
+test("computeOrphanSet returns empty for empty edges", () => {
+  const orphans = T.computeOrphanSet(NODES, []);
+  eq(orphans.size, NODES.length, "no edges → every node is an orphan");
+});
+
+test("computeOrphanSet handles missing edge fields defensively", () => {
+  // Edges missing src/dst should not crash, just not contribute.
+  const malformed = [{ rel: "extends" }, { src: "P0" }, { dst: "P1" }];
+  const orphans = T.computeOrphanSet(NODES, malformed);
+  // Only P0 and P1 marked incident; everyone else orphan (3).
+  eq(orphans.size, NODES.length - 2);
 });
 
 test("existingThemeMatch returns slug for case-insensitive theme name match", () => {

@@ -190,6 +190,11 @@ const state = {
   xAxisMode: typeof prefs?.xAxisMode === "string" && X_AXIS_MODES.includes(prefs.xAxisMode)
     ? prefs.xAxisMode
     : DEFAULT_X_AXIS_MODE,
+  // Hide orphan papers (no incident edge). Default off — orphans are
+  // topically relevant to the theme even when LLM dropped their edges
+  // as `unrelated`. URL: ?orphan=hide.
+  hideOrphans: false,
+  orphanSet: new Set(),
 };
 
 // #61: matchesSearch — case-insensitive needle in title / authors / venue.
@@ -264,6 +269,9 @@ const els = {
   activeFilters: document.getElementById("active-filters"),
   activeFiltersItems: document.getElementById("active-filters-items"),
   activeFiltersClear: document.getElementById("active-filters-clear"),
+  orphanToggle: document.getElementById("orphan-toggle"),
+  orphanToggleLabel: document.getElementById("orphan-toggle-label"),
+  orphanCount: document.getElementById("orphan-count"),
   progress: document.getElementById("theme-progress"),
   progressTitle: document.getElementById("theme-progress-title"),
   progressElapsed: document.getElementById("theme-progress-elapsed"),
@@ -513,6 +521,9 @@ function readUrlState() {
         state.visibleRelations = new Set(requested);
       }
     }
+
+    // Orphan hide flag: only "hide" is meaningful; absent = default show.
+    if (params.get("orphan") === "hide") state.hideOrphans = true;
   } catch (e) {
     console.warn("[url-state] read failed:", e);
   } finally {
@@ -557,6 +568,9 @@ function syncUrlState() {
     } else {
       p.delete("rels");
     }
+
+    if (state.hideOrphans) p.set("orphan", "hide");
+    else p.delete("orphan");
 
     // replaceState (not pushState) — we don't want each filter twiddle
     // to add a back-button entry. The user can still bookmark / share
@@ -807,6 +821,10 @@ function renderActiveFilters() {
     const visible = [...state.visibleRelations].sort();
     chips.push({ kind: "relations", label: `🔗 関係: ${visible.join(", ")}` });
   }
+  if (state.hideOrphans) {
+    const n = state.orphanSet?.size || 0;
+    chips.push({ kind: "orphan", label: `🔗 孤立論文 ${n} 件を非表示` });
+  }
   if (chips.length === 0) {
     els.activeFilters.hidden = true;
     return;
@@ -851,11 +869,39 @@ function clearOneFilter(kind) {
         c.setAttribute("aria-pressed", String(DEFAULT_RELATIONS.includes(c.dataset.rel)));
       }
     }
+  } else if (kind === "orphan") {
+    state.hideOrphans = false;
+    if (els.orphanToggle) els.orphanToggle.checked = false;
   }
   syncUrlState();
   updateFiltersBadge();
   renderActiveFilters();
   render();
+}
+
+// Bind the orphan-hide checkbox + keep its label/(count) and checked
+// state in sync with state.hideOrphans (which may have been set by
+// the URL on load). Hides the entire toggle when there are no orphans
+// in the current theme so the UI stays clean for "fully connected"
+// trees (DPO has 0 orphans, MoE has 1 — both look better without an
+// always-zero counter).
+function bindOrphanToggle() {
+  if (!els.orphanToggle) return;
+  els.orphanToggle.checked = !!state.hideOrphans;
+  els.orphanToggle.addEventListener("change", () => {
+    state.hideOrphans = els.orphanToggle.checked;
+    syncUrlState();
+    updateFiltersBadge();
+    renderActiveFilters();
+    render();
+  });
+}
+function updateOrphanToggleVisibility() {
+  if (!els.orphanToggleLabel || !els.orphanCount) return;
+  const n = state.orphanSet?.size || 0;
+  els.orphanCount.textContent = String(n);
+  // Hide the whole control when there's nothing to act on.
+  els.orphanToggleLabel.hidden = n === 0;
 }
 
 function bindActiveFiltersClear() {
@@ -864,6 +910,7 @@ function bindActiveFiltersClear() {
       clearOneFilter("search");
       clearOneFilter("year");
       clearOneFilter("relations");
+      clearOneFilter("orphan");
     });
   }
   if (els.activeFiltersItems) {
@@ -883,6 +930,7 @@ function updateFiltersBadge() {
   if (Number.isFinite(state.yearRange.min) && state.yearRange.min !== _yearDataExtents.min) n++;
   if (Number.isFinite(state.yearRange.max) && state.yearRange.max !== _yearDataExtents.max) n++;
   if (hasNonDefaultRelations()) n++;
+  if (state.hideOrphans) n++;
   if (n === 0) {
     els.filtersCount.hidden = true;
   } else {
@@ -1241,6 +1289,7 @@ async function init() {
   bindExport();
   bindFiltersToggle();
   bindActiveFiltersClear();
+  bindOrphanToggle();
   bindOnboardingDismiss();
   bindKeyboardShortcuts();
   render();
@@ -1931,6 +1980,24 @@ function computeHubSet(nodes, edges) {
   return hubs;
 }
 
+// Orphan set — nodes with no incident edge in the FULL relation graph
+// (we ignore the user's relation filter so toggling chips doesn't
+// reshuffle which nodes count as "isolated"). build_theme_lineage drops
+// edges classified as `unrelated`, so a paper that the LLM judged
+// unrelated to every other paper in the theme ends up here. Visually
+// surfaced via the .node-card--orphan class so users can tell "in the
+// data but disconnected" apart from "actually a hub".
+function computeOrphanSet(nodes, edges) {
+  const incident = new Set();
+  for (const e of edges || []) {
+    if (e.src) incident.add(e.src);
+    if (e.dst) incident.add(e.dst);
+  }
+  const orphans = new Set();
+  for (const n of nodes) if (!incident.has(n.id)) orphans.add(n.id);
+  return orphans;
+}
+
 function render() {
   const { nodes, edges } = state.data;
   const visibleEdges = (edges || []).filter((e) => state.visibleRelations.has(e.rel));
@@ -1939,6 +2006,9 @@ function render() {
   // #83: hub set computed against ALL edges (not just visible) so toggling
   // relation filters doesn't reshuffle which papers feel "important".
   state.hubSet = computeHubSet(nodes, edges || []);
+  state.orphanSet = computeOrphanSet(nodes, edges || []);
+  updateOrphanToggleVisibility();
+  renderActiveFilters();
   // Per-mode supplemental data passed through to drawSvg so card classes
   // can pick up signals that aren't visible in the layout itself
   // (disrupt/incremental ratio for novelty, parent-group color for
@@ -2209,6 +2279,17 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     const hubHtml = isHub
       ? `<span class="node-card__hub" title="hub paper: high connectivity">👑</span>`
       : "";
+    // Orphan: no edge incident to this paper (LLM judged all candidate
+    // relations `unrelated`). Visually distinguished with a dashed
+    // border + small 🔗 badge so users can tell "in the data but
+    // disconnected" apart from real hubs/leaves.
+    const isOrphan = state.orphanSet?.has(p.id);
+    if (isOrphan) card.classList.add("node-card--orphan");
+    // Hide entirely when user opted to via state.hideOrphans.
+    if (isOrphan && state.hideOrphans) card.classList.add("node-card--orphan-hidden");
+    const orphanHtml = isOrphan
+      ? `<span class="node-card__orphan" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
+      : "";
     // B1: hover label that names the click target (arXiv / DOI / S2)
     // so users understand what clicking a card does. The actual click
     // handler is bound below; this is purely visual feedback shown via
@@ -2235,6 +2316,7 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
         <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
         ${hubHtml}
         ${trendingHtml}
+        ${orphanHtml}
       </div>
       <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
       ${tldrHtml}
