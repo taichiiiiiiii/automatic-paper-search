@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=29" />
+  <link rel="stylesheet" href="../assets/style.css?v=30" />
 </head>
 <body>
   <header class="hero hero--compact">
@@ -234,6 +234,30 @@
     <span class="x-axis-legend__arrow" aria-hidden="true">→</span>
   </div>
 
+  <!-- Keyboard shortcut help — toggled by `?` key. Shows the modal
+       overlay listing every shortcut. Closed by Escape, click outside,
+       or the close button. -->
+  <div class="kbd-help" id="kbd-help" hidden role="dialog" aria-modal="true" aria-labelledby="kbd-help-title">
+    <div class="kbd-help__panel">
+      <h2 class="kbd-help__title" id="kbd-help-title">⌨️ キーボードショートカット</h2>
+      <table class="kbd-help__table">
+        <tbody>
+          <tr><td><kbd>1</kbd></td><td>📊 順位</td></tr>
+          <tr><td><kbd>2</kbd></td><td>📈 log</td></tr>
+          <tr><td><kbd>3</kbd></td><td>🌳 系譜</td></tr>
+          <tr><td><kbd>4</kbd></td><td>⭐ 中心</td></tr>
+          <tr><td><kbd>5</kbd></td><td>🏛 会議</td></tr>
+          <tr><td><kbd>6</kbd></td><td>💥 新規</td></tr>
+          <tr><td><kbd>/</kbd></td><td>論文検索フォーカス</td></tr>
+          <tr><td><kbd>F</kbd></td><td>絞り込みパネル開閉</td></tr>
+          <tr><td><kbd>?</kbd></td><td>このヘルプ表示</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>閉じる / 解除</td></tr>
+        </tbody>
+      </table>
+      <button type="button" class="kbd-help__close" id="kbd-help-close">閉じる</button>
+    </div>
+  </div>
+
   <!-- Onboarding hint: shown to first-time visitors only (gated by
        localStorage["pp.theme.onboarded"]). Points at the X-axis pill
        row to surface the most important interactive feature, since
@@ -289,7 +313,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=29" defer></script>
-  <script src="../assets/theme.js?v=29" defer></script>
+  <script src="../assets/utils.js?v=30" defer></script>
+  <script src="../assets/theme.js?v=30" defer></script>
 </body>
 </html>
