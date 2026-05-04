@@ -805,6 +805,11 @@ function bindFiltersToggle() {
     || (Number.isFinite(state.yearRange.max) && state.yearRange.max !== _yearDataExtents.max)
     || hasNonDefaultRelations();
   if (auto) setOpen(true);
+  // INIT-time sync only — calls updateFiltersBadge + renderActiveFilters
+  // directly (NOT via commitStateChange) because no state mutation has
+  // occurred and we don't want to write the URL or trigger a render
+  // here. If you add a new "after state changed" duty in the future,
+  // it should go in commitStateChange — NOT here.
   updateFiltersBadge();
   renderActiveFilters();
 }
@@ -2019,7 +2024,9 @@ function render() {
     : nodes;
   const layout = layoutChronological(visibleNodes, edges || [], state.xAxisMode);
   updateXAxisHint();
-  renderActiveFilters();
+  // Note: we used to call renderActiveFilters() here, but every entry
+  // point now goes through commitStateChange() which already invokes
+  // it (review #121 MEDIUM). Removed to avoid the double-render.
   // Per-mode supplemental data passed through to drawSvg so card classes
   // can pick up signals that aren't visible in the layout itself
   // (disrupt/incremental ratio for novelty, parent-group color for
@@ -2043,6 +2050,12 @@ function render() {
       )
     : null;
   drawSvg(layout, visibleEdges, matchSet);
+  // Toggle .has-filtered on the canvas so the match-highlight rule
+  // can target unfiltered cards (replaces the .lineage-canvas:has(...)
+  // CSS selector for compatibility with Safari < 15.4 + Firefox < 121).
+  if (els.canvas) {
+    els.canvas.classList.toggle("has-filtered", !!matchSet && matchSet.size < (visibleNodes?.length || 0));
+  }
 }
 
 // ---- SVG drawing ----
