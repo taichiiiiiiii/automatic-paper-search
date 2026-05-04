@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=28" />
+  <link rel="stylesheet" href="../assets/style.css?v=29" />
 </head>
 <body>
   <header class="hero hero--compact">
@@ -38,7 +38,25 @@
         ✨ 新規テーマ
       </button>
     </nav>
-    <h1 class="hero__title"><em>Theme Lineage</em> — テーマで時系列家系図</h1>
+    <h1 class="hero__title">
+      <!-- Mini family-tree glyph: 1 root → 2 children → 1 grandchild,
+           same edge colors as the actual lineage so the icon previews
+           what the page renders. -->
+      <svg class="hero__icon" viewBox="0 0 64 64" aria-hidden="true">
+        <g fill="none" stroke-width="2" stroke-linecap="round">
+          <!-- edges -->
+          <path d="M32 14 V22 M32 22 L20 32 M32 22 L44 32 M44 36 V46" stroke="oklch(62% 0.14 145)"/>
+          <path d="M20 36 V46" stroke="oklch(72% 0.13 80)"/>
+          <!-- nodes -->
+          <rect x="26" y="6" width="12" height="10" rx="2" fill="oklch(78% 0.13 85)" stroke="oklch(55% 0.14 75)"/>
+          <rect x="14" y="32" width="12" height="8" rx="2" fill="oklch(96% 0.02 80)" stroke="oklch(60% 0.04 85)"/>
+          <rect x="38" y="32" width="12" height="8" rx="2" fill="oklch(96% 0.02 80)" stroke="oklch(60% 0.04 85)"/>
+          <rect x="38" y="46" width="12" height="8" rx="2" fill="oklch(96% 0.02 80)" stroke="oklch(60% 0.04 85)"/>
+          <rect x="14" y="46" width="12" height="8" rx="2" fill="oklch(96% 0.02 80)" stroke="oklch(60% 0.04 85)"/>
+        </g>
+      </svg>
+      <em>Theme Lineage</em> — テーマで時系列家系図
+    </h1>
 
     <!-- Collapsible details: was always-visible 3-paragraph block + form
          (above-fold issue). Now hidden by default; users open via the
@@ -216,6 +234,21 @@
     <span class="x-axis-legend__arrow" aria-hidden="true">→</span>
   </div>
 
+  <!-- Onboarding hint: shown to first-time visitors only (gated by
+       localStorage["pp.theme.onboarded"]). Points at the X-axis pill
+       row to surface the most important interactive feature, since
+       it's easy to miss without exploration. Dismissed automatically
+       when the user switches a mode, or via the explicit close button. -->
+  <div class="onboarding" id="onboarding-hint" hidden role="dialog" aria-labelledby="onboarding-title">
+    <div class="onboarding__arrow" aria-hidden="true"></div>
+    <strong class="onboarding__title" id="onboarding-title">📐 横軸を切り替えてみよう</strong>
+    <p class="onboarding__body">
+      論文の並び方が変わります。<br>
+      <em>順位 / log / 系譜 / 中心 / 会議 / 新規</em> の 6 種類。
+    </p>
+    <button type="button" class="onboarding__close" id="onboarding-dismiss">わかった ✓</button>
+  </div>
+
   <div class="lineage-canvas" id="canvas">
     <!-- Floating export toolbar — was crammed into the .lineage-toolbar
          where it pushed the toolbar to wrap on 1280-1600px screens.
@@ -256,7 +289,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=28" defer></script>
-  <script src="../assets/theme.js?v=28" defer></script>
+  <script src="../assets/utils.js?v=29" defer></script>
+  <script src="../assets/theme.js?v=29" defer></script>
 </body>
 </html>
