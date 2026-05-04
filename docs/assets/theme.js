@@ -259,6 +259,8 @@ const els = {
   filtersCount: document.getElementById("filters-count"),
   onboarding: document.getElementById("onboarding-hint"),
   onboardingDismiss: document.getElementById("onboarding-dismiss"),
+  kbdHelp: document.getElementById("kbd-help"),
+  kbdHelpClose: document.getElementById("kbd-help-close"),
   progress: document.getElementById("theme-progress"),
   progressTitle: document.getElementById("theme-progress-title"),
   progressElapsed: document.getElementById("theme-progress-elapsed"),
@@ -613,6 +615,99 @@ function showSlugFallback(requestedSlug, fallbackSlug) {
   }
   if (els.slugFallbackClose) {
     els.slugFallbackClose.onclick = () => { els.slugFallback.hidden = true; };
+  }
+}
+
+// Global keyboard shortcuts. Power users can switch X-axis modes,
+// jump into search, open filters, or pull up help without ever
+// touching the mouse. We deliberately ignore key events that target
+// an editable element (input, textarea, contenteditable) so typing
+// "/" or numbers inside the search box doesn't hijack the keystroke.
+function bindKeyboardShortcuts() {
+  const isEditable = (el) => {
+    if (!el) return false;
+    const tag = (el.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return true;
+    if (el.isContentEditable) return true;
+    return false;
+  };
+
+  // Map number key → mode index (1..6 maps to X_AXIS_MODES[0..5]).
+  const modeKey = (key) => {
+    const n = parseInt(key, 10);
+    if (n >= 1 && n <= X_AXIS_MODES.length) return X_AXIS_MODES[n - 1];
+    return null;
+  };
+
+  document.addEventListener("keydown", (e) => {
+    // Always allow Escape to close help / onboarding regardless of focus.
+    if (e.key === "Escape") {
+      if (els.kbdHelp && !els.kbdHelp.hidden) {
+        els.kbdHelp.hidden = true;
+        e.preventDefault();
+        return;
+      }
+      if (els.onboarding && !els.onboarding.hidden) {
+        dismissOnboarding();
+        e.preventDefault();
+        return;
+      }
+      return;
+    }
+
+    // Don't hijack keys while the user is typing.
+    if (isEditable(document.activeElement)) return;
+    // Modifier-bearing combos belong to the browser / OS.
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    // X-axis mode switch: 1..6
+    const targetMode = modeKey(e.key);
+    if (targetMode) {
+      e.preventDefault();
+      const btn = els.xAxisMode?.querySelector(`.chip[data-xaxis="${targetMode}"]`);
+      if (btn) btn.click();
+      return;
+    }
+
+    // "/" — focus the search input (open filters panel first if needed).
+    if (e.key === "/") {
+      e.preventDefault();
+      if (els.filtersPanel && els.filtersPanel.hidden && els.filtersToggle) {
+        els.filtersToggle.click();
+      }
+      els.searchInput?.focus();
+      return;
+    }
+
+    // "F" — toggle the filters panel.
+    if (e.key === "f" || e.key === "F") {
+      if (els.filtersToggle) {
+        e.preventDefault();
+        els.filtersToggle.click();
+      }
+      return;
+    }
+
+    // "?" — open the keyboard help overlay.
+    if (e.key === "?") {
+      if (els.kbdHelp) {
+        e.preventDefault();
+        els.kbdHelp.hidden = false;
+      }
+      return;
+    }
+  });
+
+  if (els.kbdHelpClose) {
+    els.kbdHelpClose.addEventListener("click", () => {
+      els.kbdHelp.hidden = true;
+    });
+  }
+  // Click outside the panel to close.
+  if (els.kbdHelp) {
+    els.kbdHelp.addEventListener("click", (e) => {
+      if (e.target === els.kbdHelp) els.kbdHelp.hidden = true;
+    });
   }
 }
 
@@ -1057,6 +1152,7 @@ async function init() {
   bindExport();
   bindFiltersToggle();
   bindOnboardingDismiss();
+  bindKeyboardShortcuts();
   render();
   showOnboardingHintIfFirstVisit();
 
@@ -2019,7 +2115,24 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     const hubHtml = isHub
       ? `<span class="node-card__hub" title="hub paper: high connectivity">👑</span>`
       : "";
+    // B1: hover label that names the click target (arXiv / DOI / S2)
+    // so users understand what clicking a card does. The actual click
+    // handler is bound below; this is purely visual feedback shown via
+    // the .node-card:hover .node-card__open rule.
+    const tooltipBase = p.arxiv_id ? "arXiv"
+                      : p.doi ? "DOI"
+                      : "Semantic Scholar";
+    // B2: small deep-view CTA — clicking opens the per-paper deep
+    // family-tree viewer (existing /iclr-2026/deep.html mode), focused
+    // on this paper id. Falls back to no-op if no deep manifest is
+    // accessible. Stop-propagation so it doesn't also trigger the
+    // card's main click handler. The link is rendered only when the
+    // node has an arxiv_id (deep-manifest entries are keyed by arxiv).
+    const deepHtml = p.arxiv_id && ARXIV_RE.test(p.arxiv_id)
+      ? `<a class="node-card__deep" href="../iclr-2026/deep.html?paper=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" data-stop-card-click="true">📖</a>`
+      : "";
     card.innerHTML = `
+      <span class="node-card__open">→ ${escapeHtml(tooltipBase)} で開く</span>
       <div class="node-card__venue">
         <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
         ${hubHtml}
@@ -2028,7 +2141,7 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
       <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
       ${tldrHtml}
       <div class="node-card__authors">${escapeHtml(authors)}</div>
-      <div class="node-card__meta">${cits}${starsHtml}</div>
+      <div class="node-card__meta">${cits}${starsHtml}${deepHtml}</div>
     `;
 
     // Hover: highlight edges incident to this node, fade the rest. Done
@@ -2042,14 +2155,15 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
       hidePopover();
     });
     // Click: open the paper page in a new tab. arxiv > doi > S2 fallback
-    // gives readers the most direct route to the actual paper.
-    card.addEventListener("click", () => {
+    // gives readers the most direct route to the actual paper. Skip
+    // when the click came from a child element that opted out via
+    // data-stop-card-click (the 📖 deep-view CTA does this so its own
+    // anchor navigation isn't shadowed by the window.open here).
+    card.addEventListener("click", (e) => {
+      if (e.target.closest("[data-stop-card-click]")) return;
       window.open(paperUrl, "_blank", "noopener,noreferrer");
     });
     card.style.cursor = "pointer";
-    const tooltipBase = p.arxiv_id ? "arXiv"
-                      : p.doi ? "DOI"
-                      : "Semantic Scholar";
     card.title = `クリックで ${tooltipBase} に開く`;
 
     fo.appendChild(card);

@@ -758,6 +758,82 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 }
 .filters-toggle__count[hidden] { display: none; }
 
+/* B3: Keyboard shortcut help overlay. Triggered by `?`, dismissed by
+   Escape / outside-click / close button. Modal pattern with dimmed
+   backdrop so the focus stays on the cheat-sheet. */
+.kbd-help {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: oklch(20% 0.012 270 / 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: kbd-help-fade 0.18s ease-out;
+}
+.kbd-help[hidden] { display: none; }
+.kbd-help__panel {
+  width: min(420px, 92vw);
+  background: var(--color-bg);
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem 1.1rem;
+  box-shadow: 0 20px 60px oklch(0% 0 0 / 0.25);
+}
+.kbd-help__title {
+  margin: 0 0 1rem;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--color-ink);
+}
+.kbd-help__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+}
+.kbd-help__table td {
+  padding: 0.32rem 0;
+  vertical-align: middle;
+}
+.kbd-help__table td:first-child {
+  width: 60px;
+}
+.kbd-help kbd {
+  display: inline-block;
+  min-width: 28px;
+  padding: 0.18rem 0.55rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-align: center;
+  color: var(--color-ink);
+}
+.kbd-help__close {
+  display: block;
+  margin-left: auto;
+  padding: 0.4rem 1rem;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+.kbd-help__close:hover { opacity: 0.85; }
+@keyframes kbd-help-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kbd-help { animation: none; }
+}
+
 /* First-visit onboarding popover. Floats below the X-axis pill row,
    absolutely positioned by JS based on the pill row's bbox. Has an
    upward-pointing CSS triangle so the visual ties to its target. */
@@ -1961,6 +2037,63 @@ g.node-wrap.node-wrap--no-tx {
       oklch(58% 0.18 30 / calc(0.04 + var(--card-heat, 0) * 0.08));
   transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease,
               border-color 0.15s ease;
+}
+
+/* B1: hover affordance — names the click target ("arXiv で開く") so
+   users see what clicking does. Hidden by default, fades in on card
+   hover. position:absolute to overlay the venue badge area without
+   reflowing the card. */
+.node-card--theme {
+  position: relative;
+}
+.node-card__open {
+  position: absolute;
+  top: -10px;
+  right: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  padding: 2px 8px;
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 5;
+  white-space: nowrap;
+}
+.node-card--theme:hover .node-card__open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* B2: deep-view CTA at the card's bottom-right. Small enough to be
+   non-intrusive on a normal card glance, but visible enough to invite
+   exploration. Stops click propagation via data-stop-card-click so
+   its anchor navigation isn't intercepted by the card's external-link
+   handler. */
+.node-card__deep {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: oklch(96% 0.018 270);
+  border: 1px solid var(--color-rule);
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+.node-card__deep:hover {
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border-color: var(--color-ink);
+  transform: scale(1.1);
 }
 
 /* #83: hub badge — 👑 marks papers in the 90th percentile of total
