@@ -2282,8 +2282,11 @@ g.node-wrap.node-wrap--no-tx {
 /* Match highlight — cards that DO match the search/year filter get a
    strong, eye-catching border so they're easy to find at a glance.
    Only kicks in when at least one card has the --filtered class
-   (otherwise the highlight would noisily decorate every card). */
-.lineage-canvas:has(.node-card--filtered) .node-card--theme:not(.node-card--filtered) {
+   (otherwise the highlight would noisily decorate every card).
+   Uses a JS-applied .has-filtered class on .lineage-canvas instead of
+   the CSS :has() selector so the rule works in Safari < 15.4 and
+   Firefox < 121 (review #121 HIGH). */
+.lineage-canvas.has-filtered .node-card--theme:not(.node-card--filtered) {
   outline: 3px solid oklch(75% 0.18 50);
   outline-offset: 2px;
   box-shadow: 0 0 0 6px oklch(75% 0.18 50 / 0.15),
@@ -2301,9 +2304,6 @@ g.node-wrap.node-wrap--no-tx {
   border-style: dashed !important;
   opacity: 0.78;
 }
-.node-card--orphan-hidden {
-  display: none !important;
-}
 .node-card__orphan {
   display: inline-block;
   margin-left: 0.4rem;
@@ -2311,11 +2311,11 @@ g.node-wrap.node-wrap--no-tx {
   color: var(--color-ink-muted);
   cursor: help;
 }
-/* Hide the connecting wrapper too when --orphan-hidden is on, so the
-   foreignObject's reserved layout slot doesn't leave a phantom gap. */
-g.node-wrap:has(.node-card--orphan-hidden) {
-  display: none;
-}
+/* Note: the previous `:has(.node-card--orphan-hidden)` rule is gone
+   because c76778b drops orphans BEFORE layout when state.hideOrphans
+   is true — the orphan nodes are no longer rendered at all in that
+   mode, so there's nothing to hide via CSS. The .node-card--orphan-
+   hidden class is also no longer applied (see buildNodeWrapper). */
 
 /* #61: search input styled to match the existing toolbar pill aesthetic. */
 .theme-search {

@@ -14,3 +14,12 @@ __pycache__/
 !.dev.vars.example
 .env*
 !.env.example
+
+# Local build artifacts — S2 API response cache + LLM classification
+# cache. Regenerated on demand by build_*_lineage.py; not part of the
+# published artifact. (Was showing 40+ files in `git status` — review #123.)
+paperpilot/data/lineage-cache/
+
+# uv lock — currently untracked; commit deliberately if reproducibility
+# is needed. Excluded here to keep status clean.
+uv.lock
