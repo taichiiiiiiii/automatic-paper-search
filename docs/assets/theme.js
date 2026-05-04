@@ -261,6 +261,9 @@ const els = {
   onboardingDismiss: document.getElementById("onboarding-dismiss"),
   kbdHelp: document.getElementById("kbd-help"),
   kbdHelpClose: document.getElementById("kbd-help-close"),
+  activeFilters: document.getElementById("active-filters"),
+  activeFiltersItems: document.getElementById("active-filters-items"),
+  activeFiltersClear: document.getElementById("active-filters-clear"),
   progress: document.getElementById("theme-progress"),
   progressTitle: document.getElementById("theme-progress-title"),
   progressElapsed: document.getElementById("theme-progress-elapsed"),
@@ -772,6 +775,7 @@ function bindFiltersToggle() {
     || hasNonDefaultRelations();
   if (auto) setOpen(true);
   updateFiltersBadge();
+  renderActiveFilters();
 }
 
 // Track default year extents so the URL-restored auto-open detector
@@ -783,6 +787,91 @@ function hasNonDefaultRelations() {
   const cur = [...state.visibleRelations].sort();
   if (cur.length !== DEFAULT_RELATIONS.length) return true;
   return !cur.every((r) => DEFAULT_RELATIONS.includes(r));
+}
+
+// Active-filter chips beneath the toolbar. Each shows one filter
+// dimension with a [×] to clear just that one. "すべて解除" wipes the
+// lot. Idempotent — safe to re-render after every filter mutation.
+function renderActiveFilters() {
+  if (!els.activeFilters || !els.activeFiltersItems) return;
+  const chips = [];
+  if (state.searchQuery) {
+    chips.push({ kind: "search", label: `🔍 検索: "${state.searchQuery}"` });
+  }
+  const yMin = state.yearRange.min, yMax = state.yearRange.max;
+  if (Number.isFinite(yMin) && Number.isFinite(yMax)
+      && (yMin !== _yearDataExtents.min || yMax !== _yearDataExtents.max)) {
+    chips.push({ kind: "year", label: `📅 年: ${yMin}〜${yMax}` });
+  }
+  if (hasNonDefaultRelations()) {
+    const visible = [...state.visibleRelations].sort();
+    chips.push({ kind: "relations", label: `🔗 関係: ${visible.join(", ")}` });
+  }
+  if (chips.length === 0) {
+    els.activeFilters.hidden = true;
+    return;
+  }
+  els.activeFilters.hidden = false;
+  els.activeFiltersItems.innerHTML = "";
+  for (const c of chips) {
+    const el = document.createElement("span");
+    el.className = "active-filters__chip";
+    el.dataset.kind = c.kind;
+    // textContent for the label part, then a separate span for the ×
+    // so a click on the × can be detected via the data-kind handler.
+    const txt = document.createElement("span");
+    txt.textContent = c.label;
+    el.appendChild(txt);
+    const x = document.createElement("button");
+    x.type = "button";
+    x.className = "active-filters__chip-x";
+    x.title = "この絞り込みを解除";
+    x.dataset.clearKind = c.kind;
+    x.textContent = "×";
+    el.appendChild(x);
+    els.activeFiltersItems.appendChild(el);
+  }
+}
+
+function clearOneFilter(kind) {
+  if (kind === "search") {
+    state.searchQuery = "";
+    if (els.searchInput) els.searchInput.value = "";
+  } else if (kind === "year") {
+    state.yearRange.min = _yearDataExtents.min;
+    state.yearRange.max = _yearDataExtents.max;
+    if (els.yearMin) els.yearMin.value = String(_yearDataExtents.min);
+    if (els.yearMax) els.yearMax.value = String(_yearDataExtents.max);
+    if (els.yearMinLabel) els.yearMinLabel.textContent = String(_yearDataExtents.min);
+    if (els.yearMaxLabel) els.yearMaxLabel.textContent = String(_yearDataExtents.max);
+  } else if (kind === "relations") {
+    state.visibleRelations = new Set(DEFAULT_RELATIONS);
+    if (els.filterBar) {
+      for (const c of els.filterBar.querySelectorAll(".chip[data-rel]")) {
+        c.setAttribute("aria-pressed", String(DEFAULT_RELATIONS.includes(c.dataset.rel)));
+      }
+    }
+  }
+  syncUrlState();
+  updateFiltersBadge();
+  renderActiveFilters();
+  render();
+}
+
+function bindActiveFiltersClear() {
+  if (els.activeFiltersClear) {
+    els.activeFiltersClear.addEventListener("click", () => {
+      clearOneFilter("search");
+      clearOneFilter("year");
+      clearOneFilter("relations");
+    });
+  }
+  if (els.activeFiltersItems) {
+    els.activeFiltersItems.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-clear-kind]");
+      if (btn) clearOneFilter(btn.dataset.clearKind);
+    });
+  }
 }
 
 // "🔍 絞り込み (3)" — show the count of active filter dimensions
@@ -1151,6 +1240,7 @@ async function init() {
   bindYearRange();
   bindExport();
   bindFiltersToggle();
+  bindActiveFiltersClear();
   bindOnboardingDismiss();
   bindKeyboardShortcuts();
   render();
@@ -1364,6 +1454,7 @@ function bindYearRange() {
     if (els.yearMaxLabel) els.yearMaxLabel.textContent = String(hi);
     syncUrlState();
     updateFiltersBadge();
+    renderActiveFilters();
     clearTimeout(pending);
     pending = setTimeout(render, 80);
   };
@@ -1381,6 +1472,7 @@ function bindSearch() {
     state.searchQuery = els.searchInput.value || "";
     syncUrlState();
     updateFiltersBadge();
+    renderActiveFilters();
     clearTimeout(pending);
     pending = setTimeout(render, 120);
   });
@@ -1456,6 +1548,7 @@ function bindXAxisMode() {
     savePrefs();
     syncUrlState();
     updateFiltersBadge();
+    renderActiveFilters();
     render();
   });
 }
@@ -1492,6 +1585,7 @@ function bindFilterBar() {
     savePrefs();
     syncUrlState();
     updateFiltersBadge();
+    renderActiveFilters();
     render();
   });
 }
@@ -2128,8 +2222,12 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
     // accessible. Stop-propagation so it doesn't also trigger the
     // card's main click handler. The link is rendered only when the
     // node has an arxiv_id (deep-manifest entries are keyed by arxiv).
+    // Param name MUST be ?arxiv=... — deep.js's arxivIdFromLocation()
+    // looks for that key. An earlier draft used ?paper= and the deep
+    // viewer silently fell back to its default paper, leaving the
+    // user at the wrong tree.
     const deepHtml = p.arxiv_id && ARXIV_RE.test(p.arxiv_id)
-      ? `<a class="node-card__deep" href="../iclr-2026/deep.html?paper=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" data-stop-card-click="true">📖</a>`
+      ? `<a class="node-card__deep" href="../iclr-2026/deep.html?arxiv=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" data-stop-card-click="true">📖</a>`
       : "";
     card.innerHTML = `
       <span class="node-card__open">→ ${escapeHtml(tooltipBase)} で開く</span>

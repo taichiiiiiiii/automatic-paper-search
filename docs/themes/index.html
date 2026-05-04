@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=30" />
+  <link rel="stylesheet" href="../assets/style.css?v=31" />
 </head>
 <body>
   <header class="hero hero--compact">
@@ -258,6 +258,18 @@
     </div>
   </div>
 
+  <!-- Active filter chips: live indicators of any non-default filter.
+       Each chip has a [×] to clear that single dimension. Lets the
+       user see at a glance that the canvas is filtered without having
+       to open the filter panel. Hidden when no filters are active. -->
+  <div class="active-filters" id="active-filters" hidden aria-live="polite">
+    <span class="active-filters__label">絞り込み中:</span>
+    <span class="active-filters__items" id="active-filters-items"></span>
+    <button type="button" class="active-filters__clear" id="active-filters-clear" title="すべての絞り込みを解除">
+      すべて解除
+    </button>
+  </div>
+
   <!-- Onboarding hint: shown to first-time visitors only (gated by
        localStorage["pp.theme.onboarded"]). Points at the X-axis pill
        row to surface the most important interactive feature, since
@@ -313,7 +325,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=30" defer></script>
-  <script src="../assets/theme.js?v=30" defer></script>
+  <script src="../assets/utils.js?v=31" defer></script>
+  <script src="../assets/theme.js?v=31" defer></script>
 </body>
 </html>
