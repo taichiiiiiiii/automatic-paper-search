@@ -2264,16 +2264,31 @@ g.node-wrap.node-wrap--no-tx {
    while keeping the chronological grid intact. Slightly stronger fade
    than the hover-dim state so a search box "hit" reads clearly. */
 .node-card--filtered {
-  /* Bumped from 0.18 → 0.35 so filtered cards still register as
-     "present but de-emphasised" instead of looking like they vanished
-     (a user reported this as suspected breakage when sharing a search-
-     filtered screenshot). 0.35 keeps text readable enough for context
-     while still clearly secondary to matched cards. */
-  opacity: 0.35;
+  /* Filter de-emphasis evolution:
+       v0: opacity 0.18 → reported as "broken / invisible"
+       v1: opacity 0.35 → still reported as invisible at large widths
+       v2: opacity 0.55 + grayscale + slight border lighten → cards
+           remain clearly readable but visually secondary to matches.
+     Pointer-events: none so accidental clicks on a faded card don't
+     pop open an arxiv tab. */
+  opacity: 0.55;
+  filter: grayscale(0.6);
+  border-color: var(--color-rule) !important;
   pointer-events: none;
 }
 .edge--filtered {
   opacity: 0.15 !important;
+}
+/* Match highlight — cards that DO match the search/year filter get a
+   strong, eye-catching border so they're easy to find at a glance.
+   Only kicks in when at least one card has the --filtered class
+   (otherwise the highlight would noisily decorate every card). */
+.lineage-canvas:has(.node-card--filtered) .node-card--theme:not(.node-card--filtered) {
+  outline: 3px solid oklch(75% 0.18 50);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px oklch(75% 0.18 50 / 0.15),
+              0 4px 16px oklch(0% 0 0 / 0.08);
+  z-index: 2;
 }
 
 /* Orphan cards: papers with no edge in the lineage (LLM judged all
