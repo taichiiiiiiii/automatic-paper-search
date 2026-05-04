@@ -716,6 +716,59 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 }
 .chip--xaxis[aria-pressed="false"] { opacity: 0.55; }
 
+/* Detail-filter toggle button + collapsible panel — hides the
+   search/year/relation triplet behind one click so the toolbar stays
+   one tidy line for first-time users. The badge surfaces how many
+   filters are active so the user remembers what's hidden. */
+.filters-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.42rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.filters-toggle:hover { border-color: var(--color-ink-muted); }
+.filters-toggle[aria-expanded="true"] {
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border-color: var(--color-ink);
+}
+.filters-toggle__count {
+  background: oklch(75% 0.18 50);
+  color: white;
+  font-size: 0.62rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+.filters-toggle__count[hidden] { display: none; }
+
+.filters-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.6rem var(--space-edge) 0.4rem;
+  background: var(--color-surface-elevated);
+  border-bottom: 1px solid var(--color-rule);
+  animation: filters-panel-slide 0.15s ease-out;
+}
+.filters-panel[hidden] { display: none; }
+@keyframes filters-panel-slide {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .filters-panel { animation: none; }
+}
+
 /* Mobile / narrow-viewport tweaks: enlarge touch targets so the chip
    row is reliably tappable. Apple HIG asks for 44px, Material 48px;
    here we settle on 36-40px because the canvas-first layout doesn't
