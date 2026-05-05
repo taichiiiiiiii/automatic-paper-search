@@ -663,83 +663,94 @@ function showSlugFallback(requestedSlug, fallbackSlug) {
   }
 }
 
-// Global keyboard shortcuts. Power users can switch X-axis modes,
-// jump into search, open filters, or pull up help without ever
-// touching the mouse. We deliberately ignore key events that target
-// an editable element (input, textarea, contenteditable) so typing
+// True when the focused element is a text input / textarea / select /
+// contenteditable — used to suppress non-Escape shortcuts so typing
 // "/" or numbers inside the search box doesn't hijack the keystroke.
-function bindKeyboardShortcuts() {
-  const isEditable = (el) => {
-    if (!el) return false;
-    const tag = (el.tagName || "").toLowerCase();
-    if (tag === "input" || tag === "textarea" || tag === "select") return true;
-    if (el.isContentEditable) return true;
+function isEditableTarget(el) {
+  if (!el) return false;
+  const tag = (el.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || tag === "select") return true;
+  if (el.isContentEditable) return true;
+  return false;
+}
+
+// Escape handlers — fire even when an editable element is focused.
+// Each entry returns true if it consumed the event (we then stop the
+// chain + preventDefault). Order matters: kbd help dismisses before
+// onboarding so layered overlays close one at a time.
+const ESCAPE_HANDLERS = [
+  () => {
+    if (els.kbdHelp && !els.kbdHelp.hidden) { els.kbdHelp.hidden = true; return true; }
     return false;
-  };
+  },
+  () => {
+    if (els.onboarding && !els.onboarding.hidden) { dismissOnboarding(); return true; }
+    return false;
+  },
+];
 
-  // Map number key → mode index (1..6 maps to X_AXIS_MODES[0..5]).
-  const modeKey = (key) => {
-    const n = parseInt(key, 10);
-    if (n >= 1 && n <= X_AXIS_MODES.length) return X_AXIS_MODES[n - 1];
-    return null;
-  };
-
-  document.addEventListener("keydown", (e) => {
-    // Always allow Escape to close help / onboarding regardless of focus.
-    if (e.key === "Escape") {
-      if (els.kbdHelp && !els.kbdHelp.hidden) {
-        els.kbdHelp.hidden = true;
-        e.preventDefault();
-        return;
-      }
-      if (els.onboarding && !els.onboarding.hidden) {
-        dismissOnboarding();
-        e.preventDefault();
-        return;
-      }
-      return;
-    }
-
-    // Don't hijack keys while the user is typing.
-    if (isEditable(document.activeElement)) return;
-    // Modifier-bearing combos belong to the browser / OS.
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-    // X-axis mode switch: 1..6
-    const targetMode = modeKey(e.key);
-    if (targetMode) {
-      e.preventDefault();
+// Non-Escape shortcuts — only fire when no editable is focused and no
+// modifier (Ctrl/Cmd/Alt) is held. `match(key)` decides whether the
+// entry handles the keystroke; `run(key)` executes it. Returning true
+// from run() means we preventDefault().
+const KEYBOARD_SHORTCUTS = [
+  // 1..6 → switch X-axis mode (matches X_AXIS_MODES[0..5]).
+  {
+    match: (key) => /^[1-6]$/.test(key) && parseInt(key, 10) <= X_AXIS_MODES.length,
+    run: (key) => {
+      const targetMode = X_AXIS_MODES[parseInt(key, 10) - 1];
       const btn = els.xAxisMode?.querySelector(`.chip[data-xaxis="${targetMode}"]`);
       if (btn) btn.click();
-      return;
-    }
-
-    // "/" — focus the search input (open filters panel first if needed).
-    if (e.key === "/") {
-      e.preventDefault();
+      return true;
+    },
+  },
+  // "/" — focus the search input (open filters panel first if collapsed).
+  {
+    match: (key) => key === "/",
+    run: () => {
       if (els.filtersPanel && els.filtersPanel.hidden && els.filtersToggle) {
         els.filtersToggle.click();
       }
       els.searchInput?.focus();
-      return;
-    }
+      return true;
+    },
+  },
+  // "F" / "f" — toggle the filters panel.
+  {
+    match: (key) => key === "f" || key === "F",
+    run: () => {
+      if (!els.filtersToggle) return false;
+      els.filtersToggle.click();
+      return true;
+    },
+  },
+  // "?" — open the keyboard help overlay.
+  {
+    match: (key) => key === "?",
+    run: () => {
+      if (!els.kbdHelp) return false;
+      els.kbdHelp.hidden = false;
+      return true;
+    },
+  },
+];
 
-    // "F" — toggle the filters panel.
-    if (e.key === "f" || e.key === "F") {
-      if (els.filtersToggle) {
-        e.preventDefault();
-        els.filtersToggle.click();
+function bindKeyboardShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      for (const h of ESCAPE_HANDLERS) {
+        if (h()) { e.preventDefault(); return; }
       }
       return;
     }
+    if (isEditableTarget(document.activeElement)) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-    // "?" — open the keyboard help overlay.
-    if (e.key === "?") {
-      if (els.kbdHelp) {
-        e.preventDefault();
-        els.kbdHelp.hidden = false;
+    for (const sc of KEYBOARD_SHORTCUTS) {
+      if (sc.match(e.key)) {
+        if (sc.run(e.key)) e.preventDefault();
+        return;
       }
-      return;
     }
   });
 
@@ -2329,172 +2340,160 @@ function drawSvg({ positioned, yearLabels, totalW, totalH }, edges, matchSet) {
 // DOM tree for one positioned paper. Extracted from drawSvg's per-node
 // loop (was the bulk of the 344-line god function). Returns the wrapper
 // <g>; caller appends it to the nodes group.
+// Tier→CSS allowlist (used by buildCardElement). XSS-safe: any value of
+// p.venue_tier outside the keys falls back to "preprint" rather than
+// reaching the class attribute as user-controlled text.
+const _TIER_CLASSES = { "A+": "aplus", "A": "a" };
+
+// Resolve the click-target URL + the visible label that names it.
+// arxiv > doi > S2 fallback. Both regexes are strict shape checks so
+// the encoded id we splice in is well-formed before encodeURIComponent.
+function resolvePaperLink(p) {
+  if (p.arxiv_id && ARXIV_RE.test(p.arxiv_id)) {
+    return { url: `https://arxiv.org/abs/${encodeURIComponent(p.arxiv_id)}`, label: "arXiv" };
+  }
+  if (p.doi && DOI_RE.test(p.doi)) {
+    return { url: `https://doi.org/${encodeURIComponent(p.doi)}`, label: "DOI" };
+  }
+  return {
+    url: `https://www.semanticscholar.org/paper/${encodeURIComponent(p.id)}`,
+    label: "Semantic Scholar",
+  };
+}
+
+// Construct the inner card div — pure DOM construction, no listeners.
+// Returned alongside the resolved paperUrl/tooltipBase so the orchestrator
+// can wire events without re-deriving them.
+function buildCardElement(p, matchSet) {
+  const card = document.createElement("div");
+  card.setAttribute("xmlns", XHTML_NS);
+  card.className = "node-card node-card--theme";
+  if (p.is_focus) card.classList.add("node-card--focus");
+  // #61: fade non-matching cards when a search query is active.
+  if (matchSet && !matchSet.has(p.id)) card.classList.add("node-card--filtered");
+
+  // Mode-specific visual hooks computed by computeModeData(). The SVG-level
+  // data attribute decides whether the CSS rules light up; here we just
+  // expose the per-card signals.
+  const modeMeta = state.modeData?.get(p.id);
+  if (modeMeta?.kind === "tier" && modeMeta.value) {
+    card.dataset.tier = String(modeMeta.value);
+  } else if (modeMeta?.kind === "novelty" && modeMeta.value !== "neutral") {
+    card.dataset.novelty = modeMeta.value;
+  } else if (modeMeta?.kind === "lineage" && typeof modeMeta.value === "number") {
+    card.style.setProperty("--lineage-hue", String(modeMeta.value));
+  }
+
+  // #67: citation-heat — log-normalised 0..1 weight. 500k ceiling matches
+  // the most-cited DL papers (~226k ResNet, ~174k Attention).
+  const cit = typeof p.citation_count === "number" ? p.citation_count : 0;
+  const heat = cit > 0 ? Math.min(1, Math.log10(cit + 1) / Math.log10(500001)) : 0;
+  card.style.setProperty("--card-heat", heat.toFixed(3));
+
+  const tier = _TIER_CLASSES[p.venue_tier] ?? "preprint";
+  const venue = PP.formatVenue(p.venue, p.year);
+  const authors = (p.authors || []).slice(0, 3).join(", ")
+    + ((p.authors || []).length > 3 ? ` +${p.authors.length - 3}` : "");
+  const cits = typeof p.citation_count === "number" && p.citation_count > 0
+    ? `<span class="node-card__cit">📖 ${p.citation_count.toLocaleString()}</span>` : "";
+  const stars = formatStars(p.github_stars);
+  const starsHtml = stars ? `<span class="node-card__stars">⭐${stars}</span>` : "";
+
+  const link = resolvePaperLink(p);
+
+  // #63: TLDR is the abstract head ≤ 140 chars — 2-line-clamped under title.
+  const tldrHtml = p.tldr ? `<div class="node-card__tldr">${escapeHtml(p.tldr)}</div>` : "";
+  // #68: trending badge — citation velocity.
+  const trendingHtml = p.is_trending
+    ? `<span class="node-card__trending" title="citation velocity: trending">📈</span>`
+    : "";
+  // #83: hub — degree above 90th percentile across the theme.
+  const isHub = state.hubSet?.has(p.id);
+  if (isHub) card.classList.add("node-card--hub");
+  const hubHtml = isHub
+    ? `<span class="node-card__hub" title="hub paper: high connectivity">👑</span>`
+    : "";
+  // Orphan: no edge incident — LLM judged all candidate relations `unrelated`.
+  // When state.hideOrphans is true, render() drops orphans upstream so this
+  // path doesn't run for them.
+  const isOrphan = state.orphanSet?.has(p.id);
+  if (isOrphan) card.classList.add("node-card--orphan");
+  const orphanHtml = isOrphan
+    ? `<span class="node-card__orphan" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
+    : "";
+  // B2: deep-view CTA — opens per-paper deep family-tree viewer focused on
+  // this id. Param name MUST be ?arxiv=... (deep.js's arxivIdFromLocation
+  // looks for that key). data-stop-card-click prevents the card's window.open
+  // handler from shadowing the anchor navigation.
+  const deepHtml = p.arxiv_id && ARXIV_RE.test(p.arxiv_id)
+    ? `<a class="node-card__deep" href="../iclr-2026/deep.html?arxiv=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" data-stop-card-click="true">📖</a>`
+    : "";
+
+  card.innerHTML = `
+    <span class="node-card__open">→ ${escapeHtml(link.label)} で開く</span>
+    <div class="node-card__venue">
+      <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
+      ${hubHtml}
+      ${trendingHtml}
+      ${orphanHtml}
+    </div>
+    <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
+    ${tldrHtml}
+    <div class="node-card__authors">${escapeHtml(authors)}</div>
+    <div class="node-card__meta">${cits}${starsHtml}${deepHtml}</div>
+  `;
+
+  return { card, paperUrl: link.url, tooltipBase: link.label };
+}
+
+// Wire hover/click to a constructed card. Hover toggles edge highlight +
+// popover; click opens the paper unless the event came from a child that
+// opted out via [data-stop-card-click] (the 📖 deep CTA).
+function bindCardEventHandlers(card, p, paperUrl, tooltipBase) {
+  card.addEventListener("mouseenter", () => {
+    highlightNode(p.id);
+    schedulePopover(p, card);
+  });
+  card.addEventListener("mouseleave", () => {
+    clearHighlight();
+    hidePopover();
+  });
+  card.addEventListener("click", (e) => {
+    if (e.target.closest("[data-stop-card-click]")) return;
+    window.open(paperUrl, "_blank", "noopener,noreferrer");
+  });
+  card.style.cursor = "pointer";
+  card.title = `クリックで ${tooltipBase} に開く`;
+}
+
 function buildNodeWrapper(p, matchSet) {
-    // Each node is now wrapped in a <g class="node-wrap"> with a translate
-    // transform; the FLIP block at the end of drawSvg uses this wrapper
-    // to animate position changes between renders. The inner foreignObject
-    // sits at (0, 0) so its CSS layout (the whole HTML card tree inside)
-    // doesn't shift around when we re-translate the wrapper.
-    const wrap = document.createElementNS(SVG_NS, "g");
-    wrap.setAttribute("class", "node-wrap");
-    wrap.setAttribute("transform", `translate(${p._x}, ${p._y})`);
-    wrap.dataset.nodeId = p.id;
-    const fo = document.createElementNS(SVG_NS, "foreignObject");
-    fo.setAttribute("x", 0);
-    fo.setAttribute("y", 0);
-    fo.setAttribute("width", NODE_W);
-    fo.setAttribute("height", NODE_H);
-    // Let the ★ FOCUS badge (top: -10px) and the citation-heat box-shadow
-    // halo render outside the foreignObject's NODE_W × NODE_H viewport.
-    // Without this, those decorations get clipped at the card edge.
-    // ROW_GAP=80 and SIBLING_GAP=28 leave plenty of clearance for the
-    // ~10–22 px overhangs.
-    fo.setAttribute("overflow", "visible");
-    fo.style.overflow = "visible";
-    fo.dataset.nodeId = p.id;
-    const card = document.createElement("div");
-    card.setAttribute("xmlns", XHTML_NS);
-    card.className = "node-card node-card--theme";
-    if (p.is_focus) card.classList.add("node-card--focus");
-    // #61: fade non-matching cards when a search query is active.
-    if (matchSet && !matchSet.has(p.id)) card.classList.add("node-card--filtered");
-    // Mode-specific visual hooks computed by computeModeData(). The
-    // SVG-level data attribute (set after this loop) decides whether the
-    // CSS rules light up; here we just expose the per-card signals.
-    const modeMeta = state.modeData?.get(p.id);
-    if (modeMeta?.kind === "tier" && modeMeta.value) {
-      card.dataset.tier = String(modeMeta.value);
-    } else if (modeMeta?.kind === "novelty" && modeMeta.value !== "neutral") {
-      card.dataset.novelty = modeMeta.value;
-    } else if (modeMeta?.kind === "lineage" && typeof modeMeta.value === "number") {
-      card.style.setProperty("--lineage-hue", String(modeMeta.value));
-    }
-    // #67: citation-heat — log-normalised 0..1 weight that the CSS
-    // turns into border thickness + halo intensity. 500k cite ceiling
-    // matches the most-cited DL papers (~226k for ResNet, ~174k for
-    // Attention). Use --card-heat as a CSS custom property so styles
-    // can compose it however they want.
-    const cit = typeof p.citation_count === "number" ? p.citation_count : 0;
-    const heat = cit > 0 ? Math.min(1, Math.log10(cit + 1) / Math.log10(500001)) : 0;
-    card.style.setProperty("--card-heat", heat.toFixed(3));
+  // <g class="node-wrap"> with translate transform — the FLIP block at the
+  // end of drawSvg uses this wrapper to animate position changes. The inner
+  // foreignObject sits at (0, 0) so its CSS layout doesn't shift around when
+  // we re-translate the wrapper.
+  const wrap = document.createElementNS(SVG_NS, "g");
+  wrap.setAttribute("class", "node-wrap");
+  wrap.setAttribute("transform", `translate(${p._x}, ${p._y})`);
+  wrap.dataset.nodeId = p.id;
 
-    // Explicit allowlist — survives copy-paste mutation. The earlier
-    // ternary was ALSO safe (only three string outcomes possible) but
-    // a future edit that replaced `tier` with `p.venue_tier` directly
-    // would drop a user-controlled string into a class attribute, an
-    // XSS sink one keystroke away. Spelling the map out makes the
-    // intent obvious. (Review #122 HIGH-latent.)
-    const _TIER_CLASSES = { "A+": "aplus", "A": "a" };
-    const tier = _TIER_CLASSES[p.venue_tier] ?? "preprint";
-    const venue = PP.formatVenue(p.venue, p.year);
-    const authors = (p.authors || []).slice(0, 3).join(", ")
-      + ((p.authors || []).length > 3 ? ` +${p.authors.length - 3}` : "");
-    const cits = typeof p.citation_count === "number" && p.citation_count > 0
-      ? `<span class="node-card__cit">📖 ${p.citation_count.toLocaleString()}</span>` : "";
-    const stars = formatStars(p.github_stars);
-    const starsHtml = stars ? `<span class="node-card__stars">⭐${stars}</span>` : "";
-    // Build a paper URL — prefer arXiv (immediate PDF), then DOI (publisher
-    // page), and fall back to Semantic Scholar's detail page when neither
-    // is on the node. arXiv ids may include a version suffix like
-    // "1610.04256v2" — strip nothing; arxiv.org accepts both forms.
-    let paperUrl = `https://www.semanticscholar.org/paper/${encodeURIComponent(p.id)}`;
-    // ARXIV_RE / DOI_RE are hoisted to module scope (above) — strict
-    // forms ensure the id we splice into the link is shape-correct
-    // before encodeURIComponent runs.
-    if (p.arxiv_id && ARXIV_RE.test(p.arxiv_id)) {
-      paperUrl = `https://arxiv.org/abs/${encodeURIComponent(p.arxiv_id)}`;
-    } else if (p.doi && DOI_RE.test(p.doi)) {
-      paperUrl = `https://doi.org/${encodeURIComponent(p.doi)}`;
-    }
-    // #63: TLDR is the abstract head ≤ 140 chars — show it 2-line-clamped
-    // under the title so users can size up a paper without clicking.
-    const tldrHtml = p.tldr
-      ? `<div class="node-card__tldr">${escapeHtml(p.tldr)}</div>`
-      : "";
-    // #68: trending badge for fast-moving papers (citation velocity).
-    const trendingHtml = p.is_trending
-      ? `<span class="node-card__trending" title="citation velocity: trending">📈</span>`
-      : "";
-    // #83: hub badge for papers whose in+out degree clears the 90th
-    // percentile across the theme. Strong cross-tree connectors —
-    // worth a glance whether or not citation_count is high.
-    const isHub = state.hubSet?.has(p.id);
-    if (isHub) card.classList.add("node-card--hub");
-    const hubHtml = isHub
-      ? `<span class="node-card__hub" title="hub paper: high connectivity">👑</span>`
-      : "";
-    // Orphan: no edge incident to this paper (LLM judged all candidate
-    // relations `unrelated`). Visually distinguished with a dashed
-    // border + small 🔗 badge so users can tell "in the data but
-    // disconnected" apart from real hubs/leaves.
-    const isOrphan = state.orphanSet?.has(p.id);
-    if (isOrphan) card.classList.add("node-card--orphan");
-    // Note: when state.hideOrphans is true, render() drops orphans
-    // from visibleNodes upstream so this code path doesn't even run
-    // for them. The .node-card--orphan-hidden class is no longer
-    // applied here (kept in CSS only as legacy belt-and-braces).
-    const orphanHtml = isOrphan
-      ? `<span class="node-card__orphan" title="他の論文との分類関係がないため、この家系図では孤立しています">🔗</span>`
-      : "";
-    // B1: hover label that names the click target (arXiv / DOI / S2)
-    // so users understand what clicking a card does. The actual click
-    // handler is bound below; this is purely visual feedback shown via
-    // the .node-card:hover .node-card__open rule.
-    const tooltipBase = p.arxiv_id ? "arXiv"
-                      : p.doi ? "DOI"
-                      : "Semantic Scholar";
-    // B2: small deep-view CTA — clicking opens the per-paper deep
-    // family-tree viewer (existing /iclr-2026/deep.html mode), focused
-    // on this paper id. Falls back to no-op if no deep manifest is
-    // accessible. Stop-propagation so it doesn't also trigger the
-    // card's main click handler. The link is rendered only when the
-    // node has an arxiv_id (deep-manifest entries are keyed by arxiv).
-    // Param name MUST be ?arxiv=... — deep.js's arxivIdFromLocation()
-    // looks for that key. An earlier draft used ?paper= and the deep
-    // viewer silently fell back to its default paper, leaving the
-    // user at the wrong tree.
-    const deepHtml = p.arxiv_id && ARXIV_RE.test(p.arxiv_id)
-      ? `<a class="node-card__deep" href="../iclr-2026/deep.html?arxiv=${encodeURIComponent(p.arxiv_id)}" target="_blank" rel="noopener" title="この論文を中心に深掘り (deep view)" data-stop-card-click="true">📖</a>`
-      : "";
-    card.innerHTML = `
-      <span class="node-card__open">→ ${escapeHtml(tooltipBase)} で開く</span>
-      <div class="node-card__venue">
-        <span class="node-card__venue-tier node-card__venue-tier--${tier}">${escapeHtml(venue || "—")}</span>
-        ${hubHtml}
-        ${trendingHtml}
-        ${orphanHtml}
-      </div>
-      <h3 class="node-card__title">${escapeHtml(p.title || "")}</h3>
-      ${tldrHtml}
-      <div class="node-card__authors">${escapeHtml(authors)}</div>
-      <div class="node-card__meta">${cits}${starsHtml}${deepHtml}</div>
-    `;
+  const fo = document.createElementNS(SVG_NS, "foreignObject");
+  fo.setAttribute("x", 0);
+  fo.setAttribute("y", 0);
+  fo.setAttribute("width", NODE_W);
+  fo.setAttribute("height", NODE_H);
+  // Let ★ FOCUS badge (top: -10px) and citation-heat box-shadow halo render
+  // outside the NODE_W × NODE_H viewport. ROW_GAP=80 / SIBLING_GAP=28 leave
+  // plenty of clearance for the ~10–22 px overhangs.
+  fo.setAttribute("overflow", "visible");
+  fo.style.overflow = "visible";
+  fo.dataset.nodeId = p.id;
 
-    // Hover: highlight edges incident to this node, fade the rest. Done
-    // by toggling .is-faded on every edge that doesn't touch this id.
-    card.addEventListener("mouseenter", () => {
-      highlightNode(p.id);
-      schedulePopover(p, card);
-    });
-    card.addEventListener("mouseleave", () => {
-      clearHighlight();
-      hidePopover();
-    });
-    // Click: open the paper page in a new tab. arxiv > doi > S2 fallback
-    // gives readers the most direct route to the actual paper. Skip
-    // when the click came from a child element that opted out via
-    // data-stop-card-click (the 📖 deep-view CTA does this so its own
-    // anchor navigation isn't shadowed by the window.open here).
-    card.addEventListener("click", (e) => {
-      if (e.target.closest("[data-stop-card-click]")) return;
-      window.open(paperUrl, "_blank", "noopener,noreferrer");
-    });
-    card.style.cursor = "pointer";
-    card.title = `クリックで ${tooltipBase} に開く`;
+  const { card, paperUrl, tooltipBase } = buildCardElement(p, matchSet);
+  bindCardEventHandlers(card, p, paperUrl, tooltipBase);
 
-    fo.appendChild(card);
-    wrap.appendChild(fo);
-    return wrap;
+  fo.appendChild(card);
+  wrap.appendChild(fo);
+  return wrap;
 }
 
 // #66: minimap — a small canvas that mirrors the SVG's node positions at
