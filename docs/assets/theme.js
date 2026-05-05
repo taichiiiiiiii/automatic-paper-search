@@ -494,6 +494,13 @@ function showErrorHtml(safeHtml) {
 // the various bind*() functions push when they wire up.
 let _urlSyncSuppressed = false;
 
+// Restore filter state from the URL on page load. INTENTIONALLY does
+// NOT call commitStateChange() at the end — init() is responsible for
+// kicking off the first render once all binds are wired, and we don't
+// want to double-write the URL or trigger a half-bound render here.
+// If you add a new state-change duty to commitStateChange, you must
+// also decide whether readUrlState needs to invoke it on first load.
+// (Review #122 MEDIUM.)
 function readUrlState() {
   _urlSyncSuppressed = true;
   try {
@@ -543,12 +550,16 @@ function syncUrlState() {
       p.delete("xaxis");
     }
 
-    if (Number.isFinite(state.yearRange.min)) {
+    // Only persist year bounds when they NARROW the default data
+    // extents — writing them when they equal the extents pollutes the
+    // URL after a "Clear all" with a no-op &ymin=2014&ymax=2026
+    // suffix that doesn't carry any user intent.
+    if (Number.isFinite(state.yearRange.min) && state.yearRange.min !== _yearDataExtents.min) {
       p.set("ymin", String(state.yearRange.min));
     } else {
       p.delete("ymin");
     }
-    if (Number.isFinite(state.yearRange.max)) {
+    if (Number.isFinite(state.yearRange.max) && state.yearRange.max !== _yearDataExtents.max) {
       p.set("ymax", String(state.yearRange.max));
     } else {
       p.delete("ymax");
@@ -873,7 +884,12 @@ function renderActiveFilters() {
   }
 }
 
-function clearOneFilter(kind) {
+// Pure state mutation for a single filter dimension. Split out from
+// clearOneFilter so the "Clear all" path can run multiple resets and
+// commit ONCE — the previous design called commitStateChange() (and
+// thus a full render) per kind, doing 4× the work on a single click
+// (review #122 HIGH).
+function _resetOneFilterState(kind) {
   if (kind === "search") {
     state.searchQuery = "";
     if (els.searchInput) els.searchInput.value = "";
@@ -895,6 +911,18 @@ function clearOneFilter(kind) {
     state.hideOrphans = false;
     if (els.orphanToggle) els.orphanToggle.checked = false;
   }
+}
+
+function clearOneFilter(kind) {
+  _resetOneFilterState(kind);
+  commitStateChange();
+}
+
+function clearAllFilters() {
+  _resetOneFilterState("search");
+  _resetOneFilterState("year");
+  _resetOneFilterState("relations");
+  _resetOneFilterState("orphan");
   commitStateChange();
 }
 
@@ -922,12 +950,7 @@ function updateOrphanToggleVisibility() {
 
 function bindActiveFiltersClear() {
   if (els.activeFiltersClear) {
-    els.activeFiltersClear.addEventListener("click", () => {
-      clearOneFilter("search");
-      clearOneFilter("year");
-      clearOneFilter("relations");
-      clearOneFilter("orphan");
-    });
+    els.activeFiltersClear.addEventListener("click", clearAllFilters);
   }
   if (els.activeFiltersItems) {
     els.activeFiltersItems.addEventListener("click", (e) => {
@@ -1126,7 +1149,11 @@ async function submitTheme() {
 }
 
 function startProgress(slug, themeLabel) {
-  els.progress.hidden = false;
+  // Guard every els.progress access — the rest of the file uses
+  // `if (els.progress)` defensively (see cancelProgress at line 1216),
+  // and an unguarded access here would lock submit-disabled state if
+  // the element were ever absent (review #122 HIGH).
+  if (els.progress) els.progress.hidden = false;
   if (els.progressTitle) els.progressTitle.textContent = `「${themeLabel}」を生成中...`;
   setProgressStep("dispatch");
   progressState = {
@@ -1884,6 +1911,13 @@ function layoutChronological(nodes, edges, mode = DEFAULT_X_AXIS_MODE) {
       isUnknown: year === UNKNOWN_YEAR,
       importance,
     });
+    // ORDERING CONTRACT: ctx.placedX must be populated in chronological
+    // year order so that genealogy mode (which reads parent X positions
+    // from earlier rows) sees them when computing child X. The outer
+    // years.forEach above iterates a sorted year list — DO NOT
+    // parallelise this loop or reorder the iteration without also
+    // reworking scoreForMode("genealogy") to defer parent lookups.
+    // (Review #122 MEDIUM.)
     row.forEach((n, i) => {
       const x = xStart + i * (NODE_W + SIBLING_GAP);
       positioned.push({ ...n, _x: x, _y: y });
@@ -2344,7 +2378,14 @@ function buildNodeWrapper(p, matchSet) {
     const heat = cit > 0 ? Math.min(1, Math.log10(cit + 1) / Math.log10(500001)) : 0;
     card.style.setProperty("--card-heat", heat.toFixed(3));
 
-    const tier = p.venue_tier === "A+" ? "aplus" : p.venue_tier === "A" ? "a" : "preprint";
+    // Explicit allowlist — survives copy-paste mutation. The earlier
+    // ternary was ALSO safe (only three string outcomes possible) but
+    // a future edit that replaced `tier` with `p.venue_tier` directly
+    // would drop a user-controlled string into a class attribute, an
+    // XSS sink one keystroke away. Spelling the map out makes the
+    // intent obvious. (Review #122 HIGH-latent.)
+    const _TIER_CLASSES = { "A+": "aplus", "A": "a" };
+    const tier = _TIER_CLASSES[p.venue_tier] ?? "preprint";
     const venue = PP.formatVenue(p.venue, p.year);
     const authors = (p.authors || []).slice(0, 3).join(", ")
       + ((p.authors || []).length > 3 ? ` +${p.authors.length - 3}` : "");
@@ -2662,20 +2703,27 @@ function clearHighlight() {
 
 // ---- Tooltip ----
 
+// Bail early when the tooltip elements aren't in the DOM — these
+// handlers fire on every edge mouseenter/mousemove (a hot path on
+// large graphs), so an unguarded null access would throw on every
+// hover (review #122 HIGH).
 function onEdgeHover(e) {
+  if (!els.tooltip) return;
   const rel = e.currentTarget.dataset.rel || "";
-  els.ttRel.textContent = rel.replace("_", " ");
+  if (els.ttRel) els.ttRel.textContent = rel.replace("_", " ");
   // textContent (NOT innerHTML): rationale comes from an LLM and must be
   // treated as untrusted text. innerHTML here would be an XSS sink.
-  els.ttRationale.textContent = e.currentTarget.dataset.rationale || "";
+  if (els.ttRationale) els.ttRationale.textContent = e.currentTarget.dataset.rationale || "";
   const c = e.currentTarget.dataset.conf;
-  els.ttConf.textContent = c ? `confidence ${Number(c).toFixed(2)}` : "";
+  if (els.ttConf) els.ttConf.textContent = c ? `confidence ${Number(c).toFixed(2)}` : "";
   els.tooltip.classList.add("is-visible");
   els.tooltip.setAttribute("aria-hidden", "false");
   onEdgeMove(e);
 }
 function onEdgeMove(e) {
-  const tt = els.tooltip; const pad = 12;
+  const tt = els.tooltip;
+  if (!tt) return;
+  const pad = 12;
   let x = e.clientX + pad, y = e.clientY + pad;
   const w = tt.offsetWidth || 280, h = tt.offsetHeight || 80;
   if (x + w > window.innerWidth - 8) x = e.clientX - w - pad;
@@ -2684,6 +2732,7 @@ function onEdgeMove(e) {
   tt.style.top = `${Math.max(8, y)}px`;
 }
 function onEdgeLeave() {
+  if (!els.tooltip) return;
   els.tooltip.classList.remove("is-visible");
   els.tooltip.setAttribute("aria-hidden", "true");
 }
