@@ -31,20 +31,27 @@ against the existing manifest, rate-limits per IP, and dispatches the
    │ redirect to ?theme=<slug>    │                            │
 ```
 
-## Config split
+## Single-Worker design
 
-The repo has TWO wrangler config files:
+There is **one** `wrangler.jsonc` at the repo root. It owns both:
 
-| File | Purpose | How it deploys |
-|---|---|---|
-| `wrangler.jsonc` (root) | Static `docs/` bundle | CF git auto-deploy on push to `develop` |
-| `worker/wrangler.jsonc` | Worker `/api/themes` | `wrangler deploy --config worker/wrangler.jsonc` |
+- **Static assets** — `docs/` served via the `ASSETS` binding for `/themes/`
+  and friends.
+- **The API** — `/api/themes` POST handled by `worker/index.ts` (this
+  module). Anything else falls through to `env.ASSETS.fetch(request)`.
 
-They're separated because mixing Worker bindings into the root config broke
-CF's git auto-deploy (the validator rejected an unset KV id and silently
-blocked every push).
+Both live at the same origin (`automatic-paper-search.<account>.workers.dev`),
+so the form on `/themes/` posts to `/api/themes` on the same URL — no CORS,
+no second sub-domain, no confusion.
 
-## Setup
+> **Historical note:** an earlier iteration split the Worker into a separate
+> `automatic-paper-search-api.*` sub-domain. That made the form's same-origin
+> POST impossible without CORS gymnastics, so it was consolidated. If you
+> see references to a `-api` sub-domain in old commits, that's why.
+
+## Setup (one-time)
+
+You need a developer machine with `wrangler` and Cloudflare auth.
 
 1. **Install wrangler** and authenticate:
 
@@ -59,27 +66,33 @@ blocked every push).
    wrangler kv namespace create RATE_LIMIT_KV
    ```
 
-   Replace the 32-zero placeholder in `worker/wrangler.jsonc` with the id
-   the command prints (something like `"id": "abc123…"`). Commit the change.
+   The command prints something like:
+
+   ```
+   { binding = "RATE_LIMIT_KV", id = "abc123…" }
+   ```
+
+   **Replace the 32-zero placeholder** in the root `wrangler.jsonc`
+   (`kv_namespaces[0].id`) with that real id. Commit the change.
 
 3. **Mint a fine-grained GitHub PAT** scoped to this repo with the
-   `Actions: read & write` permission, and store it as a Worker secret:
+   `Actions: read & write` permission and store it as a Worker secret:
 
    ```bash
-   wrangler secret put GH_DISPATCH_PAT --config worker/wrangler.jsonc
+   wrangler secret put GH_DISPATCH_PAT
    ```
 
    The PAT is the only credential that can dispatch jobs — keep it
-   tight (no other scopes, no other repos).
+   tight (no other scopes, no other repos, short expiry).
 
-4. **Deploy the Worker**:
+4. **Deploy** (or just push to `develop` — CF auto-deploys on push):
 
    ```bash
-   wrangler deploy --config worker/wrangler.jsonc
+   wrangler deploy
    ```
 
-   This deploys ONLY the Worker. The static `docs/` bundle continues
-   auto-deploying via CF's git integration on every push to `develop`.
+After step 3, every push to `develop` re-publishes both the static bundle
+and the Worker in one go.
 
 ## Local development
 
@@ -94,7 +107,7 @@ PAT at a test repo or stub the dispatch in the Worker source.
 ## Tests
 
 ```bash
-node worker/index.test.mjs
+node --test worker/index.test.mjs
 uv run pytest paperpilot/tests/test_worker_slug_parity.py
 ```
 

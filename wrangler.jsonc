@@ -1,30 +1,59 @@
 {
-  // Root wrangler.jsonc — static assets ONLY.
+  // Single Worker config — owns BOTH the static `docs/` bundle (via the
+  // ASSETS binding) AND the `/api/themes` POST endpoint (worker/index.ts).
   //
-  // Why this stays minimal: Cloudflare's git integration (the auto-deploy
-  // hook that fires on push to develop) reads THIS file. Adding a
-  // `main: worker/index.ts` converted the project from a pure
-  // "Static Assets" deployment into a "Worker with Assets" deployment,
-  // and the validator started rejecting the placeholder KV id, silently
-  // blocking every push for ~3 commits before we noticed.
+  // Why one file: deploying the API at `automatic-paper-search-api.*` was
+  // confusing for users (the form on /themes/ posts to /api/themes on the
+  // SAME origin), and Cloudflare's "Workers + Static Assets" pattern lets
+  // both live at the same URL without a second sub-domain. Cf the older
+  // split design captured in commit history if you need to revert.
   //
-  // The Worker config (main + bindings) lives at `worker/wrangler.jsonc`
-  // and is deployed manually via:
+  // CF git auto-deploy reads this file on every push to `develop`. If the
+  // KV id below is the 32-zero placeholder, the validator rejects the
+  // deploy silently — so the FIRST deploy needs a real KV id (see Setup).
   //
-  //   wrangler deploy --config worker/wrangler.jsonc
+  // Setup (one-time, run from a developer machine with `wrangler login`):
   //
-  // That way the user-typed-theme API can be deployed deliberately while
-  // the static viewer keeps auto-publishing on every push.
+  //   1. wrangler kv namespace create RATE_LIMIT_KV
+  //      → copy the printed id over the placeholder in `kv_namespaces[0].id`.
+  //
+  //   2. wrangler secret put GH_DISPATCH_PAT
+  //      → paste a fine-grained PAT with `actions: read & write` scoped to
+  //        this repo only. Never share or reuse this PAT.
+  //
+  //   3. git commit + push (or `wrangler deploy` once manually).
+  //
+  // After that, every push to `develop` re-deploys both the static bundle
+  // and the API in a single Worker. See worker/README.md for details.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "automatic-paper-search",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-04-21",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "docs"
+    "directory": "docs",
+    "binding": "ASSETS"
   },
-  "compatibility_flags": [
-    "nodejs_compat"
+  // Non-secret config — visible in the CF dashboard. The PAT itself is a
+  // secret (set via `wrangler secret put GH_DISPATCH_PAT`).
+  "vars": {
+    "GH_OWNER": "taichiiiiiiii",
+    "GH_REPO": "automatic-paper-search",
+    "GH_WORKFLOW_FILE": "theme-on-demand.yml",
+    "GH_REF": "develop"
+  },
+  // Per-IP rate limit + global daily cap. Replace the placeholder id with
+  // the value `wrangler kv namespace create` prints (see Setup above).
+  // Until that swap happens, deploys fail with a binding-validation error.
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT_KV",
+      "id": "00000000000000000000000000000000"
+    }
   ]
 }
