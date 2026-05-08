@@ -51,6 +51,11 @@ no second sub-domain, no confusion.
 
 ## Setup (one-time)
 
+> **Quick path:** run `bash worker/setup.sh` from the repo root. It does
+> all four steps below interactively (login → KV create → splice id →
+> secret put → deploy → post-deploy probe). Use the manual steps if you
+> need fine-grained control.
+
 You need a developer machine with `wrangler` and Cloudflare auth.
 
 1. **Install wrangler** and authenticate:
