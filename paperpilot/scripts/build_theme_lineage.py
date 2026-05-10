@@ -32,10 +32,11 @@ import hashlib
 import json
 import sys
 import unicodedata
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 # Make `paperpilot.*` importable when run as `python paperpilot/scripts/...`
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -69,6 +70,20 @@ _S2_FIELDS_SEARCH = (
 _S2_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
 _S2_SEARCH_LIMIT = 50
 
+# OpenAlex fallback for seed discovery. /paper/search on S2's free tier
+# is the steady-state failure point on GitHub Actions — the shared IP
+# pool is throttled by S2 — so a 429 there nukes the entire build. We
+# fall back to OpenAlex's /works (free, no key, much higher per-IP
+# allowance) and resolve the DOIs through S2's /paper/batch endpoint,
+# which has a separate budget from /paper/search.
+_OPENALEX_WORKS_URL = "https://api.openalex.org/works"
+_S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch"
+_OPENALEX_PER_PAGE_MAX = 200
+# /paper/batch caps at 500 ids per call (https://api.semanticscholar.org
+# /api-docs/graph#tag/Paper-Data/operation/post_graph_get_papers); cap our
+# own send to half of that so even a wide OpenAlex page can never overflow.
+_S2_BATCH_MAX_IDS = 250
+
 _THEME_MAX_LEN = 500
 _KEYWORD_EXPANSIONS = 8
 
@@ -98,8 +113,9 @@ def _is_trending(paper: dict, current_year: int) -> bool:
     age = current_year - year
     if age > _TRENDING_AGE_LIMIT_YEARS:
         return False
-    age = max(age, 0.5)  # 0.5y floor guards against same-year div
-    return (cit / age) >= _TRENDING_VELOCITY_THRESHOLD
+    # 0.5y floor guards against same-year div; widen to float deliberately.
+    age_years: float = max(float(age), 0.5)
+    return (cit / age_years) >= _TRENDING_VELOCITY_THRESHOLD
 
 
 # Issue #53: heuristic templates that mirror build_deep_lineage's lenient
@@ -324,11 +340,164 @@ def _seed_cache_path(keyword: str, since_year: int | None) -> Path:
     return CACHE_DIR / f"search_{digest}_{suffix}.json"
 
 
+_DOI_HOSTS = frozenset({"doi.org", "www.doi.org", "dx.doi.org"})
+
+
+def _extract_doi(work: dict) -> str | None:
+    """Pull the bare DOI (no URL prefix) out of an OpenAlex Work dict.
+
+    OpenAlex returns DOIs as full URLs (``https://doi.org/10.x/y``) in
+    both the top-level ``doi`` field and ``ids.doi``. Older records
+    occasionally carry ``http://`` or ``dx.doi.org`` host variants.
+    S2's ``/paper/batch`` expects the prefix ``DOI:10.x/y`` — passing
+    the URL form yields a "No valid paper ids given" parser error
+    (verified in branch commit history). Use ``urlparse`` so all
+    scheme/host variants collapse to the bare DOI; if the input
+    already arrives as a bare DOI (no scheme) it passes through.
+    """
+    raw = work.get("doi") or (work.get("ids") or {}).get("doi")
+    if not isinstance(raw, str):
+        return None
+    raw = raw.strip()
+    if not raw:
+        return None
+    parsed = urlparse(raw)
+    # When the input is a doi.org URL (any scheme/case variant), pull the
+    # path. Bare DOI ("10.x/y") or non-doi.org URLs pass through — S2
+    # rejects truly malformed values downstream.
+    bare = (
+        parsed.path.lstrip("/")
+        if parsed.scheme and parsed.netloc.lower() in _DOI_HOSTS
+        else raw
+    )
+    bare = bare.strip()
+    return bare or None
+
+
+def discover_seeds_via_openalex(
+    *,
+    query: str,
+    top_n: int,
+    since_year: int | None,
+    email: str | None = None,
+) -> list[dict[str, Any]]:
+    """Search OpenAlex ``/works`` for the theme; return raw Work dicts.
+
+    OpenAlex is the primary fallback when S2 ``/paper/search`` throttles
+    on shared CI runner IPs — its rate budget is independent and far
+    more permissive (10 req/sec free, 100k/day in the polite pool).
+    Returned works carry DOIs which the caller resolves through S2
+    ``/paper/batch`` to obtain S2-shape paper dicts that the rest of
+    the pipeline (BFS, classification) can consume unchanged.
+
+    The ``mailto`` polite-pool query param is sent when ``email`` is
+    provided. OpenAlex puts polite-pool requests on a separate, more
+    reliable queue under load — required for batch CI runs.
+
+    Returns ``[]`` on any error (None response / non-200 / parse fail)
+    so callers degrade gracefully instead of crashing the pipeline.
+    """
+    if not query or not query.strip():
+        return []
+    # Pull a wider page than top_n so dedup against any S2 hits still
+    # leaves headroom; the pipeline truncates to top_n at the end.
+    page_size = max(top_n * 3, 25)
+    page_size = min(page_size, _OPENALEX_PER_PAGE_MAX)
+
+    params: dict[str, Any] = {
+        "search": query,
+        "per-page": page_size,
+        "sort": "cited_by_count:desc",
+    }
+    if since_year is not None:
+        params["filter"] = f"from_publication_date:{since_year}-01-01"
+    if email:
+        params["mailto"] = email
+
+    resp = request_with_retry(
+        "GET",
+        _OPENALEX_WORKS_URL,
+        params=params,
+        headers={"User-Agent": "PaperPilot/0.1"},
+        timeout=20,
+    )
+    if resp is None or resp.status_code != 200:
+        logger.warning(
+            "openalex search failed (status=%s) — fallback contributes 0 seeds",
+            getattr(resp, "status_code", None),
+        )
+        return []
+    try:
+        payload = resp.json()
+    except ValueError as exc:
+        logger.warning("openalex JSON parse failed: %s", exc)
+        return []
+    results = payload.get("results") if isinstance(payload, dict) else None
+    if not isinstance(results, list):
+        return []
+    return [w for w in results if isinstance(w, dict)]
+
+
+def _resolve_openalex_to_s2(works: list[dict]) -> list[dict[str, Any]]:
+    """POST OpenAlex DOIs to S2 ``/paper/batch``; return S2-shape dicts.
+
+    Uses ``/paper/batch`` (one request, up to 500 ids) instead of N
+    parallel ``/paper/{id}`` lookups because batch counts as a single
+    call against the shared-IP rate limit on GitHub Actions runners
+    (S2's primary throttle vector for this pipeline). Works without a
+    DOI are silently skipped — they cannot be resolved through this
+    endpoint.
+
+    Returns ``[]`` on error (None response, non-200, parse fail) so
+    callers can fall through to whatever S2 search managed to surface.
+    """
+    ids: list[str] = []
+    for work in works:
+        doi = _extract_doi(work)
+        if not doi:
+            continue
+        ids.append(f"DOI:{doi}")
+        if len(ids) >= _S2_BATCH_MAX_IDS:
+            break
+    if not ids:
+        return []
+
+    resp = request_with_retry(
+        "POST",
+        _S2_BATCH_URL,
+        params={"fields": _S2_FIELDS_SEARCH},
+        json_body={"ids": ids},
+        headers={"User-Agent": "PaperPilot/0.1"},
+        timeout=30,
+    )
+    if resp is None or resp.status_code != 200:
+        logger.warning(
+            "S2 /paper/batch failed (status=%s) — OpenAlex DOIs unresolved",
+            getattr(resp, "status_code", None),
+        )
+        return []
+    try:
+        data = resp.json()
+    except ValueError as exc:
+        logger.warning("S2 /paper/batch JSON parse failed: %s", exc)
+        return []
+    if not isinstance(data, list):
+        return []
+    # /paper/batch returns nulls in-place for unmatched ids; drop them.
+    resolved: list[dict[str, Any]] = []
+    for entry in data:
+        if isinstance(entry, dict) and entry.get("paperId") and entry.get("title"):
+            resolved.append(entry)
+    return resolved
+
+
 def discover_seeds(
     *,
     keywords: list[str],
     top_n: int,
     since_year: int | None,
+    use_openalex_fallback: bool = True,
+    openalex_email: str | None = None,
 ) -> list[dict[str, Any]]:
     """Find seed papers for the theme via S2 ``/paper/search``.
 
@@ -340,6 +509,14 @@ def discover_seeds(
 
     Network failures (resp is None / non-200) are written as an empty
     cache entry — same fail-safe behaviour as the rest of the pipeline.
+
+    OpenAlex fallback (``use_openalex_fallback=True``, default): when
+    S2 yields fewer than ``top_n`` seeds — the steady-state failure
+    mode on shared GitHub Actions runner IPs throttled by S2 — search
+    OpenAlex for the theme, resolve the resulting DOIs through S2
+    ``/paper/batch`` (separate rate budget from ``/paper/search``),
+    and merge the new papers in (dedup by paperId). ``openalex_email``
+    enables OpenAlex's polite pool for higher reliability under load.
     """
     by_id: dict[str, dict[str, Any]] = {}
 
@@ -385,7 +562,60 @@ def discover_seeds(
                 by_id.setdefault(p["paperId"], p)
         cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
 
-    candidates = list(by_id.values())
+    primary = _rank_and_truncate(by_id.values(), top_n=top_n, since_year=since_year)
+    if not use_openalex_fallback or len(primary) >= top_n:
+        return primary
+
+    # Fallback path: top up the seed pool when S2 alone wasn't enough.
+    # Build the OpenAlex query from all non-empty keywords; for the
+    # current single-keyword default (theme as one keyword) this
+    # collapses to the theme string itself.
+    query = " ".join(k for k in keywords if k and k.strip())
+    if not query:
+        return primary
+    logger.info(
+        "S2 yielded %d/%d seeds; trying OpenAlex fallback (theme=%r)",
+        len(primary), top_n, query,
+    )
+    works = discover_seeds_via_openalex(
+        query=query,
+        top_n=top_n,
+        since_year=since_year,
+        email=openalex_email,
+    )
+    if not works:
+        return primary
+    resolved = _resolve_openalex_to_s2(works)
+    if not resolved:
+        return primary
+
+    for paper in resolved:
+        pid = paper.get("paperId")
+        if pid and pid not in by_id:
+            by_id[pid] = paper
+
+    merged = _rank_and_truncate(by_id.values(), top_n=top_n, since_year=since_year)
+    logger.info(
+        "OpenAlex fallback added %d new seeds (final=%d)",
+        len(merged) - len(primary), len(merged),
+    )
+    return merged
+
+
+def _rank_and_truncate(
+    papers: Iterable[dict[str, Any]],
+    *,
+    top_n: int,
+    since_year: int | None,
+) -> list[dict[str, Any]]:
+    """Apply since_year filter, sort by citationCount desc, return top_n.
+
+    Extracted so the S2-only path and the merged-with-OpenAlex path
+    share identical filtering and ranking semantics — otherwise the
+    fallback could surface a paper that the primary path would have
+    rejected, producing surprising before/after deltas in the seed list.
+    """
+    candidates = list(papers)
     if since_year is not None:
         candidates = [
             p for p in candidates
@@ -594,10 +824,21 @@ def build_theme_lineage(
     width: int,
     since_year: int | None,
     output: Path | None = None,
+    use_openalex_fallback: bool = True,
 ) -> Path:
     """Run the full theme-to-family-tree pipeline; return the output path."""
     sanitised = sanitize_theme(theme)
     slug = theme_slug(sanitised)
+
+    # Load env once at the top — both the seed-discovery fallback
+    # (openalex_email) and the github-stars enrichment further down
+    # (github_token) read from the same env dict.
+    try:
+        env = load_env()
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("load_env failed (continuing with empty env): %s", exc)
+        env = {}
+    openalex_email = (env or {}).get("openalex_email")
 
     # Issue #53: relation classification is now LLM-free (derive_relation),
     # but build_provider is still used downstream by other scripts; here
@@ -620,7 +861,11 @@ def build_theme_lineage(
 
     # Stage 2: discover seeds.
     seeds = discover_seeds(
-        keywords=keywords, top_n=seeds_count, since_year=since_year
+        keywords=keywords,
+        top_n=seeds_count,
+        since_year=since_year,
+        use_openalex_fallback=use_openalex_fallback,
+        openalex_email=openalex_email,
     )
     logger.info(
         "discovered %d seeds: %s",
@@ -790,11 +1035,7 @@ def build_theme_lineage(
     # node had stars=0 — the ⭐ row in the viewer never rendered. Look up
     # via PwC + GitHub for nodes that carry an arxiv_id, with a 7-day
     # disk cache so the weekly cron doesn't re-query the whole graph.
-    try:
-        env = load_env()
-    except Exception as exc:  # pragma: no cover - defensive
-        logger.warning("load_env failed (skipping github stars): %s", exc)
-        env = {}
+    # `env` was loaded at the top of build_theme_lineage().
     github_token = (env or {}).get("github_token")
     github_added = _enrich_github_stars(nodes, github_token=github_token)
     if github_added:
@@ -922,6 +1163,15 @@ def main(argv: list[str] | None = None) -> int:
              "Intended for CI / tests — bypasses the theme_slug() gate, so do "
              "not use with untrusted input.",
     )
+    ap.add_argument(
+        "--no-openalex-fallback",
+        dest="use_openalex_fallback",
+        action="store_false",
+        default=True,
+        help="Disable the OpenAlex fallback used when S2 /paper/search "
+             "returns < seeds_count results (e.g. on throttled CI IPs). "
+             "By default the fallback runs whenever S2 alone is short.",
+    )
     args = ap.parse_args(argv)
 
     # CLI invocations need an explicit setup_logging() call (collector.py
@@ -946,6 +1196,7 @@ def main(argv: list[str] | None = None) -> int:
             width=args.width,
             since_year=args.since_year,
             output=output,
+            use_openalex_fallback=args.use_openalex_fallback,
         )
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
