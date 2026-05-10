@@ -466,6 +466,7 @@ output/<conf>/papers_YYYY-MM-DD.csv
 
 [テーマ文字列] → build_theme_lineage.py → docs/themes/<slug>/lineage.json
                   - keyword_expand → S2 /paper/search → top-N seeds
+                    └─ S2 が throttle / 0 件なら OpenAlex /works → S2 /paper/batch
                   - 各 seed から BFS depth-N（祖先方向）
                   - AbstractLLMProvider で関係分類
 generate_themes_manifest.py → docs/themes/themes-manifest.json
@@ -514,6 +515,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **`docs/themes/<slug>/lineage.json` のスキーマは conference 版 `lineage.json` と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.source = "build_theme_lineage.py"`、`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を含む。
     - **`docs/themes/themes-manifest.json` は `generate_themes_manifest.py` のみが生成**。`build_theme_lineage.py` 内では生成しない（並列実行時の race 回避）。マニフェスト生成時に `rel` 値が許可 enum (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に該当しないテーマは skip する（cache poisoning 抑止）。
     - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。`_classify_cached` が書込前に on-disk cache を再読込してマージし、`os.replace` でアトミックに書き出すため、並列ランでも他プロセスのエントリを上書きしない。
+    - **OpenAlex フォールバック (seed 発見)**: S2 `/paper/search` が `top_n` 未満しか返さない場合（GitHub Actions の共有 IP プールが S2 free tier に throttle される CI ステディ状態）、自動で OpenAlex `/works` 検索 → DOI 抽出 → S2 `/paper/batch` で paperId 解決にフォールバック。`/paper/batch` は `/paper/search` と別のレート枠なので throttle 同時発生確率が低い。`PAPERPILOT_OPENALEX_EMAIL` を設定すると polite pool（`mailto=...`）を使い更に安定。`--no-openalex-fallback` で明示的に無効化可能（テスト用途）。
 
 ---
 
@@ -531,6 +533,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 | `CLAUDE_API_KEY` | 将来の Claude Provider 用 | 任意 |
 | `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗時通知 | 任意 |
 | `PAPERPILOT_GROQ_API_KEY` | テーマ家系図の LLM 分類 (Groq) | テーマ生成に必須 |
+| `PAPERPILOT_OPENALEX_EMAIL` | OpenAlex polite pool（フォールバックの安定性向上） | 推奨 |
 
 CF Worker 側のシークレット (`wrangler secret put`):
 

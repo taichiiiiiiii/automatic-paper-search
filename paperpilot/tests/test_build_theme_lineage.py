@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -153,7 +154,12 @@ def test_sanitize_theme_passes_500_chars():
 
 
 def test_discover_seeds_calls_s2_search_per_keyword(tmp_path: Path, monkeypatch):
-    """Each expanded keyword should produce one S2 /paper/search call."""
+    """Each expanded keyword should produce one S2 /paper/search call.
+
+    Pinned to S2-only via ``use_openalex_fallback=False`` because top_n=10
+    > unique results=2, which would otherwise trigger the OpenAlex fallback
+    and add network calls that obscure the per-keyword S2 invariant.
+    """
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     keywords = ["mixture of experts", "moe", "sparse routing"]
 
@@ -169,6 +175,7 @@ def test_discover_seeds_calls_s2_search_per_keyword(tmp_path: Path, monkeypatch)
             keywords=keywords,
             top_n=10,
             since_year=None,
+            use_openalex_fallback=False,
         )
 
     assert mock_rwr.call_count == len(keywords)
@@ -274,19 +281,28 @@ def test_discover_seeds_handles_none_response(tmp_path: Path, monkeypatch):
 
 def test_discover_seeds_handles_corrupt_cache(tmp_path: Path, monkeypatch):
     """A garbled cache file must not crash the pipeline; treat as empty
-    and proceed (next run will rewrite it on a successful query)."""
+    and proceed (next run will rewrite it on a successful query).
+
+    Fallback is disabled here so the test isolates corrupt-cache handling
+    from the OpenAlex path (a real OpenAlex request would otherwise fire).
+    """
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
     cache_path = build_theme_lineage._seed_cache_path("x", None)
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_text("{this is not valid json")
     seeds = build_theme_lineage.discover_seeds(
         keywords=["x"], top_n=10, since_year=None,
+        use_openalex_fallback=False,
     )
     assert seeds == []
 
 
 def test_discover_seeds_caches_per_keyword(tmp_path: Path, monkeypatch):
-    """Re-running with the same keyword reuses cache (no second HTTP call)."""
+    """Re-running with the same keyword reuses cache (no second HTTP call).
+
+    Fallback disabled so the cache-hit invariant (1 network call across
+    2 runs) isn't muddied by OpenAlex top-up calls when top_n > 1 result.
+    """
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
 
     p = _mk_s2_paper("p1")
@@ -295,8 +311,14 @@ def test_discover_seeds_caches_per_keyword(tmp_path: Path, monkeypatch):
         "request_with_retry",
         return_value=_mk_s2_search_response([p]),
     ) as mock_rwr:
-        build_theme_lineage.discover_seeds(keywords=["k"], top_n=5, since_year=None)
-        build_theme_lineage.discover_seeds(keywords=["k"], top_n=5, since_year=None)
+        build_theme_lineage.discover_seeds(
+            keywords=["k"], top_n=5, since_year=None,
+            use_openalex_fallback=False,
+        )
+        build_theme_lineage.discover_seeds(
+            keywords=["k"], top_n=5, since_year=None,
+            use_openalex_fallback=False,
+        )
     # Two pipeline runs, but only one network call thanks to disk cache.
     assert mock_rwr.call_count == 1
 
@@ -1607,7 +1629,7 @@ def test_enrich_github_stars_invoked_by_pipeline(tmp_path, monkeypatch):
             return _mk_s2_search_response([seed])
         return _mk_s2_search_response([])
 
-    captured = {}
+    captured: dict[str, Any] = {}
 
     def fake_enrich(nodes, **kw):
         captured["called"] = True
@@ -1731,3 +1753,427 @@ def test_enrich_github_stars_counts_curated_and_search_separately(
     assert "search=1" in log
     # Only one paper actually had stars > 0, so the third tally reads 1.
     assert "stars>0=1" in log
+
+
+# ---- OpenAlex fallback (S2 throttle relief) ----------------------------------
+#
+# When S2 /paper/search returns 0 (or fewer than top_n) seeds — the steady-state
+# failure mode on GitHub Actions runners since the shared IP pool is throttled
+# by S2's free tier — the pipeline must transparently fall back to OpenAlex
+# search and resolve the resulting works to S2 paperIds via /paper/batch (a
+# separate endpoint with a different rate-limit budget than /paper/search).
+# These tests pin the fallback contract so a future refactor cannot silently
+# regress the CI-pipeline-survival property.
+
+
+def _mk_openalex_response(works: list[dict]) -> MagicMock:
+    """Wrap OpenAlex /works results in a MagicMock response."""
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json = lambda: {"results": works}
+    return resp
+
+
+def _mk_openalex_work(
+    *,
+    title: str = "Theme Paper",
+    doi: str | None = "10.1234/test",
+    year: int = 2020,
+    cites: int = 100,
+    openalex_id: str = "https://openalex.org/W1",
+) -> dict:
+    work: dict = {
+        "id": openalex_id,
+        "title": title,
+        "publication_year": year,
+        "publication_date": f"{year}-01-01",
+        "cited_by_count": cites,
+        "ids": {"openalex": openalex_id},
+    }
+    if doi is not None:
+        # OpenAlex returns DOIs as full URLs; the fallback parser must
+        # tolerate both `https://doi.org/10.x/y` and bare `10.x/y`.
+        work["doi"] = f"https://doi.org/{doi}"
+        work["ids"]["doi"] = f"https://doi.org/{doi}"
+    return work
+
+
+def _mk_s2_batch_response(papers: list) -> MagicMock:
+    """Wrap S2 /paper/batch response (a JSON array, possibly with nulls).
+
+    `papers` is typed as a plain `list` so callers can pass either a
+    ``list[dict]`` or a mixed ``list[dict | None]`` without invariance
+    headaches. The S2 batch endpoint inserts None entries for unmatched
+    ids — both shapes need to be testable.
+    """
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json = lambda: papers
+    return resp
+
+
+def test_openalex_fallback_invoked_when_s2_returns_zero(tmp_path, monkeypatch):
+    """S2 /paper/search returning 0 results triggers OpenAlex; OpenAlex
+    DOIs are then resolved through S2 /paper/batch and surfaced as seeds."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    oa_work = _mk_openalex_work(title="Theme paper", doi="10.1/a", year=2020, cites=200)
+    s2_paper = _mk_s2_paper("p_resolved", year=2020, cites=200)
+
+    calls: list[tuple[str, str]] = []
+
+    def fake_rwr(method, url, **kw):
+        calls.append((method, url))
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        if "openalex.org/works" in url:
+            return _mk_openalex_response([oa_work])
+        if "/paper/batch" in url:
+            return _mk_s2_batch_response([s2_paper])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["mixture of experts"],
+            top_n=5,
+            since_year=None,
+        )
+
+    assert {s["paperId"] for s in seeds} == {"p_resolved"}
+    urls = [c[1] for c in calls]
+    assert any("openalex.org" in u for u in urls)
+    assert any("/paper/batch" in u for u in urls)
+
+
+def test_openalex_fallback_skipped_when_s2_meets_quota(tmp_path, monkeypatch):
+    """S2 search alone produces >= top_n seeds → OpenAlex MUST NOT be hit
+    (preserves the fast happy path; OpenAlex is purely a fallback)."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    s2_papers = [_mk_s2_paper(f"p{i}", cites=1000 - i) for i in range(5)]
+    calls: list[str] = []
+
+    def fake_rwr(method, url, **kw):
+        calls.append(url)
+        if "/paper/search" in url:
+            return _mk_s2_search_response(s2_papers)
+        return MagicMock(status_code=200, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    assert len(seeds) == 5
+    assert not any("openalex.org" in u for u in calls)
+    assert not any("/paper/batch" in u for u in calls)
+
+
+def test_openalex_fallback_invoked_when_s2_returns_partial(tmp_path, monkeypatch):
+    """S2 returns 1 seed but caller asked for 5 → fallback fills the gap."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    s2_partial = [_mk_s2_paper("p_s2", cites=500)]
+    oa_work = _mk_openalex_work(title="Other paper", doi="10.2/b", cites=300)
+    s2_resolved = _mk_s2_paper("p_oa_resolved", cites=300)
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response(s2_partial)
+        if "openalex.org/works" in url:
+            return _mk_openalex_response([oa_work])
+        if "/paper/batch" in url:
+            return _mk_s2_batch_response([s2_resolved])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    assert {s["paperId"] for s in seeds} == {"p_s2", "p_oa_resolved"}
+
+
+def test_openalex_search_includes_polite_pool_email(tmp_path, monkeypatch):
+    """When openalex_email is provided, OpenAlex /works request must carry
+    a `mailto` query param (polite pool — more reliable under load)."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    captured_params: dict = {}
+
+    def fake_rwr(method, url, **kw):
+        if "openalex.org/works" in url:
+            captured_params.update(kw.get("params") or {})
+            return _mk_openalex_response([])
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+            openalex_email="research@example.com",
+        )
+
+    assert captured_params.get("mailto") == "research@example.com"
+
+
+def test_openalex_search_filters_by_since_year(tmp_path, monkeypatch):
+    """since_year propagates to OpenAlex as `from_publication_date:YYYY-01-01`."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    captured: dict = {}
+
+    def fake_rwr(method, url, **kw):
+        if "openalex.org/works" in url:
+            captured.update(kw.get("params") or {})
+            return _mk_openalex_response([])
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=2020,
+        )
+
+    flt = captured.get("filter") or ""
+    assert "from_publication_date:2020-01-01" in flt
+
+
+def test_openalex_handles_empty_results(tmp_path, monkeypatch):
+    """OpenAlex returning 0 works → no S2 batch call, fallback returns []."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    openalex_called: list[str] = []
+    batch_called: list[str] = []
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        if "openalex.org/works" in url:
+            openalex_called.append(url)
+            return _mk_openalex_response([])
+        if "/paper/batch" in url:
+            batch_called.append(url)
+            return _mk_s2_batch_response([])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    assert seeds == []
+    assert len(openalex_called) == 1, "OpenAlex must be tried when S2 yields 0"
+    assert batch_called == []
+
+
+def test_openalex_handles_failure_gracefully(tmp_path, monkeypatch):
+    """OpenAlex returning None (network failure / 5xx after retries):
+    no crash, fallback contributes 0 seeds, primary S2 result is returned."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    openalex_called: list[str] = []
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        if "openalex.org/works" in url:
+            openalex_called.append(url)
+            return None
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    assert seeds == []
+    assert len(openalex_called) == 1, "OpenAlex must be attempted before giving up"
+
+
+def test_resolve_to_s2_batch_uses_doi_prefix(tmp_path, monkeypatch):
+    """OpenAlex DOIs must be sent to /paper/batch as `DOI:<bare_doi>` in
+    the `ids` array (S2 expects the prefix; the URL form is a parse
+    error — see manual repro from this branch's commit message)."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    oa_works = [
+        _mk_openalex_work(title="A", doi="10.1/a", openalex_id="https://openalex.org/W1"),
+        _mk_openalex_work(title="B", doi="10.2/b", openalex_id="https://openalex.org/W2"),
+    ]
+    captured_body: dict = {}
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        if "openalex.org/works" in url:
+            return _mk_openalex_response(oa_works)
+        if "/paper/batch" in url:
+            captured_body.update(kw.get("json_body") or {})
+            return _mk_s2_batch_response(
+                [_mk_s2_paper("p1"), _mk_s2_paper("p2")]
+            )
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    ids = captured_body.get("ids") or []
+    assert "DOI:10.1/a" in ids
+    assert "DOI:10.2/b" in ids
+
+
+def test_resolve_to_s2_batch_handles_429(tmp_path, monkeypatch):
+    """S2 /paper/batch returning None (persistent 429): graceful empty seeds."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    oa_work = _mk_openalex_work(title="A", doi="10.1/a")
+    batch_called: list[str] = []
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        if "openalex.org/works" in url:
+            return _mk_openalex_response([oa_work])
+        if "/paper/batch" in url:
+            batch_called.append(url)
+            return None
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    assert seeds == []
+    assert len(batch_called) == 1, "S2 batch must be attempted when OpenAlex finds DOIs"
+
+
+def test_no_openalex_fallback_flag_disables_fallback(tmp_path, monkeypatch):
+    """use_openalex_fallback=False prevents OpenAlex even when S2 returns 0."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    calls: list[str] = []
+
+    def fake_rwr(method, url, **kw):
+        calls.append(url)
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+            use_openalex_fallback=False,
+        )
+
+    assert seeds == []
+    assert not any("openalex.org" in u for u in calls)
+
+
+def test_openalex_fallback_skips_works_without_doi(tmp_path, monkeypatch):
+    """OpenAlex works without a DOI cannot be resolved through S2 batch;
+    they must be silently skipped, not poison the request body."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    work_with = _mk_openalex_work(title="A", doi="10.1/a")
+    work_without = _mk_openalex_work(title="B", doi=None)
+    captured_body: dict = {}
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response([])
+        if "openalex.org/works" in url:
+            return _mk_openalex_response([work_with, work_without])
+        if "/paper/batch" in url:
+            captured_body.update(kw.get("json_body") or {})
+            return _mk_s2_batch_response([_mk_s2_paper("p1")])
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    ids = captured_body.get("ids") or []
+    assert ids == ["DOI:10.1/a"]
+
+
+def test_openalex_fallback_dedups_against_s2_seeds(tmp_path, monkeypatch):
+    """Same paperId surfaced by both S2 and OpenAlex+batch → single entry.
+
+    This pins the dedup semantics specifically — without dedup, the
+    overlap would surface as a duplicate row in the chronological tree.
+    A new ``p_extra`` from the fallback proves the merge actually ran;
+    asserting only on ``p_shared`` would pass even if fallback were
+    completely skipped.
+    """
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+
+    s2_partial = [_mk_s2_paper("p_shared", cites=500)]
+    oa_works = [
+        _mk_openalex_work(title="dup", doi="10.dup/x"),
+        _mk_openalex_work(title="extra", doi="10.extra/y", openalex_id="https://openalex.org/W2"),
+    ]
+    s2_batch_results = [
+        _mk_s2_paper("p_shared", cites=500),
+        _mk_s2_paper("p_extra", cites=300),
+    ]
+
+    def fake_rwr(method, url, **kw):
+        if "/paper/search" in url:
+            return _mk_s2_search_response(s2_partial)
+        if "openalex.org/works" in url:
+            return _mk_openalex_response(oa_works)
+        if "/paper/batch" in url:
+            return _mk_s2_batch_response(s2_batch_results)
+        return MagicMock(status_code=404, json=lambda: {})
+
+    with patch.object(build_theme_lineage, "request_with_retry", side_effect=fake_rwr):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["x"], top_n=5, since_year=None,
+        )
+
+    paper_ids = [s["paperId"] for s in seeds]
+    assert paper_ids.count("p_shared") == 1
+    assert "p_extra" in paper_ids, "fallback must have run and added the new paper"
+
+
+def test_build_pipeline_passes_openalex_email_from_env(tmp_path, monkeypatch):
+    """build_theme_lineage() reads openalex_email from load_env() and
+    threads it through to discover_seeds() so the polite-pool path works
+    end-to-end without the operator passing it explicitly.
+
+    Patches ``build_theme_lineage.load_env`` directly because the module
+    binds the symbol at import time (``from … import load_env``) — the
+    standard ``_patch_env`` helper, which patches the source module's
+    binding, doesn't reach this caller's frame.
+    """
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(
+        build_theme_lineage,
+        "load_env",
+        lambda *a, **kw: {"openalex_email": "researcher@example.com"},
+    )
+    _stub_external_calls(monkeypatch)
+
+    captured: dict = {}
+
+    def spy_discover(**kw):
+        captured.update(kw)
+        return []
+
+    with (
+        patch.object(build_theme_lineage, "discover_seeds", side_effect=spy_discover),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[]),
+    ):
+        build_theme_lineage.build_theme_lineage(
+            theme="Test", depth=1, seeds_count=1, width=4, since_year=None,
+        )
+
+    assert captured.get("openalex_email") == "researcher@example.com"
