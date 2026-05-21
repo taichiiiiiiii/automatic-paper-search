@@ -178,7 +178,10 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
         )
         return provider, LLM_RATE_DELAY["gemini"]
 
-    sys.exit(
+    # RuntimeError (not sys.exit) so this function is safe to import from a
+    # Modal Function — sys.exit would tear down the ASGI worker. The CLI
+    # main() converts this back to exit code 3 to preserve script contract.
+    raise RuntimeError(
         "No LLM key found. Set PAPERPILOT_GROQ_API_KEY (preferred) "
         "or PAPERPILOT_GEMINI_API_KEY."
     )
@@ -639,11 +642,15 @@ def main():
 
     setup_logging()  # CLI mode: surface logger.info to stderr.
 
-    result = build(
-        limit=args.limit,
-        conference=args.conference,
-        venue_override=args.venue_override,
-    )
+    try:
+        result = build(
+            limit=args.limit,
+            conference=args.conference,
+            venue_override=args.venue_override,
+        )
+    except RuntimeError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        sys.exit(3)
     _, output_path = resolve_paths(args.conference)
     output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2))
 
