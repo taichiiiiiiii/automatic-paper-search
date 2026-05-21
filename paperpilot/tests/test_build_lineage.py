@@ -64,9 +64,12 @@ def test_build_provider_falls_back_to_gemini(monkeypatch):
     assert delay == build_lineage.LLM_RATE_DELAY["gemini"]
 
 
-def test_build_provider_exits_without_any_key(monkeypatch):
+def test_build_provider_raises_without_any_key(monkeypatch):
+    # Phase 0a (closes #110): RuntimeError lets Modal import build_provider
+    # safely; sys.exit would tear down the ASGI worker. Detailed contract is
+    # pinned in test_build_lineage_provider_error.py.
     _patch_env(monkeypatch)  # no keys at all
-    with pytest.raises(SystemExit):
+    with pytest.raises(RuntimeError):
         build_lineage.build_provider()
 
 
