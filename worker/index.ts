@@ -36,36 +36,16 @@ interface Env {
 // Python theme_slug() function. The pin test in
 // paperpilot/tests/test_worker_slug_parity.py compares all three.
 import { themeSlug, THEME_INPUT_PATTERN } from "./slug.js";
+import {
+  json,
+  isRateLimited,
+  isGloballyRateLimited,
+  RATE_LIMIT_PER_HOUR,
+  RATE_LIMIT_GLOBAL_PER_DAY,
+} from "./response.js";
 export { themeSlug };
 
-const RATE_LIMIT_PER_HOUR = 5;
-// Global daily ceiling on dispatched workflows. Even with a perfect
-// per-IP limiter, a /20 IPv6 block or a rotating proxy can bypass IP
-// rate limiting; this cap protects against direct-cost denial-of-service
-// against the LLM provider (Groq Stage 4 calls).
-const RATE_LIMIT_GLOBAL_PER_DAY = 100;
 const THEME_PATTERN = THEME_INPUT_PATTERN;
-
-interface JsonResponse {
-  ok: boolean;
-  status: "exists" | "queued" | "rate_limited" | "invalid" | "error";
-  slug?: string;
-  message?: string;
-}
-
-function json(body: JsonResponse, init: ResponseInit = {}): Response {
-  return new Response(JSON.stringify(body), {
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store",
-      // Tight CORS — same-origin only, since the page is on the same
-      // CF Pages domain. If we ever expose the API for embeds, change
-      // this to a specific allow-list.
-      "vary": "origin",
-    },
-    ...init,
-  });
-}
 
 async function alreadyGenerated(slug: string, request: Request, env: Env): Promise<boolean> {
   // Re-resolve against the static asset bundle on the same origin so we
@@ -85,35 +65,6 @@ async function alreadyGenerated(slug: string, request: Request, env: Env): Promi
   } catch {
     return false;
   }
-}
-
-async function isRateLimited(ip: string, kv: KVNamespace): Promise<boolean> {
-  const key = `rl:${ip}`;
-  const raw = await kv.get(key);
-  const count = raw ? parseInt(raw, 10) || 0 : 0;
-  if (count >= RATE_LIMIT_PER_HOUR) return true;
-  // 1-hour TTL — KV expirationTtl resets the window when the next
-  // request lands after the bucket expires, so a single client gets a
-  // fresh quota each hour rather than a fixed UTC-aligned window.
-  await kv.put(key, String(count + 1), { expirationTtl: 3600 });
-  return false;
-}
-
-// Today's UTC date as YYYY-MM-DD. Worker time is UTC by default.
-function todayUTC(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-async function isGloballyRateLimited(kv: KVNamespace): Promise<boolean> {
-  const key = `rl:global:${todayUTC()}`;
-  const raw = await kv.get(key);
-  const count = raw ? parseInt(raw, 10) || 0 : 0;
-  if (count >= RATE_LIMIT_GLOBAL_PER_DAY) return true;
-  // 24h TTL on the global bucket. Even if KV reset on every write
-  // sliding the window slightly, the daily cap is loose enough that the
-  // amortised throughput stays bounded.
-  await kv.put(key, String(count + 1), { expirationTtl: 86400 });
-  return false;
 }
 
 async function dispatchWorkflow(theme: string, env: Env): Promise<{ ok: boolean; status: number; body: string }> {
