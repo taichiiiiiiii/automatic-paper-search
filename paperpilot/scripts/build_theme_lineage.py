@@ -43,6 +43,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from paperpilot.llm.base import AbstractLLMProvider, RelationClassification  # noqa: E402
 from paperpilot.scripts._common import theme_slug  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
@@ -147,6 +148,8 @@ def _add_cross_node_edges(
     *,
     seed_ids: set[str] | None = None,
     cohort_min_year: int | None = None,
+    provider: AbstractLLMProvider | None = None,
+    strict_mode: str = "off",
 ) -> int:
     """Find citation links between nodes already in the graph.
 
@@ -202,7 +205,10 @@ def _add_cross_node_edges(
             if edge_key in existing:
                 continue
             citing_node = nodes.get(citing_id)
-            cls = derive_relation(ref, parent=ref, child=citing_node)
+            cls = derive_relation(
+                ref, parent=ref, child=citing_node,
+                provider=provider, strict_mode=strict_mode,
+            )
             if cls is None:
                 continue
             edges.append({
@@ -222,30 +228,67 @@ def derive_relation(
     *,
     parent: dict | None = None,
     child: dict | None = None,
+    provider: AbstractLLMProvider | None = None,
+    strict_mode: str = "off",
 ) -> dict | None:
-    """Heuristic LLM-free relation classifier.
+    """Classify how the cited paper relates to the citing paper.
 
-    ``intent_record`` is the S2 paper dict that carries the
-    ``_is_influential`` / ``_intents`` fields lifted by ``fetch_related``.
-    ``parent`` (older) and ``child`` (newer) are the two endpoints of
-    the edge — used for the year / citation heuristic when intents
-    don't pin down a category.
+    Heuristic path (S2 intents + year/citation contrast) is the default,
+    matching the LLM-free post-#54 behavior. When ``strict_mode`` is
+    ``"ambiguous"`` or ``"all"``, the result of the heuristic is then
+    refined by a real LLM classification via ``provider.classify_relation``.
 
-    Direction conventions:
-      * BFS (references): the cited paper carries intents; parent =
-        intent_record, child = the citing paper currently being processed.
-      * Descendants (citations): the citing paper carries intents;
-        parent = the seed, child = intent_record (the citer).
-      * Cross-node: parent = intent_record (cited), child = the citing
-        node already in the graph.
+    Modes:
+      * ``"off"``       (default): heuristic only. ``provider`` is ignored
+        even if supplied — Phase 0c compat.
+      * ``"ambiguous"`` : LLM is called only when S2 intents do not pick
+        a key in ``_INTENT_RELATION_MAP`` (= the heuristic fell through
+        to year/citation or the default rule).
+      * ``"all"``       : LLM is called on every influential edge.
+        Cost warning: a wide graph (e.g. seeds=8, width=8, depth=2) can
+        produce a few hundred calls/run; depth 3+ can exceed 1000. On
+        Groq this is throttled via 429s (we fall back to heuristic);
+        on Claude/Gemini paid plans the operator bears the cost. Follow-up
+        issue #119 will add an explicit per-run cap. Use ``"ambiguous"``
+        unless you have a budget cap in place.
 
-    Returns ``None`` when S2 flagged the citation as non-influential.
+    Direction conventions are unchanged from the pre-Step 1 contract:
+      * BFS (references): parent = intent_record, child = citing paper.
+      * Descendants: parent = seed, child = intent_record.
+      * Cross-node: parent = intent_record (cited), child = citing node.
 
-    #80: refines the previous default-everything-to-``extends`` path
-    with a year + citation contrast pass that picks ``supersedes`` /
-    ``successor`` / ``contrasts`` / ``ablation`` when intents are
-    missing. Cuts the "all extends" appearance the user reported on
-    the SemSeg tree.
+    Returns ``None`` when S2 flagged the citation as non-influential,
+    OR when the LLM (only invoked in strict modes) judges the relation
+    as ``unrelated``. LLM-call failure (provider returns ``None``) falls
+    back to the heuristic edge — we never silently drop a perfectly fine
+    heuristic edge because the LLM hiccupped.
+    """
+    heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
+    if heuristic is None:
+        # _is_influential=False — LLM cost on a citation we'd drop anyway.
+        return None
+    if strict_mode == "off" or provider is None:
+        return heuristic
+    if strict_mode == "ambiguous" and not _is_ambiguous(intent_record):
+        return heuristic
+    llm_result = provider.classify_relation(parent or {}, child or {})
+    return _apply_llm_classification(heuristic, llm_result)
+
+
+def _derive_relation_heuristic(
+    intent_record: dict,
+    *,
+    parent: dict | None = None,
+    child: dict | None = None,
+) -> dict | None:
+    """Heuristic LLM-free classifier — extracted from derive_relation in
+    Phase A Step 1 so the public ``derive_relation`` can compose the
+    heuristic with an optional LLM pass.
+
+    Behavior is byte-for-byte identical to the pre-Step 1 derive_relation
+    body (#53 introduced the intent map, #80 added the year/citation
+    contrast pass). Existing 76 tests in test_build_theme_lineage.py pin
+    this contract.
     """
     if intent_record.get("_is_influential") is False:
         return None
@@ -255,7 +298,7 @@ def derive_relation(
         if keyword in intents_set:
             return _make_derived(relation, rationale)
 
-    # No intents — try year + citation contrast.
+    # No matching intent — try year + citation contrast.
     if parent is not None and child is not None:
         py = parent.get("year")
         cy = child.get("year")
@@ -285,6 +328,50 @@ def derive_relation(
                 )
     relation, rationale = _DEFAULT_DERIVED
     return _make_derived(relation, rationale)
+
+
+def _is_ambiguous(intent_record: dict) -> bool:
+    """True iff S2 intents fail to pick a key in ``_INTENT_RELATION_MAP``.
+
+    Gating predicate for ``--llm-strict=ambiguous``: edges whose intent
+    set matches a known key are kept on the cheap heuristic path; the
+    rest get the LLM treatment. Phase A Step 1 / CRITICAL C7.
+    """
+    intents = intent_record.get("_intents") or []
+    intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
+    return all(keyword not in intents_set for keyword, _, _ in _INTENT_RELATION_MAP)
+
+
+def _apply_llm_classification(
+    heuristic: dict, llm_result: RelationClassification | None
+) -> dict | None:
+    """Confluence point: merge an optional LLM classification into a heuristic edge.
+
+    Decision matrix (#118 / CRITICAL C7):
+      * ``llm_result is None``  → keep the heuristic (LLM hiccup,
+        fail-safe). We never drop a good heuristic edge because the
+        provider returned an unparseable JSON or hit a timeout.
+      * ``relation == "unrelated"`` → drop the edge entirely
+        (LLM positively rejects the relation; ``unrelated`` is never
+        rendered in the viewer).
+      * otherwise → take LLM's relation + rationale verbatim, but
+        ``confidence = max(heuristic, llm)``. A timid LLM (conf 0.3)
+        should not weaken a methodology-intent heuristic (conf 0.7);
+        a confident LLM (0.95) should override the heuristic constant.
+
+    Why rationale = LLM (when present): the heuristic rationale is a
+    template; the LLM's rationale is grounded in the actual abstracts
+    and carries far more user-facing signal.
+    """
+    if llm_result is None:
+        return heuristic
+    if llm_result.relation == "unrelated":
+        return None
+    return {
+        "relation": llm_result.relation,
+        "confidence": max(float(heuristic["confidence"]), float(llm_result.confidence)),
+        "rationale": llm_result.rationale,
+    }
 
 
 def _make_derived(relation: str, rationale: str) -> dict:
@@ -825,6 +912,7 @@ def build_theme_lineage(
     since_year: int | None,
     output: Path | None = None,
     use_openalex_fallback: bool = True,
+    llm_strict: str = "off",
 ) -> Path:
     """Run the full theme-to-family-tree pipeline; return the output path."""
     sanitised = sanitize_theme(theme)
@@ -941,7 +1029,10 @@ def build_theme_lineage(
             classify_attempted += 1
             # BFS: parent (cited) carries intents; current is the citing
             # child being processed (parent → current edge).
-            cls = derive_relation(parent, parent=parent, child=current)
+            cls = derive_relation(
+                parent, parent=parent, child=current,
+                provider=provider, strict_mode=llm_strict,
+            )
             if cls is not None:
                 classify_succeeded += 1
                 edges.append(
@@ -992,7 +1083,10 @@ def build_theme_lineage(
             # Descendants direction: seed → child edge. The CHILD carries
             # intents (S2 citations endpoint annotates the citing paper).
             # parent=seed (older), child=child (newer) for year/cite logic.
-            cls = derive_relation(child, parent=seed, child=child)
+            cls = derive_relation(
+                child, parent=seed, child=child,
+                provider=provider, strict_mode=llm_strict,
+            )
             if cls is None:
                 continue
             if any(e["src"] == sid and e["dst"] == cid for e in edges):
@@ -1023,7 +1117,9 @@ def build_theme_lineage(
     # user wanted visible ("全体的に矢印を作成して"). Re-enable the
     # full pass; volume is acceptable given the seeded influence filter
     # already culls non-influential refs upstream.
-    cross_added = _add_cross_node_edges(nodes, edges)
+    cross_added = _add_cross_node_edges(
+        nodes, edges, provider=provider, strict_mode=llm_strict,
+    )
     if cross_added:
         logger.info(
             "cross-node pass added %d edges (in-graph citations not seen by BFS)",
@@ -1135,7 +1231,11 @@ def build_theme_lineage(
 # ---------- CLI ----------
 
 
-def main(argv: list[str] | None = None) -> int:
+def _build_arg_parser() -> argparse.ArgumentParser:
+    """argparse parser for build_theme_lineage CLI.
+
+    Extracted so unit tests can pin the flag set without invoking main().
+    """
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
         "--theme", required=True,
@@ -1172,6 +1272,23 @@ def main(argv: list[str] | None = None) -> int:
              "returns < seeds_count results (e.g. on throttled CI IPs). "
              "By default the fallback runs whenever S2 alone is short.",
     )
+    ap.add_argument(
+        "--llm-strict",
+        dest="llm_strict",
+        choices=["off", "ambiguous", "all"],
+        default="off",
+        help="Optional LLM refinement of the heuristic relation classifier. "
+             "off (default): heuristic only, no LLM calls. "
+             "ambiguous: LLM only on edges whose S2 intents do not map to a "
+             "known relation key (most edges, but cheap to bulk-skip). "
+             "all: LLM on every influential edge (high cost — bounded by "
+             "Groq per-minute rate limits in practice).",
+    )
+    return ap
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = _build_arg_parser()
     args = ap.parse_args(argv)
 
     # CLI invocations need an explicit setup_logging() call (collector.py
@@ -1197,6 +1314,7 @@ def main(argv: list[str] | None = None) -> int:
             since_year=args.since_year,
             output=output,
             use_openalex_fallback=args.use_openalex_fallback,
+            llm_strict=args.llm_strict,
         )
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
