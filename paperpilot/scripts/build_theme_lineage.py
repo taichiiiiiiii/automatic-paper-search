@@ -585,6 +585,7 @@ def discover_seeds(
     since_year: int | None,
     use_openalex_fallback: bool = True,
     openalex_email: str | None = None,
+    theme: str | None = None,
 ) -> list[dict[str, Any]]:
     """Find seed papers for the theme via S2 ``/paper/search``.
 
@@ -649,7 +650,22 @@ def discover_seeds(
                 by_id.setdefault(p["paperId"], p)
         cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
 
-    primary = _rank_and_truncate(by_id.values(), top_n=top_n, since_year=since_year)
+    # Topic relevance gate: drop seeds whose title+abstract don't include
+    # enough of the theme's words. ``theme`` is optional for backwards
+    # compatibility with callers that already pre-filter their input;
+    # production passes the original theme string so the GNN→Pandas
+    # bug can't recur (issue #126 followup). Warn when omitted so the
+    # regression can't slip back in via a forgotten kwarg.
+    if theme is None:
+        logger.warning(
+            "discover_seeds called without theme= ; topic-relevance filter "
+            "is bypassed and off-topic seeds may slip in (caller should pass "
+            "the sanitised theme string)"
+        )
+    candidates: list[dict[str, Any]] = list(by_id.values())
+    if theme:
+        candidates = _filter_topic_relevant_seeds(candidates, theme=theme)
+    primary = _rank_and_truncate(candidates, top_n=top_n, since_year=since_year)
     if not use_openalex_fallback or len(primary) >= top_n:
         return primary
 
@@ -681,7 +697,24 @@ def discover_seeds(
         if pid and pid not in by_id:
             by_id[pid] = paper
 
-    merged = _rank_and_truncate(by_id.values(), top_n=top_n, since_year=since_year)
+    # Re-apply the topic gate after the OpenAlex top-up — fallback can
+    # introduce a brand new off-topic paper that the S2-only path would
+    # have filtered. Without this, off-topic seeds slip in only when S2
+    # fell short, producing flaky before/after comparisons.
+    #
+    # Invariant note: with the current substring-only filter, every
+    # element of ``primary`` also passes the second filter pass, so
+    # ``len(merged) >= len(primary)`` holds. If the filter is ever
+    # tightened (e.g. embedding similarity), revisit the log delta below
+    # which assumes that invariant.
+    candidates_after_fallback: list[dict[str, Any]] = list(by_id.values())
+    if theme:
+        candidates_after_fallback = _filter_topic_relevant_seeds(
+            candidates_after_fallback, theme=theme
+        )
+    merged = _rank_and_truncate(
+        candidates_after_fallback, top_n=top_n, since_year=since_year
+    )
     logger.info(
         "OpenAlex fallback added %d new seeds (final=%d)",
         len(merged) - len(primary), len(merged),
@@ -710,6 +743,91 @@ def _rank_and_truncate(
         ]
     candidates.sort(key=lambda p: p.get("citationCount") or 0, reverse=True)
     return candidates[:top_n]
+
+
+# Multi-word themes whose words are all 3+ chars get a relevance gate:
+# at least half of the words must appear (case-insensitively) somewhere
+# in the seed's title or abstract. Short or single-word themes (RAG,
+# MoE, BERT) skip the gate because their tokens produce too many false
+# matches and S2's own search ranking is the better signal.
+_TOPIC_RELEVANCE_MIN_WORD_LEN = 3
+_TOPIC_RELEVANCE_THRESHOLD_RATIO = 0.5
+
+
+def _filter_topic_relevant_seeds(
+    seeds: list[dict[str, Any]],
+    *,
+    theme: str,
+) -> list[dict[str, Any]]:
+    """Drop seeds whose title+abstract don't include enough of the theme's
+    words. The original failure mode: searching S2 for "Graph Neural
+    Network" surfaced the Pandas paper (highly cited, completely off-topic)
+    as a top seed because S2's relevance ranker counts citation graph hops.
+    Adding a substring check before ranking pins the seeds to the topic.
+
+    The gate only fires when the theme has 2+ words of 3+ chars each —
+    otherwise the filter would over-trim short queries like "RAG" or
+    "DPO" where the abbreviation rarely appears literally in the paper text.
+    """
+    if not seeds:
+        return []
+    words = [w.lower() for w in theme.split() if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN]
+    if len(words) < 2:
+        return seeds
+    threshold = max(1, int(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO))
+    kept: list[dict[str, Any]] = []
+    for p in seeds:
+        haystack = f"{p.get('title') or ''} {p.get('abstract') or ''}".lower()
+        hits = sum(1 for w in words if w in haystack)
+        if hits >= threshold:
+            kept.append(p)
+    return kept
+
+
+# Anything cited more than ``_OFF_TOPIC_CITE_MULTIPLIER × max(seed cites)``
+# is treated as a foundational paper that's likely tangential to the theme
+# (ResNet/Attention-Is-All-You-Need/PyTorch landing in a GNN tree because
+# every modern ML paper cites them, not because they're part of the GNN
+# lineage). The methodology intent overrides this — if S2 says the citing
+# paper actually built its method on top of the foundational work, the
+# edge stays.
+_OFF_TOPIC_CITE_MULTIPLIER = 3.0
+
+
+def _filter_off_topic_refs(
+    refs: list[dict[str, Any]],
+    *,
+    max_seed_cite: int,
+) -> list[dict[str, Any]]:
+    """Drop BFS reference candidates (either parents or children) whose
+    citationCount is wildly above the theme's max-cited seed AND that
+    lack a methodology intent. Applied symmetrically on both BFS directions
+    because foundational refs leak into both (ancestor: citing paper cites
+    ResNet; descendant: a survey citing the seed is also cited by every
+    modern ML paper). See the block comment above ``_OFF_TOPIC_CITE_MULTIPLIER``
+    for the rationale.
+
+    When ``max_seed_cite`` is 0 (e.g. S2 returned the seed without cite
+    info), the multiplier collapses and we pass everything through —
+    blindly dropping all refs would be worse than the original noise.
+    """
+    if max_seed_cite <= 0:
+        return refs
+    ceiling = max_seed_cite * _OFF_TOPIC_CITE_MULTIPLIER
+    kept: list[dict[str, Any]] = []
+    for p in refs:
+        cites = int(p.get("citationCount") or 0)
+        if cites <= ceiling:
+            kept.append(p)
+            continue
+        intents = {
+            str(i).lower()
+            for i in (p.get("_intents") or [])
+            if isinstance(i, str)
+        }
+        if "methodology" in intents:
+            kept.append(p)
+    return kept
 
 
 # ---------- GitHub stars enrichment ----------
@@ -954,11 +1072,22 @@ def build_theme_lineage(
         since_year=since_year,
         use_openalex_fallback=use_openalex_fallback,
         openalex_email=openalex_email,
+        theme=sanitised,
     )
     logger.info(
         "discovered %d seeds: %s",
         len(seeds),
         [s.get("paperId") for s in seeds],
+    )
+
+    # Foundational filter calibration: cap BFS parent citations at
+    # `_OFF_TOPIC_CITE_MULTIPLIER × max(seed cites)`, so the citing paper's
+    # references can't drag in a globally-foundational paper that the
+    # theme has nothing to do with. Computed once so every BFS node uses
+    # the same ceiling.
+    max_seed_cite = max(
+        (int(s.get("citationCount") or 0) for s in seeds),
+        default=0,
     )
 
     # Stage 3: BFS ancestors via fetch_related (build_lineage's cache reused).
@@ -996,6 +1125,15 @@ def build_theme_lineage(
         # keep BFS cost bounded.
         all_parents = fetch_related(current["paperId"], "references", width * 4)
         all_parents = [p for p in all_parents if p.get("abstract")]
+
+        # #126 followup: drop foundational off-topic refs before partitioning.
+        # The methodology-intent guard inside _filter_off_topic_refs lets
+        # truly load-bearing foundationals (ones the citing paper explicitly
+        # uses as its method) survive — only the ResNet-in-a-GNN-tree class
+        # of accidental ancestors gets removed.
+        all_parents = _filter_off_topic_refs(
+            all_parents, max_seed_cite=max_seed_cite
+        )
 
         # Issue #50 (followup): the previous order — sort all by citationCount
         # then filter by isInfluential — let foundational papers (ResNet,
@@ -1066,6 +1204,14 @@ def build_theme_lineage(
         # the parent partition above so descendants stay quality-anchored.
         all_children = fetch_related(sid, "citations", desc_width * 4)
         all_children = [c for c in all_children if c.get("abstract")]
+        # Same off-topic guard as the parent path — a foundational paper
+        # masquerading as a descendant (e.g. a survey that cites the seed
+        # while also being cited by every modern ML paper) would similarly
+        # pollute the tree. The methodology-intent override keeps real
+        # extensions in place.
+        all_children = _filter_off_topic_refs(
+            all_children, max_seed_cite=max_seed_cite
+        )
         influential = [c for c in all_children if c.get("_is_influential") is not False]
         non_influential = [c for c in all_children if c.get("_is_influential") is False]
         influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
