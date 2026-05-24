@@ -80,15 +80,23 @@ jobs:
         # User input goes through env var only (never spliced into the
         # shell command line) so command-substitution-style attacks are
         # impossible here. Python side also defends.
+        #
+        # --llm-strict=ambiguous: edges where S2 intents don't pick a
+        # heuristic relation get a real LLM-written rationale via Groq.
+        # The cheaper-than-`all` mode keeps the per-theme run cost bounded
+        # (~10 LLM calls instead of 30-50) while still cleaning up the
+        # most generic templated rationales — those are exactly the
+        # heuristic-fallthrough edges. See CLAUDE.md §14 quality notes.
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEME_INPUT: ${{ github.event.inputs.theme }}
         run: |
-          set -eu
+          set -euo pipefail
           uv run python -m paperpilot.scripts.build_theme_lineage \
             --theme "$THEME_INPUT" \
-            --depth 1 --seeds 5 --width 8 --since-year 2018
+            --depth 1 --seeds 5 --width 8 --since-year 2018 \
+            --llm-strict ambiguous
 
       - name: Refresh manifest
         run: |
