@@ -21,6 +21,16 @@ on:
         required: true
         type: string
 
+# Serialize the push window with regen-themes.yml so a weekly cron and an
+# on-demand submission don't race on `develop`. cancel-in-progress is OFF —
+# we never want to discard 2-3 min of LLM/S2 work just because another
+# theme finished slightly earlier. The retry loop inside
+# .github/scripts/commit-and-push.sh covers any residual contention when
+# two on-demand runs queue around the same instant. See #121.
+concurrency:
+  group: themes-push-develop
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -90,19 +100,13 @@ jobs:
         env:
           THEME_INPUT: ${{ github.event.inputs.theme }}
         run: |
-          set -eu
+          set -euo pipefail
           git config user.email "actions@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          # Only the published JSONs — local lineage-cache is gitignored
-          # and must never end up in the public repo.
-          git add docs/themes/
-          if git diff --cached --quiet; then
-            echo "nothing changed — theme already exists"
-            exit 0
-          fi
           # Commit message uses a literal $THEME_INPUT via env, not via
           # interpolation, so a theme like "$(rm -rf ~)" would show up
-          # as a literal string in the commit.
+          # as a literal string in the commit. The push retry/rebase
+          # logic lives in .github/scripts/commit-and-push.sh — see #121
+          # for why this needs to be more than a single `git push`.
           msg=$(printf 'data(themes): on-demand generation of "%s"' "$THEME_INPUT")
-          git commit -m "$msg"
-          git push origin develop
+          bash .github/scripts/commit-and-push.sh "$msg" docs/themes/

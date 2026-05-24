@@ -14,9 +14,20 @@ on:
         required: false
         default: ''
 
+# Share the push lane with theme-on-demand.yml so the Sunday cron and a
+# user submission can't race on `develop`. cancel-in-progress is OFF —
+# cancelling would discard ~5-10 minutes of LLM/S2 regen work. See #121.
+concurrency:
+  group: themes-push-develop
+  cancel-in-progress: false
+
 jobs:
   regen:
     runs-on: ubuntu-latest
+    # Each theme takes ~1 min (LLM classify + S2 fetch) and we cap the
+    # workflow at ~30 themes; 60 min is a generous ceiling that still
+    # surfaces stuck runs instead of leaving them billed indefinitely.
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -109,15 +120,12 @@ jobs:
 
       - name: Commit + push if changed
         run: |
+          set -euo pipefail
           git config user.email "actions@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           # Stage only the published JSONs — the local lineage-cache
           # holds large per-paper S2 fetches whose growth would inflate
-          # the repo every week (review #87 HIGH finding).
-          git add docs/themes/
-          if git diff --cached --quiet; then
-            echo "nothing changed — skipping commit"
-            exit 0
-          fi
-          git commit -m "data(themes): weekly auto-regen ($(date -u +%Y-%m-%d))"
-          git push origin develop
+          # the repo every week (review #87 HIGH finding). Push retry +
+          # rebase live in .github/scripts/commit-and-push.sh; see #121.
+          msg="data(themes): weekly auto-regen ($(date -u +%Y-%m-%d))"
+          bash .github/scripts/commit-and-push.sh "$msg" docs/themes/
