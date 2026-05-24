@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date
 
 from paperpilot.llm.base import (
+    CLASSIFY_SYSTEM_PROMPT,
     AbstractLLMProvider,
     PaperEvaluation,
     RelationClassification,
@@ -142,3 +143,109 @@ def test_abstract_provider_classify_relation_returns_none_by_default():
 
     provider = Dummy({"enabled": True})
     assert provider.classify_relation({"title": "x"}, {"title": "y"}) is None
+
+
+# ---- Prompt quality (#131) ----
+# The Llama 3.3 70B production trace showed the LLM consistently
+# regurgitating the heuristic templates instead of comparing the two
+# abstracts — every "extends" edge had rationale "論文 B は論文 A の
+# 手法を異なる領域・タスク・スケールに拡張している。", which is literally
+# the Japanese translation of the prompt's `extends:` definition. The
+# system prompt now (a) demands paper-specific content, (b) lists the
+# templates as forbidden outputs, and (c) shows good/bad examples.
+
+
+def test_classify_prompt_demands_paper_specific_content():
+    """The system prompt must explicitly require referencing a concrete
+    technical concept from the abstracts so the LLM stops translating the
+    enum definition. This is the core fix for #131 — the prompt is the
+    only place where the LLM learns what 'good rationale' looks like."""
+    system_lower = CLASSIFY_SYSTEM_PROMPT.lower()
+    # Some signal that the prompt asks for concrete content — wording can
+    # evolve, but at least one of these markers must survive a refactor.
+    markers = ["specific", "concrete", "technical concept", "abstract",
+               "paper-specific", "must reference", "must mention"]
+    assert any(m in system_lower for m in markers), (
+        f"prompt no longer demands paper-specific content: {CLASSIFY_SYSTEM_PROMPT}"
+    )
+
+
+def test_classify_prompt_forbids_template_phrasings():
+    """The system prompt must list the heuristic templates as forbidden
+    outputs. If the LLM emits one anyway, ``RelationClassification.from_dict``
+    has a second-line defence (test below), but the prompt is the cheapest
+    place to stop it."""
+    # At least one of the canonical heuristic templates must appear in the
+    # prompt as a "do not output" example.
+    template_fragments = [
+        "異なる領域・タスク・スケール",  # extends template
+        "研究ラインを継承",  # successor template
+        "ベースライン比較にのみ",  # baseline_only template
+    ]
+    matched = [f for f in template_fragments if f in CLASSIFY_SYSTEM_PROMPT]
+    assert len(matched) >= 2, (
+        f"prompt must call out at least 2 template phrasings as forbidden; "
+        f"only found: {matched}"
+    )
+
+
+def test_classify_prompt_includes_good_examples():
+    """Few-shot good examples teach the LLM what paper-specific looks
+    like. Without these the LLM falls back to the safest abstract output —
+    which is the template translation. The exact wording is flexible but
+    SOMETHING that looks like a sample rationale must be present."""
+    # An "examples" / "good" section, and at least one example that name-
+    # drops a real concept (so the LLM sees the pattern).
+    assert "example" in CLASSIFY_SYSTEM_PROMPT.lower(), (
+        "prompt lacks the few-shot examples that teach paper-specific output"
+    )
+
+
+def test_relation_classification_rejects_known_template_rationale():
+    """Second-line defence (#131): if the LLM regurgitates a template
+    string verbatim, treat the response as a failure and fall back to
+    the heuristic — outputting the heuristic from ``_apply_llm_classification``
+    is identical in user-visible content but doesn't pretend the LLM
+    added value."""
+    payload = {
+        "relation": "extends",
+        "confidence": 0.85,
+        "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
+    }
+    rc = RelationClassification.from_dict(payload)
+    assert rc is None, "template rationale must be rejected"
+
+
+def test_relation_classification_rejects_all_known_templates():
+    """Pin every known template so a future template addition can't
+    silently skip the rejection."""
+    templates = [
+        "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
+        "論文 B は論文 A の研究ラインを継承し自然に発展させている。",
+        "論文 B は論文 A をベースライン比較にのみ用いている。",
+        "論文 B は論文 A と根本的に異なるアプローチを提案している。",
+        "論文 B は論文 A の手法を置き換える改良版として提案されている。",
+        "論文 B は論文 A の構成要素を分析・ablation している。",
+    ]
+    for t in templates:
+        payload = {"relation": "extends", "confidence": 0.7, "rationale": t}
+        assert RelationClassification.from_dict(payload) is None, (
+            f"template not rejected: {t!r}"
+        )
+
+
+def test_relation_classification_keeps_paper_specific_rationale():
+    """Sanity counter-test: a real LLM-style paper-specific rationale
+    must parse cleanly. The validator must only reject the exact known
+    templates, not anything that *looks* generic."""
+    payload = {
+        "relation": "extends",
+        "confidence": 0.85,
+        "rationale": (
+            "論文 B のグラフ畳み込み層は、論文 A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。"
+        ),
+    }
+    rc = RelationClassification.from_dict(payload)
+    assert rc is not None
+    assert rc.relation == "extends"
+    assert "O(E)" in rc.rationale
