@@ -59,15 +59,23 @@ jobs:
 
       # Lineage regeneration is expensive (hundreds of LLM calls per run)
       # and only useful for conferences where the Oral curation is done.
-      # Runs only when PAPERPILOT_GROQ_API_KEY is configured — otherwise
-      # we keep whatever lineage.json was last committed.
+      # The "is the key configured" gate USED to live in a step-level
+      # `if: ${{ secrets.GROQ_API_KEY != '' }}` — but that's a #124
+      # startup_failure: GitHub Actions disallows the `secrets` context
+      # in step-level `if:` expressions and rejects the whole workflow
+      # at parse time. The check now lives inside the run script,
+      # which is allowed and produces the same skip-when-unset behaviour.
       - name: Regenerate lineage.json (if Groq key available)
-        if: ${{ secrets.GROQ_API_KEY != '' }}
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PAPERPILOT_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         continue-on-error: true   # viewer falls back to last good lineage.json
         run: |
+          set -euo pipefail
+          if [ -z "${PAPERPILOT_GROQ_API_KEY:-}" ]; then
+            echo "PAPERPILOT_GROQ_API_KEY not configured — skipping lineage regen"
+            exit 0
+          fi
           shopt -s nullglob
           for papers in docs/*/papers.json; do
             name=$(basename "$(dirname "$papers")")
