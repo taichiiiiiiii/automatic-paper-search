@@ -186,62 +186,34 @@ class RelationClassification:
         return cls(relation=rel, confidence=conf, rationale=rationale)
 
 
-# Why the prompt looks like this — #131:
-# The original prompt's enum definitions ("B applies A's method to a
-# different domain, task, or scale.") were close translations of the
-# heuristic templates ("論文 B は論文 A の手法を異なる領域・タスク・スケール
-# に拡張している。"), so the LLM took the cheap shortcut of translating
-# the definition rather than reading the abstracts. Production traces
-# (#131) showed 69/70 edges came out with byte-for-byte template
-# rationales.
+# Production traces showed Llama 3.3 70B would translate the prompt's
+# English enum definitions into Japanese rather than reading the
+# abstracts, producing byte-for-byte heuristic templates. The rewrite
+# below (a) shortens the enum text so it can't be translated wholesale,
+# (b) explicitly forbids the template phrasings as outputs, (c) shows
+# one good example anchoring paper-specific style.
 #
-# Rewrite goals:
-#   (a) abstract / terse enum definitions so they can't be directly
-#       translated into useful Japanese,
-#   (b) MUST/MUST NOT rules calling out the templates as forbidden
-#       outputs,
-#   (c) good-vs-bad examples showing what a paper-specific rationale
-#       looks like.
+# Token budget note: kept under ~250 tokens because Groq's free tier
+# caps at 6,000 TPM. A larger prompt × 25 RPM (rate limiter default)
+# would burn through the TPM budget and 429-throttle the back half of
+# each burst, which was the regression observed in the #131 first-cut
+# rewrite (PR #132's first deploy got timed out at 8 min).
 CLASSIFY_SYSTEM_PROMPT = """\
-You compare two AI/ML papers (A older, B newer) and decide how B relates to A.
+Compare two AI/ML papers (A older, B newer). Output ONLY JSON:
+{"relation":"<one>","confidence":<0.0-1.0>,"rationale":"<one Japanese sentence>"}
 
-Output ONLY a JSON object (no markdown, no prose):
-{"relation": "<one of the seven>", "confidence": <0.0-1.0>, "rationale": "<one Japanese sentence>"}
+relation values: supersedes / successor / extends / ablation / baseline_only / contrasts / unrelated
 
-Relation values (pick exactly one):
-- supersedes: B's method is a drop-in replacement that outperforms A.
-- successor: B is a natural follow-up to A.
-- extends: B applies A in a new direction.
-- ablation: B analyses A's components.
-- baseline_only: A serves only as a baseline in B's experiments.
-- contrasts: B argues for a fundamentally different approach to A's problem.
-- unrelated: B's citation of A is tangential.
+rationale rules — read carefully, this is what gets wrong most often:
+- 30-200 chars, one Japanese sentence
+- MUST mention a concrete concept from B's title or abstract (a method name, dataset, metric, or architectural choice). The reader should know which two papers are compared from the rationale alone.
+- NEVER output these heuristic templates (emitting them wastes an LLM call):
+  - "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している"
+  - "論文 B は論文 A の研究ラインを継承し自然に発展させている"
+  - "論文 B は論文 A をベースライン比較にのみ用いている"
+  - "論文 B は論文 A と根本的に異なるアプローチを提案している"
 
-RATIONALE — this is the part the LLM usually gets wrong, read carefully:
-
-MUST reference at least one concrete technical concept, method name,
-dataset, metric, or architectural choice that is visible in B's title
-or abstract. The reader should be able to tell which two papers are
-being compared from the rationale alone.
-
-MUST NOT output any of these template phrasings (these are the
-heuristic fallback strings the system emits when the LLM is offline —
-emitting them defeats the point of calling the LLM):
-- "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している"
-- "論文 B は論文 A の研究ラインを継承し自然に発展させている"
-- "論文 B は論文 A をベースライン比較にのみ用いている"
-- "論文 B は論文 A と根本的に異なるアプローチを提案している"
-
-One Japanese sentence, 30-200 characters.
-
-Examples — GOOD (paper-specific):
-- B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。
-- B は A の Switch Transformer のルーターを、トークンごとに上位 k 個のエキスパートを選ぶ MoE 層に置換した。
-- B の DPO 目的関数は、A の PPO ベース RLHF が必要とする報酬モデルを取り除き、選好データから直接最適化する。
-
-Examples — BAD (forbidden — too generic):
-- 論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。
-- 論文 B は論文 A の研究ラインを継承し自然に発展させている。
+Good example: "B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。"
 """
 
 _CLASSIFY_USER_TEMPLATE = """\
