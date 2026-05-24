@@ -326,7 +326,7 @@ def test_discover_seeds_caches_per_keyword(tmp_path: Path, monkeypatch):
 # ---- build pipeline ----
 
 
-def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None):
+def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None, tmp_path=None):
     """Wire up keyword-expand + S2 + classify mocks for the full pipeline tests.
 
     Returns the FakeProvider so individual tests can introspect it.
@@ -338,6 +338,12 @@ def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None):
     classification calls; pass classifier=... if you need a structured
     RelationClassification (currently unused — kept for future symmetry
     with build_lineage tests).
+
+    Also redirects the shared classifications cache to /dev/null by
+    default so tests can't accidentally write to the production
+    ``paperpilot/data/lineage-cache/classifications.json``. Pass
+    ``tmp_path`` to point the cache at a per-test scratch directory
+    instead, when the test needs to observe or pre-seed cache state.
     """
     rc = classifier or RelationClassification(
         relation="extends", confidence=0.9, rationale="既存手法の改善版"
@@ -357,6 +363,17 @@ def _stub_external_calls(monkeypatch, *, classifier=None, chat_text=None):
         build_theme_lineage,
         "build_provider",
         lambda: (provider, 0.0),
+    )
+    # Redirect the shared cache to a scratch path so tests don't pollute
+    # the real classifications.json. Tests that explicitly want to
+    # observe cache state should pass ``tmp_path=...``.
+    if tmp_path is not None:
+        cache_path = Path(tmp_path) / "classifications.json"
+    else:
+        # Use a path that definitely won't exist so load returns {}.
+        cache_path = Path("/nonexistent/classifications.json")
+    monkeypatch.setattr(
+        build_theme_lineage, "_CLASSIFICATION_CACHE_PATH", cache_path
     )
     return provider
 
@@ -2569,3 +2586,223 @@ def test_build_keeps_foundational_parent_with_methodology(tmp_path: Path, monkey
     payload = json.loads(out_path.read_text())
     # methodology intent → kept.
     assert "resnet" in {n["id"] for n in payload["nodes"]}
+
+
+# ---- Shared classification cache (#131 followup, follow-up to PR #133) ----
+# build_lineage.py persists every LLM classify_relation call to
+# paperpilot/data/lineage-cache/classifications.json (key:
+# "src_paperId->dst_paperId"). The theme pipeline was NOT using this
+# cache, so every theme rebuild paid the full LLM cost again — making
+# free-tier Groq's TPM ceiling the binding limit (#131). Sharing the
+# cache means second-and-later theme builds reuse already-classified
+# pairs, accumulating paper-specific rationales over time even on the
+# free tier.
+
+
+def test_cached_classify_provider_returns_cached_entry_on_hit():
+    """Hit path: provider.classify_relation should return the cached
+    RelationClassification without invoking the inner provider."""
+    inner = _FakeProvider(
+        classification=RelationClassification(
+            relation="extends", confidence=0.9, rationale="should not be returned"
+        )
+    )
+    cache = {
+        "src1->dst1": {
+            "relation": "successor",
+            "confidence": 0.85,
+            "rationale": "B が A の RoBERTa 事前学習を低リソース言語に転用している",
+        }
+    }
+    cached = build_theme_lineage._CachedClassifyProvider(
+        inner, cache, cache_path=None
+    )
+    rc = cached.classify_relation(
+        {"paperId": "src1"}, {"paperId": "dst1"}
+    )
+    assert rc is not None
+    assert rc.relation == "successor"
+    assert rc.rationale.startswith("B が A の RoBERTa")
+    # Inner provider must NOT have been called.
+    assert inner.classify_calls == []
+
+
+def test_cached_classify_provider_calls_inner_on_miss(tmp_path):
+    """Miss path: provider.classify_relation calls the inner provider
+    and persists the result to disk."""
+    cache_path = tmp_path / "classifications.json"
+    inner = _FakeProvider(
+        classification=RelationClassification(
+            relation="extends",
+            confidence=0.9,
+            rationale="B は A の sparse attention を audio 信号に拡張している",
+        )
+    )
+    cached = build_theme_lineage._CachedClassifyProvider(
+        inner, {}, cache_path=cache_path
+    )
+    a = {"paperId": "src_miss", "title": "A"}
+    b = {"paperId": "dst_miss", "title": "B"}
+    rc = cached.classify_relation(a, b)
+    assert rc is not None
+    assert rc.relation == "extends"
+    # Inner provider called exactly once.
+    assert len(inner.classify_calls) == 1
+    # The cache file now contains the entry.
+    assert cache_path.exists()
+    persisted = json.loads(cache_path.read_text())
+    key = "src_miss->dst_miss"
+    assert key in persisted
+    assert persisted[key]["relation"] == "extends"
+
+
+def test_cached_classify_provider_skips_persist_when_inner_returns_none(tmp_path):
+    """If the LLM call fails (Groq 429 → returns None), don't poison the
+    cache with a null entry. The next call should retry the LLM."""
+    cache_path = tmp_path / "classifications.json"
+    inner = _FakeProvider(classification=None)  # provider returns None
+    cache: dict = {}
+    cached = build_theme_lineage._CachedClassifyProvider(
+        inner, cache, cache_path=cache_path
+    )
+    rc = cached.classify_relation(
+        {"paperId": "src_none"}, {"paperId": "dst_none"}
+    )
+    assert rc is None
+    assert cache == {}, "must not store None as a cache entry"
+    # cache_path may or may not exist (the persist step is skipped); the
+    # *content* is what we care about: nothing got written.
+    if cache_path.exists():
+        assert cache_path.read_text() in {"", "{}", "{\n}"}
+
+
+def test_cached_classify_provider_no_persist_when_cache_path_none(tmp_path):
+    """When cache_path is None (in-memory only mode), persist is skipped
+    even on a fresh miss. Used by tests that don't want disk side-effects."""
+    inner = _FakeProvider(
+        classification=RelationClassification(
+            relation="extends", confidence=0.9, rationale="paper-specific 説明"
+        )
+    )
+    cache: dict = {}
+    cached = build_theme_lineage._CachedClassifyProvider(
+        inner, cache, cache_path=None
+    )
+    rc = cached.classify_relation(
+        {"paperId": "x"}, {"paperId": "y"}
+    )
+    assert rc is not None
+    # In-memory cache populated.
+    assert "x->y" in cache
+    # No file should have been created anywhere.
+
+
+def test_cached_classify_provider_missing_paper_ids_skip_cache(tmp_path):
+    """If either paper dict lacks a paperId, the cache key would be
+    ambiguous — fall through to the inner provider without storing
+    anything. (Build_theme_lineage always populates paperIds, but
+    defensive contracts catch regressions.)"""
+    cache_path = tmp_path / "classifications.json"
+    inner = _FakeProvider(
+        classification=RelationClassification(
+            relation="extends", confidence=0.9, rationale="paper-specific 説明"
+        )
+    )
+    cache: dict = {}
+    cached = build_theme_lineage._CachedClassifyProvider(
+        inner, cache, cache_path=cache_path
+    )
+    rc = cached.classify_relation({}, {"paperId": "dst"})
+    assert rc is not None
+    assert cache == {}, "must skip cache when paperId is missing"
+
+
+def test_build_theme_lineage_shares_classification_cache(tmp_path, monkeypatch):
+    """Integration: build_theme_lineage with --llm-strict=ambiguous and
+    a pre-populated classification cache must reuse the cached entry
+    without firing the LLM. This is the #131-followup payoff: theme
+    rebuilds become free LLM-cost-wise."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "fetch-cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    # Point the classification cache at a per-test path so we can pre-seed
+    # it and observe behaviour without touching the shared on-disk cache.
+    monkeypatch.setattr(
+        build_theme_lineage,
+        "_CLASSIFICATION_CACHE_PATH",
+        tmp_path / "classifications.json",
+    )
+
+    # Pre-seed the cache with an entry that maps the (parent → seed) edge
+    # we're about to build, with a paper-specific rationale.
+    cached_rationale = (
+        "B は A のグラフアテンション機構を不均一グラフのメタパスへ拡張した"
+    )
+    (tmp_path / "classifications.json").write_text(
+        json.dumps({
+            "p_parent->seed": {
+                "relation": "extends",
+                "confidence": 0.9,
+                "rationale": cached_rationale,
+            }
+        }, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    # Provider stub that BLOWS UP if called — we want to prove the cache
+    # short-circuited it.
+    class _BoomProvider(AbstractLLMProvider):
+        name = "boom"
+        def evaluate_batch(self, papers, profile):  # pragma: no cover
+            return [None] * len(papers)
+        def classify_relation(self, a, b):
+            raise AssertionError(
+                "cache miss — _CachedClassifyProvider failed to hit the cache"
+            )
+    monkeypatch.setattr(
+        build_theme_lineage, "build_provider", lambda: (_BoomProvider({}), 0.0)
+    )
+
+    seed = _mk_s2_paper(
+        "seed",
+        title="Graph Attention Network",
+        abstract="we propose a graph neural network with attention",
+        year=2018, cites=10_000,
+    )
+    # No _intents → _is_ambiguous returns True → with strict_mode=ambiguous,
+    # the cached classify_relation IS exercised (it'd raise without cache).
+    parent = {
+        **_mk_s2_paper("p_parent", year=2014, cites=2_000),
+        "_is_influential": True,
+    }
+    # fetch_related is asked for both "references" (BFS parents) and
+    # "citations" (descendants). We only want to exercise the parent
+    # path here, so return [parent] for references and [] for
+    # citations. Otherwise the descendants pass would call
+    # classify_relation(seed, parent) — a DIFFERENT cache key — and
+    # cache-miss into the BoomProvider, masking the real assertion.
+    def _fetch_related_side(s2_id, kind, limit):
+        return [parent] if kind == "references" else []
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            side_effect=_fetch_related_side,
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Graph Neural Network",
+            depth=1, seeds_count=1, width=4, since_year=None,
+            llm_strict="ambiguous",
+        )
+    payload = json.loads(out_path.read_text())
+    # The cached LLM rationale must have flowed through.
+    assert any(
+        e["rationale"] == cached_rationale for e in payload["edges"]
+    ), f"cached rationale did not appear in output edges: {payload['edges']}"
