@@ -35,7 +35,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    timeout-minutes: 8
+    # 15 min (was 8) so Groq rate-limiting + S2 retries can't push us past
+    # the workflow timeout. With Groq's 25-RPM throttle + ~90 LLM calls
+    # worst case, the LLM phase alone is ~4 min; S2/OpenAlex throttling
+    # has been observed adding another 1-2 min. See #131 for the
+    # truncated run that motivated this bump.
+    timeout-minutes: 15
     steps:
       - name: Validate input early
         # Reject before checkout so a malformed dispatch doesn't burn a
@@ -81,15 +86,20 @@ jobs:
         # shell command line) so command-substitution-style attacks are
         # impossible here. Python side also defends.
         #
-        # --llm-strict=all: classify EVERY influential edge with the LLM
-        # so each tooltip carries a paper-specific Japanese explanation
-        # instead of the 5 hardcoded templates the heuristic emits. With
-        # depth=1, seeds=5, width=8, the worst-case call count is ~40,
-        # which Groq's free tier (30 RPM) drains in ~80s — acceptable for
-        # the +90s workflow runtime trade. When the rate limit hits, the
-        # provider returns None and the per-edge call falls back to the
-        # heuristic template (silent fallback was the #45 bug; #118 added
-        # a summary log so we notice if it dominates).
+        # --llm-strict=ambiguous (not =all): Groq free tier is RPM-capped
+        # AND TPM-capped (6,000 tokens/min). At ~2,000 tokens per call
+        # (system prompt + two 600-char abstracts + response), even 4 RPM
+        # exceeds the TPM budget; --llm-strict=all on the free tier hits
+        # 429 throttles in the back half of the burst and either pushes
+        # the run past the workflow timeout (15 min) or falls back to
+        # heuristic templates anyway.
+        #
+        # Honest design: heuristic for the ~80% of edges S2 already
+        # classified (methodology / result / background intents), LLM
+        # only for the truly ambiguous edges where the heuristic falls
+        # back to "extends" by default. Operators on a Groq paid plan
+        # who can raise llm.rate_limit_rpm can switch to --llm-strict=all
+        # if they want full LLM coverage. #131 documents the trade.
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
@@ -99,7 +109,7 @@ jobs:
           uv run python -m paperpilot.scripts.build_theme_lineage \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
-            --llm-strict all
+            --llm-strict ambiguous
 
       - name: Refresh manifest
         run: |
