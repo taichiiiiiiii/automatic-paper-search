@@ -14,12 +14,10 @@ on:
         required: false
         default: ''
 
-# Share the push lane with theme-on-demand.yml so the Sunday cron and a
-# user submission can't race on `develop`. cancel-in-progress is OFF —
-# cancelling would discard ~5-10 minutes of LLM/S2 regen work. See #121.
-concurrency:
-  group: themes-push-develop
-  cancel-in-progress: false
+# No concurrency group — see theme-on-demand.yml for rationale (#125).
+# A Sunday cron racing an on-demand submission is handled by the rebase+
+# retry loop in .github/scripts/commit-and-push.sh, same as the
+# theme-on-demand → theme-on-demand case.
 
 jobs:
   regen:
