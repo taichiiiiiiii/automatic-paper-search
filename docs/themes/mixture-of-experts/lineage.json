@@ -89,7 +89,7 @@
       ],
       "kinds": [],
       "citation_count": 173873,
-      "github_stars": 17262,
+      "github_stars": 17281,
       "tldr": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder…",
       "arxiv_id": "1706.03762",
       "github_url": "https://github.com/tensorflow/tensor2tensor"
@@ -166,7 +166,7 @@
       ],
       "kinds": [],
       "citation_count": 113451,
-      "github_stars": 40014,
+      "github_stars": 40021,
       "tldr": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers.…",
       "arxiv_id": "1810.04805",
       "doi": "10.18653/v1/N19-1423",
@@ -207,7 +207,7 @@
       ],
       "kinds": [],
       "citation_count": 25315,
-      "github_stars": 6515,
+      "github_stars": 6519,
       "tldr": "Transfer learning, where a model is first pre-trained on a data-rich task before being fine-tuned on a downstream task, has emerged as a…",
       "arxiv_id": "1910.10683",
       "github_url": "https://github.com/google-research/text-to-text-transfer-transformer"
@@ -300,7 +300,7 @@
       ],
       "kinds": [],
       "citation_count": 61150,
-      "github_stars": 12527,
+      "github_stars": 12544,
       "tldr": "While the Transformer architecture has become the de-facto standard for natural language processing tasks, its applications to computer…",
       "arxiv_id": "2010.11929",
       "github_url": "https://github.com/google-research/vision_transformer"
@@ -320,7 +320,7 @@
       ],
       "kinds": [],
       "citation_count": 57078,
-      "github_stars": 15745,
+      "github_stars": 15740,
       "tldr": "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by…",
       "arxiv_id": "2005.14165",
       "github_url": "https://github.com/openai/gpt-3"
@@ -340,7 +340,7 @@
       ],
       "kinds": [],
       "citation_count": 7786,
-      "github_stars": 1579,
+      "github_stars": 1580,
       "tldr": "We propose a new test to measure a text model's multitask accuracy. The test covers 57 tasks including elementary mathematics, US history,…",
       "arxiv_id": "2009.03300",
       "github_url": "https://github.com/hendrycks/test"
@@ -1275,22 +1275,71 @@
       "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     },
     {
-      "src": "510e26733aaff585d65701b9f1be7ca9d5afc586",
-      "dst": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
-      "rel": "extends",
+      "src": "8760bc7631c0cb04e7138254e9fd6451b7def8ca",
+      "dst": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+      "rel": "supersedes",
       "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
     },
     {
-      "src": "1518039b5001f1836565215eb047526b3ac7f462",
-      "dst": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+      "dst": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
       "rel": "successor",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     },
     {
+      "src": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+      "dst": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
+    },
+    {
+      "src": "1882f194cb43828852cc052887671e55a80f945a",
+      "dst": "80d0116d77beeded0c23cf48946d9d10d4faee14",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
+    },
+    {
       "src": "510e26733aaff585d65701b9f1be7ca9d5afc586",
-      "dst": "2b55f4f2357c9af64cdb48ef19058fae4f39d761",
+      "dst": "80d0116d77beeded0c23cf48946d9d10d4faee14",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
+      "dst": "43497fe8aa7c730e075b08facc2aa560a6d4dd85",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
+      "dst": "66c10bf1f11bc1b2d92204d8f8391d087f6de1c4",
+      "rel": "baseline_only",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A をベースライン比較にのみ用いている。"
+    },
+    {
+      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+      "dst": "66c10bf1f11bc1b2d92204d8f8391d087f6de1c4",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
+      "src": "f6b51c8753a871dc94ff32152c00c01e94f90f09",
+      "dst": "f37e1b62a767a307c046404ca96bc140b3e68cb5",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
+      "src": "814a4f680b9ba6baba23b93499f4b48af1a27678",
+      "dst": "35b142ea69598e6241f0011312128031df55895c",
       "rel": "extends",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
@@ -1317,6 +1366,48 @@
       "rationale": "論文 B は論文 A をベースライン比較にのみ用いている。"
     },
     {
+      "src": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+      "dst": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
+      "src": "1518039b5001f1836565215eb047526b3ac7f462",
+      "dst": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "1882f194cb43828852cc052887671e55a80f945a",
+      "dst": "85dc0f90178b0f6aa4b3262e18c13cf8235c117f",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
+      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+      "dst": "85dc0f90178b0f6aa4b3262e18c13cf8235c117f",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
+      "src": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
+      "dst": "5ae6fb6b5a3c7df515ff4a82ac9673bae6a8e200",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
+      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
+      "dst": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
       "src": "5ae6fb6b5a3c7df515ff4a82ac9673bae6a8e200",
       "dst": "ea02e95728453a8cc8d5e4692cfa3fa2ed62411e",
       "rel": "successor",
@@ -1339,49 +1430,14 @@
     },
     {
       "src": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
-      "dst": "814a4f680b9ba6baba23b93499f4b48af1a27678",
-      "rel": "extends",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "1882f194cb43828852cc052887671e55a80f945a",
-      "dst": "85dc0f90178b0f6aa4b3262e18c13cf8235c117f",
-      "rel": "extends",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
-      "dst": "85dc0f90178b0f6aa4b3262e18c13cf8235c117f",
-      "rel": "extends",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "1882f194cb43828852cc052887671e55a80f945a",
-      "dst": "80d0116d77beeded0c23cf48946d9d10d4faee14",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
-    },
-    {
-      "src": "510e26733aaff585d65701b9f1be7ca9d5afc586",
-      "dst": "80d0116d77beeded0c23cf48946d9d10d4faee14",
+      "dst": "83b90f4a0ae4cc214eb3cc140ccfef9cd99fac05",
       "rel": "successor",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     },
     {
-      "src": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
-      "dst": "66c10bf1f11bc1b2d92204d8f8391d087f6de1c4",
-      "rel": "baseline_only",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A をベースライン比較にのみ用いている。"
-    },
-    {
-      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
-      "dst": "66c10bf1f11bc1b2d92204d8f8391d087f6de1c4",
+      "src": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
+      "dst": "814a4f680b9ba6baba23b93499f4b48af1a27678",
       "rel": "extends",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
@@ -1406,13 +1462,6 @@
       "rel": "extends",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "90abbc2cf38462b954ae1b772fac9532e2ccd8b0",
-      "dst": "83b90f4a0ae4cc214eb3cc140ccfef9cd99fac05",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     },
     {
       "src": "1518039b5001f1836565215eb047526b3ac7f462",
@@ -1429,67 +1478,11 @@
       "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
     },
     {
-      "src": "814a4f680b9ba6baba23b93499f4b48af1a27678",
-      "dst": "35b142ea69598e6241f0011312128031df55895c",
-      "rel": "extends",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
-      "dst": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
-      "rel": "extends",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
-      "dst": "43497fe8aa7c730e075b08facc2aa560a6d4dd85",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "6c4b76232bb72897685d19b3d264c6ee3005bc2b",
-      "dst": "5ae6fb6b5a3c7df515ff4a82ac9673bae6a8e200",
-      "rel": "extends",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "f6b51c8753a871dc94ff32152c00c01e94f90f09",
-      "dst": "f37e1b62a767a307c046404ca96bc140b3e68cb5",
-      "rel": "extends",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
       "src": "510e26733aaff585d65701b9f1be7ca9d5afc586",
-      "dst": "a41e0454694feab716115f36ee9d8d5626f30cba",
+      "dst": "2b55f4f2357c9af64cdb48ef19058fae4f39d761",
       "rel": "extends",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
-    },
-    {
-      "src": "8760bc7631c0cb04e7138254e9fd6451b7def8ca",
-      "dst": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
-      "rel": "supersedes",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
-    },
-    {
-      "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
-      "dst": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "df2b0e26d0599ce3e70df8a9da02e51594e0e992",
-      "dst": "268d347e8a55b5eb82fb5e7d2f800e33c75ab18a",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
     },
     {
       "src": "204e3073870fae3d05bcbc2f6a8e263d9b72e776",
@@ -1511,6 +1504,13 @@
       "rel": "extends",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
+    },
+    {
+      "src": "510e26733aaff585d65701b9f1be7ca9d5afc586",
+      "dst": "a41e0454694feab716115f36ee9d8d5626f30cba",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"
     }
   ],
   "meta": {
@@ -1529,6 +1529,6 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-05-17T03:47:28.134351+00:00"
+    "generated_at": "2026-05-24T03:58:27.748659+00:00"
   }
 }
