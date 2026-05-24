@@ -2472,6 +2472,66 @@ def test_off_topic_filter_uses_tighter_2x_multiplier():
     assert kept == []
 
 
+def test_build_llm_strict_all_propagates_rationale_to_output(tmp_path: Path, monkeypatch):
+    """End-to-end pin (#129): with --llm-strict=all and a stub provider
+    returning a paper-specific rationale, the FINAL lineage.json edge
+    must carry that LLM rationale verbatim — NOT the heuristic template.
+
+    Regression for a behavior we never had a test for: production --llm-
+    strict=all was producing all-template rationales because of either a
+    propagation bug or a Groq response shape issue. This test pins the
+    happy path so a refactor can't silently re-introduce the bug."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    custom_rationale = "論文 B は論文 A の attention 機構を graph 構造に拡張している"
+    provider = _stub_external_calls(
+        monkeypatch,
+        classifier=RelationClassification(
+            relation="extends",
+            confidence=0.92,
+            rationale=custom_rationale,
+        ),
+    )
+
+    seed = _mk_s2_paper(
+        "seed",
+        title="Graph Attention Network",
+        abstract="we propose a graph neural network with attention.",
+        year=2018, cites=10_000,
+    )
+    parent = {
+        **_mk_s2_paper("p_parent", year=2014, cites=5_000),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(build_theme_lineage, "fetch_related", return_value=[parent]),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Graph Neural Network",
+            depth=1, seeds_count=1, width=4, since_year=None,
+            llm_strict="all",  # the crux of this test
+        )
+
+    payload = json.loads(out_path.read_text())
+    # The provider's classify_relation must have been called for each
+    # influential edge (here, parent → seed).
+    assert len(provider.classify_calls) >= 1, "LLM was never invoked"
+    # The LLM rationale must appear in the output, NOT the template.
+    rationales = [e["rationale"] for e in payload["edges"]]
+    assert custom_rationale in rationales, (
+        f"LLM rationale missing from output. Saw: {rationales}"
+    )
+
+
 def test_build_keeps_foundational_parent_with_methodology(tmp_path: Path, monkeypatch):
     """Same setup as the previous test but with a methodology intent —
     the foundational paper is genuinely part of the citing paper's
