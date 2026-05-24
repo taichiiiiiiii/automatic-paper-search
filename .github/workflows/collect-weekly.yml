@@ -57,14 +57,23 @@ jobs:
       # Poster). Skips silently when no conferences are set up.
       - name: Regenerate summary + papers.json for each conference
         run: |
+          set -euo pipefail
           shopt -s nullglob
           for conf in paperpilot/output/*/; do
             name=$(basename "$conf")
-            if ls "$conf"/papers_*.csv >/dev/null 2>&1; then
-              echo "--- $name ---"
-              uv run python paperpilot/scripts/build_summary_csv.py --conference "$name"
-              uv run python paperpilot/scripts/build_pages.py --conference "$name"
+            # `ls "$conf"/papers_*.csv` under nullglob expands the glob
+            # to nothing and `ls` (no args) succeeds against the current
+            # working directory — so the previous `if ls ... >/dev/null`
+            # test passed for empty conference dirs and the script then
+            # crashed with FileNotFoundError. Check the glob match
+            # explicitly via an array length instead.
+            matches=( "$conf"/papers_*.csv )
+            if [ "${#matches[@]}" -eq 0 ]; then
+              continue
             fi
+            echo "--- $name ---"
+            uv run python paperpilot/scripts/build_summary_csv.py --conference "$name"
+            uv run python paperpilot/scripts/build_pages.py --conference "$name"
           done
 
       # Lineage regeneration is expensive (hundreds of LLM calls per run)
