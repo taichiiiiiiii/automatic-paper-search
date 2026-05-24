@@ -81,12 +81,15 @@ jobs:
         # shell command line) so command-substitution-style attacks are
         # impossible here. Python side also defends.
         #
-        # --llm-strict=ambiguous: edges where S2 intents don't pick a
-        # heuristic relation get a real LLM-written rationale via Groq.
-        # The cheaper-than-`all` mode keeps the per-theme run cost bounded
-        # (~10 LLM calls instead of 30-50) while still cleaning up the
-        # most generic templated rationales — those are exactly the
-        # heuristic-fallthrough edges. See CLAUDE.md §14 quality notes.
+        # --llm-strict=all: classify EVERY influential edge with the LLM
+        # so each tooltip carries a paper-specific Japanese explanation
+        # instead of the 5 hardcoded templates the heuristic emits. With
+        # depth=1, seeds=5, width=8, the worst-case call count is ~40,
+        # which Groq's free tier (30 RPM) drains in ~80s — acceptable for
+        # the +90s workflow runtime trade. When the rate limit hits, the
+        # provider returns None and the per-edge call falls back to the
+        # heuristic template (silent fallback was the #45 bug; #118 added
+        # a summary log so we notice if it dominates).
         env:
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
@@ -96,7 +99,7 @@ jobs:
           uv run python -m paperpilot.scripts.build_theme_lineage \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
-            --llm-strict ambiguous
+            --llm-strict all
 
       - name: Refresh manifest
         run: |

@@ -862,16 +862,21 @@ def test_build_prioritises_influential_parents_over_citation_count(
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
     _stub_external_calls(monkeypatch)
-    seed = _mk_s2_paper("seed", year=2023)
+    # #127-followup: seed cite count must be realistic — the off-topic
+    # filter caps refs at 2x max_seed_cite, so a default seed at 100
+    # cites would lock the ceiling to 200 and drop the niche ref too.
+    # Production seeds discovered via S2 /paper/search routinely have
+    # 5k-50k cites; 10k is representative.
+    seed = _mk_s2_paper("seed", year=2023, cites=10_000)
     # Mix: influential ref with low citations + non-influential foundational
     # papers with very high citations. Width=2 — without the fix, the two
     # foundationals win the budget and the influential one is dropped.
     foundational1 = {
-        **_mk_s2_paper("found1", title="Foundational A", year=2015, cites=200_000),
+        **_mk_s2_paper("found1", title="Foundational A", year=2015, cites=15_000),
         "_is_influential": False,
     }
     foundational2 = {
-        **_mk_s2_paper("found2", title="Foundational B", year=2017, cites=150_000),
+        **_mk_s2_paper("found2", title="Foundational B", year=2017, cites=12_000),
         "_is_influential": False,
     }
     niche_influential = {
@@ -2372,6 +2377,99 @@ def test_build_drops_foundational_parents_in_bfs(tmp_path: Path, monkeypatch):
     assert "resnet" not in {n["id"] for n in payload["nodes"]}
     assert all(e["src"] != "resnet" and e["dst"] != "resnet"
                for e in payload["edges"])
+
+
+def test_implementation_foundation_denylist_by_paper_id():
+    """Adam (paperId in denylist) must be dropped even with a methodology
+    intent — the original filter let it through because GNN papers cite
+    Adam with methodology='we use Adam as the optimizer'. The denylist
+    overrides that."""
+    refs = [
+        {
+            **_mk_s2_paper("a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+                           title="Adam: A Method for Stochastic Optimization",
+                           cites=166_000),
+            "_is_influential": True,
+            "_intents": ["methodology"],
+        },
+    ]
+    # max_seed_cite=25_000 → ceiling=50_000 → Adam at 166k normally would
+    # be dropped except for the methodology override. The denylist must
+    # win regardless.
+    kept = build_theme_lineage._filter_off_topic_refs(refs, max_seed_cite=25_000)
+    assert kept == []
+
+
+def test_implementation_foundation_denylist_by_title_pattern():
+    """A future paperId we haven't seen yet (e.g. a new TensorFlow paper)
+    must still be caught via the title-pattern fallback."""
+    refs = [
+        {
+            **_mk_s2_paper("NEW_TF_PID_UNSEEN",
+                           title="TensorFlow: a future tutorial paper",
+                           cites=200_000),
+            "_is_influential": True,
+            "_intents": ["methodology"],
+        },
+    ]
+    kept = build_theme_lineage._filter_off_topic_refs(refs, max_seed_cite=25_000)
+    assert kept == []
+
+
+def test_implementation_foundation_denylist_keeps_topic_libraries():
+    """A library paper that's TOPIC-SPECIFIC (PyTorch Geometric for GNN
+    work) must not be wholesale denied because its title contains 'PyTorch'.
+    Only the literal 'PyTorch:' (with colon) library paper is in the
+    denylist, not derivative geometric/audio/vision sub-libraries."""
+    refs = [
+        {
+            **_mk_s2_paper("63a513832f56addb67be81a2fa399b233f3030fc",
+                           title="Fast Graph Representation Learning with PyTorch Geometric",
+                           cites=8_000),
+            "_is_influential": True,
+            "_intents": ["methodology"],
+        },
+    ]
+    kept = build_theme_lineage._filter_off_topic_refs(refs, max_seed_cite=25_000)
+    assert len(kept) == 1
+    assert kept[0]["paperId"] == "63a513832f56addb67be81a2fa399b233f3030fc"
+
+
+def test_implementation_foundation_denylist_under_threshold_still_dropped():
+    """A denylisted paper with citationCount BELOW the foundational ceiling
+    must still be dropped — the denylist is unconditional, not a tiebreaker."""
+    refs = [
+        {
+            **_mk_s2_paper("ad4fd2c149f220a62441576af92a8a669fe81246",
+                           title="Scikit-learn: Machine Learning in Python",
+                           cites=100),  # tiny cite count, way under ceiling
+            "_is_influential": True,
+        },
+    ]
+    kept = build_theme_lineage._filter_off_topic_refs(refs, max_seed_cite=25_000)
+    assert kept == []
+
+
+def test_off_topic_filter_uses_tighter_2x_multiplier():
+    """#127 followup: the 3x multiplier let Adam (166k cites / 25k seed =
+    6.6x) through only because of methodology intent. With 2x and the
+    denylist, the ceiling becomes 50k and Adam — caught by the denylist
+    above — never reaches the cite-based check anyway. This test pins
+    that a non-foundational, non-denylisted paper at ratio 2.5x is
+    correctly DROPPED at the new threshold (regression for the multiplier
+    tightening)."""
+    refs = [
+        {
+            **_mk_s2_paper("p_above_2x",
+                           title="A Generic Foundational Paper", cites=62_500),
+            "_is_influential": True,
+            # No methodology intent → cite-only check applies.
+            "_intents": ["background"],
+        },
+    ]
+    # 62500 / 25000 = 2.5x → > 2x ceiling → drop.
+    kept = build_theme_lineage._filter_off_topic_refs(refs, max_seed_cite=25_000)
+    assert kept == []
 
 
 def test_build_keeps_foundational_parent_with_methodology(tmp_path: Path, monkeypatch):

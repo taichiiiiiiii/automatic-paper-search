@@ -1,0 +1,35 @@
+{
+  "_comment": "Papers that are implementation foundations (libraries, optimizers, generic training techniques) rather than research-line predecessors of any specific topic. They get pulled into theme lineages because every modern ML paper cites them with a 'methodology' intent — which our normal foundational-cite filter respects, so we override that here with an explicit denylist. See paperpilot/scripts/build_theme_lineage.py::_is_implementation_foundation.",
+  "_kept_examples": [
+    "63a513832f56addb67be81a2fa399b233f3030fc — PyTorch Geometric is library code, BUT it's GNN-specific. Keep it in GNN-flavoured trees; the title-pattern alone would have caught it (matches /pytorch/i)."
+  ],
+  "paper_ids": [
+    "a6cb366736791bcccc5c8639de5a8f9636bf87e8",
+    "024a2c03be8e468e7c4fdf9bda36cdc0eaae85fb",
+    "cef52bea3f13b20d6a31391034b0fccec71c6781",
+    "995c5f5e62614fcb4d2796ad2faab969da51713e",
+    "f6dac1c52d3b07c993fe52513b8964f86e8fe381",
+    "3c8a456509e6c0805354bd40a35e3f2dbf8069b1",
+    "854eca61a57d2c1ea1019663caf022bc8fd0b909",
+    "ad4fd2c149f220a62441576af92a8a669fe81246",
+    "4954fa180728932959997a4768411ff9136aac81",
+    "9c9d7247f8c51ec5a02b0d911d1d7b9e8160495d"
+  ],
+  "title_patterns": [
+    "^Adam:\\s+A\\s+Method\\s+for\\s+Stochastic\\s+Optimization\\b",
+    "^Batch\\s+Normalization:",
+    "^Dropout:\\s+a\\s+simple\\s+way",
+    "^Scikit-learn:",
+    "^SciPy\\s+1\\.0",
+    "^TensorFlow:",
+    "^PyTorch:\\s+An\\s+Imperative",
+    "^Array\\s+programming\\s+with\\s+NumPy",
+    "^The\\s+NumPy\\s+Array",
+    "^Data\\s+Structures\\s+for\\s+Statistical\\s+Computing\\s+in\\s+Python",
+    "^Keras\\b",
+    "^Theano:",
+    "^Caffe:\\s+Convolutional",
+    "^MXNet:",
+    "^JAX:\\s+composable"
+  ]
+}
