@@ -183,3 +183,118 @@ def test_classify_relation_api_failure_returns_none():
     ):
         rc = provider.classify_relation({"title": "A"}, {"title": "B"})
     assert rc is None
+
+
+# ---- Rate limiter (#129) ----
+# Groq free tier is 30 RPM. PaperPilot's build_theme_lineage in
+# --llm-strict=all fires ~40 classify_relation calls in a tight loop,
+# so without a built-in interval the second half of the burst silently
+# 429s and falls back to heuristic templates. The provider sleeps to
+# stay under the limit; tests below pin the sleep behaviour without
+# burning real wall-clock time (time.monotonic + time.sleep are mocked).
+
+
+def test_groq_provider_rate_limits_consecutive_calls(monkeypatch):
+    """Two back-to-back calls must trigger a sleep between them so the
+    second one doesn't exceed the per-minute budget. ``_chat`` is the
+    natural place to hook the throttle because both `evaluate_batch` and
+    `classify_relation` flow through it."""
+    sleeps: list[float] = []
+    # Use a manually-advanced clock so we can pin exactly how long the
+    # rate limiter thinks has elapsed between calls — using real
+    # time.monotonic would make this test order-dependent and flaky.
+    times = iter([0.0, 0.0, 0.0, 0.1, 0.1, 0.1, 0.2, 0.2, 0.2])
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic",
+                        lambda: next(times, 0.0))
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep",
+                        lambda s: sleeps.append(s))
+
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    body = _groq_body("hi")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        provider._chat("sys", "u1")
+        provider._chat("sys", "u2")
+        provider._chat("sys", "u3")
+
+    # 3 calls, first one no wait (no prior call), 2nd and 3rd should
+    # each sleep enough to maintain the configured RPM budget.
+    assert len(sleeps) == 2, f"expected 2 sleeps, got {sleeps}"
+    # 25 RPM default → min interval ~2.4s; clock advanced 0.1s between
+    # calls so each sleep should be ~2.3s.
+    for s in sleeps:
+        assert s > 2.0, f"sleep was too short: {s}s (expected ~2.4)"
+
+
+def test_groq_provider_no_sleep_when_interval_already_elapsed(monkeypatch):
+    """If the previous call was far enough in the past, no sleep is
+    needed — the provider must not introduce dead time when the rate
+    limit isn't binding.
+
+    The throttle calls monotonic once on first call (initial stamp) and
+    twice per subsequent call (elapsed check + post-stamp), so a 2-call
+    test consumes 3 clock readings total.
+    """
+    sleeps: list[float] = []
+    # Clock jumps 10s between calls — well past the 2.4s min interval.
+    times = iter([0.0, 10.0, 10.0])
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic",
+                        lambda: next(times, 999.0))
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep",
+                        lambda s: sleeps.append(s))
+
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    body = _groq_body("hi")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        provider._chat("sys", "u1")
+        provider._chat("sys", "u2")
+    assert sleeps == []
+
+
+def test_groq_provider_rate_limit_configurable(monkeypatch):
+    """The RPM budget must be configurable so an operator on a paid plan
+    (1000+ RPM) doesn't pay the throttle tax. Default is conservative
+    (25 RPM) for the free tier."""
+    sleeps: list[float] = []
+    # Clock advances 0s — every call would be back-to-back without sleep.
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic", lambda: 0.0)
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep",
+                        lambda s: sleeps.append(s))
+
+    # 1000 RPM → 0.06s interval → trivially small sleep.
+    provider = GroqProvider(
+        {"enabled": True, "rate_limit_rpm": 1000}, api_key="k"
+    )
+    body = _groq_body("hi")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        provider._chat("sys", "u1")
+        provider._chat("sys", "u2")
+    # Sleep happens but is tiny — pin that it's < 0.1s.
+    assert len(sleeps) == 1
+    assert sleeps[0] < 0.1
+
+
+def test_groq_provider_no_throttle_for_first_call(monkeypatch):
+    """Sanity: the very first call should never sleep because there's no
+    'previous call' to space against."""
+    sleeps: list[float] = []
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic", lambda: 5.0)
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep",
+                        lambda s: sleeps.append(s))
+
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    body = _groq_body("hi")
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        return_value=_resp(200, body),
+    ):
+        provider._chat("sys", "u1")
+    assert sleeps == []
