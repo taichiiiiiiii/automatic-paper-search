@@ -370,7 +370,14 @@ def test_build_writes_output_under_themes_dir(tmp_path: Path, monkeypatch):
 
     _stub_external_calls(monkeypatch)
 
-    seed = _mk_s2_paper("seed1", title="Original MoE", year=2017)
+    # #126 followup: seed title must contain the theme words so the new
+    # topic relevance gate keeps it through discover_seeds. The original
+    # short title "Original MoE" no longer matches a multi-word theme.
+    seed = _mk_s2_paper(
+        "seed1",
+        title="The Original Mixture of Experts paper",
+        year=2017,
+    )
     parent = {
         **_mk_s2_paper("p_parent", year=2014),
         "_is_influential": True,
@@ -1613,8 +1620,11 @@ def test_enrich_github_stars_invoked_by_pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
 
     _stub_external_calls(monkeypatch)
+    # #126 followup: seed title must include theme words for the topic
+    # relevance gate to keep it. The default stub title doesn't match
+    # "Mixture of Experts" and would otherwise be filtered out.
     seed = {
-        **_mk_s2_paper("seed1", year=2017),
+        **_mk_s2_paper("seed1", title="Mixture of Experts paper", year=2017),
         "externalIds": {"ArXiv": "1701.06538"},
     }
     parent = {
@@ -2177,3 +2187,227 @@ def test_build_pipeline_passes_openalex_email_from_env(tmp_path, monkeypatch):
         )
 
     assert captured.get("openalex_email") == "researcher@example.com"
+
+
+# ---- Quality improvements (#126 followup) ----
+# Two families of fixes after real users observed off-topic noise in the
+# generated lineages:
+#   (A) Foundational-paper filter for BFS parents — drop ResNet / Attention
+#       Is All You Need / PyTorch / NumPy etc. when they show up as
+#       references from a theme-specific seed but aren't actually part of
+#       the lineage (cite >> theme && no methodology intent).
+#   (D) Topic relevance filter for seeds — multi-word themes require at
+#       least half the (3+ char) words to appear in the title or abstract,
+#       so a search for "Graph Neural Network" can't latch onto the
+#       Pandas paper just because S2 ranks it highly.
+
+
+def test_filter_off_topic_refs_drops_high_cite_no_methodology():
+    """A parent cited 50x more than the theme's max seed cite must be
+    dropped unless it has a methodology intent. This is the GNN-theme bug:
+    ResNet at 228k cites slipping into a graph attention paper's tree."""
+    parents = [
+        {**_mk_s2_paper("p_normal", cites=8_000), "_is_influential": True},
+        # 100x more cited than max_seed_cite=8000, no methodology intent →
+        # foundational, drop.
+        {**_mk_s2_paper("p_foundational", cites=800_000), "_is_influential": True},
+    ]
+    kept = build_theme_lineage._filter_off_topic_refs(parents, max_seed_cite=8_000)
+    kept_ids = [p["paperId"] for p in kept]
+    assert "p_normal" in kept_ids
+    assert "p_foundational" not in kept_ids
+
+
+def test_filter_off_topic_refs_keeps_methodology_intent():
+    """The same high-cite parent must be kept when S2 flagged the citation
+    with a methodology intent — the citing paper actually built on top of
+    this foundational work, so it belongs in the lineage."""
+    parents = [
+        {
+            **_mk_s2_paper("p_kept", cites=800_000),
+            "_is_influential": True,
+            "_intents": ["methodology"],
+        },
+    ]
+    kept = build_theme_lineage._filter_off_topic_refs(parents, max_seed_cite=8_000)
+    assert [p["paperId"] for p in kept] == ["p_kept"]
+
+
+def test_filter_off_topic_refs_keeps_all_when_seeds_have_no_cites():
+    """Edge case: max_seed_cite=0 (search returned a paper with no cite
+    count). The filter must not divide-by-zero or wipe the parent list."""
+    parents = [
+        {**_mk_s2_paper("p_a", cites=100_000), "_is_influential": True},
+        {**_mk_s2_paper("p_b", cites=50), "_is_influential": True},
+    ]
+    kept = build_theme_lineage._filter_off_topic_refs(parents, max_seed_cite=0)
+    # No threshold to clamp against → keep both, the downstream cite-sort
+    # still puts the relevant one near the top.
+    assert {p["paperId"] for p in kept} == {"p_a", "p_b"}
+
+
+def test_filter_topic_relevant_seeds_multi_word_theme():
+    """A multi-word theme like 'Graph Neural Network' must drop seeds
+    whose title+abstract mention none of the (3+ char) theme words."""
+    seeds = [
+        # 3/3 words match the title → keep
+        _mk_s2_paper("relevant", title="A Graph Neural Network for X",
+                     abstract="we propose a GNN to ..."),
+        # 0/3 words match anywhere → drop (the Pandas paper bug)
+        _mk_s2_paper("irrelevant",
+                     title="Data Structures for Statistical Computing",
+                     abstract="Practical issues of working with data sets..."),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Graph Neural Network"
+    )
+    ids = [s["paperId"] for s in kept]
+    assert "relevant" in ids
+    assert "irrelevant" not in ids
+
+
+def test_filter_topic_relevant_seeds_short_theme_skips_filter():
+    """Single-word themes (RAG, MoE, BERT) can't be reliably filtered with
+    substring matching — short tokens produce false matches and false
+    misses. The filter must short-circuit for these so the existing S2
+    ranking does the work."""
+    seeds = [
+        _mk_s2_paper("p1", title="Anything", abstract="anything"),
+        _mk_s2_paper("p2", title="Whatever", abstract="whatever"),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(seeds, theme="RAG")
+    # Short theme → no filter applied.
+    assert len(kept) == 2
+
+
+def test_filter_topic_relevant_seeds_partial_word_match():
+    """If at least half the (3+ char) words match, keep the seed. This is
+    the design knob — themes like 'Direct Preference Optimization' should
+    still match a seed titled 'Preference Optimization without DPO' even
+    if the word 'Direct' doesn't appear."""
+    seeds = [
+        # 2/3 words ("preference", "optimization") match → keep at 50% threshold
+        _mk_s2_paper("partial", title="Preference Optimization without DPO",
+                     abstract="we revisit preference optimization without ..."),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Direct Preference Optimization"
+    )
+    assert [s["paperId"] for s in kept] == ["partial"]
+
+
+def test_filter_topic_relevant_seeds_empty_input_returns_empty():
+    """Defensive: empty input → empty output, no exception."""
+    assert build_theme_lineage._filter_topic_relevant_seeds([], theme="Anything") == []
+
+
+def test_discover_seeds_filters_irrelevant_seeds(tmp_path: Path, monkeypatch):
+    """Integration: discover_seeds() must apply the topic relevance filter
+    before _rank_and_truncate, so S2 returning the Pandas paper for a GNN
+    search doesn't end up as a top-N seed."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    relevant = _mk_s2_paper(
+        "gnn", title="Graph Neural Networks Survey",
+        abstract="A comprehensive review of graph neural network methods.",
+        cites=200,
+    )
+    irrelevant = _mk_s2_paper(
+        "pandas", title="Data Structures for Statistical Computing in Python",
+        abstract="practical issues of working with data sets in pandas.",
+        cites=10_000,  # higher cites: would rank higher without the filter
+    )
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=_mk_s2_search_response([relevant, irrelevant]),
+    ):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["Graph Neural Network"],
+            top_n=10,
+            since_year=None,
+            use_openalex_fallback=False,
+            theme="Graph Neural Network",
+        )
+    assert [s["paperId"] for s in seeds] == ["gnn"]
+
+
+def test_build_drops_foundational_parents_in_bfs(tmp_path: Path, monkeypatch):
+    """End-to-end: a seed with 8k cites + a parent at 800k cites + no
+    methodology intent must NOT produce an edge after the foundational
+    filter. Regression pin for the GNN→ResNet bug."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+
+    seed = _mk_s2_paper(
+        "seed", title="Graph Attention Network",
+        abstract="we propose a graph neural network with attention.",
+        year=2018, cites=8_000,
+    )
+    foundational = {
+        **_mk_s2_paper("resnet", title="Deep Residual Learning",
+                       year=2015, cites=800_000),
+        "_is_influential": True,
+        # NO methodology intent.
+        "_intents": ["background"],
+    }
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage, "fetch_related", return_value=[foundational]
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Graph Neural Network",
+            depth=1, seeds_count=1, width=4, since_year=None,
+        )
+    payload = json.loads(out_path.read_text())
+    # Foundational parent must not appear as a node OR an edge endpoint.
+    assert "resnet" not in {n["id"] for n in payload["nodes"]}
+    assert all(e["src"] != "resnet" and e["dst"] != "resnet"
+               for e in payload["edges"])
+
+
+def test_build_keeps_foundational_parent_with_methodology(tmp_path: Path, monkeypatch):
+    """Same setup as the previous test but with a methodology intent —
+    the foundational paper is genuinely part of the citing paper's
+    technical lineage, so it must stay."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    _stub_external_calls(monkeypatch)
+
+    seed = _mk_s2_paper("seed",
+                        title="Graph Attention Network",
+                        abstract="graph neural network with attention",
+                        year=2018, cites=8_000)
+    foundational = {
+        **_mk_s2_paper("resnet", title="Deep Residual Learning",
+                       year=2015, cites=800_000),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage, "fetch_related", return_value=[foundational]
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Graph Neural Network",
+            depth=1, seeds_count=1, width=4, since_year=None,
+        )
+    payload = json.loads(out_path.read_text())
+    # methodology intent → kept.
+    assert "resnet" in {n["id"] for n in payload["nodes"]}
