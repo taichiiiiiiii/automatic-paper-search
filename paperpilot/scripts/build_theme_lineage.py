@@ -30,10 +30,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 import unicodedata
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -786,12 +788,77 @@ def _filter_topic_relevant_seeds(
 
 # Anything cited more than ``_OFF_TOPIC_CITE_MULTIPLIER × max(seed cites)``
 # is treated as a foundational paper that's likely tangential to the theme
-# (ResNet/Attention-Is-All-You-Need/PyTorch landing in a GNN tree because
-# every modern ML paper cites them, not because they're part of the GNN
+# (ResNet/Attention-Is-All-You-Need landing in a GNN tree because every
+# modern ML paper cites them, not because they're part of the GNN
 # lineage). The methodology intent overrides this — if S2 says the citing
 # paper actually built its method on top of the foundational work, the
 # edge stays.
-_OFF_TOPIC_CITE_MULTIPLIER = 3.0
+#
+# The multiplier was 3.0 originally (#127); production data showed Adam
+# (cites=166k, ratio 6.6x against a 25k seed) still surviving via the
+# methodology override even though Adam-the-optimizer is an
+# implementation foundation, not a research-line predecessor. We tightened
+# to 2.0 in #127-followup so the cite-only check catches more candidates,
+# and added the denylist below to override the methodology guard for
+# canonical library/tooling papers.
+_OFF_TOPIC_CITE_MULTIPLIER = 2.0
+
+
+# Canonical libraries / optimizers / generic training techniques. These
+# get cited by every modern ML paper as "methodology" (we used Adam, we
+# used PyTorch), so the methodology-intent escape hatch keeps them in.
+# Denylisting by paperId + title pattern ensures they're dropped
+# unconditionally — they are implementation foundations, not part of any
+# specific topic's research lineage.
+_DENYLIST_PATH = ROOT / "paperpilot" / "data" / "lineage_denylist.json"
+
+
+@lru_cache(maxsize=1)
+def _load_denylist() -> tuple[frozenset[str], tuple[re.Pattern[str], ...]]:
+    """Return (paperId set, compiled title-regexes) from the data file.
+
+    Cached so the JSON is parsed once per process — the BFS calls
+    ``_is_implementation_foundation`` once per candidate ref, and re-
+    reading a 500-byte JSON each time was wasteful (and made the test
+    setup brittle when monkeypatching ``ROOT``).
+    """
+    try:
+        raw = json.loads(_DENYLIST_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        logger.warning(
+            "denylist file missing or malformed at %s — proceeding with empty list",
+            _DENYLIST_PATH,
+        )
+        return frozenset(), ()
+    paper_ids = frozenset(
+        pid for pid in raw.get("paper_ids", []) if isinstance(pid, str)
+    )
+    patterns = tuple(
+        re.compile(p, re.IGNORECASE)
+        for p in raw.get("title_patterns", [])
+        if isinstance(p, str)
+    )
+    return paper_ids, patterns
+
+
+def _is_implementation_foundation(paper: dict[str, Any]) -> bool:
+    """True iff ``paper`` is on the implementation-foundation denylist.
+
+    A match on either paperId or title regex is enough — they
+    complement each other. paperId catches the specific S2 IDs we've
+    observed leaking into themes; title pattern catches future
+    variants of the same canonical paper (e.g. TensorFlow has at
+    least two papers with different IDs, and new lib release notes
+    could acquire fresh IDs over time).
+    """
+    paper_ids, patterns = _load_denylist()
+    pid = paper.get("paperId") or paper.get("id")
+    if isinstance(pid, str) and pid in paper_ids:
+        return True
+    title = paper.get("title") or ""
+    if not isinstance(title, str):
+        return False
+    return any(pat.search(title) for pat in patterns)
 
 
 def _filter_off_topic_refs(
@@ -811,13 +878,16 @@ def _filter_off_topic_refs(
     info), the multiplier collapses and we pass everything through —
     blindly dropping all refs would be worse than the original noise.
     """
-    if max_seed_cite <= 0:
-        return refs
-    ceiling = max_seed_cite * _OFF_TOPIC_CITE_MULTIPLIER
+    ceiling = max_seed_cite * _OFF_TOPIC_CITE_MULTIPLIER if max_seed_cite > 0 else None
     kept: list[dict[str, Any]] = []
     for p in refs:
+        # Denylist is unconditional — applies regardless of cite count or
+        # intent. Without this guard, Adam-as-optimizer slips through every
+        # methodology-flavoured citation it accumulates.
+        if _is_implementation_foundation(p):
+            continue
         cites = int(p.get("citationCount") or 0)
-        if cites <= ceiling:
+        if ceiling is None or cites <= ceiling:
             kept.append(p)
             continue
         intents = {
