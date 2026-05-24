@@ -125,5 +125,12 @@ jobs:
           # holds large per-paper S2 fetches whose growth would inflate
           # the repo every week (review #87 HIGH finding). Push retry +
           # rebase live in .github/scripts/commit-and-push.sh; see #121.
+          #
+          # EXCEPTION: classifications.json (the LLM rationale cache) IS
+          # committed across runs so quality accumulates instead of
+          # resetting every Sunday. The rest of lineage-cache/ is still
+          # gitignored. `|| true` because the file may not exist on a
+          # cold checkout.
+          git add paperpilot/data/lineage-cache/classifications.json || true
           msg="data(themes): weekly auto-regen ($(date -u +%Y-%m-%d))"
           bash .github/scripts/commit-and-push.sh "$msg" docs/themes/
