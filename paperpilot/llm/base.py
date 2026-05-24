@@ -129,6 +129,23 @@ _VALID_RELATIONS = frozenset(
 _MAX_RATIONALE_LEN = 280
 _CLASSIFY_ABSTRACT_TRIM = 600
 
+# Heuristic template rationales — the system prompt forbids the LLM from
+# outputting these (it was happily regurgitating them as direct
+# translations of the enum definitions, see #131 production trace). Kept
+# as a frozenset so ``RelationClassification.from_dict`` can also second-
+# line-defend by rejecting any LLM output that lands on a template
+# byte-for-byte. When rejected, ``_apply_llm_classification`` falls back
+# to the heuristic — same user-visible rationale, but no false claim that
+# the LLM added value.
+_GENERIC_TEMPLATE_RATIONALES = frozenset({
+    "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
+    "論文 B は論文 A の研究ラインを継承し自然に発展させている。",
+    "論文 B は論文 A をベースライン比較にのみ用いている。",
+    "論文 B は論文 A と根本的に異なるアプローチを提案している。",
+    "論文 B は論文 A の手法を置き換える改良版として提案されている。",
+    "論文 B は論文 A の構成要素を分析・ablation している。",
+})
+
 
 @dataclass
 class RelationClassification:
@@ -154,6 +171,12 @@ class RelationClassification:
             # An empty rationale would render an empty tooltip in the viewer.
             # Reject rather than emit a silent edge.
             return None
+        if rationale in _GENERIC_TEMPLATE_RATIONALES:
+            # LLM regurgitated the heuristic template (see #131). Treat as
+            # a failed classification — the caller's _apply_llm_classification
+            # will then keep the heuristic edge, which has the same
+            # user-visible rationale but doesn't claim LLM provenance.
+            return None
         try:
             conf = float(d.get("confidence", 0.7))
         except (TypeError, ValueError):
@@ -163,20 +186,62 @@ class RelationClassification:
         return cls(relation=rel, confidence=conf, rationale=rationale)
 
 
+# Why the prompt looks like this — #131:
+# The original prompt's enum definitions ("B applies A's method to a
+# different domain, task, or scale.") were close translations of the
+# heuristic templates ("論文 B は論文 A の手法を異なる領域・タスク・スケール
+# に拡張している。"), so the LLM took the cheap shortcut of translating
+# the definition rather than reading the abstracts. Production traces
+# (#131) showed 69/70 edges came out with byte-for-byte template
+# rationales.
+#
+# Rewrite goals:
+#   (a) abstract / terse enum definitions so they can't be directly
+#       translated into useful Japanese,
+#   (b) MUST/MUST NOT rules calling out the templates as forbidden
+#       outputs,
+#   (c) good-vs-bad examples showing what a paper-specific rationale
+#       looks like.
 CLASSIFY_SYSTEM_PROMPT = """\
-You classify the relationship between two AI/ML research papers.
+You compare two AI/ML papers (A older, B newer) and decide how B relates to A.
 
-Reply with ONLY a single JSON object, no markdown fences, no prose:
-{"relation": "<relation>", "confidence": <0.0-1.0>, "rationale": "<one short Japanese sentence>"}
+Output ONLY a JSON object (no markdown, no prose):
+{"relation": "<one of the seven>", "confidence": <0.0-1.0>, "rationale": "<one Japanese sentence>"}
 
-Valid `relation` values (choose exactly one):
-- supersedes: B uses A's approach but clearly outperforms it, replacing A as the reference.
-- successor: B continues A's research line with a natural improvement (weaker than supersedes).
-- extends: B applies A's method to a different domain, task, or scale.
-- ablation: B is an analysis / ablation study of A's components.
-- baseline_only: B merely cites A as a baseline for comparison without building on it.
-- contrasts: B argues for a fundamentally different approach to the same problem.
-- unrelated: B cites A only tangentially with no real intellectual link.
+Relation values (pick exactly one):
+- supersedes: B's method is a drop-in replacement that outperforms A.
+- successor: B is a natural follow-up to A.
+- extends: B applies A in a new direction.
+- ablation: B analyses A's components.
+- baseline_only: A serves only as a baseline in B's experiments.
+- contrasts: B argues for a fundamentally different approach to A's problem.
+- unrelated: B's citation of A is tangential.
+
+RATIONALE — this is the part the LLM usually gets wrong, read carefully:
+
+MUST reference at least one concrete technical concept, method name,
+dataset, metric, or architectural choice that is visible in B's title
+or abstract. The reader should be able to tell which two papers are
+being compared from the rationale alone.
+
+MUST NOT output any of these template phrasings (these are the
+heuristic fallback strings the system emits when the LLM is offline —
+emitting them defeats the point of calling the LLM):
+- "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している"
+- "論文 B は論文 A の研究ラインを継承し自然に発展させている"
+- "論文 B は論文 A をベースライン比較にのみ用いている"
+- "論文 B は論文 A と根本的に異なるアプローチを提案している"
+
+One Japanese sentence, 30-200 characters.
+
+Examples — GOOD (paper-specific):
+- B のグラフ畳み込み層は、A のスペクトル法を空間領域に再定式化し計算量を O(E) に落としている。
+- B は A の Switch Transformer のルーターを、トークンごとに上位 k 個のエキスパートを選ぶ MoE 層に置換した。
+- B の DPO 目的関数は、A の PPO ベース RLHF が必要とする報酬モデルを取り除き、選好データから直接最適化する。
+
+Examples — BAD (forbidden — too generic):
+- 論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。
+- 論文 B は論文 A の研究ラインを継承し自然に発展させている。
 """
 
 _CLASSIFY_USER_TEMPLATE = """\
