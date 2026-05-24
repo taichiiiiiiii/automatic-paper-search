@@ -19,6 +19,7 @@ then runs commit-and-push.sh and asserts:
 
 from __future__ import annotations
 
+import concurrent.futures
 import os
 import shutil
 import subprocess
@@ -208,3 +209,89 @@ def test_injection_safe_commit_message(world):
     log = _git(world["remote"], "log", "-1", "--pretty=%s").stdout.strip()
     assert "$(touch" in log
     assert "`id`" in log
+
+
+def test_five_parallel_runs_all_publish(tmp_path: Path):
+    """Stress test for #125: simulate the original incident — five workers
+    each generating a different theme push to the same remote at roughly
+    the same instant. Without a concurrency group (the new design after
+    #125), the retry loop alone must be strong enough that all 5 commits
+    end up on develop.
+
+    This is the test the original #121 PR was missing — `test_recovers_
+    from_concurrent_push` only models a single pre-committed competitor,
+    not five live workers racing each other in real time."""
+    # Shared remote — the analog of `origin/develop` in production.
+    remote = tmp_path / "remote.git"
+    remote.mkdir()
+    _git(remote, "init", "--bare", "--initial-branch=develop")
+
+    # Seed commit so all workers start from a valid base.
+    seeder = tmp_path / "seeder"
+    seeder.mkdir()
+    _git(seeder, "init", "--initial-branch=develop")
+    _git(seeder, "remote", "add", "origin", str(remote))
+    (seeder / "README.md").write_text("seed\n")
+    _git(seeder, "add", "README.md")
+    _git(seeder, "commit", "-m", "seed")
+    _git(seeder, "push", "-u", "origin", "develop")
+
+    themes = [
+        "Vector Database",
+        "State Space Model",
+        "World Model",
+        "Flash Attention",
+        "Chain of Thought",
+    ]
+
+    def worker(theme: str) -> tuple[str, subprocess.CompletedProcess]:
+        # Each worker gets its own clone — production each runner gets its
+        # own fresh actions/checkout, never shares a working tree.
+        slug = theme.lower().replace(" ", "-")
+        local = tmp_path / f"local-{slug}"
+        _git(tmp_path, "clone", str(remote), local.name)
+        # Stage a unique file so the workers don't merge-conflict; they
+        # only race on the push refs.
+        theme_dir = local / "docs" / "themes" / slug
+        theme_dir.mkdir(parents=True)
+        (theme_dir / "lineage.json").write_text(f'{{"slug":"{slug}"}}\n')
+        r = _run_script(
+            local,
+            f'data(themes): on-demand generation of "{theme}"',
+            env={"COMMIT_PUSH_NO_SLEEP": "1"},
+        )
+        return theme, r
+
+    # Fire all 5 workers from a thread pool. ThreadPoolExecutor is fine
+    # here because each call blocks on subprocess.run — the parallelism
+    # comes from concurrent kernel-level git operations, not Python-level
+    # threading.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
+        results = list(pool.map(worker, themes))
+
+    # All 5 workers must have exited 0.
+    for theme, r in results:
+        assert r.returncode == 0, f"{theme} failed:\n{r.stdout}\n---\n{r.stderr}"
+
+    # Verify every theme's commit lives on the remote.
+    log = _git(remote, "log", "--oneline").stdout
+    assert log.count("on-demand generation of") == 5, log
+    for theme in themes:
+        assert theme in log, f"missing {theme} in:\n{log}"
+
+
+def test_path_exists_but_diff_is_empty(world):
+    """LOW-finding from #121 review-round-2: if the stage path exists but
+    has no diff (idempotent rerun of build_theme_lineage when the theme is
+    already up to date), the script must exit 0 without committing — same
+    as the missing-path case but via a different branch in the script."""
+    # Stage the existing file via `git add` so it's tracked, then run the
+    # script. Because nothing actually changed compared to HEAD, the
+    # `git diff --cached --quiet` guard inside the script must short-circuit.
+    _git(world["local"], "add", "docs/themes/test-theme/lineage.json")
+    _git(world["local"], "commit", "-m", "pre-existing identical content")
+    _git(world["local"], "push", "origin", "develop")
+
+    r = _run_script(world["local"], "data(themes): noop")
+    assert r.returncode == 0, r.stderr
+    assert "nothing changed" in r.stdout.lower()

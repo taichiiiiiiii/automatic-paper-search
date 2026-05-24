@@ -21,15 +21,14 @@ on:
         required: true
         type: string
 
-# Serialize the push window with regen-themes.yml so a weekly cron and an
-# on-demand submission don't race on `develop`. cancel-in-progress is OFF —
-# we never want to discard 2-3 min of LLM/S2 work just because another
-# theme finished slightly earlier. The retry loop inside
-# .github/scripts/commit-and-push.sh covers any residual contention when
-# two on-demand runs queue around the same instant. See #121.
-concurrency:
-  group: themes-push-develop
-  cancel-in-progress: false
+# No concurrency group: GitHub Actions only keeps ONE pending job per
+# group, so a `cancel-in-progress: false` group would silently drop the
+# 2nd-through-Nth queued dispatch when a user submits 3+ themes back to
+# back (the worker rate-limit allows 5/h). We instead rely solely on the
+# rebase+retry loop in .github/scripts/commit-and-push.sh, which a
+# 5-worker stress test (test_five_parallel_runs_all_publish) verifies is
+# strong enough to land every commit when 5 runs race on the same ref.
+# See #125 for the failure mode this avoids and the original #121 fix.
 
 jobs:
   generate:
