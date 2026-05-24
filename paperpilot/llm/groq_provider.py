@@ -24,6 +24,8 @@ When missing, `.enabled` evaluates to False so callers skip this provider.
 
 from __future__ import annotations
 
+import time
+
 from ..models import Paper
 from ..utils.http import request_with_retry
 from ..utils.json_parser import parse_llm_response
@@ -40,6 +42,11 @@ logger = get_logger(__name__)
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 DEFAULT_MODEL = "llama-3.3-70b-versatile"
+# Conservative default below the 30 RPM free tier so a burst of
+# classify_relation calls from build_theme_lineage(--llm-strict=all)
+# doesn't silently 429 the back half of the burst. Operators on a paid
+# plan can raise this via `llm.rate_limit_rpm` in config.yaml.
+DEFAULT_RATE_LIMIT_RPM = 25
 
 
 class GroqProvider(AbstractLLMProvider):
@@ -50,6 +57,16 @@ class GroqProvider(AbstractLLMProvider):
         self._api_key = api_key
         self.model = str(self.config.get("model", DEFAULT_MODEL))
         self.temperature = float(self.config.get("temperature", 0.2))
+        # Rate-limit state: track the timestamp of the last call so the
+        # next _chat() can sleep just enough to keep us under the RPM
+        # budget. ``None`` is the sentinel for "no prior call" — using
+        # 0.0 would be ambiguous against monkeypatched test clocks that
+        # legitimately return 0.0. See DEFAULT_RATE_LIMIT_RPM and #129.
+        rpm = int(self.config.get("rate_limit_rpm", DEFAULT_RATE_LIMIT_RPM))
+        # Guard against pathological config values (0 or negative would
+        # divide by zero / sleep forever). Fall through to the default.
+        self._min_call_interval_s = 60.0 / rpm if rpm > 0 else 60.0 / DEFAULT_RATE_LIMIT_RPM
+        self._last_call_ts: float | None = None
 
     @property
     def enabled(self) -> bool:
@@ -105,7 +122,27 @@ class GroqProvider(AbstractLLMProvider):
 
     # ---- helpers ----
 
+    def _throttle_for_rate_limit(self) -> None:
+        """Sleep just enough to keep this call under the RPM budget.
+
+        Idempotent on first invocation (``_last_call_ts is None``). Uses
+        ``time.monotonic`` so a wall-clock jump (NTP correction, container
+        clock skew) can't push the next call into a stuck-asleep state
+        the way ``time.time`` would.
+        """
+        if self._last_call_ts is None:
+            self._last_call_ts = time.monotonic()
+            return
+        elapsed = time.monotonic() - self._last_call_ts
+        wait = self._min_call_interval_s - elapsed
+        if wait > 0:
+            time.sleep(wait)
+        # Stamp AFTER sleeping so the next call measures interval from
+        # the actual return time, not from when we entered the throttle.
+        self._last_call_ts = time.monotonic()
+
     def _chat(self, system: str, user: str, *, json_mode: bool = False) -> str | None:
+        self._throttle_for_rate_limit()
         body: dict = {
             "model": self.model,
             "messages": [
