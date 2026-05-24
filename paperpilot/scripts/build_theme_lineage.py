@@ -51,6 +51,7 @@ from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
     build_provider,
     fetch_related,
+    persist_classifications,
     to_node,
 )
 from paperpilot.utils.config_loader import load_env  # noqa: E402
@@ -223,6 +224,122 @@ def _add_cross_node_edges(
             existing.add(edge_key)
             added += 1
     return added
+
+
+# Shared classification cache (see paperpilot/data/lineage-cache/
+# classifications.json). build_lineage.py populates it for the conference
+# pipeline; we point build_theme_lineage at the SAME file so theme
+# rebuilds reuse already-classified (parent, child) pairs and stop
+# paying the LLM cost twice. The module-level constant lets tests
+# monkeypatch the path.
+_CLASSIFICATION_CACHE_PATH = ROOT / "paperpilot" / "data" / "lineage-cache" / "classifications.json"
+
+
+class _CachedClassifyProvider(AbstractLLMProvider):
+    """Decorate an LLM provider so classify_relation() hits a shared
+    persistent cache keyed by ``f"{a.paperId}->{b.paperId}"`` first.
+
+    Why this exists (#131-followup): theme rebuilds on the free Groq
+    tier were re-querying the LLM for every edge in every run. With the
+    shared cache from build_lineage.py wired in, the SECOND build of a
+    given theme — and any cross-theme overlap — is served from disk at
+    zero LLM cost. The cache is a plain dict on disk so it composes with
+    the existing build_lineage flow without further coordination.
+
+    Behaviour matches build_lineage.py's ``_classify_cached``:
+      * Hit: deserialize through ``RelationClassification.from_dict``
+        (which now also rejects #131 template echoes — those entries
+        fall back to the heuristic via _apply_llm_classification).
+      * Miss with successful inner call: store + persist atomically.
+      * Miss with inner returning None (LLM throttle / parse error):
+        do NOT poison the cache — let the next attempt retry the LLM.
+      * Missing paperIds on either side: skip cache entirely (defensive
+        — the theme pipeline always populates paperIds, but a regression
+        elsewhere shouldn't silently cache an empty key).
+
+    Wraps any AbstractLLMProvider; evaluate_batch is delegated through
+    unchanged because the cache only meaningfully applies to per-edge
+    classify_relation calls.
+    """
+
+    def __init__(
+        self,
+        inner: AbstractLLMProvider,
+        cache: dict[str, dict],
+        *,
+        cache_path: Path | None,
+    ) -> None:
+        # We deliberately do NOT call super().__init__() because
+        # AbstractLLMProvider sets a bunch of config-derived state we
+        # don't need (timeout, batch_size etc.) — the inner provider
+        # already owns those. Set the class-level `name` and `enabled`
+        # attributes directly so they're plain attributes (matching the
+        # base's declared shape) rather than properties (which mypy
+        # rejects as an override mismatch).
+        self.name = f"{inner.name}+cache"
+        self.enabled = bool(getattr(inner, "enabled", True))
+        self._inner = inner
+        self._cache = cache
+        self._cache_path = cache_path
+
+    def evaluate_batch(self, papers, profile):  # pragma: no cover - delegated
+        return self._inner.evaluate_batch(papers, profile)
+
+    def classify_relation(
+        self, a: dict, b: dict
+    ) -> RelationClassification | None:
+        a_id = a.get("paperId") if isinstance(a, dict) else None
+        b_id = b.get("paperId") if isinstance(b, dict) else None
+        if not (isinstance(a_id, str) and a_id and isinstance(b_id, str) and b_id):
+            # Defensive: defer to inner provider but do NOT cache.
+            return self._inner.classify_relation(a, b)
+        key = f"{a_id}->{b_id}"
+        cached = self._cache.get(key)
+        if cached is not None:
+            return RelationClassification.from_dict(cached)
+        rc = self._inner.classify_relation(a, b)
+        if rc is not None:
+            self._cache[key] = {
+                "relation": rc.relation,
+                "confidence": rc.confidence,
+                "rationale": rc.rationale,
+            }
+            # Persist only when the parent directory exists. Tests that
+            # don't care about on-disk state point the path at a stub
+            # like /nonexistent/... — silently skipping persist keeps
+            # the in-memory cache intact for the rest of the run.
+            if (
+                self._cache_path is not None
+                and self._cache_path.parent.exists()
+            ):
+                try:
+                    persist_classifications(self._cache, self._cache_path)
+                except OSError as exc:
+                    logger.warning(
+                        "classifications cache persist failed (%s) — "
+                        "in-memory state still consistent",
+                        exc,
+                    )
+        return rc
+
+
+def _load_classification_cache(
+    cache_path: Path,
+) -> dict[str, dict]:
+    """Load the shared classifications cache from disk; return ``{}`` on
+    missing or malformed file. Mirrors the bootstrap snippet in
+    build_lineage.py so callers don't reimplement the same guards."""
+    if not cache_path.exists():
+        return {}
+    try:
+        data = json.loads(cache_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        logger.warning(
+            "classifications cache at %s unreadable (%s) — starting empty",
+            cache_path, exc,
+        )
+        return {}
+    return data if isinstance(data, dict) else {}
 
 
 def derive_relation(
@@ -1122,8 +1239,19 @@ def build_theme_lineage(
     # provider is constructed (logs config errors etc.) but we won't ever
     # invoke .classify_relation / ._chat from this script.
     provider, _ = build_provider()
-    logger.info("theme=%r slug=%r provider=%s (LLM-free path)",
-                sanitised, slug, provider.name)
+    # Wrap with the shared classification cache (#131 followup). Theme
+    # rebuilds + cross-theme overlap reuse already-classified (a, b)
+    # pairs at zero LLM cost — the binding constraint on free-tier Groq
+    # was per-build TPM, not lifetime API budget. Cache path is module-
+    # level so tests can monkeypatch it.
+    cache = _load_classification_cache(_CLASSIFICATION_CACHE_PATH)
+    provider = _CachedClassifyProvider(
+        provider, cache, cache_path=_CLASSIFICATION_CACHE_PATH
+    )
+    logger.info(
+        "theme=%r slug=%r provider=%s (cache=%d entries)",
+        sanitised, slug, provider.name, len(cache),
+    )
 
     # Stage 1: keyword expansion is skipped — the LLM call here was the
     # last reason this script needed a working provider. Use the raw
