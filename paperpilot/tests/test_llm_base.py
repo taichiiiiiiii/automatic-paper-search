@@ -249,3 +249,98 @@ def test_relation_classification_keeps_paper_specific_rationale():
     assert rc is not None
     assert rc.relation == "extends"
     assert "O(E)" in rc.rationale
+
+
+# ---- Invariant pins (#133 followup) ----
+# PR #133 fixed an 8-min cancellation regression caused by the #131
+# prompt rewrite blowing past Groq's TPM ceiling. The fix wasn't pinned
+# by a test, so a future careless edit ("let me add one more example",
+# "let me revert to --llm-strict=all") could silently re-introduce
+# the same production cancellation. These tests lock the size budget
+# and the workflow flag so future edits trip a unit-test failure
+# instead of a 15-min CI cancellation.
+
+
+def test_classify_prompt_within_groq_tpm_budget():
+    """The system prompt + a typical user prompt (two 600-char abstracts
+    plus boilerplate) must fit under a token budget that lets
+    --llm-strict=ambiguous run on Groq's 6,000 TPM free tier without
+    burning into the rate limiter.
+
+    Char count is a coarse proxy for tokens — Japanese is ~1.5 tok/char,
+    English ~0.25 tok/char — but it's robust enough as a guard against
+    obvious blowups (the #131 first-cut prompt was 1,696 chars and caused
+    the regression). We cap the system prompt at 1,200 chars (current
+    is 855), leaving room for measured iteration without re-triggering
+    the production timeout.
+    """
+    assert len(CLASSIFY_SYSTEM_PROMPT) <= 1200, (
+        f"CLASSIFY_SYSTEM_PROMPT is {len(CLASSIFY_SYSTEM_PROMPT)} chars — over 1200 budget. "
+        "Production traces (#131 PR #132 first deploy) showed > 1500 chars at 25 RPM "
+        "exceeded Groq free-tier 6000 TPM and caused 8-min workflow cancellation. "
+        "If a longer prompt is genuinely needed, lower llm.rate_limit_rpm to compensate "
+        "OR move to a paid plan (config.yaml llm.rate_limit_rpm = 1000+)."
+    )
+
+
+def test_theme_on_demand_workflow_uses_ambiguous_strict_mode():
+    """``--llm-strict=all`` on the Groq free tier blew the TPM budget and
+    timed out the workflow (#131 PR #132 deploy → #133 walk-back). The
+    deployed workflow MUST stay on ``--llm-strict=ambiguous`` until the
+    operator moves to a paid plan; a careless flip back to ``all`` would
+    silently re-introduce the production cancellation.
+
+    Reading the YAML as plain text (no yaml.safe_load tree walk) keeps
+    the test resilient to comment / whitespace re-shuffling — the only
+    thing we check is the literal flag value on the command line.
+    """
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[2]
+    yaml_path = repo_root / ".github" / "workflows" / "theme-on-demand.yml"
+    text = yaml_path.read_text(encoding="utf-8")
+
+    # The literal flag value must be 'ambiguous'. A reviewer who wants
+    # to flip back to 'all' must also flip this test, which forces them
+    # to look at #131 / #133 and confirm they've taken the paid-plan
+    # rate-limit step first.
+    assert "--llm-strict ambiguous" in text, (
+        "theme-on-demand.yml lost the --llm-strict=ambiguous flag. Free-tier "
+        "Groq cannot sustain --llm-strict=all; see #131 / PR #133 for the "
+        "8-min cancellation regression this prevents."
+    )
+    # And the dangerous 'all' must NOT be live (a commented example is fine
+    # — only check the un-commented invocation).
+    live_lines = [
+        line for line in text.splitlines()
+        if "--llm-strict" in line
+        and not line.lstrip().startswith("#")
+    ]
+    assert all("ambiguous" in line for line in live_lines), (
+        f"theme-on-demand.yml has a non-ambiguous --llm-strict line: {live_lines}"
+    )
+
+
+def test_classify_prompt_invariants_still_hold():
+    """Belt-and-braces: after the #133 size compression, the #131 quality
+    requirements still hold. This pins the *intersection* of the two
+    fixes: a smaller prompt must not have been achieved by deleting the
+    paper-specific demand."""
+    # Paper-specific demand markers (kept liberal so the wording can
+    # evolve without forcing a test change).
+    must_demand = ["concrete", "specific", "abstract", "concept"]
+    assert any(m in CLASSIFY_SYSTEM_PROMPT.lower() for m in must_demand), (
+        "prompt no longer asks for paper-specific content (#131 regression)"
+    )
+    # At least two heuristic template phrasings must be called out as
+    # forbidden so the LLM doesn't translate the relation enum.
+    templates_called_out = [
+        "異なる領域・タスク・スケール",
+        "研究ラインを継承",
+        "ベースライン比較にのみ",
+    ]
+    matched = [t for t in templates_called_out if t in CLASSIFY_SYSTEM_PROMPT]
+    assert len(matched) >= 2, (
+        f"prompt no longer forbids template echoes (#131 regression). "
+        f"Found only: {matched}"
+    )
