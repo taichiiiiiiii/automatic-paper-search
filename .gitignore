@@ -15,10 +15,18 @@ __pycache__/
 .env*
 !.env.example
 
-# Local build artifacts — S2 API response cache + LLM classification
-# cache. Regenerated on demand by build_*_lineage.py; not part of the
-# published artifact. (Was showing 40+ files in `git status` — review #123.)
-paperpilot/data/lineage-cache/
+# Local build artifacts — S2 API response cache is regenerated on demand
+# (40+ files of references_*.json / citations_*.json per run; not worth
+# committing). LLM classification cache is the EXCEPTION: it accumulates
+# paper-specific rationales across runs, and free-tier Groq's per-build
+# TPM ceiling makes the cumulative amortisation across builds the only
+# way to keep most edges paper-specific. So we ignore the directory's
+# CONTENTS by default but un-ignore classifications.json explicitly.
+# Git requires the dir itself to NOT be ignored for the negation to
+# bite (a `dir/` rule ignores the directory wholesale and overrides
+# any `!dir/file` inside it). See #131 followup.
+paperpilot/data/lineage-cache/*
+!paperpilot/data/lineage-cache/classifications.json
 
 # uv lock — currently untracked; commit deliberately if reproducibility
 # is needed. Excluded here to keep status clean.

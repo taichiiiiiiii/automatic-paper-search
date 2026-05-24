@@ -123,6 +123,15 @@ jobs:
           set -euo pipefail
           git config user.email "actions@users.noreply.github.com"
           git config user.name "github-actions[bot]"
+          # Pre-stage the shared classification cache so this run's new
+          # LLM rationales persist across CI invocations. The cache file
+          # is un-ignored in .gitignore (the rest of lineage-cache/ stays
+          # ignored). Without this, every run starts from the committed
+          # state and free-tier Groq's per-build TPM ceiling caps quality
+          # forever. `|| true` because the file may not exist on a clean
+          # fresh-build (no cache yet) — that's fine, commit-and-push.sh's
+          # docs/themes/ stage covers the lineage JSON in any case.
+          git add paperpilot/data/lineage-cache/classifications.json || true
           # Commit message uses a literal $THEME_INPUT via env, not via
           # interpolation, so a theme like "$(rm -rf ~)" would show up
           # as a literal string in the commit. The push retry/rebase
