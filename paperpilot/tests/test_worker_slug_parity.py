@@ -66,7 +66,11 @@ def _js_slugs(inputs: list[str]) -> list[str]:
     )
     if res.returncode != 0:
         pytest.fail(f"node invocation failed: {res.stderr}")
-    return json.loads(res.stdout)
+    # json.loads returns Any; narrow to the declared list[str] so mypy
+    # doesn't flag the implicit-Any return. The node script always
+    # emits a JSON array of strings; downstream tests assert per-entry.
+    parsed: list[str] = json.loads(res.stdout)
+    return parsed
 
 
 def test_worker_slug_matches_python_slug() -> None:
