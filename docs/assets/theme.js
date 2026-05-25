@@ -1079,6 +1079,13 @@ function bindHeroToggle() {
     for (const btn of [els.heroToggle, els.heroNewTheme].filter(Boolean)) {
       btn.setAttribute("aria-expanded", String(open));
     }
+    // Opening the hero details surfaces the form / description, which
+    // would otherwise sit behind the first-visit onboarding popover.
+    // Dismiss the popover (and persist the dismissal) so the user
+    // doesn't end up with two overlapping primary UI elements.
+    if (open && els.onboarding && !els.onboarding.hidden) {
+      dismissOnboarding();
+    }
     if (open && focusInput && els.reqInput) {
       // Wait for the panel to actually paint before focusing.
       requestAnimationFrame(() => els.reqInput.focus());
