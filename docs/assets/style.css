@@ -1792,6 +1792,60 @@ g.node-wrap.node-wrap--no-tx {
 .legend__swatch--baseline   { border-top: 1.5px dotted var(--rel-baseline); }
 .legend__swatch--contrasts  { border-top: 2px double var(--rel-contrasts); }
 
+/* Inline edge-color legend on /themes/. Sits between the x-axis-legend
+   and the canvas so users have an immediate reference for what the
+   edge colors mean without opening the filter panel. */
+.relation-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 1.1rem;
+  margin: 0.4rem var(--space-edge) 0.8rem;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-muted);
+  border: 1px dashed var(--color-rule);
+  border-radius: 8px;
+  background: var(--color-surface-elevated);
+}
+.relation-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.relation-legend__swatch {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+}
+.relation-legend__swatch--supersedes { background: var(--rel-supersedes); height: 3.5px; }
+.relation-legend__swatch--successor  { background: var(--rel-successor); }
+.relation-legend__swatch--extends    {
+  background: repeating-linear-gradient(to right, var(--rel-extends) 0 6px, transparent 6px 9px);
+}
+.relation-legend__swatch--ablation   {
+  background: repeating-linear-gradient(to right, var(--rel-ablation) 0 4px, transparent 4px 7px);
+}
+.relation-legend__swatch--baseline   {
+  background: repeating-linear-gradient(to right, var(--rel-baseline) 0 2px, transparent 2px 5px);
+}
+.relation-legend__swatch--contrasts  {
+  background: repeating-linear-gradient(to right, var(--rel-contrasts) 0 4px, transparent 4px 6px, var(--rel-contrasts) 6px 7px, transparent 7px 9px);
+}
+/* On narrow viewports the 6 items wrap to two rows. Cap a min-height
+   so the wrap doesn't shift the canvas below by an unpredictable
+   amount. */
+@media (max-width: 720px) {
+  .relation-legend {
+    font-size: 0.65rem;
+    gap: 0.4rem 0.8rem;
+  }
+}
+
 .lineage-canvas {
   width: 100%;
   overflow: auto;
@@ -1800,7 +1854,11 @@ g.node-wrap.node-wrap--no-tx {
     radial-gradient(circle at 1px 1px, oklch(90% 0.005 270) 1px, transparent 0)
       0 0 / 32px 32px,
     var(--color-bg);
-  min-height: 70vh;
+  /* Reduced 70vh → 30vh: the inner .canvas-loading reserves its own
+     60vh for the "drawing..." state, and rendered SVGs always exceed
+     30vh on real data. The previous 70vh padded short / failed-render
+     cases with a dot-grid void that read as "is anything happening?". */
+  min-height: 30vh;
   position: relative;
 }
 .lineage-canvas::before,
@@ -2038,6 +2096,11 @@ g.node-wrap.node-wrap--no-tx {
               0 10px 32px oklch(0% 0 0 / 0.12);
   position: relative;
   transform: translateY(-1px);
+  /* The ★ FOCUS badge sits at top:-10px which overlaps the venue
+     tier badge if the card uses the base 0.7 rem top padding. Push
+     the inner content down a hair so the two stay vertically
+     separate on the focused card. */
+  padding-top: 1rem;
 }
 .node-card--focus::before {
   content: "★ FOCUS";
