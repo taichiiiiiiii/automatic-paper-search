@@ -1072,6 +1072,11 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   position: absolute;
   z-index: 100;
   width: 280px;
+  /* Don't exceed the viewport on small phones. 92vw caps the popover at
+     ~344 px on a 375 px viewport — comfortably inside the 8 px margin
+     that showOnboardingHintIfFirstVisit() reserves, with the JS-driven
+     horizontal clamp from #159 covering the edge case. */
+  max-width: 92vw;
   background: var(--color-ink);
   color: var(--color-surface);
   padding: 0.85rem 1rem 0.75rem;
@@ -1124,6 +1129,22 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   cursor: pointer;
 }
 .onboarding__close:hover { background: oklch(45% 0.018 270); }
+/* On narrow viewports the popover takes a third of the screen height
+   while the user reads it — shrink the type and gaps so the family
+   tree below stays partially visible. */
+@media (max-width: 480px) {
+  .onboarding {
+    padding: 0.7rem 0.85rem 0.6rem;
+  }
+  .onboarding__title {
+    font-size: 0.88rem;
+    margin-bottom: 0.3rem;
+  }
+  .onboarding__body {
+    font-size: 0.72rem;
+    margin-bottom: 0.5rem;
+  }
+}
 @keyframes onboarding-pop {
   from { opacity: 0; transform: translateY(-6px) scale(0.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -1406,6 +1427,11 @@ g.node-wrap.node-wrap--no-tx {
   background: var(--color-ink);
   color: var(--color-surface);
   border-color: var(--color-ink);
+  /* Coral underline that ties the active card to the page accent
+     palette — pure black-on-white was reading as "system disabled"
+     instead of "this is the active selection" at thumbnail size. */
+  box-shadow: inset 0 -3px 0 0 var(--color-accent),
+              0 2px 8px oklch(0% 0 0 / 0.12);
 }
 .theme-gallery__card--active:hover {
   background: var(--color-ink);
@@ -2577,7 +2603,11 @@ g.node-wrap.node-wrap--no-tx {
 
 .year-label {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  /* Bumped 0.78 → 0.9 rem after Playwright surfaced that the labels
+     sit far enough from the leftmost cards (~50-90 px gap) that 12.5 px
+     glyphs were hard to associate with the row they label. 0.9 rem
+     reads cleanly without needing to scrub horizontally. */
+  font-size: 0.9rem;
   font-weight: 500;
   fill: var(--color-ink);
   dominant-baseline: middle;
@@ -2589,7 +2619,7 @@ g.node-wrap.node-wrap--no-tx {
 /* #64: highlight 5/10-year boundaries so the temporal scale is easier
    to read. decade-major beats decade beats regular. */
 .year-label--decade {
-  font-size: 0.86rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 .year-label--decade-major {
