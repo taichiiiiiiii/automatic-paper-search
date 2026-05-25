@@ -141,7 +141,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（カバレッジ 97%）
+    ├── tests/                           # pytest テスト（カバレッジ 91%、636 件）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
@@ -282,7 +282,7 @@ PAPERPILOT_SMTP_*            # Email 通知
 1. **RED** — `paperpilot/tests/test_<module>.py` を先に書き、失敗を確認
 2. **GREEN** — 最小実装でテストを通す
 3. **REFACTOR** — 設計原則に沿って整える
-4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 97%）
+4. **カバレッジ確認** — `pytest --cov=paperpilot` で **80% 以上**（現状 91%）
 
 独立した複数モジュールは専門エージェント（`source-agent` / `signal-agent` / `exporter-agent`）を並列起動。
 
