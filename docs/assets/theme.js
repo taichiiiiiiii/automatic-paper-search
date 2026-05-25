@@ -797,9 +797,59 @@ function showOnboardingHintIfFirstVisit() {
   // requestAnimationFrame to make sure layout is settled.
   requestAnimationFrame(() => {
     const rect = els.xAxisMode.getBoundingClientRect();
-    els.onboarding.style.top = `${rect.bottom + window.scrollY + 8}px`;
-    els.onboarding.style.left = `${rect.left + window.scrollX + Math.min(60, rect.width / 4)}px`;
+    // Reveal off-screen first so we can measure the popover's actual
+    // width (CSS sets 280 but media queries may have shrunk it).
+    els.onboarding.style.visibility = "hidden";
     els.onboarding.hidden = false;
+    const popoverWidth = els.onboarding.offsetWidth || 280;
+    const popoverHeight = els.onboarding.offsetHeight || 120;
+    const margin = 8;
+    const viewportW = document.documentElement.clientWidth;
+    const viewportH = document.documentElement.clientHeight;
+
+    // Ideal position — left-align inside the pill row, but not flush
+    // with the pill row's left edge (offset 60 / quarter-width).
+    const idealLeftViewport = rect.left + Math.min(60, rect.width / 4);
+    // Clamp so the popover never overflows either edge of the
+    // viewport, leaving an 8px gutter.
+    const maxLeftViewport = viewportW - popoverWidth - margin;
+    const clampedLeftViewport = Math.max(margin, Math.min(idealLeftViewport, maxLeftViewport));
+
+    // Decide whether the popover sits below or above the pill row.
+    // Flip above when there isn't enough room below (mostly a concern
+    // on the smallest phones where the tall toolbar pushes the pills
+    // close to the fold).
+    const belowSpace = viewportH - rect.bottom;
+    const aboveSpace = rect.top;
+    const flipUp = belowSpace < popoverHeight + margin && aboveSpace > belowSpace;
+    const topViewport = flipUp
+      ? rect.top - popoverHeight - margin
+      : rect.bottom + margin;
+
+    els.onboarding.style.top = `${topViewport + window.scrollY}px`;
+    els.onboarding.style.left = `${clampedLeftViewport + window.scrollX}px`;
+
+    // Shift the CSS arrow horizontally so it still points at the
+    // original target inside the pill row even when we clamped the
+    // popover left/right to keep it on-screen. The base CSS offset is
+    // 28 (.onboarding__arrow { left: 28px }); add the clamp delta so
+    // arrow_screen_x stays equal to idealLeftViewport + 28.
+    const arrow = els.onboarding.querySelector(".onboarding__arrow");
+    if (arrow) {
+      const baseOffset = 28;
+      const shift = idealLeftViewport - clampedLeftViewport;
+      const arrowLeft = Math.max(8, Math.min(popoverWidth - 22, baseOffset + shift));
+      arrow.style.left = `${arrowLeft}px`;
+      // Flip the arrow to the bottom edge when the popover sits above.
+      if (flipUp) {
+        arrow.style.top = "auto";
+        arrow.style.bottom = "-7px";
+      } else {
+        arrow.style.top = "";
+        arrow.style.bottom = "";
+      }
+    }
+    els.onboarding.style.visibility = "";
   });
 }
 
