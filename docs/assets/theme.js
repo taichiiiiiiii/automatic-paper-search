@@ -1653,7 +1653,60 @@ async function init() {
     requestAnimationFrame(() => requestAnimationFrame(() =>
       focusNode(requestedNode)
     ));
+  } else {
+    // No explicit ?node= — find the first is_focus paper (the seed of
+    // the theme) and scroll the canvas viewport to center on it. The
+    // chronological layout spreads papers across an SVG several
+    // thousand px wide; landing at scrollLeft=0 routinely showed users
+    // the sparse left edge with the actual focus seed off-screen to
+    // the right (verified on DPO / RAG / MoE themes).
+    const focusNode_ = state.data?.nodes?.find?.((n) => n.is_focus);
+    if (focusNode_) {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        // Reuse the existing scroll helper but pin the highlight so the
+        // user doesn't see the card flash a hover state on load. The
+        // helper highlights then auto-clears via mouseleave handlers.
+        scrollCanvasToNode(focusNode_.id);
+      }));
+    }
   }
+}
+
+// Center the viewport on a node. Horizontal scroll lives on the canvas
+// (overflow-x: auto), vertical scroll on the window (the canvas
+// expands to its full content height), so we split the call between
+// the two. Used for the on-load "first impression" scroll so the user
+// lands on the focus seed instead of the sparse top-left corner.
+function scrollCanvasToNode(nodeId) {
+  if (!els.canvas || !els.svg) return;
+  const wrap = els.svg.querySelector(`g.node-wrap[data-node-id="${CSS.escape(nodeId)}"]`);
+  if (!wrap) return;
+  const t = wrap.getAttribute("transform") || "";
+  // transform="translate(<x>, <y>)"
+  const m = /translate\(\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\)/.exec(t);
+  if (!m) return;
+  const svgX = parseFloat(m[1]);
+  const svgY = parseFloat(m[2]);
+  const svgRect = els.svg.getBoundingClientRect();
+  const canvasRect = els.canvas.getBoundingClientRect();
+  const svgW = parseFloat(els.svg.getAttribute("width")) || svgRect.width;
+  const svgH = parseFloat(els.svg.getAttribute("height")) || svgRect.height;
+  const scaleX = svgRect.width / svgW;
+  const scaleY = svgRect.height / svgH;
+  // Horizontal: canvas-local scroll.
+  const targetLeft = svgX * scaleX - canvasRect.width / 2 + NODE_W / 2;
+  els.canvas.scrollLeft = Math.max(0, targetLeft);
+  // Vertical: page-level scroll because the canvas expands to its
+  // content height and the actual scrollbar lives on the window.
+  // canvasRect.top is the canvas's offset from the viewport top, so
+  // adding the node's in-svg y gives a page-space coordinate.
+  const pageNodeY = canvasRect.top + window.scrollY + svgY * scaleY;
+  const targetTop = pageNodeY - window.innerHeight / 2 + NODE_H / 2;
+  window.scrollTo({
+    left: window.scrollX,
+    top: Math.max(0, targetTop),
+    behavior: "auto",
+  });
 }
 
 // #82: PNG / SVG export — bake the live SVG (with foreignObject HTML
