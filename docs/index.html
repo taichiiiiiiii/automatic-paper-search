@@ -16,7 +16,16 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PaperPilot" />
   <meta property="og:locale" content="ja_JP" />
-  <meta name="twitter:card" content="summary" />
+  <!-- og:image / twitter:image use path-absolute URLs so the same HTML
+       resolves to the right asset across pages.dev / workers.dev /
+       custom-domain deploys. summary_large_image gives the card a hero
+       width on Twitter / X. -->
+  <meta property="og:image" content="/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="PaperPilot — visualize the lineage of AI/ML papers" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="/assets/og-image.png" />
   <meta name="twitter:title" content="PaperPilot — Conference Paper Catalog" />
   <meta name="twitter:description" content="AI/ML 学会論文の自動収集 + フィルタブルカタログ。" />
 
