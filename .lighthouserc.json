@@ -37,7 +37,6 @@
     },
 
     "assert": {
-      "_comment": "Category-level floors. Per-audit thresholds below tighten the ones that historically regress on this codebase. 'warn' lets PRs through with a visible warning; switch to 'error' to make it a hard gate once a metric is stable.",
       "assertions": {
         "categories:performance": ["warn", { "minScore": 0.85 }],
         "categories:accessibility": ["warn", { "minScore": 0.9 }],
@@ -49,7 +48,6 @@
         "total-blocking-time": ["warn", { "maxNumericValue": 200 }],
         "first-contentful-paint": ["warn", { "maxNumericValue": 1500 }],
 
-        "_unused_audits_comment": "These audits flag implementation details we can't fix without rearchitecting — silence them to keep the report focused on actionable regressions.",
         "uses-text-compression": "off",
         "render-blocking-resources": "off"
       }
