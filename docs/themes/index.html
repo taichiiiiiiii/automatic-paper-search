@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=54" />
+  <link rel="stylesheet" href="../assets/style.css?v=56" />
 </head>
 <body>
   <header class="hero hero--compact">
@@ -278,6 +278,20 @@
     <span class="x-axis-legend__arrow" aria-hidden="true">→</span>
   </div>
 
+  <!-- Edge-color legend (6 relation types). Was buried inside the
+       collapsed filter panel — users saw colored edges but had no way
+       to know what the colors meant without opening filters first.
+       This inline strip sits between the x-axis-legend and the canvas,
+       small enough to not bloat the chrome but always visible. -->
+  <div class="relation-legend" aria-label="エッジの色とエッジ種別の対応">
+    <span class="relation-legend__item"><span class="relation-legend__swatch relation-legend__swatch--supersedes"></span>置換</span>
+    <span class="relation-legend__item"><span class="relation-legend__swatch relation-legend__swatch--successor"></span>後継</span>
+    <span class="relation-legend__item"><span class="relation-legend__swatch relation-legend__swatch--extends"></span>拡張</span>
+    <span class="relation-legend__item"><span class="relation-legend__swatch relation-legend__swatch--ablation"></span>成分分析</span>
+    <span class="relation-legend__item"><span class="relation-legend__swatch relation-legend__swatch--baseline"></span>比較</span>
+    <span class="relation-legend__item"><span class="relation-legend__swatch relation-legend__swatch--contrasts"></span>対立</span>
+  </div>
+
   <!-- Keyboard shortcut help — toggled by `?` key. Shows the modal
        overlay listing every shortcut. Closed by Escape, click outside,
        or the close button. -->
@@ -379,7 +393,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=54" defer></script>
-  <script src="../assets/theme.js?v=54" defer></script>
+  <script src="../assets/utils.js?v=56" defer></script>
+  <script src="../assets/theme.js?v=56" defer></script>
 </body>
 </html>
