@@ -77,6 +77,7 @@ automatic-paper-search/
 │       ├── collect-daily-watch.yml      # 毎日 07:00 JST フォロー著者ウォッチ
 │       ├── regen-themes.yml             # 毎週日曜 09:00 JST 全テーマ再生成
 │       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（CF Worker から workflow_dispatch）
+│       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
 │       └── publish.yml                  # PyPI trusted-publisher（release 発火）
 ├── worker/                              # ★ Cloudflare Worker (theme submission API)
 │   ├── index.ts                         # POST /api/themes ハンドラ
@@ -721,6 +722,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` (#143)、timeout 120min (#144) |
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
+| Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
 
 ### ビューア
 | 仕様 | 状態 |

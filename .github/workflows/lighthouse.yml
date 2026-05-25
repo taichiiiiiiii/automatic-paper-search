@@ -1,0 +1,51 @@
+name: Lighthouse CI
+
+# Run Lighthouse against the static docs/ bundle on every PR that touches
+# the frontend and on a weekly schedule, so Core Web Vitals regressions
+# show up in the PR review instead of after deploy.
+#
+# Why a static serve (lhci's staticDistDir) and not the live CF Pages
+# URL: CF auto-deploys from develop, so there is no per-PR preview to
+# point at. Serving the diff under test from the runner removes that
+# coupling and keeps the measurement reproducible — CF's brotli + edge
+# cache add a constant on top of the HTML/CSS/JS quality we actually
+# gate here.
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - ".lighthouserc.json"
+      - ".github/workflows/lighthouse.yml"
+  workflow_dispatch:
+  schedule:
+    # Mondays 02:00 UTC (11:00 JST) — surfaces creeping regressions
+    # introduced by upstream font / browser API changes that the per-PR
+    # gate would otherwise miss.
+    - cron: "0 2 * * 1"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: "./.lighthouserc.json"
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          # treosh action reads this when posting status to the PR.
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
