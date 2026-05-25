@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=47" />
+  <link rel="stylesheet" href="../assets/style.css?v=48" />
 </head>
 <body>
   <header class="hero hero--compact">
@@ -148,6 +148,23 @@
           キャンセルして既存テーマを見る
         </button>
       </p>
+      <!-- Persistent failure block. Replaces the steps list / cancel
+           button when polling exceeds POLL_TIMEOUT_MS or hits the
+           consecutive-fetch-failure threshold. Stays visible until the
+           user explicitly dismisses or retries — unlike showRequestError
+           which auto-clears after 6 s. -->
+      <div class="theme-progress__failure" id="theme-progress-failure" hidden role="alert">
+        <strong class="theme-progress__failure-title" id="theme-progress-failure-title">生成に失敗しました</strong>
+        <p class="theme-progress__failure-msg" id="theme-progress-failure-msg"></p>
+        <div class="theme-progress__failure-actions">
+          <button type="button" class="theme-progress__failure-retry" id="theme-progress-failure-retry">
+            再試行
+          </button>
+          <button type="button" class="theme-progress__failure-dismiss" id="theme-progress-failure-dismiss">
+            閉じて既存テーマを見る
+          </button>
+        </div>
+      </div>
     </div>
 
   <!-- Slug-fallback notification: shown when ?theme=<unknown> made the
@@ -362,7 +379,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=47" defer></script>
-  <script src="../assets/theme.js?v=47" defer></script>
+  <script src="../assets/utils.js?v=48" defer></script>
+  <script src="../assets/theme.js?v=48" defer></script>
 </body>
 </html>

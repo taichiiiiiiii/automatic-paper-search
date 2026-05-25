@@ -1590,6 +1590,67 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-progress__cancel-btn:hover { color: var(--color-ink); border-color: var(--color-ink-muted); }
 
+/* Persistent failure block — replaces steps / cancel when polling
+   times out or repeatedly fails. Soft coral surface + left rail
+   echoing the active-filters banner so users recognize the "alert"
+   semantics. */
+.theme-progress__failure {
+  margin: 0.6rem 0 0;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(
+    to right,
+    oklch(96% 0.04 30) 0%,
+    oklch(97% 0.02 30) 100%
+  );
+  border: 1px solid oklch(82% 0.10 30);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: 0 1px 2px oklch(58% 0.18 30 / 0.05);
+}
+.theme-progress__failure[hidden] { display: none; }
+.theme-progress__failure-title {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-ink);
+  margin-bottom: 0.3rem;
+}
+.theme-progress__failure-msg {
+  margin: 0 0 0.7rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+.theme-progress__failure-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.theme-progress__failure-retry,
+.theme-progress__failure-dismiss {
+  padding: 0.35rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.theme-progress__failure-retry {
+  background: var(--color-accent);
+  color: var(--color-surface);
+  border: 1px solid var(--color-accent);
+}
+.theme-progress__failure-retry:hover { filter: brightness(0.92); }
+.theme-progress__failure-dismiss {
+  background: transparent;
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-rule);
+}
+.theme-progress__failure-dismiss:hover {
+  color: var(--color-ink);
+  border-color: var(--color-ink-muted);
+}
+
 .legend[hidden], .lineage-toolbar__group[hidden] { display: none !important; }
 
 .legend {
