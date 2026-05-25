@@ -1269,13 +1269,44 @@ g.node-wrap.node-wrap--no-tx {
   border-radius: 8px;
   text-decoration: none;
   color: var(--color-ink);
-  transition: all 0.15s ease;
+  /* Polish: explicit transition list (was `transition: all` — lazy and
+     animates unintended layout props). Spring easing on transform. */
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.2s ease,
+              border-color 0.15s ease,
+              background 0.18s ease;
   min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+/* Polish: arrow "→" that slides in from the right on hover. Visually
+   reinforces that the card is a link, no extra DOM. */
+.theme-gallery__card::after {
+  content: "→";
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;
+  transform: translate(8px, -50%);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  opacity: 0;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease;
+  pointer-events: none;
 }
 .theme-gallery__card:hover {
   border-color: var(--color-ink-muted);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px oklch(50% 0.02 270 / 0.08);
+}
+.theme-gallery__card:hover::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+.theme-gallery__card:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-color: transparent;
 }
 .theme-gallery__card--active {
   background: var(--color-ink);
@@ -1285,6 +1316,11 @@ g.node-wrap.node-wrap--no-tx {
 .theme-gallery__card--active:hover {
   background: var(--color-ink);
   color: var(--color-surface);
+}
+/* On the active card the arrow flips color so it stays visible against
+   the dark fill. Slightly muted so it doesn't fight the title. */
+.theme-gallery__card--active::after {
+  color: oklch(80% 0.08 30);
 }
 .theme-gallery__title {
   font-family: var(--font-serif, var(--font-body));
@@ -1655,22 +1691,58 @@ g.node-wrap.node-wrap--no-tx {
   padding: 0.7rem 0.85rem;
   box-shadow: 0 1px 2px oklch(0% 0 0 / 0.04), 0 4px 12px oklch(0% 0 0 / 0.04);
   font-family: var(--font-sans);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  /* Polish: explicit transition list (was `all`, which animates layout
+     props too and causes subtle jitter when child sizes change). Spring-
+     cubic easing on transform feels more intentional than linear ease. */
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.2s ease,
+              border-color 0.15s ease;
   cursor: pointer;
   box-sizing: border-box;
+  position: relative;
+}
+/* Polish: thin coral accent line that slides in from the left on hover.
+   Subtle "this is interactive" signal that doesn't fight the card's
+   typography. Pseudo-element instead of border so it doesn't shift the
+   card's content box. */
+.node-card::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  opacity: 0;
+  transform: scaleY(0.6);
+  transform-origin: center;
+  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
 }
 .node-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 4px oklch(0% 0 0 / 0.06), 0 12px 24px oklch(0% 0 0 / 0.08);
   border-color: var(--color-ink-muted);
 }
+.node-card:hover::before {
+  opacity: 0.7;
+  transform: scaleY(1);
+}
 /* a11y: keyboard focus ring. :focus-visible avoids drawing the ring on
    mouse click; the underlying click-to-focus visual stays unchanged.
-   outline (not box-shadow) so it doesn't fight the --focus halo on the
-   currently-centered card. */
+   Polish: 2-layer ring — crisp outline + soft outer halo — feels more
+   designed than a flat 3px outline, matches the focus-card halo idiom. */
 .node-card:focus-visible {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px oklch(58% 0.18 30 / 0.12),
+              0 2px 4px oklch(0% 0 0 / 0.06),
+              0 12px 24px oklch(0% 0 0 / 0.08);
+}
+.node-card:focus-visible::before {
+  opacity: 0.85;
+  transform: scaleY(1);
 }
 .node-card--focus {
   border: 2.5px solid var(--color-accent);
