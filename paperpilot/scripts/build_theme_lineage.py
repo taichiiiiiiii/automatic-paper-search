@@ -45,7 +45,11 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from paperpilot.llm.base import AbstractLLMProvider, RelationClassification  # noqa: E402
+from paperpilot.llm.base import (  # noqa: E402
+    TEMPLATE_RATIONALES,
+    AbstractLLMProvider,
+    RelationClassification,
+)
 from paperpilot.scripts._common import theme_slug  # noqa: E402
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
@@ -168,22 +172,20 @@ def _is_trending(paper: dict, current_year: int) -> bool:
 # fallback rationales. derive_relation() picks one based on S2's intent
 # array so we get a non-empty rationale for free (the stage-4 'drop empty
 # rationale' filter would otherwise silently kill every derived edge).
+# Rationale strings are sourced from base.TEMPLATE_RATIONALES so the
+# heuristic-emitted text matches the reject set used by
+# RelationClassification.from_dict (#131 / #145 followup) — the two
+# CANNOT drift.
 _INTENT_RELATION_MAP: list[tuple[str, str, str]] = [
     # (intent name, relation enum, rationale template) — order matters:
     # methodology > result > background when an entry has multiple
     # intents, since methodology implies the citing paper actually built
     # on top of the referenced work.
-    ("methodology", "extends",
-     "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。"),
-    ("result", "successor",
-     "論文 B は論文 A の研究ラインを継承し自然に発展させている。"),
-    ("background", "baseline_only",
-     "論文 B は論文 A をベースライン比較にのみ用いている。"),
+    ("methodology", "extends", TEMPLATE_RATIONALES["extends_methodology"]),
+    ("result", "successor", TEMPLATE_RATIONALES["successor_result"]),
+    ("background", "baseline_only", TEMPLATE_RATIONALES["baseline_only_background"]),
 ]
-_DEFAULT_DERIVED = (
-    "extends",
-    "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
-)
+_DEFAULT_DERIVED = ("extends", TEMPLATE_RATIONALES["extends_methodology"])
 _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
 
 
@@ -461,22 +463,22 @@ def _derive_relation_heuristic(
             if delta >= 3 and pc > 100 and cc >= pc * 1.5:
                 return _make_derived(
                     "supersedes",
-                    "論文 B は論文 A の手法を置き換える改良版として提案されている。",
+                    TEMPLATE_RATIONALES["supersedes_year_cite"],
                 )
             if delta <= 1 and pc > 100 and 0.5 <= cc / max(pc, 1) <= 2.0:
                 return _make_derived(
                     "contrasts",
-                    "論文 B は論文 A と根本的に異なるアプローチを提案している。",
+                    TEMPLATE_RATIONALES["contrasts_year_cite"],
                 )
             if delta <= 2 and cc < 100 and pc > 1000:
                 return _make_derived(
                     "ablation",
-                    "論文 B は論文 A の構成要素を分析・ablation している。",
+                    TEMPLATE_RATIONALES["ablation_year_cite"],
                 )
             if 1 <= delta <= 5:
                 return _make_derived(
                     "successor",
-                    "論文 B は論文 A の研究ラインを継承し自然に発展させている。",
+                    TEMPLATE_RATIONALES["successor_result"],
                 )
     relation, rationale = _DEFAULT_DERIVED
     return _make_derived(relation, rationale)

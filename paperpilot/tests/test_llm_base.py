@@ -352,3 +352,43 @@ def test_classify_prompt_invariants_still_hold():
         f"prompt no longer forbids template echoes (#131 regression). "
         f"Found only: {matched}"
     )
+
+
+# ---- Template-rationale single source of truth (#145 followup) ----
+# After the constants reorganization, heuristic-template strings live in
+# a named dict on base.py and both the reject frozenset and
+# build_theme_lineage's heuristic map source from it. These tests pin
+# the contract so a future edit to the dict (or to either consumer)
+# can't silently break the others.
+
+
+def test_template_rationales_is_source_of_truth_for_reject_set():
+    """``_GENERIC_TEMPLATE_RATIONALES`` (the reject frozenset used by
+    ``RelationClassification.from_dict``) must be derived from the
+    ``TEMPLATE_RATIONALES`` dict's values. Otherwise an addition to
+    either side could silently un-sync."""
+    from paperpilot.llm.base import (
+        _GENERIC_TEMPLATE_RATIONALES,
+        TEMPLATE_RATIONALES,
+    )
+    assert set(TEMPLATE_RATIONALES.values()) == _GENERIC_TEMPLATE_RATIONALES, (
+        "_GENERIC_TEMPLATE_RATIONALES drifted from TEMPLATE_RATIONALES.values()"
+    )
+
+
+def test_template_rationales_used_by_build_theme_lineage():
+    """build_theme_lineage._INTENT_RELATION_MAP and _DEFAULT_DERIVED
+    must reference TEMPLATE_RATIONALES so the heuristic-emitted strings
+    are exactly the same strings the reject set looks for."""
+    from paperpilot.llm.base import TEMPLATE_RATIONALES
+    from paperpilot.scripts import build_theme_lineage as btl
+
+    # Every rationale emitted by the intent map must be a value from
+    # the canonical dict.
+    intent_rationales = {rationale for _, _, rationale in btl._INTENT_RELATION_MAP}
+    assert intent_rationales.issubset(set(TEMPLATE_RATIONALES.values())), (
+        "_INTENT_RELATION_MAP emits rationales outside TEMPLATE_RATIONALES — "
+        "they won't be caught by from_dict's reject set."
+    )
+    # _DEFAULT_DERIVED's rationale must also be canonical.
+    assert btl._DEFAULT_DERIVED[1] in TEMPLATE_RATIONALES.values()
