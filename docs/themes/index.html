@@ -306,6 +306,16 @@
         📥 PNG
       </button>
     </div>
+    <!-- Initial loading state — hidden by theme.js as soon as the first
+         lineage.json fetch resolves. Without this the dotted-grid
+         canvas reads as "the site is broken" while the network call
+         is in flight (themes-manifest.json + per-slug lineage.json,
+         300-800ms on a fresh visit). aria-live=polite so a screen
+         reader announces the swap to actual content. -->
+    <div class="canvas-loading" id="canvas-loading" role="status" aria-live="polite">
+      <div class="canvas-loading__spinner" aria-hidden="true"></div>
+      <span>家系図を描画中…</span>
+    </div>
     <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Theme chronological lineage graph"></svg>
   </div>
 
