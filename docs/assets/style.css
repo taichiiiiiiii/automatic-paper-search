@@ -642,6 +642,11 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   align-items: center;
   padding: 0 var(--space-edge) 1.5rem;
   border-bottom: 1px solid var(--color-rule);
+  /* CLS fix: the toolbar holds JS-populated chunks (#x-axis-mode pills,
+     #relation-filter chips). Reserve enough vertical room that filling
+     them doesn't push the gallery + canvas below down. ~2.5 rem covers
+     a single wrapped row at the breakpoints we ship. */
+  min-height: 2.5rem;
 }
 
 .layout-btn {
@@ -885,9 +890,14 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 /* Disabled state when the current theme has zero orphans. The control
    stays mounted (discoverability) but visibly de-emphasized so users
    don't think the checkbox does nothing. cursor:help nudges them to
-   hover for the explanatory title attribute on the label. */
+   hover for the explanatory title attribute on the label.
+
+   opacity capped at 0.65 (was 0.45) to keep the text inside WCAG AA
+   contrast — opacity-stacking against the L=18% ink on L=98% surface
+   was driving Lighthouse's color-contrast audit on themes/ below
+   the 0.9 a11y floor. */
 .orphan-toggle--disabled {
-  opacity: 0.45;
+  opacity: 0.65;
   cursor: help;
 }
 .orphan-toggle--disabled:hover { border-color: var(--color-rule); }
