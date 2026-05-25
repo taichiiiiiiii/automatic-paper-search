@@ -92,7 +92,8 @@ jobs:
             echo "::group::regen $theme"
             if uv run python -m paperpilot.scripts.build_theme_lineage \
                 --theme "$theme" \
-                --depth 1 --seeds 5 --width 8 --since-year 2018; then
+                --depth 1 --seeds 5 --width 8 --since-year 2018 \
+                --llm-strict ambiguous; then
               :
             else
               failed=$((failed + 1))
