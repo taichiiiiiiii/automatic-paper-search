@@ -235,6 +235,13 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-weight: 500;
   line-height: 1;
   color: var(--color-ink);
+  /* CLS fix: stats start with "—" placeholder and become 1-3 digit
+     numbers via JS. Reserving a 3-character minimum (tabular figures)
+     stops the label below from sliding sideways when the digit count
+     fills in. */
+  display: inline-block;
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
   font-variation-settings: "opsz" 24;
 }
 .stat__num--oral { color: var(--color-oral); }
@@ -306,6 +313,13 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: flex-end;
+  /* CLS fix (Lighthouse baseline 2026-05-25 / 0.37 on
+     /iclr-2026/index.html): the chip containers start empty and
+     get filled by JS after the papers.json fetch. Reserving the
+     single-row height keeps the paper-list below from shifting up
+     when the chips appear. Two rows (~2.5 rem) is the typical
+     wrapped-state for tag chips. */
+  min-height: 2.5rem;
 }
 .chip {
   font-family: var(--font-mono);
@@ -344,6 +358,10 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-family: var(--font-mono);
   font-size: var(--text-meta);
   color: var(--color-ink-subtle);
+  /* CLS fix: "Loading…" → "Showing 226 / 226 papers" has different
+     width. Reserve a min-height so the line itself doesn't move
+     vertically — width difference is acceptable inline. */
+  min-height: 1.5em;
   letter-spacing: 0.02em;
 }
 
@@ -351,6 +369,12 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   list-style: none;
   margin: 0;
   padding: 0 var(--space-edge) var(--space-section);
+  /* CLS fix: reserve ~6 rows worth of vertical space so the first
+     paint already sized for above-fold content. Without this the
+     skeleton `<li>` was ~30 px tall and the real list jumped to
+     hundreds of rows when papers.json resolved, causing the
+     viewport's visible content to shift. */
+  min-height: 60vh;
 }
 
 .paper {
@@ -1287,6 +1311,10 @@ g.node-wrap.node-wrap--no-tx {
   gap: 0.45rem;
   padding: 0.6rem var(--space-edge) 0;
   overflow-x: auto;
+  /* CLS fix (Lighthouse baseline 2026-05-25 / 0.25 on themes/):
+     gallery starts empty, becomes 19+ cards once manifest resolves.
+     Reserve one row of card height so the canvas below stays put. */
+  min-height: calc(56px + 0.6rem);
   /* Right-edge fade hints "there's more to scroll" without a
      scrollbar. Falls back gracefully on browsers without mask-image. */
   -webkit-mask-image: linear-gradient(to right, black 92%, transparent 100%);
