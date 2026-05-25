@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- PaperPilot social card — 1200x630 per the Open Graph + Twitter spec.
+       Colors are hex equivalents of the oklch tokens in docs/assets/style.css
+       (cairosvg / Pango don't grok oklch() yet, so the SVG must stay in
+       fully-supported color space). -->
+
+  <defs>
+    <!-- Subtle paper-grain feel via a horizontal gradient. -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fbf9f5"/>
+      <stop offset="100%" stop-color="#f4f1ea"/>
+    </linearGradient>
+    <!-- Drop shadow for the lineage cards. -->
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1c1c25" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Thin coral accent bar top -->
+  <rect x="0" y="0" width="1200" height="6" fill="#d3502d"/>
+
+  <!-- ============= LEFT: wordmark + headline ============= -->
+
+  <!-- Brand wordmark -->
+  <g transform="translate(80, 100)">
+    <text x="0" y="0" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="500" fill="#1c1c25" letter-spacing="-0.5">PaperPilot</text>
+    <line x1="0" y1="14" x2="100" y2="14" stroke="#d3502d" stroke-width="3"/>
+    <text x="0" y="40" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#87858f" letter-spacing="2">CONFERENCE PAPER CATALOG · LINEAGE VIEW</text>
+  </g>
+
+  <!-- Main headline. English on the image because the social-card font
+       stack (cairosvg → DejaVu / Liberation) has no CJK glyphs and the
+       JP version rendered as tofu. The HTML <meta name="description">
+       stays in JP so domestic platforms still surface the JP text in
+       the page itself. -->
+  <g transform="translate(80, 245)">
+    <text x="0" y="0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="56" font-weight="700" fill="#1c1c25" letter-spacing="-1.4">Visualize the lineage</text>
+    <text x="0" y="72" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="56" font-weight="700" fill="#1c1c25" letter-spacing="-1.4">of <tspan fill="#d3502d">AI/ML papers</tspan>.</text>
+  </g>
+
+  <!-- Sub headline -->
+  <g transform="translate(80, 410)">
+    <text x="0" y="0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="22" font-weight="400" fill="#5b5a64">arXiv · Semantic Scholar · OpenAlex citation graph,</text>
+    <text x="0" y="32" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="22" font-weight="400" fill="#5b5a64">classified by an LLM into <tspan font-weight="600" fill="#1c1c25">supersedes / successor /</tspan></text>
+    <text x="0" y="64" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#1c1c25">extends / ablation / baseline / contrasts.</text>
+  </g>
+
+  <!-- Footer repo path -->
+  <g transform="translate(80, 570)">
+    <text x="0" y="0" font-family="'Courier New', Courier, monospace" font-size="16" font-weight="500" fill="#87858f">github.com/taichiiiiiiii/automatic-paper-search</text>
+  </g>
+
+  <!-- ============= RIGHT: stylized lineage tree ============= -->
+
+  <g transform="translate(780, 175)">
+    <!-- Edges first so they sit behind the cards. Coral arrows are the
+         "primary lineage" (supersedes / successor); muted are extends /
+         baseline. Visual reference to the relation-filter palette. -->
+
+    <!-- root → 2 mid (coral) -->
+    <path d="M 175 36 C 175 75, 75 75, 75 110" stroke="#d3502d" stroke-width="2.5" fill="none"/>
+    <path d="M 175 36 C 175 75, 275 75, 275 110" stroke="#d3502d" stroke-width="2.5" fill="none"/>
+
+    <!-- left mid → 2 leaves (muted) -->
+    <path d="M 75 146 C 75 185, 10 185, 10 220" stroke="#b8b0a3" stroke-width="2" fill="none"/>
+    <path d="M 75 146 C 75 185, 140 185, 140 220" stroke="#b8b0a3" stroke-width="2" fill="none"/>
+
+    <!-- right mid → 2 leaves (muted) -->
+    <path d="M 275 146 C 275 185, 210 185, 210 220" stroke="#b8b0a3" stroke-width="2" fill="none"/>
+    <path d="M 275 146 C 275 185, 340 185, 340 220" stroke="#b8b0a3" stroke-width="2" fill="none"/>
+
+    <!-- Cards: root highlighted, others neutral. -->
+
+    <!-- Root card -->
+    <g filter="url(#cardShadow)">
+      <rect x="115" y="0" width="120" height="36" rx="4" fill="#ffffff" stroke="#d3502d" stroke-width="2"/>
+      <rect x="118" y="3" width="32" height="10" rx="2" fill="#fbe4dc"/>
+      <text x="122" y="11" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" font-weight="600" fill="#d3502d">NeurIPS</text>
+      <rect x="118" y="17" width="80" height="3" rx="1.5" fill="#1c1c25"/>
+      <rect x="118" y="23" width="60" height="3" rx="1.5" fill="#1c1c25"/>
+      <rect x="118" y="29" width="40" height="2" rx="1" fill="#b8b0a3"/>
+    </g>
+
+    <!-- Mid-left card -->
+    <g filter="url(#cardShadow)">
+      <rect x="15" y="110" width="120" height="36" rx="4" fill="#ffffff" stroke="#d8d3cb" stroke-width="1.5"/>
+      <rect x="18" y="113" width="28" height="10" rx="2" fill="#eee9df"/>
+      <text x="22" y="121" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" font-weight="600" fill="#5b5a64">ICLR</text>
+      <rect x="18" y="127" width="75" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="18" y="133" width="55" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="18" y="139" width="35" height="2" rx="1" fill="#b8b0a3"/>
+    </g>
+
+    <!-- Mid-right card -->
+    <g filter="url(#cardShadow)">
+      <rect x="215" y="110" width="120" height="36" rx="4" fill="#ffffff" stroke="#d8d3cb" stroke-width="1.5"/>
+      <rect x="218" y="113" width="34" height="10" rx="2" fill="#eee9df"/>
+      <text x="222" y="121" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" font-weight="600" fill="#5b5a64">arXiv</text>
+      <rect x="218" y="127" width="70" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="218" y="133" width="60" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="218" y="139" width="30" height="2" rx="1" fill="#b8b0a3"/>
+    </g>
+
+    <!-- Leaf cards (4) -->
+    <g filter="url(#cardShadow)">
+      <rect x="-50" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="#d8d3cb" stroke-width="1.5"/>
+      <rect x="-47" y="223" width="32" height="10" rx="2" fill="#eee9df"/>
+      <text x="-43" y="231" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" font-weight="600" fill="#5b5a64">CVPR</text>
+      <rect x="-47" y="237" width="65" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="-47" y="243" width="50" height="3" rx="1.5" fill="#5b5a64"/>
+    </g>
+
+    <g filter="url(#cardShadow)">
+      <rect x="80" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="#d8d3cb" stroke-width="1.5"/>
+      <rect x="83" y="223" width="28" height="10" rx="2" fill="#eee9df"/>
+      <text x="87" y="231" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" font-weight="600" fill="#5b5a64">ACL</text>
+      <rect x="83" y="237" width="70" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="83" y="243" width="45" height="3" rx="1.5" fill="#5b5a64"/>
+    </g>
+
+    <g filter="url(#cardShadow)">
+      <rect x="150" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="#d8d3cb" stroke-width="1.5"/>
+      <rect x="153" y="223" width="32" height="10" rx="2" fill="#eee9df"/>
+      <text x="157" y="231" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" font-weight="600" fill="#5b5a64">EMNLP</text>
+      <rect x="153" y="237" width="60" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="153" y="243" width="40" height="3" rx="1.5" fill="#5b5a64"/>
+    </g>
+
+    <g filter="url(#cardShadow)">
+      <rect x="280" y="220" width="120" height="36" rx="4" fill="#ffffff" stroke="#d8d3cb" stroke-width="1.5"/>
+      <rect x="283" y="223" width="32" height="10" rx="2" fill="#eee9df"/>
+      <text x="287" y="231" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="7" font-weight="600" fill="#5b5a64">ICML</text>
+      <rect x="283" y="237" width="65" height="3" rx="1.5" fill="#5b5a64"/>
+      <rect x="283" y="243" width="45" height="3" rx="1.5" fill="#5b5a64"/>
+    </g>
+
+    <!-- Caption under tree -->
+    <text x="175" y="310" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#87858f" text-anchor="middle">supersedes · successor · extends · ablation · baseline · contrasts</text>
+  </g>
+</svg>
