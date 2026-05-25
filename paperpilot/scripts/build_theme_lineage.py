@@ -377,6 +377,26 @@ def _load_classification_cache(
     return data if isinstance(data, dict) else {}
 
 
+def _wrap_provider_with_cache(
+    inner: AbstractLLMProvider,
+) -> tuple[_CachedClassifyProvider, dict[str, dict]]:
+    """Wrap ``inner`` with the shared classification cache so theme
+    rebuilds reuse classified (parent, child) pairs at zero LLM cost.
+
+    Returns ``(wrapped_provider, loaded_cache)`` so the caller can log
+    the entry count without reaching into the wrapper's internals.
+    The cache path is the module-level ``_CLASSIFICATION_CACHE_PATH``
+    constant so tests can monkeypatch it.
+    """
+    cache = _load_classification_cache(_CLASSIFICATION_CACHE_PATH)
+    return (
+        _CachedClassifyProvider(
+            inner, cache, cache_path=_CLASSIFICATION_CACHE_PATH
+        ),
+        cache,
+    )
+
+
 def derive_relation(
     intent_record: dict,
     *,
@@ -1041,6 +1061,33 @@ def _filter_off_topic_refs(
 # alongside the code that uses them.)
 
 
+def _load_github_stars_cache(cache_path: Path) -> dict[str, dict]:
+    """Load the GitHub-stars cache; return ``{}`` on missing or
+    malformed file. Extracted so the resolution loop in
+    ``_enrich_github_stars`` reads as a single linear flow."""
+    if not cache_path.exists():
+        return {}
+    try:
+        data = json.loads(cache_path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _save_github_stars_cache(cache: dict[str, dict], cache_path: Path) -> None:
+    """Atomically persist the GitHub-stars cache. Concurrent theme
+    runs are kept safe by the temp-file + rename pattern; on OSError
+    we warn but don't fail the build (in-memory cache stays
+    consistent for the rest of the run)."""
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = cache_path.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(cache, ensure_ascii=False, indent=2))
+        tmp.replace(cache_path)
+    except OSError as exc:
+        logger.warning("failed to persist github_stars cache: %s", exc)
+
+
 def _enrich_github_stars(
     nodes: dict[str, dict],
     *,
@@ -1072,12 +1119,7 @@ def _enrich_github_stars(
     (cache hits + freshly resolved).
     """
     cache_path = CACHE_DIR / _GITHUB_CACHE_FILE
-    cache: dict[str, dict] = {}
-    if cache_path.exists():
-        try:
-            cache = json.loads(cache_path.read_text())
-        except (OSError, json.JSONDecodeError):
-            cache = {}
+    cache = _load_github_stars_cache(cache_path)
 
     if curated is None:
         curated = load_curated_map()
@@ -1188,14 +1230,7 @@ def _enrich_github_stars(
             len(looked_up),
         )
 
-    # Atomic write so concurrent theme runs don't tear the cache.
-    try:
-        cache_path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = cache_path.with_suffix(".json.tmp")
-        tmp.write_text(json.dumps(cache, ensure_ascii=False, indent=2))
-        tmp.replace(cache_path)
-    except OSError as exc:
-        logger.warning("failed to persist github_stars cache: %s", exc)
+    _save_github_stars_cache(cache, cache_path)
 
     return enriched
 
@@ -1233,16 +1268,8 @@ def build_theme_lineage(
     # we no longer need it for the theme pipeline. Keep the call so the
     # provider is constructed (logs config errors etc.) but we won't ever
     # invoke .classify_relation / ._chat from this script.
-    provider, _ = build_provider()
-    # Wrap with the shared classification cache (#131 followup). Theme
-    # rebuilds + cross-theme overlap reuse already-classified (a, b)
-    # pairs at zero LLM cost — the binding constraint on free-tier Groq
-    # was per-build TPM, not lifetime API budget. Cache path is module-
-    # level so tests can monkeypatch it.
-    cache = _load_classification_cache(_CLASSIFICATION_CACHE_PATH)
-    provider = _CachedClassifyProvider(
-        provider, cache, cache_path=_CLASSIFICATION_CACHE_PATH
-    )
+    inner_provider, _ = build_provider()
+    provider, cache = _wrap_provider_with_cache(inner_provider)
     logger.info(
         "theme=%r slug=%r provider=%s (cache=%d entries)",
         sanitised, slug, provider.name, len(cache),
