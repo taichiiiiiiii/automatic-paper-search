@@ -1086,9 +1086,23 @@ function bindHeroToggle() {
     if (open && els.onboarding && !els.onboarding.hidden) {
       dismissOnboarding();
     }
+    // After the auto-focus scroll on init() runs, the page may sit ~2500 px
+    // below the hero. Clicking "ⓘ について" or "✨ 新規テーマ" without
+    // scrolling back would expand a panel the user can't see. Scroll the
+    // hero into view (smooth) on open so the freshly-expanded details +
+    // submission form land in viewport.
+    if (open) {
+      const hero = document.querySelector(".hero");
+      if (hero) {
+        hero.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
     if (open && focusInput && els.reqInput) {
-      // Wait for the panel to actually paint before focusing.
-      requestAnimationFrame(() => els.reqInput.focus());
+      // Wait for the panel to actually paint AND for smooth scroll to
+      // start before focusing — `scrollIntoView` aborts when an input
+      // gets focus before it begins. Two rAFs is enough; the smooth
+      // scroll continues in the background.
+      requestAnimationFrame(() => requestAnimationFrame(() => els.reqInput.focus()));
     }
   };
   if (els.heroToggle) {
