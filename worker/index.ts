@@ -84,6 +84,92 @@ async function dispatchWorkflow(theme: string, env: Env): Promise<{ ok: boolean;
   return { ok: resp.ok, status: resp.status, body: resp.ok ? "" : await resp.text() };
 }
 
+// Subset of fields we surface to the client. Mirrors the JSON shape of
+// /actions/workflows/{file}/runs items; intentionally narrow so we
+// don't leak GitHub-internal fields (head_sha, run_attempt etc).
+interface RunSummary {
+  status: string;       // "queued" | "in_progress" | "completed"
+  conclusion: string | null; // "success" | "failure" | "cancelled" | "timed_out" | null while running
+  html_url: string;     // direct link to the run for the failure-UI CTA
+  created_at: string;
+  run_started_at: string | null;
+  display_title: string;
+}
+
+// Find the most recent workflow run whose display_title matches the
+// `theme` input. Run names are set by the `run-name:` block at the top
+// of theme-on-demand.yml ("theme-on-demand: <theme>"), so a substring
+// match on the theme — verbatim, case-preserved — is unambiguous.
+//
+// Returns null when GitHub doesn't list a matching run yet (typical for
+// the first ~5-10 s after a dispatch lands but before Actions indexes
+// the run).
+async function findRecentRun(theme: string, env: Env): Promise<RunSummary | null> {
+  const url = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW_FILE}/runs?event=workflow_dispatch&per_page=30`;
+  const resp = await fetch(url, {
+    headers: {
+      "authorization": `Bearer ${env.GH_DISPATCH_PAT}`,
+      "accept": "application/vnd.github+json",
+      "x-github-api-version": "2022-11-28",
+      "user-agent": "paperpilot-theme-dispatcher",
+    },
+  });
+  if (!resp.ok) {
+    console.warn(`workflow runs query failed: ${resp.status}`);
+    return null;
+  }
+  type RunFromApi = {
+    status: string;
+    conclusion: string | null;
+    html_url: string;
+    created_at: string;
+    run_started_at: string | null;
+    display_title: string;
+  };
+  const data = await resp.json() as { workflow_runs?: RunFromApi[] };
+  if (!Array.isArray(data?.workflow_runs)) return null;
+  const themeMarker = `: ${theme}`;
+  // Most recent first — `workflow_runs` is already sorted by created_at
+  // desc per the API contract.
+  for (const r of data.workflow_runs) {
+    if (typeof r.display_title === "string" && r.display_title.endsWith(themeMarker)) {
+      return {
+        status: r.status,
+        conclusion: r.conclusion,
+        html_url: r.html_url,
+        created_at: r.created_at,
+        run_started_at: r.run_started_at,
+        display_title: r.display_title,
+      };
+    }
+  }
+  return null;
+}
+
+async function handleStatusGet(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const theme = url.searchParams.get("theme") ?? "";
+  // Same validator as the POST endpoint — keep the surface area uniform
+  // so a malformed query string can't probe the GH API on our behalf.
+  if (!THEME_PATTERN.test(theme.trim())) {
+    return json({
+      ok: false,
+      status: "invalid",
+      message: "theme query param must be 2-80 chars matching /^[A-Za-z0-9 _-]+$/",
+    }, { status: 400 });
+  }
+  let run: RunSummary | null = null;
+  try {
+    run = await findRecentRun(theme.trim(), env);
+  } catch (e) {
+    // Treat upstream errors as "no info yet" rather than a hard failure;
+    // the manifest poll is still the primary source of truth.
+    console.warn(`findRecentRun threw: ${(e as Error).message}`);
+    return json({ ok: true, run: null });
+  }
+  return json({ ok: true, run });
+}
+
 async function handlePost(request: Request, env: Env): Promise<Response> {
   let payload: { theme?: unknown };
   try {
@@ -171,6 +257,9 @@ const handler: ExportedHandler<Env> = {
     const url = new URL(request.url);
     if (url.pathname === "/api/themes" && request.method === "POST") {
       return handlePost(request, env);
+    }
+    if (url.pathname === "/api/themes/status" && request.method === "GET") {
+      return handleStatusGet(request, env);
     }
     if (url.pathname === "/api/themes" && request.method === "OPTIONS") {
       // Preflight isn't strictly needed for same-origin same-site posts,
