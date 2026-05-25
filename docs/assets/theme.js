@@ -1333,10 +1333,55 @@ function updateElapsed() {
 // in the failure block. Below the threshold the loop just retries — we
 // don't want to alarm users for a single flaky fetch.
 const POLL_FAILURE_THRESHOLD = 4;
+// How often to check the Worker's /api/themes/status endpoint relative
+// to manifest polling. 1 status check per 6 manifest polls ≈ once every
+// 30 s — frequent enough that a failed workflow surfaces well before
+// the 6-minute timeout, sparse enough that we stay way below the GH
+// API rate limit even with multiple concurrent users.
+const STATUS_CHECK_INTERVAL_POLLS = 6;
+
+// Translate GitHub Actions run state into the failure-UI fields. status
+// "completed" + conclusion "failure"/"cancelled"/"timed_out" are
+// terminal — we stop polling and surface immediately. Returns null
+// when the run is still in flight (queued / in_progress).
+function failureFromRun(run) {
+  if (!run || run.status !== "completed") return null;
+  const conc = run.conclusion;
+  if (conc === "success") return null;  // shouldn't happen — manifest poll would have caught it first
+  const url = typeof run.html_url === "string" ? run.html_url : "";
+  if (conc === "failure") {
+    return {
+      title: "ワークフロー実行が失敗しました",
+      message: "GitHub Actions の theme-on-demand ジョブが failure で完了しました。S2 のレート制限、Groq LLM の TPM 上限、または build_theme_lineage.py の内部エラーの可能性があります。ログから原因を特定してください。",
+      runUrl: url,
+    };
+  }
+  if (conc === "cancelled") {
+    return {
+      title: "ワークフローがキャンセルされました",
+      message: "GitHub Actions のジョブが外部からキャンセルされました。再試行してください。",
+      runUrl: url,
+    };
+  }
+  if (conc === "timed_out") {
+    return {
+      title: "ワークフローがタイムアウトしました",
+      message: "ジョブが GitHub Actions 側で時間切れになりました (workflow timeout-minutes 超過)。数分待ってから再試行してください。",
+      runUrl: url,
+    };
+  }
+  return null;
+}
 
 async function pollForCompletion(slug) {
   const startedAt = Date.now();
   let consecutiveFailures = 0;
+  let pollIter = 0;
+  // Snapshot the user-typed theme — pollForCompletion is called right
+  // after startProgress() sets progressState, so this is always
+  // populated. The Worker's status endpoint matches GH run titles on
+  // this string verbatim.
+  const themeLabel = progressState?.themeLabel ?? "";
   while (progressState && !progressState.cancelled) {
     if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
       // Persistent failure UI replaces the steps list + cancel button.
@@ -1387,6 +1432,33 @@ async function pollForCompletion(slug) {
       // Recovery — clear the warning if a subsequent fetch succeeded.
       setProgressNetworkWarning(false);
     }
+    // Every Nth poll, ask the Worker for the actual GH Actions run
+    // state. This catches failures that won't ever show up in the
+    // manifest (build_theme_lineage.py exited non-zero, S2 rate-limit
+    // aborted the run, etc) much earlier than the 6-minute timeout.
+    pollIter++;
+    if (pollIter % STATUS_CHECK_INTERVAL_POLLS === 0 && themeLabel) {
+      try {
+        const sr = await fetch(`/api/themes/status?theme=${encodeURIComponent(themeLabel)}`);
+        if (sr.ok) {
+          const sd = await sr.json();
+          const fail = failureFromRun(sd?.run);
+          if (fail) {
+            showProgressFailure({
+              title: fail.title,
+              message: fail.message,
+              retrySlug: slug,
+              runUrl: fail.runUrl,
+            });
+            return;
+          }
+        }
+      } catch {
+        // Status endpoint failures are non-fatal — manifest poll +
+        // 6-min timeout still cover the failure modes, just with
+        // less specificity.
+      }
+    }
     await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
   }
 }
@@ -1406,8 +1478,10 @@ function setProgressNetworkWarning(on) {
 
 // Render the persistent failure UI. Hides the steps + cancel button,
 // disables polling, leaves the theme-progress card visible until the
-// user explicitly retries or dismisses.
-function showProgressFailure({ title, message, retrySlug }) {
+// user explicitly retries or dismisses. runUrl (optional) injects a
+// "GitHub Actions のログを開く" link into the message so the user can
+// self-triage without leaving the page.
+function showProgressFailure({ title, message, retrySlug, runUrl }) {
   if (!els.progress) return;
   // Stop the polling loop and clear the elapsed-time timer without
   // hiding the panel (cancelProgress would also hide it).
@@ -1420,7 +1494,25 @@ function showProgressFailure({ title, message, retrySlug }) {
   if (cancelWrap) cancelWrap.hidden = true;
   if (els.progressFailure) {
     if (els.progressFailureTitle && title) els.progressFailureTitle.textContent = title;
-    if (els.progressFailureMsg && message) els.progressFailureMsg.textContent = message;
+    if (els.progressFailureMsg && message) {
+      // Build the message + optional link as DOM nodes so the runUrl
+      // can't be injected with bad markup. The link uses rel=noopener
+      // and target=_blank so navigating away from the polling page
+      // doesn't kill the user's progress view.
+      els.progressFailureMsg.textContent = message;
+      if (runUrl) {
+        const sep = document.createElement("span");
+        sep.textContent = " ";
+        const a = document.createElement("a");
+        a.href = runUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "GitHub Actions のログを開く →";
+        a.className = "theme-progress__failure-link";
+        els.progressFailureMsg.appendChild(sep);
+        els.progressFailureMsg.appendChild(a);
+      }
+    }
     els.progressFailure.hidden = false;
     // Stash the retry slug on the dataset so the bound handler picks it
     // up without closing over stale state.

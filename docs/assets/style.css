@@ -1650,6 +1650,19 @@ g.node-wrap.node-wrap--no-tx {
   color: var(--color-ink);
   border-color: var(--color-ink-muted);
 }
+/* "GitHub Actions のログを開く" inline link — accent color + underline
+   on hover so the link reads as an action separate from the surround
+   error copy. */
+.theme-progress__failure-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.theme-progress__failure-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
 .legend[hidden], .lineage-toolbar__group[hidden] { display: none !important; }
 
