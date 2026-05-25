@@ -103,13 +103,15 @@ jobs:
           done
 
       - name: Commit results
-        env:
-          # Push to main (vs the script default 'develop'). Same retry +
-          # rebase logic as theme-on-demand uses, so a concurrent push
-          # (e.g. the daily-watch workflow finishing around the same
-          # cron tick) can't silently lose this run's changes the way
-          # the previous `git pull --rebase ... || true` pattern did.
-          COMMIT_PUSH_BRANCH: main
+        # Push to develop (the script default). The original workflow
+        # pushed to `main` from the GitHub-Pages era, but main has been
+        # essentially abandoned since Cloudflare Pages took over and
+        # auto-deploys develop. Forcing this run to push to main caused
+        # a real README.md merge conflict on the first dispatch after
+        # PR #140 — there's no point rebasing develop's actual work
+        # onto a stale main. The retry+rebase logic in
+        # commit-and-push.sh still applies (concurrent themes /
+        # daily-watch pushes), it just operates on the right branch now.
         run: |
           set -euo pipefail
           git config user.name "PaperPilot Bot"
