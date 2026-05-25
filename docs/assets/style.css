@@ -827,6 +827,16 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 .orphan-toggle[hidden] { display: none; }
 .orphan-toggle:hover { border-color: var(--color-ink-muted); }
 .orphan-toggle input { accent-color: var(--color-ink); }
+/* Disabled state when the current theme has zero orphans. The control
+   stays mounted (discoverability) but visibly de-emphasized so users
+   don't think the checkbox does nothing. cursor:help nudges them to
+   hover for the explanatory title attribute on the label. */
+.orphan-toggle--disabled {
+  opacity: 0.45;
+  cursor: help;
+}
+.orphan-toggle--disabled:hover { border-color: var(--color-rule); }
+.orphan-toggle--disabled input { cursor: not-allowed; }
 
 /* Active-filter chips: shown beneath the toolbar whenever any
    non-default filter is active. Each chip names its dimension and

@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=43" />
+  <link rel="stylesheet" href="../assets/style.css?v=44" />
 </head>
 <body>
   <header class="hero hero--compact">
@@ -239,8 +239,10 @@
     <!-- Orphan toggle: hide papers with no edge in the lineage. The
          (N) count is updated by theme.js to reflect the current theme's
          orphan total; the toggle is also wired into the active-filter
-         banner via clearOneFilter("orphan"). -->
-    <label class="orphan-toggle" for="orphan-toggle" id="orphan-toggle-label" hidden>
+         banner via clearOneFilter("orphan"). Always rendered (even when
+         a theme has zero orphans) so users discover the feature; the
+         control disables itself in that state instead of vanishing. -->
+    <label class="orphan-toggle" for="orphan-toggle" id="orphan-toggle-label" title="孤立論文 = 他の論文との分類関係が見つからず、家系図のどのエッジにも乗らなかった論文">
       <input type="checkbox" id="orphan-toggle" />
       <span>🔗 孤立論文 (<span id="orphan-count">0</span>) を非表示</span>
     </label>
@@ -360,7 +362,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=43" defer></script>
-  <script src="../assets/theme.js?v=43" defer></script>
+  <script src="../assets/utils.js?v=44" defer></script>
+  <script src="../assets/theme.js?v=44" defer></script>
 </body>
 </html>
