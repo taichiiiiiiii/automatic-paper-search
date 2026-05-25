@@ -129,22 +129,36 @@ _VALID_RELATIONS = frozenset(
 _MAX_RATIONALE_LEN = 280
 _CLASSIFY_ABSTRACT_TRIM = 600
 
-# Heuristic template rationales — the system prompt forbids the LLM from
-# outputting these (it was happily regurgitating them as direct
-# translations of the enum definitions, see #131 production trace). Kept
-# as a frozenset so ``RelationClassification.from_dict`` can also second-
-# line-defend by rejecting any LLM output that lands on a template
-# byte-for-byte. When rejected, ``_apply_llm_classification`` falls back
-# to the heuristic — same user-visible rationale, but no false claim that
-# the LLM added value.
-_GENERIC_TEMPLATE_RATIONALES = frozenset({
-    "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
-    "論文 B は論文 A の研究ラインを継承し自然に発展させている。",
-    "論文 B は論文 A をベースライン比較にのみ用いている。",
-    "論文 B は論文 A と根本的に異なるアプローチを提案している。",
-    "論文 B は論文 A の手法を置き換える改良版として提案されている。",
-    "論文 B は論文 A の構成要素を分析・ablation している。",
-})
+# Single source of truth for heuristic template rationales (#145 followup).
+# Three consumers cross-reference these strings — they MUST stay in
+# perfect byte-for-byte sync, so all three pull from this dict:
+#   1. paperpilot.scripts.build_theme_lineage._INTENT_RELATION_MAP and
+#      _derive_relation_heuristic emit them as the heuristic edges.
+#   2. _GENERIC_TEMPLATE_RATIONALES (below) — reject set used by
+#      RelationClassification.from_dict to catch LLM template echoes
+#      (#131 second-line defence). Built from this dict's values.
+#   3. CLASSIFY_SYSTEM_PROMPT MUST NOT block (first-line defence) —
+#      currently lists 4 of these as forbidden outputs in plain text.
+#      The test test_classify_prompt_forbids_template_phrasings pins
+#      that fragments of the listed templates appear in the prompt.
+#
+# To add a new heuristic relation: add an entry here, reference it from
+# build_theme_lineage, optionally add to the prompt's MUST NOT block.
+TEMPLATE_RATIONALES: dict[str, str] = {
+    "extends_methodology": "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
+    "successor_result": "論文 B は論文 A の研究ラインを継承し自然に発展させている。",
+    "baseline_only_background": "論文 B は論文 A をベースライン比較にのみ用いている。",
+    "contrasts_year_cite": "論文 B は論文 A と根本的に異なるアプローチを提案している。",
+    "supersedes_year_cite": "論文 B は論文 A の手法を置き換える改良版として提案されている。",
+    "ablation_year_cite": "論文 B は論文 A の構成要素を分析・ablation している。",
+}
+
+# Reject set for LLM template echoes (#131). Derived from the dict so
+# the two can't drift; if the LLM emits any of these, from_dict returns
+# None and the caller's _apply_llm_classification falls back to the
+# heuristic — same user-visible rationale, no false claim that the LLM
+# added value.
+_GENERIC_TEMPLATE_RATIONALES = frozenset(TEMPLATE_RATIONALES.values())
 
 
 @dataclass
