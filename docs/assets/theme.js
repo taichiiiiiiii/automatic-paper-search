@@ -1017,8 +1017,19 @@ function updateOrphanToggleVisibility() {
   if (!els.orphanToggleLabel || !els.orphanCount) return;
   const n = state.orphanSet?.size || 0;
   els.orphanCount.textContent = String(n);
-  // Hide the whole control when there's nothing to act on.
-  els.orphanToggleLabel.hidden = n === 0;
+  // Keep the control visible even when n === 0 so the orphan concept
+  // is discoverable across all themes; disable the checkbox instead so
+  // it can't be toggled without effect.
+  els.orphanToggleLabel.hidden = false;
+  const disabled = n === 0;
+  els.orphanToggleLabel.classList.toggle("orphan-toggle--disabled", disabled);
+  if (els.orphanToggle) {
+    els.orphanToggle.disabled = disabled;
+    if (disabled) {
+      els.orphanToggle.checked = false;
+      state.hideOrphans = false;
+    }
+  }
 }
 
 function bindActiveFiltersClear() {
