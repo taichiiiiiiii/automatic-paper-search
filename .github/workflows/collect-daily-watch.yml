@@ -39,11 +39,12 @@ jobs:
         run: python -m paperpilot.collector --config paperpilot/config.daily-watch.yaml
 
       - name: Commit daily hits (if any)
-        env:
-          # Push to main (vs the script default 'develop'). The retry +
-          # rebase loop replaces the previous `git pull --rebase ... ||
-          # true` pattern which silently swallowed rebase failures (#123).
-          COMMIT_PUSH_BRANCH: main
+        # Push to develop (the script default). Migrated off main when
+        # the project moved from GitHub Pages to Cloudflare Pages — main
+        # is essentially abandoned and rebasing develop's work onto it
+        # causes conflicts (#123 followup). The retry+rebase loop in
+        # commit-and-push.sh still guards against concurrent push races
+        # with the other develop-targeting workflows.
         run: |
           set -euo pipefail
           git config user.name "PaperPilot Bot"
