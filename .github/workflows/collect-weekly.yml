@@ -103,20 +103,24 @@ jobs:
           done
 
       - name: Commit results
+        env:
+          # Push to main (vs the script default 'develop'). Same retry +
+          # rebase logic as theme-on-demand uses, so a concurrent push
+          # (e.g. the daily-watch workflow finishing around the same
+          # cron tick) can't silently lose this run's changes the way
+          # the previous `git pull --rebase ... || true` pattern did.
+          COMMIT_PUSH_BRANCH: main
         run: |
+          set -euo pipefail
           git config user.name "PaperPilot Bot"
           git config user.email "bot@paperpilot.dev"
-          # docs/ carries the viewer data (papers.json / lineage.json) that
-          # Cloudflare Pages serves, so it must be committed alongside the CSVs
-          # (Cloudflare hooks the push and auto-deploys).
-          git add paperpilot/output paperpilot/data docs || true
-          git pull --rebase origin main || true
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "📚 Weekly survey $(date -u +%Y-%m-%d)"
-            git push
-          fi
+          # docs/ carries the viewer data (papers.json / lineage.json)
+          # that Cloudflare Pages serves, so it must be committed
+          # alongside the CSVs (Cloudflare hooks the push and auto-
+          # deploys).
+          msg="📚 Weekly survey $(date -u +%Y-%m-%d)"
+          bash .github/scripts/commit-and-push.sh "$msg" \
+            paperpilot/output paperpilot/data docs
 
       - name: Notify on failure
         if: failure() && env.SLACK_WEBHOOK_URL != ''

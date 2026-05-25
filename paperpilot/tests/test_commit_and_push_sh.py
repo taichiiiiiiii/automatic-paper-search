@@ -85,17 +85,27 @@ def world(tmp_path: Path):
     return {"remote": remote, "local": local, "tmp": tmp_path}
 
 
-def _run_script(local: Path, msg: str, stage: str = "docs/themes/", env: dict | None = None) -> subprocess.CompletedProcess:
+def _run_script(
+    local: Path,
+    msg: str,
+    stage: str | list[str] = "docs/themes/",
+    env: dict | None = None,
+) -> subprocess.CompletedProcess:
     """Invoke commit-and-push.sh against the local clone.
 
     Mimics the workflow's pre-step that does `git config user.email ...` by
     passing GIT_*_NAME / GIT_*_EMAIL through the env. Without this the
     sandboxed runner has no identity and `git commit` aborts with 128.
     timeout=30 (review-MED-1): a hung git push must surface as a test
-    failure, never as an indefinitely-blocked CI job."""
+    failure, never as an indefinitely-blocked CI job.
+
+    ``stage`` accepts either a single path (back-compat with #121 tests)
+    or a list of paths (#123 followup — collect-* workflows stage
+    paperpilot/output + paperpilot/data + docs in one commit)."""
     full_env = {**os.environ, **_TEST_GIT_ENV, **(env or {})}
+    stage_args = [stage] if isinstance(stage, str) else list(stage)
     return subprocess.run(
-        ["bash", str(SCRIPT_PATH), msg, stage],
+        ["bash", str(SCRIPT_PATH), msg, *stage_args],
         cwd=local,
         capture_output=True,
         text=True,
@@ -295,3 +305,107 @@ def test_path_exists_but_diff_is_empty(world):
     r = _run_script(world["local"], "data(themes): noop")
     assert r.returncode == 0, r.stderr
     assert "nothing changed" in r.stdout.lower()
+
+
+# ---- Multi-path stage support (#123 followup) ----
+# The collect-* workflows stage paperpilot/output, paperpilot/data, and
+# docs/ in one commit. commit-and-push.sh used to accept only a single
+# stage path; we extend it to take N paths so collect-daily-watch.yml
+# and collect-weekly.yml can drop their hand-rolled `git pull --rebase
+# ... || true` + `git push` pattern (which silently swallowed rebase
+# failures) and reuse the script's rebase+retry logic.
+
+
+def test_script_accepts_multiple_stage_paths(world):
+    """Pass two stage paths; both must end up in the same commit and
+    the push must succeed exactly once."""
+    # Add a second changed file outside docs/themes/.
+    extra = world["local"] / "paperpilot" / "output"
+    extra.mkdir(parents=True)
+    (extra / "summary.csv").write_text("title,year\nfoo,2026\n")
+
+    r = _run_script(
+        world["local"],
+        "data(weekly): summary + themes",
+        stage=["docs/themes/", "paperpilot/output/"],
+    )
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+
+    # Remote log: seed commit + our one new commit (BOTH paths in it).
+    log = _git(world["remote"], "log", "--oneline").stdout.strip().splitlines()
+    assert len(log) == 2, log
+    # Verify both staged paths landed in the single commit.
+    files = _git(
+        world["remote"], "show", "--name-only", "--pretty=", "HEAD"
+    ).stdout.strip().splitlines()
+    assert "docs/themes/test-theme/lineage.json" in files
+    assert "paperpilot/output/summary.csv" in files
+
+
+def test_script_multi_path_with_one_missing(world):
+    """A missing stage path among multiple must NOT crash the run —
+    the workflow's `paperpilot/data/lineage-cache/classifications.json`
+    isn't always present on a cold checkout. The script should stage
+    whatever exists and skip the missing ones."""
+    # docs/themes/test-theme/lineage.json is already created by the fixture.
+    # The other two paths don't exist.
+    r = _run_script(
+        world["local"],
+        "data(test): partial multi-path",
+        stage=[
+            "docs/themes/",
+            "paperpilot/data/nonexistent-cache.json",
+            "some/other/missing/path",
+        ],
+    )
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    # Existing path made it onto the remote.
+    log = _git(world["remote"], "log", "--oneline").stdout.strip().splitlines()
+    assert len(log) == 2, log
+    files = _git(
+        world["remote"], "show", "--name-only", "--pretty=", "HEAD"
+    ).stdout.strip().splitlines()
+    assert "docs/themes/test-theme/lineage.json" in files
+
+
+def test_script_multi_path_all_missing(world):
+    """If every stage path is missing/non-existent AND nothing was
+    pre-staged externally, the script must exit cleanly (no error,
+    no commit) — same contract as the single-path noop case."""
+    r = _run_script(
+        world["local"],
+        "data(test): all missing",
+        stage=[
+            "some/missing/a",
+            "some/missing/b",
+        ],
+    )
+    assert r.returncode == 0, r.stderr
+    assert "nothing changed" in r.stdout.lower()
+    # Remote still has only the seed.
+    log = _git(world["remote"], "log", "--oneline").stdout.strip().splitlines()
+    assert len(log) == 1, log
+
+
+def test_script_respects_commit_push_branch_env(world):
+    """COMMIT_PUSH_BRANCH=main lets collect-* workflows push to main
+    (vs the default 'develop'). This pins that the env override
+    actually targets the right ref."""
+    # Re-init the remote so its default branch is 'main' instead of
+    # 'develop' (the fixture's seed uses 'develop'). Simplest path:
+    # rename the remote's branch.
+    _git(world["remote"], "branch", "-m", "develop", "main")
+    _git(world["local"], "branch", "-m", "develop", "main")
+    # Re-set the local remote tracking so the push knows where to go.
+    _git(world["local"], "fetch", "origin")
+    _git(world["local"], "branch", "--set-upstream-to=origin/main", "main")
+
+    r = _run_script(
+        world["local"],
+        "data(weekly): to main branch",
+        env={"COMMIT_PUSH_BRANCH": "main"},
+    )
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    # Verify the new commit lives on origin/main.
+    log = _git(world["remote"], "log", "--oneline", "main").stdout.strip().splitlines()
+    assert len(log) == 2, log
