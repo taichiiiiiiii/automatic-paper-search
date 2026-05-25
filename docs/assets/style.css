@@ -479,6 +479,55 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   .paper { grid-template-columns: 1fr; gap: 0.75rem; }
   .paper__type { margin-top: 0; }
   .stat-row { gap: 1.5rem; }
+
+  /* Toolbar stacking for narrow viewports. The desktop layout assumes
+     5 horizontally-wrapped chunks (layout group, root btn, paper
+     picker, search input, filter chips); on a 375-420px viewport they
+     wrap into a jumbled multi-row pile and the search input collides
+     with adjacent buttons. Stack into clearly-separated rows instead,
+     and let the chip group scroll horizontally so chips stay
+     finger-friendly without forcing the toolbar three rows tall. */
+  .lineage-toolbar {
+    gap: 0.75rem;
+    padding-left: var(--space-edge);
+    padding-right: var(--space-edge);
+  }
+  .lineage-toolbar > .lineage-toolbar__group,
+  .lineage-toolbar > .deep-picker,
+  .lineage-toolbar > .lineage-search {
+    flex: 1 1 100%;
+    min-width: 0;
+    max-width: none;
+  }
+  .lineage-toolbar > .lineage-toolbar__group {
+    flex-wrap: wrap;
+  }
+  /* The relation-filter group can hold 6 chips — let it scroll-x
+     instead of wrapping, otherwise it consumes most of the screen
+     height. Mask-image gives a soft right-edge fade as a scroll cue. */
+  .lineage-toolbar > #relation-filter {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    mask-image: linear-gradient(to right, black calc(100% - 1.5rem), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 1.5rem), transparent);
+  }
+  .lineage-toolbar > #relation-filter > .chip {
+    flex: 0 0 auto;
+  }
+  /* WCAG-friendly touch targets: ≥40px tall on the most-tapped
+     controls. The desktop 0.4rem 0.9rem padding falls well short. */
+  .layout-btn,
+  .chip {
+    min-height: 40px;
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
+  .lineage-search input {
+    font-size: 0.95rem;
+    padding: 0.7rem 0.85rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
