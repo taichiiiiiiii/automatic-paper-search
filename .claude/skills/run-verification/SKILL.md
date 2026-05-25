@@ -17,7 +17,7 @@ description: PaperPilot の全検証を一括実行（pytest + カバレッジ +
 | レイヤー | 目的 | 実行コマンド |
 |---------|------|------------|
 | L1. ユニットテスト | 個別モジュールの挙動 | `pytest paperpilot/tests/` |
-| L2. カバレッジ | 80%+ 維持（現状 97%） | `pytest --cov=paperpilot --cov-report=term` |
+| L2. カバレッジ | 80%+ 維持（現状 91%、tests 636 件） | `pytest --cov=paperpilot --cov-report=term` |
 | L3. Venue 検出率 | ≥95%（§9 Table 21） | `pytest paperpilot/tests/test_venue_stress.py` |
 | L4. ランナー統合テスト | Stage 0-4 の通し動作 | `pytest paperpilot/tests/test_runner.py` |
 | L5. スモークテスト（任意） | 実 arXiv で小規模実行 | `python -m paperpilot.collector --days 3 --keyword <kw>` |

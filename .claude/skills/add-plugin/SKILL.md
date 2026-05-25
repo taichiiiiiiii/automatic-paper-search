@@ -138,7 +138,7 @@ class PubMedSource(AbstractSource):
 python3 -m pytest paperpilot/tests/test_<new_module>.py -v
 python3 -m pytest paperpilot/tests/ --cov=paperpilot --cov-report=term --cov-config=/dev/null
 
-# 80% 以上を維持（現状 97%）
+# 80% 以上を維持（現状 91%、tests 636 件）
 ```
 
 ## 絶対に守ること
