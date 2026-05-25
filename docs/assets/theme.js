@@ -2380,6 +2380,12 @@ function buildCardElement(p, matchSet) {
   card.setAttribute("xmlns", XHTML_NS);
   card.className = "node-card node-card--theme";
   if (p.is_focus) card.classList.add("node-card--focus");
+  // a11y: cards open an external paper URL on click — role="link" plus
+  // tabindex+Enter handler (added in bindCardEventHandlers) makes that
+  // available to keyboard users. The screen-reader label combines the
+  // CTA verb with the resolved destination.
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("role", "link");
   // #61: fade non-matching cards when a search query is active.
   if (matchSet && !matchSet.has(p.id)) card.classList.add("node-card--filtered");
 
@@ -2469,10 +2475,29 @@ function bindCardEventHandlers(card, p, paperUrl, tooltipBase) {
     clearHighlight();
     hidePopover();
   });
+  card.addEventListener("focus", () => {
+    highlightNode(p.id);
+  });
+  card.addEventListener("blur", () => {
+    clearHighlight();
+    hidePopover();
+  });
+  const openPaper = () => window.open(paperUrl, "_blank", "noopener,noreferrer");
   card.addEventListener("click", (e) => {
     if (e.target.closest("[data-stop-card-click]")) return;
-    window.open(paperUrl, "_blank", "noopener,noreferrer");
+    openPaper();
   });
+  // a11y: Enter on a role="link" opens the paper just like the click
+  // handler. Space stays off so it doesn't conflict with page scrolling —
+  // Enter alone matches the WAI-ARIA link pattern.
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      if (e.target.closest("[data-stop-card-click]")) return;
+      e.preventDefault();
+      openPaper();
+    }
+  });
+  card.setAttribute("aria-label", `論文を新しいタブで開く: ${tooltipBase} — ${p.title || p.id}`);
   card.style.cursor = "pointer";
   card.title = `クリックで ${tooltipBase} に開く`;
 }

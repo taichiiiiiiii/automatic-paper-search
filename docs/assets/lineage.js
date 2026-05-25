@@ -199,6 +199,10 @@ function renderFilterChips() {
 
 function focusPaper(id, { push = true, smooth = true } = {}) {
   if (state.focusId === id) return;
+  // Remember whether the action was triggered by keyboard (focus was on a
+  // card) so we can move the keyboard focus to the new center card after
+  // re-render instead of dropping back to <body>.
+  const cameFromKeyboard = document.activeElement?.classList?.contains("node-card");
   state.focusId = id;
   const url = new URL(window.location.href);
   url.searchParams.set("focus", id);
@@ -207,6 +211,15 @@ function focusPaper(id, { push = true, smooth = true } = {}) {
   render();
   scrollToFocus(smooth);
   updateTitle();
+  if (cameFromKeyboard) {
+    // render() rebuilds the SVG synchronously; querySelector after it
+    // returns finds the new focus card. Defer one frame so the focus
+    // ring is drawn after the FLIP transitions have started.
+    requestAnimationFrame(() => {
+      const next = els.svg?.querySelector(".node-card--focus");
+      if (next instanceof HTMLElement) next.focus({ preventScroll: true });
+    });
+  }
 }
 
 function updateTitle() {
@@ -722,9 +735,25 @@ async function drawSvg(positioned, edges) {
     card.className = "node-card";
     if (p.id === state.focusId) card.classList.add("node-card--focus");
     if (p.is_trending) card.classList.add("node-card--trending");
+    // a11y: cards are <div> not <button> (foreignObject + nested anchors
+    // make button semantics awkward), so promote them to focusable
+    // role="button" so Tab can reach them and Enter / Space trigger
+    // the same focus-switch as a click. Screen readers get a label
+    // pinned to the paper title.
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `論文を選択: ${p.title || p.id}`);
     card.addEventListener("click", () => focusPaper(p.id));
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        focusPaper(p.id);
+      }
+    });
     card.addEventListener("mouseenter", () => highlightConnectedEdges(p.id, true));
     card.addEventListener("mouseleave", () => highlightConnectedEdges(p.id, false));
+    card.addEventListener("focus", () => highlightConnectedEdges(p.id, true));
+    card.addEventListener("blur", () => highlightConnectedEdges(p.id, false));
 
     const tier = p.venue_tier === "A+" ? "aplus"
                : p.venue_tier === "A" ? "a"

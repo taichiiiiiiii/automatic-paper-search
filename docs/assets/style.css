@@ -1605,6 +1605,14 @@ g.node-wrap.node-wrap--no-tx {
   box-shadow: 0 2px 4px oklch(0% 0 0 / 0.06), 0 12px 24px oklch(0% 0 0 / 0.08);
   border-color: var(--color-ink-muted);
 }
+/* a11y: keyboard focus ring. :focus-visible avoids drawing the ring on
+   mouse click; the underlying click-to-focus visual stays unchanged.
+   outline (not box-shadow) so it doesn't fight the --focus halo on the
+   currently-centered card. */
+.node-card:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
 .node-card--focus {
   border: 2.5px solid var(--color-accent);
   box-shadow: 0 0 0 6px oklch(58% 0.18 30 / 0.18),

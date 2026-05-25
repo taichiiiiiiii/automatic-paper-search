@@ -210,10 +210,19 @@ function renderFilterChips() {
 
 function focusPaper(id) {
   if (!id || state.focusId === id) return;
+  // Mirror lineage.js: after re-render, move keyboard focus to the new
+  // center card so Tab navigation continues from the deepened view.
+  const cameFromKeyboard = document.activeElement?.classList?.contains("node-card");
   state.focusId = id;
   render();
   scrollToFocus(true);
   updateTitle();
+  if (cameFromKeyboard) {
+    requestAnimationFrame(() => {
+      const next = els.svg?.querySelector(".node-card--focus");
+      if (next instanceof HTMLElement) next.focus({ preventScroll: true });
+    });
+  }
 }
 
 function bindSearch() {
@@ -462,7 +471,18 @@ async function drawSvg(positioned, edges) {
     card.setAttribute("xmlns", XHTML_NS);
     card.className = "node-card node-card--deep";
     if (p.id === state.focusId) card.classList.add("node-card--focus");
+    // a11y: see equivalent block in lineage.js — Tab + Enter / Space
+    // re-centers the family-tree on this paper.
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `論文を中心に設定: ${p.title || p.id}`);
     card.addEventListener("click", () => focusPaper(p.id));
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        focusPaper(p.id);
+      }
+    });
 
     const tier = p.venue_tier === "A+" ? "aplus" : p.venue_tier === "A" ? "a" : "preprint";
     const venue = PP.formatVenue(p.venue, p.year);
