@@ -37,7 +37,7 @@ from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 from urllib.parse import urlparse
 
 # Make `paperpilot.*` importable when run as `python paperpilot/scripts/...`
@@ -1238,79 +1238,39 @@ def _enrich_github_stars(
 # ---------- Build pipeline ----------
 
 
-def build_theme_lineage(
+class _BFSResult(NamedTuple):
+    """Bundles the per-build state produced by ``_run_bfs_and_descendants``
+    so ``build_theme_lineage`` can reason about the BFS output as a single
+    object instead of juggling five locals. Each field is mutable
+    (``nodes``, ``edges``) or trivially copyable (counters), so passing
+    by reference is fine for the rest of the pipeline."""
+    nodes: dict[str, dict]
+    edges: list[dict]
+    seed_ids: list[str]
+    classify_attempted: int
+    classify_succeeded: int
+
+
+def _run_bfs_and_descendants(
+    seeds: list[dict],
     *,
-    theme: str,
     depth: int,
-    seeds_count: int,
     width: int,
-    since_year: int | None,
-    output: Path | None = None,
-    use_openalex_fallback: bool = True,
-    llm_strict: str = "off",
-) -> Path:
-    """Run the full theme-to-family-tree pipeline; return the output path."""
-    sanitised = sanitize_theme(theme)
-    slug = theme_slug(sanitised)
+    max_seed_cite: int,
+    provider: AbstractLLMProvider,
+    llm_strict: str,
+) -> _BFSResult:
+    """BFS ancestor traversal up to ``depth`` hops, then a 1-hop
+    descendants pass from each seed (issue #55).
 
-    # Load env once at the top — both the seed-discovery fallback
-    # (openalex_email) and the github-stars enrichment further down
-    # (github_token) read from the same env dict.
-    try:
-        env = load_env()
-    except Exception as exc:  # pragma: no cover - defensive
-        logger.warning("load_env failed (continuing with empty env): %s", exc)
-        env = {}
-    openalex_email = (env or {}).get("openalex_email")
+    Behaviour intentionally identical to the inlined version this
+    replaced — the only change is encapsulating the four output values
+    (nodes, edges, seed_ids, classify counters) into ``_BFSResult``.
 
-    # Issue #53: relation classification is now LLM-free (derive_relation),
-    # but build_provider is still used downstream by other scripts; here
-    # we no longer need it for the theme pipeline. Keep the call so the
-    # provider is constructed (logs config errors etc.) but we won't ever
-    # invoke .classify_relation / ._chat from this script.
-    inner_provider, _ = build_provider()
-    provider, cache = _wrap_provider_with_cache(inner_provider)
-    logger.info(
-        "theme=%r slug=%r provider=%s (cache=%d entries)",
-        sanitised, slug, provider.name, len(cache),
-    )
-
-    # Stage 1: keyword expansion is skipped — the LLM call here was the
-    # last reason this script needed a working provider. Use the raw
-    # theme as the single search keyword. Multi-keyword expansion was
-    # nice for seed diversity but is no longer worth a TPM-burdened
-    # round-trip; the theme name itself is usually the strongest signal
-    # (per the DPO experience where 1-keyword fallback still produced
-    # good seeds when paired with citation-desc ranking).
-    keywords = [sanitised]
-    logger.info("using raw theme as single keyword: %r", keywords[0])
-
-    # Stage 2: discover seeds.
-    seeds = discover_seeds(
-        keywords=keywords,
-        top_n=seeds_count,
-        since_year=since_year,
-        use_openalex_fallback=use_openalex_fallback,
-        openalex_email=openalex_email,
-        theme=sanitised,
-    )
-    logger.info(
-        "discovered %d seeds: %s",
-        len(seeds),
-        [s.get("paperId") for s in seeds],
-    )
-
-    # Foundational filter calibration: cap BFS parent citations at
-    # `_OFF_TOPIC_CITE_MULTIPLIER × max(seed cites)`, so the citing paper's
-    # references can't drag in a globally-foundational paper that the
-    # theme has nothing to do with. Computed once so every BFS node uses
-    # the same ceiling.
-    max_seed_cite = max(
-        (int(s.get("citationCount") or 0) for s in seeds),
-        default=0,
-    )
-
-    # Stage 3: BFS ancestors via fetch_related (build_lineage's cache reused).
+    BFS direction conventions:
+      * ancestors: parent (cited, carries intents) → current (citing)
+      * descendants: seed (older, focus) → child (newer, carries intents)
+    """
     nodes: dict[str, dict] = {}
     edges: list[dict] = []
 
@@ -1471,6 +1431,163 @@ def build_theme_lineage(
             desc_added,
         )
 
+    return _BFSResult(
+        nodes=nodes,
+        edges=edges,
+        seed_ids=seed_ids,
+        classify_attempted=classify_attempted,
+        classify_succeeded=classify_succeeded,
+    )
+
+
+def _log_classify_summary(
+    classify_attempted: int,
+    classify_succeeded: int,
+    *,
+    has_extra_nodes: bool,
+    has_edges: bool,
+) -> None:
+    """Emit the post-build LLM-failure-rate summary + the three distinct
+    degraded-data warnings (#45). Pulled out of ``build_theme_lineage``
+    so the caller flow reads as one line — the conditions are subtle
+    enough (LLM quota vs. influential-filter vs. zero-edges) that they
+    warrant a dedicated home.
+    """
+    classify_failed = classify_attempted - classify_succeeded
+    fail_rate = classify_failed / classify_attempted if classify_attempted else 0.0
+    logger.info(
+        "classify summary: attempted=%d, success=%d, failed=%d (%.1f%% failure)",
+        classify_attempted,
+        classify_succeeded,
+        classify_failed,
+        fail_rate * 100,
+    )
+    if classify_attempted and fail_rate > 0.30:
+        logger.warning(
+            "high LLM failure rate (%.1f%%) — likely Groq RPM/daily quota; "
+            "consider re-running after quota resets",
+            fail_rate * 100,
+        )
+    # All parents skipped by the isInfluential filter (#50) — produces a
+    # node-only graph that looks healthy but is structurally empty.
+    # Surface this distinct from the LLM-quota path so the operator can
+    # widen the seed pool / loosen the filter rather than wait for quota.
+    if classify_attempted == 0 and has_extra_nodes:
+        logger.warning(
+            "no classify calls attempted — every parent was filtered out "
+            "(non-influential per S2). Theme may be too narrow."
+        )
+    if not has_edges:
+        logger.warning(
+            "produced 0 edges — data quality is degraded; the JSON is still "
+            "written but the viewer will show nodes only. See issue #45."
+        )
+
+
+def _pick_root_seed(
+    seed_ids: list[str],
+    cleaned_edges: list[dict],
+) -> str | None:
+    """Pick the focus seed with the most relations (in OR out edges) as
+    the lineage root. Returns ``None`` for an edgeless / seedless graph
+    so the JSON encoder writes ``null`` instead of an empty string.
+    """
+    if not seed_ids:
+        return None
+    edge_count: dict[str, int] = {}
+    for e in cleaned_edges:
+        edge_count[e["src"]] = edge_count.get(e["src"], 0) + 1
+        edge_count[e["dst"]] = edge_count.get(e["dst"], 0) + 1
+    return max(seed_ids, key=lambda nid: edge_count.get(nid, 0))
+
+
+def build_theme_lineage(
+    *,
+    theme: str,
+    depth: int,
+    seeds_count: int,
+    width: int,
+    since_year: int | None,
+    output: Path | None = None,
+    use_openalex_fallback: bool = True,
+    llm_strict: str = "off",
+) -> Path:
+    """Run the full theme-to-family-tree pipeline; return the output path."""
+    sanitised = sanitize_theme(theme)
+    slug = theme_slug(sanitised)
+
+    # Load env once at the top — both the seed-discovery fallback
+    # (openalex_email) and the github-stars enrichment further down
+    # (github_token) read from the same env dict.
+    try:
+        env = load_env()
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("load_env failed (continuing with empty env): %s", exc)
+        env = {}
+    openalex_email = (env or {}).get("openalex_email")
+
+    # Issue #53: relation classification is now LLM-free (derive_relation),
+    # but build_provider is still used downstream by other scripts; here
+    # we no longer need it for the theme pipeline. Keep the call so the
+    # provider is constructed (logs config errors etc.) but we won't ever
+    # invoke .classify_relation / ._chat from this script.
+    inner_provider, _ = build_provider()
+    provider, cache = _wrap_provider_with_cache(inner_provider)
+    logger.info(
+        "theme=%r slug=%r provider=%s (cache=%d entries)",
+        sanitised, slug, provider.name, len(cache),
+    )
+
+    # Stage 1: keyword expansion is skipped — the LLM call here was the
+    # last reason this script needed a working provider. Use the raw
+    # theme as the single search keyword. Multi-keyword expansion was
+    # nice for seed diversity but is no longer worth a TPM-burdened
+    # round-trip; the theme name itself is usually the strongest signal
+    # (per the DPO experience where 1-keyword fallback still produced
+    # good seeds when paired with citation-desc ranking).
+    keywords = [sanitised]
+    logger.info("using raw theme as single keyword: %r", keywords[0])
+
+    # Stage 2: discover seeds.
+    seeds = discover_seeds(
+        keywords=keywords,
+        top_n=seeds_count,
+        since_year=since_year,
+        use_openalex_fallback=use_openalex_fallback,
+        openalex_email=openalex_email,
+        theme=sanitised,
+    )
+    logger.info(
+        "discovered %d seeds: %s",
+        len(seeds),
+        [s.get("paperId") for s in seeds],
+    )
+
+    # Foundational filter calibration: cap BFS parent citations at
+    # `_OFF_TOPIC_CITE_MULTIPLIER × max(seed cites)`, so the citing paper's
+    # references can't drag in a globally-foundational paper that the
+    # theme has nothing to do with. Computed once so every BFS node uses
+    # the same ceiling.
+    max_seed_cite = max(
+        (int(s.get("citationCount") or 0) for s in seeds),
+        default=0,
+    )
+
+    # Stage 3: BFS ancestors + descendants pass (see _run_bfs_and_descendants).
+    bfs_result = _run_bfs_and_descendants(
+        seeds,
+        depth=depth,
+        width=width,
+        max_seed_cite=max_seed_cite,
+        provider=provider,
+        llm_strict=llm_strict,
+    )
+    nodes = bfs_result.nodes
+    edges = bfs_result.edges
+    seed_ids = bfs_result.seed_ids
+    classify_attempted = bfs_result.classify_attempted
+    classify_succeeded = bfs_result.classify_succeeded
+
     # Issue #54 / #57: cross-node edges. The BFS only adds (parent → seed)
     # edges, so two seeds that cite each other, or a parent that cites
     # another parent in the same graph, never produce a visible relation.
@@ -1513,46 +1630,15 @@ def build_theme_lineage(
 
     # Issue #45: surface LLM-failure rate so silent quota throttling
     # doesn't hide as a successful "0 edges" build in CI logs.
-    classify_failed = classify_attempted - classify_succeeded
-    fail_rate = classify_failed / classify_attempted if classify_attempted else 0.0
-    logger.info(
-        "classify summary: attempted=%d, success=%d, failed=%d (%.1f%% failure)",
+    _log_classify_summary(
         classify_attempted,
         classify_succeeded,
-        classify_failed,
-        fail_rate * 100,
+        has_extra_nodes=len(nodes) > len(seed_ids),
+        has_edges=bool(cleaned_edges),
     )
-    if classify_attempted and fail_rate > 0.30:
-        logger.warning(
-            "high LLM failure rate (%.1f%%) — likely Groq RPM/daily quota; "
-            "consider re-running after quota resets",
-            fail_rate * 100,
-        )
-    # All parents skipped by the isInfluential filter (#50) — produces a
-    # node-only graph that looks healthy but is structurally empty.
-    # Surface this distinct from the LLM-quota path so the operator can
-    # widen the seed pool / loosen the filter rather than wait for quota.
-    if classify_attempted == 0 and len(nodes) > len(seed_ids):
-        logger.warning(
-            "no classify calls attempted — every parent was filtered out "
-            "(non-influential per S2). Theme may be too narrow."
-        )
-    if not cleaned_edges:
-        logger.warning(
-            "produced 0 edges — data quality is degraded; the JSON is still "
-            "written but the viewer will show nodes only. See issue #45."
-        )
 
     # Stage 5: pick root = focus seed with most relations.
-    root_id: str | None
-    if seed_ids:
-        edge_count: dict[str, int] = {}
-        for e in cleaned_edges:
-            edge_count[e["src"]] = edge_count.get(e["src"], 0) + 1
-            edge_count[e["dst"]] = edge_count.get(e["dst"], 0) + 1
-        root_id = max(seed_ids, key=lambda nid: edge_count.get(nid, 0))
-    else:
-        root_id = None
+    root_id = _pick_root_seed(seed_ids, cleaned_edges)
 
     # Stage 6: sort nodes by year ascending (None years sink to the bottom).
     sorted_nodes = sorted(
