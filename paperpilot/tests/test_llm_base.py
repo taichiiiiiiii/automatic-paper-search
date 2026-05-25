@@ -283,12 +283,13 @@ def test_classify_prompt_within_groq_tpm_budget():
     )
 
 
-def test_theme_on_demand_workflow_uses_ambiguous_strict_mode():
+def test_theme_workflows_use_ambiguous_strict_mode():
     """``--llm-strict=all`` on the Groq free tier blew the TPM budget and
-    timed out the workflow (#131 PR #132 deploy → #133 walk-back). The
-    deployed workflow MUST stay on ``--llm-strict=ambiguous`` until the
-    operator moves to a paid plan; a careless flip back to ``all`` would
-    silently re-introduce the production cancellation.
+    timed out the workflow (#131 PR #132 deploy → #133 walk-back). Both
+    theme-producing workflows — the on-demand single-theme dispatch and
+    the weekly bulk regen — MUST stay on ``--llm-strict=ambiguous`` until
+    the operator moves to a paid plan; a careless flip back to ``all``
+    would silently re-introduce the production cancellation.
 
     Reading the YAML as plain text (no yaml.safe_load tree walk) keeps
     the test resilient to comment / whitespace re-shuffling — the only
@@ -297,28 +298,35 @@ def test_theme_on_demand_workflow_uses_ambiguous_strict_mode():
     from pathlib import Path
 
     repo_root = Path(__file__).resolve().parents[2]
-    yaml_path = repo_root / ".github" / "workflows" / "theme-on-demand.yml"
-    text = yaml_path.read_text(encoding="utf-8")
-
-    # The literal flag value must be 'ambiguous'. A reviewer who wants
-    # to flip back to 'all' must also flip this test, which forces them
-    # to look at #131 / #133 and confirm they've taken the paid-plan
-    # rate-limit step first.
-    assert "--llm-strict ambiguous" in text, (
-        "theme-on-demand.yml lost the --llm-strict=ambiguous flag. Free-tier "
-        "Groq cannot sustain --llm-strict=all; see #131 / PR #133 for the "
-        "8-min cancellation regression this prevents."
-    )
-    # And the dangerous 'all' must NOT be live (a commented example is fine
-    # — only check the un-commented invocation).
-    live_lines = [
-        line for line in text.splitlines()
-        if "--llm-strict" in line
-        and not line.lstrip().startswith("#")
+    # Both workflows that invoke build_theme_lineage must use the same
+    # strict mode for predictable LLM cost.
+    yaml_paths = [
+        repo_root / ".github" / "workflows" / "theme-on-demand.yml",
+        repo_root / ".github" / "workflows" / "regen-themes.yml",
     ]
-    assert all("ambiguous" in line for line in live_lines), (
-        f"theme-on-demand.yml has a non-ambiguous --llm-strict line: {live_lines}"
-    )
+
+    for yaml_path in yaml_paths:
+        text = yaml_path.read_text(encoding="utf-8")
+        # The literal flag value must be 'ambiguous'. A reviewer who wants
+        # to flip back to 'all' must also flip this test, which forces them
+        # to look at #131 / #133 and confirm they've taken the paid-plan
+        # rate-limit step first.
+        assert "--llm-strict ambiguous" in text, (
+            f"{yaml_path.name} lost the --llm-strict=ambiguous flag. "
+            "Free-tier Groq cannot sustain --llm-strict=all; see #131 / "
+            "PR #133 for the cancellation regression this prevents."
+        )
+    # And the dangerous 'all' must NOT be live (a commented example is fine
+        # — only check the un-commented invocation).
+        live_lines = [
+            line for line in text.splitlines()
+            if "--llm-strict" in line
+            and not line.lstrip().startswith("#")
+        ]
+        assert all("ambiguous" in line for line in live_lines), (
+            f"{yaml_path.name} has a non-ambiguous --llm-strict line: "
+            f"{live_lines}"
+        )
 
 
 def test_classify_prompt_invariants_still_hold():
