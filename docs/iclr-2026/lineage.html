@@ -49,16 +49,31 @@
 
   <nav class="lineage-crumb" id="lineage-crumb" aria-label="Current cluster" hidden></nav>
 
-  <div class="legend" aria-label="Relation type legend">
-    <span class="legend__item"><span class="legend__swatch legend__swatch--supersedes"></span> Supersedes（置換）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--successor"></span> Successor（後継）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--extends"></span> Extends（拡張）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--ablation"></span> Ablation（成分分析）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--baseline"></span> Baseline（比較）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--contrasts"></span> Contrasts（対立）</span>
-  </div>
+  <!-- The relation type legend used to live as a flat strip here, but
+       the toolbar's #relation-filter chips already carry the same color
+       swatch on each pill, so duplicating the swatches in a separate
+       row was pure noise. Collapsed into a <details> so users who
+       genuinely need the full label/translation reference can still
+       reach it. -->
+  <details class="legend-collapsible">
+    <summary>関係種別の凡例（6 種）</summary>
+    <div class="legend" aria-label="Relation type legend">
+      <span class="legend__item"><span class="legend__swatch legend__swatch--supersedes"></span> Supersedes（置換）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--successor"></span> Successor（後継）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--extends"></span> Extends（拡張）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--ablation"></span> Ablation（成分分析）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--baseline"></span> Baseline（比較）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--contrasts"></span> Contrasts（対立）</span>
+    </div>
+  </details>
 
   <div class="lineage-canvas" id="canvas">
+    <!-- Initial loading state, same pattern as docs/themes/index.html.
+         lineage.js hides this once the first draw lands. -->
+    <div class="canvas-loading" id="canvas-loading" role="status" aria-live="polite">
+      <div class="canvas-loading__spinner" aria-hidden="true"></div>
+      <span>家系図を描画中…</span>
+    </div>
     <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Paper lineage graph showing relationships between research papers"></svg>
   </div>
 

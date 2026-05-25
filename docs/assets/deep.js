@@ -135,8 +135,9 @@ function showErrorHtml(safeHtml) {
 }
 
 async function init() {
-  els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state" id="loading-msg">データ読み込み中...</p>`);
-
+  // Same pattern as theme.js / lineage.js: the HTML now ships a
+  // `.canvas-loading` element with a spinner; we just hide it once
+  // the data resolves.
   state.manifest = await loadManifest();
   const requested = arxivIdFromLocation();
   const known = new Set(state.manifest.map((e) => e.arxiv_id));
@@ -148,7 +149,8 @@ async function init() {
 
   const jsonName = targetId ? `deep-${targetId}.json` : "deep.json";
   state.data = await loadLineage(jsonName);
-  document.getElementById("loading-msg")?.remove();
+  const canvasLoading = document.getElementById("canvas-loading");
+  if (canvasLoading) canvasLoading.hidden = true;
 
   if (!state.data) {
     renderPicker();
