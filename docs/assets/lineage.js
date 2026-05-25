@@ -330,7 +330,20 @@ function render() {
   // Surface unexpected rejections instead of silently dropping via
   // `void` — a blank graph with no signal is worse than a console
   // error during development.
-  drawSvg(positioned, visibleEdges).catch((err) => {
+  drawSvg(positioned, visibleEdges).then(() => {
+    // Timeline mode lays out papers by year (oldest left, newest right).
+    // The recent year often has a deep paper stack (e.g., ICLR 2026 Oral
+    // = 13 papers) while older years carry just one ancestor each. With
+    // the canvas's natural scrollLeft=0, users see a viewport of sparse
+    // ancestor columns and a long empty void below row 0 — the dense
+    // content sits off-screen to the right. Auto-scroll to the rightmost
+    // edge so the dense column is the user's first impression.
+    if (state.layout === "timeline" && els.canvas) {
+      requestAnimationFrame(() => {
+        els.canvas.scrollLeft = els.canvas.scrollWidth;
+      });
+    }
+  }).catch((err) => {
     console.error("[lineage] drawSvg failed:", err);
   });
 }
