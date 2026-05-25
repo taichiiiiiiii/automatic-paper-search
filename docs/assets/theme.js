@@ -278,6 +278,11 @@ const els = {
   progressBar: document.getElementById("theme-progress-bar"),
   progressSteps: document.getElementById("theme-progress-steps"),
   progressCancel: document.getElementById("theme-progress-cancel"),
+  progressFailure: document.getElementById("theme-progress-failure"),
+  progressFailureTitle: document.getElementById("theme-progress-failure-title"),
+  progressFailureMsg: document.getElementById("theme-progress-failure-msg"),
+  progressFailureRetry: document.getElementById("theme-progress-failure-retry"),
+  progressFailureDismiss: document.getElementById("theme-progress-failure-dismiss"),
   popover: document.getElementById("card-popover"),
   popVenue: document.getElementById("cp-venue"),
   popTitle: document.getElementById("cp-title"),
@@ -1104,6 +1109,35 @@ function bindThemeRequest() {
   if (els.progressCancel) {
     els.progressCancel.addEventListener("click", cancelProgress);
   }
+  if (els.progressFailureRetry) {
+    els.progressFailureRetry.addEventListener("click", () => {
+      const retrySlug = els.progressFailureRetry.dataset.retrySlug || "";
+      // Pre-fill the input so the user sees what's being retried, then
+      // re-submit. The slug may have lost case info during normalize —
+      // good enough for a retry context.
+      if (retrySlug && els.reqInput) {
+        // Re-derive the human label from the slug (caps + spaces).
+        els.reqInput.value = retrySlug.replace(/-/g, " ");
+      }
+      cancelProgress();
+      // Re-open the hero details so the form is visible if it was
+      // collapsed during the progress view.
+      if (els.heroDetails && els.heroDetails.hidden && els.heroToggle) {
+        els.heroToggle.click();
+      }
+      // Defer the submit one tick so the cancel-driven cleanup
+      // completes before we start a new run.
+      setTimeout(() => {
+        submitTheme().catch((err) => {
+          console.error("[theme-request] retry submit failed:", err);
+          showRequestError("再試行に失敗しました。少し時間を空けて再度お試しください。");
+        });
+      }, 50);
+    });
+  }
+  if (els.progressFailureDismiss) {
+    els.progressFailureDismiss.addEventListener("click", cancelProgress);
+  }
 }
 
 // Populate the autocomplete datalist from the manifest. Lives separately
@@ -1242,10 +1276,17 @@ function startProgress(slug, themeLabel) {
   setProgressStep("dispatch");
   progressState = {
     slug,
+    themeLabel,
     startedAt: Date.now(),
     cancelled: false,
     timer: null,
   };
+  // Make sure the failure block from a prior attempt is hidden and the
+  // normal steps / cancel chunks are visible.
+  if (els.progressFailure) els.progressFailure.hidden = true;
+  if (els.progressSteps) els.progressSteps.hidden = false;
+  const cancelWrap = els.progressCancel?.parentElement;
+  if (cancelWrap) cancelWrap.hidden = false;
   // Step transitions are time-based estimates. We shift "queue" → "generate"
   // → "commit" on a schedule because the Worker can't tell us the live
   // workflow status without a second API hop. This stays accurate enough
@@ -1287,12 +1328,26 @@ function updateElapsed() {
   els.progressElapsed.textContent = `経過 ${m}:${String(s).padStart(2, "0")}`;
 }
 
+// Consecutive polling failures threshold. 4 failures × 5 s interval ≈
+// 20 s of trouble before we surface "having issues reaching the server"
+// in the failure block. Below the threshold the loop just retries — we
+// don't want to alarm users for a single flaky fetch.
+const POLL_FAILURE_THRESHOLD = 4;
+
 async function pollForCompletion(slug) {
   const startedAt = Date.now();
+  let consecutiveFailures = 0;
   while (progressState && !progressState.cancelled) {
     if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
-      showRequestError("生成がタイムアウトしました。後ほど再試行してください。");
-      cancelProgress();
+      // Persistent failure UI replaces the steps list + cancel button.
+      // Copy spells out the most likely causes so users can self-triage
+      // (S2 free-tier shared IP throttle + Groq TPM ceiling are the two
+      // we've actually hit in CI), and the retry button re-dispatches.
+      showProgressFailure({
+        title: "生成がタイムアウトしました (6 分経過)",
+        message: "S2 / Groq LLM のレート制限、または GitHub Actions の内部エラーの可能性があります。数分後に再試行するか、既存テーマを確認してください。",
+        retrySlug: slug,
+      });
       return;
     }
     try {
@@ -1305,6 +1360,7 @@ async function pollForCompletion(slug) {
       // settling within ~30s converges much faster.
       const r = await fetch("themes-manifest.json", { cache: "no-store" });
       if (r.ok) {
+        consecutiveFailures = 0;
         const data = await r.json();
         if (Array.isArray(data) && data.some((e) => e?.slug === slug)) {
           setProgressStep("ready");
@@ -1314,13 +1370,68 @@ async function pollForCompletion(slug) {
           }, 800);
           return;
         }
+      } else {
+        consecutiveFailures++;
       }
     } catch {
       // Transient network error — keep polling. The hard cap above will
-      // bail if the failure persists.
+      // bail if the failure persists; the counter below surfaces a soft
+      // warning sooner so the user isn't left guessing.
+      consecutiveFailures++;
+    }
+    if (consecutiveFailures === POLL_FAILURE_THRESHOLD) {
+      // One-shot warning — show but don't cancel polling. Mark the
+      // counter so we don't fire repeatedly while it ticks up.
+      setProgressNetworkWarning(true);
+    } else if (consecutiveFailures === 0) {
+      // Recovery — clear the warning if a subsequent fetch succeeded.
+      setProgressNetworkWarning(false);
     }
     await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
   }
+}
+
+// Soft network warning surfaced via the progress title while polling
+// keeps retrying. Distinct from the persistent failure block — this is
+// "we're not giving up yet, but you should know" status.
+function setProgressNetworkWarning(on) {
+  if (!els.progressTitle) return;
+  const baseTitle = progressState?.themeLabel
+    ? `「${progressState.themeLabel}」を生成中...`
+    : "生成中...";
+  els.progressTitle.textContent = on
+    ? `${baseTitle} (マニフェスト取得に再試行中)`
+    : baseTitle;
+}
+
+// Render the persistent failure UI. Hides the steps + cancel button,
+// disables polling, leaves the theme-progress card visible until the
+// user explicitly retries or dismisses.
+function showProgressFailure({ title, message, retrySlug }) {
+  if (!els.progress) return;
+  // Stop the polling loop and clear the elapsed-time timer without
+  // hiding the panel (cancelProgress would also hide it).
+  if (progressState) {
+    progressState.cancelled = true;
+    if (progressState.timer) clearInterval(progressState.timer);
+  }
+  if (els.progressSteps) els.progressSteps.hidden = true;
+  const cancelWrap = els.progressCancel?.parentElement;
+  if (cancelWrap) cancelWrap.hidden = true;
+  if (els.progressFailure) {
+    if (els.progressFailureTitle && title) els.progressFailureTitle.textContent = title;
+    if (els.progressFailureMsg && message) els.progressFailureMsg.textContent = message;
+    els.progressFailure.hidden = false;
+    // Stash the retry slug on the dataset so the bound handler picks it
+    // up without closing over stale state.
+    if (retrySlug && els.progressFailureRetry) {
+      els.progressFailureRetry.dataset.retrySlug = retrySlug;
+    }
+  }
+  // Re-enable the input so the user can either retry the same slug or
+  // type a different one if they suspect the input was the problem.
+  if (els.reqSubmit) els.reqSubmit.disabled = false;
+  if (els.reqInput) els.reqInput.disabled = false;
 }
 
 function cancelProgress() {
@@ -1329,6 +1440,8 @@ function cancelProgress() {
     if (progressState.timer) clearInterval(progressState.timer);
   }
   if (els.progress) els.progress.hidden = true;
+  // Also hide the failure block so a subsequent submit starts fresh.
+  if (els.progressFailure) els.progressFailure.hidden = true;
   if (els.reqSubmit) els.reqSubmit.disabled = false;
   if (els.reqInput) els.reqInput.disabled = false;
 }
