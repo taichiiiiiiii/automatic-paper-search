@@ -1,4 +1,10 @@
 name: theme-on-demand
+# Run name surfaces the theme input in /actions/workflows/.../runs so
+# the CF Worker can match a polling client to its run (matched on the
+# substring after the colon — case-preserved as-typed). Falls back to
+# the workflow name if `inputs.theme` is somehow missing (scheduled or
+# manually re-run jobs etc).
+run-name: "theme-on-demand: ${{ inputs.theme || 'manual' }}"
 # On-demand single-theme generation triggered by the public submission
 # form (CF Worker → workflow_dispatch). Generates one theme, refreshes
 # the manifest, commits to develop.
