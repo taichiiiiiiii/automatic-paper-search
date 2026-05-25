@@ -849,10 +849,19 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   flex-wrap: wrap;
   gap: 0.5rem;
   margin: 0.5rem var(--space-edge) 0;
-  padding: 0.5rem 0.75rem;
-  background: oklch(96% 0.05 60);
-  border: 1px solid oklch(80% 0.12 60);
-  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  /* Polish: warm amber surface with a thin accent rail on the left edge
+     (border-left) instead of the flat 1px box. Reads as "status / alert"
+     in a more designed way than the previous uniform border. */
+  background: linear-gradient(
+    to right,
+    oklch(96% 0.045 70) 0%,
+    oklch(97% 0.025 70) 100%
+  );
+  border: 1px solid oklch(82% 0.10 70);
+  border-left: 3px solid oklch(72% 0.16 60);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: 0 1px 2px oklch(50% 0.04 60 / 0.06);
   font-family: var(--font-mono);
   font-size: 0.74rem;
 }
@@ -874,12 +883,20 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   background: white;
   border: 1px solid var(--color-rule);
   border-radius: 999px;
-  padding: 0.2rem 0.55rem;
+  padding: 0.22rem 0.6rem;
   color: var(--color-ink);
   max-width: 360px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* Polish: tiny lift + accent-tinted shadow so the chips read as
+     standing slightly above the banner instead of melting into it. */
+  box-shadow: 0 1px 2px oklch(0% 0 0 / 0.04);
+  transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+.active-filters__chip:hover {
+  border-color: oklch(72% 0.16 60);
+  box-shadow: 0 2px 6px oklch(58% 0.18 30 / 0.12);
 }
 .active-filters__chip-x {
   background: transparent;
@@ -1407,10 +1424,20 @@ g.node-wrap.node-wrap--no-tx {
 
 .theme-progress {
   margin: 0.6rem 0 1.4rem;
-  padding: 1rem 1.1rem;
-  background: var(--color-surface-elevated);
+  padding: 1.1rem 1.2rem 1.2rem;
+  /* Polish: a single subtle elevation (1 + 4 + 16) layered with a hair-
+     line border to read as "active task panel" rather than a flat box.
+     The off-white gradient breaks the otherwise uniform surface tone. */
+  background: linear-gradient(
+    180deg,
+    oklch(99.5% 0.004 80) 0%,
+    oklch(98% 0.005 80) 100%
+  );
   border: 1px solid var(--color-rule);
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px oklch(0% 0 0 / 0.04),
+    0 4px 14px oklch(0% 0 0 / 0.05);
 }
 .theme-progress__head {
   display: flex;
@@ -1460,25 +1487,86 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-progress__steps {
   list-style: none;
-  margin: 0;
-  padding: 0;
+  margin: 0.6rem 0 0;
+  /* Polish: vertical timeline rail to the left of each step. Replaces
+     the flat list with something closer to a real progress chronology,
+     and the current-step dot pulses to give visible motion while the
+     job is running. */
+  padding: 0 0 0 1.4rem;
+  position: relative;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--color-ink-muted);
 }
+.theme-progress__steps::before {
+  content: "";
+  position: absolute;
+  left: 0.45rem;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 1px;
+  background: var(--color-rule);
+}
 .theme-progress__steps li {
-  padding: 0.2rem 0;
+  position: relative;
+  padding: 0.32rem 0;
   opacity: 0.45;
   transition: opacity 0.2s ease, color 0.2s ease;
+}
+.theme-progress__steps li::before {
+  /* Timeline dot. Sits halfway through the line on the rail. Empty by
+     default; --current fills it + pulses, --done fills it + draws a
+     checkmark with the ::after pseudo. */
+  content: "";
+  position: absolute;
+  left: -1.18rem;
+  top: 0.62rem;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-rule);
+  box-sizing: border-box;
 }
 .theme-progress__steps li.theme-progress__step--current {
   opacity: 1;
   color: var(--color-ink);
   font-weight: 600;
 }
+.theme-progress__steps li.theme-progress__step--current::before {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  animation: theme-progress-pulse 1.4s ease-in-out infinite;
+}
+@keyframes theme-progress-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(58% 0.18 30 / 0.35); }
+  50%      { box-shadow: 0 0 0 6px oklch(58% 0.18 30 / 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-progress__steps li.theme-progress__step--current::before {
+    animation: none;
+  }
+}
 .theme-progress__steps li.theme-progress__step--done {
   opacity: 0.7;
-  color: oklch(50% 0.15 145);
+  color: oklch(45% 0.15 145);
+}
+.theme-progress__steps li.theme-progress__step--done::before {
+  background: oklch(62% 0.14 145);
+  border-color: oklch(62% 0.14 145);
+}
+.theme-progress__steps li.theme-progress__step--done::after {
+  /* Subtle white checkmark inside the done dot. SVG-as-background so it
+     scales cleanly and stays crisp at this size. */
+  content: "";
+  position: absolute;
+  left: -1.05rem;
+  top: 0.78rem;
+  width: 7px;
+  height: 5px;
+  border-left: 1.5px solid white;
+  border-bottom: 1.5px solid white;
+  transform: rotate(-45deg);
 }
 .theme-progress__steps li.theme-progress__step--pending { opacity: 0.4; }
 .theme-progress__cancel { margin: 0.6rem 0 0; }
