@@ -158,6 +158,23 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   margin: 0 0 1rem;
   color: var(--color-ink);
   font-variation-settings: "opsz" 36;
+  /* JP wraps anywhere by default, which produced ugly mid-word
+     breaks like "テーマで時/系列家系図" on narrow phones. word-break
+     keep-all keeps each JP run intact and breaks only between Latin
+     words / dash separators, so the title splits naturally between
+     "Theme Lineage —" and "テーマで時系列家系図". */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  .hero__title {
+    /* Cap at ~28 px so a long bilingual title doesn't dominate the
+       first ~40% of viewport height before the user even sees the
+       canvas. clamp() upper bound is otherwise inherited from the
+       --text-display token which targets desktop. */
+    font-size: clamp(1.6rem, 1.2rem + 4vw, 2rem);
+    line-height: 1.15;
+  }
 }
 .hero__title em {
   font-style: italic;
