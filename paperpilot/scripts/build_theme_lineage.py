@@ -66,42 +66,84 @@ from paperpilot.utils.logger import get_logger, setup_logging  # noqa: E402
 
 logger = get_logger(__name__)
 
+# ---- Paths & directories ----
 DOCS_ROOT = ROOT / "docs"
+# Shared classification cache (also used by build_lineage.py). See
+# _CachedClassifyProvider for the design; ignoring/un-ignoring rules in
+# .gitignore allow this single file to be committed while the rest of
+# paperpilot/data/lineage-cache/ stays untracked.
+_CLASSIFICATION_CACHE_PATH = ROOT / "paperpilot" / "data" / "lineage-cache" / "classifications.json"
+# Curated denylist of implementation-foundation papers (Adam, PyTorch,
+# Scikit-learn, NumPy, ...) that S2's methodology intent would otherwise
+# drag into every topic. See _is_implementation_foundation.
+_DENYLIST_PATH = ROOT / "paperpilot" / "data" / "lineage_denylist.json"
 
+# ---- S2 endpoints ----
 _S2_FIELDS_SEARCH = (
     "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
 )
 _S2_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
 _S2_SEARCH_LIMIT = 50
-
-# OpenAlex fallback for seed discovery. /paper/search on S2's free tier
-# is the steady-state failure point on GitHub Actions — the shared IP
-# pool is throttled by S2 — so a 429 there nukes the entire build. We
-# fall back to OpenAlex's /works (free, no key, much higher per-IP
-# allowance) and resolve the DOIs through S2's /paper/batch endpoint,
-# which has a separate budget from /paper/search.
-_OPENALEX_WORKS_URL = "https://api.openalex.org/works"
 _S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch"
-_OPENALEX_PER_PAGE_MAX = 200
 # /paper/batch caps at 500 ids per call (https://api.semanticscholar.org
 # /api-docs/graph#tag/Paper-Data/operation/post_graph_get_papers); cap our
 # own send to half of that so even a wide OpenAlex page can never overflow.
 _S2_BATCH_MAX_IDS = 250
 
+# ---- OpenAlex fallback ----
+# /paper/search on S2's free tier is the steady-state failure point on
+# GitHub Actions — the shared IP pool is throttled by S2 — so a 429
+# there nukes the entire build. We fall back to OpenAlex's /works (free,
+# no key, much higher per-IP allowance) and resolve the DOIs through
+# S2's /paper/batch endpoint, which has a separate budget from
+# /paper/search.
+_OPENALEX_WORKS_URL = "https://api.openalex.org/works"
+_OPENALEX_PER_PAGE_MAX = 200
+# Bare-DOI extraction collapses any of these URL hosts to a plain "10.x/y"
+# for /paper/batch (which rejects URL-form DOIs).
+_DOI_HOSTS = frozenset({"doi.org", "www.doi.org", "dx.doi.org"})
+
+# ---- Theme input + BFS limits ----
 _THEME_MAX_LEN = 500
 _KEYWORD_EXPANSIONS = 8
-
 # Cross-node lookup (#54) only checks for in-graph hits, so 100 refs is
 # more than enough to surface any cohort-internal citation. fetch_related
 # already caps at 100 (S2's per-page max).
 _CROSS_NODE_LIMIT = 100
 
-# Trending threshold (#68): citations / year for *recent* papers.
-# Limiting to the last 3 years keeps the badge meaning "fast-moving
-# right now" — not "established classic". 200 cites/year for a 2024
-# paper means ~600 cites by mid-2026, well above noise.
+# ---- Trending threshold (#68) ----
+# citations / year for *recent* papers. Limiting to the last 3 years
+# keeps the badge meaning "fast-moving right now" — not "established
+# classic". 200 cites/year for a 2024 paper means ~600 cites by
+# mid-2026, well above noise.
 _TRENDING_VELOCITY_THRESHOLD = 200.0
 _TRENDING_AGE_LIMIT_YEARS = 3
+
+# ---- Seed topic-relevance filter (#127) ----
+# Multi-word themes whose words are all 3+ chars get a relevance gate:
+# at least half of the words must appear (case-insensitively) somewhere
+# in the seed's title or abstract. Short or single-word themes (RAG,
+# MoE, BERT) skip the gate because their tokens produce too many false
+# matches and S2's own search ranking is the better signal.
+_TOPIC_RELEVANCE_MIN_WORD_LEN = 3
+_TOPIC_RELEVANCE_THRESHOLD_RATIO = 0.5
+
+# ---- Off-topic foundational-ref filter (#127 / #128) ----
+# Anything cited more than `_OFF_TOPIC_CITE_MULTIPLIER × max(seed cites)`
+# is treated as a foundational paper that's likely tangential to the
+# theme (ResNet/Attention-Is-All-You-Need landing in a GNN tree because
+# every modern ML paper cites them). The methodology-intent overrides
+# this for non-denylisted papers. Multiplier lowered from 3.0 to 2.0 in
+# #127 followup so the cite-only check catches more candidates.
+_OFF_TOPIC_CITE_MULTIPLIER = 2.0
+
+# ---- GitHub stars enrichment ----
+_GITHUB_CACHE_FILE = "github_stars.json"
+_GITHUB_CACHE_TTL_DAYS = 7
+# Default per-run lookup budget — the workflow has no need to resolve
+# more than a couple of dozen repos per theme, and the GitHub Search
+# API's unauthenticated quota is 30 req/min.
+_GITHUB_DEFAULT_BUDGET = 80
 
 
 def _is_trending(paper: dict, current_year: int) -> bool:
@@ -224,15 +266,6 @@ def _add_cross_node_edges(
             existing.add(edge_key)
             added += 1
     return added
-
-
-# Shared classification cache (see paperpilot/data/lineage-cache/
-# classifications.json). build_lineage.py populates it for the conference
-# pipeline; we point build_theme_lineage at the SAME file so theme
-# rebuilds reuse already-classified (parent, child) pairs and stop
-# paying the LLM cost twice. The module-level constant lets tests
-# monkeypatch the path.
-_CLASSIFICATION_CACHE_PATH = ROOT / "paperpilot" / "data" / "lineage-cache" / "classifications.json"
 
 
 class _CachedClassifyProvider(AbstractLLMProvider):
@@ -544,9 +577,6 @@ def _seed_cache_path(keyword: str, since_year: int | None) -> Path:
     digest = hashlib.sha1(keyword.lower().strip().encode("utf-8")).hexdigest()[:12]
     suffix = f"y{since_year}" if since_year is not None else "yany"
     return CACHE_DIR / f"search_{digest}_{suffix}.json"
-
-
-_DOI_HOSTS = frozenset({"doi.org", "www.doi.org", "dx.doi.org"})
 
 
 def _extract_doi(work: dict) -> str | None:
@@ -864,15 +894,6 @@ def _rank_and_truncate(
     return candidates[:top_n]
 
 
-# Multi-word themes whose words are all 3+ chars get a relevance gate:
-# at least half of the words must appear (case-insensitively) somewhere
-# in the seed's title or abstract. Short or single-word themes (RAG,
-# MoE, BERT) skip the gate because their tokens produce too many false
-# matches and S2's own search ranking is the better signal.
-_TOPIC_RELEVANCE_MIN_WORD_LEN = 3
-_TOPIC_RELEVANCE_THRESHOLD_RATIO = 0.5
-
-
 def _filter_topic_relevant_seeds(
     seeds: list[dict[str, Any]],
     *,
@@ -901,33 +922,6 @@ def _filter_topic_relevant_seeds(
         if hits >= threshold:
             kept.append(p)
     return kept
-
-
-# Anything cited more than ``_OFF_TOPIC_CITE_MULTIPLIER × max(seed cites)``
-# is treated as a foundational paper that's likely tangential to the theme
-# (ResNet/Attention-Is-All-You-Need landing in a GNN tree because every
-# modern ML paper cites them, not because they're part of the GNN
-# lineage). The methodology intent overrides this — if S2 says the citing
-# paper actually built its method on top of the foundational work, the
-# edge stays.
-#
-# The multiplier was 3.0 originally (#127); production data showed Adam
-# (cites=166k, ratio 6.6x against a 25k seed) still surviving via the
-# methodology override even though Adam-the-optimizer is an
-# implementation foundation, not a research-line predecessor. We tightened
-# to 2.0 in #127-followup so the cite-only check catches more candidates,
-# and added the denylist below to override the methodology guard for
-# canonical library/tooling papers.
-_OFF_TOPIC_CITE_MULTIPLIER = 2.0
-
-
-# Canonical libraries / optimizers / generic training techniques. These
-# get cited by every modern ML paper as "methodology" (we used Adam, we
-# used PyTorch), so the methodology-intent escape hatch keeps them in.
-# Denylisting by paperId + title pattern ensures they're dropped
-# unconditionally — they are implementation foundations, not part of any
-# specific topic's research lineage.
-_DENYLIST_PATH = ROOT / "paperpilot" / "data" / "lineage_denylist.json"
 
 
 @lru_cache(maxsize=1)
@@ -1035,15 +1029,14 @@ def _filter_off_topic_refs(
 # and the production-media data dumps return TLS errors / 404). The HF
 # papers endpoint does not expose a githubRepo field, so we cannot just
 # swap one third-party for another.
-_GITHUB_CACHE_FILE = "github_stars.json"
-_GITHUB_CACHE_TTL_DAYS = 7
-# Default budget covers a typical theme (~50–60 nodes) without burning
-# GitHub's hourly quota. Curated hits use 1 GitHub API call each; search
-# fallbacks use 2 (search + repo). 80 lookups -> at most ~160 calls, well
-# inside the 5000/h PAT limit. Without a PAT the unauthenticated cap is
-# 60/h overall (10/min for search) so the operator should set
-# PAPERPILOT_GITHUB_TOKEN for bulk regen.
-_GITHUB_DEFAULT_BUDGET = 80
+# Budget rationale (kept here near _enrich_github_stars callers): a
+# typical theme has ~50–60 nodes. Curated hits use 1 GitHub API call
+# each, search fallbacks use 2 (search + repo). 80 lookups → ~160 calls
+# max, well under the 5000/h PAT limit. Without a PAT the
+# unauthenticated cap is 60/h overall (10/min for search) so the
+# operator should set PAPERPILOT_GITHUB_TOKEN for bulk regen.
+# (Constants moved to the top of the file; only this comment remains
+# alongside the code that uses them.)
 
 
 def _enrich_github_stars(
