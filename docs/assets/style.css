@@ -1172,14 +1172,35 @@ g.node-wrap.node-wrap--no-tx {
    generated theme with its key stats. Cards stay readable down to ~6
    per row at 1600px; below that they wrap. */
 .theme-gallery {
+  /* Default (≤ 1439px viewports): single horizontal scrollable row so
+     the canvas below stays above-the-fold. Above the breakpoint the
+     gallery wraps to multiple lines because the user has room. */
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.45rem;
   padding: 0.6rem var(--space-edge) 0;
+  overflow-x: auto;
+  /* Right-edge fade hints "there's more to scroll" without a
+     scrollbar. Falls back gracefully on browsers without mask-image. */
+  -webkit-mask-image: linear-gradient(to right, black 92%, transparent 100%);
+          mask-image: linear-gradient(to right, black 92%, transparent 100%);
+  scrollbar-width: thin;
+}
+@media (min-width: 1440px) {
+  .theme-gallery {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
 }
 .theme-gallery[hidden] { display: none; }
 .theme-gallery__card {
-  flex: 0 1 200px;
+  /* Slightly narrower default so 4-5 cards fit in a horizontal row on
+     1280px without overflow noise. flex-shrink: 0 prevents the
+     horizontal-scroll layout from cramping cards into unreadable
+     strips. */
+  flex: 0 0 180px;
   display: flex;
   flex-direction: column;
   gap: 0.12rem;
@@ -1446,6 +1467,91 @@ g.node-wrap.node-wrap--no-tx {
 .lineage-canvas svg {
   display: block;
   min-width: 900px;
+}
+
+/* Mobile + tablet: cap SVG to viewport and let the canvas itself scroll
+   horizontally, so the page chrome (toolbar, gallery, filters) stays
+   readable without the entire viewport being shoved off-screen. The
+   900px floor still applies on desktop where it's needed for the
+   chronological tree layout to breathe. */
+@media (max-width: 900px) {
+  .lineage-canvas {
+    overflow-x: auto;
+  }
+  .lineage-canvas svg {
+    min-width: 100%;
+  }
+}
+
+/* In-canvas loading + empty states. The canvas's min-height: 70vh
+   meant a fetch-in-flight surface read as a broken empty grid;
+   loading message keeps the user oriented while the JS draws. */
+.canvas-loading,
+.canvas-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 0.6rem;
+  color: var(--color-ink-muted);
+  font-family: var(--font-serif, var(--font-body));
+  font-style: italic;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.canvas-loading__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid oklch(85% 0.01 270);
+  border-top-color: var(--color-ink);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas-loading__spinner {
+    animation: none;
+    border-top-color: transparent;
+  }
+}
+.canvas-empty__cta {
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-size: 0.95rem;
+  color: var(--color-ink-muted);
+}
+
+/* Collapsed-by-default legend wrapper (#ui). Native <details> styling
+   varies wildly across browsers; flatten the disclosure caret and
+   match the surrounding hero typography so the row reads as
+   "info available on demand", not a chrome control. */
+.legend-collapsible {
+  margin: 0 var(--space-edge);
+  padding: 0;
+  border: none;
+}
+.legend-collapsible > summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+  padding: 0.5rem 0;
+  user-select: none;
+  list-style: none;
+}
+.legend-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+.legend-collapsible > summary::before {
+  content: "▸ ";
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.legend-collapsible[open] > summary::before {
+  transform: rotate(90deg);
+}
+.legend-collapsible > summary:hover {
+  color: var(--color-ink);
 }
 
 /* SVG edge styles */

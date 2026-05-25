@@ -465,6 +465,10 @@ function renderHeader() {
 // responses, user input) here without escaping first — that would be a
 // stored / reflected XSS sink.
 function showErrorHtml(safeHtml) {
+  // Ensure the loading spinner is gone before showing the error —
+  // every caller in init() already calls hideCanvasLoading() but
+  // defending here keeps the function self-contained.
+  hideCanvasLoading();
   els.canvas.insertAdjacentHTML(
     "beforeend",
     `<div class="empty-state">${safeHtml}</div>`,
@@ -1256,9 +1260,16 @@ function cancelProgress() {
   if (els.reqInput) els.reqInput.disabled = false;
 }
 
-async function init() {
-  els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state" id="loading-msg">テーマを読み込み中...</p>`);
+// #ui: the HTML now ships a sticky `.canvas-loading` element with a
+// spinner; we just have to hide it once the data is in. Centralised
+// so all init() exit paths can call it without duplicating the
+// document.getElementById lookup.
+function hideCanvasLoading() {
+  const el = document.getElementById("canvas-loading");
+  if (el) el.hidden = true;
+}
 
+async function init() {
   // Bind the on-demand submission form FIRST so it stays usable even
   // when the manifest is empty (first-time visitor) or when the slug
   // they asked for can't be loaded.
@@ -1267,7 +1278,7 @@ async function init() {
 
   state.manifest = await loadManifest();
   if (state.manifest.length === 0) {
-    document.getElementById("loading-msg")?.remove();
+    hideCanvasLoading();
     showErrorHtml(`
       <p>テーマがまだ生成されていません。</p>
       <p>上のフォームに研究テーマを入力すると自動生成できます。例: <em>Vision Transformer</em>, <em>Diffusion Model</em></p>
@@ -1291,7 +1302,7 @@ async function init() {
   }
 
   state.data = await loadThemeLineage(state.currentSlug);
-  document.getElementById("loading-msg")?.remove();
+  hideCanvasLoading();
 
   if (!state.data) {
     renderPicker();

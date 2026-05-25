@@ -45,16 +45,26 @@
     <div class="lineage-toolbar__group" id="relation-filter" role="group" aria-label="Relation filter"></div>
   </div>
 
-  <div class="legend" aria-label="Relation type legend">
-    <span class="legend__item"><span class="legend__swatch legend__swatch--supersedes"></span> Supersedes（置換）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--successor"></span> Successor（後継）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--extends"></span> Extends（拡張）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--ablation"></span> Ablation（成分分析）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--baseline"></span> Baseline（比較）</span>
-    <span class="legend__item"><span class="legend__swatch legend__swatch--contrasts"></span> Contrasts（対立）</span>
-  </div>
+  <!-- Same rationale as lineage.html: the toolbar's #relation-filter
+       chips already show the color swatches, so the flat legend strip
+       below them was duplicating signal. Collapsed into a <details>. -->
+  <details class="legend-collapsible">
+    <summary>関係種別の凡例（6 種）</summary>
+    <div class="legend" aria-label="Relation type legend">
+      <span class="legend__item"><span class="legend__swatch legend__swatch--supersedes"></span> Supersedes（置換）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--successor"></span> Successor（後継）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--extends"></span> Extends（拡張）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--ablation"></span> Ablation（成分分析）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--baseline"></span> Baseline（比較）</span>
+      <span class="legend__item"><span class="legend__swatch legend__swatch--contrasts"></span> Contrasts（対立）</span>
+    </div>
+  </details>
 
   <div class="lineage-canvas" id="canvas">
+    <div class="canvas-loading" id="canvas-loading" role="status" aria-live="polite">
+      <div class="canvas-loading__spinner" aria-hidden="true"></div>
+      <span>家系図を描画中…</span>
+    </div>
     <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Deep paper lineage graph"></svg>
   </div>
 

@@ -72,7 +72,14 @@
   <p class="results-meta" id="results-meta">Loading…</p>
 
   <main>
-    <ul class="paper-list" id="paper-list"></ul>
+    <ul class="paper-list" id="paper-list">
+      <!-- Skeleton row visible until app.js renderList() replaces the
+           list. Without this the page reads as "empty under the
+           filter bar" during the ~200-600ms papers.json fetch on
+           fresh visits. app.js's existing renderList() overwrites
+           innerHTML so the placeholder vanishes naturally. -->
+      <li class="empty-state" id="paper-list-loading">論文一覧を読込中…</li>
+    </ul>
   </main>
 
   <footer class="footer">

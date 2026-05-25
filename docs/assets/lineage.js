@@ -112,10 +112,12 @@ async function init() {
   bindLayoutButtons();
   bindCrumb();
 
-  els.canvas.insertAdjacentHTML("beforeend", `<p class="empty-state" id="loading-msg">データ読み込み中...</p>`);
+  // #ui: the HTML ships a `.canvas-loading` element with a spinner;
+  // just hide it once the data resolves. Replaces the previous
+  // dynamically-injected `<p class="empty-state">…` paragraph.
   state.data = await loadLineage();
-  const loadingMsg = document.getElementById("loading-msg");
-  if (loadingMsg) loadingMsg.remove();
+  const canvasLoading = document.getElementById("canvas-loading");
+  if (canvasLoading) canvasLoading.hidden = true;
   if (!state.data) {
     els.canvas.insertAdjacentHTML("beforeend", `
       <div class="empty-state">
