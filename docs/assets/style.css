@@ -1275,7 +1275,15 @@ g.node-wrap.node-wrap--no-tx {
   /* Slightly narrower default so 4-5 cards fit in a horizontal row on
      1280px without overflow noise. flex-shrink: 0 prevents the
      horizontal-scroll layout from cramping cards into unreadable
-     strips. */
+     strips.
+
+     Perf: `content-visibility: auto` lets the browser skip rendering
+     cards that are off-screen until the user scrolls them in.
+     `contain-intrinsic-size` reserves the box so swap-in/out doesn't
+     shift layout. Modern browsers honor this; older just render
+     normally. */
+  content-visibility: auto;
+  contain-intrinsic-size: 180px 56px;
   flex: 0 0 180px;
   display: flex;
   flex-direction: column;
@@ -2421,7 +2429,10 @@ g.node-wrap.node-wrap--no-tx {
 }
 .year-label--decade-major {
   font-size: 0.96rem;
-  font-weight: 700;
+  /* 600 instead of 700 so the browser doesn't synthesize a bolder weight
+     (the Google Fonts URL only loads Inter 400/500/600 — a 700 here
+     would force ugly synthetic bolding). */
+  font-weight: 600;
   fill: var(--color-accent);
 }
 
