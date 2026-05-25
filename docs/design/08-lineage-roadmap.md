@@ -2,22 +2,31 @@
 
 論文の **後継 / 置換 / 拡張** 関係を LLM で判定し、サイト上で系譜として表示する機能の実装計画。
 
-## 現状 — Phase 1 完了
+## 現状 — Phase 1 + 2 完了、テーマ家系図 公開運用中（2026-05-25）
+
+### Conference lineage (ICLR 2026)
 
 | 項目 | 値 |
 |---|---|
-| 対象 | ICLR 2026 Oral 13 件 |
+| 対象 | ICLR 2026 Oral 全件 |
 | 祖先深さ | ±1 世代（直親・直子のみ） |
 | 各方向の幅 | 上位 15（citation count 降順） |
-| S2 成功率 | 9 / 13（4 件は新しすぎて S2 未登録） |
-| 取得ノード総数 | 136 |
-| 関係種別付きエッジ | 80 |
-| 内訳 | extends 37, successor 26, contrasts 16, baseline 1 |
 | 使用 LLM | Groq Llama 3.3 70B（無料） |
-| 総所要時間 | ~15 分 |
-| 総コスト | $0 |
+| 公開先 | [`docs/iclr-2026/lineage.html`](../iclr-2026/lineage.html) |
+| Deep tree | 14 件生成 (`deep-*.json`) — 1 論文 × N hop BFS、`build_deep_lineage.py` |
 
-生成物: [`docs/iclr-2026/lineage.json`](../iclr-2026/lineage.json)
+### Theme lineage (オンデマンド + 週次自動再生成)
+
+| 項目 | 値 |
+|---|---|
+| 入力 | 任意の研究テーマ文字列 (frontend form) |
+| パイプライン | CF Worker `/api/themes` → `theme-on-demand.yml` workflow_dispatch → `build_theme_lineage.py` → develop commit → CF Pages 自動デプロイ |
+| 公開済 themes | 19 (Diffusion / DPO / MoE / RAG / RLHF / Vision Transformer / GNN / Speculative Decoding / 他) |
+| デフォルト LLM mode | `--llm-strict=ambiguous`（free-tier Groq の TPM 6,000/min 制約に整合） |
+| 品質フィルタ | (1) Topic relevance seeds (2) Foundational ref 除外 (2× max seed cites) (3) Implementation denylist (Adam/PyTorch/NumPy 等) |
+| LLM rationale 品質 | `CLASSIFY_SYSTEM_PROMPT` ~250 tokens、MUST/MUST NOT block、template echo reject (`_GENERIC_TEMPLATE_RATIONALES`) |
+| Classification cache | `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有、git 永続化で run 間で蓄積 |
+| Push race 対策 | `commit-and-push.sh` の 5 回 retry + rebase（per-IP 5/h dispatch を全件公開可） |
 
 ## Phase 2 — ICLR 2026 全件へ拡大
 

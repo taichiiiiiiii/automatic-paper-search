@@ -90,6 +90,26 @@ PaperPilot の設計原則（Open/Closed、Fail-Safe、秘匿分離、冪等性�
 - [ ] 各レイヤーで `logger.info` / `logger.warning` を適切に出しているか
 - [ ] 新しい失敗モードを足した場合、`run_history.jsonl` の `errors` / `sources_status` に反映されるか
 
+### K. Theme 家系図 / classification cache (#127〜#149)
+
+- [ ] `build_theme_lineage` の Stage helper (`_run_bfs_and_descendants` / `_pick_root_seed` / `_log_classify_summary`) を勝手に main 関数へ統合し直していないか（#148 の split を維持）
+- [ ] `_filter_topic_relevant_seeds` / `_filter_off_topic_refs` / `_is_implementation_foundation` の **3 段フィルタ順序** (seed relevance → off-topic ref → denylist) を変更していないか
+- [ ] `paperpilot/data/lineage_denylist.json` を変更した場合、build_lineage / build_deep_lineage の対応コードも追従しているか
+- [ ] `paperpilot/llm/base.py::TEMPLATE_RATIONALES` dict (#146) が `_GENERIC_TEMPLATE_RATIONALES` と `build_theme_lineage._INTENT_RELATION_MAP` / `_derive_relation_heuristic` の **唯一の source** になっているか（重複文字列は禁止）
+- [ ] `RelationClassification.from_dict` の template-rationale rejection (#132) を回避するコード（template を直接 LLM result に放り込む等）が追加されていないか
+- [ ] `CLASSIFY_SYSTEM_PROMPT` のサイズ (#134 invariant test、~1200 chars 上限) を意識して変更しているか — TPM 制約に直結
+- [ ] `_CachedClassifyProvider` (#138) を bypass せず provider をラップしているか（`_wrap_provider_with_cache` 経由）
+- [ ] `classifications.json` は `.gitignore` の選択 un-ignore で tracked、変更時は commit に含める
+
+### L. Workflow YAML 不変条件 (#124 / #135)
+
+- [ ] **step-level `if:` で `secrets.X` context を使わない** — `paperpilot/tests/test_workflow_yaml_quality.py` の自動チェックがあるが、レビューでも目視確認
+- [ ] secret の check は `env:` で受けて `run:` 内の `[ -z "$VAR" ]` で実施
+- [ ] commit + push step は `.github/scripts/commit-and-push.sh` 経由（`git pull --rebase ... || true` パターンは silently 失敗する、#123）
+- [ ] push 先 branch は `develop` （`main` は 2026-04 以降 abandoned、#141）
+- [ ] dependency install は `uv sync` (`pip install -r requirements.txt` パターンは pyproject.toml と乖離、#136 / #142)
+- [ ] `theme-on-demand.yml` / `regen-themes.yml` は `--llm-strict=ambiguous` を維持（`all` は Groq free tier の TPM 制約で破綻、#131 / #133。`test_theme_workflows_use_ambiguous_strict_mode` が pin）
+
 ## レビュー出力フォーマット
 
 以下の順で報告する：
@@ -125,6 +145,8 @@ PaperPilot の設計原則（Open/Closed、Fail-Safe、秘匿分離、冪等性�
 - ✅ Approve: 全て合格
 - ⚠️ Warning: HIGH あるが merge 可能
 - ❌ Block: CRITICAL あり → 修正必須
+
+(K / L は theme lineage / workflow YAML を触る変更時のみ評価)
 ```
 
 ## 重要度の判断基準

@@ -699,8 +699,9 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-## 実装ステータス（2026-04-28 時点）
+## 実装ステータス（2026-05-25 時点）
 
+### パイプライン
 | 仕様 | 状態 |
 |------|------|
 | Stage 0 (async 並列収集) | ✅ arXiv / S2 / OpenAlex |
@@ -710,15 +711,51 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Stage 4 (LLM rerank) | ✅ Ollama / Gemini / Claude / Groq |
 | Exporters | ✅ CSV / JSON / Slack / Email |
 | 差分更新 (seen_ids) | ✅ `{id: timestamp}` 日次パージ |
-| GitHub Actions | ⏸️ ワークフロー作成済み、PAT の workflow scope 追加待ち（#12 / #14） |
-| **ビューア一覧 (papers.json)** | ✅ `index.html` + `build_pages.py` で生成 |
-| **家系図ビュー (lineage.json)** | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI (`collect-weekly.yml`) に統合済 |
-| **テーマ家系図 (themes/)** | ✅ `build_theme_lineage.py`（テーマ→S2/paper/search→BFS→LLM 分類→年軸ツリー）。silent-fallback 検知 (#45) と classify summary log + 0-edges 時 exit 3 を実装 |
-| **Groq Provider (lineage 第一候補)** | ✅ `paperpilot/llm/groq_provider.py` (Gemini もフォールバック対応) |
-| **scripts のテスト** | 🟡 `build_lineage` / `build_pages` / `build_summary_csv` / `build_theme_lineage` は smoke test 済。`sync_to_sheets` は未対応（#24） |
+
+### CI / ワークフロー
+| 仕様 | 状態 |
+|------|------|
+| 週次深掘り (`collect-weekly.yml`) | ✅ uv sync 移行 (#136)、合計 3 件の startup_failure + numpy missing + empty-dir guard 修正 (#135-137)、develop push (#141) |
+| 毎日 follow-watch (`collect-daily-watch.yml`) | ✅ uv sync 移行 (#142)、develop push (#141) |
+| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` 有効化 (#133)、timeout 15min |
+| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` (#143)、timeout 120min (#144) |
+| Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
+| Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
+
+### ビューア
+| 仕様 | 状態 |
+|------|------|
+| 論文一覧 (`papers.json`) | ✅ `index.html` + `build_pages.py` で生成 |
+| Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 |
+| Conference deep tree (`deep-*.json`) | ✅ `build_deep_lineage.py`、14 件生成済 |
+| **テーマ家系図 (`themes/<slug>/`)** | ✅ Frontend form → CF Worker → `theme-on-demand.yml` の full pipeline 稼働中。19 themes 公開 |
+
+### Theme 家系図の品質改善 (本セッションの主軸)
+| 仕様 | 状態 |
+|------|------|
+| Foundational ref フィルタ (#127) | ✅ `_filter_off_topic_refs`、`citationCount > 2 × max(seed cites)` で除外 |
+| Topic relevance seed フィルタ (#127) | ✅ `_filter_topic_relevant_seeds`、多単語テーマでタイトル/アブストラクト一致要求 |
+| Implementation denylist (#128) | ✅ `paperpilot/data/lineage_denylist.json` (10 paperIds + 15 title pattern) |
+| LLM strict mode (`--llm-strict`) | ✅ off / ambiguous / all、production default = ambiguous |
+| Classification cache 共有 (#138/#139) | ✅ `_CachedClassifyProvider` + `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有、git 永続化 (.gitignore 個別 un-ignore) |
+| Groq rate limiter (#130) | ✅ default 25 RPM、`config.yaml` の `llm.rate_limit_rpm` で paid plan 拡張可 |
+| LLM prompt 品質 (#131-#133) | ✅ ~250 tokens に圧縮、MUST/MUST NOT block、`TEMPLATE_RATIONALES` 単一 source (#146) |
+| Template echo reject (#132) | ✅ `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を拒否 |
+| 不変条件 pin (#134, #146) | ✅ prompt size / `--llm-strict` flag / template dedup の regression test 完備 |
+
+### コード品質
+| 仕様 | 状態 |
+|------|------|
+| ruff (lint) | ✅ 105 files clean |
+| mypy (type check) | ✅ 105 files clean |
+| pytest テスト数 | ✅ **636 tests pass** |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
-| テストカバレッジ | ✅ 457 tests pass |
+| `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
+
+### 既知のオープン項目
+- **Bulk regen 19 themes の timeout 問題**: 60 / 120 min いずれも完走せず。S2 throttle on shared CI IP + 60s inter-theme cool-off が支配的。Matrix parallel 化が必要 (未着手)。
+- **LLM rationale 累積**: classifications.json は git 永続化済、theme-on-demand と weekly cron で漸進的に蓄積。
 
 ---
 
-*最終更新：2026年4月28日（テーマ家系図の silent-fallback 検知 #45 を追加 / 4 テーマ (MoE / DPO / Diffusion / RAG / RLHF) を初回生成）*
+*最終更新：2026年5月25日（28 PRs の品質向上 + 整理セッション完了。詳細は CHANGELOG.md ## [Unreleased] 参照）*
