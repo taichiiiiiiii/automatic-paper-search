@@ -78,7 +78,10 @@ const els = {
 
 async function loadManifest() {
   try {
-    const res = await fetch("deep-manifest.json", { cache: "no-store" });
+    // Default cache — deep-manifest.json only changes when the weekly
+    // collect job adds a new deep view, so the _headers max-age=300
+    // window is more than fast enough.
+    const res = await fetch("deep-manifest.json");
     if (!res.ok) return [];
     const data = await res.json();
     if (!Array.isArray(data)) return [];
