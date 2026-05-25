@@ -21,23 +21,39 @@
 
 set -euo pipefail
 
-msg=${1:?usage: commit-and-push.sh "<message>" "<stage-glob>"}
-stage=${2:?usage: commit-and-push.sh "<message>" "<stage-glob>"}
+msg=${1:?usage: commit-and-push.sh "<message>" "<stage-path>" ["<stage-path>" ...]}
+shift
+if [ "$#" -eq 0 ]; then
+  echo "::error::commit-and-push.sh: at least one stage path required"
+  echo "usage: commit-and-push.sh \"<message>\" \"<stage-path>\" [\"<stage-path>\" ...]" >&2
+  exit 2
+fi
 
 branch=${COMMIT_PUSH_BRANCH:-develop}
 max_attempts=${COMMIT_PUSH_MAX_ATTEMPTS:-5}
 
 # Stage the target files. We intentionally do not `git add -A` so that
-# untracked files outside the stage glob (e.g. lineage-cache, ad-hoc logs)
-# never leak into the public repo. `git add -- <pathspec>` returns 128 if
-# the pathspec doesn't exist; we treat that as "nothing to stage" rather
-# than a hard failure so a defensive caller that runs the script even when
-# the build produced no files exits cleanly.
-if [ ! -e "$stage" ]; then
-  echo "nothing changed — stage path '$stage' does not exist"
+# untracked files outside the stage paths (e.g. lineage-cache contents,
+# ad-hoc logs) never leak into the public repo. Multiple stage paths are
+# accepted (#123 followup — collect-* workflows commit several dirs at
+# once: paperpilot/output, paperpilot/data, docs). `git add -- <path>`
+# returns 128 if the pathspec doesn't exist; we treat that as "nothing
+# to stage from this path" rather than a hard failure so a workflow
+# whose previous step produced a subset of the expected paths still
+# exits cleanly.
+staged_any=0
+for path in "$@"; do
+  if [ ! -e "$path" ]; then
+    echo "skip: stage path '$path' does not exist"
+    continue
+  fi
+  git add -- "$path"
+  staged_any=1
+done
+if [ "$staged_any" -eq 0 ]; then
+  echo "nothing changed — none of the stage paths existed"
   exit 0
 fi
-git add -- "$stage"
 
 # If nothing changed (e.g. theme already exists and the build was a no-op
 # rerun), exit cleanly so the workflow doesn't fail.

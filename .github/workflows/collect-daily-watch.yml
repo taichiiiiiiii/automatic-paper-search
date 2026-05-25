@@ -39,17 +39,18 @@ jobs:
         run: python -m paperpilot.collector --config paperpilot/config.daily-watch.yaml
 
       - name: Commit daily hits (if any)
+        env:
+          # Push to main (vs the script default 'develop'). The retry +
+          # rebase loop replaces the previous `git pull --rebase ... ||
+          # true` pattern which silently swallowed rebase failures (#123).
+          COMMIT_PUSH_BRANCH: main
         run: |
+          set -euo pipefail
           git config user.name "PaperPilot Bot"
           git config user.email "bot@paperpilot.dev"
-          git add paperpilot/output/daily paperpilot/data/seen_ids.daily.json || true
-          git pull --rebase origin main || true
-          if git diff --cached --quiet; then
-            echo "No daily hits to commit."
-          else
-            git commit -m "👀 Daily follow-watch $(date -u +%Y-%m-%d)"
-            git push
-          fi
+          msg="👀 Daily follow-watch $(date -u +%Y-%m-%d)"
+          bash .github/scripts/commit-and-push.sh "$msg" \
+            paperpilot/output/daily paperpilot/data/seen_ids.daily.json
 
       - name: Notify on failure
         if: failure() && env.SLACK_WEBHOOK_URL != ''
