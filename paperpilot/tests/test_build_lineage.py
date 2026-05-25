@@ -34,7 +34,11 @@ def _patch_env(monkeypatch, **values):
     a no-op, but dotenv re-reads paperpilot/.env and restored real keys
     in developer environments, making the tests non-hermetic.
     """
-    base = {
+    # Annotate the dict shape so mypy can see the heterogeneous values
+    # (None / str / nested dict) — without it, mypy infers
+    # `dict[str, dict[Never, Never]]` from the empty smtp sub-dict and
+    # base.update(values) becomes a type error.
+    base: dict[str, object] = {
         "github_token": None, "s2_api_key": None, "openalex_email": None,
         "slack_webhook_url": None, "gemini_api_key": None, "claude_api_key": None,
         "groq_api_key": None, "groq_model": None, "gemini_model": None,
@@ -77,7 +81,9 @@ def test_build_provider_uses_model_override_from_env(monkeypatch):
     """`PAPERPILOT_GROQ_MODEL` (via load_env) overrides the default model."""
     _patch_env(monkeypatch, groq_api_key="gsk_x", groq_model="llama-4-800b")
     provider, _ = build_lineage.build_provider()
-    assert provider.model == "llama-4-800b"
+    # `.model` is concrete-provider state (GroqProvider / GeminiProvider),
+    # not part of the AbstractLLMProvider base API — mypy needs the cast.
+    assert getattr(provider, "model", None) == "llama-4-800b"
 
 
 def test_build_provider_accepts_unprefixed_fallback(monkeypatch):
