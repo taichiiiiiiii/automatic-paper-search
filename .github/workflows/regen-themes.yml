@@ -22,10 +22,15 @@ on:
 jobs:
   regen:
     runs-on: ubuntu-latest
-    # Each theme takes ~1 min (LLM classify + S2 fetch) and we cap the
-    # workflow at ~30 themes; 60 min is a generous ceiling that still
-    # surfaces stuck runs instead of leaving them billed indefinitely.
-    timeout-minutes: 60
+    # 19 themes × (BFS ~30s + S2 throttle retries 1-3 min + LLM
+    # ambiguous 30-60s + 60s inter-theme cool-off) lands at 60-100 min
+    # in practice — the first ambiguous-mode bulk regen (run
+    # 26377566033) hit the 60-min ceiling at theme 6/19. 120 min
+    # gives 2× headroom while still surfacing stuck runs instead of
+    # billing indefinitely. Future optimisation: matrix-parallelise
+    # themes (each job has its own IP → no shared S2 rate limit) to
+    # cut wall-clock to single-theme time.
+    timeout-minutes: 120
     permissions:
       contents: write
     steps:
