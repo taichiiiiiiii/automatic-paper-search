@@ -57,12 +57,34 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
 
 /* ---------- HERO ---------- */
 .hero {
+  position: relative;
   padding: var(--space-section) var(--space-edge) calc(var(--space-section) * 0.7);
   border-bottom: 1px solid var(--color-rule);
   background:
     radial-gradient(ellipse at 80% -10%, oklch(94% 0.03 80) 0%, transparent 60%),
     var(--color-surface);
+  /* Polish: ensure direct children (breadcrumb, title, lede, modes)
+     sit above the ::before grain overlay below. */
+  isolation: isolate;
 }
+/* Polish: hand-painted paper grain via inline-SVG turbulence. Drops the
+   "stock template" feel a flat gradient surface has and gives the hero a
+   tactile atmosphere — one of the design-quality 'texture / atmosphere'
+   criteria. Sits between the gradient and the content; opacity tuned so
+   the texture reads as paper-fiber subtle, not gritty. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+/* Respect reduced-motion: noise itself doesn't animate, but users who
+   set reduced-motion are also commonly motion-sensitive — keep the
+   subtle layer in place since it's static decoration, no change. */
 /* Compact hero — used on data-heavy pages where the canvas should be
    above the fold. Drops vertical padding to ~30% of the standard hero
    and tightens the bottom margin. The expanded `.hero__details`
@@ -141,6 +163,15 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-style: italic;
   color: var(--color-ink-muted);
   font-weight: 400;
+  /* Polish: thin coral underline anchored to the italic word so the
+     page identity (Lineage / Theme Lineage / Deep Lineage) reads as
+     "this is the named thing" rather than just decorative italic.
+     Underline-from-decoration (not border) so it follows the italic
+     slope precisely. */
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.18em;
 }
 .hero__icon {
   width: 1.4em;
