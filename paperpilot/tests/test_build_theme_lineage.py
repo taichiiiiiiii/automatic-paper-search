@@ -1874,16 +1874,22 @@ def _mk_s2_batch_response(papers: list) -> MagicMock:
 
 def test_openalex_fallback_invoked_when_s2_returns_zero(tmp_path, monkeypatch):
     """S2 /paper/search returning 0 results triggers OpenAlex; OpenAlex
-    DOIs are then resolved through S2 /paper/batch and surfaced as seeds."""
+    DOIs are then resolved through S2 /paper/batch and surfaced as seeds.
+
+    Also verifies the OpenAlex query carries the `concepts.id:...` filter
+    introduced when 2026-05-26 audit found medical / biology papers
+    contaminating fallback results for AI theme strings like "World
+    Model" (S2 fieldsOfStudy was already filtering but OpenAlex had no
+    equivalent gate)."""
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
 
     oa_work = _mk_openalex_work(title="Theme paper", doi="10.1/a", year=2020, cites=200)
     s2_paper = _mk_s2_paper("p_resolved", year=2020, cites=200)
 
-    calls: list[tuple[str, str]] = []
+    calls: list[tuple[str, str, dict]] = []
 
     def fake_rwr(method, url, **kw):
-        calls.append((method, url))
+        calls.append((method, url, kw.get("params") or {}))
         if "/paper/search" in url:
             return _mk_s2_search_response([])
         if "openalex.org/works" in url:
@@ -1903,6 +1909,13 @@ def test_openalex_fallback_invoked_when_s2_returns_zero(tmp_path, monkeypatch):
     urls = [c[1] for c in calls]
     assert any("openalex.org" in u for u in urls)
     assert any("/paper/batch" in u for u in urls)
+    # OpenAlex call carried the concept-id field gate (CS / Math / Linguistics).
+    oa_calls = [c for c in calls if "openalex.org" in c[1]]
+    assert oa_calls, "expected an OpenAlex call when S2 returns zero"
+    oa_filter = oa_calls[0][2].get("filter", "")
+    assert "concepts.id:C41008148" in oa_filter, (
+        f"OpenAlex filter must include Computer Science concept id; got {oa_filter!r}"
+    )
 
 
 def test_openalex_fallback_skipped_when_s2_meets_quota(tmp_path, monkeypatch):

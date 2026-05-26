@@ -678,8 +678,21 @@ def discover_seeds_via_openalex(
         "per-page": page_size,
         "sort": "cited_by_count:desc",
     }
+    # OpenAlex concept-id field gate. Mirrors the S2 fieldsOfStudy gate
+    # the primary search applies — without this, the fallback was the
+    # contamination vector: when S2 throttled, OpenAlex returned medical
+    # / biology papers for theme strings like "World Model" because
+    # OpenAlex's text relevance has no domain prior. Concepts IDs come
+    # from https://docs.openalex.org/api-entities/concepts (Computer
+    # Science = C41008148, Mathematics = C33923547, Linguistics =
+    # C137293760). Join with `|` for OR.
+    concept_filter = "concepts.id:C41008148|concepts.id:C33923547|concepts.id:C137293760"
     if since_year is not None:
-        params["filter"] = f"from_publication_date:{since_year}-01-01"
+        params["filter"] = (
+            f"from_publication_date:{since_year}-01-01,{concept_filter}"
+        )
+    else:
+        params["filter"] = concept_filter
     if email:
         params["mailto"] = email
 
