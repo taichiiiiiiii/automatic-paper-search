@@ -51,6 +51,33 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Off-screen until focused — keyboard users hit Tab once and the link
+   surfaces, then activating it jumps past the hero / breadcrumb to the
+   primary content. Mouse / touch users never see it. Matches the
+   `accent` palette so it reads as the same UI language as buttons. */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  z-index: 1000;
+  transform: translateY(-150%);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
 /* Visible only to no-JS users (everyone else has `<noscript>` collapsed
    by the browser). Matches the active-filter banner palette so it reads
    as "system status" instead of "decorative". */
