@@ -115,6 +115,7 @@ PAT at a test repo or stub the dispatch in the Worker source.
 node --test worker/index.test.mjs
 node --test worker/response.test.mjs
 node --test worker/run-match.test.mjs
+node --test worker/validate-input.test.mjs
 uv run pytest paperpilot/tests/test_worker_slug_parity.py
 ```
 

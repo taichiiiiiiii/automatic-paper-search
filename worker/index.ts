@@ -44,6 +44,7 @@ import {
   RATE_LIMIT_GLOBAL_PER_DAY,
 } from "./response.js";
 import { pickMatchingRun } from "./run-match.js";
+import { validatePostInput } from "./validate-input.js";
 export { themeSlug };
 
 const THEME_PATTERN = THEME_INPUT_PATTERN;
@@ -167,31 +168,23 @@ async function handleStatusGet(request: Request, env: Env): Promise<Response> {
 }
 
 async function handlePost(request: Request, env: Env): Promise<Response> {
-  let payload: { theme?: unknown };
+  let payload: unknown;
   try {
-    payload = (await request.json()) as { theme?: unknown };
+    payload = await request.json();
   } catch {
     return json({ ok: false, status: "invalid", message: "JSON body required" }, { status: 400 });
   }
-  const raw = typeof payload.theme === "string" ? payload.theme.trim() : "";
-  if (!THEME_PATTERN.test(raw)) {
-    return json({
-      ok: false,
-      status: "invalid",
-      message: "theme must be 2-80 chars matching /^[A-Za-z0-9 _-]+$/",
-    }, { status: 400 });
+  // Input validation lives in worker/validate-input.js so it can be
+  // unit-tested without an HTTP round-trip. The pure helper bundles
+  // body parse, theme pattern check, and slug derivation.
+  const validation = validatePostInput(payload, themeSlug) as
+    | { ok: true; raw: string; slug: string }
+    | { ok: false; status: number; body: object };
+  if (!validation.ok) {
+    return json(validation.body, { status: validation.status });
   }
-
-  let slug: string;
-  try {
-    slug = themeSlug(raw);
-  } catch (e) {
-    return json({
-      ok: false,
-      status: "invalid",
-      message: `slug derivation failed: ${(e as Error).message}`,
-    }, { status: 400 });
-  }
+  const raw = validation.raw;
+  const slug = validation.slug;
 
   // Existing theme → short-circuit. No rate-limit charge, no dispatch.
   if (await alreadyGenerated(slug, request, env)) {
