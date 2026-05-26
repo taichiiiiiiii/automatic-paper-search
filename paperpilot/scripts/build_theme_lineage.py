@@ -83,6 +83,13 @@ _CLASSIFICATION_CACHE_PATH = ROOT / "paperpilot" / "data" / "lineage-cache" / "c
 # drag into every topic. See _is_implementation_foundation.
 _DENYLIST_PATH = ROOT / "paperpilot" / "data" / "lineage_denylist.json"
 
+# Optional alternate-keyword map used when the primary theme returns 0
+# seeds. Lives in a JSON file so operators can tweak the alias list
+# without editing the script. Loaded once per process.
+_THEME_ALIASES_PATH = (
+    Path(__file__).resolve().parents[1] / "data" / "theme_aliases.json"
+)
+
 # ---- S2 endpoints ----
 _S2_FIELDS_SEARCH = (
     "paperId,title,year,venue,citationCount,authors,abstract,externalIds"
@@ -1011,6 +1018,37 @@ def _filter_topic_relevant_seeds(
 
 
 @lru_cache(maxsize=1)
+def _load_theme_aliases() -> dict[str, list[str]]:
+    """Return the alias map from theme_aliases.json.
+
+    Keys are lower-cased theme strings; values are lists of alternate
+    keywords to try when the primary keyword returned 0 seeds. Missing
+    file is silently treated as "no aliases" so the pipeline degrades
+    gracefully when this optional override doesn't exist.
+    """
+    try:
+        raw = json.loads(_THEME_ALIASES_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    out: dict[str, list[str]] = {}
+    for k, v in raw.items():
+        if k.startswith("_") or not isinstance(k, str) or not isinstance(v, list):
+            continue
+        clean = [s for s in v if isinstance(s, str) and s.strip()]
+        if clean:
+            out[k.lower()] = clean
+    return out
+
+
+def _aliases_for(theme: str) -> list[str]:
+    """Return any alternate keywords for ``theme``, normalised to lower
+    case + whitespace-stripped (matches the loader's key shape)."""
+    return _load_theme_aliases().get(theme.strip().lower(), [])
+
+
+@lru_cache(maxsize=1)
 def _load_denylist() -> tuple[frozenset[str], tuple[re.Pattern[str], ...]]:
     """Return (paperId set, compiled title-regexes) from the data file.
 
@@ -1621,6 +1659,29 @@ def build_theme_lineage(
         openalex_email=openalex_email,
         theme=sanitised,
     )
+    # Alias fallback: when the canonical theme name doesn't surface any
+    # seeds (S2 indexed under a different spelling, abbreviation
+    # mismatch, etc), retry with operator-curated alternates from
+    # theme_aliases.json. Only fires on 0-seed outcomes so the common
+    # path stays a single search. See the doc string of
+    # _load_theme_aliases for the file shape.
+    if not seeds:
+        for alt_kw in _aliases_for(sanitised):
+            logger.info(
+                "primary keyword %r returned 0 seeds; trying alias %r",
+                sanitised, alt_kw,
+            )
+            alt_seeds = discover_seeds(
+                keywords=[alt_kw],
+                top_n=seeds_count,
+                since_year=since_year,
+                use_openalex_fallback=use_openalex_fallback,
+                openalex_email=openalex_email,
+                theme=sanitised,
+            )
+            if alt_seeds:
+                seeds = alt_seeds
+                break
     logger.info(
         "discovered %d seeds: %s",
         len(seeds),
