@@ -89,6 +89,16 @@ _S2_FIELDS_SEARCH = (
 )
 _S2_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
 _S2_SEARCH_LIMIT = 50
+# Limit search to AI/CS-adjacent fields so the topic-relevance filter
+# isn't the only thing standing between us and medical / biology / global
+# health papers that share generic theme words ("World Model" hitting
+# Global Burden of Disease, "Flash Attention" hitting hyperglycemia
+# management, etc — verified on 2026-05-26 post-regen audit). S2
+# documents valid values at /api-docs/graph#tag/Paper-Data — we ship
+# the umbrella ML / AI / DS triplet plus Linguistics for NLP themes.
+_S2_FIELDS_OF_STUDY = (
+    "Computer Science,Mathematics,Linguistics"
+)
 _S2_BATCH_URL = "https://api.semanticscholar.org/graph/v1/paper/batch"
 # /paper/batch caps at 500 ids per call (https://api.semanticscholar.org
 # /api-docs/graph#tag/Paper-Data/operation/post_graph_get_papers); cap our
@@ -799,6 +809,13 @@ def discover_seeds(
             "query": kw,
             "fields": _S2_FIELDS_SEARCH,
             "limit": _S2_SEARCH_LIMIT,
+            # CS-adjacent gate at the API level — see _S2_FIELDS_OF_STUDY
+            # comment for the medical / biology contamination this guards
+            # against. S2 returns a subset of the natural relevance
+            # ranking; if the user-typed theme is unambiguously CS this
+            # is a clean win, and the (rare) CS / interdisciplinary
+            # theme will still surface its top CS papers.
+            "fieldsOfStudy": _S2_FIELDS_OF_STUDY,
         }
         resp = request_with_retry(
             "GET",

@@ -184,6 +184,34 @@ def test_discover_seeds_calls_s2_search_per_keyword(tmp_path: Path, monkeypatch)
     assert {s["paperId"] for s in seeds} == {"p1", "p2"}
 
 
+def test_discover_seeds_passes_fieldsOfStudy_to_s2(tmp_path: Path, monkeypatch):
+    """S2 search must include `fieldsOfStudy=Computer Science,...` so
+    medical / biology papers don't surface for AI-themed queries. Verified
+    post-2026-05-26 regen audit where ``World Model`` was matching Global
+    Burden of Disease papers (both contain "world" + "model" in title /
+    abstract) and the text-only topic filter wasn't enough on its own."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    p1 = _mk_s2_paper("p1", year=2020, cites=100)
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=_mk_s2_search_response([p1]),
+    ) as mock_rwr:
+        build_theme_lineage.discover_seeds(
+            keywords=["world model"],
+            top_n=5,
+            since_year=None,
+            use_openalex_fallback=False,
+        )
+    # Inspect the request the production code sent: params kwarg should
+    # carry the fieldsOfStudy filter.
+    assert mock_rwr.call_count == 1
+    _, kwargs = mock_rwr.call_args_list[0]
+    params = kwargs.get("params") or {}
+    fos = params.get("fieldsOfStudy", "")
+    assert "Computer Science" in fos
+
+
 def test_discover_seeds_dedupes_papers(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
 
