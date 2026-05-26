@@ -6,6 +6,38 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — Seed selection holes (#209)
+
+- **Hyphen normalisation + tighter 2-word topic gate**
+  (`paperpilot/scripts/build_theme_lineage.py`,
+  `_filter_topic_relevant_seeds`) — 2-word themes now require the
+  verbatim phrase in `title + abstract` OR both words in the **title
+  only**. The pre-#209 "both words anywhere" rule let LPIPS into the
+  Self-Supervised Learning theme because LPIPS reviewed multiple
+  paradigms ("supervised, self-supervised, and even unsupervised") +
+  separately mentioned "deep learning". Title-only fallback keeps
+  papers like "Denoising Diffusion Probabilistic Models" against the
+  "Diffusion Models" theme where both words appear in the title but
+  the phrase order differs. Hyphen-to-space normalisation on both
+  the theme and the haystack means "self-supervised learning" and
+  "self supervised learning" match interchangeably.
+- **Denylist applied at seed phase**
+  (`_filter_denylisted_seeds` → wired into `discover_seeds`) — same
+  `_is_implementation_foundation` check that has guarded BFS refs
+  since #128 now also runs on the seed pool. The 2026-05-27 audit
+  found state-space-model surfacing SciPy 1.0 / Array programming
+  with NumPy / QIIME 2 as seeds because S2's
+  `fieldsOfStudy=Mathematics` gate accepts those papers
+  indistinguishably from research-line predecessors. The denylist
+  is a clean veto, applied before both the S2-only path and the
+  OpenAlex top-up path.
+- **`audit_theme_seeds.py` mirrors the new gate** — same
+  hyphen-normalisation + 2-word title-fallback + 3-word ceil(N/2)
+  rule so the audit's verdict matches what the live filter would
+  do at regeneration time. Audit now correctly stops flagging
+  DDPM-style false positives while still catching LPIPS-style
+  abstract-only leaks.
+
 ### Added — Theme lineage quality + LLM cache amortisation
 
 - **Foundational-ref filter** (`paperpilot/scripts/build_theme_lineage.py`

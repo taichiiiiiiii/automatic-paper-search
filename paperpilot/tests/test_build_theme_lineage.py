@@ -2441,6 +2441,179 @@ def test_filter_topic_relevant_seeds_phrase_escape_hatch():
     assert [s["paperId"] for s in kept] == ["phrase"]
 
 
+# ---- #209: tighter 2-word + hyphen-normalised phrase check ----------------
+
+
+def test_filter_topic_relevant_seeds_lpips_dropped_from_self_supervised():
+    """Regression for the 2026-05-27 audit (#209): LPIPS slipped into
+    the Self-Supervised Learning theme because the previous filter
+    accepted "both words present anywhere" and the abstract reviewed
+    multiple paradigms ("supervised, self-supervised, and even
+    unsupervised") + separately mentioned "deep learning" — neither
+    was the theme. Verbatim phrase now required."""
+    seeds = [
+        _mk_s2_paper(
+            "lpips",
+            title="The Unreasonable Effectiveness of Deep Features as a Perceptual Metric",
+            abstract=(
+                "we apply supervised, self-supervised, and even unsupervised "
+                "deep features to evaluate perceptual similarity."
+            ),
+        ),
+        _mk_s2_paper(
+            "simclr",
+            title="A Simple Framework for Contrastive Learning of Visual Representations",
+            abstract=(
+                "We present SimCLR, a simple framework for contrastive "
+                "self-supervised learning of visual representations."
+            ),
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Self-Supervised Learning"
+    )
+    assert [s["paperId"] for s in kept] == ["simclr"]
+
+
+def test_filter_topic_relevant_seeds_hyphen_normalisation_two_word():
+    """The same theme matches a paper that writes "self supervised
+    learning" with a space and one that writes "self-supervised
+    learning" with a hyphen. Without the hyphen→space normalisation,
+    a single punctuation difference between the typed theme and the
+    paper would silently drop legitimate seeds."""
+    seeds = [
+        _mk_s2_paper(
+            "hyphen",
+            title="Self-Supervised Learning of Visual Features",
+            abstract="we study self-supervised learning ...",
+        ),
+        _mk_s2_paper(
+            "space",
+            title="A Survey of Self Supervised Learning",
+            abstract="self supervised learning has matured ...",
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Self-Supervised Learning"
+    )
+    assert {s["paperId"] for s in kept} == {"hyphen", "space"}
+
+
+def test_filter_topic_relevant_seeds_two_word_drops_when_words_only_in_abstract():
+    """Two-word themes (#209): phrase verbatim anywhere, OR both words
+    in TITLE. A paper that has the theme words scattered in its
+    abstract (no verbatim phrase, words not in title) drops. The
+    pre-#209 "both words anywhere in title+abstract" rule was the
+    LPIPS hole."""
+    seeds = [
+        _mk_s2_paper(
+            "abstract-only-no-phrase",
+            title="A Survey of Deep Learning Architectures",
+            abstract=(
+                # Both words present but never in phrase order — same
+                # shape as the LPIPS regression that motivated #209.
+                "we evaluate supervised, self-supervised, and even "
+                "unsupervised pre-training across different visual "
+                "recognition tasks; deep learning has matured."
+            ),
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Self-Supervised Learning"
+    )
+    assert kept == []
+
+
+def test_filter_topic_relevant_seeds_two_word_keeps_when_both_words_in_title():
+    """Two-word themes (#209): title-only fallback. Paper whose title
+    carries both words in any order keeps even when the verbatim phrase
+    isn't present (e.g. DDPM has "diffusion" + "models" in its title
+    "Denoising Diffusion Probabilistic Models" — phrase "diffusion
+    models" never appears verbatim but both individual words do)."""
+    seeds = [
+        _mk_s2_paper(
+            "ddpm",
+            title="Denoising Diffusion Probabilistic Models",
+            abstract="diffusion probabilistic models for image synthesis",
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Diffusion Models"
+    )
+    assert [s["paperId"] for s in kept] == ["ddpm"]
+
+
+def test_filter_denylisted_seeds_drops_known_lib_papers():
+    """#209 seed-phase denylist application: SciPy / NumPy / QIIME
+    titles that slip past S2's fieldsOfStudy=Mathematics gate must
+    drop at the seed phase, not just at the BFS-ref phase. State-
+    space-model regen had pulled "SciPy 1.0" + "Array programming
+    with NumPy" as seeds."""
+    seeds = [
+        _mk_s2_paper(
+            "scipy",
+            title="SciPy 1.0: fundamental algorithms for scientific computing",
+            abstract="SciPy is a scientific Python library",
+        ),
+        _mk_s2_paper(
+            "real-seed",
+            title="Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+            abstract="state space models for long sequences",
+        ),
+    ]
+    kept = build_theme_lineage._filter_denylisted_seeds(seeds)
+    assert [s["paperId"] for s in kept] == ["real-seed"]
+
+
+def test_filter_denylisted_seeds_empty_input_returns_empty():
+    """Defensive: empty list in → empty list out, no exception."""
+    assert build_theme_lineage._filter_denylisted_seeds([]) == []
+
+
+def test_filter_denylisted_seeds_non_denylisted_passthrough():
+    """Papers not on the denylist must pass through untouched —
+    the filter is veto-only, not allowlist."""
+    seeds = [
+        _mk_s2_paper("a", title="Attention Is All You Need"),
+        _mk_s2_paper("b", title="BERT pre-training"),
+    ]
+    kept = build_theme_lineage._filter_denylisted_seeds(seeds)
+    assert {s["paperId"] for s in kept} == {"a", "b"}
+
+
+def test_discover_seeds_drops_denylisted_seeds(tmp_path: Path, monkeypatch):
+    """Integration: discover_seeds() must apply the denylist filter
+    before _rank_and_truncate, so a high-cite NumPy paper doesn't
+    end up in the top-N just because it has the highest citationCount
+    in the S2 response."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    numpy_paper = _mk_s2_paper(
+        "numpy",
+        title="Array programming with NumPy",
+        abstract="NumPy is the fundamental array library for Python.",
+        cites=50_000,  # would rank #1 without the denylist
+    )
+    real_seed = _mk_s2_paper(
+        "mamba",
+        title="Mamba: linear-time sequence modeling with selective state spaces",
+        abstract="state space models for long sequences",
+        cites=500,
+    )
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=_mk_s2_search_response([numpy_paper, real_seed]),
+    ):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["state space model"],
+            top_n=10,
+            since_year=None,
+            use_openalex_fallback=False,
+            theme="state space model",
+        )
+    assert [s["paperId"] for s in seeds] == ["mamba"]
+
+
 def test_discover_seeds_filters_irrelevant_seeds(tmp_path: Path, monkeypatch):
     """Integration: discover_seeds() must apply the topic relevance filter
     before _rank_and_truncate, so S2 returning the Pandas paper for a GNN
