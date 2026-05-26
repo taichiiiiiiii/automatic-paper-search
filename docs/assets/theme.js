@@ -406,6 +406,12 @@ function renderThemeGallery() {
   els.gallery.innerHTML = "";
   for (const entry of state.manifest) {
     if (typeof entry?.slug !== "string" || !SLUG_RE.test(entry.slug)) continue;
+    // Skip empty themes — the manifest occasionally contains slugs whose
+    // generation produced 0 papers (S2 returned nothing for the query,
+    // every candidate got filtered out, etc). They render as "0 papers ·
+    // / N days ago" which reads as a UI bug. Filter at the viewer so a
+    // bad row doesn't ship until the underlying pipeline retries.
+    if ((entry.paper_count || 0) === 0 && entry.slug !== state.currentSlug) continue;
     const card = document.createElement("a");
     card.className = "theme-gallery__card";
     if (entry.slug === state.currentSlug) {
@@ -1169,6 +1175,9 @@ function populateThemeDatalist() {
   if (!els.reqDatalist || !Array.isArray(state.manifest)) return;
   els.reqDatalist.innerHTML = "";
   for (const entry of state.manifest) {
+    // Skip 0-paper themes from autocomplete too — submitting one would
+    // hit the "exists" short-circuit and redirect to a broken viewer.
+    if ((entry.paper_count || 0) === 0) continue;
     const opt = document.createElement("option");
     // textContent (not innerHTML) — manifest entries come from
     // generate_themes_manifest.py but treat as untrusted at the
