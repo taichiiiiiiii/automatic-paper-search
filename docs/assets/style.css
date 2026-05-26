@@ -13,7 +13,10 @@
 
   --color-ink: oklch(18% 0.012 270);
   --color-ink-muted: oklch(42% 0.015 270);
-  --color-ink-subtle: oklch(58% 0.012 270);
+  /* L=48% gets us to ~4.6:1 against the L=98% surface — WCAG AA for
+     normal-weight text. Was L=58% which dropped under the 4.5:1 floor
+     and was the dominant color-contrast audit failure on themes/. */
+  --color-ink-subtle: oklch(48% 0.012 270);
 
   --color-accent: oklch(58% 0.18 30);          /* deep coral — links */
   --color-oral: oklch(72% 0.16 75);             /* scholarly gold */
