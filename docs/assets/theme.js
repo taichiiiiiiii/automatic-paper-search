@@ -259,6 +259,9 @@ const els = {
   slugFallbackMsg: document.getElementById("slug-fallback-msg"),
   slugFallbackGenerate: document.getElementById("slug-fallback-generate"),
   slugFallbackClose: document.getElementById("slug-fallback-close"),
+  staleBanner: document.getElementById("stale-banner"),
+  staleBannerMsg: document.getElementById("stale-banner-msg"),
+  staleBannerClose: document.getElementById("stale-banner-close"),
   filtersToggle: document.getElementById("filters-toggle"),
   filtersPanel: document.getElementById("filters-panel"),
   filtersCount: document.getElementById("filters-count"),
@@ -683,6 +686,54 @@ function showSlugFallback(requestedSlug, fallbackSlug) {
   }
   if (els.slugFallbackClose) {
     els.slugFallbackClose.onclick = () => { els.slugFallback.hidden = true; };
+  }
+}
+
+// Stale-data audit: walk the currently-loaded theme's focus seeds and
+// check whether they look on-topic for the theme name. Mirror of
+// paperpilot/scripts/audit_theme_seeds.py logic, using `title + tldr`
+// (the only paper text the viewer ships in lineage.json — full S2
+// abstract is not persisted). Returns the off-topic seed titles or [].
+function _auditFocusSeeds() {
+  const data = state.data;
+  const meta = data?.meta || {};
+  const theme = (meta.theme || "").trim();
+  const nodes = Array.isArray(data?.nodes) ? data.nodes : [];
+  const seeds = nodes.filter((n) => n && n.is_focus);
+  if (!theme || seeds.length === 0) return [];
+  const words = theme.split(/\s+/).filter((w) => w.length >= 3).map((w) => w.toLowerCase());
+  if (words.length < 2) return [];
+  const threshold = words.length === 2 ? 2 : Math.max(2, Math.ceil(words.length * 0.5));
+  const phrase = theme.toLowerCase();
+  const offTopic = [];
+  for (const s of seeds) {
+    const hay = `${s.title || ""} ${s.tldr || ""}`.toLowerCase();
+    if (phrase && hay.includes(phrase)) continue;
+    const hits = words.reduce((acc, w) => acc + (hay.includes(w) ? 1 : 0), 0);
+    if (hits < threshold) offTopic.push(s.title || s.id || "");
+  }
+  return offTopic;
+}
+
+// Surface a soft "data being refreshed" banner when audit catches an
+// off-topic seed. Stale data still renders below — we don't hide
+// anything — but the banner explains the visible weirdness.
+function maybeShowStaleBanner() {
+  if (!els.staleBanner || !els.staleBannerMsg) return;
+  const offTopic = _auditFocusSeeds();
+  if (offTopic.length === 0) {
+    els.staleBanner.hidden = true;
+    return;
+  }
+  const sample = offTopic[0].slice(0, 60) + (offTopic[0].length > 60 ? "…" : "");
+  els.staleBannerMsg.textContent =
+    `このテーマは古いデータです (${offTopic.length} / ${offTopic.length} 件の seed がトピック外、例: "${sample}")。次回の再生成 (日曜 09:00 JST) で更新されます。`;
+  els.staleBanner.hidden = false;
+}
+
+function bindStaleBannerClose() {
+  if (els.staleBannerClose && els.staleBanner) {
+    els.staleBannerClose.onclick = () => { els.staleBanner.hidden = true; };
   }
 }
 
@@ -1664,9 +1715,11 @@ async function init() {
   bindActiveFiltersClear();
   bindOrphanToggle();
   bindOnboardingDismiss();
+  bindStaleBannerClose();
   bindKeyboardShortcuts();
   render();
   showOnboardingHintIfFirstVisit();
+  maybeShowStaleBanner();
 
   // #65: if the URL carried a ?node=, scroll to it and highlight after
   // the SVG has had a frame to paint. Two requestAnimationFrame ticks
