@@ -51,6 +51,26 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Visible only to no-JS users (everyone else has `<noscript>` collapsed
+   by the browser). Matches the active-filter banner palette so it reads
+   as "system status" instead of "decorative". */
+.noscript-banner {
+  padding: 0.9rem 1.2rem;
+  margin: 0;
+  background: linear-gradient(
+    to right,
+    oklch(96% 0.045 70) 0%,
+    oklch(97% 0.025 70) 100%
+  );
+  border: 1px solid oklch(82% 0.10 70);
+  border-left: 3px solid oklch(72% 0.16 60);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
 a { color: var(--color-accent); text-decoration: none; transition: color var(--duration-fast); }
 a:hover { color: oklch(45% 0.2 30); text-decoration: underline; text-underline-offset: 3px; }
 a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 2px; }
