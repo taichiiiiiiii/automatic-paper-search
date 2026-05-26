@@ -47,6 +47,17 @@ DEFAULT_MODEL = "llama-3.3-70b-versatile"
 # doesn't silently 429 the back half of the burst. Operators on a paid
 # plan can raise this via `llm.rate_limit_rpm` in config.yaml.
 DEFAULT_RATE_LIMIT_RPM = 25
+# After this many consecutive Groq /chat/completions failures we treat
+# the daily / TPM quota as exhausted and short-circuit further calls to
+# return None instead of hammering the API for another 14s-each retry
+# burst. Without this, a build_theme_lineage run on a fully-throttled
+# Groq quota burns its workflow timeout-minutes (15) rotating through
+# 429-after-3-retries on every edge — verified on the 2026-05-26 SSM
+# regen which got cancelled at 15 min with 0 classifications completed.
+# Caller code (_CachedClassifyProvider) already falls back to the S2
+# intent-based heuristic on None, so the result is "graceful degrade"
+# rather than "data missing".
+QUOTA_EXHAUSTED_THRESHOLD = 3
 
 
 class GroqProvider(AbstractLLMProvider):
@@ -67,6 +78,13 @@ class GroqProvider(AbstractLLMProvider):
         # divide by zero / sleep forever). Fall through to the default.
         self._min_call_interval_s = 60.0 / rpm if rpm > 0 else 60.0 / DEFAULT_RATE_LIMIT_RPM
         self._last_call_ts: float | None = None
+        # Circuit-breaker state for the quota-exhausted short-circuit.
+        # Counts consecutive failed _chat() returns; resets on the first
+        # successful call. Once it crosses QUOTA_EXHAUSTED_THRESHOLD the
+        # provider stops issuing requests and returns None until the
+        # process restarts.
+        self._consecutive_failures = 0
+        self._quota_exhausted = False
 
     @property
     def enabled(self) -> bool:
@@ -142,6 +160,14 @@ class GroqProvider(AbstractLLMProvider):
         self._last_call_ts = time.monotonic()
 
     def _chat(self, system: str, user: str, *, json_mode: bool = False) -> str | None:
+        # Circuit-breaker short-circuit: once we've hit the quota-
+        # exhausted threshold, every further call returns None without
+        # touching the API or sleeping for the RPM throttle. The caller
+        # (_CachedClassifyProvider in build_theme_lineage / build_lineage)
+        # already treats None as "fall back to S2-intent heuristic", so
+        # the data still gets a sensible classification.
+        if self._quota_exhausted:
+            return None
         self._throttle_for_rate_limit()
         body: dict = {
             "model": self.model,
@@ -169,11 +195,27 @@ class GroqProvider(AbstractLLMProvider):
                 "groq: chat/completions failed (status=%s)",
                 getattr(resp, "status_code", None),
             )
+            self._consecutive_failures += 1
+            if self._consecutive_failures >= QUOTA_EXHAUSTED_THRESHOLD:
+                self._quota_exhausted = True
+                logger.warning(
+                    "groq: %d consecutive failures — assuming daily / TPM "
+                    "quota exhausted, short-circuiting further LLM calls "
+                    "to heuristic-only for the rest of this run",
+                    self._consecutive_failures,
+                )
             return None
         data = resp.json() or {}
         choices = data.get("choices") or []
         if not choices:
             logger.warning("groq: empty choices in response")
+            self._consecutive_failures += 1
             return None
         content = (choices[0].get("message") or {}).get("content")
-        return content if isinstance(content, str) and content.strip() else None
+        if not (isinstance(content, str) and content.strip()):
+            self._consecutive_failures += 1
+            return None
+        # Success — reset the failure counter so a transient blip doesn't
+        # latch the circuit breaker open.
+        self._consecutive_failures = 0
+        return content
