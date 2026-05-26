@@ -51,6 +51,18 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Text selection in the brand coral. Two layers: ::selection covers
+   most browsers; ::-moz-selection is the Firefox-specific fallback
+   for older versions. */
+::selection {
+  background: oklch(58% 0.18 30 / 0.25);
+  color: var(--color-ink);
+}
+::-moz-selection {
+  background: oklch(58% 0.18 30 / 0.25);
+  color: var(--color-ink);
+}
+
 /* Custom scrollbars — the browser default chunky-blue scrollbar is the
    single most "this is a templated webpage" detail visible on most
    pages. Replacing it with a thin, neutral track that picks up the
@@ -266,6 +278,11 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   margin: 0 0 1rem;
   color: var(--color-ink);
   font-variation-settings: "opsz" 36;
+  /* Subtle entrance: 4 px slide-up + 0.35 s fade so the page reads
+     as "settling in" rather than "popping into place". Short enough
+     not to delay perceived load (animation overlaps with the rest of
+     the page rendering). */
+  animation: hero-title-settle 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   /* JP wraps anywhere by default, which produced ugly mid-word
      breaks like "テーマで時/系列家系図" on narrow phones. word-break
      keep-all keeps each JP run intact and breaks only between Latin
@@ -282,6 +299,21 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
        --text-display token which targets desktop. */
     font-size: clamp(1.6rem, 1.2rem + 4vw, 2rem);
     line-height: 1.15;
+  }
+}
+@keyframes hero-title-settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__title {
+    animation: none;
   }
 }
 .hero__title em {
