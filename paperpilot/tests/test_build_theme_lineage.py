@@ -2323,6 +2323,57 @@ def test_filter_topic_relevant_seeds_empty_input_returns_empty():
     assert build_theme_lineage._filter_topic_relevant_seeds([], theme="Anything") == []
 
 
+def test_filter_topic_relevant_seeds_two_word_requires_both():
+    """Two eligible words (after dropping <3-char stopwords like ``of``)
+    must require BOTH to match. The 50 %-of-2 = 1 rule passing for the
+    CoT theme on 2026-05-24 let in 5 COVID / physics-ML papers because
+    their abstracts contained either "chain" or "thought" but never both
+    in a topic-relevant way."""
+    seeds = [
+        # contains both "chain" and "thought" → keep
+        _mk_s2_paper(
+            "relevant",
+            title="Chain of thought prompting elicits reasoning",
+            abstract="we show chain-of-thought prompting helps ...",
+        ),
+        # contains "chain" only (e.g. supply chain) → drop
+        _mk_s2_paper(
+            "off-topic-chain",
+            title="A pneumonia outbreak associated with a new coronavirus",
+            abstract="The transmission chain of infection was traced ...",
+        ),
+        # contains "thought" only → drop
+        _mk_s2_paper(
+            "off-topic-thought",
+            title="Physics-informed machine learning",
+            abstract="We thought the model would converge ...",
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Chain of Thought"
+    )
+    ids = [s["paperId"] for s in kept]
+    assert ids == ["relevant"]
+
+
+def test_filter_topic_relevant_seeds_phrase_escape_hatch():
+    """Verbatim full-theme phrase in title/abstract overrides the
+    word-by-word check. A paper titled exactly "Chain of Thought" should
+    pass even if abstract somehow lacks the individual words elsewhere —
+    the phrase itself is already strong topic evidence."""
+    seeds = [
+        _mk_s2_paper(
+            "phrase",
+            title="Chain of Thought variants in modern LLMs",
+            abstract="this paper studies CoT prompting ...",
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Chain of Thought"
+    )
+    assert [s["paperId"] for s in kept] == ["phrase"]
+
+
 def test_discover_seeds_filters_irrelevant_seeds(tmp_path: Path, monkeypatch):
     """Integration: discover_seeds() must apply the topic relevance filter
     before _rank_and_truncate, so S2 returning the Pandas paper for a GNN
