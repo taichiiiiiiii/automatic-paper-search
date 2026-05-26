@@ -184,7 +184,7 @@ def test_discover_seeds_calls_s2_search_per_keyword(tmp_path: Path, monkeypatch)
     assert {s["paperId"] for s in seeds} == {"p1", "p2"}
 
 
-def test_discover_seeds_passes_fieldsOfStudy_to_s2(tmp_path: Path, monkeypatch):
+def test_discover_seeds_passes_fields_of_study_to_s2(tmp_path: Path, monkeypatch):
     """S2 search must include `fieldsOfStudy=Computer Science,...` so
     medical / biology papers don't surface for AI-themed queries. Verified
     post-2026-05-26 regen audit where ``World Model`` was matching Global
