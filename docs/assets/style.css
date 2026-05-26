@@ -1374,6 +1374,10 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   gap: 0.6rem;
   margin: 0 var(--space-edge);
   padding: 0.45rem 0.9rem;
+  /* CLS: reserve the filled height so the JS `__left` / `__right`
+     text fill-in doesn't shift canvas down. ~1 line of mono 0.7rem
+     content = ~22 px including padding. */
+  min-height: 1.6rem;
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.04em;
@@ -1571,6 +1575,15 @@ g.node-wrap.node-wrap--no-tx {
     overflow-x: visible;
     -webkit-mask-image: none;
             mask-image: none;
+    /* CLS fix: at desktop viewport the gallery wraps to 2-3 rows
+       (~180px). The single-row reservation below would otherwise
+       under-shoot and the toolbar / canvas would slide 100+px when
+       cards finished populating. Verified post-#194 the actual filled
+       height clusters around 240-260 px on 1440 / 1920 viewports
+       (3 wrapped rows × ~80 px). Reserve 250 to cover the common
+       case; the gallery can still grow taller without CLS because
+       min-height doesn't cap. */
+    min-height: 250px;
   }
 }
 .theme-gallery[hidden] { display: none; }
