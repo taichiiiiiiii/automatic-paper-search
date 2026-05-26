@@ -43,6 +43,7 @@ import {
   RATE_LIMIT_PER_HOUR,
   RATE_LIMIT_GLOBAL_PER_DAY,
 } from "./response.js";
+import { pickMatchingRun } from "./run-match.js";
 export { themeSlug };
 
 const THEME_PATTERN = THEME_INPUT_PATTERN;
@@ -127,23 +128,18 @@ async function findRecentRun(theme: string, env: Env): Promise<RunSummary | null
     display_title: string;
   };
   const data = await resp.json() as { workflow_runs?: RunFromApi[] };
-  if (!Array.isArray(data?.workflow_runs)) return null;
-  const themeMarker = `: ${theme}`;
-  // Most recent first — `workflow_runs` is already sorted by created_at
-  // desc per the API contract.
-  for (const r of data.workflow_runs) {
-    if (typeof r.display_title === "string" && r.display_title.endsWith(themeMarker)) {
-      return {
-        status: r.status,
-        conclusion: r.conclusion,
-        html_url: r.html_url,
-        created_at: r.created_at,
-        run_started_at: r.run_started_at,
-        display_title: r.display_title,
-      };
-    }
-  }
-  return null;
+  // Matching logic lives in run-match.js so it can be unit-tested
+  // without an HTTP mock — see worker/run-match.test.mjs.
+  const match = pickMatchingRun(data?.workflow_runs as unknown[] | undefined, theme) as RunFromApi | null;
+  if (!match) return null;
+  return {
+    status: match.status,
+    conclusion: match.conclusion,
+    html_url: match.html_url,
+    created_at: match.created_at,
+    run_started_at: match.run_started_at,
+    display_title: match.display_title,
+  };
 }
 
 async function handleStatusGet(request: Request, env: Env): Promise<Response> {
