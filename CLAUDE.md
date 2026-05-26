@@ -78,6 +78,7 @@ automatic-paper-search/
 │       ├── regen-themes.yml             # 毎週日曜 09:00 JST 全テーマ再生成
 │       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（CF Worker から workflow_dispatch）
 │       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
+│       ├── theme-audit.yml              # ★ PR/push 時に audit_theme_seeds 自動実行 → off-topic seed regression を block
 │       └── publish.yml                  # PyPI trusted-publisher（release 発火）
 ├── worker/                              # ★ Cloudflare Worker (theme submission API)
 │   ├── index.ts                         # POST /api/themes ハンドラ
@@ -142,7 +143,7 @@ automatic-paper-search/
     │   ├── github.py                    # 共有 GitHub 解決器（curated map + GitHub Search + Stars）
     │   ├── json_parser.py               # LLM 3段階フォールバック
     │   └── logger.py                    # 日次ローテ (7日保持)
-    ├── tests/                           # pytest テスト（カバレッジ 91%、636 件）
+    ├── tests/                           # pytest テスト（カバレッジ 91%、644 件）
     │   ├── conftest.py
     │   ├── test_*.py                    # 各モジュールのユニット/統合テスト
     │   └── test_venue_stress.py         # 60 パターンで検出率 95% 以上
@@ -517,11 +518,16 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **`docs/themes/themes-manifest.json` は `generate_themes_manifest.py` のみが生成**。`build_theme_lineage.py` 内では生成しない（並列実行時の race 回避）。マニフェスト生成時に `rel` 値が許可 enum (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に該当しないテーマは skip する（cache poisoning 抑止）。
     - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。`_classify_cached` が書込前に on-disk cache を再読込してマージし、`os.replace` でアトミックに書き出すため、並列ランでも他プロセスのエントリを上書きしない。
     - **OpenAlex フォールバック (seed 発見)**: S2 `/paper/search` が `top_n` 未満しか返さない場合（GitHub Actions の共有 IP プールが S2 free tier に throttle される CI ステディ状態）、自動で OpenAlex `/works` 検索 → DOI 抽出 → S2 `/paper/batch` で paperId 解決にフォールバック。`/paper/batch` は `/paper/search` と別のレート枠なので throttle 同時発生確率が低い。`PAPERPILOT_OPENALEX_EMAIL` を設定すると polite pool（`mailto=...`）を使い更に安定。`--no-openalex-fallback` で明示的に無効化可能（テスト用途）。
-    - **品質改善ノイズ防止**: 3 レイヤで off-topic 論文を除外する:
-        1. **Seed topic 関連度 (`_filter_topic_relevant_seeds`)**: 2 単語以上のテーマ (例 "Graph Neural Network") では、seed タイトル+アブストラクトに少なくとも半数の単語 (≥3 chars) が含まれることを要求。これで S2 検索が citation 数の都合で Pandas / Scikit-learn の論文を上位に返してきても seed として採用しない。RAG / MoE / BERT のような短い single-word テーマは false match 多発するため自動 skip。
-        2. **Foundational ref フィルタ (`_filter_off_topic_refs`)**: BFS で取得した parent/child 候補のうち、`citationCount > 2 × max(seed citations)` かつ S2 intent に "methodology" を含まないものを除外。"methodology" 意図がある場合はそのまま採用（その citing paper の手法を本当に支えている foundational ref のため）。閾値は初期 3x から #127 followup で 2x に絞り込み。
-        3. **Implementation denylist (`_is_implementation_foundation`)**: `paperpilot/data/lineage_denylist.json` に列挙された paperId / title pattern にマッチする論文（Adam optimizer / TensorFlow / PyTorch / Scikit-learn / NumPy / SciPy / Batch Normalization / Dropout / Keras / pandas 等）は methodology intent があっても**無条件で除外**。これらは「実装の foundational」であって「研究線譜の foundational」ではないため。PyTorch Geometric のような topic-specific lib は title pattern が catch しないので残る。新しい canonical lib paper を見つけたら denylist JSON に追記する。
+    - **品質改善ノイズ防止 (#127 / #186 / #188 / #189)**: 5 レイヤで off-topic 論文を除外する:
+        1. **S2 `fieldsOfStudy` ゲート (#188)**: `/paper/search` リクエストに `fieldsOfStudy=Computer Science,Mathematics,Linguistics` を渡し、API レベルで医療 / 生物 / 工学論文を除外。"World Model" → "Global Burden of Disease"、"Flash Attention" → 糖尿病管理論文の混入を防ぐ。
+        2. **OpenAlex `concepts.id` 同等ゲート (#189 / #190)**: `discover_seeds_via_openalex` の `filter` に `concepts.id:C41008148|C33923547|C137293760` (Computer Science / Mathematics / Linguistics) を追加。S2 throttle 時の OpenAlex fallback でも同等のドメイン制約。OR syntax は `field:val1|val2|val3` 形式 (field 名を OR 値ごとに繰り返すと HTTP 400)。
+        3. **Seed topic 関連度 (`_filter_topic_relevant_seeds` #127 / #186)**: 2 単語以上のテーマで substring チェック。**2 単語 → 両方必須** (CoT-COVID 誤通過 #186 で強化)、**3+ 単語 → `ceil(N×0.5)` 必須**。verbatim phrase が title+abstract に含まれれば word-by-word チェック skip (escape hatch)。RAG / MoE / BERT のような短い single-word テーマは false match 多発するため自動 skip。
+        4. **Foundational ref フィルタ (`_filter_off_topic_refs`)**: BFS で取得した parent/child 候補のうち、`citationCount > 2 × max(seed citations)` かつ S2 intent に "methodology" を含まないものを除外。"methodology" 意図がある場合はそのまま採用（その citing paper の手法を本当に支えている foundational ref のため）。閾値は初期 3x から #127 followup で 2x に絞り込み。
+        5. **Implementation denylist (`_is_implementation_foundation`)**: `paperpilot/data/lineage_denylist.json` に列挙された paperId / title pattern にマッチする論文（Adam optimizer / TensorFlow / PyTorch / Scikit-learn / NumPy / SciPy / Batch Normalization / Dropout / Keras / pandas 等）は methodology intent があっても**無条件で除外**。これらは「実装の foundational」であって「研究線譜の foundational」ではないため。PyTorch Geometric のような topic-specific lib は title pattern が catch しないので残る。新しい canonical lib paper を見つけたら denylist JSON に追記する。
+    - **Theme alias フォールバック (#195)**: canonical テーマ名で seed=0 になる場合、`paperpilot/data/theme_aliases.json` の代替キーワードを順次試行。例: "Speculative Decoding" → "Speculative Sampling" (S2 が後者の名義で index している)。lowercase + trim でキーマッチ、最初の成功で打ち切り。
+    - **Seed quality audit (#187)**: `uv run python -m paperpilot.scripts.audit_theme_seeds` で `docs/themes/*/lineage.json` を巡回、off-topic seed を検出。CI で `.github/workflows/theme-audit.yml` (#192) が `docs/themes/**` 変更 PR で自動実行 (exit 1 で job 失敗)。Viewer 側は #194 で同等 audit を走らせ stale-banner 表示。
     - **LLM rationale (`--llm-strict=ambiguous` がデフォルト)**: `theme-on-demand.yml` は **`--llm-strict=ambiguous`** を有効化。S2 intent が `_INTENT_RELATION_MAP` のキー (methodology / result / background) に一致しない edge のみ Groq (Llama 3.3 70B) で paper-specific 分類。`--llm-strict=all` は Groq free tier の TPM 制約 (6,000 tokens/min) で破綻する (~2,000 tokens × 25 RPM = 50,000 TPM → 429 throttle 連鎖で 15 min timeout 到達)。Paid plan で `config.yaml` の `llm.rate_limit_rpm` を 1000+ に上げてから `--llm-strict=all` を使う。`GroqProvider` 内蔵 rate limiter (default 25 RPM) は RPM 制約だけカバー、TPM は prompt サイズで間接的に制御する。
+    - **Groq 429 circuit breaker (#191)**: `GroqProvider` が連続 3 回失敗 (request_with_retry が None / 非 200 を返す) で `_quota_exhausted=True` に latch、以降の `_chat` は API call 前に None を即返却。caller (`_CachedClassifyProvider`) は S2 intent heuristic にフォールバック。これで Groq daily quota 切れでも 15 min workflow timeout-minutes で cancel されず、heuristic で完走する。成功 200 で counter リセット (transient blip で latch しない)。
     - **LLM prompt 品質保証 (#131)**: `CLASSIFY_SYSTEM_PROMPT` (`paperpilot/llm/base.py`) は LLM が heuristic template を翻訳しないように設計されている。enum 定義を短く抽象化、MUST/MUST NOT 指示で template phrasing を明示禁止、Good 例で paper-specific rationale を few-shot 提示。Token budget は ~250 tokens に抑制 (Groq TPM 制約のため)。第二防衛線として `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を返した場合 None を返して heuristic フォールバックさせる。template 追加時は両方 (prompt の MUST NOT リスト + `_GENERIC_TEMPLATE_RATIONALES`) を同期更新する。
     - **classification cache 共有 (theme 品質改善の本命)**: `build_theme_lineage` は `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有。`_CachedClassifyProvider` が AbstractLLMProvider をラップし、key `f"{a.paperId}->{b.paperId}"` で hit すれば LLM call を skip。free-tier Groq の TPM 制約はあくまで「1 run あたり」の問題で、cache が複数 run に渡って蓄積するため、テーマ再生成 / 複数テーマ間で同じ (parent, child) ペアが出てくれば LLM cost ゼロで paper-specific rationale が再利用される。template entry は from_dict の rejection (#131 第二防衛線) でヒット時も拒否され heuristic フォールバック → 次回 LLM 機会あれば再分類されて cache 更新。`persist_classifications` で atomic write (build_lineage と同じ pattern)。
     - **並列 dispatch の push 競合対策**（#121 / #125）: Worker は per-IP 5/h + global 100/day で並列 dispatch を許す設計のため、複数の `theme-on-demand` run が同時刻に `develop` へ push すると 1 本以外が `! [rejected] develop -> develop (fetch first)` で discard されていた。
@@ -723,6 +729,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
 | Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
+| Theme seed audit (`theme-audit.yml`) | ✅ PR/push 時に `docs/themes/**` / build_theme_lineage / audit script 変更で fire。`uv run python -m paperpilot.scripts.audit_theme_seeds` 実行 → off-topic seed 検出で exit 1。Job Summary に Markdown 詳細出力 (#192) |
 
 ### ビューア
 | 仕様 | 状態 |
@@ -750,7 +757,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 |------|------|
 | ruff (lint) | ✅ 105 files clean |
 | mypy (type check) | ✅ 105 files clean |
-| pytest テスト数 | ✅ **636 tests pass** |
+| pytest テスト数 | ✅ **644 tests pass** |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
 | `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
 
