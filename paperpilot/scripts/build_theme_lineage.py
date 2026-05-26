@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import sys
 import unicodedata
@@ -927,19 +928,50 @@ def _filter_topic_relevant_seeds(
     as a top seed because S2's relevance ranker counts citation graph hops.
     Adding a substring check before ranking pins the seeds to the topic.
 
-    The gate only fires when the theme has 2+ words of 3+ chars each —
-    otherwise the filter would over-trim short queries like "RAG" or
-    "DPO" where the abbreviation rarely appears literally in the paper text.
+    Threshold scaling, by count of eligible (≥3 char) words after the
+    stopword-ish drop:
+
+    - 0 or 1 word eligible — short queries like "RAG" or "DPO" where the
+      abbreviation rarely appears literally in any paper. Skip the gate
+      and let S2 ranking do the work.
+    - 2 words eligible — require ``BOTH``. The 50 %-of-2 = 1 rule used
+      to suffice but data-recovery audit on the "Chain of Thought"
+      theme (2026-05-24) found 5 COVID-19 / Physics-ML papers slipping
+      through because the abstract happened to mention "chain" OR
+      "thought" without ever being on-topic. With only two words, the
+      false-positive cost of demanding both is small; the false-positive
+      cost of one was very large.
+    - 3+ words eligible — require ``ceil(N / 2)`` (e.g. 2 of 3, 2 of 4,
+      3 of 5). Same 50 % ratio but ``ceil`` so a 3-word query still
+      requires 2 hits instead of the previous ``int(3*0.5)=1``.
+
+    Also accepts the full theme as a phrase substring as an OR escape
+    hatch — papers explicitly titled "Chain of Thought Prompting" pass
+    even if title alone doesn't carry both words separately (the title
+    starts with the verbatim phrase, abstract may use the abbreviation
+    "CoT" elsewhere).
     """
     if not seeds:
         return []
     words = [w.lower() for w in theme.split() if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN]
     if len(words) < 2:
         return seeds
-    threshold = max(1, int(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO))
+    if len(words) == 2:
+        threshold = 2  # require both — fewer false positives, see docstring
+    else:
+        threshold = max(
+            2, math.ceil(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO)
+        )
+    phrase = theme.strip().lower()
     kept: list[dict[str, Any]] = []
     for p in seeds:
         haystack = f"{p.get('title') or ''} {p.get('abstract') or ''}".lower()
+        # Phrase short-circuit: "<theme verbatim>" anywhere in the text
+        # is a strong enough signal to accept even when word-by-word
+        # check would fail.
+        if phrase and phrase in haystack:
+            kept.append(p)
+            continue
         hits = sum(1 for w in words if w in haystack)
         if hits >= threshold:
             kept.append(p)
