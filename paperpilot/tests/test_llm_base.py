@@ -377,9 +377,15 @@ def test_template_rationales_is_source_of_truth_for_reject_set():
 
 
 def test_template_rationales_used_by_build_theme_lineage():
-    """build_theme_lineage._INTENT_RELATION_MAP and _DEFAULT_DERIVED
-    must reference TEMPLATE_RATIONALES so the heuristic-emitted strings
-    are exactly the same strings the reject set looks for."""
+    """build_theme_lineage._INTENT_RELATION_MAP must reference
+    TEMPLATE_RATIONALES so the heuristic-emitted strings are exactly
+    the same strings the from_dict reject set looks for.
+
+    #209 removed ``_DEFAULT_DERIVED`` (the "extends-template" fallback
+    that produced 93.7% of published edges) — the heuristic now
+    returns ``None`` when no signal applies and the LLM is the only
+    way to recover the edge.
+    """
     from paperpilot.llm.base import TEMPLATE_RATIONALES
     from paperpilot.scripts import build_theme_lineage as btl
 
@@ -390,5 +396,10 @@ def test_template_rationales_used_by_build_theme_lineage():
         "_INTENT_RELATION_MAP emits rationales outside TEMPLATE_RATIONALES — "
         "they won't be caught by from_dict's reject set."
     )
-    # _DEFAULT_DERIVED's rationale must also be canonical.
-    assert btl._DEFAULT_DERIVED[1] in TEMPLATE_RATIONALES.values()
+    # Regression guard: _DEFAULT_DERIVED is gone (#209). If a future
+    # refactor reintroduces a generic "extends-by-default" fallback,
+    # this assertion catches it.
+    assert not hasattr(btl, "_DEFAULT_DERIVED"), (
+        "_DEFAULT_DERIVED reintroduced — #209 removed the fabricated-extends "
+        "fallback because it accounted for 93.7% of edges and was pure noise."
+    )
