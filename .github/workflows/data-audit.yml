@@ -1,0 +1,103 @@
+name: data-audit
+# Aggregate audit gate for the generated viewer data under docs/. Two
+# read-only checks run in parallel-friendly sequence, each a pure
+# Python walk over the JSON files (no external API):
+#
+#   1. theme seeds — paperpilot/scripts/audit_theme_seeds.py
+#      flags off-topic focus papers per docs/themes/<slug>/lineage.json.
+#      Caught 12 / 19 themes contaminated by pre-#127 generations.
+#
+#   2. conference lineage — paperpilot/scripts/audit_lineage_quality.py
+#      flags structural issues (old focus papers, denylisted libs in
+#      seed set, dangling cluster ids) per docs/<conference>/lineage.json.
+#
+# Both auditors exit 1 on problems. The job reports each independently
+# in the GITHUB_STEP_SUMMARY so a partial regression on themes/ doesn't
+# hide a conference-data issue, then fails the overall job if either
+# audit flagged something.
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - "docs/themes/**"
+      - "docs/iclr-*/**"
+      - "paperpilot/scripts/audit_theme_seeds.py"
+      - "paperpilot/scripts/audit_lineage_quality.py"
+      - "paperpilot/scripts/build_theme_lineage.py"
+      - "paperpilot/scripts/build_lineage.py"
+      - ".github/workflows/data-audit.yml"
+  pull_request:
+    paths:
+      - "docs/themes/**"
+      - "docs/iclr-*/**"
+      - "paperpilot/scripts/audit_theme_seeds.py"
+      - "paperpilot/scripts/audit_lineage_quality.py"
+      - "paperpilot/scripts/build_theme_lineage.py"
+      - "paperpilot/scripts/build_lineage.py"
+      - ".github/workflows/data-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Theme seed audit
+        id: themes
+        run: |
+          set -o pipefail
+          uv run python -m paperpilot.scripts.audit_theme_seeds | tee themes.txt
+        continue-on-error: true
+
+      - name: Conference lineage audit
+        id: lineage
+        run: |
+          set -o pipefail
+          uv run python -m paperpilot.scripts.audit_lineage_quality | tee lineage.txt
+        continue-on-error: true
+
+      - name: Post audit summary
+        if: always()
+        run: |
+          {
+            echo "## Data quality audit"
+            echo ""
+            if [ "${{ steps.themes.outcome }}" = "success" ]; then
+              echo "✅ Theme seeds — all on-topic."
+            else
+              echo "⚠️ Theme seeds — off-topic detected:"
+              echo ""
+              echo '```'
+              cat themes.txt
+              echo '```'
+            fi
+            echo ""
+            if [ "${{ steps.lineage.outcome }}" = "success" ]; then
+              echo "✅ Conference lineage — clean."
+            else
+              echo "⚠️ Conference lineage — structural issues:"
+              echo ""
+              echo '```'
+              cat lineage.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail the job when any audit reports problems
+        if: steps.themes.outcome != 'success' || steps.lineage.outcome != 'success'
+        run: exit 1
