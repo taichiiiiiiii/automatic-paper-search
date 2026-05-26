@@ -298,3 +298,61 @@ def test_groq_provider_no_throttle_for_first_call(monkeypatch):
     ):
         provider._chat("sys", "u1")
     assert sleeps == []
+
+
+# ---- Quota-exhausted circuit breaker (#30) ----
+
+
+def test_groq_provider_short_circuits_after_consecutive_429(monkeypatch):
+    """3 consecutive Groq failures must flip the quota-exhausted flag.
+
+    Verified post-2026-05-26 SSM workflow cancellation where the run
+    spent its full 15-min timeout-minutes thrashing through Groq 429s
+    on every edge. The fourth call onwards should return None without
+    hitting the API.
+    """
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic", lambda: 0.0)
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep", lambda s: None)
+
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    call_count = 0
+
+    def fake_rwr(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        return _resp(429)  # all 429
+
+    with patch("paperpilot.llm.groq_provider.request_with_retry", side_effect=fake_rwr):
+        # First 3 calls hit the API and 429.
+        assert provider._chat("s", "u") is None
+        assert provider._chat("s", "u") is None
+        assert provider._chat("s", "u") is None
+        # 4th call short-circuits — no API hit.
+        assert provider._chat("s", "u") is None
+        assert provider._chat("s", "u") is None
+
+    # 3 actual requests sent, then short-circuit took over.
+    assert call_count == 3
+    assert provider._quota_exhausted is True
+
+
+def test_groq_provider_failure_counter_resets_on_success(monkeypatch):
+    """A successful call must reset the consecutive-failure counter so a
+    transient 1-2 blip doesn't latch the breaker."""
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.monotonic", lambda: 0.0)
+    monkeypatch.setattr("paperpilot.llm.groq_provider.time.sleep", lambda s: None)
+
+    provider = GroqProvider({"enabled": True}, api_key="k")
+    responses = [_resp(429), _resp(429), _resp(200, _groq_body("ok")), _resp(429), _resp(429)]
+
+    with patch(
+        "paperpilot.llm.groq_provider.request_with_retry",
+        side_effect=responses,
+    ):
+        assert provider._chat("s", "u") is None     # fail 1
+        assert provider._chat("s", "u") is None     # fail 2
+        assert provider._chat("s", "u") == "ok"     # success → counter reset
+        assert provider._chat("s", "u") is None     # fail 1 again (not 3)
+        assert provider._chat("s", "u") is None     # fail 2
+
+    assert provider._quota_exhausted is False
