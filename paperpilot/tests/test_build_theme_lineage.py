@@ -1916,6 +1916,13 @@ def test_openalex_fallback_invoked_when_s2_returns_zero(tmp_path, monkeypatch):
     assert "concepts.id:C41008148" in oa_filter, (
         f"OpenAlex filter must include Computer Science concept id; got {oa_filter!r}"
     )
+    # OR syntax pin: OpenAlex expects `field:val1|val2|val3`, NOT
+    # `field:val1|field:val2|field:val3` — the latter returned HTTP 400
+    # on the 2026-05-26 v3 attempt and silently dropped the fallback to
+    # 0 seeds.
+    assert "concepts.id:C41008148|concepts.id" not in oa_filter, (
+        f"OpenAlex OR syntax wrong (repeated key); got {oa_filter!r}"
+    )
 
 
 def test_openalex_fallback_skipped_when_s2_meets_quota(tmp_path, monkeypatch):
