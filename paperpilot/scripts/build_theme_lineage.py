@@ -685,8 +685,10 @@ def discover_seeds_via_openalex(
     # OpenAlex's text relevance has no domain prior. Concepts IDs come
     # from https://docs.openalex.org/api-entities/concepts (Computer
     # Science = C41008148, Mathematics = C33923547, Linguistics =
-    # C137293760). Join with `|` for OR.
-    concept_filter = "concepts.id:C41008148|concepts.id:C33923547|concepts.id:C137293760"
+    # C137293760). OR within one filter key uses `|` between *values*
+    # only — repeating `concepts.id:` per value yielded HTTP 400 in the
+    # 2026-05-26 v3 attempt.
+    concept_filter = "concepts.id:C41008148|C33923547|C137293760"
     if since_year is not None:
         params["filter"] = (
             f"from_publication_date:{since_year}-01-01,{concept_filter}"
