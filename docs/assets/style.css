@@ -1508,6 +1508,41 @@ g.node-wrap.node-wrap--no-tx {
 }
 .slug-fallback__close:hover { color: var(--color-ink); }
 
+/* Stale-data banner — same shape as slug-fallback but in the
+   theme-progress coral palette to differentiate "this theme's data
+   is mid-refresh" (alert) from slug-fallback's "your URL was wrong"
+   (info). Hide on the same close-button pattern. */
+.stale-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0.6rem var(--space-edge) 0;
+  padding: 0.55rem 0.9rem;
+  background: linear-gradient(
+    to right,
+    oklch(96% 0.045 30) 0%,
+    oklch(97% 0.025 30) 100%
+  );
+  border: 1px solid oklch(82% 0.10 30);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 4px 8px 8px 4px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink);
+}
+.stale-banner[hidden] { display: none; }
+.stale-banner__icon { font-size: 1.05rem; }
+.stale-banner__msg { flex: 1 1 auto; line-height: 1.5; }
+.stale-banner__close {
+  background: transparent;
+  border: 0;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 0.3rem;
+}
+.stale-banner__close:hover { color: var(--color-ink); }
+
 /* Theme gallery: horizontal card row above the toolbar listing every
    generated theme with its key stats. Cards stay readable down to ~6
    per row at 1600px; below that they wrap. */
