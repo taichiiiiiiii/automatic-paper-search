@@ -1,0 +1,74 @@
+name: theme-seed-audit
+# Walk `docs/themes/*/lineage.json` and fail when any focus paper looks
+# off-topic for its theme. Runs on every push/PR that touches the
+# generated theme data so a regen with a bad seed gate (e.g. a future
+# pipeline change that re-introduces the COVID-papers-for-Chain-of-
+# Thought bug) gets caught at PR time instead of after merge.
+#
+# Audit logic lives in paperpilot/scripts/audit_theme_seeds.py — it's a
+# pure read-only walk, no external API calls, so it runs in seconds.
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - "docs/themes/**"
+      - "paperpilot/scripts/audit_theme_seeds.py"
+      - "paperpilot/scripts/build_theme_lineage.py"
+      - ".github/workflows/theme-audit.yml"
+  pull_request:
+    paths:
+      - "docs/themes/**"
+      - "paperpilot/scripts/audit_theme_seeds.py"
+      - "paperpilot/scripts/build_theme_lineage.py"
+      - ".github/workflows/theme-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Run audit
+        id: audit
+        run: |
+          set -o pipefail
+          # The script exits 1 when problems are found; tee the output so
+          # the job summary surfaces it without re-running the audit.
+          uv run python -m paperpilot.scripts.audit_theme_seeds | tee audit.txt
+        continue-on-error: true
+
+      - name: Post audit summary
+        if: always()
+        run: |
+          {
+            echo "## Theme seed audit"
+            echo ""
+            if [ "${{ steps.audit.outcome }}" = "success" ]; then
+              echo "✅ All themes are on-topic."
+            else
+              echo "⚠️ Off-topic seeds detected — re-dispatch the affected themes via theme-on-demand.yml or wait for the Sunday regen-themes cron."
+              echo ""
+              echo '```'
+              cat audit.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail the job when audit reports problems
+        if: steps.audit.outcome != 'success'
+        run: exit 1
