@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,16..72,400;0,16..72,500;1,16..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="../assets/style.css?v=69" />
+  <link rel="stylesheet" href="../assets/style.css?v=70" />
 </head>
 <body>
   <noscript>
@@ -187,6 +187,20 @@
       ✨ そのテーマを新規生成
     </button>
     <button type="button" class="slug-fallback__close" id="slug-fallback-close" aria-label="閉じる">
+      ✕
+    </button>
+  </div>
+
+  <!-- Stale-data banner: theme.js audits the current theme's focus
+       seeds against its theme words; if any seed reads as off-topic
+       (the CoT-with-COVID-papers class of regression) we show a soft
+       warning instead of silently rendering bad data. Toggled by
+       theme.js maybeShowStaleBanner() — see audit_theme_seeds.py for
+       the same rule applied as a CI gate. -->
+  <div class="stale-banner" id="stale-banner" hidden role="status">
+    <span class="stale-banner__icon" aria-hidden="true">🛠</span>
+    <span class="stale-banner__msg" id="stale-banner-msg"></span>
+    <button type="button" class="stale-banner__close" id="stale-banner-close" aria-label="閉じる">
       ✕
     </button>
   </div>
@@ -403,7 +417,7 @@
     <span id="x-axis-hint">Y 軸: 年（rank-based 等間隔） · X 軸: 引用ランク · ホバー → 分類理由</span>
   </footer>
 
-  <script src="../assets/utils.js?v=69" defer></script>
-  <script src="../assets/theme.js?v=69" defer></script>
+  <script src="../assets/utils.js?v=70" defer></script>
+  <script src="../assets/theme.js?v=70" defer></script>
 </body>
 </html>
