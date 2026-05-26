@@ -51,6 +51,35 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Custom scrollbars — the browser default chunky-blue scrollbar is the
+   single most "this is a templated webpage" detail visible on most
+   pages. Replacing it with a thin, neutral track that picks up the
+   surface palette costs nothing and reads as "the designer thought
+   about every edge". Firefox handles `scrollbar-*` and Chromium /
+   Safari handle `::-webkit-scrollbar-*` — we ship both so coverage
+   is universal. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-rule-strong) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-rule-strong);
+  border-radius: 999px;
+  border: 2px solid var(--color-surface);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-muted);
+  background-clip: padding-box;
+}
+
 /* Off-screen until focused — keyboard users hit Tab once and the link
    surfaces, then activating it jumps past the hero / breadcrumb to the
    primary content. Mouse / touch users never see it. Matches the
