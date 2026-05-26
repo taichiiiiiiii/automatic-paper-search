@@ -114,6 +114,38 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
      sit above the ::before grain overlay below. */
   isolation: isolate;
 }
+/* Editorial section mark in the top-right of the hero: a small "§"
+   glyph in mono caps, like the section markers a print magazine uses
+   between articles. Sits in the negative space above the title without
+   competing with content. Hidden on narrow viewports where vertical
+   real estate is more valuable. */
+.hero::after {
+  content: "§";
+  position: absolute;
+  top: calc(var(--space-section) * 0.55);
+  right: var(--space-edge);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 1rem + 2vw, 3rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-accent);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+  font-variation-settings: "opsz" 48;
+}
+@media (max-width: 720px) {
+  .hero::after { display: none; }
+}
+/* Compact hero has the "ⓘ について" / "✨ 新規テーマ" buttons in the
+   breadcrumb at top-right, which would crowd the § mark. Move the
+   mark down to sit beside the title instead so the two surfaces have
+   their own zone. */
+.hero--compact::after {
+  top: auto;
+  bottom: calc(var(--space-section) * 0.2);
+  font-size: clamp(1.6rem, 0.9rem + 1.5vw, 2.4rem);
+}
 /* Polish: hand-painted paper grain via inline-SVG turbulence. Drops the
    "stock template" feel a flat gradient surface has and gives the hero a
    tactile atmosphere — one of the design-quality 'texture / atmosphere'
@@ -251,6 +283,12 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   color: var(--color-ink-muted);
   line-height: 1.55;
   margin: 0 0 1rem;
+  /* Editorial pull-quote treatment: a 2 px coral rule on the left sets
+     the lede apart from the body text like a magazine standfirst,
+     anchoring it visually to the title without competing for attention.
+     Padding-left gives the rule breathing room from the text. */
+  padding-left: 1rem;
+  border-left: 2px solid var(--color-accent);
 }
 
 .hero__modes {
@@ -292,6 +330,13 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   flex-wrap: wrap;
   gap: clamp(2rem, 1rem + 4vw, 4rem);
   align-items: baseline;
+  /* Editorial: a horizontal rule under the stats row anchors it as a
+     header band (like a masthead under the paper of record). Subtle
+     enough to not compete with the title, present enough to read as
+     intentional rhythm rather than empty space below the numbers. */
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-rule);
+  margin-bottom: 0.5rem;
 }
 .stat__num {
   font-family: var(--font-serif);
@@ -309,6 +354,14 @@ a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; b
   font-variation-settings: "opsz" 24;
 }
 .stat__num--oral { color: var(--color-oral); }
+/* Featured stat — the highlight number of the masthead. ICLR Oral is
+   already coral-tinted via --oral, this scales it up to a true
+   feature ratio (1.4×) so the eye anchors there first. */
+.stat--featured .stat__num {
+  font-size: clamp(2.8rem, 1.6rem + 3.5vw, 4.5rem);
+  font-variation-settings: "opsz" 36;
+  letter-spacing: -0.02em;
+}
 .stat__label {
   display: block;
   font-family: var(--font-mono);
