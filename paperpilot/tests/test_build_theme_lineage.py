@@ -2371,6 +2371,25 @@ def test_filter_topic_relevant_seeds_empty_input_returns_empty():
     assert build_theme_lineage._filter_topic_relevant_seeds([], theme="Anything") == []
 
 
+def test_aliases_for_known_theme():
+    """The shipped theme_aliases.json should at minimum carry an entry
+    for the speculative-decoding case that motivated the feature."""
+    aliases = build_theme_lineage._aliases_for("Speculative Decoding")
+    assert "speculative sampling" in aliases
+
+
+def test_aliases_for_unknown_theme_returns_empty():
+    """Themes not in the alias file → empty list, never None."""
+    assert build_theme_lineage._aliases_for("totally-unknown-theme-xyz") == []
+
+
+def test_aliases_for_case_insensitive():
+    """Lookup must be case- and whitespace-insensitive so
+    "SPECULATIVE  DECODING" still matches."""
+    assert build_theme_lineage._aliases_for("  speculative decoding ") == \
+        build_theme_lineage._aliases_for("Speculative Decoding")
+
+
 def test_filter_topic_relevant_seeds_two_word_requires_both():
     """Two eligible words (after dropping <3-char stopwords like ``of``)
     must require BOTH to match. The 50 %-of-2 = 1 rule passing for the
