@@ -725,6 +725,132 @@ def _seed_cache_path(keyword: str, since_year: int | None) -> Path:
     return CACHE_DIR / f"search_{digest}_{suffix}.json"
 
 
+def _decode_abstract_inverted_index(inverted: object) -> str:
+    """Reconstruct an abstract from OpenAlex's ``abstract_inverted_index``.
+
+    OpenAlex licences abstracts in inverted form: ``{word: [positions, ...]}``
+    instead of a single string, so the API response stays compact even
+    for long abstracts. Walk every (word, position) pair to recover the
+    original sentence-ordered text. Missing positions in the resulting
+    sparse map are filled with an empty string so consecutive words still
+    join with a single space.
+
+    Returns the empty string when the input is missing, malformed, or
+    yields no positions — callers treat empty as "no abstract" and fall
+    through gracefully.
+    """
+    if not isinstance(inverted, dict):
+        return ""
+    by_position: dict[int, str] = {}
+    for word, positions in inverted.items():
+        if not isinstance(word, str) or not isinstance(positions, list):
+            continue
+        for pos in positions:
+            if isinstance(pos, int) and pos >= 0:
+                by_position[pos] = word
+    if not by_position:
+        return ""
+    max_pos = max(by_position.keys())
+    return " ".join(by_position.get(i, "") for i in range(max_pos + 1)).strip()
+
+
+def _openalex_short_id(work_url_or_id: str) -> str | None:
+    """Extract the ``W...`` short ID from an OpenAlex Work URL or id.
+
+    OpenAlex returns IDs in two shapes:
+      * full URL: ``https://openalex.org/W2962917714``
+      * short:    ``W2962917714``
+
+    Anywhere we use the ID as a primary key, we want the short form.
+    Returns None for non-string / malformed inputs.
+    """
+    if not isinstance(work_url_or_id, str) or not work_url_or_id:
+        return None
+    tail = work_url_or_id.rsplit("/", 1)[-1].strip()
+    return tail if tail.startswith("W") else None
+
+
+# Prefix that marks a paper dict whose ``paperId`` came from OpenAlex
+# rather than S2. fetch_related (build_lineage.py) routes BFS calls by
+# checking this prefix — papers with S2 hash IDs hit the S2 endpoints
+# as before; ``openalex:W...`` papers route to OpenAlex's referenced_works
+# / cites filter so the lineage can be built without any S2 access.
+_OPENALEX_PAPER_ID_PREFIX = "openalex:"
+
+
+def _work_to_paper_dict(work: dict) -> dict[str, Any] | None:
+    """Convert an OpenAlex ``/works`` payload to an S2-shape paper dict.
+
+    The returned dict is compatible with the rest of the lineage pipeline
+    (``_filter_topic_relevant_seeds``, ``_rank_and_truncate``, BFS via
+    ``fetch_related``) so callers can use OpenAlex Works as a drop-in
+    replacement for S2 search results.
+
+    ``paperId`` is set to ``f"openalex:{short_id}"`` (e.g.
+    ``"openalex:W2962917714"``). The ``openalex:`` prefix tells
+    ``fetch_related`` to dispatch to the OpenAlex BFS path; S2 doesn't
+    recognise these IDs so we must never let one leak into an S2 call.
+
+    Fields not provided by OpenAlex (``_intents``, ``_is_influential``,
+    ``_contexts``) are not set here — they're populated by ``fetch_related``
+    when it builds the parent/child edge records. For seed-only use, the
+    intent map gracefully falls through to year/cite contrast.
+
+    Returns ``None`` when the Work is missing an OpenAlex ID, has no
+    title, or is otherwise unusable. Callers filter ``None`` out.
+    """
+    short = _openalex_short_id(work.get("id") or "")
+    if not short:
+        return None
+    title = work.get("title") or work.get("display_name") or ""
+    if not title:
+        return None
+
+    doi = _extract_doi(work) or ""
+    external_ids: dict[str, str] = {"OpenAlex": short}
+    if doi:
+        external_ids["DOI"] = doi
+    # Pull out arxiv / mag / pmid if present so downstream code that
+    # checks externalIds.ArXiv (e.g. arXiv-category gate work) keeps
+    # working unchanged.
+    ids_block = work.get("ids") or {}
+    for k_oa, k_out in [
+        ("arxiv_id", "ArXiv"),
+        ("mag", "MAG"),
+        ("pmid", "PMID"),
+    ]:
+        v = ids_block.get(k_oa)
+        if isinstance(v, str) and v.strip():
+            external_ids[k_out] = v.strip()
+
+    abstract = _decode_abstract_inverted_index(
+        work.get("abstract_inverted_index")
+    )
+    primary_location = work.get("primary_location") or {}
+    source = primary_location.get("source") or {}
+    venue = source.get("display_name") or ""
+
+    authors: list[dict[str, str]] = []
+    for authorship in work.get("authorships") or []:
+        if not isinstance(authorship, dict):
+            continue
+        author = authorship.get("author") or {}
+        name = author.get("display_name") or ""
+        if isinstance(name, str) and name.strip():
+            authors.append({"name": name.strip()})
+
+    return {
+        "paperId": f"{_OPENALEX_PAPER_ID_PREFIX}{short}",
+        "title": title,
+        "year": work.get("publication_year"),
+        "venue": venue,
+        "citationCount": int(work.get("cited_by_count") or 0),
+        "abstract": abstract,
+        "authors": authors,
+        "externalIds": external_ids,
+    }
+
+
 def _extract_doi(work: dict) -> str | None:
     """Pull the bare DOI (no URL prefix) out of an OpenAlex Work dict.
 
@@ -835,6 +961,175 @@ def discover_seeds_via_openalex(
     return [w for w in results if isinstance(w, dict)]
 
 
+def _fetch_openalex_works_by_ids(
+    short_ids: list[str], *, email: str | None = None
+) -> list[dict[str, Any]]:
+    """Batch-fetch OpenAlex Works by short ID via the ``filter=openalex:W1|W2``
+    parameter. Returns S2-shape paper dicts (via ``_work_to_paper_dict``).
+
+    OpenAlex's filter pipeline accepts up to ~100 IDs per request; we
+    chunk above that to stay safely inside the limit. Failed pages
+    contribute zero (graceful degrade). Order is not preserved — the
+    BFS layer already de-duplicates and re-ranks.
+    """
+    cleaned: list[str] = [
+        sid for sid in short_ids
+        if isinstance(sid, str) and sid.startswith("W")
+    ]
+    if not cleaned:
+        return []
+    results: list[dict[str, Any]] = []
+    chunk_size = 50
+    for i in range(0, len(cleaned), chunk_size):
+        chunk = cleaned[i : i + chunk_size]
+        params: dict[str, Any] = {
+            "filter": f"openalex:{'|'.join(chunk)}",
+            "per-page": len(chunk),
+        }
+        if email:
+            params["mailto"] = email
+        resp = request_with_retry(
+            "GET",
+            _OPENALEX_WORKS_URL,
+            params=params,
+            headers={"User-Agent": "PaperPilot/0.1"},
+            timeout=20,
+        )
+        if resp is None or resp.status_code != 200:
+            logger.warning(
+                "openalex batch fetch failed (status=%s, chunk=%d ids)",
+                getattr(resp, "status_code", None), len(chunk),
+            )
+            continue
+        try:
+            payload = resp.json()
+        except ValueError:
+            continue
+        works = payload.get("results") if isinstance(payload, dict) else None
+        if not isinstance(works, list):
+            continue
+        for work in works:
+            if not isinstance(work, dict):
+                continue
+            paper = _work_to_paper_dict(work)
+            if paper is not None:
+                results.append(paper)
+    return results
+
+
+def fetch_related_via_openalex(
+    openalex_short_id: str, kind: str, limit: int, *, email: str | None = None
+) -> list[dict[str, Any]]:
+    """OpenAlex BFS — return parent/child papers for a given Work.
+
+    Mirrors the contract of ``build_lineage.fetch_related`` so callers
+    can dispatch by paperId prefix without code-path forks. Each
+    returned dict is shaped like an S2 paper response (via
+    ``_work_to_paper_dict``) with ``paperId='openalex:W...'`` so the
+    next BFS hop recursively routes back here.
+
+    ``kind`` selects the relationship:
+      * ``references`` — fetch this Work's ``referenced_works`` (parents),
+        then batch-resolve the IDs to full Work metadata.
+      * ``citations`` — query ``/works?filter=cites:W{id}`` for papers
+        that cite this Work (children), sorted by ``cited_by_count``
+        so the top hits are the most-influential descendants.
+
+    Limit is capped at ``_OPENALEX_PER_PAGE_MAX`` (200) per OpenAlex.
+    OpenAlex does NOT provide ``intents`` / ``contexts`` / ``isInfluential``
+    so the returned dicts carry ``_intents=None``, ``_contexts=[]``,
+    ``_is_influential=None``. Downstream ``derive_relation`` then falls
+    through to year/cite contrast or LLM (whichever is configured).
+    """
+    if not openalex_short_id or not openalex_short_id.startswith("W"):
+        return []
+    page_size = min(max(1, limit), _OPENALEX_PER_PAGE_MAX)
+    if kind == "references":
+        params: dict[str, Any] = {
+            "select": "id,referenced_works",
+        }
+        if email:
+            params["mailto"] = email
+        resp = request_with_retry(
+            "GET",
+            f"{_OPENALEX_WORKS_URL}/{openalex_short_id}",
+            params=params,
+            headers={"User-Agent": "PaperPilot/0.1"},
+            timeout=20,
+        )
+        if resp is None or resp.status_code != 200:
+            logger.warning(
+                "openalex work fetch failed (id=%s, status=%s)",
+                openalex_short_id, getattr(resp, "status_code", None),
+            )
+            return []
+        try:
+            payload = resp.json()
+        except ValueError:
+            return []
+        ref_urls = (payload or {}).get("referenced_works") or []
+        ref_ids = [
+            sid for sid in (
+                _openalex_short_id(u) for u in ref_urls if isinstance(u, str)
+            )
+            if sid
+        ]
+        # Cap before the batch fetch to avoid wasting OpenAlex quota
+        # on papers we'd discard anyway.
+        parents = _fetch_openalex_works_by_ids(ref_ids[:page_size], email=email)
+        return [_attach_empty_intent_fields(p) for p in parents]
+    if kind == "citations":
+        params = {
+            "filter": f"cites:{openalex_short_id}",
+            "per-page": page_size,
+            "sort": "cited_by_count:desc",
+        }
+        if email:
+            params["mailto"] = email
+        resp = request_with_retry(
+            "GET",
+            _OPENALEX_WORKS_URL,
+            params=params,
+            headers={"User-Agent": "PaperPilot/0.1"},
+            timeout=20,
+        )
+        if resp is None or resp.status_code != 200:
+            logger.warning(
+                "openalex cites query failed (id=%s, status=%s)",
+                openalex_short_id, getattr(resp, "status_code", None),
+            )
+            return []
+        try:
+            payload = resp.json()
+        except ValueError:
+            return []
+        results = payload.get("results") if isinstance(payload, dict) else None
+        if not isinstance(results, list):
+            return []
+        children: list[dict[str, Any]] = []
+        for work in results:
+            if not isinstance(work, dict):
+                continue
+            paper = _work_to_paper_dict(work)
+            if paper is not None:
+                children.append(_attach_empty_intent_fields(paper))
+        return children
+    return []
+
+
+def _attach_empty_intent_fields(paper: dict[str, Any]) -> dict[str, Any]:
+    """Add the entry-level fields that BFS callers rely on (``_intents``,
+    ``_is_influential``, ``_contexts``) when they're not provided by the
+    data source. OpenAlex doesn't expose citation intent / contexts, so
+    OpenAlex-sourced papers always carry None / [] here and the
+    downstream classifier falls through to year/cite contrast or LLM.
+    """
+    paper.setdefault("_intents", None)
+    paper.setdefault("_is_influential", None)
+    paper.setdefault("_contexts", [])
+    return paper
+
+
 def _resolve_openalex_to_s2(works: list[dict]) -> list[dict[str, Any]]:
     """POST OpenAlex DOIs to S2 ``/paper/batch``; return S2-shape dicts.
 
@@ -888,6 +1183,74 @@ def _resolve_openalex_to_s2(works: list[dict]) -> list[dict[str, Any]]:
     return resolved
 
 
+def _apply_seed_filters(
+    by_id: dict[str, dict[str, Any]],
+    *,
+    theme: str | None,
+    top_n: int,
+    since_year: int | None,
+) -> list[dict[str, Any]]:
+    """Run the standard seed-filter chain (denylist → topic relevance →
+    per-theme blacklist) on the candidate pool, then rank-and-truncate.
+
+    Extracted so the S2-primary and OpenAlex-primary paths share an
+    identical filter chain — drifting the two would silently cause
+    different seed sets depending on which data source the throttle
+    happened to spare today.
+    """
+    candidates: list[dict[str, Any]] = list(by_id.values())
+    candidates = _filter_denylisted_seeds(candidates)
+    if theme:
+        candidates = _filter_topic_relevant_seeds(candidates, theme=theme)
+        candidates = _filter_theme_blacklist(candidates, theme=theme)
+    return _rank_and_truncate(candidates, top_n=top_n, since_year=since_year)
+
+
+def _discover_seeds_openalex_primary(
+    *,
+    keywords: list[str],
+    top_n: int,
+    since_year: int | None,
+    openalex_email: str | None,
+    theme: str | None,
+) -> list[dict[str, Any]]:
+    """OpenAlex-first seed discovery path (#209 S2-free Phase 1).
+
+    Mirrors the structure of the S2-primary path but uses OpenAlex
+    Works as the seed source and converts each to an S2-shape paper
+    dict via ``_work_to_paper_dict``. The resulting ``paperId`` is
+    prefixed ``openalex:`` so the BFS layer (``fetch_related``) routes
+    to the OpenAlex back-end for parent/child traversal — no S2 call
+    is needed anywhere on this path.
+
+    Unlike the legacy S2 fallback, we do NOT call ``/paper/batch`` to
+    map DOIs onto S2 paperIds: that endpoint shares S2's IP-pool
+    throttle and was the choke point pre-#209. Skipping it makes the
+    pipeline robust to S2 outages.
+
+    Single OpenAlex search per keyword (their relevance ranker is fine
+    on multi-word strings); dedup by OpenAlex short ID.
+    """
+    by_id: dict[str, dict[str, Any]] = {}
+    for kw in keywords:
+        if not kw or not kw.strip():
+            continue
+        works = discover_seeds_via_openalex(
+            query=kw,
+            top_n=top_n,
+            since_year=since_year,
+            email=openalex_email,
+        )
+        for work in works:
+            paper = _work_to_paper_dict(work)
+            if paper is None:
+                continue
+            by_id.setdefault(paper["paperId"], paper)
+    return _apply_seed_filters(
+        by_id, theme=theme, top_n=top_n, since_year=since_year
+    )
+
+
 def discover_seeds(
     *,
     keywords: list[str],
@@ -896,8 +1259,10 @@ def discover_seeds(
     use_openalex_fallback: bool = True,
     openalex_email: str | None = None,
     theme: str | None = None,
+    primary_source: str = "s2",
 ) -> list[dict[str, Any]]:
-    """Find seed papers for the theme via S2 ``/paper/search``.
+    """Find seed papers for the theme via S2 ``/paper/search`` (default)
+    or OpenAlex ``/works`` (``primary_source="openalex"``).
 
     Calls the search endpoint once per keyword, dedupes by paperId,
     filters by ``since_year``, sorts by citationCount desc, returns
@@ -915,7 +1280,27 @@ def discover_seeds(
     ``/paper/batch`` (separate rate budget from ``/paper/search``),
     and merge the new papers in (dedup by paperId). ``openalex_email``
     enables OpenAlex's polite pool for higher reliability under load.
+
+    ``primary_source="openalex"`` (#209 S2-free Phase 1): inverts the
+    priority. OpenAlex becomes the primary data source and S2 is only
+    consulted as a top-up when OpenAlex returns fewer than ``top_n``
+    seeds. Used by production workflows that can't rely on S2 (no API
+    key, shared CI IP throttle) — paperIds are emitted with an
+    ``openalex:`` prefix so BFS routes to OpenAlex.
     """
+    if primary_source == "openalex":
+        primary = _discover_seeds_openalex_primary(
+            keywords=keywords,
+            top_n=top_n,
+            since_year=since_year,
+            openalex_email=openalex_email,
+            theme=theme,
+        )
+        # No S2 top-up here: the whole point of this path is to avoid
+        # S2 entirely. If OpenAlex under-delivered, the lineage will
+        # be sparser but the build still completes.
+        return primary
+
     by_id: dict[str, dict[str, Any]] = {}
 
     for kw in keywords:
@@ -1906,8 +2291,19 @@ def build_theme_lineage(
     output: Path | None = None,
     use_openalex_fallback: bool = True,
     llm_strict: str = "off",
+    primary_source: str = "s2",
 ) -> Path:
-    """Run the full theme-to-family-tree pipeline; return the output path."""
+    """Run the full theme-to-family-tree pipeline; return the output path.
+
+    ``primary_source`` (#209 S2-free Phase 1): selects the primary
+    data source for seed discovery and BFS.
+      * ``"s2"`` (default): legacy behaviour — S2 ``/paper/search`` and
+        ``/{id}/references|citations``, with OpenAlex top-up fallback.
+      * ``"openalex"``: OpenAlex ``/works`` for seed + BFS via
+        ``referenced_works`` / ``cites:`` filter. No S2 calls anywhere
+        on the success path — survives without ``PAPERPILOT_S2_API_KEY``
+        and without CI runner IP throttle.
+    """
     sanitised = sanitize_theme(theme)
     slug = theme_slug(sanitised)
 
@@ -1951,6 +2347,7 @@ def build_theme_lineage(
         use_openalex_fallback=use_openalex_fallback,
         openalex_email=openalex_email,
         theme=sanitised,
+        primary_source=primary_source,
     )
     # Alias fallback: when the canonical theme name doesn't surface any
     # seeds (S2 indexed under a different spelling, abbreviation
@@ -2154,6 +2551,17 @@ def _build_arg_parser() -> argparse.ArgumentParser:
              "all: LLM on every influential edge (high cost — bounded by "
              "Groq per-minute rate limits in practice).",
     )
+    ap.add_argument(
+        "--primary-source",
+        dest="primary_source",
+        choices=["s2", "openalex"],
+        default="s2",
+        help="Data source for seed discovery + BFS (#209 S2-free Phase 1). "
+             "s2 (default): legacy path with S2 search + OpenAlex top-up. "
+             "openalex: OpenAlex /works for seed + referenced_works / "
+             "cites: filter for BFS — no S2 calls anywhere, survives "
+             "without PAPERPILOT_S2_API_KEY and shared-IP throttle.",
+    )
     return ap
 
 
@@ -2185,6 +2593,7 @@ def main(argv: list[str] | None = None) -> int:
             output=output,
             use_openalex_fallback=args.use_openalex_fallback,
             llm_strict=args.llm_strict,
+            primary_source=args.primary_source,
         )
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)

@@ -115,7 +115,8 @@ jobs:
           uv run python -m paperpilot.scripts.build_theme_lineage \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
-            --llm-strict ambiguous
+            --llm-strict ambiguous \
+            --primary-source openalex
 
       - name: Refresh manifest
         run: |

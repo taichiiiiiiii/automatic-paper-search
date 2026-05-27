@@ -3077,6 +3077,287 @@ def test_discover_seeds_filters_irrelevant_seeds(tmp_path: Path, monkeypatch):
     assert [s["paperId"] for s in seeds] == ["gnn"]
 
 
+# ---- #209 S2-free Phase 1: OpenAlex Work → paper_dict + primary inversion ----
+
+
+def _mk_oa_work_v2(
+    short_id: str,
+    *,
+    title: str = "Sample paper",
+    year: int = 2022,
+    cited_by_count: int = 100,
+    doi: str | None = None,
+    venue: str = "NeurIPS",
+    abstract_words: tuple[str, ...] = ("we", "propose", "a", "method"),
+) -> dict:
+    """Build an OpenAlex Work payload with the minimum fields the
+    converter inspects. Abstract is inverted-index encoded.
+
+    Named with ``_v2`` suffix because an earlier helper
+    ``_mk_openalex_work`` (with a different signature) already exists
+    above for the legacy OpenAlex-fallback tests.
+    """
+    inverted: dict[str, list[int]] = {}
+    for i, word in enumerate(abstract_words):
+        inverted.setdefault(word, []).append(i)
+    work: dict = {
+        "id": f"https://openalex.org/{short_id}",
+        "title": title,
+        "publication_year": year,
+        "cited_by_count": cited_by_count,
+        "abstract_inverted_index": inverted,
+        "primary_location": {"source": {"display_name": venue}},
+        "authors": [],
+        "authorships": [
+            {"author": {"display_name": "A. Author"}},
+        ],
+    }
+    if doi:
+        work["doi"] = f"https://doi.org/{doi}"
+        work["ids"] = {"doi": f"https://doi.org/{doi}"}
+    return work
+
+
+def test_decode_abstract_inverted_index_reconstructs_text():
+    """Inverted index → original sentence order via position walk."""
+    inverted = {
+        "We": [0],
+        "propose": [1],
+        "a": [2],
+        "novel": [3],
+        "method": [4, 7],
+        "for": [5],
+        "the": [6],
+    }
+    assert build_theme_lineage._decode_abstract_inverted_index(inverted) == (
+        "We propose a novel method for the method"
+    )
+
+
+def test_decode_abstract_inverted_index_handles_malformed():
+    """Defensive: non-dict / bad position values yield empty string."""
+    assert build_theme_lineage._decode_abstract_inverted_index(None) == ""
+    assert build_theme_lineage._decode_abstract_inverted_index("not a dict") == ""
+    assert build_theme_lineage._decode_abstract_inverted_index({}) == ""
+    # Negative positions skipped; valid one still rendered.
+    assert (
+        build_theme_lineage._decode_abstract_inverted_index(
+            {"hello": [-1], "world": [0]}
+        )
+        == "world"
+    )
+
+
+def test_openalex_short_id_extracts_from_url_and_short():
+    """Full URL → short. Already-short → unchanged. Garbage → None."""
+    assert (
+        build_theme_lineage._openalex_short_id(
+            "https://openalex.org/W2962917714"
+        )
+        == "W2962917714"
+    )
+    assert build_theme_lineage._openalex_short_id("W123") == "W123"
+    assert build_theme_lineage._openalex_short_id("") is None
+    assert build_theme_lineage._openalex_short_id(None) is None  # type: ignore[arg-type]
+    assert build_theme_lineage._openalex_short_id("not-a-work-id") is None
+
+
+def test_work_to_paper_dict_returns_s2_shape():
+    """OpenAlex Work → S2-shape paper_dict with paperId='openalex:W...'."""
+    work = _mk_oa_work_v2(
+        "W2962917714",
+        title="Deep contextualized word representations",
+        year=2018,
+        cited_by_count=12345,
+        doi="10.18653/v1/N18-1202",
+        venue="NAACL",
+    )
+    paper = build_theme_lineage._work_to_paper_dict(work)
+    assert paper is not None
+    assert paper["paperId"] == "openalex:W2962917714"
+    assert paper["title"] == "Deep contextualized word representations"
+    assert paper["year"] == 2018
+    assert paper["citationCount"] == 12345
+    assert paper["venue"] == "NAACL"
+    assert paper["externalIds"]["OpenAlex"] == "W2962917714"
+    assert paper["externalIds"]["DOI"] == "10.18653/v1/N18-1202"
+    assert "we propose a method" in paper["abstract"].lower()
+    assert paper["authors"] == [{"name": "A. Author"}]
+
+
+def test_work_to_paper_dict_returns_none_for_missing_id_or_title():
+    """Malformed Works skipped (caller filters)."""
+    assert build_theme_lineage._work_to_paper_dict({"title": "T"}) is None
+    assert (
+        build_theme_lineage._work_to_paper_dict({"id": "https://openalex.org/X1"})
+        is None
+    )
+    assert build_theme_lineage._work_to_paper_dict({}) is None
+
+
+def test_work_to_paper_dict_handles_arxiv_id():
+    """ids.arxiv_id is surfaced as externalIds.ArXiv so downstream
+    arXiv-category gates still see the value."""
+    work = _mk_oa_work_v2("W123", title="Some paper")
+    work["ids"] = {"arxiv_id": "2103.14030", "doi": "https://doi.org/10.x/y"}
+    paper = build_theme_lineage._work_to_paper_dict(work)
+    assert paper is not None
+    assert paper["externalIds"]["ArXiv"] == "2103.14030"
+
+
+def test_discover_seeds_openalex_primary_uses_openalex_not_s2(
+    tmp_path: Path, monkeypatch
+):
+    """primary_source='openalex' must hit OpenAlex, not S2 /paper/search."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    work = _mk_oa_work_v2(
+        "W123",
+        title="Graph Neural Network: A New Framework",
+        year=2020,
+        cited_by_count=5000,
+    )
+    openalex_payload = MagicMock()
+    openalex_payload.status_code = 200
+    openalex_payload.json = lambda: {"results": [work]}
+
+    def _fake_request(method, url, **kwargs):
+        # Test invariant: S2 must NOT be called on the openalex-primary
+        # path. If it is, the assertion fails with a clear message.
+        assert "semanticscholar" not in url, (
+            f"S2 endpoint hit on openalex-primary path: {url}"
+        )
+        return openalex_payload
+
+    with patch.object(
+        build_theme_lineage, "request_with_retry", side_effect=_fake_request
+    ):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["Graph Neural Network"],
+            top_n=5,
+            since_year=None,
+            theme="Graph Neural Network",
+            primary_source="openalex",
+        )
+    assert seeds, "openalex-primary returned no seeds"
+    assert seeds[0]["paperId"].startswith("openalex:")
+    assert seeds[0]["paperId"] == "openalex:W123"
+
+
+def test_discover_seeds_default_remains_s2_primary(tmp_path, monkeypatch):
+    """Backwards compat: omitting primary_source keeps S2-primary
+    behaviour. Existing tests + workflows that don't pass the param
+    continue to work unchanged."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    s2_paper = _mk_s2_paper(
+        "s2-id-hash",
+        title="Graph Neural Network",
+        abstract="we propose a graph neural network",
+    )
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=_mk_s2_search_response([s2_paper]),
+    ) as mock_req:
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["Graph Neural Network"],
+            top_n=10,
+            since_year=None,
+            use_openalex_fallback=False,
+            theme="Graph Neural Network",
+            # primary_source NOT passed → defaults to "s2"
+        )
+    assert seeds[0]["paperId"] == "s2-id-hash"
+    # First call must have been to S2.
+    first_call_url = mock_req.call_args_list[0].args[1]
+    assert "semanticscholar" in first_call_url
+
+
+def test_fetch_related_via_openalex_references(tmp_path, monkeypatch):
+    """references kind: GET /works/{id} → referenced_works → batch fetch."""
+    parent_short = "W999"
+
+    def _fake_request(method, url, **kwargs):
+        params = kwargs.get("params") or {}
+        # 1st call: GET /works/W123 (the focal paper, returns referenced_works)
+        if url.endswith("/works/W123"):
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json = lambda: {
+                "id": "https://openalex.org/W123",
+                "referenced_works": [
+                    f"https://openalex.org/{parent_short}",
+                ],
+            }
+            return resp
+        # 2nd call: GET /works?filter=openalex:W999 (batch fetch of parents)
+        if "filter" in params and params["filter"].startswith("openalex:"):
+            work = _mk_oa_work_v2(
+                parent_short,
+                title="Earlier foundational work",
+                year=2015,
+                cited_by_count=20000,
+            )
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json = lambda: {"results": [work]}
+            return resp
+        return None
+
+    with patch.object(
+        build_theme_lineage, "request_with_retry", side_effect=_fake_request
+    ):
+        parents = build_theme_lineage.fetch_related_via_openalex(
+            "W123", "references", limit=10
+        )
+    assert len(parents) == 1
+    assert parents[0]["paperId"] == f"openalex:{parent_short}"
+    # OpenAlex doesn't provide intents → None is set so downstream
+    # derive_relation falls through.
+    assert parents[0]["_intents"] is None
+    assert parents[0]["_contexts"] == []
+
+
+def test_fetch_related_via_openalex_citations(tmp_path, monkeypatch):
+    """citations kind: GET /works?filter=cites:W{id}&sort=cited_by_count:desc."""
+    child_short = "W777"
+
+    def _fake_request(method, url, **kwargs):
+        params = kwargs.get("params") or {}
+        if "filter" in params and params["filter"] == "cites:W123":
+            work = _mk_oa_work_v2(
+                child_short, title="Later citing paper", year=2024
+            )
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json = lambda: {"results": [work]}
+            return resp
+        return None
+
+    with patch.object(
+        build_theme_lineage, "request_with_retry", side_effect=_fake_request
+    ):
+        children = build_theme_lineage.fetch_related_via_openalex(
+            "W123", "citations", limit=10
+        )
+    assert len(children) == 1
+    assert children[0]["paperId"] == f"openalex:{child_short}"
+    assert children[0]["_intents"] is None
+
+
+def test_fetch_related_via_openalex_invalid_id_returns_empty():
+    """Defensive: non-W-prefixed id → empty list, no API call."""
+    assert build_theme_lineage.fetch_related_via_openalex(
+        "not-an-openalex-id", "references", limit=10
+    ) == []
+
+
+def test_fetch_related_via_openalex_unknown_kind_returns_empty():
+    """Defensive: unknown kind → empty list."""
+    assert build_theme_lineage.fetch_related_via_openalex(
+        "W123", "siblings", limit=10
+    ) == []
+
+
 def test_build_drops_foundational_parents_in_bfs(tmp_path: Path, monkeypatch):
     """End-to-end: a seed with 8k cites + a parent at 800k cites + no
     methodology intent must NOT produce an edge after the foundational
