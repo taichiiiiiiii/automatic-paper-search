@@ -1343,6 +1343,196 @@ def test_derive_relation_non_influential_skips_llm_call():
     )
 
 
+# ---- #209 Phase 1: S2 citation-context classifier ---------------------------
+# Patterns in _CITATION_CONTEXT_PATTERNS match the actual sentence(s)
+# where the citing paper mentions the cited paper. When a pattern
+# fires, the matched relation enum + the verbatim sentence become the
+# edge — paper-specific rationale with no LLM call.
+
+
+def test_classify_from_contexts_returns_none_on_empty():
+    """Empty contexts list / None / non-list → None (falls through)."""
+    assert build_theme_lineage._classify_from_contexts([]) is None
+    assert build_theme_lineage._classify_from_contexts(None) is None  # type: ignore[arg-type]
+    assert build_theme_lineage._classify_from_contexts("not a list") is None  # type: ignore[arg-type]
+
+
+def test_classify_from_contexts_detects_supersedes():
+    """'outperforms', 'supersedes', 'new SOTA' phrasings → supersedes."""
+    contexts = [
+        "Our method outperforms the prior approach of [Smith 2020] by 3 points.",
+    ]
+    rel = build_theme_lineage._classify_from_contexts(contexts)
+    assert rel is not None
+    assert rel["relation"] == "supersedes"
+    assert "outperform" in rel["rationale"].lower()
+
+
+def test_classify_from_contexts_detects_extends():
+    """'builds on', 'extends', 'based on' phrasings → extends."""
+    for sentence in [
+        "We build on the diffusion framework of [Ho et al. 2020] to model video.",
+        "Following [42], we apply a contrastive loss.",
+        "This method is based on the spectral approach of [Defferrard 2016].",
+        "We extend the work of [Smith 2019] to a multi-modal setting.",
+    ]:
+        rel = build_theme_lineage._classify_from_contexts([sentence])
+        assert rel is not None, f"failed to detect extends in: {sentence!r}"
+        assert rel["relation"] == "extends"
+
+
+def test_classify_from_contexts_detects_contrasts():
+    """'unlike', 'in contrast to' phrasings → contrasts."""
+    contexts = ["Unlike [Smith 2020], we do not assume a parametric form."]
+    rel = build_theme_lineage._classify_from_contexts(contexts)
+    assert rel is not None
+    assert rel["relation"] == "contrasts"
+
+
+def test_classify_from_contexts_detects_baseline_only():
+    """'as a baseline', 'compared against [X]' → baseline_only."""
+    for sentence in [
+        "We use [BERT] as a baseline for our experiments.",
+        "Compared against [the original method 12], we achieve 90% accuracy.",
+    ]:
+        rel = build_theme_lineage._classify_from_contexts([sentence])
+        assert rel is not None, f"failed to detect baseline in: {sentence!r}"
+        assert rel["relation"] == "baseline_only"
+
+
+def test_classify_from_contexts_detects_ablation():
+    contexts = ["We perform an ablation of [the gate mechanism 5]."]
+    rel = build_theme_lineage._classify_from_contexts(contexts)
+    assert rel is not None
+    assert rel["relation"] == "ablation"
+
+
+def test_classify_from_contexts_priority_order():
+    """When multiple patterns could match across the contexts list,
+    the strongest (earlier in the table) wins. A sentence with both
+    'outperforms' (supersedes) and 'follows' (extends) → supersedes."""
+    contexts = [
+        # Two contexts on the same edge — pick supersedes over extends.
+        "We follow the protocol of [Smith 2020].",
+        "Our system also outperforms [Smith 2020] by 5 points.",
+    ]
+    rel = build_theme_lineage._classify_from_contexts(contexts)
+    assert rel is not None
+    assert rel["relation"] == "supersedes"
+
+
+def test_classify_from_contexts_returns_actual_sentence():
+    """The rationale field is the VERBATIM citation context, not a
+    template. This is the #209 Phase 1 goal: paper-specific evidence
+    visible to the user."""
+    sentence = "We build on the diffusion framework of [Ho et al. 2020] to model video diffusion at 4K resolution."
+    rel = build_theme_lineage._classify_from_contexts([sentence])
+    assert rel is not None
+    assert rel["rationale"] == sentence  # exact match (no template substitution)
+
+
+def test_classify_from_contexts_truncates_long_sentences():
+    """Very long contexts are trimmed to _MAX_CONTEXT_RATIONALE_LEN to
+    keep tooltips from blowing up the viewer width."""
+    long_sentence = (
+        "We build on the diffusion framework of [Ho et al. 2020] " + "and " * 200
+    )
+    rel = build_theme_lineage._classify_from_contexts([long_sentence])
+    assert rel is not None
+    assert len(rel["rationale"]) <= build_theme_lineage._MAX_CONTEXT_RATIONALE_LEN
+
+
+def test_classify_from_contexts_skips_non_string_entries():
+    """Defensive: a context list with mixed types (e.g. an old cache
+    accidentally storing dicts) must not crash, just skip them."""
+    contexts = [None, 42, {"text": "fake"}, "We build on [12]."]  # type: ignore[list-item]
+    rel = build_theme_lineage._classify_from_contexts(contexts)
+    assert rel is not None
+    assert rel["relation"] == "extends"
+
+
+def test_classify_from_contexts_case_insensitive():
+    """Patterns are case-insensitive — papers may capitalise differently."""
+    contexts = ["IN CONTRAST TO [SMITH 2020], we adopt a sparse approach."]
+    rel = build_theme_lineage._classify_from_contexts(contexts)
+    assert rel is not None
+    assert rel["relation"] == "contrasts"
+
+
+def test_classify_from_contexts_no_match_returns_none():
+    """A context with no matching phrase → None (caller falls back
+    to S2 intent map)."""
+    contexts = ["See also [Smith 2020] for related discussion."]
+    assert build_theme_lineage._classify_from_contexts(contexts) is None
+
+
+def test_derive_relation_prefers_context_over_intent_map():
+    """End-to-end: when contexts AND intents both present, contexts
+    take precedence (they're paper-specific evidence vs S2's
+    automated 3-class label).
+
+    Context says "Unlike X" → contrasts.
+    Intent says "methodology" → would have been extends.
+    """
+    parent = {
+        "_is_influential": True,
+        "_intents": ["methodology"],
+        "_contexts": ["Unlike [Smith 2020], we use a sparse attention pattern."],
+    }
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None
+    assert rel["relation"] == "contrasts"
+    assert "unlike" in rel["rationale"].lower()
+
+
+def test_derive_relation_falls_through_to_intent_map_when_no_context_match():
+    """When contexts exist but none match a pattern, fall through to
+    the intent map heuristic — preserves current behaviour."""
+    parent = {
+        "_is_influential": True,
+        "_intents": ["methodology"],
+        "_contexts": ["See also [Smith 2020] for related work."],
+    }
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None
+    assert rel["relation"] == "extends"  # methodology → extends from intent map
+
+
+def test_derive_relation_works_when_contexts_field_missing():
+    """Old cached data without _contexts must still work (backwards
+    compat). Falls straight through to intent map."""
+    parent = {"_is_influential": True, "_intents": ["methodology"]}
+    rel = build_theme_lineage.derive_relation(parent)
+    assert rel is not None
+    assert rel["relation"] == "extends"
+
+
+def test_derive_relation_context_match_skips_llm_call():
+    """When a context fires, no LLM call is made even in
+    strict_mode='all'. The context IS the ground truth — no need
+    to ask an LLM that has less information."""
+    parent = {
+        "_is_influential": True,
+        "_intents": ["methodology"],
+        "_contexts": ["Unlike [42], we use a different loss."],
+    }
+    provider = _StubProvider(
+        RelationClassification(relation="extends", confidence=0.9, rationale="LLM")
+    )
+    rel = build_theme_lineage.derive_relation(
+        parent,
+        parent={"paperId": "a"},
+        child={"paperId": "b"},
+        provider=provider,
+        strict_mode="all",
+    )
+    assert rel is not None
+    assert rel["relation"] == "contrasts"  # from context, not LLM
+    assert provider.classify_calls == [], (
+        "Context match must short-circuit before LLM call (#209 Phase 1)"
+    )
+
+
 # ---- #209: _apply_llm_classification merge policy ---------------------------
 
 

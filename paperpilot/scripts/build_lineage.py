@@ -203,7 +203,13 @@ _S2_FIELDS_REL = (
     # the citation into methodology / result / background, which lets
     # build_theme_lineage derive the relation type WITHOUT an LLM call
     # (#53). Both are lifted onto the inner paper dict by fetch_related.
-    "isInfluential,intents"
+    "isInfluential,intents,"
+    # contexts is the actual sentence(s) where the citing paper mentions
+    # the cited paper (#209 Phase 1). Used by _classify_from_contexts to
+    # match relation keywords against ground-truth citation text, giving
+    # paper-specific rationales without an LLM call. Coverage is ~70-80%
+    # of S2 citations; the rest fall through to the intent-map heuristic.
+    "contexts"
 )
 
 
@@ -286,6 +292,18 @@ def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
             enriched["_intents"] = (
                 [str(i) for i in raw_intents]
                 if isinstance(raw_intents, list) else None
+            )
+            # contexts is a list of sentence-level snippets where the
+            # citing paper mentions the cited paper (#209 Phase 1).
+            # build_theme_lineage._classify_from_contexts matches relation
+            # keywords against these to produce paper-specific rationales
+            # without an LLM call. Older cached entries may lack this
+            # field — treat missing as an empty list so downstream code
+            # doesn't need to guard for None.
+            raw_contexts = entry.get("contexts")
+            enriched["_contexts"] = (
+                [str(c) for c in raw_contexts if isinstance(c, str)]
+                if isinstance(raw_contexts, list) else []
             )
             items.append(enriched)
     cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))

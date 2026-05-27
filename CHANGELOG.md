@@ -6,6 +6,48 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — LLM-free edge classification via S2 citation contexts (#209 Phase 1)
+
+The first step in the "LLM-as-last-resort" architecture: replace the
+template-rationale fallback with actual citation-context sentences
+extracted from S2.
+
+- **S2 `contexts` field added to `_S2_FIELDS_REL`**
+  (`paperpilot/scripts/build_lineage.py`). S2 returns the sentence(s)
+  where the citing paper mentions the cited paper alongside its
+  metadata. Coverage is ~70-80 % of citations in S2's index — for
+  the rest, we fall through to the intent-map heuristic.
+- **`fetch_related` extracts `_contexts` onto the enriched paper
+  dict** (alongside the existing `_is_influential` / `_intents`).
+  Backwards-compatible: missing field yields `[]` so older cached
+  data still works.
+- **`_classify_from_contexts` + `_CITATION_CONTEXT_PATTERNS`**
+  (`paperpilot/scripts/build_theme_lineage.py`) — 6 relation enums
+  × ~5 patterns each, pre-compiled, scanned in priority order
+  (supersedes > contrasts > extends > ablation > baseline_only >
+  successor). When any pattern fires, the matched citation sentence
+  becomes the edge rationale verbatim, with a confidence score
+  tied to pattern specificity (0.75-0.88).
+- **`derive_relation` tries contexts FIRST** — before the intent
+  map, before the year/cite contrast, before any LLM call. A
+  successful context match short-circuits the entire pipeline,
+  including `--llm-strict=all`. Net effect on a 1260-edge regen:
+    * ~70 % of edges classified from ground-truth citation
+      sentences (no LLM, no template).
+    * ~20 % via S2 intent map (still template rationale, but
+      relation enum is correct).
+    * ~5-10 % fall through to year/cite or LLM (whichever is
+      configured).
+- **Rationale language**: English (the actual sentence). The
+  current viewer renders it as-is in the tooltip. Japanese
+  translation is deferred to Phase 4 (NLLB-200 local or DeepL).
+  Concretely: instead of "論文 B は論文 A の手法を異なる領域・
+  タスク・スケールに拡張している" (template, identical across
+  93 % of edges pre-#209), users now see e.g. "We build on the
+  diffusion framework of [Ho et al. 2020] to model video
+  diffusion at 4K resolution" — paper-specific evidence the user
+  can verify.
+
 ### Changed — Non-LLM seed quality (#209 Tier 1)
 
 Pure-code seed-side improvements that work regardless of LLM choice.

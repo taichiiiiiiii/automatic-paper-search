@@ -259,6 +259,138 @@ _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
 # hiccups (None) still fall back to the heuristic at the merge step.
 _MIN_LLM_CONFIDENCE = 0.4
 
+# ---- #209 Phase 1: S2 citation-context classifier ----
+# Patterns matched against the actual sentence(s) where the citing
+# paper mentions the cited paper (S2 returns these via the `contexts`
+# field on /paper/{id}/references and /citations). When a pattern
+# fires, the matched relation enum becomes the edge's relation AND
+# the matching sentence becomes the edge's rationale verbatim — so
+# the user sees paper-specific evidence instead of a Japanese template.
+#
+# Order matters: earlier entries win when multiple patterns match the
+# same context. Strongest signals (supersedes, contrasts) are listed
+# first; baseline_only and successor are weakest and listed last.
+#
+# Confidence reflects pattern specificity: "supersedes [X]" leaves
+# little room for interpretation (0.88), while "subsequent work on
+# [X]" is weaker (0.75).
+#
+# All matching is case-insensitive (re.IGNORECASE applied at compile
+# time below). Rationale is the matching sentence trimmed to
+# _MAX_CONTEXT_RATIONALE_LEN — keeps long surveys from blowing up
+# the tooltip width while preserving enough text to be useful.
+_MAX_CONTEXT_RATIONALE_LEN = 280
+
+
+def _compile_context_patterns(
+    raw: list[tuple[str, float, list[str]]],
+) -> list[tuple[str, float, tuple[re.Pattern[str], ...]]]:
+    """Pre-compile the regex patterns in _CITATION_CONTEXT_PATTERNS so
+    every edge classification on a regen run reuses the same compiled
+    objects instead of re-parsing the regex strings ~1260 times."""
+    return [
+        (relation, confidence, tuple(re.compile(p, re.IGNORECASE) for p in patterns))
+        for relation, confidence, patterns in raw
+    ]
+
+
+_CITATION_CONTEXT_PATTERNS: list[tuple[str, float, tuple[re.Pattern[str], ...]]] = (
+    _compile_context_patterns([
+        # SUPERSEDES — explicit replacement / outperformance / SOTA claim.
+        # "X supersedes Y", "outperforms Y", "new state-of-the-art".
+        ("supersedes", 0.88, [
+            r"\bsupersed(es|ed|e|ing)\b",
+            r"\boutperform(s|ed|ing)?\b",
+            r"\bsurpass(es|ed|ing)?\b",
+            r"\bnew\s+state[\s\-]of[\s\-]the[\s\-]art\b",
+            r"\bsignificantly\s+(?:better|improves)\s+(?:than|over)\b",
+        ]),
+        # CONTRASTS — explicit comparison framing.
+        # "unlike X", "in contrast to Y", "differs from".
+        ("contrasts", 0.86, [
+            r"\bunlike\b",
+            r"\bin\s+contrast\s+(?:to|with)\b",
+            r"\bin\s+contrast\b,",
+            r"\bdiffer(s|ent|ently)?\s+from\b",
+            r"\bas\s+opposed\s+to\b",
+            r"\bdiffer(s|ent)?\s+(?:significantly|notably)\b",
+        ]),
+        # EXTENDS — methodological extension / construction on top.
+        # "builds on", "extends", "based on", "following X".
+        ("extends", 0.84, [
+            r"\bbuild(s|ing|t)?\s+(?:on|upon)\b",
+            r"\bextend(s|ing|ed)?\s+(?:the|this|their|previous)\b",
+            r"\bextend(s|ing|ed)?\s+\[",  # "extends [42]"
+            r"\bgeneraliz(e|es|ing|ed)\b",
+            r"\bbased\s+on\b",
+            r"\bfollowing\s+\[",  # "following [Smith et al.]"
+            r"\bfollows?\s+(?:the\s+)?(?:approach|method|framework|setup)\b",
+            r"\bimprove(s|ment|d|ing)?\s+(?:on|over|upon)\b",
+            r"\binspired\s+by\b",
+        ]),
+        # ABLATION — component analysis.
+        # "ablation of X", "without [Y]", "ablate".
+        ("ablation", 0.82, [
+            r"\bablation\b",
+            r"\bablate(s|d|ing)?\b",
+        ]),
+        # BASELINE_ONLY — comparison baseline / mention.
+        # "as a baseline", "compared against [X]", "baseline method".
+        ("baseline_only", 0.78, [
+            r"\bas\s+(?:a|the)\s+baseline(s)?\b",
+            r"\bcompared\s+(?:against|with|to)\s+\[",
+            r"\bbaseline\s+(?:method|model|approach|system)\b",
+            r"\b(?:we|us)\s+(?:compare|use)\s+(?:to|with|against)\s+\[",
+        ]),
+        # SUCCESSOR — temporal continuation framing.
+        # "subsequent work", "successor", "newer version".
+        ("successor", 0.75, [
+            r"\bsubsequent(ly)?\s+work\b",
+            r"\bsuccess(or|ive|ion)\b",
+            r"\bnewer\s+(?:version|variant|generation)\b",
+        ]),
+    ])
+)
+
+
+def _classify_from_contexts(
+    contexts: list[str],
+) -> dict[str, Any] | None:
+    """Match citation context sentences against the pattern table.
+
+    Returns ``{relation, confidence, rationale}`` on the first matching
+    (relation, pattern, context) triple, scanning in priority order
+    (strongest signals first). ``rationale`` is the actual citation
+    sentence trimmed to ``_MAX_CONTEXT_RATIONALE_LEN``.
+
+    Returns ``None`` when the contexts list is empty, contains only
+    non-string entries, or matches no pattern. Callers (``derive_relation``)
+    fall through to the S2 intent map → year/cite heuristic.
+
+    Why scan patterns-outer, contexts-inner: a single edge usually has
+    1-3 contexts. Some are weak ("see [X]") while another is strong
+    ("we extend [X] to multi-modal data"). Visiting all contexts for
+    a strong pattern before moving to a weaker pattern means the
+    strong signal wins regardless of which context it appears in.
+    """
+    if not isinstance(contexts, list) or not contexts:
+        return None
+    for relation, confidence, patterns in _CITATION_CONTEXT_PATTERNS:
+        for pattern in patterns:
+            for ctx in contexts:
+                if not isinstance(ctx, str):
+                    continue
+                stripped = ctx.strip()
+                if not stripped:
+                    continue
+                if pattern.search(stripped):
+                    return {
+                        "relation": relation,
+                        "confidence": confidence,
+                        "rationale": stripped[:_MAX_CONTEXT_RATIONALE_LEN],
+                    }
+    return None
+
 
 def _add_cross_node_edges(
     nodes: dict[str, dict],
@@ -517,6 +649,18 @@ def derive_relation(
     # spend an LLM call on a citation we'd discard anyway.
     if intent_record.get("_is_influential") is False:
         return None
+
+    # #209 Phase 1: try S2 citation contexts FIRST. When the citing
+    # paper's actual sentence ("we extend [X]", "unlike [Y]") matches
+    # a known relation phrasing, we use that sentence verbatim as the
+    # rationale — ground-truth, paper-specific, and skips the LLM
+    # call entirely. Falls through to the intent / year-cite heuristic
+    # when no context fires or contexts are absent (~20-30% of edges
+    # have no contexts in S2's index).
+    contexts = intent_record.get("_contexts") or []
+    context_edge = _classify_from_contexts(contexts)
+    if context_edge is not None:
+        return context_edge
 
     heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
 
