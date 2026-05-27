@@ -250,11 +250,39 @@ def fetch_paper_by_arxiv(arxiv_id: str) -> dict[str, Any] | None:
 
 
 def fetch_related(s2_id: str, kind: str, limit: int) -> list[dict[str, Any]]:
-    """kind = 'references' or 'citations'."""
+    """kind = 'references' or 'citations'.
+
+    Dispatches by paperId prefix (#209 S2-free Phase 1):
+
+    * ``s2_id`` starting with ``openalex:`` → OpenAlex BFS. No S2 call
+      is made. Resulting paper dicts carry ``_intents=None``,
+      ``_contexts=[]``, ``_is_influential=None`` because OpenAlex doesn't
+      provide these — the relation classifier falls through to year/cite
+      contrast or LLM downstream.
+    * any other prefix → existing S2 ``/paper/{id}/{kind}`` path.
+
+    Cache key includes the full ``s2_id`` so OpenAlex and S2 IDs never
+    collide on disk.
+    """
+    # Cache check is FIRST so OpenAlex and S2 routes share the same
+    # disk layer — keeps re-runs cheap regardless of data source.
     cache = CACHE_DIR / f"{kind}_{s2_id}.json"
     if cache.exists():
         cached = json.loads(cache.read_text())
         return cached if isinstance(cached, list) else []
+
+    if s2_id.startswith("openalex:"):
+        # Lazy import to avoid a circular dependency: build_theme_lineage
+        # imports from this module at top level.
+        from paperpilot.scripts.build_theme_lineage import (
+            fetch_related_via_openalex,
+        )
+        short_id = s2_id[len("openalex:"):]
+        items = fetch_related_via_openalex(short_id, kind, limit)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
+        return items
+
     url = (
         f"https://api.semanticscholar.org/graph/v1/paper/{s2_id}/{kind}"
         f"?fields={_S2_FIELDS_REL}&limit={min(limit * 4, 100)}"

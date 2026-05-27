@@ -98,7 +98,8 @@ jobs:
             if uv run python -m paperpilot.scripts.build_theme_lineage \
                 --theme "$theme" \
                 --depth 1 --seeds 5 --width 8 --since-year 2018 \
-                --llm-strict ambiguous; then
+                --llm-strict ambiguous \
+                --primary-source openalex; then
               :
             else
               failed=$((failed + 1))
