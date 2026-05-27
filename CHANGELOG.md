@@ -95,6 +95,37 @@ follows [Semantic Versioning](https://semver.org/) and the
   Main pipeline function 354 → 238 lines, no behaviour change.
   (PR #145, #146, #147, #148)
 
+### Fixed — Lineage edge fabrication (#209)
+
+- **Drop `_DEFAULT_DERIVED` "extends" fallback**
+  (`paperpilot/scripts/build_theme_lineage.py`,
+  `_derive_relation_heuristic`) — 2026-05-27 audit found 1222/1304
+  (93.7 %) of edges across 18 published themes were emitted by this
+  fallback with a single template rationale (`論文 B は論文 A の
+  手法を異なる領域・タスク・スケールに拡張している`). The fallback
+  is gone; edges with no S2 intent AND no year/cite contrast now
+  return `None` (drop). In strict modes the LLM is the only path to
+  recover the edge — if it also doesn't fire, the edge stays
+  dropped instead of being fabricated. (PR #2xx, closes #209)
+- **Use LLM confidence verbatim + threshold-drop weak edges**
+  (`_apply_llm_classification`) — pre-#209 the merge took
+  `max(heuristic 0.7, llm)`, hiding a "timid LLM" (conf 0.3) behind
+  a heuristic floor. The new policy uses LLM confidence directly
+  and drops edges where the LLM's own confidence is below
+  `_MIN_LLM_CONFIDENCE = 0.4` — the LLM has actually read both
+  abstracts; trusting its uncertainty is more honest than masking
+  it. LLM hiccup (`None`) still falls back to a non-None heuristic.
+- **`scripts/purge_template_classifications.py`** — one-shot purge
+  of cached LLM classifications whose rationale is one of
+  `TEMPLATE_RATIONALES.values()`. The 2026-05-27 audit found 123
+  of 407 cache entries (~30 %) were template-poisoned from pre-#131
+  runs — these short-circuit future LLM rescue calls forever
+  because `_CachedClassifyProvider` hits the cache first and
+  `from_dict` rejects the entry. Initial run dropped 123 entries
+  (cache 407 → 284). Idempotent on already-clean caches; covered
+  by 10 unit tests including CLI dry-run / write-back / malformed
+  cache paths.
+
 ### Fixed — workflow + LLM regressions
 
 - **collect-weekly.yml startup_failure** — step-level

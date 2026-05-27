@@ -136,18 +136,33 @@ def test_apply_takes_llm_rationale():
     assert out["rationale"] == "LLM-says-so"
 
 
-def test_apply_takes_max_confidence_when_llm_higher():
+def test_apply_takes_llm_confidence_verbatim_when_high():
+    """#209: LLM confidence is used verbatim, not max(heuristic, llm).
+    The pre-#209 max-policy hid the LLM's own uncertainty signal
+    behind a constant 0.7 floor."""
     heuristic = {"relation": "extends", "confidence": 0.7, "rationale": "H"}
     out = btl._apply_llm_classification(heuristic, _rc("supersedes", 0.95, "L"))
     assert out is not None
     assert out["confidence"] == 0.95
 
 
-def test_apply_takes_max_confidence_when_heuristic_higher():
+def test_apply_drops_edge_when_llm_confidence_below_threshold():
+    """#209: LLM conf < _MIN_LLM_CONFIDENCE (0.4) → drop the edge,
+    even when the heuristic gave higher confidence. The LLM has
+    actually read both abstracts; emitting the edge with a
+    heuristic-floored 0.7 hides the LLM's signal that this relation
+    is too weak to render."""
     heuristic = {"relation": "extends", "confidence": 0.7, "rationale": "H"}
     out = btl._apply_llm_classification(heuristic, _rc("supersedes", 0.3, "L"))
+    assert out is None
+
+
+def test_apply_uses_llm_verbatim_at_threshold():
+    """Edge case: LLM conf exactly at _MIN_LLM_CONFIDENCE (0.4) — keep."""
+    heuristic = {"relation": "extends", "confidence": 0.7, "rationale": "H"}
+    out = btl._apply_llm_classification(heuristic, _rc("supersedes", 0.4, "L"))
     assert out is not None
-    assert out["confidence"] == 0.7
+    assert out["confidence"] == 0.4
 
 
 def test_apply_preserves_relation_keys_in_output_shape():
