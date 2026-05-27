@@ -935,6 +935,10 @@ def discover_seeds(
             "the sanitised theme string)"
         )
     candidates: list[dict[str, Any]] = list(by_id.values())
+    # Denylist runs ahead of the topic gate — it's a hard veto on a
+    # known canonical-but-off-topic list (SciPy / NumPy / QIIME etc.)
+    # and is theme-independent. Cheap to run; never causes loss.
+    candidates = _filter_denylisted_seeds(candidates)
     if theme:
         candidates = _filter_topic_relevant_seeds(candidates, theme=theme)
     primary = _rank_and_truncate(candidates, top_n=top_n, since_year=since_year)
@@ -980,6 +984,9 @@ def discover_seeds(
     # tightened (e.g. embedding similarity), revisit the log delta below
     # which assumes that invariant.
     candidates_after_fallback: list[dict[str, Any]] = list(by_id.values())
+    candidates_after_fallback = _filter_denylisted_seeds(
+        candidates_after_fallback
+    )
     if theme:
         candidates_after_fallback = _filter_topic_relevant_seeds(
             candidates_after_fallback, theme=theme
@@ -1017,65 +1024,114 @@ def _rank_and_truncate(
     return candidates[:top_n]
 
 
+def _normalize_relevance_text(text: str) -> str:
+    """Lower-case, replace hyphens with spaces, collapse whitespace.
+
+    Used by the topic-relevance gate so "self-supervised learning"
+    (theme) matches "self supervised learning" (paper abstract with
+    space) and vice versa. Without this normalisation the gate's
+    phrase check was brittle to a single punctuation difference
+    between the typed theme and the canonical paper wording.
+    """
+    return re.sub(r"\s+", " ", text.replace("-", " ").lower()).strip()
+
+
 def _filter_topic_relevant_seeds(
     seeds: list[dict[str, Any]],
     *,
     theme: str,
 ) -> list[dict[str, Any]]:
-    """Drop seeds whose title+abstract don't include enough of the theme's
-    words. The original failure mode: searching S2 for "Graph Neural
-    Network" surfaced the Pandas paper (highly cited, completely off-topic)
-    as a top seed because S2's relevance ranker counts citation graph hops.
-    Adding a substring check before ranking pins the seeds to the topic.
+    """Drop seeds whose title+abstract don't include the theme as a
+    phrase (2-word themes) or enough of the theme's words (3+ word
+    themes). All comparisons run on hyphen-normalised lowercase text
+    so "self-supervised learning" and "self supervised learning"
+    match interchangeably.
 
     Threshold scaling, by count of eligible (≥3 char) words after the
     stopword-ish drop:
 
-    - 0 or 1 word eligible — short queries like "RAG" or "DPO" where the
-      abbreviation rarely appears literally in any paper. Skip the gate
-      and let S2 ranking do the work.
-    - 2 words eligible — require ``BOTH``. The 50 %-of-2 = 1 rule used
-      to suffice but data-recovery audit on the "Chain of Thought"
-      theme (2026-05-24) found 5 COVID-19 / Physics-ML papers slipping
-      through because the abstract happened to mention "chain" OR
-      "thought" without ever being on-topic. With only two words, the
-      false-positive cost of demanding both is small; the false-positive
-      cost of one was very large.
-    - 3+ words eligible — require ``ceil(N / 2)`` (e.g. 2 of 3, 2 of 4,
-      3 of 5). Same 50 % ratio but ``ceil`` so a 3-word query still
-      requires 2 hits instead of the previous ``int(3*0.5)=1``.
-
-    Also accepts the full theme as a phrase substring as an OR escape
-    hatch — papers explicitly titled "Chain of Thought Prompting" pass
-    even if title alone doesn't carry both words separately (the title
-    starts with the verbatim phrase, abstract may use the abbreviation
-    "CoT" elsewhere).
+    - 0 or 1 word eligible — short queries like "RAG" or "DPO" where
+      the abbreviation rarely appears literally. Skip the gate and
+      let S2 ranking do the work.
+    - 2 words eligible — **phrase in title+abstract OR both words in
+      title (#209).** The previous "both words anywhere in
+      title+abstract" rule passed LPIPS as a Self-Supervised Learning
+      seed because its abstract reviewed multiple paradigms
+      ("supervised, self-supervised, and even unsupervised") and
+      separately mentioned "deep learning" — neither was the theme.
+      The phrase check (after hyphen normalisation) drops LPIPS; the
+      title-only fallback keeps papers like "Denoising Diffusion
+      Probabilistic Models" against the "Diffusion Models" theme,
+      where the title carries both words but the phrase order
+      differs.
+    - 3+ words eligible — phrase OR ``ceil(N / 2)`` distinct words
+      anywhere in title+abstract. The 50 % rule survives here because
+      longer themes like "Direct Preference Optimization" routinely
+      surface relevant papers titled "Preference Optimization without
+      DPO" that drop one of the theme's tokens.
     """
     if not seeds:
         return []
-    words = [w.lower() for w in theme.split() if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN]
+    words = [
+        w.lower()
+        for w in theme.split()
+        if len(w) >= _TOPIC_RELEVANCE_MIN_WORD_LEN
+    ]
     if len(words) < 2:
         return seeds
-    if len(words) == 2:
-        threshold = 2  # require both — fewer false positives, see docstring
-    else:
-        threshold = max(
-            2, math.ceil(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO)
-        )
-    phrase = theme.strip().lower()
+    phrase = _normalize_relevance_text(theme)
+    normalised_words = [_normalize_relevance_text(w) for w in words]
     kept: list[dict[str, Any]] = []
+    if len(words) == 2:
+        for p in seeds:
+            title_only = _normalize_relevance_text(p.get("title") or "")
+            haystack = _normalize_relevance_text(
+                f"{p.get('title') or ''} {p.get('abstract') or ''}"
+            )
+            if phrase and phrase in haystack:
+                kept.append(p)
+                continue
+            # Fallback: both words must appear *in the title*. Title-
+            # only is much higher signal than title+abstract — LPIPS
+            # had both words in its abstract but neither in its title,
+            # which the old rule treated as a match.
+            if all(w and w in title_only for w in normalised_words):
+                kept.append(p)
+        return kept
+    threshold = max(
+        2, math.ceil(len(words) * _TOPIC_RELEVANCE_THRESHOLD_RATIO)
+    )
     for p in seeds:
-        haystack = f"{p.get('title') or ''} {p.get('abstract') or ''}".lower()
-        # Phrase short-circuit: "<theme verbatim>" anywhere in the text
-        # is a strong enough signal to accept even when word-by-word
-        # check would fail.
+        haystack = _normalize_relevance_text(
+            f"{p.get('title') or ''} {p.get('abstract') or ''}"
+        )
         if phrase and phrase in haystack:
             kept.append(p)
             continue
-        hits = sum(1 for w in words if w in haystack)
+        hits = sum(1 for w in normalised_words if w and w in haystack)
         if hits >= threshold:
             kept.append(p)
     return kept
+
+
+def _filter_denylisted_seeds(
+    seeds: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Drop seed candidates that match the implementation-foundation
+    denylist (#209).
+
+    Same denylist already used by ``_filter_off_topic_refs`` for BFS
+    parent / child candidates — applied at seed phase now too because
+    the 2026-05-27 audit found state-space-model surfacing SciPy 1.0
+    and QIIME 2 (microbiome) as seeds. The S2
+    ``fieldsOfStudy=Mathematics`` gate accepts those papers
+    indistinguishably from research-line predecessors of state-space
+    models; the denylist is a clean veto on a fixed list of
+    canonical-but-off-topic paperIds and title regexes. Calls the
+    same ``_is_implementation_foundation`` helper as
+    ``_filter_off_topic_refs`` so the two filters can't drift.
+    """
+    return [p for p in seeds if not _is_implementation_foundation(p)]
 
 
 @lru_cache(maxsize=1)
