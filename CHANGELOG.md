@@ -6,6 +6,52 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — OpenAlex-primary architecture (#209 S2-free Phase 1)
+
+Foundation for running the lineage pipeline without any S2 API
+dependency. S2 free-tier on shared GitHub-Actions CI IPs hits the
+throttle pool too aggressively; signing up for a free S2 key
+requires a non-gmail organisational email which most indie users
+don't have. OpenAlex offers no-auth access at 10 req/s in the
+polite pool (with `mailto`) — enough for full bulk regen — and
+returns equivalent metadata (with the trade-off of no `intents`
+and no `citation contexts`).
+
+- **`_work_to_paper_dict`** (`paperpilot/scripts/build_theme_lineage.py`)
+  converts an OpenAlex Work to an S2-shape paper dict. `paperId` is
+  prefixed `openalex:W...` so the BFS layer can route by prefix.
+- **`_decode_abstract_inverted_index`** reconstructs OpenAlex's
+  word-position-encoded abstracts to plain text — needed for the
+  topic-relevance gate and LLM rationale paths to see real
+  abstract text.
+- **`discover_seeds(..., primary_source="openalex")`** runs an
+  OpenAlex-only seed discovery path with no S2 calls anywhere on
+  the success path. Defaults to `"s2"` so existing callers behave
+  unchanged.
+- **`fetch_related_via_openalex`** (BFS): `references` resolves via
+  `GET /works/{id}.referenced_works` + batch fetch; `citations`
+  uses `GET /works?filter=cites:W{id}&sort=cited_by_count:desc`.
+  Each result is shaped like an S2 paper response.
+- **`fetch_related` dispatch** (`paperpilot/scripts/build_lineage.py`)
+  detects the `openalex:` prefix and routes BFS to the OpenAlex
+  path without S2 calls; cache layer is shared so re-runs are cheap
+  on either backend.
+- **CLI `--primary-source {s2,openalex}`** flag exposed on
+  `build_theme_lineage` (default `s2` for backwards compat).
+  Workflows opt in to `openalex`.
+- **`.github/workflows/theme-on-demand.yml` + `regen-themes.yml`**
+  now invoke `--primary-source openalex` so the production CI runs
+  without any S2 API key requirement.
+
+Trade-offs:
+- OpenAlex doesn't expose citation `intents`, `contexts`, or
+  `isInfluential` → these fields are `None` on OpenAlex-sourced
+  paper dicts. The relation classifier falls through to year/cite
+  contrast or LLM. Phase 2 (#52, SciCite local) and the later
+  unarXive integration close that gap without S2.
+- arXiv-only papers without DOIs surface fine via OpenAlex; older
+  journal-only papers without DOIs may not.
+
 ### Changed — Non-LLM seed quality (#209 Tier 1)
 
 Pure-code seed-side improvements that work regardless of LLM choice.
