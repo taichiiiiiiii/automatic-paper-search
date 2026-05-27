@@ -1,26 +1,39 @@
-"""Audit ICLR-style conference lineage quality.
+"""Audit lineage.json files — structural checks + edge-level metrics.
 
-Companion to `audit_theme_seeds.py` for `docs/<conference>/lineage.json`
-files where seeds are conference papers (focus) and the rest of the
-graph is their cited / citing references. Unlike themes/, there's no
-single "theme word" to match against, so the checks here are
-structural:
+Companion to `audit_theme_seeds.py` (which checks per-seed topic
+relevance). Walks every `docs/*/lineage.json` and `docs/themes/*/
+lineage.json` and checks:
 
+### Structural (focus papers — conferences only)
 - focus papers must be from the conference year window (default
-  current year ± 1, override with --min-year). Catches the case where
-  an older paper gets the is_focus tag by mistake.
+  current year ± 1, override with --min-year)
 - no implementation-foundation library paper (NumPy / PyTorch /
-  SciPy / pandas / …) appears as a focus paper — those are always
-  reference-only.
-- cluster assignments are consistent — every focus paper carries a
-  cluster id that resolves to a real cluster entry.
+  SciPy / pandas / …) appears as a focus paper
+- cluster assignments resolve to real cluster entries
+
+### Edge-level (#209: applies to every lineage)
+- **template_rationale_ratio**: fraction of edges whose rationale is
+  byte-for-byte one of `TEMPLATE_RATIONALES.values()`. Pre-#209
+  audit found 93.7 % of theme edges were template — after the edge-
+  fabrication fix (PR #210) + regeneration, expect 40-60 % (the
+  legitimate heuristic-intent path still emits templates). The hard
+  fail threshold is generous on purpose (80 %) so the data-audit
+  CI doesn't block PRs on themes that haven't been regenerated yet.
+  Warn-only above 60 %.
+- **popularity_sink_count**: nodes with `incoming ≥ 8` — a single
+  paper accumulating 8+ "extends" arrows means the lineage is
+  collapsing into a star around a survey / landmark paper, which
+  the chronological viewer renders as a chaotic hub.
+- **year_reversal_count**: edges where parent year > child year + 1
+  (1-year window absorbs preprint↔conference overlap). A handful
+  is expected; bulk reversals indicate the BFS direction is wrong.
 
 Run:
     uv run python -m paperpilot.scripts.audit_lineage_quality
 
 Exit codes:
-- 0 : every audited conference lineage passes (or there are none)
-- 1 : at least one conference has a problem
+- 0 : every audited lineage passes (or there are none)
+- 1 : at least one lineage has a hard-fail problem
 """
 
 from __future__ import annotations
@@ -28,12 +41,29 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
+
+from paperpilot.llm.base import TEMPLATE_RATIONALES
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS_DIR = ROOT / "docs"
 DENYLIST_PATH = ROOT / "paperpilot" / "data" / "lineage_denylist.json"
+
+# Edge-level thresholds (#209). Generous on purpose — themes that
+# haven't been regenerated since PR #210 will fail at the warn level
+# but the hard-fail thresholds only catch extreme outliers so CI is
+# not blocked across the board.
+_TEMPLATE_RATIO_FAIL = 0.80  # > 80% template rationales is a hard fail
+_TEMPLATE_RATIO_WARN = 0.60  # 60-80% is warned, not failed
+_POPULARITY_SINK_INCOMING = 8  # node with ≥N incoming edges
+_POPULARITY_SINK_FAIL_COUNT = 5  # > N sinks per lineage is a hard fail
+_YEAR_REVERSAL_FAIL_COUNT = 10  # > N edges with parent.year > child.year+1
+
+_TEMPLATE_RATIONALES_SET = frozenset(
+    t.strip() for t in TEMPLATE_RATIONALES.values()
+)
 
 
 def _load_denylist_paper_ids() -> set[str]:
@@ -47,38 +77,46 @@ def _load_denylist_paper_ids() -> set[str]:
     return {pid for pid in ids if isinstance(pid, str)}
 
 
-def _audit_lineage(path: Path, min_year: int) -> list[str]:
-    """Return a list of problem strings; empty list = clean."""
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        return [f"unreadable: {e}"]
+def _audit_structural(path: Path, data: dict, min_year: int) -> list[str]:
+    """Return structural problems (focus papers, denylist, clusters).
+
+    The "focus paper too old" check only fires for conference
+    lineages (``docs/<conf>/lineage.json``) — themes legitimately
+    seed on seminal 2017-2020 papers and would explode the failure
+    list if we applied a recency filter to them. Denylist and
+    cluster-consistency checks apply uniformly.
+    """
     nodes = data.get("nodes") or []
     if not isinstance(nodes, list):
         return ["nodes field missing or non-list"]
     problems: list[str] = []
     focus_papers = [n for n in nodes if n.get("is_focus")]
     if not focus_papers:
+        # Themes mark seeds with is_focus too — empty here means the
+        # lineage truly has none, which we want to flag for any path.
         problems.append("no focus papers")
-    # Focus papers must be recent.
-    for n in focus_papers:
-        y = n.get("year")
-        if isinstance(y, int) and y < min_year:
-            problems.append(
-                f"focus paper too old (year={y}): {(n.get('title') or '')[:60]}"
-            )
-    # Denylist intersection.
+        return problems
+    is_theme = "themes" in path.parts
+    if not is_theme:
+        for n in focus_papers:
+            y = n.get("year")
+            if isinstance(y, int) and y < min_year:
+                problems.append(
+                    f"focus paper too old (year={y}): "
+                    f"{(n.get('title') or '')[:60]}"
+                )
     denylist = _load_denylist_paper_ids()
     if denylist:
         for n in focus_papers:
             pid = n.get("id") or n.get("paperId")
             if pid in denylist:
                 problems.append(
-                    f"denylisted lib paper marked as focus: {(n.get('title') or '')[:60]}"
+                    f"denylisted lib paper marked as focus: "
+                    f"{(n.get('title') or '')[:60]}"
                 )
-    # Cluster consistency — every paper that names a cluster must point
-    # at a real one. Themes don't have clusters so skip when none.
-    clusters = {c.get("id") for c in (data.get("clusters") or []) if isinstance(c, dict)}
+    clusters = {
+        c.get("id") for c in (data.get("clusters") or []) if isinstance(c, dict)
+    }
     if clusters:
         for n in nodes:
             cid = n.get("cluster")
@@ -87,9 +125,134 @@ def _audit_lineage(path: Path, min_year: int) -> list[str]:
                     f"dangling cluster ref ({cid}) on paper "
                     f"{(n.get('title') or '')[:60]}"
                 )
-                # Don't report 100 of these; one is enough signal.
-                break
+                break  # One sample is enough signal.
     return problems
+
+
+def edge_metrics(data: dict) -> dict[str, int | float]:
+    """Compute the four edge-level metrics for a lineage (#209).
+
+    Returns a dict with keys: ``edge_count``, ``template_count``,
+    ``template_ratio``, ``popularity_sinks``, ``year_reversals``.
+    Empty / missing edges yields all-zeros so callers don't need to
+    guard. Designed to also be importable by ad-hoc analysis scripts.
+    """
+    edges = data.get("edges") or []
+    if not isinstance(edges, list) or not edges:
+        return {
+            "edge_count": 0,
+            "template_count": 0,
+            "template_ratio": 0.0,
+            "popularity_sinks": 0,
+            "year_reversals": 0,
+        }
+    nodes_by_id: dict[str, dict] = {}
+    for n in data.get("nodes") or []:
+        if isinstance(n, dict):
+            nid = n.get("id") or n.get("paperId")
+            if isinstance(nid, str):
+                nodes_by_id[nid] = n
+
+    template_count = 0
+    incoming: Counter[str] = Counter()
+    year_reversals = 0
+
+    for e in edges:
+        if not isinstance(e, dict):
+            continue
+        rationale = e.get("rationale")
+        if isinstance(rationale, str) and rationale.strip() in _TEMPLATE_RATIONALES_SET:
+            template_count += 1
+        dst = e.get("dst")
+        if isinstance(dst, str):
+            incoming[dst] += 1
+        src_node = nodes_by_id.get(e.get("src") or "")
+        dst_node = nodes_by_id.get(dst or "")
+        if src_node and dst_node:
+            sy = src_node.get("year")
+            dy = dst_node.get("year")
+            if isinstance(sy, int) and isinstance(dy, int) and sy > dy + 1:
+                year_reversals += 1
+
+    popularity_sinks = sum(
+        1 for cnt in incoming.values() if cnt >= _POPULARITY_SINK_INCOMING
+    )
+    return {
+        "edge_count": len(edges),
+        "template_count": template_count,
+        "template_ratio": template_count / len(edges) if edges else 0.0,
+        "popularity_sinks": popularity_sinks,
+        "year_reversals": year_reversals,
+    }
+
+
+def _audit_edges(data: dict) -> tuple[list[str], list[str]]:
+    """Return (warnings, hard_failures) from the edge metrics."""
+    m = edge_metrics(data)
+    warnings: list[str] = []
+    failures: list[str] = []
+    if m["edge_count"] == 0:
+        return warnings, failures
+    ratio = float(m["template_ratio"])
+    if ratio > _TEMPLATE_RATIO_FAIL:
+        failures.append(
+            f"template_rationale_ratio={ratio:.0%} "
+            f"({m['template_count']}/{m['edge_count']}); "
+            f"hard fail above {_TEMPLATE_RATIO_FAIL:.0%}"
+        )
+    elif ratio > _TEMPLATE_RATIO_WARN:
+        warnings.append(
+            f"template_rationale_ratio={ratio:.0%} "
+            f"({m['template_count']}/{m['edge_count']}); "
+            f"warn above {_TEMPLATE_RATIO_WARN:.0%}"
+        )
+    if int(m["popularity_sinks"]) > _POPULARITY_SINK_FAIL_COUNT:
+        failures.append(
+            f"popularity_sinks={m['popularity_sinks']} "
+            f"(nodes with ≥{_POPULARITY_SINK_INCOMING} incoming); "
+            f"hard fail above {_POPULARITY_SINK_FAIL_COUNT}"
+        )
+    elif int(m["popularity_sinks"]) > 0:
+        warnings.append(
+            f"popularity_sinks={m['popularity_sinks']} "
+            f"(nodes with ≥{_POPULARITY_SINK_INCOMING} incoming)"
+        )
+    if int(m["year_reversals"]) > _YEAR_REVERSAL_FAIL_COUNT:
+        failures.append(
+            f"year_reversals={m['year_reversals']} "
+            f"(parent.year > child.year+1); "
+            f"hard fail above {_YEAR_REVERSAL_FAIL_COUNT}"
+        )
+    elif int(m["year_reversals"]) > 0:
+        warnings.append(f"year_reversals={m['year_reversals']}")
+    return warnings, failures
+
+
+def _audit_lineage(path: Path, min_year: int) -> tuple[list[str], list[str]]:
+    """Return (warnings, hard_failures) for one lineage.json path.
+
+    Structural problems are always failures (broken focus papers /
+    denylist hits can't be partial). Edge metrics have separate
+    warn / fail thresholds so a regenerable theme that's still 70 %
+    template doesn't block PRs.
+    """
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        return [], [f"unreadable: {e}"]
+    structural = _audit_structural(path, data, min_year)
+    edge_warn, edge_fail = _audit_edges(data)
+    return edge_warn, structural + edge_fail
+
+
+def _collect_targets() -> list[Path]:
+    """Glob both `docs/<slug>/lineage.json` and
+    `docs/themes/<slug>/lineage.json`. Sorted by full path so output
+    is deterministic across runs (CI summaries diff cleanly)."""
+    targets = list(DOCS_DIR.glob("*/lineage.json")) + list(
+        DOCS_DIR.glob("themes/*/lineage.json")
+    )
+    return sorted(set(targets), key=lambda p: str(p))
 
 
 def main() -> int:
@@ -98,39 +261,66 @@ def main() -> int:
         "--min-year",
         type=int,
         default=datetime.now().year - 1,
-        help="Focus papers older than this trigger a warning. "
-             "Default: last year (covers e.g. ICLR 2026 papers preprinted in 2025).",
+        help=(
+            "Focus papers older than this trigger a structural error. "
+            "Default: last year (covers e.g. ICLR 2026 papers preprinted in 2025)."
+        ),
+    )
+    parser.add_argument(
+        "--include-themes",
+        action="store_true",
+        help=(
+            "Also audit docs/themes/<slug>/lineage.json files. "
+            "Defaults to OFF (conferences only) so the data-audit CI "
+            "doesn't fail on themes that still need regeneration after "
+            "the #210 / #211 lineage-quality fixes — flip the flag in "
+            "the workflow after the bulk re-dispatch lands clean."
+        ),
+    )
+    parser.add_argument(
+        "--themes-only",
+        action="store_true",
+        help="Only audit docs/themes/<slug>/lineage.json files (implies --include-themes).",
     )
     args = parser.parse_args()
 
-    targets = sorted(
-        DOCS_DIR.glob("*/lineage.json"),
-        key=lambda p: p.parent.name,
-    )
-    # Skip themes/ — that's covered by audit_theme_seeds.py.
-    targets = [p for p in targets if p.parent.name != "themes"]
-
+    targets = _collect_targets()
+    if args.themes_only:
+        targets = [p for p in targets if "themes" in p.parts]
+    elif not args.include_themes:
+        targets = [p for p in targets if "themes" not in p.parts]
     if not targets:
-        print("no conference lineage.json found.")
+        print("no lineage.json found.")
         return 0
 
     any_failed = False
     for path in targets:
-        slug = path.parent.name
-        problems = _audit_lineage(path, args.min_year)
-        if not problems:
-            print(f"OK  {slug}")
+        slug = (
+            f"themes/{path.parent.name}"
+            if "themes" in path.parts
+            else path.parent.name
+        )
+        warnings, failures = _audit_lineage(path, args.min_year)
+        if not warnings and not failures:
+            print(f"OK    {slug}")
             continue
-        any_failed = True
-        print(f"\nFAIL {slug}:")
-        for p in problems:
-            print(f"  - {p}")
+        if failures:
+            any_failed = True
+            print(f"\nFAIL  {slug}:")
+            for p in failures:
+                print(f"  - {p}")
+        if warnings:
+            print(f"\nWARN  {slug}:")
+            for p in warnings:
+                print(f"  - {p}")
 
     if any_failed:
         print(
             "\nOperator action: investigate failures above. "
-            "Most often the conference data needs regeneration via "
-            "the weekly collect-weekly.yml workflow."
+            "Themes failing the template_rationale_ratio threshold need "
+            "regeneration via theme-on-demand.yml (the edge-fabrication "
+            "fix in PR #210 + cache purge make follow-up runs converge "
+            "well below the hard-fail threshold)."
         )
         return 1
     return 0

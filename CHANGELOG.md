@@ -6,37 +6,31 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
-### Fixed — Seed selection holes (#209)
+### Added — Edge-level lineage audit (#209)
 
-- **Hyphen normalisation + tighter 2-word topic gate**
-  (`paperpilot/scripts/build_theme_lineage.py`,
-  `_filter_topic_relevant_seeds`) — 2-word themes now require the
-  verbatim phrase in `title + abstract` OR both words in the **title
-  only**. The pre-#209 "both words anywhere" rule let LPIPS into the
-  Self-Supervised Learning theme because LPIPS reviewed multiple
-  paradigms ("supervised, self-supervised, and even unsupervised") +
-  separately mentioned "deep learning". Title-only fallback keeps
-  papers like "Denoising Diffusion Probabilistic Models" against the
-  "Diffusion Models" theme where both words appear in the title but
-  the phrase order differs. Hyphen-to-space normalisation on both
-  the theme and the haystack means "self-supervised learning" and
-  "self supervised learning" match interchangeably.
-- **Denylist applied at seed phase**
-  (`_filter_denylisted_seeds` → wired into `discover_seeds`) — same
-  `_is_implementation_foundation` check that has guarded BFS refs
-  since #128 now also runs on the seed pool. The 2026-05-27 audit
-  found state-space-model surfacing SciPy 1.0 / Array programming
-  with NumPy / QIIME 2 as seeds because S2's
-  `fieldsOfStudy=Mathematics` gate accepts those papers
-  indistinguishably from research-line predecessors. The denylist
-  is a clean veto, applied before both the S2-only path and the
-  OpenAlex top-up path.
-- **`audit_theme_seeds.py` mirrors the new gate** — same
-  hyphen-normalisation + 2-word title-fallback + 3-word ceil(N/2)
-  rule so the audit's verdict matches what the live filter would
-  do at regeneration time. Audit now correctly stops flagging
-  DDPM-style false positives while still catching LPIPS-style
-  abstract-only leaks.
+- **`audit_lineage_quality.py` extended with edge metrics**
+  (`edge_metrics()` + `_audit_edges()`) computing:
+    * `template_rationale_ratio` — fraction of edges whose rationale
+      is byte-for-byte one of `TEMPLATE_RATIONALES.values()`. Hard
+      fail above 80 %, warn above 60 %.
+    * `popularity_sinks` — nodes with ≥ 8 incoming edges. Hard fail
+      above 5 sinks/lineage; warn on any.
+    * `year_reversals` — edges where parent year > child year + 1
+      (1-year window absorbs preprint/conference overlap). Hard fail
+      above 10/lineage.
+  Pre-#209 audit found 93.7 % of theme edges were template + 4-5
+  popularity sinks per theme — the new metrics make these regressions
+  CI-visible instead of buried in JSON.
+- **Themes opt-in via `--include-themes`** (default OFF). The
+  data-audit CI keeps walking only conferences until the bulk
+  theme regeneration lands clean; flip the flag in the workflow
+  after the #210 + #211 + regen sequence finishes.
+- **`--themes-only`** convenience flag for operators auditing just
+  the theme corpus locally.
+- **Theme paths skip the focus-paper-recency check** — themes
+  legitimately seed on seminal 2017-2020 papers (DDPM, GANs,
+  Transformer) and would otherwise drown the failure list in
+  false positives.
 
 ### Added — Theme lineage quality + LLM cache amortisation
 
