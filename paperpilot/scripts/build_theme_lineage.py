@@ -203,8 +203,16 @@ _INTENT_RELATION_MAP: list[tuple[str, str, str]] = [
     ("result", "successor", TEMPLATE_RATIONALES["successor_result"]),
     ("background", "baseline_only", TEMPLATE_RATIONALES["baseline_only_background"]),
 ]
-_DEFAULT_DERIVED = ("extends", TEMPLATE_RATIONALES["extends_methodology"])
 _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
+
+# Minimum LLM confidence to keep an edge (#209). Below this, the LLM
+# itself is signalling that the relation is weak; emitting it as a
+# styled arrow misleads the reader. Threshold chosen at 0.4 so a "low
+# but real" 0.5 still passes (the LLM has actually read both abstracts
+# and judged a connection), while a tentative 0.3 is dropped. This
+# only applies when classify_relation() returned a real result — LLM
+# hiccups (None) still fall back to the heuristic at the merge step.
+_MIN_LLM_CONFIDENCE = 0.4
 
 
 def _add_cross_node_edges(
@@ -450,15 +458,33 @@ def derive_relation(
       * Cross-node: parent = intent_record (cited), child = citing node.
 
     Returns ``None`` when S2 flagged the citation as non-influential,
-    OR when the LLM (only invoked in strict modes) judges the relation
-    as ``unrelated``. LLM-call failure (provider returns ``None``) falls
-    back to the heuristic edge — we never silently drop a perfectly fine
-    heuristic edge because the LLM hiccupped.
+    when neither the heuristic nor the LLM produced an edge, or when
+    the LLM judges the relation as ``unrelated`` / low-confidence.
+
+    LLM-call failure (provider returns ``None``) falls back to the
+    heuristic edge IF the heuristic had real signal — we never silently
+    drop a methodology-intent edge because Groq hiccupped. But when the
+    heuristic itself had no signal (no S2 intent + no year/cite
+    contrast), we no longer fabricate an "extends" template (#209): we
+    either invoke the LLM in strict modes, or drop the edge entirely.
     """
-    heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
-    if heuristic is None:
-        # _is_influential=False — LLM cost on a citation we'd drop anyway.
+    # _is_influential=False is an explicit drop signal from S2 — never
+    # spend an LLM call on a citation we'd discard anyway.
+    if intent_record.get("_is_influential") is False:
         return None
+
+    heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
+
+    if heuristic is None:
+        # Pre-#209: this path fabricated _DEFAULT_DERIVED ("extends"
+        # template). The audit found 1222/1304 (93.7%) of published
+        # edges came from this fallback — pure noise. Now we only emit
+        # an edge if the LLM produces one; otherwise drop.
+        if strict_mode == "off" or provider is None:
+            return None
+        llm_result = provider.classify_relation(parent or {}, child or {})
+        return _build_edge_from_llm(llm_result)
+
     if strict_mode == "off" or provider is None:
         return heuristic
     if strict_mode == "ambiguous" and not _is_ambiguous(intent_record):
@@ -477,13 +503,16 @@ def _derive_relation_heuristic(
     Phase A Step 1 so the public ``derive_relation`` can compose the
     heuristic with an optional LLM pass.
 
-    Behavior is byte-for-byte identical to the pre-Step 1 derive_relation
-    body (#53 introduced the intent map, #80 added the year/citation
-    contrast pass). Existing 76 tests in test_build_theme_lineage.py pin
-    this contract.
+    Returns ``None`` when there is no real signal (no matching S2
+    intent and no year/cite contrast trigger). Pre-#209 this path
+    fabricated an "extends" template; the audit found that fallback
+    was the source of 93.7% of published edges (1222/1304) and the
+    main reason the lineage view felt junk. ``derive_relation`` now
+    treats ``None`` as "let LLM decide; drop if it can't".
+
+    The ``_is_influential`` check has moved up to ``derive_relation``
+    so callers that bypass this helper still get the same drop.
     """
-    if intent_record.get("_is_influential") is False:
-        return None
     intents = intent_record.get("_intents") or []
     intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
     for keyword, relation, rationale in _INTENT_RELATION_MAP:
@@ -518,8 +547,7 @@ def _derive_relation_heuristic(
                     "successor",
                     TEMPLATE_RATIONALES["successor_result"],
                 )
-    relation, rationale = _DEFAULT_DERIVED
-    return _make_derived(relation, rationale)
+    return None
 
 
 def _is_ambiguous(intent_record: dict) -> bool:
@@ -537,31 +565,64 @@ def _is_ambiguous(intent_record: dict) -> bool:
 def _apply_llm_classification(
     heuristic: dict, llm_result: RelationClassification | None
 ) -> dict | None:
-    """Confluence point: merge an optional LLM classification into a heuristic edge.
+    """Merge an LLM classification into an existing heuristic edge.
 
-    Decision matrix (#118 / CRITICAL C7):
-      * ``llm_result is None``  → keep the heuristic (LLM hiccup,
-        fail-safe). We never drop a good heuristic edge because the
-        provider returned an unparseable JSON or hit a timeout.
-      * ``relation == "unrelated"`` → drop the edge entirely
-        (LLM positively rejects the relation; ``unrelated`` is never
-        rendered in the viewer).
-      * otherwise → take LLM's relation + rationale verbatim, but
-        ``confidence = max(heuristic, llm)``. A timid LLM (conf 0.3)
-        should not weaken a methodology-intent heuristic (conf 0.7);
-        a confident LLM (0.95) should override the heuristic constant.
+    Decision matrix (#118 / #209):
+      * ``llm_result is None``                 → keep heuristic
+        (LLM hiccup; the heuristic has real signal so we don't
+        regress the edge to nothing just because Groq throttled).
+      * ``relation == "unrelated"``            → drop the edge
+        (LLM positively rejects the relation).
+      * ``llm_result.confidence < threshold``  → drop the edge (#209)
+        (LLM has read both abstracts and judged the connection weak;
+        the heuristic's 0.7 confidence is an artefact, not a signal —
+        trusting it over the LLM's own assessment misleads the user).
+      * otherwise                              → use LLM verbatim
+        (#209: was max(heuristic, llm) — pinning conf to 0.7 floor
+        hid the LLM's own uncertainty signal).
 
-    Why rationale = LLM (when present): the heuristic rationale is a
-    template; the LLM's rationale is grounded in the actual abstracts
-    and carries far more user-facing signal.
+    Why rationale comes from the LLM: heuristic rationale is a
+    template (one of `TEMPLATE_RATIONALES.values()`); the LLM's
+    rationale is grounded in the actual abstracts. The from_dict
+    template-echo reject (#131) means an LLM-supplied template would
+    have already been turned into ``None`` by RelationClassification,
+    so reaching this point means the rationale is paper-specific.
     """
     if llm_result is None:
         return heuristic
     if llm_result.relation == "unrelated":
         return None
+    if float(llm_result.confidence) < _MIN_LLM_CONFIDENCE:
+        return None
     return {
         "relation": llm_result.relation,
-        "confidence": max(float(heuristic["confidence"]), float(llm_result.confidence)),
+        "confidence": float(llm_result.confidence),
+        "rationale": llm_result.rationale,
+    }
+
+
+def _build_edge_from_llm(
+    llm_result: RelationClassification | None,
+) -> dict | None:
+    """Build an edge dict from an LLM-only classification.
+
+    Used by ``derive_relation`` when the heuristic produced no signal
+    (#209). Distinct from ``_apply_llm_classification`` because there
+    is no heuristic to fall back to — if the LLM didn't produce a
+    confident, non-unrelated result, the edge is dropped entirely.
+
+    Same thresholds as the merge path: ``unrelated`` and confidence
+    below ``_MIN_LLM_CONFIDENCE`` both yield ``None``.
+    """
+    if llm_result is None:
+        return None
+    if llm_result.relation == "unrelated":
+        return None
+    if float(llm_result.confidence) < _MIN_LLM_CONFIDENCE:
+        return None
+    return {
+        "relation": llm_result.relation,
+        "confidence": float(llm_result.confidence),
         "rationale": llm_result.rationale,
     }
 

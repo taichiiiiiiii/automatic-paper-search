@@ -1106,13 +1106,18 @@ def test_derive_relation_methodology_takes_precedence_over_background():
     assert rel is not None and rel["relation"] == "extends"
 
 
-def test_derive_relation_no_intents_falls_back_to_extends():
-    """Missing intents (older cache or S2 omission), no year info → assume
-    extends. #80: when year + cite are available the heuristic refines
-    further (see test_derive_relation_heuristic_*)."""
+def test_derive_relation_no_signal_returns_none_in_off_mode():
+    """#209: missing intents AND no year/cite info → return None (drop
+    edge) instead of fabricating a template "extends".
+
+    Pre-#209 audit: this fallback produced 1222/1304 (93.7%) of
+    published edges with the same template rationale. They contributed
+    nothing the reader could trust, so we drop the edge entirely in
+    LLM-off mode and let the LLM be the only path to recovery in
+    strict modes (see ``test_derive_relation_no_signal_uses_llm_in_*``).
+    """
     parent = {"_is_influential": True, "_intents": None}
-    rel = build_theme_lineage.derive_relation(parent)
-    assert rel is not None and rel["relation"] == "extends"
+    assert build_theme_lineage.derive_relation(parent) is None
 
 
 # ---- #80: heuristic refinement when intents missing -------------------------
@@ -1151,12 +1156,17 @@ def test_derive_relation_successor_via_heuristic():
     assert rel is not None and rel["relation"] == "successor"
 
 
-def test_derive_relation_long_lineage_falls_back_to_extends():
-    """6+ year gap with no special signals → extends (long-running line)."""
+def test_derive_relation_long_lineage_returns_none_in_off_mode():
+    """#209: 6+ year gap with no special signals → drop the edge
+    (was: fabricate "extends" template). The year/cite heuristic
+    explicitly does not fire here — the gap is too large to call it
+    successor and the citation profile doesn't trigger supersedes /
+    contrasts / ablation. Pre-#209 the "extends" default papered over
+    this; now we admit we don't know."""
     parent = {"_is_influential": True, "year": 2010, "citationCount": 200}
     child = {"year": 2024, "citationCount": 50}
     rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
-    assert rel is not None and rel["relation"] == "extends"
+    assert rel is None
 
 
 def test_derive_relation_intents_take_precedence_over_heuristic():
@@ -1187,6 +1197,206 @@ def test_derive_relation_attaches_rationale():
     assert len(rel["rationale"].strip()) > 0
     assert isinstance(rel.get("confidence"), float)
     assert 0.0 <= rel["confidence"] <= 1.0
+
+
+# ---- #209: no-heuristic-signal LLM rescue path ------------------------------
+# Pre-#209 the heuristic fabricated a generic "extends" template when
+# nothing else fired. That single fallback was responsible for 93.7%
+# of published edges (1222/1304) — pure noise. The fallback is gone;
+# these tests pin the replacement behavior.
+
+
+class _StubProvider:
+    """Minimal AbstractLLMProvider-shaped stub for derive_relation tests.
+
+    classify_calls records each (a, b) so tests can assert the LLM was
+    actually invoked (or not). Returning a fixed RelationClassification
+    keeps the test isolated from prompt / parsing layers.
+    """
+
+    def __init__(self, result: RelationClassification | None) -> None:
+        self.name = "stub"
+        self.enabled = True
+        self._result = result
+        self.classify_calls: list[tuple[dict, dict]] = []
+
+    def evaluate_batch(self, papers, profile):  # pragma: no cover
+        return []
+
+    def classify_relation(self, a, b):
+        self.classify_calls.append((a, b))
+        return self._result
+
+
+def test_derive_relation_no_signal_drops_in_off_mode_without_llm():
+    """LLM-off mode + heuristic returns None → drop the edge. No
+    provider call, no fabricated template. The opposite of pre-#209."""
+    parent = {"_is_influential": True, "_intents": None}
+    provider = _StubProvider(
+        RelationClassification(relation="extends", confidence=0.9, rationale="x")
+    )
+    rel = build_theme_lineage.derive_relation(
+        parent, provider=provider, strict_mode="off"
+    )
+    assert rel is None
+    assert provider.classify_calls == [], (
+        "LLM must NOT be called in strict_mode='off' — that's the whole point"
+    )
+
+
+def test_derive_relation_no_signal_uses_llm_in_ambiguous_mode():
+    """LLM-ambiguous mode + heuristic returns None → LLM is invoked
+    and its result becomes the edge (no max-with-heuristic, since
+    there is no heuristic to merge against)."""
+    parent = {"_is_influential": True, "_intents": None}
+    llm = RelationClassification(
+        relation="successor",
+        confidence=0.85,
+        rationale="B のグラフ注意機構は A の空間正則化を拡張している",
+    )
+    provider = _StubProvider(llm)
+    rel = build_theme_lineage.derive_relation(
+        parent,
+        parent={"paperId": "a"},
+        child={"paperId": "b"},
+        provider=provider,
+        strict_mode="ambiguous",
+    )
+    assert rel is not None
+    assert rel["relation"] == "successor"
+    assert rel["confidence"] == 0.85  # LLM verbatim, NOT max with 0.7 heuristic
+    assert rel["rationale"] == llm.rationale
+    assert len(provider.classify_calls) == 1
+
+
+def test_derive_relation_no_signal_drops_when_llm_returns_none():
+    """LLM provider throttled / returned None → no heuristic to fall
+    back to → drop the edge. Pre-#209 the heuristic would have
+    fabricated "extends" here."""
+    parent = {"_is_influential": True, "_intents": None}
+    provider = _StubProvider(None)
+    rel = build_theme_lineage.derive_relation(
+        parent,
+        parent={"paperId": "a"},
+        child={"paperId": "b"},
+        provider=provider,
+        strict_mode="ambiguous",
+    )
+    assert rel is None
+    assert len(provider.classify_calls) == 1
+
+
+def test_derive_relation_no_signal_drops_when_llm_says_unrelated():
+    """LLM positively rejects the relation → drop the edge."""
+    parent = {"_is_influential": True, "_intents": None}
+    llm = RelationClassification(
+        relation="unrelated", confidence=0.95, rationale="無関係"
+    )
+    provider = _StubProvider(llm)
+    rel = build_theme_lineage.derive_relation(
+        parent,
+        parent={"paperId": "a"},
+        child={"paperId": "b"},
+        provider=provider,
+        strict_mode="ambiguous",
+    )
+    assert rel is None
+
+
+def test_derive_relation_no_signal_drops_low_confidence_llm():
+    """LLM returned a relation but with confidence below the threshold
+    (#209: ``_MIN_LLM_CONFIDENCE = 0.4``) — drop. The LLM is signalling
+    "I read the abstracts and the connection is weak"; emitting the
+    edge with a confident-looking style would mislead the reader."""
+    parent = {"_is_influential": True, "_intents": None}
+    llm = RelationClassification(
+        relation="extends", confidence=0.3, rationale="弱い関連"
+    )
+    provider = _StubProvider(llm)
+    rel = build_theme_lineage.derive_relation(
+        parent,
+        parent={"paperId": "a"},
+        child={"paperId": "b"},
+        provider=provider,
+        strict_mode="ambiguous",
+    )
+    assert rel is None
+
+
+def test_derive_relation_non_influential_skips_llm_call():
+    """_is_influential=False is an explicit drop signal from S2 — never
+    spend a Groq call on it even in strict modes."""
+    parent = {"_is_influential": False, "_intents": ["methodology"]}
+    provider = _StubProvider(
+        RelationClassification(relation="extends", confidence=0.9, rationale="x")
+    )
+    rel = build_theme_lineage.derive_relation(
+        parent,
+        parent={"paperId": "a"},
+        child={"paperId": "b"},
+        provider=provider,
+        strict_mode="all",
+    )
+    assert rel is None
+    assert provider.classify_calls == [], (
+        "Non-influential edges must not trigger LLM calls (#209: cost guard)"
+    )
+
+
+# ---- #209: _apply_llm_classification merge policy ---------------------------
+
+
+def test_apply_llm_classification_uses_llm_confidence_verbatim():
+    """When LLM and heuristic both exist, LLM confidence wins verbatim —
+    no max(heuristic, llm). The heuristic 0.7 is an artefact (every
+    heuristic edge shares it); pinning the floor at 0.7 hid the LLM's
+    own uncertainty signal, see #209 audit."""
+    heuristic = {
+        "relation": "extends",
+        "confidence": 0.7,
+        "rationale": "heuristic template",
+    }
+    llm = RelationClassification(
+        relation="successor",
+        confidence=0.55,  # below heuristic, above _MIN_LLM_CONFIDENCE
+        rationale="LLM specific rationale citing concept X",
+    )
+    merged = build_theme_lineage._apply_llm_classification(heuristic, llm)
+    assert merged is not None
+    assert merged["relation"] == "successor"
+    assert merged["confidence"] == 0.55, "LLM confidence must NOT be lifted to 0.7"
+    assert merged["rationale"] == llm.rationale
+
+
+def test_apply_llm_classification_drops_low_confidence_llm():
+    """LLM conf < _MIN_LLM_CONFIDENCE → drop, even when heuristic had
+    real signal. Trust the LLM's "I'm not sure" over the heuristic's
+    constant 0.7."""
+    heuristic = {
+        "relation": "extends",
+        "confidence": 0.7,
+        "rationale": "heuristic",
+    }
+    llm = RelationClassification(
+        relation="extends", confidence=0.25, rationale="weak"
+    )
+    assert build_theme_lineage._apply_llm_classification(heuristic, llm) is None
+
+
+def test_apply_llm_classification_llm_hiccup_keeps_heuristic():
+    """LLM provider returned None (Groq throttled, parse failure, etc.)
+    → fall back to the heuristic edge. This is the protective case:
+    heuristic has REAL signal (methodology intent or year/cite
+    contrast), so dropping the edge would be a regression. Only the
+    no-signal path (#209) drops when LLM fails — see
+    test_derive_relation_no_signal_drops_when_llm_returns_none."""
+    heuristic = {
+        "relation": "extends",
+        "confidence": 0.7,
+        "rationale": "heuristic",
+    }
+    merged = build_theme_lineage._apply_llm_classification(heuristic, None)
+    assert merged is heuristic
 
 
 def test_build_theme_lineage_makes_zero_classify_calls(tmp_path, monkeypatch):
