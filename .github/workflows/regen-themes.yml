@@ -60,7 +60,13 @@ jobs:
         # Inputs are interpolated into env vars FIRST, never directly into
         # shell strings — protects against command injection via
         # workflow_dispatch theme list (review #87 CRITICAL finding).
+        #
+        # Gemini 2.5-flash paid Tier 1 (post-#209): 300 RPM lets the
+        # bulk regen finish in ~5 min per theme × 18 themes = ~90 min,
+        # well inside the 120-min timeout. Pre-#209 Groq was hitting
+        # the timeout at theme 6/19 because of TPM throttling.
         env:
+          PAPERPILOT_GEMINI_API_KEY: ${{ secrets.PAPERPILOT_GEMINI_API_KEY }}
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEMES_INPUT: ${{ github.event.inputs.themes }}
@@ -98,7 +104,7 @@ jobs:
             if uv run python -m paperpilot.scripts.build_theme_lineage \
                 --theme "$theme" \
                 --depth 1 --seeds 5 --width 8 --since-year 2018 \
-                --llm-strict ambiguous; then
+                --llm-strict all; then
               :
             else
               failed=$((failed + 1))

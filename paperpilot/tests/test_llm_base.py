@@ -283,23 +283,25 @@ def test_classify_prompt_within_groq_tpm_budget():
     )
 
 
-def test_theme_workflows_use_ambiguous_strict_mode():
-    """``--llm-strict=all`` on the Groq free tier blew the TPM budget and
-    timed out the workflow (#131 PR #132 deploy → #133 walk-back). Both
-    theme-producing workflows — the on-demand single-theme dispatch and
-    the weekly bulk regen — MUST stay on ``--llm-strict=ambiguous`` until
-    the operator moves to a paid plan; a careless flip back to ``all``
-    would silently re-introduce the production cancellation.
+def test_theme_workflows_use_all_strict_mode_post_209():
+    """#209 / PR-D: with the Gemini 2.5-flash swap (paid Tier 1 = 300
+    RPM, 2M TPM), both theme workflows now run ``--llm-strict=all``
+    so every influential edge gets a paper-specific LLM rationale.
 
-    Reading the YAML as plain text (no yaml.safe_load tree walk) keeps
-    the test resilient to comment / whitespace re-shuffling — the only
-    thing we check is the literal flag value on the command line.
+    Pre-#209 this was pinned to ``--llm-strict=ambiguous`` because
+    free-tier Groq (30 RPM / 6K TPM) couldn't sustain ``=all`` — see
+    #131 / #133. The Gemini swap lifted the rate ceiling 10× and the
+    edge-fabrication fix (#210) made the template-only fallback
+    actively harmful (those edges now drop), so ``=all`` is the new
+    correct default.
+
+    A reviewer who wants to flip back to ``=ambiguous`` must also
+    flip this test, forcing them to confirm the cost / quota story
+    has changed.
     """
     from pathlib import Path
 
     repo_root = Path(__file__).resolve().parents[2]
-    # Both workflows that invoke build_theme_lineage must use the same
-    # strict mode for predictable LLM cost.
     yaml_paths = [
         repo_root / ".github" / "workflows" / "theme-on-demand.yml",
         repo_root / ".github" / "workflows" / "regen-themes.yml",
@@ -307,26 +309,22 @@ def test_theme_workflows_use_ambiguous_strict_mode():
 
     for yaml_path in yaml_paths:
         text = yaml_path.read_text(encoding="utf-8")
-        # The literal flag value must be 'ambiguous'. A reviewer who wants
-        # to flip back to 'all' must also flip this test, which forces them
-        # to look at #131 / #133 and confirm they've taken the paid-plan
-        # rate-limit step first.
-        assert "--llm-strict ambiguous" in text, (
-            f"{yaml_path.name} lost the --llm-strict=ambiguous flag. "
-            "Free-tier Groq cannot sustain --llm-strict=all; see #131 / "
-            "PR #133 for the cancellation regression this prevents."
-        )
-    # And the dangerous 'all' must NOT be live (a commented example is fine
-        # — only check the un-commented invocation).
         live_lines = [
-            line for line in text.splitlines()
-            if "--llm-strict" in line
-            and not line.lstrip().startswith("#")
+            line
+            for line in text.splitlines()
+            if "--llm-strict" in line and not line.lstrip().startswith("#")
         ]
-        assert all("ambiguous" in line for line in live_lines), (
-            f"{yaml_path.name} has a non-ambiguous --llm-strict line: "
-            f"{live_lines}"
+        assert live_lines, (
+            f"{yaml_path.name} has no live --llm-strict invocation; "
+            "expected at least one (the build_theme_lineage call)."
         )
+        for line in live_lines:
+            assert "all" in line and "ambiguous" not in line, (
+                f"{yaml_path.name} still has a non-all --llm-strict line "
+                f"({line!r}). Post-#209 the Gemini swap supports =all; "
+                "a downgrade back to =ambiguous needs a deliberate "
+                "decision (see PR #213)."
+            )
 
 
 def test_classify_prompt_invariants_still_hold():

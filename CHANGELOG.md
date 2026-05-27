@@ -6,6 +6,57 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — LLM swap: Groq → Gemini 2.5-flash (#209 / PR-D)
+
+- **`build_provider()` priority inverted**
+  (`paperpilot/scripts/build_lineage.py`): when both keys are
+  configured, Gemini wins (was Groq). Rationale:
+    * **Rate ceiling**: Gemini paid Tier 1 (no minimum spend) sustains
+      300 RPM / 2M TPM. Groq free is 30 RPM / 6K TPM. A 1260-call
+      regen runs in ~4 min on Gemini vs ~50 min on Groq — the latter
+      exceeds the 15-min `theme-on-demand` workflow timeout.
+    * **Quality**: Llama 3.3 70B has the documented #131
+      enum-translation regression where the model translates the
+      English enum list into Japanese instead of reading the
+      abstracts, producing byte-for-byte heuristic templates. Gemini
+      2.5-flash has not been observed reproducing this on the same
+      prompt.
+    * **JSON adherence**: Gemini's `responseMimeType=application/json`
+      schema-enforces valid JSON output — stronger than Groq's
+      `json_object` mode.
+  Groq remains a viable fallback when only its key is configured —
+  useful for local-dev experiments without Gemini billing.
+- **`GeminiProvider` gets rate-limit + circuit-breaker**
+  (`paperpilot/llm/gemini_provider.py`) — mirrors Groq's #130 / #191
+  pattern. Default `rate_limit_rpm = 250` (paid Tier 1 with 17 %
+  headroom); operators on free tier override to 8 via config.yaml.
+  Three consecutive non-200 responses latch `_quota_exhausted` so a
+  fully-throttled key short-circuits to `None` and the heuristic
+  fallback completes the build in finite time.
+- **`gemini-2.5-flash` is the new default model** (was
+  `gemini-1.5-flash`; `build_lineage`'s env override already pointed
+  here, the provider's `DEFAULT_MODEL` now matches).
+- **Workflows lifted to `--llm-strict=all`**:
+  `.github/workflows/theme-on-demand.yml` and
+  `.github/workflows/regen-themes.yml` now request paper-specific
+  LLM rationales on **every** influential edge. Pre-#209 was pinned
+  to `=ambiguous` because Groq's TPM ceiling couldn't sustain
+  `=all`; the Gemini swap lifted the rate ceiling and the edge-
+  fabrication fix (#210) made the heuristic-template fallback
+  actively harmful (those edges now drop), so `=all` is the new
+  correct default.
+- **`paperpilot/config.yaml` + `paperpilot/.env.example`** updated
+  with the new provider order and Gemini Tier 1 setup notes.
+- **`test_theme_workflows_use_ambiguous_strict_mode` inverted**
+  → `test_theme_workflows_use_all_strict_mode_post_209` (regression
+  guard pin for the new default).
+- **Cost**: ~¥1,030/mo at the projected 7K calls/mo workload
+  (10.5M input × $0.30/MTok + 1.4M output × $2.50/MTok), well
+  inside the ¥1,500/mo CLAUDE.md budget. Operators who care more
+  about quality than cost can swap to Claude Haiku 4.5 via the
+  existing `claude_provider.py` for ~¥2,700/mo (¥1,100/mo with
+  prompt caching).
+
 ### Added — Theme lineage quality + LLM cache amortisation
 
 - **Foundational-ref filter** (`paperpilot/scripts/build_theme_lineage.py`

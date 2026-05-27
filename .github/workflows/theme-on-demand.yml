@@ -92,21 +92,21 @@ jobs:
         # shell command line) so command-substitution-style attacks are
         # impossible here. Python side also defends.
         #
-        # --llm-strict=ambiguous (not =all): Groq free tier is RPM-capped
-        # AND TPM-capped (6,000 tokens/min). At ~2,000 tokens per call
-        # (system prompt + two 600-char abstracts + response), even 4 RPM
-        # exceeds the TPM budget; --llm-strict=all on the free tier hits
-        # 429 throttles in the back half of the burst and either pushes
-        # the run past the workflow timeout (15 min) or falls back to
-        # heuristic templates anyway.
+        # --llm-strict=all (post-#209): Gemini 2.5-flash paid Tier 1
+        # sustains 300 RPM / 2M TPM — enough for full LLM coverage on
+        # every influential edge inside the 15-min workflow timeout.
+        # The pre-#209 free-tier Groq deployment was forced into
+        # =ambiguous because Llama 3.3 on 30 RPM / 6K TPM couldn't keep
+        # up with the burst; the Gemini swap lifts that ceiling.
+        # Edge fabrication removal (#210) also means non-LLM edges now
+        # drop rather than emit a template, so =all is required for the
+        # lineage to be dense enough to be useful.
         #
-        # Honest design: heuristic for the ~80% of edges S2 already
-        # classified (methodology / result / background intents), LLM
-        # only for the truly ambiguous edges where the heuristic falls
-        # back to "extends" by default. Operators on a Groq paid plan
-        # who can raise llm.rate_limit_rpm can switch to --llm-strict=all
-        # if they want full LLM coverage. #131 documents the trade.
+        # Groq fallback: when only PAPERPILOT_GROQ_API_KEY is set, the
+        # build_provider() chain still picks Groq — fine for local dev,
+        # not recommended for CI because of the throttle issue above.
         env:
+          PAPERPILOT_GEMINI_API_KEY: ${{ secrets.PAPERPILOT_GEMINI_API_KEY }}
           PAPERPILOT_GROQ_API_KEY: ${{ secrets.PAPERPILOT_GROQ_API_KEY }}
           PAPERPILOT_S2_API_KEY: ${{ secrets.PAPERPILOT_S2_API_KEY }}
           THEME_INPUT: ${{ github.event.inputs.theme }}
@@ -115,7 +115,7 @@ jobs:
           uv run python -m paperpilot.scripts.build_theme_lineage \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
-            --llm-strict ambiguous
+            --llm-strict all
 
       - name: Refresh manifest
         run: |

@@ -183,3 +183,93 @@ def test_classify_relation_rejects_invalid_relation():
     ):
         rc = provider.classify_relation({"title": "A"}, {"title": "B"})
     assert rc is None
+
+
+# ---- #209 / PR-D: rate limit + circuit breaker ----
+
+
+def test_rate_limit_default_rpm_matches_paid_tier1():
+    """Default 250 RPM = 240 ms spacing — fits paid Tier 1 (300 RPM)
+    with 17% headroom. Pin the default so a careless edit doesn't
+    silently re-introduce the free-tier 8 RPM throttle."""
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    assert provider._min_call_interval_s == 60.0 / 250
+
+
+def test_rate_limit_respects_config_override():
+    """Operators on the free tier (10 RPM) override via
+    `rate_limit_rpm: 8` to stay under the cap."""
+    provider = GeminiProvider(
+        {"enabled": True, "rate_limit_rpm": 8}, api_key="k"
+    )
+    assert provider._min_call_interval_s == 60.0 / 8
+
+
+def test_rate_limit_handles_zero_rpm_safely():
+    """Misconfigured rate_limit_rpm=0 → fall back to the default
+    rather than divide-by-zero."""
+    provider = GeminiProvider(
+        {"enabled": True, "rate_limit_rpm": 0}, api_key="k"
+    )
+    assert provider._min_call_interval_s == 60.0 / 250
+
+
+def test_circuit_breaker_latches_after_consecutive_failures():
+    """Three consecutive non-200 responses latch ``_quota_exhausted``
+    so subsequent calls short-circuit to None without hitting the
+    API. Mirrors GroqProvider's #191 behaviour."""
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        return_value=_resp(429),
+    ) as mock_req:
+        for _ in range(3):
+            provider.classify_relation({"title": "A"}, {"title": "B"})
+        assert provider._quota_exhausted is True
+        # Fourth call must NOT hit the API.
+        before_count = mock_req.call_count
+        result = provider.classify_relation({"title": "X"}, {"title": "Y"})
+        assert result is None
+        assert mock_req.call_count == before_count, (
+            "Circuit breaker should short-circuit without calling request_with_retry"
+        )
+
+
+def test_circuit_breaker_resets_on_success():
+    """A successful 200 response resets the failure counter, so an
+    isolated 429 doesn't poison the rest of the build."""
+    success_body = _gemini_body(
+        json.dumps({"relation": "extends", "confidence": 0.8, "rationale": "ok"})
+    )
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    responses = iter([_resp(429), _resp(429), _resp(200, success_body)])
+    with patch(
+        "paperpilot.llm.gemini_provider.request_with_retry",
+        side_effect=lambda *a, **kw: next(responses),
+    ):
+        provider.classify_relation({"title": "A"}, {"title": "B"})
+        provider.classify_relation({"title": "C"}, {"title": "D"})
+        # Failures = 2 (under threshold) → next success resets.
+        provider.classify_relation({"title": "E"}, {"title": "F"})
+    assert provider._consecutive_failures == 0
+    assert provider._quota_exhausted is False
+
+
+def test_first_call_does_not_sleep():
+    """No prior call → throttle returns immediately (no sleep)."""
+    import time as _time
+
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    t0 = _time.monotonic()
+    provider._throttle_for_rate_limit()
+    elapsed = _time.monotonic() - t0
+    # 240 ms is the spacing; first call must complete in < 50 ms.
+    assert elapsed < 0.05
+
+
+def test_default_model_is_gemini_2_5_flash():
+    """Pin the production default. Operators on free tier may want to
+    swap to gemini-1.5-flash via config; the default tracks the
+    swap target."""
+    provider = GeminiProvider({"enabled": True}, api_key="k")
+    assert provider.model == "gemini-2.5-flash"

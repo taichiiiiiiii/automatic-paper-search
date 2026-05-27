@@ -526,7 +526,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
         5. **Implementation denylist (`_is_implementation_foundation`)**: `paperpilot/data/lineage_denylist.json` に列挙された paperId / title pattern にマッチする論文（Adam optimizer / TensorFlow / PyTorch / Scikit-learn / NumPy / SciPy / Batch Normalization / Dropout / Keras / pandas 等）は methodology intent があっても**無条件で除外**。これらは「実装の foundational」であって「研究線譜の foundational」ではないため。PyTorch Geometric のような topic-specific lib は title pattern が catch しないので残る。新しい canonical lib paper を見つけたら denylist JSON に追記する。
     - **Theme alias フォールバック (#195)**: canonical テーマ名で seed=0 になる場合、`paperpilot/data/theme_aliases.json` の代替キーワードを順次試行。例: "Speculative Decoding" → "Speculative Sampling" (S2 が後者の名義で index している)。lowercase + trim でキーマッチ、最初の成功で打ち切り。
     - **Seed quality audit (#187)**: `uv run python -m paperpilot.scripts.audit_theme_seeds` で `docs/themes/*/lineage.json` を巡回、off-topic seed を検出。CI で `.github/workflows/theme-audit.yml` (#192) が `docs/themes/**` 変更 PR で自動実行 (exit 1 で job 失敗)。Viewer 側は #194 で同等 audit を走らせ stale-banner 表示。
-    - **LLM rationale (`--llm-strict=ambiguous` がデフォルト)**: `theme-on-demand.yml` は **`--llm-strict=ambiguous`** を有効化。S2 intent が `_INTENT_RELATION_MAP` のキー (methodology / result / background) に一致しない edge のみ Groq (Llama 3.3 70B) で paper-specific 分類。`--llm-strict=all` は Groq free tier の TPM 制約 (6,000 tokens/min) で破綻する (~2,000 tokens × 25 RPM = 50,000 TPM → 429 throttle 連鎖で 15 min timeout 到達)。Paid plan で `config.yaml` の `llm.rate_limit_rpm` を 1000+ に上げてから `--llm-strict=all` を使う。`GroqProvider` 内蔵 rate limiter (default 25 RPM) は RPM 制約だけカバー、TPM は prompt サイズで間接的に制御する。
+    - **LLM rationale (`--llm-strict=all` がデフォルト、Gemini 2.5-flash)**: #209 / PR-D で Groq → Gemini に swap。`theme-on-demand.yml` と `regen-themes.yml` は **`--llm-strict=all`** で全 influential edge に LLM 分類を適用。Gemini 2.5-flash paid Tier 1 (no minimum spend) は 300 RPM / 2M TPM をサポートし、1260 calls の full regen が 4 分で完了する (Groq free 30 RPM では 50 分超で workflow timeout)。`build_provider()` の優先順位は **Gemini → Groq fallback**。`PAPERPILOT_GEMINI_API_KEY` が未設定で `PAPERPILOT_GROQ_API_KEY` のみあるならローカル dev 用途として Groq へフォールバック。Pre-#209 の `--llm-strict=ambiguous` は Llama 3.3 の #131 enum-translation 問題と Groq free tier TPM 制約の二重縛りに対応した妥協で、Gemini 移行でそのまま `--llm-strict=all` に格上げできる。
     - **Groq 429 circuit breaker (#191)**: `GroqProvider` が連続 3 回失敗 (request_with_retry が None / 非 200 を返す) で `_quota_exhausted=True` に latch、以降の `_chat` は API call 前に None を即返却。caller (`_CachedClassifyProvider`) は S2 intent heuristic にフォールバック。これで Groq daily quota 切れでも 15 min workflow timeout-minutes で cancel されず、heuristic で完走する。成功 200 で counter リセット (transient blip で latch しない)。
     - **LLM prompt 品質保証 (#131)**: `CLASSIFY_SYSTEM_PROMPT` (`paperpilot/llm/base.py`) は LLM が heuristic template を翻訳しないように設計されている。enum 定義を短く抽象化、MUST/MUST NOT 指示で template phrasing を明示禁止、Good 例で paper-specific rationale を few-shot 提示。Token budget は ~250 tokens に抑制 (Groq TPM 制約のため)。第二防衛線として `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を返した場合 None を返して heuristic フォールバックさせる。template 追加時は両方 (prompt の MUST NOT リスト + `_GENERIC_TEMPLATE_RATIONALES`) を同期更新する。
     - **classification cache 共有 (theme 品質改善の本命)**: `build_theme_lineage` は `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有。`_CachedClassifyProvider` が AbstractLLMProvider をラップし、key `f"{a.paperId}->{b.paperId}"` で hit すれば LLM call を skip。free-tier Groq の TPM 制約はあくまで「1 run あたり」の問題で、cache が複数 run に渡って蓄積するため、テーマ再生成 / 複数テーマ間で同じ (parent, child) ペアが出てくれば LLM cost ゼロで paper-specific rationale が再利用される。template entry は from_dict の rejection (#131 第二防衛線) でヒット時も拒否され heuristic フォールバック → 次回 LLM 機会あれば再分類されて cache 更新。`persist_classifications` で atomic write (build_lineage と同じ pattern)。
@@ -550,7 +550,8 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 | `S2_API_KEY` | Semantic Scholar | 任意 |
 | `CLAUDE_API_KEY` | 将来の Claude Provider 用 | 任意 |
 | `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗時通知 | 任意 |
-| `PAPERPILOT_GROQ_API_KEY` | テーマ家系図の LLM 分類 (Groq) | テーマ生成に必須 |
+| `PAPERPILOT_GEMINI_API_KEY` | **テーマ家系図の LLM 分類 (Gemini 2.5-flash, paid Tier 1)** | テーマ生成に必須 (post #209) |
+| `PAPERPILOT_GROQ_API_KEY` | Gemini key 未設定時のフォールバック | 任意 (local dev 用) |
 | `PAPERPILOT_OPENALEX_EMAIL` | OpenAlex polite pool（フォールバックの安定性向上） | 推奨 |
 
 CF Worker 側のシークレット (`wrangler secret put`):
@@ -724,8 +725,8 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 |------|------|
 | 週次深掘り (`collect-weekly.yml`) | ✅ uv sync 移行 (#136)、合計 3 件の startup_failure + numpy missing + empty-dir guard 修正 (#135-137)、develop push (#141) |
 | 毎日 follow-watch (`collect-daily-watch.yml`) | ✅ uv sync 移行 (#142)、develop push (#141) |
-| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` 有効化 (#133)、timeout 15min |
-| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` (#143)、timeout 120min (#144) |
+| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=all` (#209 / PR-D で格上げ)、Gemini 2.5-flash、timeout 15min |
+| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=all` (#209)、Gemini 2.5-flash、timeout 120min |
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
 | Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
@@ -745,7 +746,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Foundational ref フィルタ (#127) | ✅ `_filter_off_topic_refs`、`citationCount > 2 × max(seed cites)` で除外 |
 | Topic relevance seed フィルタ (#127) | ✅ `_filter_topic_relevant_seeds`、多単語テーマでタイトル/アブストラクト一致要求 |
 | Implementation denylist (#128) | ✅ `paperpilot/data/lineage_denylist.json` (10 paperIds + 15 title pattern) |
-| LLM strict mode (`--llm-strict`) | ✅ off / ambiguous / all、production default = ambiguous |
+| LLM strict mode (`--llm-strict`) | ✅ off / ambiguous / all、production default = **all** (post #209, Gemini swap) |
 | Classification cache 共有 (#138/#139) | ✅ `_CachedClassifyProvider` + `paperpilot/data/lineage-cache/classifications.json` を build_lineage と共有、git 永続化 (.gitignore 個別 un-ignore) |
 | Groq rate limiter (#130) | ✅ default 25 RPM、`config.yaml` の `llm.rate_limit_rpm` で paid plan 拡張可 |
 | LLM prompt 品質 (#131-#133) | ✅ ~250 tokens に圧縮、MUST/MUST NOT block、`TEMPLATE_RATIONALES` 単一 source (#146) |

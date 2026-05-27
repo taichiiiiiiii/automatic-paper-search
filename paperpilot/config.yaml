@@ -78,10 +78,16 @@ embedding:
 # ===== LLM (Stage 4) =====
 # Provider options:
 #   - ollama : local, free (requires `ollama serve` + `ollama pull <model>`)
-#   - gemini : cloud, free tier (requires PAPERPILOT_GEMINI_API_KEY)
+#   - gemini : cloud, paid Tier 1 = 300 RPM / 2M TPM (requires
+#              PAPERPILOT_GEMINI_API_KEY) — **primary backend for lineage
+#              relation classification (post #209 / PR-D)**. Free tier
+#              is 10 RPM / 250 RPD — too tight for lineage workflows
+#              (set rate_limit_rpm: 8 if you must use it).
 #   - claude : cloud, paid (requires PAPERPILOT_CLAUDE_API_KEY) — spec's primary
-#   - groq   : cloud, free tier 30 RPM / 14400 RPD (requires PAPERPILOT_GROQ_API_KEY)
-#              primary backend for lineage relation classification
+#   - groq   : cloud, free tier 30 RPM / 14400 RPD (requires
+#              PAPERPILOT_GROQ_API_KEY). Fallback only — Llama 3.3's
+#              #131 enum-translation/template-echo regression makes it
+#              a quality downgrade for lineage classification.
 # Disable this block to skip Stage 4 entirely.
 llm:
   enabled: false         # flip to true once the provider is ready
@@ -92,7 +98,9 @@ llm:
   host: http://localhost:11434
 
   # Gemini-specific settings (used when provider == 'gemini')
-  # model: gemini-1.5-flash   # swap in when switching provider
+  # model: gemini-2.5-flash       # current default
+  # rate_limit_rpm: 250           # 250 = paid Tier 1 with 17% headroom;
+  #                               # use 8 for free tier (10 RPM cap)
 
   # Claude-specific settings (used when provider == 'claude')
   # model: claude-sonnet-4-20250514   # or claude-opus-4-* / claude-haiku-4-*
@@ -100,6 +108,7 @@ llm:
 
   # Groq-specific settings (used when provider == 'groq')
   # model: llama-3.3-70b-versatile   # see https://console.groq.com/docs/models
+  # rate_limit_rpm: 25               # free tier 30 RPM; paid Dev 1000+
 
   batch_size: 5
   temperature: 0.2

@@ -105,7 +105,11 @@ def _cluster_slug(label: str) -> str:
 # so we don't trigger retries in the first place.
 LLM_RATE_DELAY = {
     "groq": 2.2,    # ~27 RPM (Groq free tier: 30 RPM)
-    "gemini": 7.0,  # ~8 RPM (Gemini 2.5-flash free tier: 10 RPM)
+    # Gemini 2.5-flash paid Tier 1 (no minimum spend) = 300 RPM.
+    # 0.3s = 200 RPM keeps a 33 % headroom against transient bursts.
+    # Free-tier operators (10 RPM) must override via config to ~7.0
+    # or the build will 429-loop and burn the workflow timeout.
+    "gemini": 0.3,
 }
 
 # Match on S2's full venue names as lowercase substrings.
@@ -143,8 +147,21 @@ VENUE_TIER_MAP = [
 def build_provider() -> tuple[AbstractLLMProvider, float]:
     """Pick the first available LLM provider and return (provider, rate_delay).
 
-    Groq takes precedence because it has the most generous free tier for
-    the classification workload (hundreds of calls per lineage build).
+    Gemini takes precedence over Groq as of #209 / PR-D:
+
+    - Gemini 2.5-flash paid Tier 1 sustains 300 RPM (vs Groq free 30 RPM
+      / paid Dev ~100 RPM), so the LLM phase of a 1260-call regen runs
+      in ~4 min instead of ~50 min — a hard requirement for the 15-min
+      ``theme-on-demand`` workflow timeout.
+    - Llama 3.3 70B (Groq) has the documented #131 enum-translation /
+      template-echo problem; Gemini 2.5-flash has not been observed
+      reproducing it on the same prompt.
+    - Gemini's ``responseSchema`` / ``responseMimeType=application/json``
+      gives stronger JSON adherence than Groq's ``json_object`` mode.
+
+    Groq remains a viable fallback when only its key is configured —
+    useful for free-tier developers who don't want to enable Gemini
+    billing for local experimentation.
 
     Env lookup goes through `utils.config_loader.load_env` so the pipeline
     and scripts share one mapping from PAPERPILOT_* vars to the secrets
@@ -155,21 +172,13 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
 
     env = load_env(ROOT / "paperpilot" / ".env")
     # Unprefixed names are accepted as a convenience for users running
-    # one-off scripts with ambient credentials (e.g. `GROQ_API_KEY=... python ...`).
-    groq_key = env.get("groq_api_key") or os.environ.get("GROQ_API_KEY")
+    # one-off scripts with ambient credentials.
     gemini_key = env.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+    groq_key = env.get("groq_api_key") or os.environ.get("GROQ_API_KEY")
 
     # Annotate explicitly as the base class so mypy accepts either concrete
     # subclass on the way back out of the tuple.
     provider: AbstractLLMProvider
-    if groq_key:
-        model = env.get("groq_model") or "llama-3.3-70b-versatile"
-        provider = GroqProvider(
-            {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
-            api_key=groq_key,
-        )
-        return provider, LLM_RATE_DELAY["groq"]
-
     if gemini_key:
         model = env.get("gemini_model") or "gemini-2.5-flash"
         provider = GeminiProvider(
@@ -178,12 +187,20 @@ def build_provider() -> tuple[AbstractLLMProvider, float]:
         )
         return provider, LLM_RATE_DELAY["gemini"]
 
+    if groq_key:
+        model = env.get("groq_model") or "llama-3.3-70b-versatile"
+        provider = GroqProvider(
+            {"enabled": True, "model": model, "temperature": 0.1, "timeout_seconds": 30},
+            api_key=groq_key,
+        )
+        return provider, LLM_RATE_DELAY["groq"]
+
     # RuntimeError (not sys.exit) so this function is safe to import from a
     # Modal Function — sys.exit would tear down the ASGI worker. The CLI
     # main() converts this back to exit code 3 to preserve script contract.
     raise RuntimeError(
-        "No LLM key found. Set PAPERPILOT_GROQ_API_KEY (preferred) "
-        "or PAPERPILOT_GEMINI_API_KEY."
+        "No LLM key found. Set PAPERPILOT_GEMINI_API_KEY (preferred) "
+        "or PAPERPILOT_GROQ_API_KEY (fallback)."
     )
 
 

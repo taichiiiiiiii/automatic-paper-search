@@ -54,18 +54,26 @@ def _patch_env(monkeypatch, **values):
         monkeypatch.delenv(v, raising=False)
 
 
-def test_build_provider_prefers_groq(monkeypatch):
+def test_build_provider_prefers_gemini(monkeypatch):
+    """#209 / PR-D: Gemini wins when both keys are configured.
+
+    Reason: Gemini 2.5-flash paid Tier 1 sustains 300 RPM (vs Groq
+    free 30 RPM), Llama 3.3's #131 template-echo problem doesn't
+    reproduce on Gemini, and Gemini's responseSchema gives stronger
+    JSON adherence."""
     _patch_env(monkeypatch, groq_api_key="gsk_x", gemini_api_key="gemini_y")
-    provider, delay = build_lineage.build_provider()
-    assert provider.name == "groq"
-    assert delay == build_lineage.LLM_RATE_DELAY["groq"]
-
-
-def test_build_provider_falls_back_to_gemini(monkeypatch):
-    _patch_env(monkeypatch, gemini_api_key="gemini_y")  # no groq
     provider, delay = build_lineage.build_provider()
     assert provider.name == "gemini"
     assert delay == build_lineage.LLM_RATE_DELAY["gemini"]
+
+
+def test_build_provider_falls_back_to_groq(monkeypatch):
+    """Only Groq key configured → use Groq. Lets developers run
+    local experiments without enabling Gemini billing."""
+    _patch_env(monkeypatch, groq_api_key="gsk_x")  # no gemini
+    provider, delay = build_lineage.build_provider()
+    assert provider.name == "groq"
+    assert delay == build_lineage.LLM_RATE_DELAY["groq"]
 
 
 def test_build_provider_raises_without_any_key(monkeypatch):
@@ -77,21 +85,30 @@ def test_build_provider_raises_without_any_key(monkeypatch):
         build_lineage.build_provider()
 
 
-def test_build_provider_uses_model_override_from_env(monkeypatch):
-    """`PAPERPILOT_GROQ_MODEL` (via load_env) overrides the default model."""
-    _patch_env(monkeypatch, groq_api_key="gsk_x", groq_model="llama-4-800b")
+def test_build_provider_uses_gemini_model_override_from_env(monkeypatch):
+    """`PAPERPILOT_GEMINI_MODEL` (via load_env) overrides the default."""
+    _patch_env(monkeypatch, gemini_api_key="gem_y", gemini_model="gemini-2.5-pro")
     provider, _ = build_lineage.build_provider()
     # `.model` is concrete-provider state (GroqProvider / GeminiProvider),
     # not part of the AbstractLLMProvider base API — mypy needs the cast.
+    assert getattr(provider, "model", None) == "gemini-2.5-pro"
+
+
+def test_build_provider_uses_groq_model_override_from_env(monkeypatch):
+    """`PAPERPILOT_GROQ_MODEL` override still works on the Groq
+    fallback path."""
+    _patch_env(monkeypatch, groq_api_key="gsk_x", groq_model="llama-4-800b")
+    provider, _ = build_lineage.build_provider()
     assert getattr(provider, "model", None) == "llama-4-800b"
 
 
 def test_build_provider_accepts_unprefixed_fallback(monkeypatch):
-    """Ambient `GROQ_API_KEY` (no PAPERPILOT_ prefix) is still picked up."""
+    """Ambient `GEMINI_API_KEY` (no PAPERPILOT_ prefix) is still picked up.
+    Mirrors the same convenience for Groq."""
     _patch_env(monkeypatch)  # clears load_env-sourced keys
-    monkeypatch.setenv("GROQ_API_KEY", "gsk_ambient")
+    monkeypatch.setenv("GEMINI_API_KEY", "gem_ambient")
     provider, _ = build_lineage.build_provider()
-    assert provider.name == "groq"
+    assert provider.name == "gemini"
 
 
 # ---- _classify_cached ----
