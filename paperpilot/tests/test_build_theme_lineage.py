@@ -2588,6 +2588,229 @@ def test_aliases_for_known_theme():
     assert "speculative sampling" in aliases
 
 
+# ---- #209 Tier 1: velocity ranking + survey penalty ----
+
+
+def test_is_survey_detects_prefix_form():
+    """`A Survey of X`, `Comprehensive Review of Y` etc. → True."""
+    titles = [
+        "A Survey of Graph Neural Networks",
+        "An Comprehensive Survey on Diffusion Models",
+        "Review of Deep Learning",
+        "Tutorial on Variational Autoencoders",
+        "Roadmap for Continual Learning",
+        "Perspective on Self-Supervised Pretraining",
+        "Primer on Attention Mechanisms",
+    ]
+    for t in titles:
+        assert build_theme_lineage._is_survey({"title": t}), (
+            f"survey-prefix title not detected: {t!r}"
+        )
+
+
+def test_is_survey_detects_colon_form():
+    """`Foo: A Survey` colon-suffix form."""
+    assert build_theme_lineage._is_survey(
+        {"title": "Graph Neural Networks: A Survey"}
+    )
+    assert build_theme_lineage._is_survey(
+        {"title": "Mixture of Experts: A Review"}
+    )
+
+
+def test_is_survey_does_not_false_positive_on_seminal_works():
+    """Seminal titles must NOT trigger the survey detector."""
+    non_surveys = [
+        "Deep Residual Learning for Image Recognition",
+        "Attention Is All You Need",
+        "BERT: Pre-training of Deep Bidirectional Transformers",
+        "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        "Denoising Diffusion Probabilistic Models",
+        "ImageNet Classification with Deep Convolutional Neural Networks",
+    ]
+    for t in non_surveys:
+        assert not build_theme_lineage._is_survey({"title": t}), (
+            f"false-positive survey detection on seminal: {t!r}"
+        )
+
+
+def test_is_survey_handles_missing_or_non_string_title():
+    """Defensive: missing/None/non-str title → False, no exception."""
+    assert not build_theme_lineage._is_survey({})
+    assert not build_theme_lineage._is_survey({"title": None})
+    assert not build_theme_lineage._is_survey({"title": 123})
+
+
+def test_compute_seed_score_velocity_penalises_old_papers():
+    """A 2016 paper with 100k cites (velocity = 10k) ranks lower than
+    a 2023 paper with 30k cites (velocity = 10k+). Pre-#209 raw-cites
+    desc had the older paper winning despite the younger one being
+    more relevant signal."""
+    old_high = {"year": 2016, "citationCount": 100_000, "title": "Old foundational"}
+    young_high = {"year": 2023, "citationCount": 30_000, "title": "Young foundational"}
+    s_old = build_theme_lineage._compute_seed_score(old_high, current_year=2026)
+    s_young = build_theme_lineage._compute_seed_score(young_high, current_year=2026)
+    # Old: 100001 / 10 = 10000.1; Young: 30001 / 3 = 10000.3 → young wins.
+    assert s_young > s_old
+
+
+def test_compute_seed_score_applies_survey_penalty():
+    """Two papers with identical year + cite count, one a survey:
+    survey score is 30% of the non-survey (per
+    _SURVEY_VELOCITY_PENALTY = 0.30)."""
+    survey = {"year": 2022, "citationCount": 5_000, "title": "A Survey of GNNs"}
+    non_survey = {"year": 2022, "citationCount": 5_000, "title": "Deep GNN architectures"}
+    s_survey = build_theme_lineage._compute_seed_score(survey, current_year=2026)
+    s_real = build_theme_lineage._compute_seed_score(non_survey, current_year=2026)
+    assert s_survey < s_real
+    assert s_survey == s_real * build_theme_lineage._SURVEY_VELOCITY_PENALTY
+
+
+def test_compute_seed_score_handles_zero_cite_paper():
+    """A brand-new 2026 paper with 0 cites should still produce a
+    non-zero score (via the +1) so it can compete by year alone."""
+    new = {"year": 2026, "citationCount": 0, "title": "New result"}
+    s = build_theme_lineage._compute_seed_score(new, current_year=2026)
+    # age clamped to 0.5y floor → (0+1) / 0.5 = 2.0
+    assert s == 2.0
+
+
+def test_compute_seed_score_handles_missing_year():
+    """Missing year → fall back to floor age. Avoids div-by-zero."""
+    s = build_theme_lineage._compute_seed_score(
+        {"citationCount": 100, "title": "x"}, current_year=2026
+    )
+    assert s > 0
+
+
+def test_rank_and_truncate_promotes_seminal_over_survey():
+    """End-to-end on a realistic GNN seed pool: GCN (2017, 30k) /
+    GraphSAGE (2017, 12k) / GAT (2017, 15k) must rank above
+    "A Survey of GNN" (2021, 6k) despite the survey being highly
+    cited. Pre-#209 raw-cites would have had the survey winning."""
+    seeds = [
+        _mk_s2_paper("survey", title="A Comprehensive Survey of Graph Neural Networks",
+                     year=2021, cites=6_000),
+        _mk_s2_paper("gcn", title="Semi-Supervised Classification with Graph Convolutional Networks",
+                     year=2017, cites=30_000),
+        _mk_s2_paper("gat", title="Graph Attention Networks",
+                     year=2017, cites=15_000),
+        _mk_s2_paper("graphsage", title="Inductive Representation Learning on Large Graphs",
+                     year=2017, cites=12_000),
+    ]
+    ranked = build_theme_lineage._rank_and_truncate(
+        seeds, top_n=4, since_year=2015
+    )
+    # Survey must not be #1.
+    assert ranked[0]["paperId"] != "survey"
+    # GCN should still be #1 even after age penalty (30k / 9y ~= 3333 >>
+    # survey 6k / 5y * 0.3 ~= 360).
+    assert ranked[0]["paperId"] == "gcn"
+
+
+# ---- #209 Tier 1: per-theme keyword blacklist ----
+
+
+def test_filter_theme_blacklist_drops_listed_substrings():
+    """state-space-model blacklist contains "microbiome" → drop
+    QIIME-style papers even when they pass the topic gate."""
+    seeds = [
+        _mk_s2_paper(
+            "qiime",
+            title="Reproducible microbiome data science using QIIME 2",
+            abstract="state space modeling for microbial communities",
+        ),
+        _mk_s2_paper(
+            "mamba",
+            title="Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+            abstract="state space models for long sequences",
+        ),
+    ]
+    kept = build_theme_lineage._filter_theme_blacklist(
+        seeds, theme="State Space Model"
+    )
+    assert [s["paperId"] for s in kept] == ["mamba"]
+
+
+def test_filter_theme_blacklist_case_insensitive_match():
+    """Blacklist words are compared lower-cased against lower-cased
+    title+abstract so capitalisation in either side doesn't matter."""
+    seeds = [
+        _mk_s2_paper(
+            "p1",
+            title="LPIPS for visual evaluation",
+            abstract="we adopt the LPIPS metric",
+        ),
+    ]
+    kept = build_theme_lineage._filter_theme_blacklist(
+        seeds, theme="Self-Supervised Learning"
+    )
+    assert kept == []
+
+
+def test_filter_theme_blacklist_unknown_theme_is_noop():
+    """Themes with no entry in theme_blacklist.json pass through
+    untouched (additive, not allowlist)."""
+    seeds = [_mk_s2_paper("p1"), _mk_s2_paper("p2")]
+    kept = build_theme_lineage._filter_theme_blacklist(
+        seeds, theme="Totally Unknown Theme"
+    )
+    assert {s["paperId"] for s in kept} == {"p1", "p2"}
+
+
+def test_filter_theme_blacklist_empty_input_returns_empty():
+    """Defensive empty-list contract."""
+    assert build_theme_lineage._filter_theme_blacklist(
+        [], theme="Flash Attention"
+    ) == []
+
+
+def test_load_theme_blacklist_returns_dict_of_tuples():
+    """Shape contract: returns {slug: (kw1, kw2, ...)}; the loader
+    drops `_comment` / `_format` metadata keys and any non-list
+    values."""
+    bl = build_theme_lineage._load_theme_blacklist()
+    assert isinstance(bl, dict)
+    assert all(isinstance(v, tuple) for v in bl.values())
+    assert "_comment" not in bl
+    assert "_format" not in bl
+    # At minimum the audit-driven entries should be present.
+    assert "state-space-model" in bl
+    assert "flash-attention" in bl
+
+
+def test_discover_seeds_applies_theme_blacklist(tmp_path: Path, monkeypatch):
+    """Integration: discover_seeds() must apply the per-theme
+    blacklist before ranking, so a QIIME paper with high raw cite
+    count doesn't end up as a state-space-model seed."""
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path)
+    qiime = _mk_s2_paper(
+        "qiime",
+        title="QIIME 2: reproducible microbiome data science",
+        abstract="microbial state space modeling pipeline",
+        cites=15_000,  # would rank high without blacklist
+    )
+    mamba = _mk_s2_paper(
+        "mamba",
+        title="Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        abstract="selective state space models",
+        cites=500,
+    )
+    with patch.object(
+        build_theme_lineage,
+        "request_with_retry",
+        return_value=_mk_s2_search_response([qiime, mamba]),
+    ):
+        seeds = build_theme_lineage.discover_seeds(
+            keywords=["state space model"],
+            top_n=10,
+            since_year=None,
+            use_openalex_fallback=False,
+            theme="State Space Model",
+        )
+    assert [s["paperId"] for s in seeds] == ["mamba"]
+
+
 def test_aliases_for_unknown_theme_returns_empty():
     """Themes not in the alias file → empty list, never None."""
     assert build_theme_lineage._aliases_for("totally-unknown-theme-xyz") == []
