@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -40,33 +41,45 @@ _MIN_WORD_LEN = 3
 _THRESHOLD_RATIO = 0.5
 
 
+def _normalize(text: str) -> str:
+    """Mirror of ``build_theme_lineage._normalize_relevance_text``.
+
+    Lower-case + hyphen→space + collapse whitespace so the audit
+    accepts "self-supervised learning" against a paper abstract that
+    writes it as "self supervised learning" (and vice versa)."""
+    return re.sub(r"\s+", " ", text.replace("-", " ").lower()).strip()
+
+
 def _eligible_words(theme: str) -> list[str]:
     return [w.lower() for w in theme.split() if len(w) >= _MIN_WORD_LEN]
 
 
-def _threshold(words: list[str]) -> int:
-    """Same rule as the production filter post-#186: 2 words → require
-    both, 3+ → ceil(N × 0.5)."""
-    if len(words) < 2:
-        return 0
-    if len(words) == 2:
-        return 2
-    return max(2, math.ceil(len(words) * _THRESHOLD_RATIO))
-
-
 def _is_on_topic(theme: str, paper: dict) -> bool:
-    """Mirror of build_theme_lineage._filter_topic_relevant_seeds but
-    using viewer-side fields (title + tldr instead of title + abstract)
-    because the lineage.json doesn't persist the full abstract."""
+    """Mirror of build_theme_lineage._filter_topic_relevant_seeds (#209).
+
+    Uses viewer-side fields (title + tldr instead of title + abstract)
+    because the lineage.json doesn't persist the full abstract. The
+    audit's check is therefore strictly weaker than the production
+    filter — it can only flag seeds whose title+tldr also fails the
+    gate, never seeds that passed at build time but would fail today.
+
+    2-word themes: phrase in (title+tldr) OR both words in title.
+    3+ word themes: phrase OR ceil(N/2) words anywhere.
+    """
     words = _eligible_words(theme)
     if len(words) < 2:
         return True  # filter skipped at generation time
-    haystack = f"{paper.get('title') or ''} {paper.get('tldr') or ''}".lower()
-    phrase = theme.strip().lower()
+    haystack = _normalize(f"{paper.get('title') or ''} {paper.get('tldr') or ''}")
+    phrase = _normalize(theme)
     if phrase and phrase in haystack:
         return True
-    hits = sum(1 for w in words if w in haystack)
-    return hits >= _threshold(words)
+    normalised_words = [_normalize(w) for w in words]
+    if len(words) == 2:
+        title_only = _normalize(paper.get("title") or "")
+        return all(w and w in title_only for w in normalised_words)
+    threshold = max(2, math.ceil(len(words) * _THRESHOLD_RATIO))
+    hits = sum(1 for w in normalised_words if w and w in haystack)
+    return hits >= threshold
 
 
 def audit() -> int:
