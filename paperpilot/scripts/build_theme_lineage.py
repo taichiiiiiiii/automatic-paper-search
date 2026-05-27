@@ -159,6 +159,51 @@ _TOPIC_RELEVANCE_THRESHOLD_RATIO = 0.5
 # #127 followup so the cite-only check catches more candidates.
 _OFF_TOPIC_CITE_MULTIPLIER = 2.0
 
+# ---- Seed scoring (#209 Tier 1) ----
+# Replaces raw citationCount-desc with citation *velocity* (cites/year)
+# multiplied by a survey penalty. Pre-#209 audit found graph-neural-network
+# returning 3 surveys/reviews in its top 5 seeds because old surveys had
+# accumulated more raw cites than seminal-but-young foundational papers
+# (GCN / GraphSAGE / GAT). Velocity + survey penalty restores those as
+# the natural top-N.
+#
+# Velocity floor of 0.5 years guards against same-year div-by-zero and
+# absorbs preprint-vs-conference timing noise (paper dated 2026 but
+# accessible since 2025).
+_SEED_VELOCITY_AGE_FLOOR_YEARS = 0.5
+# Survey detection — title-prefix patterns + colon-suffix patterns.
+# "A Comprehensive Survey on Graph Neural Networks" → match
+# "ResNet: A Brief Survey" → match (colon form)
+# "Deep Residual Learning" → no match
+_SURVEY_TITLE_RE = re.compile(
+    r"""
+    ^(?:[Aa]n?\s+)?                        # Optional "A " / "An "
+    (?:Comprehensive\s+|Brief\s+|Short\s+|Recent\s+)?  # adjective
+    (?:Survey|Review|Tutorial|Overview|Perspective|Roadmap|Primer)
+    \b
+    |
+    \:\s*[Aa]\s+(?:Survey|Review|Tutorial|Overview)\b    # "Foo: A Survey"
+    """,
+    re.VERBOSE,
+)
+# Pure penalty multiplier — a survey at velocity=1000 effectively
+# competes as if it had velocity=300, well below seminal works that
+# typically clear 800+. Not 0 because some "Surveys" really are
+# seminal (e.g. Goodfellow's GAN tutorial NeurIPS 2016 became *the*
+# entry point for the field), so we soft-rank rather than drop.
+_SURVEY_VELOCITY_PENALTY = 0.30
+
+# ---- Theme-specific keyword blacklist (#209 Tier 1) ----
+# Per-theme list of substrings to drop at the seed phase. Complements
+# the theme-INDEPENDENT _is_implementation_foundation check (which
+# drops Adam / SciPy / etc. for every theme); this file catches the
+# long tail of cross-domain leakage where S2's `fieldsOfStudy=Math`
+# accepts microbiome / clinical / homology modelling papers that
+# share generic ML vocabulary. Curated from the 2026-05-27 audit.
+_THEME_BLACKLIST_PATH = (
+    Path(__file__).resolve().parents[1] / "data" / "theme_blacklist.json"
+)
+
 # ---- GitHub stars enrichment ----
 _GITHUB_CACHE_FILE = "github_stars.json"
 _GITHUB_CACHE_TTL_DAYS = 7
@@ -941,6 +986,11 @@ def discover_seeds(
     candidates = _filter_denylisted_seeds(candidates)
     if theme:
         candidates = _filter_topic_relevant_seeds(candidates, theme=theme)
+        # Per-theme keyword blacklist (#209 Tier 1) runs after the
+        # topic-relevance gate — it's a hard veto on cross-domain
+        # leakage (microbiome / clinical / homology modelling) that
+        # the substring relevance filter doesn't catch.
+        candidates = _filter_theme_blacklist(candidates, theme=theme)
     primary = _rank_and_truncate(candidates, top_n=top_n, since_year=since_year)
     if not use_openalex_fallback or len(primary) >= top_n:
         return primary
@@ -991,6 +1041,9 @@ def discover_seeds(
         candidates_after_fallback = _filter_topic_relevant_seeds(
             candidates_after_fallback, theme=theme
         )
+        candidates_after_fallback = _filter_theme_blacklist(
+            candidates_after_fallback, theme=theme
+        )
     merged = _rank_and_truncate(
         candidates_after_fallback, top_n=top_n, since_year=since_year
     )
@@ -1001,18 +1054,74 @@ def discover_seeds(
     return merged
 
 
+def _is_survey(paper: dict[str, Any]) -> bool:
+    """True iff the paper title matches the survey / review pattern.
+
+    Pinned to title-only because abstracts often mention "we survey
+    related work" in the first sentence of non-survey papers, which
+    would false-positive. The regex covers both prefix form ("A
+    Survey of ...") and colon-suffix form ("Foo: A Survey").
+    """
+    title = paper.get("title") or ""
+    if not isinstance(title, str):
+        return False
+    return _SURVEY_TITLE_RE.search(title) is not None
+
+
+def _compute_seed_score(paper: dict[str, Any], *, current_year: int) -> float:
+    """Velocity-based ranking score for a seed candidate (#209 Tier 1).
+
+    Replaces raw citationCount desc. Computation:
+
+        score = (cites + 1) / max(age_years, 0.5)
+        if _is_survey(paper):
+            score *= _SURVEY_VELOCITY_PENALTY
+
+    Properties:
+      - Penalises 10-year-old high-cite surveys that accumulated more
+        raw cites than 2017 seminal works of the same field.
+      - Preserves ResNet-style classics — their velocity is still
+        massive even after age normalisation.
+      - Survey penalty is multiplicative (not zero) so genuinely
+        seminal surveys still appear in the top-N when no better
+        candidate exists.
+
+    Why ``(cites + 1)``: avoids ranking unwithdrawn 2026 papers with
+    0 cites at score=0 (same as never-published); the +1 keeps them
+    in the ordering by year alone.
+    """
+    cites = paper.get("citationCount") or 0
+    year = paper.get("year")
+    if not isinstance(year, int) or year > current_year:
+        age = _SEED_VELOCITY_AGE_FLOOR_YEARS
+    else:
+        age = max(float(current_year - year), _SEED_VELOCITY_AGE_FLOOR_YEARS)
+    score = (cites + 1) / age
+    if _is_survey(paper):
+        score *= _SURVEY_VELOCITY_PENALTY
+    return score
+
+
 def _rank_and_truncate(
     papers: Iterable[dict[str, Any]],
     *,
     top_n: int,
     since_year: int | None,
 ) -> list[dict[str, Any]]:
-    """Apply since_year filter, sort by citationCount desc, return top_n.
+    """Apply since_year filter, score by velocity + survey penalty
+    (#209 Tier 1), return top_n.
 
     Extracted so the S2-only path and the merged-with-OpenAlex path
     share identical filtering and ranking semantics — otherwise the
     fallback could surface a paper that the primary path would have
     rejected, producing surprising before/after deltas in the seed list.
+
+    Pre-#209 used raw ``citationCount desc``. That favoured 10-year-
+    old surveys with accumulated cites over young seminal works:
+    graph-neural-network's top 5 returned 3 surveys instead of
+    GCN/GraphSAGE/GAT. The new scorer normalises by paper age and
+    penalises surveys 70 % so the natural top-N becomes the seminal
+    works the user actually wants.
     """
     candidates = list(papers)
     if since_year is not None:
@@ -1020,7 +1129,11 @@ def _rank_and_truncate(
             p for p in candidates
             if isinstance(p.get("year"), int) and p["year"] >= since_year
         ]
-    candidates.sort(key=lambda p: p.get("citationCount") or 0, reverse=True)
+    current_year = datetime.now().year
+    candidates.sort(
+        key=lambda p: _compute_seed_score(p, current_year=current_year),
+        reverse=True,
+    )
     return candidates[:top_n]
 
 
@@ -1163,6 +1276,69 @@ def _aliases_for(theme: str) -> list[str]:
     """Return any alternate keywords for ``theme``, normalised to lower
     case + whitespace-stripped (matches the loader's key shape)."""
     return _load_theme_aliases().get(theme.strip().lower(), [])
+
+
+@lru_cache(maxsize=1)
+def _load_theme_blacklist() -> dict[str, tuple[str, ...]]:
+    """Return per-theme keyword blacklist from theme_blacklist.json.
+
+    Keys are theme slugs (output of ``theme_slug``); values are tuples
+    of lower-cased substrings. Any seed candidate whose lower-cased
+    title+abstract contains any substring is dropped. Theme-specific
+    veto layered on top of the theme-independent
+    ``_is_implementation_foundation`` denylist (#209 Tier 1).
+
+    The JSON file's top-level shape: ``{"themes": {<slug>: [<kw>...]}}``;
+    the ``_comment`` / ``_format`` keys at the root are ignored. Missing
+    or malformed file → empty mapping (graceful degrade).
+    """
+    try:
+        raw = json.loads(_THEME_BLACKLIST_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        logger.warning(
+            "theme blacklist at %s missing/malformed — no per-theme blacklist applied",
+            _THEME_BLACKLIST_PATH,
+        )
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    themes: dict[str, Any] = (
+        raw["themes"] if isinstance(raw.get("themes"), dict) else raw
+    )
+    out: dict[str, tuple[str, ...]] = {}
+    for slug, kws in themes.items():
+        if not isinstance(slug, str) or slug.startswith("_") or not isinstance(kws, list):
+            continue
+        cleaned = tuple(
+            kw.strip().lower() for kw in kws if isinstance(kw, str) and kw.strip()
+        )
+        if cleaned:
+            out[slug] = cleaned
+    return out
+
+
+def _filter_theme_blacklist(
+    seeds: list[dict[str, Any]], *, theme: str
+) -> list[dict[str, Any]]:
+    """Drop seeds whose title or abstract contains any of the theme's
+    blacklisted substrings (#209 Tier 1).
+
+    Resolves the theme to its slug via ``theme_slug`` so the file's
+    keys (slugs) match what's looked up here regardless of the
+    user's capitalisation or hyphenation of the theme input. Missing
+    slug entry → no-op (returns seeds unchanged).
+    """
+    slug = theme_slug(theme)
+    blacklist = _load_theme_blacklist().get(slug)
+    if not blacklist:
+        return seeds
+    kept: list[dict[str, Any]] = []
+    for p in seeds:
+        haystack = f"{p.get('title') or ''} {p.get('abstract') or ''}".lower()
+        if any(kw in haystack for kw in blacklist):
+            continue
+        kept.append(p)
+    return kept
 
 
 @lru_cache(maxsize=1)

@@ -6,6 +6,39 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — Non-LLM seed quality (#209 Tier 1)
+
+Pure-code seed-side improvements that work regardless of LLM choice.
+Designed to land before the LLM swap (#213) so the LLM only has to
+classify edges over already-clean seed pools.
+
+- **Citation velocity ranking** (`_compute_seed_score`,
+  `_rank_and_truncate`) — replaces raw `citationCount desc` with
+  `(cites + 1) / max(current_year - year, 0.5)`. The 2026-05-27 audit
+  found graph-neural-network's top-5 returning 3 surveys instead of
+  GCN / GraphSAGE / GAT because the surveys had accumulated more raw
+  cites despite being years younger than the seminal works. Velocity
+  normalisation makes age comparable: a 2017 seminal at 15k cites
+  (~1.7k velocity) now beats a 2021 survey at 6k cites (~1.2k velocity).
+- **Survey / review penalty** (`_is_survey`,
+  `_SURVEY_VELOCITY_PENALTY = 0.30`) — title-regex detector for
+  ``A Survey of X``, ``Foo: A Survey``, ``Review / Tutorial /
+  Overview / Perspective / Roadmap / Primer``; scored seeds get a
+  70 % velocity penalty (multiplicative, not zero, so genuinely
+  seminal surveys can still surface when no better candidate exists).
+  Title-only to avoid false positives from
+  ``we survey related work``-style abstract phrasings.
+- **Per-theme keyword blacklist**
+  (`paperpilot/data/theme_blacklist.json` +
+  `_filter_theme_blacklist`) — theme-specific veto layered on top
+  of the theme-independent
+  `_is_implementation_foundation` denylist. Catches the long tail
+  of cross-domain leakage S2's
+  `fieldsOfStudy=Math` accepts (microbiome / clinical / homology
+  modelling). Initial entries from the 2026-05-27 audit cover the
+  9 themes flagged as having off-topic seeds. New entries are
+  cheap to add — one JSON tweak per regression.
+
 ### Added — Edge-level lineage audit (#209)
 
 - **`audit_lineage_quality.py` extended with edge metrics**
