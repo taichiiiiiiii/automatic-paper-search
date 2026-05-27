@@ -55,9 +55,10 @@
 
 ### ブロッカー対策
 
-- **S2 レート制限**: 無料 API key を取得して制限緩和（100 req/5min → 1000 req/5min）
-  - 申請: https://www.semanticscholar.org/product/api#api-key-form
-- **新着論文の S2 未登録**: 諦める（Phase 1 で 4/13 = 30% は取得できなかった）
+- **S2 レート制限 (#209 / #217 で根本解決)**: 2026-05-27 以降、`theme-on-demand` / `regen-themes` workflows は **`--primary-source openalex`** がデフォルト。OpenAlex は no-auth polite pool で 10 req/s + 100K/day なので S2 throttle に依存しない。S2 key 申請 (gmail 拒否される問題) も回避。S2 を使いたい環境では `--primary-source s2` で従来動作。
+  - 旧情報 (参考): S2 key 申請 https://www.semanticscholar.org/product/api#api-key-form (gmail 不可、organizational email 必須)
+- **新着論文の S2 未登録**: OpenAlex でカバー (#217)。 OpenAlex は arXiv preprint も即時に index する。
+- **citation contexts / intent labels の喪失**: OpenAlex は提供しないので、edge は year/cite contrast or LLM (optional) に fall through。Phase 2 (multicite-scibert local) と unarXive 2022 統合で埋め合わせ計画。
 
 ## Phase 3 — 深さ拡張
 

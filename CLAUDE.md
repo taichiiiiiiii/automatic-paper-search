@@ -467,10 +467,18 @@ output/<conf>/papers_YYYY-MM-DD.csv
            docs/<conf>/deep.html   （tree-only の 1 本集中ビュー）
 
 [テーマ文字列] → build_theme_lineage.py → docs/themes/<slug>/lineage.json
-                  - keyword_expand → S2 /paper/search → top-N seeds
-                    └─ S2 が throttle / 0 件なら OpenAlex /works → S2 /paper/batch
-                  - 各 seed から BFS depth-N（祖先方向）
-                  - AbstractLLMProvider で関係分類
+                  - **--primary-source openalex (post #217 default in workflows)**:
+                    OpenAlex /works?search=<theme>&filter=concepts.id:...
+                    → top-N seeds (paperId='openalex:W...')
+                  - --primary-source s2 (legacy): keyword_expand → S2
+                    /paper/search → top-N seeds (paperId=sha1 hash)
+                  - 各 seed から BFS depth-N (jiez方向):
+                    - openalex: → OpenAlex referenced_works / cites
+                    - S2 sha1: → S2 /paper/{id}/references|citations
+                  - 関係分類: contexts (S2-only) → intent map (S2-only)
+                    → year/cite contrast → optional LLM
+                  - OpenAlex source の edge は _intents=None / _contexts=[]
+                    なので derive_relation は year/cite or LLM に fall through
 generate_themes_manifest.py → docs/themes/themes-manifest.json
                   ▼
            docs/themes/index.html   （テーマピッカー + 年軸 chronological tree、
@@ -517,7 +525,8 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **`docs/themes/<slug>/lineage.json` のスキーマは conference 版 `lineage.json` と互換**（`root` / `nodes` / `edges` / `meta`）。`meta.source = "build_theme_lineage.py"`、`meta.theme` / `meta.slug` / `meta.keywords` / `meta.seeds` / `meta.depth` / `meta.since_year` / `meta.generated_at` を含む。
     - **`docs/themes/themes-manifest.json` は `generate_themes_manifest.py` のみが生成**。`build_theme_lineage.py` 内では生成しない（並列実行時の race 回避）。マニフェスト生成時に `rel` 値が許可 enum (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に該当しないテーマは skip する（cache poisoning 抑止）。
     - **キャッシュ (`paperpilot/data/lineage-cache/classifications.json`) は他 lineage スクリプトと共有**。`_classify_cached` が書込前に on-disk cache を再読込してマージし、`os.replace` でアトミックに書き出すため、並列ランでも他プロセスのエントリを上書きしない。
-    - **OpenAlex フォールバック (seed 発見)**: S2 `/paper/search` が `top_n` 未満しか返さない場合（GitHub Actions の共有 IP プールが S2 free tier に throttle される CI ステディ状態）、自動で OpenAlex `/works` 検索 → DOI 抽出 → S2 `/paper/batch` で paperId 解決にフォールバック。`/paper/batch` は `/paper/search` と別のレート枠なので throttle 同時発生確率が低い。`PAPERPILOT_OPENALEX_EMAIL` を設定すると polite pool（`mailto=...`）を使い更に安定。`--no-openalex-fallback` で明示的に無効化可能（テスト用途）。
+    - **OpenAlex-primary (post #217 / PR-G, 2026-05-27 production default)**: `theme-on-demand.yml` / `regen-themes.yml` は **`--primary-source openalex`** で起動する。`discover_seeds` は OpenAlex `/works?search=...&filter=concepts.id:C41008148|C33923547|C137293760` を直接叩き、`_work_to_paper_dict` で S2-shape paper dict に変換 (paperId=`openalex:W...`)。BFS の references/citations も OpenAlex (`Work.referenced_works` の batch fetch + `/works?filter=cites:W{id}`) で完結し、S2 API は一切呼ばない。これは S2 free-tier の shared CI IP throttle と非 organizational email での key 申請拒否を恒久回避するため。`PAPERPILOT_OPENALEX_EMAIL` を設定すると polite pool (`mailto=...`) で 10 req/s + 100K/day。
+    - **`--primary-source s2` (legacy fallback)**: S2 `/paper/search` を主、OpenAlex を fallback とする旧パイプライン。S2 paperId 形式 (sha1 hash) で BFS は S2 endpoints。S2 が `top_n` 未満しか返さない場合に自動で OpenAlex `/works` 検索 → DOI 抽出 → S2 `/paper/batch` で paperId 解決。`--no-openalex-fallback` で fallback 無効化 (テスト用途)。S2 API key が用意できる環境 (e.g. .edu / 独自ドメインメール) では citation contexts と intent ラベルが取れる利点があるが、workflows の default ではない。
     - **品質改善ノイズ防止 (#127 / #186 / #188 / #189)**: 5 レイヤで off-topic 論文を除外する:
         1. **S2 `fieldsOfStudy` ゲート (#188)**: `/paper/search` リクエストに `fieldsOfStudy=Computer Science,Mathematics,Linguistics` を渡し、API レベルで医療 / 生物 / 工学論文を除外。"World Model" → "Global Burden of Disease"、"Flash Attention" → 糖尿病管理論文の混入を防ぐ。
         2. **OpenAlex `concepts.id` 同等ゲート (#189 / #190)**: `discover_seeds_via_openalex` の `filter` に `concepts.id:C41008148|C33923547|C137293760` (Computer Science / Mathematics / Linguistics) を追加。S2 throttle 時の OpenAlex fallback でも同等のドメイン制約。OR syntax は `field:val1|val2|val3` 形式 (field 名を OR 値ごとに繰り返すと HTTP 400)。
@@ -547,7 +556,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 | 名前 | 用途 | 必須？ |
 |------|------|------|
 | `GH_PAT` | GitHub API 用 PAT（未設定時は `github.token` fallback） | 推奨 |
-| `S2_API_KEY` | Semantic Scholar | 任意 |
+| `S2_API_KEY` | Semantic Scholar (`--primary-source s2` 利用時のみ。post #217 default OpenAlex では未使用) | 任意 |
 | `CLAUDE_API_KEY` | 将来の Claude Provider 用 | 任意 |
 | `SLACK_WEBHOOK_URL` | Slack 通知 + 失敗時通知 | 任意 |
 | `PAPERPILOT_GROQ_API_KEY` | テーマ家系図の LLM 分類 (Groq) | テーマ生成に必須 |
@@ -724,8 +733,8 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 |------|------|
 | 週次深掘り (`collect-weekly.yml`) | ✅ uv sync 移行 (#136)、合計 3 件の startup_failure + numpy missing + empty-dir guard 修正 (#135-137)、develop push (#141) |
 | 毎日 follow-watch (`collect-daily-watch.yml`) | ✅ uv sync 移行 (#142)、develop push (#141) |
-| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` 有効化 (#133)、timeout 15min |
-| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` (#143)、timeout 120min (#144) |
+| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` + **`--primary-source openalex` (post #217)**、timeout 15min |
+| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` + **`--primary-source openalex` (post #217)**、timeout 120min |
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
 | Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
@@ -751,6 +760,12 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | LLM prompt 品質 (#131-#133) | ✅ ~250 tokens に圧縮、MUST/MUST NOT block、`TEMPLATE_RATIONALES` 単一 source (#146) |
 | Template echo reject (#132) | ✅ `RelationClassification.from_dict` が `_GENERIC_TEMPLATE_RATIONALES` の文字列を拒否 |
 | 不変条件 pin (#134, #146) | ✅ prompt size / `--llm-strict` flag / template dedup の regression test 完備 |
+| Edge fabrication 廃止 (#209 / #210) | ✅ `_DEFAULT_DERIVED` 削除、信号なし edge は drop (template extends 量産を停止) |
+| Seed gate v2 (#209 / #211) | ✅ 2-word phrase + title fallback、hyphen normalization、`_filter_denylisted_seeds` を seed phase に適用 |
+| Edge-level audit (#209 / #212) | ✅ `audit_lineage_quality` に `template_rationale_ratio` / `popularity_sinks` / `year_reversals`、themes opt-in (`--include-themes`) |
+| Tier 1 非 LLM seed quality (#209 / #214) | ✅ citation velocity ranking、survey title regex penalty (0.30×)、`paperpilot/data/theme_blacklist.json` per-theme veto |
+| S2 citation contexts → rationale (#209 / #216) | 🟡 S2 API key 必須、merge 保留 (PR #216 open) |
+| **OpenAlex-primary architecture (#209 / #217)** | ✅ `--primary-source openalex` を workflows default 化、S2 API 完全不要で seed + BFS 動作。`_work_to_paper_dict` + `fetch_related_via_openalex` + paperId prefix routing |
 
 ### コード品質
 | 仕様 | 状態 |

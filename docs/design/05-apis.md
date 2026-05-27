@@ -5,8 +5,8 @@
 | API | 認証 | レート制限 | 用途 |
 |---|---|---|---|
 | arXiv API | 不要 | 3秒間隔（推奨） | 論文メタデータ取得 |
-| S2 API | env: S2_API_KEY（任意） | 無し:100req/5min、有:1req/sec | 論文/著者/引用（バッチ対応） |
-| OpenAlex API | env: OPENALEX_EMAIL（任意） | なし（1秒間隔推奨） | OA論文取得 |
+| S2 API | env: S2_API_KEY（**任意**） | 無し:100req/5min、有:1req/sec | 論文/著者/引用（バッチ対応）。**post #217 / 2026-05-27: `theme-on-demand` / `regen-themes` workflows は `--primary-source openalex` がデフォルトなので S2 は使用しない。S2 key を持つ環境のみ `--primary-source s2` で利用可（citation contexts + intent labels が取れる利点）** |
+| OpenAlex API | env: OPENALEX_EMAIL（**推奨**） | polite pool: 10req/s、100k/day（mailto あり） | **post #217 / 2026-05-27: lineage 用の primary data source**。`/works?search=&filter=concepts.id:`, `Work.referenced_works`, `/works?filter=cites:` で seed + BFS 完結。paperId プレフィクス `openalex:W...` で他経路と区別 |
 | ~~PwC API~~ | ~~env: PWC_TOKEN（任意）~~ | ~~なし（常識的範囲）~~ | **2026 廃止** — `paperpilot/utils/github.load_curated_map()` の curated map と GitHub Search API 経由の解決に置換（#92） |
 | GitHub API | env: PAPERPILOT_GITHUB_TOKEN（推奨） | 無:60req/h、有:5000req/h | Star数取得 + 論文→repo マッピング検索 |
 | OpenReview API | 不要 | なし | 学会採択データ取得 |
