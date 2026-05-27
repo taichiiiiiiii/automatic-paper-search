@@ -1,0 +1,50 @@
+{
+  "_comment": "Per-theme keyword blacklists (#209 Tier 1). Each entry maps a lower-cased theme slug to a list of substrings; any seed candidate whose title or abstract contains any of these is dropped at the seed phase. The seed-phase implementation-foundation denylist (paperpilot/data/lineage_denylist.json) is theme-INDEPENDENT (Adam, SciPy, PyTorch etc. for every theme); this file is theme-SPECIFIC, capturing the long tail of cross-domain leakage that S2's fieldsOfStudy gate doesn't catch (medical / clinical / bioinformatics surfacing in CS themes via Math FoS). Curated from the 2026-05-27 audit findings.",
+  "_format": {
+    "<theme-slug>": ["<lowercase keyword 1>", "<lowercase keyword 2>", "..."],
+    "matching": "case-insensitive substring against (title + ' ' + abstract).lower(); any hit = drop"
+  },
+  "themes": {
+    "flash-attention": [
+      "hyperglycemia",
+      "diabetes",
+      "continuous glucose monitoring",
+      "antioxidants",
+      "reactive oxygen",
+      "oxidative stress"
+    ],
+    "state-space-model": [
+      "microbiome",
+      "qiime",
+      "scipy",
+      "numpy",
+      "sentence embedding"
+    ],
+    "self-supervised-learning": [
+      "perceptual metric",
+      "lpips"
+    ],
+    "variational-autoencoder": [
+      "physics-informed",
+      "image data augmentation",
+      "string database",
+      "protein-protein"
+    ],
+    "vector-database": [
+      "swiss-model",
+      "homology modelling",
+      "cancer statistics",
+      "tidyverse"
+    ],
+    "semantic-segmentation": [
+      "nnu-net",
+      "biomedical image"
+    ],
+    "graph-neural-network": [
+      "explainable artificial intelligence (xai)"
+    ],
+    "vision-transformer": [
+      "explainable artificial intelligence (xai)"
+    ]
+  }
+}
