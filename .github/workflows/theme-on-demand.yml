@@ -87,6 +87,49 @@ jobs:
       - name: uv sync
         run: uv sync
 
+      # #209 Phase J / PR #222: download the prebuilt unarXive DuckDB
+      # so `paperpilot.utils.unarxive.fetch_contexts()` can return real
+      # citation paragraphs instead of falling back to year/cite heuristics.
+      # The artifact is ~2-3 GB; we host it on a GitHub Release because
+      # it's stable, public, and within the 2 GB/asset cap once gzipped.
+      #
+      # If the asset is missing (no Release tagged `unarxive-v1`,
+      # 404 from CDN, etc.), the curl `|| true` swallows the error and
+      # the build pipeline degrades gracefully: `is_available()` reports
+      # False and every `fetch_contexts()` call returns []. Edges fall
+      # through to the year/cite + LLM path as if Phase J wasn't merged.
+      # No crash, no warning spam — operators see "unarXive disabled"
+      # in the lineage build log.
+      #
+      # To install: build the DuckDB once via
+      #   uv run python -m paperpilot.scripts.build_unarxive_index
+      # then upload `paperpilot/data/unarxive/unarxive.duckdb` to a new
+      # GitHub Release tagged `unarxive-v1`.
+      - name: Download unarXive DuckDB (citation contexts, optional)
+        run: |
+          set -u
+          mkdir -p paperpilot/data/unarxive
+          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb"
+          if curl --fail --location --silent --show-error \
+               --output paperpilot/data/unarxive/unarxive.duckdb \
+               "$url"; then
+            echo "unarXive DuckDB downloaded: $(du -h paperpilot/data/unarxive/unarxive.duckdb | cut -f1)"
+          else
+            echo "::notice::unarXive DuckDB unavailable at $url; citation contexts disabled (pipeline degrades to heuristics)"
+            rm -f paperpilot/data/unarxive/unarxive.duckdb
+          fi
+        continue-on-error: true
+
+      - name: Install DuckDB (unarXive runtime dep, optional)
+        # Optional dep — only needed if the DuckDB asset above downloaded.
+        # Adding to uv sync would slow every build; install on-demand so
+        # workflows that don't need unarXive aren't penalised.
+        run: |
+          if [ -f paperpilot/data/unarxive/unarxive.duckdb ]; then
+            uv pip install duckdb
+          fi
+        continue-on-error: true
+
       - name: Generate theme lineage
         # User input goes through env var only (never spliced into the
         # shell command line) so command-substitution-style attacks are
