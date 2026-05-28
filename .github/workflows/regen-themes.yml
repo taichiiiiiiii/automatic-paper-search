@@ -56,6 +56,31 @@ jobs:
       - name: uv sync
         run: uv sync
 
+      # See theme-on-demand.yml for the rationale + install path.
+      # Same graceful-degrade contract: missing asset → no contexts,
+      # not a build failure.
+      - name: Download unarXive DuckDB (citation contexts, optional)
+        run: |
+          set -u
+          mkdir -p paperpilot/data/unarxive
+          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb"
+          if curl --fail --location --silent --show-error \
+               --output paperpilot/data/unarxive/unarxive.duckdb \
+               "$url"; then
+            echo "unarXive DuckDB downloaded: $(du -h paperpilot/data/unarxive/unarxive.duckdb | cut -f1)"
+          else
+            echo "::notice::unarXive DuckDB unavailable at $url; citation contexts disabled (pipeline degrades to heuristics)"
+            rm -f paperpilot/data/unarxive/unarxive.duckdb
+          fi
+        continue-on-error: true
+
+      - name: Install DuckDB (unarXive runtime dep, optional)
+        run: |
+          if [ -f paperpilot/data/unarxive/unarxive.duckdb ]; then
+            uv pip install duckdb
+          fi
+        continue-on-error: true
+
       - name: Regenerate themes
         # Inputs are interpolated into env vars FIRST, never directly into
         # shell strings — protects against command injection via

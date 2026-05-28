@@ -568,6 +568,45 @@ CF Worker 側のシークレット (`wrangler secret put`):
 |------|------|
 | `GH_DISPATCH_PAT` | `theme-on-demand.yml` を workflow_dispatch する PAT (`actions: write` のみ) |
 
+### unarXive DuckDB アーティファクト (PR #222 Phase J / オペレータ runbook)
+
+PR #222 で **citation contexts** を S2 不要で取得できるが、 unarXive
+2022 dataset → DuckDB の build は CI で毎回やると 10 min + 7GB DL
+で workflow timeout を圧迫する。**1 回 build → GitHub Release に
+artifact 上げる → workflow が DL する** 構造。
+
+オペレータ手順 (1 回だけ):
+
+```bash
+# 1. 依存追加 (一時的、メイン pyproject.toml には入れない)
+uv pip install duckdb datasets
+
+# 2. unarXive DuckDB を build (~10 min、~2-3 GB)
+uv run python -m paperpilot.scripts.build_unarxive_index \
+    --out paperpilot/data/unarxive/unarxive.duckdb
+
+# 3. GitHub Release tag `unarxive-v1` を作って attach
+gh release create unarxive-v1 \
+    paperpilot/data/unarxive/unarxive.duckdb \
+    --title "unarXive 2022 DuckDB index (CC-BY-SA-4.0)" \
+    --notes "Source: saier/unarXive_citrec, built $(date -u +%Y-%m-%d). \
+Citation contexts for arXiv CS papers 1991-2022-03."
+```
+
+ライセンス: unarXive 2022 は CC-BY-SA-4.0。DuckDB 内に
+`paper_license` 列保持済。viewer footer に「data: unarXive 2022
+(Saier et al., CC-BY-SA-4.0)」明記すること。
+
+artifact が無い場合:
+- workflow の DL step は `continue-on-error: true` で graceful skip
+- `paperpilot.utils.unarxive.is_available()` が False を返す
+- `fetch_contexts()` が `[]` 返却 → year/cite + LLM fallback
+- **build pipeline は壊れない** (Phase J 効果が無効化されるだけ)
+
+更新タイミング: unarXive 2022 は 2022-03 cutoff で固定 dataset。Re-build
+は基本不要。HF dataset 側に新版が出たら新 tag (`unarxive-v2` 等) で
+artifact 入れ替え → workflow 内 URL も更新。
+
 ### 注意
 
 `.github/workflows/*.yml` を push するには PAT に **`workflow` scope が必要**。
@@ -733,8 +772,8 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 |------|------|
 | 週次深掘り (`collect-weekly.yml`) | ✅ uv sync 移行 (#136)、合計 3 件の startup_failure + numpy missing + empty-dir guard 修正 (#135-137)、develop push (#141) |
 | 毎日 follow-watch (`collect-daily-watch.yml`) | ✅ uv sync 移行 (#142)、develop push (#141) |
-| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` + **`--primary-source openalex` (post #217)**、timeout 15min |
-| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` + **`--primary-source openalex` (post #217)**、timeout 120min |
+| オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` + `--primary-source openalex` + **unarXive DuckDB DL (post #222 Phase J)**、timeout 15min |
+| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` + `--primary-source openalex` + **unarXive DuckDB DL (post #222)**、timeout 120min |
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
 | Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |
@@ -766,6 +805,8 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Tier 1 非 LLM seed quality (#209 / #214) | ✅ citation velocity ranking、survey title regex penalty (0.30×)、`paperpilot/data/theme_blacklist.json` per-theme veto |
 | S2 citation contexts → rationale (#209 / #216) | 🟡 S2 API key 必須、merge 保留 (PR #216 open) |
 | **OpenAlex-primary architecture (#209 / #217)** | ✅ `--primary-source openalex` を workflows default 化、S2 API 完全不要で seed + BFS 動作。`_work_to_paper_dict` + `fetch_related_via_openalex` + paperId prefix routing |
+| **OpenAlex search relevance / field gate (#219 / #220)** | ✅ `sort=cited_by_count:desc` 削除 (relevance 順)、`primary_topic.field.id:fields/17` で Planck/AlphaFold 排除 |
+| **unarXive 2022 citation contexts (#222 Phase J)** | ✅ S2-free で paper-specific rationale 取得。HF `saier/unarXive_citrec` → DuckDB → `_classify_from_contexts` で regex 分類。LLM 不要、月 ¥0 |
 
 ### コード品質
 | 仕様 | 状態 |
