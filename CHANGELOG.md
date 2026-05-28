@@ -6,6 +6,30 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — OpenAlex topic field gate (#209 Phase 1.5b)
+
+Pre-#209-Phase-1.5b audit found Planck cosmology, AlphaFold biology,
+and similar physical-science papers leaking into AI/ML themes
+(state-space-model, variational-autoencoder etc.). Root cause: the
+legacy `concepts.id:C41008148|C33923547|C137293760` (CS|Math|Linguistics)
+filter is multi-label — a paper passes if ANY of its concepts at any
+score matches. "Planck 2018 results" had a level-0 Mathematics concept
+at score 0.23, enough to match.
+
+- **Replaced `concepts.id:...` with `primary_topic.field.id:fields/17`**
+  (`paperpilot/scripts/build_theme_lineage.py`,
+  `discover_seeds_via_openalex`). The 2024 OpenAlex topics taxonomy
+  is single-label: a paper's `primary_topic` resolves to exactly one
+  `field`, and we require Computer Science (field 17). Verified by
+  manual curl 2026-05-28 that Planck cosmology papers are now
+  excluded structurally.
+- **Test pin updated**: `test_openalex_fallback_invoked_when_s2_returns_zero`
+  + `test_discover_seeds_via_openalex_uses_relevance_sort_default` now
+  assert the `primary_topic.field.id:fields/17` substring.
+- **Trade-off**: pure-math papers whose primary_topic field is
+  "Mathematics" (e.g. some optimization-theory work) are now dropped.
+  Acceptable for AI/ML lineage; revisit when a Math-heavy theme regresses.
+
 ### Fixed — OpenAlex search relevance (#209 Phase 1.5)
 
 Post-#217 first-regen audit: 6 of 19 themes (Chain of Thought, DPO,
