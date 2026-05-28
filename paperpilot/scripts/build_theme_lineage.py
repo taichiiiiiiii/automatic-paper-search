@@ -259,6 +259,128 @@ _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
 # hiccups (None) still fall back to the heuristic at the merge step.
 _MIN_LLM_CONFIDENCE = 0.4
 
+# ---- #209 Phase J: unarXive citation-context classifier ----
+# Pattern table for the S2-free regex classifier. When the BFS layer
+# attaches `_contexts` (citation paragraphs from unarXive 2022) to an
+# edge, ``_classify_from_contexts`` scans these patterns in priority
+# order and the first match wins. The matched paragraph becomes the
+# edge rationale verbatim (trimmed to _MAX_CONTEXT_RATIONALE_LEN),
+# the relation enum + confidence come from the pattern entry.
+#
+# Why patterns, not an LLM: the citing sentence itself is direct
+# evidence. "we extend [12]" is more reliable than asking an LLM
+# "what's the relation between these two papers" with no context.
+# Patterns also keep cost at ¥0 — no API call per edge.
+#
+# Priority order matters because some sentences match multiple
+# patterns (e.g. "we extend [X], outperforming the baseline" matches
+# both extends and supersedes — supersedes wins).
+_MAX_CONTEXT_RATIONALE_LEN = 280
+_CITATION_CONTEXT_PATTERNS: list[tuple[str, float, list[re.Pattern[str]]]] = [
+    (
+        "supersedes",
+        0.88,
+        [
+            re.compile(r"\boutperform(s|ed|ing)?\b", re.IGNORECASE),
+            re.compile(r"\bsupersed(es|ed|e)\b", re.IGNORECASE),
+            re.compile(r"\bsurpass(es|ed|ing)?\b", re.IGNORECASE),
+            re.compile(
+                r"\bnew\s+state[\s\-]of[\s\-]the[\s\-]art\b", re.IGNORECASE
+            ),
+            re.compile(r"\bachiev(es|ed|ing)\s+sota\b", re.IGNORECASE),
+        ],
+    ),
+    (
+        "contrasts",
+        0.86,
+        [
+            re.compile(r"\bunlike\b", re.IGNORECASE),
+            re.compile(r"\bin\s+contrast\s+to\b", re.IGNORECASE),
+            re.compile(r"\bdiffer(s|ent)?\s+from\b", re.IGNORECASE),
+            re.compile(r"\bas\s+opposed\s+to\b", re.IGNORECASE),
+        ],
+    ),
+    (
+        "extends",
+        0.84,
+        [
+            re.compile(r"\bbuild(s|ing)?\s+(on|upon)\b", re.IGNORECASE),
+            re.compile(r"\bextend(s|ing|ed)?\b", re.IGNORECASE),
+            re.compile(r"\bbased\s+on\b", re.IGNORECASE),
+            re.compile(r"\bfollowing\s+\[?", re.IGNORECASE),
+            re.compile(r"\bimprov(e|es|ing|ed)\s+(on|upon)\b", re.IGNORECASE),
+            re.compile(r"\binspired\s+by\b", re.IGNORECASE),
+            re.compile(r"\badapt(s|ed|ing)?\s+from\b", re.IGNORECASE),
+        ],
+    ),
+    (
+        "ablation",
+        0.82,
+        [
+            re.compile(r"\bablation\b", re.IGNORECASE),
+            re.compile(r"\bablate(s|d|ing)?\b", re.IGNORECASE),
+        ],
+    ),
+    (
+        "baseline_only",
+        0.78,
+        [
+            re.compile(r"\bas\s+a\s+baseline\b", re.IGNORECASE),
+            re.compile(r"\bbaseline(s)?\b", re.IGNORECASE),
+            re.compile(r"\bcompare(d|s)?\s+(to|with|against)\b", re.IGNORECASE),
+            re.compile(r"\bcomparison\s+(to|with|against)\b", re.IGNORECASE),
+        ],
+    ),
+    (
+        "successor",
+        0.75,
+        [
+            re.compile(r"\bsubsequent\s+work\b", re.IGNORECASE),
+            re.compile(r"\bsuccessor\b", re.IGNORECASE),
+            re.compile(r"\bfollow[\-\s]?up\b", re.IGNORECASE),
+        ],
+    ),
+]
+
+
+def _classify_from_contexts(
+    contexts: list[str] | None,
+) -> dict[str, Any] | None:
+    """Match citation-paragraph text against the relation pattern
+    table. First match wins (priority order: supersedes > contrasts >
+    extends > ablation > baseline_only > successor).
+
+    Returns ``{relation, confidence, rationale}`` where ``rationale``
+    is the matched paragraph trimmed to ``_MAX_CONTEXT_RATIONALE_LEN``
+    chars. ``None`` if no context provided or no pattern fires —
+    callers (``derive_relation``) fall through to the intent-map /
+    year-cite heuristic.
+
+    Multiple contexts: scan each in turn under the same pattern; once
+    any context matches a higher-priority pattern, return immediately.
+    This lets the strongest single piece of evidence win even when
+    other paragraphs would land on weaker relations.
+    """
+    if not contexts or not isinstance(contexts, list):
+        return None
+    for relation, confidence, patterns in _CITATION_CONTEXT_PATTERNS:
+        for ctx in contexts:
+            if not isinstance(ctx, str) or not ctx.strip():
+                continue
+            for pattern in patterns:
+                if pattern.search(ctx):
+                    rationale = ctx.strip()
+                    if len(rationale) > _MAX_CONTEXT_RATIONALE_LEN:
+                        rationale = (
+                            rationale[: _MAX_CONTEXT_RATIONALE_LEN - 1] + "…"
+                        )
+                    return {
+                        "relation": relation,
+                        "confidence": confidence,
+                        "rationale": rationale,
+                    }
+    return None
+
 
 def _add_cross_node_edges(
     nodes: dict[str, dict],
@@ -517,6 +639,15 @@ def derive_relation(
     # spend an LLM call on a citation we'd discard anyway.
     if intent_record.get("_is_influential") is False:
         return None
+
+    # #209 Phase J: try unarXive citation contexts FIRST — these are
+    # actual sentences the citing paper wrote about the cited paper
+    # (paper-specific, evidence-based, no LLM cost). When a pattern
+    # match fires, the matched paragraph becomes the edge rationale
+    # verbatim and we skip every downstream heuristic.
+    context_edge = _classify_from_contexts(intent_record.get("_contexts"))
+    if context_edge is not None:
+        return context_edge
 
     heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
 
@@ -1041,8 +1172,75 @@ def _fetch_openalex_works_by_ids(
     return results
 
 
+def _enrich_with_unarxive_contexts(
+    paper: dict[str, Any], *, focal_paper_id: str, kind: str
+) -> dict[str, Any]:
+    """Look up unarXive citation contexts for the (focal, neighbour)
+    pair and attach them to the neighbour paper's ``_contexts`` field.
+
+    ``focal_paper_id``: the OpenAlex paperId (``openalex:W...``) of the
+        focal paper whose neighbours we're enriching.
+    ``kind``: ``"references"`` (paper cites focal's parents) or
+        ``"citations"`` (paper is cited by focal's children). The
+        direction determines which paper is the citing side in
+        unarXive.
+
+    For ``references`` (focal cites parent): we need
+    ``(citing=focal.arxiv_id, cited=parent.openalex_id)``. But the
+    parent paper dict is what's passed in; we have to take the citing
+    arXiv id from elsewhere — the caller does this because it has the
+    full focal paper dict.
+
+    For ``citations`` (child cites focal): we have
+    ``(citing=child.arxiv_id, cited=focal.openalex_id)``. Both are
+    available directly: child = the neighbour paper, focal_paper_id
+    is the focal.
+
+    To keep the call signature uniform, we accept the focal paperId
+    and let the BFS layer attach contexts at the right moment based
+    on ``kind``. When ``kind="references"`` the lookup uses the focal
+    arXiv id (resolved upstream) and the neighbour's OpenAlex id;
+    when ``kind="citations"`` the lookup uses the neighbour's arXiv
+    id and the focal's OpenAlex id.
+
+    Returns the same ``paper`` dict with ``_contexts`` populated
+    (in-place) — purely additive. Failures are silent: missing
+    DuckDB, missing arXiv id, etc. all yield an empty list, which is
+    indistinguishable from "no match" downstream.
+    """
+    from paperpilot.utils import unarxive
+
+    paper.setdefault("_contexts", [])
+    # Decide which paper is citing and which is cited for the unarXive
+    # query, based on BFS direction (caller passes ``kind``).
+    if kind == "citations":
+        # neighbour cites focal → citing=neighbour, cited=focal
+        child_arxiv = (paper.get("externalIds") or {}).get("ArXiv")
+        parent_openalex = focal_paper_id
+    elif kind == "references":
+        # focal cites neighbour → citing=focal, cited=neighbour. The
+        # focal's arXiv id has to be threaded through by the caller
+        # (stored as ``focal_paper_id`` here for symmetry, but it's
+        # actually the citing-side arXiv id pre-resolved).
+        child_arxiv = focal_paper_id  # arXiv id of focal (citing)
+        parent_openalex = paper.get("paperId") or ""
+    else:
+        return paper
+    ctxs = unarxive.fetch_contexts(
+        child_arxiv_id=child_arxiv,
+        parent_openalex_id=parent_openalex,
+    )
+    if ctxs:
+        paper["_contexts"] = ctxs
+    return paper
+
+
 def fetch_related_via_openalex(
-    openalex_short_id: str, kind: str, limit: int, *, email: str | None = None
+    openalex_short_id: str,
+    kind: str,
+    limit: int,
+    *,
+    email: str | None = None,
 ) -> list[dict[str, Any]]:
     """OpenAlex BFS — return parent/child papers for a given Work.
 
@@ -1060,17 +1258,26 @@ def fetch_related_via_openalex(
         so the top hits are the most-influential descendants.
 
     Limit is capped at ``_OPENALEX_PER_PAGE_MAX`` (200) per OpenAlex.
-    OpenAlex does NOT provide ``intents`` / ``contexts`` / ``isInfluential``
-    so the returned dicts carry ``_intents=None``, ``_contexts=[]``,
-    ``_is_influential=None``. Downstream ``derive_relation`` then falls
-    through to year/cite contrast or LLM (whichever is configured).
+
+    Unarxive context enrichment (#209 Phase J): each returned paper
+    has ``_contexts`` populated from the local unarXive DuckDB when
+    the relevant arXiv ↔ OpenAlex pair is in the corpus. For
+    ``references`` the focal's arXiv id is read from the same
+    ``/works/{id}`` payload that provides ``referenced_works``; for
+    ``citations`` each neighbour's own arXiv id is used as the
+    citing side. The lookup is silent when unarXive isn't built
+    (``_contexts=[]`` → downstream year/cite fallback).
     """
     if not openalex_short_id or not openalex_short_id.startswith("W"):
         return []
     page_size = min(max(1, limit), _OPENALEX_PER_PAGE_MAX)
     if kind == "references":
+        # `ids` is included so we can extract the focal's arXiv ID
+        # for the unarXive context lookup on the citing side (#209
+        # Phase J). It's a small payload addition (~30 bytes) and
+        # avoids a second OpenAlex round-trip.
         params: dict[str, Any] = {
-            "select": "id,referenced_works",
+            "select": "id,referenced_works,ids",
         }
         if email:
             params["mailto"] = email
@@ -1098,10 +1305,21 @@ def fetch_related_via_openalex(
             )
             if sid
         ]
+        # Extract focal's arXiv id for the unarXive lookup. Missing
+        # arxiv_id is fine — _enrich_with_unarxive_contexts returns []
+        # and the edge falls through to year/cite heuristic later.
+        focal_arxiv = ((payload or {}).get("ids") or {}).get("arxiv_id")
         # Cap before the batch fetch to avoid wasting OpenAlex quota
         # on papers we'd discard anyway.
         parents = _fetch_openalex_works_by_ids(ref_ids[:page_size], email=email)
-        return [_attach_empty_intent_fields(p) for p in parents]
+        enriched = [_attach_empty_intent_fields(p) for p in parents]
+        if focal_arxiv:
+            # focal cites each parent → citing=focal.arxiv, cited=parent
+            for p in enriched:
+                _enrich_with_unarxive_contexts(
+                    p, focal_paper_id=focal_arxiv, kind="references"
+                )
+        return enriched
     if kind == "citations":
         params = {
             "filter": f"cites:{openalex_short_id}",
@@ -1131,12 +1349,19 @@ def fetch_related_via_openalex(
         if not isinstance(results, list):
             return []
         children: list[dict[str, Any]] = []
+        focal_paper_id = f"{_OPENALEX_PAPER_ID_PREFIX}{openalex_short_id}"
         for work in results:
             if not isinstance(work, dict):
                 continue
             paper = _work_to_paper_dict(work)
-            if paper is not None:
-                children.append(_attach_empty_intent_fields(paper))
+            if paper is None:
+                continue
+            paper = _attach_empty_intent_fields(paper)
+            # child cites focal → citing=child.arxiv, cited=focal.openalex
+            _enrich_with_unarxive_contexts(
+                paper, focal_paper_id=focal_paper_id, kind="citations"
+            )
+            children.append(paper)
         return children
     return []
 
