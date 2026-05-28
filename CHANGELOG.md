@@ -6,6 +6,35 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — Audit script false positives via light stemming (#209 Phase 1.6)
+
+Operator noise reduction. Post-#220 audit still flagged legitimate
+seeds as off-topic because `audit_theme_seeds.py` runs against the
+viewer-side `title + tldr` (the lineage.json doesn't persist full
+abstracts) and required exact substring matches. Inflectional
+mismatches like the Knowledge Distillation theme over a paper that
+says "distilled" (not "distillation") produced false positives the
+operator had to manually verify.
+
+- **`_stem` light suffix-stripping stemmer** added to
+  `paperpilot/scripts/audit_theme_seeds.py`. Strips `ation` / `tion`
+  / `ion` / `ying` / `ing` / `ies` / `ied` / `ier` / `est` / `ed`
+  / `es` / `er` / `s` from words of length ≥ 5 (won't collapse short
+  tokens like "self"). Recurses on multi-char suffixes so
+  "ablations" → "ablation" → "ablat" reaches a fixed point in one
+  call; the `s` suffix doesn't recurse to avoid collapsing
+  "supervis" → "supervi" too far (would break the supervised/
+  supervision equivalence).
+- **`_stem_contains` substring check** uses the stem as fallback
+  when the literal word isn't in the haystack — so "distillation"
+  matches a haystack containing "distilled".
+- **`_is_on_topic` 3+ word path** uses stem matching for word hits.
+  The 2-word path keeps its strict phrase / title-only rule because
+  stemming alone can't recover words that are entirely absent.
+- Tests: 8 new (stem mechanics + idempotency + DistilBERT /
+  SimCLR / ViT / Neural Architecture Search seed-keep regressions).
+  733 total pass, ruff + mypy clean.
+
 ### Fixed — OpenAlex topic field gate (#209 Phase 1.5b)
 
 Pre-#209-Phase-1.5b audit found Planck cosmology, AlphaFold biology,
