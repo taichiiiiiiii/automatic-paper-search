@@ -1343,6 +1343,241 @@ def test_derive_relation_non_influential_skips_llm_call():
     )
 
 
+# ---- #209 Phase J: unarXive citation-context classifier ---------------------
+
+
+def test_classify_from_contexts_returns_none_on_empty():
+    """No contexts → None so caller falls through to intent map /
+    year-cite / LLM."""
+    assert build_theme_lineage._classify_from_contexts(None) is None
+    assert build_theme_lineage._classify_from_contexts([]) is None
+    assert build_theme_lineage._classify_from_contexts(["", "  "]) is None
+
+
+def test_classify_from_contexts_detects_supersedes_via_outperform():
+    """Priority 1 pattern: 'outperforms [X]' → supersedes."""
+    result = build_theme_lineage._classify_from_contexts([
+        "Our system outperforms [42] by 5 points on COCO."
+    ])
+    assert result is not None
+    assert result["relation"] == "supersedes"
+    assert result["confidence"] == 0.88
+    assert "outperforms" in result["rationale"].lower()
+
+
+def test_classify_from_contexts_detects_contrasts_via_unlike():
+    """Priority 2 pattern: 'unlike [X]' → contrasts."""
+    result = build_theme_lineage._classify_from_contexts([
+        "Unlike [Smith 2020], we use a hierarchical attention."
+    ])
+    assert result is not None
+    assert result["relation"] == "contrasts"
+
+
+def test_classify_from_contexts_detects_extends_via_build_on():
+    """Priority 3 pattern: 'build on/upon' / 'extend' / 'based on'
+    / 'following' / 'inspired by' → extends."""
+    for context in [
+        "We build on the diffusion framework of [12] to model video.",
+        "Following [Smith 2020], we apply a contrastive loss.",
+        "Our model extends the original ViT architecture.",
+        "This work is based on the spectral approach of [16].",
+        "Inspired by [42], we propose a sparse routing layer.",
+    ]:
+        result = build_theme_lineage._classify_from_contexts([context])
+        assert result is not None, f"failed to detect extends in: {context!r}"
+        assert result["relation"] == "extends", (
+            f"expected extends for {context!r}, got {result['relation']}"
+        )
+
+
+def test_classify_from_contexts_based_on_requires_self_reference():
+    """#222 review MEDIUM: plain 'based on' was too broad. The tightened
+    pattern only fires when the citing paper claims authorship of the
+    extension — 'evaluated based on F1' must NOT match extends."""
+    for non_extending in [
+        # Background reference, not extends
+        "Performance is evaluated based on F1 score on the COCO benchmark.",
+        # Citing other work's basis, but not extending it
+        "The original architecture was based on a convolutional backbone.",
+    ]:
+        result = build_theme_lineage._classify_from_contexts([non_extending])
+        # Either no match (None) or a non-extends match (e.g.
+        # baseline_only from 'evaluated'); the assertion only pins the
+        # absence of false-positive extends.
+        if result is not None:
+            assert result["relation"] != "extends", (
+                f"false-positive extends on: {non_extending!r}"
+            )
+
+
+def test_enrich_parent_with_unarxive_routes_citing_arxiv(monkeypatch):
+    """#222 review HIGH-1: parent enrichment must pass citing's arXiv
+    id as the citing side, parent.paperId as the cited side. Pin the
+    routing so a refactor can't silently swap the args."""
+    from paperpilot.utils import unarxive as unarxive_mod
+
+    captured: dict[str, str] = {}
+
+    def fake_fetch(*, child_arxiv_id: str, parent_openalex_id: str) -> list[str]:
+        captured["child_arxiv_id"] = child_arxiv_id
+        captured["parent_openalex_id"] = parent_openalex_id
+        return ["sample paragraph"]
+
+    monkeypatch.setattr(unarxive_mod, "fetch_contexts", fake_fetch)
+    parent = {"paperId": "openalex:W42", "externalIds": {"ArXiv": "unused"}}
+    result = build_theme_lineage._enrich_parent_with_unarxive(
+        parent, citing_arxiv_id="2010.11929"
+    )
+    assert captured["child_arxiv_id"] == "2010.11929"
+    assert captured["parent_openalex_id"] == "openalex:W42"
+    assert result["_contexts"] == ["sample paragraph"]
+
+
+def test_enrich_child_with_unarxive_routes_neighbour_arxiv(monkeypatch):
+    """Mirror of the parent test: child enrichment uses the child's
+    own ArXiv id (from externalIds) as the citing side, focal's
+    OpenAlex id as the cited side."""
+    from paperpilot.utils import unarxive as unarxive_mod
+
+    captured: dict[str, str] = {}
+
+    def fake_fetch(*, child_arxiv_id: str, parent_openalex_id: str) -> list[str]:
+        captured["child_arxiv_id"] = child_arxiv_id
+        captured["parent_openalex_id"] = parent_openalex_id
+        return ["child paragraph"]
+
+    monkeypatch.setattr(unarxive_mod, "fetch_contexts", fake_fetch)
+    child = {
+        "paperId": "openalex:W77",
+        "externalIds": {"ArXiv": "2103.14030"},
+    }
+    result = build_theme_lineage._enrich_child_with_unarxive(
+        child, cited_openalex_id="openalex:W42"
+    )
+    assert captured["child_arxiv_id"] == "2103.14030"
+    assert captured["parent_openalex_id"] == "openalex:W42"
+    assert result["_contexts"] == ["child paragraph"]
+
+
+def test_enrich_helpers_no_op_when_unarxive_returns_empty(monkeypatch):
+    """Either helper must leave _contexts as [] (preserving any
+    existing empty list) when unarXive returns no match. Pins the
+    'graceful degrade to year/cite fallback' contract."""
+    from paperpilot.utils import unarxive as unarxive_mod
+
+    monkeypatch.setattr(unarxive_mod, "fetch_contexts", lambda **_: [])
+    parent = {"paperId": "openalex:W1"}
+    result_p = build_theme_lineage._enrich_parent_with_unarxive(
+        parent, citing_arxiv_id="2010.11929"
+    )
+    assert result_p["_contexts"] == []
+
+    child = {"paperId": "openalex:W2", "externalIds": {"ArXiv": "2103.14030"}}
+    result_c = build_theme_lineage._enrich_child_with_unarxive(
+        child, cited_openalex_id="openalex:W1"
+    )
+    assert result_c["_contexts"] == []
+
+
+def test_classify_from_contexts_priority_supersedes_over_extends():
+    """Sentence matching multiple patterns: supersedes (priority 1)
+    wins over extends (priority 3). Pin so a future refactor can't
+    accidentally reorder."""
+    result = build_theme_lineage._classify_from_contexts([
+        "We extend [42] and outperform their reported result."
+    ])
+    assert result is not None
+    assert result["relation"] == "supersedes"
+
+
+def test_classify_from_contexts_rationale_is_verbatim_paragraph():
+    """The matched paragraph becomes the rationale verbatim (not a
+    template). This is the entire point of Phase J — show the citing
+    paper's actual evidence to the reader."""
+    paragraph = (
+        "We build on the diffusion framework of [Ho et al. 2020] "
+        "to model video diffusion with hierarchical patch attention."
+    )
+    result = build_theme_lineage._classify_from_contexts([paragraph])
+    assert result is not None
+    assert result["rationale"] == paragraph
+
+
+def test_classify_from_contexts_truncates_long_paragraphs():
+    """Paragraphs > _MAX_CONTEXT_RATIONALE_LEN are trimmed so the
+    viewer tooltip doesn't bloat. Uses ellipsis suffix to signal
+    truncation."""
+    long_text = "we build on [42]. " + "filler " * 100
+    result = build_theme_lineage._classify_from_contexts([long_text])
+    assert result is not None
+    assert (
+        len(result["rationale"])
+        <= build_theme_lineage._MAX_CONTEXT_RATIONALE_LEN
+    )
+    assert result["rationale"].endswith("…")
+
+
+def test_classify_from_contexts_skips_non_string_entries():
+    """Defensive: contexts list may contain None / dicts from
+    malformed cache; the classifier ignores them and continues."""
+    result = build_theme_lineage._classify_from_contexts([
+        None,  # type: ignore[list-item]
+        {"oops": "bad shape"},  # type: ignore[list-item]
+        "outperforms [12]",
+    ])
+    assert result is not None
+    assert result["relation"] == "supersedes"
+
+
+def test_derive_relation_uses_context_when_available():
+    """End-to-end: when _contexts is populated (e.g. via unarXive
+    lookup at BFS time), derive_relation uses it FIRST — before the
+    intent map and before any LLM call. The matched paragraph
+    becomes the edge rationale, no template ever surfaces."""
+    record = {
+        "_is_influential": True,
+        "_intents": None,  # OpenAlex source has no intent
+        "_contexts": [
+            "We build on the spectral approach of [Defferrard 2016]."
+        ],
+    }
+    # Even with a provider that would return template, contexts win.
+    provider = _StubProvider(
+        RelationClassification(
+            relation="extends", confidence=0.95, rationale="LLM template"
+        )
+    )
+    edge = build_theme_lineage.derive_relation(
+        record,
+        parent={"paperId": "a"},
+        child={"paperId": "b"},
+        provider=provider,
+        strict_mode="all",
+    )
+    assert edge is not None
+    assert edge["relation"] == "extends"
+    assert "spectral approach" in edge["rationale"]
+    # LLM must NOT be called when contexts already gave us an answer.
+    assert provider.classify_calls == [], (
+        "context match must short-circuit before LLM (#209 Phase J)"
+    )
+
+
+def test_derive_relation_falls_through_when_no_context_match():
+    """Contexts present but no pattern fires → continue to intent
+    map / year-cite / LLM. Pin so unmatchable contexts don't block
+    the legacy fallback."""
+    record = {
+        "_is_influential": True,
+        "_intents": ["methodology"],  # intent map will fire
+        "_contexts": ["See [42] for related work."],  # no pattern matches
+    }
+    edge = build_theme_lineage.derive_relation(record)
+    assert edge is not None
+    assert edge["relation"] == "extends"  # from intent map (methodology)
+
+
 # ---- #209: _apply_llm_classification merge policy ---------------------------
 
 

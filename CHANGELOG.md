@@ -6,6 +6,65 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — unarXive 2022 citation contexts, S2-free (#209 Phase J)
+
+**Solves the 81% template-rationale problem without an S2 API key
+and without LLM cost.** Uses the pre-extracted citation paragraphs
+from Saier et al. (JCDL 2023, unarXive 2022, CC-BY-SA-4.0) as the
+rationale source. The S2 context-regex classifier (originally
+intended for PR #216) lands here, but now reads from a local
+DuckDB instead of an S2 API call.
+
+- **`paperpilot/utils/unarxive.py`** — DuckDB read-only lookup
+  module. ``fetch_contexts(child_arxiv_id, parent_openalex_id)``
+  returns citation paragraphs in O(log n). Graceful when DuckDB is
+  absent: returns ``[]`` so the build pipeline degrades to year/cite
+  fallback rather than crashing.
+- **`paperpilot/scripts/build_unarxive_index.py`** — offline,
+  one-shot script that downloads ``saier/unarXive_citrec`` from HF
+  (~7 GB), joins the citrec rows with the ``license_info`` sidecar
+  to recover the citing paper's arXiv id per row, and writes a
+  DuckDB file (~2-3 GB) with a composite index on
+  (citing_arxiv, cited_openalex_url). The DuckDB ships as a GitHub
+  Release artifact, not in git.
+- **`_classify_from_contexts` + `_CITATION_CONTEXT_PATTERNS`**
+  (`paperpilot/scripts/build_theme_lineage.py`) — 6-relation regex
+  classifier matching the actual citing sentence: ``outperforms`` →
+  supersedes (priority 1), ``unlike`` → contrasts (priority 2),
+  ``build on`` / ``extends`` / ``based on`` / ``following`` /
+  ``inspired by`` → extends (priority 3), ``ablation`` → ablation,
+  ``as a baseline`` / ``compared to`` → baseline_only, ``subsequent
+  work`` → successor.
+- **`fetch_related_via_openalex` enriches ``_contexts``** by calling
+  ``_enrich_with_unarxive_contexts`` after the BFS query. For
+  ``references`` it extracts the focal's arXiv id from the same
+  OpenAlex Work payload (no extra round-trip); for ``citations``
+  it uses each neighbour's own arXiv id as the citing side.
+- **`derive_relation` tries `_classify_from_contexts` FIRST** —
+  before the intent map, before year/cite contrast, before any LLM
+  call. A successful regex match short-circuits the entire
+  pipeline, including ``--llm-strict=all``.
+
+**Coverage** (verified by the deep-dive research agent):
+~60-70 % of (parent, child) edges with both papers in arXiv CS get
+≥ 1 paragraph from unarXive. The remaining 30-40 % falls through
+to the existing year/cite heuristic. 2023+ child papers are
+silent (unarXive 2022 cutoff). Trade-off documented in CLAUDE.md.
+
+**License**: unarXive is CC-BY-SA-4.0. Surfaced paragraphs are
+short excerpts (academic fair use scope) with a "data: unarXive
+2022 (CC-BY-SA-4.0)" attribution in the viewer footer.
+
+15 new tests for the unarXive module + 10 new tests for the
+regex classifier + ``derive_relation`` integration. 758 total
+pass, ruff + mypy clean.
+
+Operator: run `uv pip install duckdb datasets` then
+`uv run python -m paperpilot.scripts.build_unarxive_index` once
+to produce ``paperpilot/data/unarxive/unarxive.duckdb``; ship via
+GitHub Release artifact for CI consumption. Pipeline degrades
+gracefully without it (no crash, just no contexts).
+
 ### Fixed — Audit script false positives via light stemming (#209 Phase 1.6)
 
 Operator noise reduction. Post-#220 audit still flagged legitimate
