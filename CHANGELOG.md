@@ -6,6 +6,30 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — OpenAlex search relevance (#209 Phase 1.5)
+
+Post-#217 first-regen audit: 6 of 19 themes (Chain of Thought, DPO,
+Flash Attention, MoE, Vector Database, World Model) returned 0 seeds.
+Root cause: `discover_seeds_via_openalex` set `sort=cited_by_count:desc`
+which overrode OpenAlex's default `relevance_score:desc`. For
+ambiguous theme names, OpenAlex's BM25 + cite-count ranking would
+surface high-cite papers that merely contained the query tokens —
+bioinformatics, crystallography, climate — and the downstream
+topic-relevance filter dropped 100 % of them.
+
+- **`sort=cited_by_count:desc` removed from OpenAlex query**
+  (`paperpilot/scripts/build_theme_lineage.py`,
+  `discover_seeds_via_openalex`). OpenAlex's default is BM25 over
+  title + abstract — exactly what we want. `_rank_and_truncate`
+  re-orders the relevance-ranked pool by velocity before truncating
+  to top-N, so the seminal-over-survey preference still applies.
+- **Regression test pin** (`test_discover_seeds_via_openalex_uses_relevance_sort_default`)
+  asserts the absence of a `sort` key in the OpenAlex params, so a
+  future refactor can't silently reintroduce the override.
+- **Verified by manual curl** on 2026-05-28: same `Chain of Thought`
+  query returns Wei et al. seminal paper at #2 (was rank 432+ when
+  sorted by cited_by_count).
+
 ### Added — OpenAlex-primary architecture (#209 S2-free Phase 1)
 
 Foundation for running the lineage pipeline without any S2 API
