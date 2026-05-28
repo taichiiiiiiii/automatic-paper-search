@@ -912,10 +912,22 @@ def discover_seeds_via_openalex(
     page_size = max(top_n * 3, 25)
     page_size = min(page_size, _OPENALEX_PER_PAGE_MAX)
 
+    # IMPORTANT (#209 Phase 1.5): don't override sort. OpenAlex's default
+    # is relevance_score:desc (BM25 over title + abstract). The pre-
+    # 2026-05-28 override of `sort=cited_by_count:desc` was a bug carried
+    # over from the S2-fallback days — it returned the highest-cited
+    # papers MATCHING the query regardless of relevance. For ambiguous
+    # theme names ("Chain of Thought" → bioinformatics + crystallography
+    # papers; "World Model" → climate / economics papers) the downstream
+    # filter dropped 100% of candidates, leaving 0 seeds. Verified by
+    # manual curl on 2026-05-28: with sort removed, the same query
+    # returns the Wei et al. Chain-of-Thought paper at #2.
+    #
+    # _rank_and_truncate re-orders the relevance-ranked pool by velocity
+    # to apply our seminal-over-survey preference for the final top-N.
     params: dict[str, Any] = {
         "search": query,
         "per-page": page_size,
-        "sort": "cited_by_count:desc",
     }
     # OpenAlex concept-id field gate. Mirrors the S2 fieldsOfStudy gate
     # the primary search applies — without this, the fallback was the

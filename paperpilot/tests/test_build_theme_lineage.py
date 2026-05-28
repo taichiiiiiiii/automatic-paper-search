@@ -3243,6 +3243,50 @@ def test_discover_seeds_openalex_primary_uses_openalex_not_s2(
     assert seeds[0]["paperId"] == "openalex:W123"
 
 
+def test_discover_seeds_via_openalex_uses_relevance_sort_default(
+    tmp_path: Path, monkeypatch
+):
+    """#209 Phase 1.5: OpenAlex query must NOT override sort to
+    cited_by_count:desc. The pre-2026-05-28 override was a bug —
+    for ambiguous theme names ("Chain of Thought", "World Model")
+    it surfaced unrelated high-cite papers (bioinformatics,
+    crystallography, climate) which then 100% filtered out, leaving
+    0 seeds. Without sort, OpenAlex's default relevance ordering
+    surfaces on-topic papers and the filter chain finds matches.
+
+    Pins the absence of any `sort` key in the query params so a
+    future refactor can't silently reintroduce the regression.
+    """
+    captured_params: list[dict] = []
+
+    def _capture(method, url, **kwargs):
+        captured_params.append(kwargs.get("params") or {})
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.json = lambda: {"results": []}
+        return resp
+
+    with patch.object(
+        build_theme_lineage, "request_with_retry", side_effect=_capture
+    ):
+        build_theme_lineage.discover_seeds_via_openalex(
+            query="Chain of Thought",
+            top_n=5,
+            since_year=2018,
+            email="test@example.com",
+        )
+    assert captured_params, "OpenAlex was not called"
+    params = captured_params[0]
+    assert "sort" not in params, (
+        f"OpenAlex query must not override sort (got sort={params.get('sort')!r}); "
+        "default relevance_score:desc is correct."
+    )
+    # Belt-and-braces: the search/mailto/filter shape we DO depend on.
+    assert params.get("search") == "Chain of Thought"
+    assert params.get("mailto") == "test@example.com"
+    assert "concepts.id" in params.get("filter", "")
+
+
 def test_discover_seeds_default_remains_s2_primary(tmp_path, monkeypatch):
     """Backwards compat: omitting primary_source keeps S2-primary
     behaviour. Existing tests + workflows that don't pass the param
