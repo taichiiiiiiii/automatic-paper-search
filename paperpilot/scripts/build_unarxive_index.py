@@ -19,10 +19,9 @@ latency < 5 ms per lookup.
         --out paperpilot/data/unarxive/unarxive.duckdb
 
 Then upload the resulting ``unarxive.duckdb`` as a GitHub Release
-asset (the 2 GB/file cap requires sharding for the citrec full set;
-default behaviour writes a single file because the indexed Parquet
-representation comfortably fits under the limit, but
-``--split-shards`` is available for safety).
+asset. The 2 GB / asset cap is comfortable for the citrec subset
+(~2-3 GB compressed Parquet inside DuckDB). Future growth past the
+cap would require sharding via Git LFS or R2.
 
 ### Why offline / not in every CI run
 
@@ -45,14 +44,16 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from paperpilot.utils.logger import get_logger, setup_logging
 
 logger = get_logger(__name__)
 
 
-def _import_or_die() -> tuple:  # tuple of (duckdb module, load_dataset func)
+def _import_or_die() -> tuple[Any, Callable[..., Any]]:
     """Import the optional ``duckdb`` and ``datasets`` packages, with
     a clear error if they're missing. These aren't in PaperPilot's
     default dependency set (kept lean) — operators add them only when

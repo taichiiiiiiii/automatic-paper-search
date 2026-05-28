@@ -306,7 +306,16 @@ _CITATION_CONTEXT_PATTERNS: list[tuple[str, float, list[re.Pattern[str]]]] = [
         [
             re.compile(r"\bbuild(s|ing)?\s+(on|upon)\b", re.IGNORECASE),
             re.compile(r"\bextend(s|ing|ed)?\b", re.IGNORECASE),
-            re.compile(r"\bbased\s+on\b", re.IGNORECASE),
+            # Tightened (#222 review MEDIUM): plain "based on" matched
+            # background sentences ("evaluated based on F1 score") and
+            # bibliographic introductions ("Based on previous work
+            # by [12]…"). Require a self-referential subject ("our X",
+            # "this X") so the phrase only fires when the CITING paper
+            # claims to build on the cited one.
+            re.compile(
+                r"\b(?:our|this)\s+(?:model|method|approach|work|paper|system|framework|architecture)\s+is\s+based\s+on\b",
+                re.IGNORECASE,
+            ),
             re.compile(r"\bfollowing\s+\[?", re.IGNORECASE),
             re.compile(r"\bimprov(e|es|ing|ed)\s+(on|upon)\b", re.IGNORECASE),
             re.compile(r"\binspired\s+by\b", re.IGNORECASE),
@@ -1172,67 +1181,62 @@ def _fetch_openalex_works_by_ids(
     return results
 
 
-def _enrich_with_unarxive_contexts(
-    paper: dict[str, Any], *, focal_paper_id: str, kind: str
+def _enrich_parent_with_unarxive(
+    parent: dict[str, Any], *, citing_arxiv_id: str
 ) -> dict[str, Any]:
-    """Look up unarXive citation contexts for the (focal, neighbour)
-    pair and attach them to the neighbour paper's ``_contexts`` field.
+    """Attach citing-side citation contexts for the ``references``
+    BFS direction: focal cites ``parent``, so the unarXive lookup is
+    ``(citing=focal.arxiv_id, cited=parent.openalex_id)``.
 
-    ``focal_paper_id``: the OpenAlex paperId (``openalex:W...``) of the
-        focal paper whose neighbours we're enriching.
-    ``kind``: ``"references"`` (paper cites focal's parents) or
-        ``"citations"`` (paper is cited by focal's children). The
-        direction determines which paper is the citing side in
-        unarXive.
+    Split from ``_enrich_child_with_unarxive`` (#222 review HIGH-1)
+    because the two BFS directions take parameters of completely
+    different shape (arXiv id vs OpenAlex id), and overloading one
+    parameter to mean both was misleading.
 
-    For ``references`` (focal cites parent): we need
-    ``(citing=focal.arxiv_id, cited=parent.openalex_id)``. But the
-    parent paper dict is what's passed in; we have to take the citing
-    arXiv id from elsewhere — the caller does this because it has the
-    full focal paper dict.
-
-    For ``citations`` (child cites focal): we have
-    ``(citing=child.arxiv_id, cited=focal.openalex_id)``. Both are
-    available directly: child = the neighbour paper, focal_paper_id
-    is the focal.
-
-    To keep the call signature uniform, we accept the focal paperId
-    and let the BFS layer attach contexts at the right moment based
-    on ``kind``. When ``kind="references"`` the lookup uses the focal
-    arXiv id (resolved upstream) and the neighbour's OpenAlex id;
-    when ``kind="citations"`` the lookup uses the neighbour's arXiv
-    id and the focal's OpenAlex id.
-
-    Returns the same ``paper`` dict with ``_contexts`` populated
-    (in-place) — purely additive. Failures are silent: missing
-    DuckDB, missing arXiv id, etc. all yield an empty list, which is
-    indistinguishable from "no match" downstream.
+    Mutates ``parent`` in place (sets ``_contexts``) and returns it
+    for convenience chaining. Silent on missing arXiv id / missing
+    DuckDB / no match — caller treats empty contexts as "fall through
+    to heuristic" downstream.
     """
     from paperpilot.utils import unarxive
 
-    paper.setdefault("_contexts", [])
-    # Decide which paper is citing and which is cited for the unarXive
-    # query, based on BFS direction (caller passes ``kind``).
-    if kind == "citations":
-        # neighbour cites focal → citing=neighbour, cited=focal
-        child_arxiv = (paper.get("externalIds") or {}).get("ArXiv")
-        parent_openalex = focal_paper_id
-    elif kind == "references":
-        # focal cites neighbour → citing=focal, cited=neighbour. The
-        # focal's arXiv id has to be threaded through by the caller
-        # (stored as ``focal_paper_id`` here for symmetry, but it's
-        # actually the citing-side arXiv id pre-resolved).
-        child_arxiv = focal_paper_id  # arXiv id of focal (citing)
-        parent_openalex = paper.get("paperId") or ""
-    else:
-        return paper
+    parent.setdefault("_contexts", [])
     ctxs = unarxive.fetch_contexts(
-        child_arxiv_id=child_arxiv,
-        parent_openalex_id=parent_openalex,
+        child_arxiv_id=citing_arxiv_id,
+        parent_openalex_id=parent.get("paperId") or "",
     )
     if ctxs:
-        paper["_contexts"] = ctxs
-    return paper
+        parent["_contexts"] = ctxs
+    return parent
+
+
+def _enrich_child_with_unarxive(
+    child: dict[str, Any], *, cited_openalex_id: str
+) -> dict[str, Any]:
+    """Attach citing-side citation contexts for the ``citations`` BFS
+    direction: ``child`` cites focal, so the unarXive lookup is
+    ``(citing=child.arxiv_id, cited=focal.openalex_id)``.
+
+    Mirror of ``_enrich_parent_with_unarxive`` — the two are split
+    rather than unified because the parameter semantics flip between
+    BFS directions (#222 review HIGH-1).
+
+    The child's arXiv id is read from ``child['externalIds']['ArXiv']``
+    which OpenAlex returns when the cited paper has an arXiv preprint.
+    Papers without arXiv preprints (journal-only) skip the lookup
+    silently and fall through to the heuristic.
+    """
+    from paperpilot.utils import unarxive
+
+    child.setdefault("_contexts", [])
+    child_arxiv = (child.get("externalIds") or {}).get("ArXiv")
+    ctxs = unarxive.fetch_contexts(
+        child_arxiv_id=child_arxiv,
+        parent_openalex_id=cited_openalex_id,
+    )
+    if ctxs:
+        child["_contexts"] = ctxs
+    return child
 
 
 def fetch_related_via_openalex(
@@ -1306,7 +1310,7 @@ def fetch_related_via_openalex(
             if sid
         ]
         # Extract focal's arXiv id for the unarXive lookup. Missing
-        # arxiv_id is fine — _enrich_with_unarxive_contexts returns []
+        # arxiv_id is fine — _enrich_parent_with_unarxive returns []
         # and the edge falls through to year/cite heuristic later.
         focal_arxiv = ((payload or {}).get("ids") or {}).get("arxiv_id")
         # Cap before the batch fetch to avoid wasting OpenAlex quota
@@ -1316,8 +1320,8 @@ def fetch_related_via_openalex(
         if focal_arxiv:
             # focal cites each parent → citing=focal.arxiv, cited=parent
             for p in enriched:
-                _enrich_with_unarxive_contexts(
-                    p, focal_paper_id=focal_arxiv, kind="references"
+                _enrich_parent_with_unarxive(
+                    p, citing_arxiv_id=focal_arxiv
                 )
         return enriched
     if kind == "citations":
@@ -1358,8 +1362,8 @@ def fetch_related_via_openalex(
                 continue
             paper = _attach_empty_intent_fields(paper)
             # child cites focal → citing=child.arxiv, cited=focal.openalex
-            _enrich_with_unarxive_contexts(
-                paper, focal_paper_id=focal_paper_id, kind="citations"
+            _enrich_child_with_unarxive(
+                paper, cited_openalex_id=focal_paper_id
             )
             children.append(paper)
         return children

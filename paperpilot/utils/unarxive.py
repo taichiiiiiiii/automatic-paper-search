@@ -13,13 +13,19 @@ downloads the HF dataset, joins the citrec rows with the
 writes a DuckDB file with this schema::
 
     CREATE TABLE citrec (
-        sample_id TEXT,        -- unarXive _id
-        text TEXT,             -- the citation paragraph
-        marker TEXT,           -- in-text marker like "[42]"
-        label TEXT,            -- 'https://openalex.org/W{ID}' of cited paper
-        paper_arxiv_id TEXT    -- arXiv id of citing paper
+        sample_id      TEXT,  -- unarXive _id
+        text           TEXT,  -- the citation paragraph
+        marker         TEXT,  -- in-text marker like "[42]"
+        label          TEXT,  -- 'https://openalex.org/W{ID}' of cited paper
+        paper_arxiv_id TEXT,  -- arXiv id of citing paper
+        paper_license  TEXT   -- per-paper licence from upstream
     );
     CREATE INDEX idx_citing_cited ON citrec(paper_arxiv_id, label);
+
+The ``paper_license`` column carries the per-paper licence string
+from ``license_info.jsonl`` (most are ``arxiv-perpetual-license``
+but some are explicitly CC-BY/CC-BY-SA). It is not queried at runtime
+but available for audit / future filtering by license compatibility.
 
 Runtime: ``fetch_contexts()`` reads the DuckDB in read-only mode and
 returns paragraphs for a given (citing arXiv id, cited OpenAlex W-id)
