@@ -2119,19 +2119,16 @@ def test_openalex_fallback_invoked_when_s2_returns_zero(tmp_path, monkeypatch):
     urls = [c[1] for c in calls]
     assert any("openalex.org" in u for u in urls)
     assert any("/paper/batch" in u for u in urls)
-    # OpenAlex call carried the concept-id field gate (CS / Math / Linguistics).
+    # OpenAlex call carried the primary_topic.field gate (Computer
+    # Science). Migrated from concepts.id (legacy multi-label score
+    # graph) in #209 Phase 1.5 / 2026-05-28 because the concepts
+    # taxonomy let Planck cosmology papers slip through (low-score
+    # Mathematics concept matched).
     oa_calls = [c for c in calls if "openalex.org" in c[1]]
     assert oa_calls, "expected an OpenAlex call when S2 returns zero"
     oa_filter = oa_calls[0][2].get("filter", "")
-    assert "concepts.id:C41008148" in oa_filter, (
-        f"OpenAlex filter must include Computer Science concept id; got {oa_filter!r}"
-    )
-    # OR syntax pin: OpenAlex expects `field:val1|val2|val3`, NOT
-    # `field:val1|field:val2|field:val3` — the latter returned HTTP 400
-    # on the 2026-05-26 v3 attempt and silently dropped the fallback to
-    # 0 seeds.
-    assert "concepts.id:C41008148|concepts.id" not in oa_filter, (
-        f"OpenAlex OR syntax wrong (repeated key); got {oa_filter!r}"
+    assert "primary_topic.field.id:fields/17" in oa_filter, (
+        f"OpenAlex filter must include CS field id (fields/17); got {oa_filter!r}"
     )
 
 
@@ -3284,7 +3281,10 @@ def test_discover_seeds_via_openalex_uses_relevance_sort_default(
     # Belt-and-braces: the search/mailto/filter shape we DO depend on.
     assert params.get("search") == "Chain of Thought"
     assert params.get("mailto") == "test@example.com"
-    assert "concepts.id" in params.get("filter", "")
+    # Phase 1.5: switched from concepts.id (legacy multi-label) to
+    # primary_topic.field.id:fields/17 (Computer Science only) so
+    # Planck-cosmology-class false positives are structurally excluded.
+    assert "primary_topic.field.id:fields/17" in params.get("filter", "")
 
 
 def test_discover_seeds_default_remains_s2_primary(tmp_path, monkeypatch):

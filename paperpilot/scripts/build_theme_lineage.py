@@ -929,17 +929,29 @@ def discover_seeds_via_openalex(
         "search": query,
         "per-page": page_size,
     }
-    # OpenAlex concept-id field gate. Mirrors the S2 fieldsOfStudy gate
-    # the primary search applies — without this, the fallback was the
-    # contamination vector: when S2 throttled, OpenAlex returned medical
-    # / biology papers for theme strings like "World Model" because
-    # OpenAlex's text relevance has no domain prior. Concepts IDs come
-    # from https://docs.openalex.org/api-entities/concepts (Computer
-    # Science = C41008148, Mathematics = C33923547, Linguistics =
-    # C137293760). OR within one filter key uses `|` between *values*
-    # only — repeating `concepts.id:` per value yielded HTTP 400 in the
-    # 2026-05-26 v3 attempt.
-    concept_filter = "concepts.id:C41008148|C33923547|C137293760"
+    # OpenAlex topic-taxonomy gate (#209 Phase 1.5 / 2026-05-28).
+    # Uses the 2024 topics hierarchy `primary_topic.field.id` rather
+    # than the legacy `concepts.id` multi-label score graph.
+    #
+    # field 17 = Computer Science (stable OpenAlex field ID, see
+    # https://api.openalex.org/fields/17).
+    #
+    # Why moved from concepts.id: the legacy concepts taxonomy is
+    # multi-label — each paper carries many concepts with scores. The
+    # filter `concepts.id:C41008148|C33923547|C137293760` (CS|Math|
+    # Linguistics) matched any paper carrying ANY of those concepts at
+    # any score. "Planck 2018 results" (cosmology, field=Physics) had a
+    # level-0 Mathematics concept at score 0.23 — enough to match
+    # `C33923547` — and surfaced as a State Space Model seed. New 2024
+    # topics taxonomy is single-label: only papers whose primary_topic's
+    # field IS Computer Science pass. Verified by manual curl 2026-05-28
+    # that Planck cosmology papers are excluded.
+    #
+    # Trade-off: a pure-math paper whose primary_topic.field is
+    # "Mathematics" (e.g. some optimization-theory work) would be
+    # dropped even if it's relevant to an ML theme. Acceptable for AI/ML
+    # lineage; revisit if a Math-heavy theme regresses.
+    concept_filter = "primary_topic.field.id:fields/17"
     if since_year is not None:
         params["filter"] = (
             f"from_publication_date:{since_year}-01-01,{concept_filter}"
