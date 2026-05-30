@@ -1,0 +1,36 @@
+name: テーマリクエスト (Theme request)
+description: 家系図ビューに追加してほしい研究テーマをリクエストします
+labels: ["theme-request"]
+title: "[theme request] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        新しい研究テーマの家系図を生成してほしい場合に使ってください。
+        承認後、運用者が `theme-on-demand.yml` ワークフローを手動で起動して
+        生成し、`develop` ブランチに lineage.json をコミットします。
+        生成完了は GitHub Pages 上のテーマ一覧で確認できます。
+  - type: input
+    id: theme
+    attributes:
+      label: 希望テーマ
+      description: アルファベット 2〜80 文字、スペース・ハイフン・アンダースコア可
+      placeholder: "例: Vision Transformer / Mixture of Experts"
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: 理由 / 背景
+      description: なぜそのテーマが家系図として欲しいか、関連既存テーマがあれば
+      placeholder: "(任意) 既存の Diffusion Models と接続したい / 自分の研究領域"
+    validations:
+      required: false
+  - type: input
+    id: known-seed
+    attributes:
+      label: 種論文 (任意)
+      description: 既知の代表論文の arXiv ID や OpenAlex W-ID があれば
+      placeholder: "例: 2010.11929 / W3014444604"
+    validations:
+      required: false

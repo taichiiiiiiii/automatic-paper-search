@@ -9,7 +9,7 @@
 ## プロジェクト概要
 
 - **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
-- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。on-demand 入力 API (`POST /api/themes`) は引き続き CF Worker（hybrid 構成）。補助出力として CSV / JSON / Slack / Email も維持
+- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。静的のみ — 旧 CF Worker / `POST /api/themes` パスは廃止済。新規テーマは GitHub Issue (`theme-request` テンプレ) → 運用者が `gh workflow run theme-on-demand.yml -f theme="..."` を手動 dispatch。補助出力として CSV / JSON / Slack / Email も維持
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
 - **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
 - **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
@@ -75,15 +75,10 @@ automatic-paper-search/
 │       ├── collect-weekly.yml           # 毎週土曜 07:00 JST 深掘り（PAT に workflow scope 必要）
 │       ├── collect-daily-watch.yml      # 毎日 07:00 JST フォロー著者ウォッチ
 │       ├── regen-themes.yml             # 毎週日曜 09:00 JST 全テーマ再生成
-│       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（CF Worker から workflow_dispatch）
+│       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（運用者が gh workflow run で手動 dispatch）
 │       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
 │       ├── data-audit.yml               # ★ PR/push 時に audit_theme_seeds + audit_lineage_quality 自動実行 → off-topic seed / 構造異常 regression を block
 │       └── publish.yml                  # PyPI trusted-publisher（release 発火）
-├── worker/                              # ★ Cloudflare Worker (theme submission API)
-│   ├── index.ts                         # POST /api/themes ハンドラ
-│   ├── slug.js                          # themeSlug() 共有 (Python と parity test)
-│   ├── index.test.mjs                   # node 単体テスト
-│   └── README.md                        # 設定 / デプロイ手順
 └── paperpilot/
     ├── collector.py                     # CLI エントリーポイント
     ├── config.yaml                      # 週次深掘り設定（秘匿情報なし）
@@ -516,10 +511,8 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
 14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
-    - **オンデマンド生成パス**: ユーザーが `/themes/` のフォームに入力 → **クロスオリジン** で CF Worker `POST /api/themes` (`worker/index.ts`) → `theme-on-demand.yml` workflow_dispatch → `build_theme_lineage.py` → `develop` へ commit → GH Pages 自動デプロイ (`.github/workflows/pages.yml`)。フロントは `themes-manifest.json` をポーリングして slug 出現で redirect。Worker URL は `docs/themes/index.html` の `<meta name="paperpilot-worker-base">` で指定（空なら同一オリジン同居の旧 CF Pages 構成にフォールバック）。Worker は `wrangler.jsonc` で API only (`main: worker/index.ts`、`assets:` ブロックは削除済) を deploy する。
-    - **GitHub Pages + CF Worker hybrid (2026-05-30 移行)**: 静的バンドル `docs/` は GH Pages、サーバレス API `/api/themes` は CF Worker。ACAO `*` + per-IP/global KV rate limit で API 側のセキュリティを担保。manifest 重複検査は raw.githubusercontent.com 経由（`alreadyGenerated` の env.ASSETS なし分岐）。CF アカウント削除はせず、Worker / KV / 1 つの secret (`GH_DISPATCH_PAT`) のみ残す。
-    - **ロールバック手順**: 不具合時は wrangler.jsonc に `"assets": { "directory": "docs", "binding": "ASSETS" }` を復帰 → `wrangler deploy` で旧 CF Pages 一体型に即戻る（Env の `ASSETS?` optional 化により code は両構成対応済）。フロント側は `<meta name="paperpilot-worker-base" content="">` に戻す。
-    - **slug 派生はの 3 か所で同期**: Python `theme_slug()`、JS `worker/slug.js`、フロント `SLUG_RE`。`paperpilot/tests/test_worker_slug_parity.py` が parity を pin。
+    - **オンデマンド生成パス (post 2026-05-31 静的化)**: ユーザーが GitHub Issue (`theme-request` テンプレ) 経由でリクエスト → 運用者が `gh workflow run theme-on-demand.yml --ref develop -f theme="..."` を手動 dispatch → `build_theme_lineage.py` → `develop` へ commit → GH Pages 自動デプロイ (`.github/workflows/pages.yml`)。viewer (`docs/themes/`) は静的のみで、フォーム + CF Worker + wrangler.jsonc は廃止済。`/themes/?theme=<slug>` の slug-fallback バナーは Issue Form リンクに切替え。
+    - **slug 派生はの 2 か所で同期**: Python `theme_slug()`、フロント `SLUG_RE`。Worker 廃止に伴い `worker/slug.js` と `paperpilot/tests/test_worker_slug_parity.py` も削除済 (旧構成では Python ↔ JS の 3 way parity を pin していた)。
     - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
     - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。
     - **出力 path は `theme_slug()` の戻り値のみで構成**。生 `--theme` 文字列を `Path()` 構築に渡してはならない（path traversal 防止）。
@@ -563,11 +556,10 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 | `PAPERPILOT_GROQ_API_KEY` | テーマ家系図の LLM 分類 (Groq) | テーマ生成に必須 |
 | `PAPERPILOT_OPENALEX_EMAIL` | OpenAlex polite pool（フォールバックの安定性向上） | 推奨 |
 
-CF Worker 側のシークレット (`wrangler secret put`):
-
-| 名前 | 用途 |
-|------|------|
-| `GH_DISPATCH_PAT` | `theme-on-demand.yml` を workflow_dispatch する PAT (`actions: write` のみ) |
+CF Worker 廃止 (2026-05-31): `theme-on-demand.yml` は `gh workflow run` の
+手動 dispatch でのみ起動するようになったため、`GH_DISPATCH_PAT` / CF
+KV / `wrangler.jsonc` / `worker/` ディレクトリは削除済。Issue
+(`theme-request` テンプレ) → 運用者 dispatch のフローに移行。
 
 ### unarXive DuckDB アーティファクト (PR #222 Phase J / オペレータ runbook)
 
@@ -791,7 +783,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | 論文一覧 (`papers.json`) | ✅ `index.html` + `build_pages.py` で生成 |
 | Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 |
 | Conference deep tree (`deep-*.json`) | ✅ `build_deep_lineage.py`、14 件生成済 |
-| **テーマ家系図 (`themes/<slug>/`)** | ✅ Frontend form → CF Worker → `theme-on-demand.yml` の full pipeline 稼働中。19 themes 公開 |
+| **テーマ家系図 (`themes/<slug>/`)** | ✅ Issue → 運用者 dispatch → `theme-on-demand.yml` の静的 pipeline 稼働中。19 themes 公開 |
 
 ### Theme 家系図の品質改善 (本セッションの主軸)
 | 仕様 | 状態 |

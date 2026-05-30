@@ -18,25 +18,6 @@
 //     strings are untrusted.
 const { escapeHtml, formatStars } = window.PP;
 
-// Base URL of the CF Worker that owns /api/themes (submit) and
-// /api/themes/status (poll). When the static viewer ships from GitHub
-// Pages instead of CF Pages, these endpoints live on a different
-// origin — the value comes from a <meta name="paperpilot-worker-base">
-// tag in the host HTML. An empty / missing meta keeps the original
-// same-origin behaviour, so the CF-Pages-only deploy path still works
-// unchanged. Guarded against typeof checks so the layout-test VM (no
-// real document) can load the module without crashing.
-const WORKER_BASE = (
-  (typeof document !== "undefined"
-    ? document.querySelector('meta[name="paperpilot-worker-base"]')?.getAttribute("content")
-    : "") || ""
-).replace(/\/+$/, "");
-const apiUrl = (path) => `${WORKER_BASE}${path}`;
-// Cross-origin to the Worker means the browser must not include cookies
-// (we don't use any, but be explicit and avoid CORS preflight failures
-// over credentials). Same-origin keeps the original cookie-aware mode.
-const apiCreds = WORKER_BASE ? "omit" : "same-origin";
-
 // Mirror of paperpilot/scripts/_common._SLUG_ALLOWED_RE / theme_slug() output.
 const SLUG_RE = /^[a-z0-9-]+$/;
 
@@ -264,12 +245,6 @@ const els = {
   xAxisHint: document.getElementById("x-axis-hint"),
   xAxisLegendLeft: document.getElementById("x-axis-legend-left"),
   xAxisLegendRight: document.getElementById("x-axis-legend-right"),
-  // On-demand theme submission UI.
-  reqForm: document.getElementById("theme-request"),
-  reqInput: document.getElementById("theme-request-input"),
-  reqSubmit: document.getElementById("theme-request-submit"),
-  reqHint: document.getElementById("theme-request-hint"),
-  reqDatalist: document.getElementById("existing-themes-datalist"),
   gallery: document.getElementById("theme-gallery"),
   heroDetails: document.getElementById("hero-details"),
   heroToggle: document.getElementById("hero-toggle"),
@@ -294,17 +269,6 @@ const els = {
   orphanToggle: document.getElementById("orphan-toggle"),
   orphanToggleLabel: document.getElementById("orphan-toggle-label"),
   orphanCount: document.getElementById("orphan-count"),
-  progress: document.getElementById("theme-progress"),
-  progressTitle: document.getElementById("theme-progress-title"),
-  progressElapsed: document.getElementById("theme-progress-elapsed"),
-  progressBar: document.getElementById("theme-progress-bar"),
-  progressSteps: document.getElementById("theme-progress-steps"),
-  progressCancel: document.getElementById("theme-progress-cancel"),
-  progressFailure: document.getElementById("theme-progress-failure"),
-  progressFailureTitle: document.getElementById("theme-progress-failure-title"),
-  progressFailureMsg: document.getElementById("theme-progress-failure-msg"),
-  progressFailureRetry: document.getElementById("theme-progress-failure-retry"),
-  progressFailureDismiss: document.getElementById("theme-progress-failure-dismiss"),
   popover: document.getElementById("card-popover"),
   popVenue: document.getElementById("cp-venue"),
   popTitle: document.getElementById("cp-title"),
@@ -654,54 +618,34 @@ function commitStateChange({ render: doRender = true } = {}) {
   if (doRender) render();
 }
 
-// ---- On-demand theme submission ---------------------------------------
+// ---- Slug fallback banner ---------------------------------------------
 //
-// Posts the user-typed theme to /api/themes (CF Worker). The Worker
-// validates, dedupes against the manifest, rate-limits per IP, and
-// dispatches a GitHub Actions workflow that runs build_theme_lineage.py
-// and commits the result to develop. We then poll themes-manifest.json
-// until the new slug appears (Cloudflare Pages auto-deploys on push)
-// and redirect to ?theme=<slug>.
-
-const REQUEST_PATTERN = /^[A-Za-z0-9 _-]{2,80}$/;
-const POLL_INTERVAL_MS = 5000;
-const POLL_TIMEOUT_MS = 6 * 60 * 1000;        // 6 min hard cap
-const ESTIMATED_DURATION_MS = 3.5 * 60 * 1000; // tuned to typical run time
-
-const PROGRESS_STEPS = ["dispatch", "queue", "generate", "commit", "ready"];
-
-let progressState = null;
-
-// Slug-fallback banner: shown when the URL ?theme=<slug> doesn't match
-// any known theme, so the user understands they're not looking at what
-// they asked for. Provides a one-click route into the new-theme form
-// pre-filled with the unknown slug, since "the user typed something
-// specific" is the strongest signal that they want to generate it.
+// Shown when the URL ?theme=<slug> doesn't match any known theme, so
+// the user understands they're not looking at what they asked for.
+// CTA drops them on a GitHub Issue ("theme request" template) with the
+// missing slug pre-filled in the title — this replaces the old in-page
+// form (CF Worker / workflow_dispatch path was retired when the viewer
+// moved to GitHub Pages).
 function showSlugFallback(requestedSlug, fallbackSlug) {
   if (!els.slugFallback || !els.slugFallbackMsg) return;
-  // Slug → human-readable theme name where possible. The requested
-  // slug is foreign by definition (not in manifest), so we just escape
-  // it. The fallback name comes from the manifest entry we landed on.
   const fallbackTheme = state.manifest.find((e) => e.slug === fallbackSlug)?.theme || fallbackSlug;
   els.slugFallbackMsg.textContent =
     `テーマ "${requestedSlug}" は存在しません。代わりに "${fallbackTheme}" を表示しています。`;
   els.slugFallback.hidden = false;
   if (els.slugFallbackGenerate) {
-    els.slugFallbackGenerate.onclick = () => {
-      // Open the hero details + pre-fill the form with the slug
-      // re-humanised (replace hyphens with spaces, title-case-ish).
-      if (els.heroDetails) els.heroDetails.hidden = false;
-      if (els.heroToggle) els.heroToggle.setAttribute("aria-expanded", "true");
-      if (els.heroNewTheme) els.heroNewTheme.setAttribute("aria-expanded", "true");
-      if (els.reqInput) {
-        const rehumanised = requestedSlug
-          .replace(/-/g, " ")
-          .replace(/\b[a-z]/g, (c) => c.toUpperCase());
-        els.reqInput.value = rehumanised;
-        requestAnimationFrame(() => els.reqInput.focus());
-      }
-      els.slugFallback.hidden = true;
-    };
+    // The slug → human-readable name conversion mirrors the form's old
+    // re-humanisation: hyphens become spaces, first letter of each word
+    // is capitalised so the issue title reads naturally.
+    const rehumanised = requestedSlug
+      .replace(/-/g, " ")
+      .replace(/\b[a-z]/g, (c) => c.toUpperCase());
+    const title = encodeURIComponent(`[theme request] ${rehumanised}`);
+    const body = encodeURIComponent(
+      `## 希望テーマ\n${rehumanised}\n\n## 理由 / 背景\n(任意)\n`,
+    );
+    els.slugFallbackGenerate.href =
+      `https://github.com/taichiiiiiiii/automatic-paper-search/issues/new` +
+      `?labels=theme-request&title=${title}&body=${body}`;
   }
   if (els.slugFallbackClose) {
     els.slugFallbackClose.onclick = () => { els.slugFallback.hidden = true; };
@@ -1173,13 +1117,10 @@ function bindHeroToggle() {
         hero.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
-    if (open && focusInput && els.reqInput) {
-      // Wait for the panel to actually paint AND for smooth scroll to
-      // start before focusing — `scrollIntoView` aborts when an input
-      // gets focus before it begins. Two rAFs is enough; the smooth
-      // scroll continues in the background.
-      requestAnimationFrame(() => requestAnimationFrame(() => els.reqInput.focus()));
-    }
+    // (focusInput was used to focus the on-demand submission input;
+    // form was removed when the viewer moved to GitHub Pages — argument
+    // kept for API compatibility but is now a no-op.)
+    void focusInput;
   };
   if (els.heroToggle) {
     els.heroToggle.addEventListener("click", () => {
@@ -1194,449 +1135,6 @@ function bindHeroToggle() {
   }
 }
 
-function bindThemeRequest() {
-  if (!els.reqForm) return;
-  els.reqForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    submitTheme().catch((err) => {
-      console.error("[theme-request] submit failed:", err);
-      showRequestError("予期しないエラーが発生しました。再試行してください。");
-    });
-  });
-  if (els.progressCancel) {
-    els.progressCancel.addEventListener("click", cancelProgress);
-  }
-  if (els.progressFailureRetry) {
-    els.progressFailureRetry.addEventListener("click", () => {
-      const retrySlug = els.progressFailureRetry.dataset.retrySlug || "";
-      // Pre-fill the input so the user sees what's being retried, then
-      // re-submit. The slug may have lost case info during normalize —
-      // good enough for a retry context.
-      if (retrySlug && els.reqInput) {
-        // Re-derive the human label from the slug (caps + spaces).
-        els.reqInput.value = retrySlug.replace(/-/g, " ");
-      }
-      cancelProgress();
-      // Re-open the hero details so the form is visible if it was
-      // collapsed during the progress view.
-      if (els.heroDetails && els.heroDetails.hidden && els.heroToggle) {
-        els.heroToggle.click();
-      }
-      // Defer the submit one tick so the cancel-driven cleanup
-      // completes before we start a new run.
-      setTimeout(() => {
-        submitTheme().catch((err) => {
-          console.error("[theme-request] retry submit failed:", err);
-          showRequestError("再試行に失敗しました。少し時間を空けて再度お試しください。");
-        });
-      }, 50);
-    });
-  }
-  if (els.progressFailureDismiss) {
-    els.progressFailureDismiss.addEventListener("click", cancelProgress);
-  }
-}
-
-// Populate the autocomplete datalist from the manifest. Lives separately
-// from bindThemeRequest so it can run AFTER the async manifest fetch
-// (bindThemeRequest is wired up first so the submit handler is alive
-// even when the manifest is empty).
-function populateThemeDatalist() {
-  if (!els.reqDatalist || !Array.isArray(state.manifest)) return;
-  els.reqDatalist.innerHTML = "";
-  for (const entry of state.manifest) {
-    // Skip 0-paper themes from autocomplete too — submitting one would
-    // hit the "exists" short-circuit and redirect to a broken viewer.
-    if ((entry.paper_count || 0) === 0) continue;
-    const opt = document.createElement("option");
-    // textContent (not innerHTML) — manifest entries come from
-    // generate_themes_manifest.py but treat as untrusted at the
-    // viewer boundary.
-    opt.value = entry.theme || entry.slug;
-    els.reqDatalist.appendChild(opt);
-  }
-}
-
-// Find an existing manifest entry whose theme or slug matches the
-// user's input case-insensitively. Returns the matching slug or null.
-// Used by submitTheme() to short-circuit duplicate dispatches the
-// moment the user picks something off the autocomplete list.
-function existingThemeMatch(raw) {
-  if (!Array.isArray(state.manifest)) return null;
-  const needle = raw.trim().toLowerCase();
-  if (!needle) return null;
-  for (const entry of state.manifest) {
-    if (typeof entry?.slug !== "string") continue;
-    if ((entry.theme || "").toLowerCase() === needle) return entry.slug;
-    if (entry.slug.toLowerCase() === needle) return entry.slug;
-  }
-  return null;
-}
-
-function showRequestError(message) {
-  if (!els.reqHint) return;
-  els.reqHint.textContent = message;
-  els.reqHint.classList.add("theme-request__hint--error");
-  // Reset error styling after a few seconds so the form stops looking
-  // like it's permanently broken.
-  setTimeout(() => {
-    if (els.reqHint) {
-      els.reqHint.classList.remove("theme-request__hint--error");
-      els.reqHint.textContent = "2〜80 文字 / [A-Za-z0-9 _-] / 5回/時まで";
-    }
-  }, 6000);
-}
-
-async function submitTheme() {
-  const raw = (els.reqInput?.value || "").trim();
-  if (!REQUEST_PATTERN.test(raw)) {
-    showRequestError("テーマは 2〜80 文字、[A-Za-z0-9 _-] のみ使用できます。");
-    return;
-  }
-  // Short-circuit: the user typed (or auto-completed) an existing
-  // theme. No need to round-trip to the Worker — jump straight to the
-  // viewer. Also avoids burning a /api/themes rate-limit slot.
-  const knownSlug = existingThemeMatch(raw);
-  if (knownSlug && SLUG_RE.test(knownSlug)) {
-    window.location.href = `?theme=${encodeURIComponent(knownSlug)}`;
-    return;
-  }
-  els.reqSubmit.disabled = true;
-  els.reqInput.disabled = true;
-
-  // POST to the Worker. credentials: same-origin keeps the cookie /
-  // session story unchanged (we don't use either, but be explicit).
-  let resp;
-  try {
-    resp = await fetch(apiUrl("/api/themes"), {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ theme: raw }),
-      credentials: apiCreds,
-    });
-  } catch (e) {
-    showRequestError("送信できませんでした。ネットワーク接続を確認してください。");
-    els.reqSubmit.disabled = false;
-    els.reqInput.disabled = false;
-    return;
-  }
-  let data;
-  try {
-    data = await resp.json();
-  } catch {
-    data = { ok: false, status: "error", message: "invalid response" };
-  }
-
-  if (!data.ok && data.status === "rate_limited") {
-    showRequestError("レート制限に達しました (5回/時)。1 時間後にお試しください。");
-    els.reqSubmit.disabled = false;
-    els.reqInput.disabled = false;
-    return;
-  }
-  if (!data.ok && data.status === "invalid") {
-    showRequestError(data.message || "入力が無効です。");
-    els.reqSubmit.disabled = false;
-    els.reqInput.disabled = false;
-    return;
-  }
-  if (!data.ok) {
-    showRequestError(data.message || "サーバ側でエラーが発生しました。");
-    els.reqSubmit.disabled = false;
-    els.reqInput.disabled = false;
-    return;
-  }
-
-  if (data.status === "exists" && data.slug) {
-    // Slug already published — jump straight to it. SLUG_RE re-checked
-    // because the Worker's response could in theory be tampered with at
-    // the network layer.
-    if (SLUG_RE.test(data.slug)) {
-      window.location.href = `?theme=${encodeURIComponent(data.slug)}`;
-    }
-    return;
-  }
-
-  if (data.status === "queued" && data.slug && SLUG_RE.test(data.slug)) {
-    startProgress(data.slug, raw);
-    return;
-  }
-
-  showRequestError("不明な状態が返されました。");
-  els.reqSubmit.disabled = false;
-  els.reqInput.disabled = false;
-}
-
-function startProgress(slug, themeLabel) {
-  // Guard every els.progress access — the rest of the file uses
-  // `if (els.progress)` defensively (see cancelProgress at line 1216),
-  // and an unguarded access here would lock submit-disabled state if
-  // the element were ever absent (review #122 HIGH).
-  if (els.progress) els.progress.hidden = false;
-  if (els.progressTitle) els.progressTitle.textContent = `「${themeLabel}」を生成中...`;
-  setProgressStep("dispatch");
-  progressState = {
-    slug,
-    themeLabel,
-    startedAt: Date.now(),
-    cancelled: false,
-    timer: null,
-  };
-  // Make sure the failure block from a prior attempt is hidden and the
-  // normal steps / cancel chunks are visible.
-  if (els.progressFailure) els.progressFailure.hidden = true;
-  if (els.progressSteps) els.progressSteps.hidden = false;
-  const cancelWrap = els.progressCancel?.parentElement;
-  if (cancelWrap) cancelWrap.hidden = false;
-  // Step transitions are time-based estimates. We shift "queue" → "generate"
-  // → "commit" on a schedule because the Worker can't tell us the live
-  // workflow status without a second API hop. This stays accurate enough
-  // for the user-facing "what's happening now" because the median run
-  // time is fairly stable.
-  setTimeout(() => maybeAdvance("queue"), 5_000);
-  setTimeout(() => maybeAdvance("generate"), 30_000);
-  setTimeout(() => maybeAdvance("commit"), 150_000);
-  pollForCompletion(slug);
-  progressState.timer = setInterval(updateElapsed, 1000);
-  updateElapsed();
-}
-
-function maybeAdvance(step) {
-  if (!progressState || progressState.cancelled) return;
-  setProgressStep(step);
-}
-
-function setProgressStep(step) {
-  if (!els.progressSteps) return;
-  const idx = PROGRESS_STEPS.indexOf(step);
-  for (const li of els.progressSteps.querySelectorAll("li[data-step]")) {
-    const liIdx = PROGRESS_STEPS.indexOf(li.dataset.step);
-    li.classList.toggle("theme-progress__step--done", liIdx < idx);
-    li.classList.toggle("theme-progress__step--current", liIdx === idx);
-    li.classList.toggle("theme-progress__step--pending", liIdx > idx);
-  }
-  if (els.progressBar) {
-    const pct = Math.min(100, (idx / (PROGRESS_STEPS.length - 1)) * 100);
-    els.progressBar.style.width = `${pct}%`;
-  }
-}
-
-function updateElapsed() {
-  if (!progressState || !els.progressElapsed) return;
-  const elapsed = Date.now() - progressState.startedAt;
-  const m = Math.floor(elapsed / 60_000);
-  const s = Math.floor((elapsed % 60_000) / 1000);
-  els.progressElapsed.textContent = `経過 ${m}:${String(s).padStart(2, "0")}`;
-}
-
-// Consecutive polling failures threshold. 4 failures × 5 s interval ≈
-// 20 s of trouble before we surface "having issues reaching the server"
-// in the failure block. Below the threshold the loop just retries — we
-// don't want to alarm users for a single flaky fetch.
-const POLL_FAILURE_THRESHOLD = 4;
-// How often to check the Worker's /api/themes/status endpoint relative
-// to manifest polling. 1 status check per 6 manifest polls ≈ once every
-// 30 s — frequent enough that a failed workflow surfaces well before
-// the 6-minute timeout, sparse enough that we stay way below the GH
-// API rate limit even with multiple concurrent users.
-const STATUS_CHECK_INTERVAL_POLLS = 6;
-
-// Translate GitHub Actions run state into the failure-UI fields. status
-// "completed" + conclusion "failure"/"cancelled"/"timed_out" are
-// terminal — we stop polling and surface immediately. Returns null
-// when the run is still in flight (queued / in_progress).
-function failureFromRun(run) {
-  if (!run || run.status !== "completed") return null;
-  const conc = run.conclusion;
-  if (conc === "success") return null;  // shouldn't happen — manifest poll would have caught it first
-  const url = typeof run.html_url === "string" ? run.html_url : "";
-  if (conc === "failure") {
-    return {
-      title: "ワークフロー実行が失敗しました",
-      message: "GitHub Actions の theme-on-demand ジョブが failure で完了しました。S2 のレート制限、Groq LLM の TPM 上限、または build_theme_lineage.py の内部エラーの可能性があります。ログから原因を特定してください。",
-      runUrl: url,
-    };
-  }
-  if (conc === "cancelled") {
-    return {
-      title: "ワークフローがキャンセルされました",
-      message: "GitHub Actions のジョブが外部からキャンセルされました。再試行してください。",
-      runUrl: url,
-    };
-  }
-  if (conc === "timed_out") {
-    return {
-      title: "ワークフローがタイムアウトしました",
-      message: "ジョブが GitHub Actions 側で時間切れになりました (workflow timeout-minutes 超過)。数分待ってから再試行してください。",
-      runUrl: url,
-    };
-  }
-  return null;
-}
-
-async function pollForCompletion(slug) {
-  const startedAt = Date.now();
-  let consecutiveFailures = 0;
-  let pollIter = 0;
-  // Snapshot the user-typed theme — pollForCompletion is called right
-  // after startProgress() sets progressState, so this is always
-  // populated. The Worker's status endpoint matches GH run titles on
-  // this string verbatim.
-  const themeLabel = progressState?.themeLabel ?? "";
-  while (progressState && !progressState.cancelled) {
-    if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
-      // Persistent failure UI replaces the steps list + cancel button.
-      // Copy spells out the most likely causes so users can self-triage
-      // (S2 free-tier shared IP throttle + Groq TPM ceiling are the two
-      // we've actually hit in CI), and the retry button re-dispatches.
-      showProgressFailure({
-        title: "生成がタイムアウトしました (6 分経過)",
-        message: "S2 / Groq LLM のレート制限、または GitHub Actions の内部エラーの可能性があります。数分後に再試行するか、既存テーマを確認してください。",
-        retrySlug: slug,
-      });
-      return;
-    }
-    try {
-      // cache: "no-store" is intentional here, not in loadManifest(): this
-      // is the post-submit polling loop, fired once per POLL_INTERVAL_MS
-      // while the user waits for build_theme_lineage to commit. CF Pages
-      // can serve a stale manifest from the edge for ~30s after the new
-      // deploy lands, and a 304 from no-cache would still serve cached
-      // bytes that don't contain our slug yet. no-store + the deploy
-      // settling within ~30s converges much faster.
-      const r = await fetch("themes-manifest.json", { cache: "no-store" });
-      if (r.ok) {
-        consecutiveFailures = 0;
-        const data = await r.json();
-        if (Array.isArray(data) && data.some((e) => e?.slug === slug)) {
-          setProgressStep("ready");
-          // Tiny pause so the user sees the green "完了" tick.
-          setTimeout(() => {
-            window.location.href = `?theme=${encodeURIComponent(slug)}`;
-          }, 800);
-          return;
-        }
-      } else {
-        consecutiveFailures++;
-      }
-    } catch {
-      // Transient network error — keep polling. The hard cap above will
-      // bail if the failure persists; the counter below surfaces a soft
-      // warning sooner so the user isn't left guessing.
-      consecutiveFailures++;
-    }
-    if (consecutiveFailures === POLL_FAILURE_THRESHOLD) {
-      // One-shot warning — show but don't cancel polling. Mark the
-      // counter so we don't fire repeatedly while it ticks up.
-      setProgressNetworkWarning(true);
-    } else if (consecutiveFailures === 0) {
-      // Recovery — clear the warning if a subsequent fetch succeeded.
-      setProgressNetworkWarning(false);
-    }
-    // Every Nth poll, ask the Worker for the actual GH Actions run
-    // state. This catches failures that won't ever show up in the
-    // manifest (build_theme_lineage.py exited non-zero, S2 rate-limit
-    // aborted the run, etc) much earlier than the 6-minute timeout.
-    pollIter++;
-    if (pollIter % STATUS_CHECK_INTERVAL_POLLS === 0 && themeLabel) {
-      try {
-        const sr = await fetch(apiUrl(`/api/themes/status?theme=${encodeURIComponent(themeLabel)}`), { credentials: apiCreds });
-        if (sr.ok) {
-          const sd = await sr.json();
-          const fail = failureFromRun(sd?.run);
-          if (fail) {
-            showProgressFailure({
-              title: fail.title,
-              message: fail.message,
-              retrySlug: slug,
-              runUrl: fail.runUrl,
-            });
-            return;
-          }
-        }
-      } catch {
-        // Status endpoint failures are non-fatal — manifest poll +
-        // 6-min timeout still cover the failure modes, just with
-        // less specificity.
-      }
-    }
-    await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
-  }
-}
-
-// Soft network warning surfaced via the progress title while polling
-// keeps retrying. Distinct from the persistent failure block — this is
-// "we're not giving up yet, but you should know" status.
-function setProgressNetworkWarning(on) {
-  if (!els.progressTitle) return;
-  const baseTitle = progressState?.themeLabel
-    ? `「${progressState.themeLabel}」を生成中...`
-    : "生成中...";
-  els.progressTitle.textContent = on
-    ? `${baseTitle} (マニフェスト取得に再試行中)`
-    : baseTitle;
-}
-
-// Render the persistent failure UI. Hides the steps + cancel button,
-// disables polling, leaves the theme-progress card visible until the
-// user explicitly retries or dismisses. runUrl (optional) injects a
-// "GitHub Actions のログを開く" link into the message so the user can
-// self-triage without leaving the page.
-function showProgressFailure({ title, message, retrySlug, runUrl }) {
-  if (!els.progress) return;
-  // Stop the polling loop and clear the elapsed-time timer without
-  // hiding the panel (cancelProgress would also hide it).
-  if (progressState) {
-    progressState.cancelled = true;
-    if (progressState.timer) clearInterval(progressState.timer);
-  }
-  if (els.progressSteps) els.progressSteps.hidden = true;
-  const cancelWrap = els.progressCancel?.parentElement;
-  if (cancelWrap) cancelWrap.hidden = true;
-  if (els.progressFailure) {
-    if (els.progressFailureTitle && title) els.progressFailureTitle.textContent = title;
-    if (els.progressFailureMsg && message) {
-      // Build the message + optional link as DOM nodes so the runUrl
-      // can't be injected with bad markup. The link uses rel=noopener
-      // and target=_blank so navigating away from the polling page
-      // doesn't kill the user's progress view.
-      els.progressFailureMsg.textContent = message;
-      if (runUrl) {
-        const sep = document.createElement("span");
-        sep.textContent = " ";
-        const a = document.createElement("a");
-        a.href = runUrl;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.textContent = "GitHub Actions のログを開く →";
-        a.className = "theme-progress__failure-link";
-        els.progressFailureMsg.appendChild(sep);
-        els.progressFailureMsg.appendChild(a);
-      }
-    }
-    els.progressFailure.hidden = false;
-    // Stash the retry slug on the dataset so the bound handler picks it
-    // up without closing over stale state.
-    if (retrySlug && els.progressFailureRetry) {
-      els.progressFailureRetry.dataset.retrySlug = retrySlug;
-    }
-  }
-  // Re-enable the input so the user can either retry the same slug or
-  // type a different one if they suspect the input was the problem.
-  if (els.reqSubmit) els.reqSubmit.disabled = false;
-  if (els.reqInput) els.reqInput.disabled = false;
-}
-
-function cancelProgress() {
-  if (progressState) {
-    progressState.cancelled = true;
-    if (progressState.timer) clearInterval(progressState.timer);
-  }
-  if (els.progress) els.progress.hidden = true;
-  // Also hide the failure block so a subsequent submit starts fresh.
-  if (els.progressFailure) els.progressFailure.hidden = true;
-  if (els.reqSubmit) els.reqSubmit.disabled = false;
-  if (els.reqInput) els.reqInput.disabled = false;
-}
 
 // #ui: the HTML now ships a sticky `.canvas-loading` element with a
 // spinner; we just have to hide it once the data is in. Centralised
@@ -1648,10 +1146,6 @@ function hideCanvasLoading() {
 }
 
 async function init() {
-  // Bind the on-demand submission form FIRST so it stays usable even
-  // when the manifest is empty (first-time visitor) or when the slug
-  // they asked for can't be loaded.
-  bindThemeRequest();
   bindHeroToggle();
 
   state.manifest = await loadManifest();

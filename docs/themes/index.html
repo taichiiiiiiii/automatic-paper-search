@@ -6,22 +6,13 @@
   <title>Theme Lineage — PaperPilot</title>
   <meta name="description" content="任意の研究テーマから生成した時系列付きの論文家系図。Y 軸は年（rank-based 等間隔）、横軸は 6 つの意味（引用ランク / log 引用数 / 系譜近接 / 中心性 / 会議格 / 新規性）から切替可能。" />
 
-  <!-- Cross-origin base for the CF Worker that owns /api/themes (submit)
-       and /api/themes/status (poll). When the static viewer ships from
-       GitHub Pages, the API lives on a *.workers.dev or worker custom
-       domain that is *not* same-origin. theme.js reads this tag and
-       prefixes all fetch URLs; leave content="" (or remove the tag) to
-       keep the original same-origin path. Fill in the Worker URL once
-       per deployment — see CLAUDE.md "GH Pages + CF Worker hybrid". -->
-  <meta name="paperpilot-worker-base" content="" />
-
-  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we restore the
-       CF-Pages-era policy via meta. `connect-src` adds *.workers.dev so
-       the cross-origin POST to /api/themes lands; the other HTMLs in
-       docs/ keep the stricter same-origin `connect-src 'self'`. Inline
-       scripts and the rationale `textContent` discipline carry over
-       unchanged. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.workers.dev; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we restore
+       the CF-Pages-era policy via meta. Same-origin `connect-src 'self'`
+       only — the on-demand form has been removed (no cross-origin
+       Worker call); new themes are requested via the GitHub Issue
+       template linked from the hero. `textContent`-only rationale
+       rendering carries over unchanged. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
        follow-up rationale. og:url is intentionally omitted. -->
@@ -113,96 +104,36 @@
         ホバーで LLM による分類理由が表示されます。データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で分類して生成。
       </p>
 
-      <!-- On-demand theme generation: POST to /api/themes (CF Worker) which
-           dispatches the theme-on-demand.yml workflow. The progress block
-           below it is hidden by default and toggled by theme.js. -->
-      <!-- novalidate: rely on JS validation so the bad-input message is
-           localised + styled consistently. The HTML pattern stays as a
-           hint to assistive tech / autofill. -->
-      <form class="theme-request" id="theme-request" autocomplete="off" novalidate>
-        <label class="theme-request__label" for="theme-request-input">
-          <span aria-hidden="true">✨</span>
-          テーマを自分で生成:
-        </label>
-        <input
-          id="theme-request-input"
-          class="theme-request__input"
-          type="text"
-          name="theme"
-          minlength="2"
-          maxlength="80"
-          pattern="[A-Za-z0-9 _\-]+"
-          placeholder="例: Vision Transformer / Graph Neural Network"
-          aria-describedby="theme-request-hint"
-          list="existing-themes-datalist"
-          autocomplete="off"
-        />
-        <datalist id="existing-themes-datalist"></datalist>
-        <button type="submit" class="theme-request__submit" id="theme-request-submit">
-          生成する
-        </button>
-        <span class="theme-request__hint" id="theme-request-hint">
-          2〜80 文字 / [A-Za-z0-9 _-] / 5回/時まで
-        </span>
-      </form>
+      <!-- Static-only deploy: the on-demand form (CF Worker → workflow_dispatch)
+           was removed when the viewer moved fully to GitHub Pages. New
+           themes are now requested via a GitHub Issue using the
+           "Theme request" template, and an operator runs
+           `gh workflow run theme-on-demand.yml -f theme="..."` to
+           generate. Link below pre-fills the issue body. -->
+      <p class="theme-request-link">
+        <span aria-hidden="true">✨</span>
+        新しいテーマがほしい場合は
+        <a href="https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request&amp;title=%5Btheme%20request%5D%20&amp;body=%23%23%20%E5%B8%8C%E6%9C%9B%E3%83%86%E3%83%BC%E3%83%9E%0A%28%E4%BE%8B%3A%20Vision%20Transformer%29%0A%0A%23%23%20%E7%90%86%E7%94%B1%20%2F%20%E8%83%8C%E6%99%AF%0A" target="_blank" rel="noopener">GitHub Issue でリクエスト</a>
+        してください。承認後に自動生成されます。
+      </p>
     </div>
 
   </header>
 
   <main id="main-content">
-  <!-- Progress block sits OUTSIDE the collapsible <header> so it remains
-       visible even when the user has the hero "details" panel closed.
-       Toggled by theme.js bindThemeRequest() / submitTheme(). -->
-  <div class="theme-progress" id="theme-progress" hidden aria-live="polite">
-      <div class="theme-progress__head">
-        <span class="theme-progress__spinner" aria-hidden="true"></span>
-        <strong class="theme-progress__title" id="theme-progress-title">生成中...</strong>
-        <span class="theme-progress__elapsed" id="theme-progress-elapsed"></span>
-      </div>
-      <div class="theme-progress__bar" aria-hidden="true">
-        <div class="theme-progress__bar-fill" id="theme-progress-bar"></div>
-      </div>
-      <ul class="theme-progress__steps" id="theme-progress-steps">
-        <li data-step="dispatch">📨 ジョブを送信</li>
-        <li data-step="queue">⏳ Actions キュー待ち</li>
-        <li data-step="generate">🔍 S2 検索 + BFS + LLM 分類</li>
-        <li data-step="commit">📦 コミット + Cloudflare デプロイ</li>
-        <li data-step="ready">✅ 完了 → 自動でビューを開きます</li>
-      </ul>
-      <p class="theme-progress__cancel">
-        <button type="button" class="theme-progress__cancel-btn" id="theme-progress-cancel">
-          キャンセルして既存テーマを見る
-        </button>
-      </p>
-      <!-- Persistent failure block. Replaces the steps list / cancel
-           button when polling exceeds POLL_TIMEOUT_MS or hits the
-           consecutive-fetch-failure threshold. Stays visible until the
-           user explicitly dismisses or retries — unlike showRequestError
-           which auto-clears after 6 s. -->
-      <div class="theme-progress__failure" id="theme-progress-failure" hidden role="alert">
-        <strong class="theme-progress__failure-title" id="theme-progress-failure-title">生成に失敗しました</strong>
-        <p class="theme-progress__failure-msg" id="theme-progress-failure-msg"></p>
-        <div class="theme-progress__failure-actions">
-          <button type="button" class="theme-progress__failure-retry" id="theme-progress-failure-retry">
-            再試行
-          </button>
-          <button type="button" class="theme-progress__failure-dismiss" id="theme-progress-failure-dismiss">
-            閉じて既存テーマを見る
-          </button>
-        </div>
-      </div>
-    </div>
-
   <!-- Slug-fallback notification: shown when ?theme=<unknown> made the
        viewer fall back to the manifest's first entry. Toggled by
        theme.js init(). Sits above the gallery so the user notices
-       before scanning the cards for their requested theme. -->
+       before scanning the cards for their requested theme. The "新規
+       生成" CTA is an anchor (the old form/Worker path is gone); JS
+       sets the href to a pre-filled GitHub Issue ("theme request"
+       template) for the missing slug. -->
   <div class="slug-fallback" id="slug-fallback" hidden role="status">
     <span class="slug-fallback__icon" aria-hidden="true">⚠️</span>
     <span class="slug-fallback__msg" id="slug-fallback-msg"></span>
-    <button type="button" class="slug-fallback__cta" id="slug-fallback-generate">
-      ✨ そのテーマを新規生成
-    </button>
+    <a class="slug-fallback__cta" id="slug-fallback-generate" target="_blank" rel="noopener">
+      ✨ Issue でリクエスト
+    </a>
     <button type="button" class="slug-fallback__close" id="slug-fallback-close" aria-label="閉じる">
       ✕
     </button>
