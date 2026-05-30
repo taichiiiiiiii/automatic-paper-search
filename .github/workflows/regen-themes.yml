@@ -63,14 +63,17 @@ jobs:
         run: |
           set -u
           mkdir -p paperpilot/data/unarxive
-          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb"
+          # See theme-on-demand.yml: Release asset is gzipped to fit
+          # the 2 GB cap; runner gunzips before the pipeline opens it.
+          gz=paperpilot/data/unarxive/unarxive.duckdb.gz
+          out=paperpilot/data/unarxive/unarxive.duckdb
+          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb.gz"
           if curl --fail --location --silent --show-error \
-               --output paperpilot/data/unarxive/unarxive.duckdb \
-               "$url"; then
-            echo "unarXive DuckDB downloaded: $(du -h paperpilot/data/unarxive/unarxive.duckdb | cut -f1)"
+               --output "$gz" "$url" && gunzip -f "$gz"; then
+            echo "unarXive DuckDB ready: $(du -h "$out" | cut -f1)"
           else
             echo "::notice::unarXive DuckDB unavailable at $url; citation contexts disabled (pipeline degrades to heuristics)"
-            rm -f paperpilot/data/unarxive/unarxive.duckdb
+            rm -f "$gz" "$out"
           fi
         continue-on-error: true
 

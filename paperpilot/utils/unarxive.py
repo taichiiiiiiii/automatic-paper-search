@@ -7,25 +7,24 @@ papers up to 2022-03.
 
 ### Architecture
 
-Offline (one-shot, ~10 min): ``paperpilot/scripts/build_unarxive_index.py``
+Offline (one-shot, ~5 min): ``paperpilot/scripts/build_unarxive_index.py``
 downloads the HF dataset, joins the citrec rows with the
 ``license_info`` sidecar to recover ``paper_arxiv_id`` per row, and
-writes a DuckDB file with this schema::
+writes a DuckDB file with this 3-column schema::
 
     CREATE TABLE citrec (
-        sample_id      TEXT,  -- unarXive _id
-        text           TEXT,  -- the citation paragraph
-        marker         TEXT,  -- in-text marker like "[42]"
-        label          TEXT,  -- 'https://openalex.org/W{ID}' of cited paper
         paper_arxiv_id TEXT,  -- arXiv id of citing paper
-        paper_license  TEXT   -- per-paper licence from upstream
+        label          TEXT,  -- 'https://openalex.org/W{ID}' of cited paper
+        text           TEXT   -- citation paragraph, truncated to 600 chars
     );
     CREATE INDEX idx_citing_cited ON citrec(paper_arxiv_id, label);
 
-The ``paper_license`` column carries the per-paper licence string
-from ``license_info.jsonl`` (most are ``arxiv-perpetual-license``
-but some are explicitly CC-BY/CC-BY-SA). It is not queried at runtime
-but available for audit / future filtering by license compatibility.
+The schema is intentionally narrow so the binary fits the GitHub
+Release 2 GB/asset cap once gzipped. Upstream columns we drop:
+``sample_id`` (UUID never queried), ``marker`` (e.g. ``"[42]"`` —
+implied by ``text`` and unused), ``paper_license`` (per-paper
+licence URL — attribution lives in the viewer footer, no per-row
+query touches it).
 
 Runtime: ``fetch_contexts()`` reads the DuckDB in read-only mode and
 returns paragraphs for a given (citing arXiv id, cited OpenAlex W-id)

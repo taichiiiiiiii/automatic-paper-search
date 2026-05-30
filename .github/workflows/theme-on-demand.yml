@@ -103,20 +103,25 @@ jobs:
       #
       # To install: build the DuckDB once via
       #   uv run python -m paperpilot.scripts.build_unarxive_index
-      # then upload `paperpilot/data/unarxive/unarxive.duckdb` to a new
-      # GitHub Release tagged `unarxive-v1`.
+      # then upload the emitted `unarxive.duckdb.gz` companion to a
+      # new GitHub Release tagged `unarxive-v1`. The raw `.duckdb`
+      # is larger than the 2 GB per-asset cap and must not be uploaded.
       - name: Download unarXive DuckDB (citation contexts, optional)
         run: |
           set -u
           mkdir -p paperpilot/data/unarxive
-          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb"
+          # Release asset is gzipped (~1.5 GB) so it fits the 2 GB
+          # per-asset cap; we gunzip on the runner before the lineage
+          # pipeline opens it.
+          gz=paperpilot/data/unarxive/unarxive.duckdb.gz
+          out=paperpilot/data/unarxive/unarxive.duckdb
+          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb.gz"
           if curl --fail --location --silent --show-error \
-               --output paperpilot/data/unarxive/unarxive.duckdb \
-               "$url"; then
-            echo "unarXive DuckDB downloaded: $(du -h paperpilot/data/unarxive/unarxive.duckdb | cut -f1)"
+               --output "$gz" "$url" && gunzip -f "$gz"; then
+            echo "unarXive DuckDB ready: $(du -h "$out" | cut -f1)"
           else
             echo "::notice::unarXive DuckDB unavailable at $url; citation contexts disabled (pipeline degrades to heuristics)"
-            rm -f paperpilot/data/unarxive/unarxive.duckdb
+            rm -f "$gz" "$out"
           fi
         continue-on-error: true
 
