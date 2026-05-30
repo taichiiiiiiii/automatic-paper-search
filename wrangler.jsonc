@@ -1,16 +1,19 @@
 {
-  // Single Worker config — owns BOTH the static `docs/` bundle (via the
-  // ASSETS binding) AND the `/api/themes` POST endpoint (worker/index.ts).
+  // Cloudflare Worker config for the /api/themes submission endpoint.
   //
-  // Why one file: deploying the API at `automatic-paper-search-api.*` was
-  // confusing for users (the form on /themes/ posts to /api/themes on the
-  // SAME origin), and Cloudflare's "Workers + Static Assets" pattern lets
-  // both live at the same URL without a second sub-domain. Cf the older
-  // split design captured in commit history if you need to revert.
+  // Deploy shape (post GH-Pages migration): the static `docs/` viewer
+  // ships from GitHub Pages via `.github/workflows/pages.yml`; this
+  // Worker only owns `/api/themes` (POST) and `/api/themes/status`
+  // (GET). The static-bundle binding (`assets.directory = docs`) was
+  // removed when traffic moved to GH Pages. The Env interface in
+  // worker/index.ts still declares ASSETS as optional so the Worker
+  // can be redeployed under the old all-in-one CF Pages shape without
+  // a code change if the migration is ever rolled back.
   //
-  // CF git auto-deploy reads this file on every push to `develop`. If the
-  // KV id below is the 32-zero placeholder, the validator rejects the
-  // deploy silently — so the FIRST deploy needs a real KV id (see Setup).
+  // CF git auto-deploy reads this file on every push to `develop`. If
+  // the KV id below is the 32-zero placeholder, the validator rejects
+  // the deploy silently — so the FIRST deploy needs a real KV id
+  // (see Setup).
   //
   // Setup (one-time, run from a developer machine with `wrangler login`):
   //
@@ -23,8 +26,9 @@
   //
   //   3. git commit + push (or `wrangler deploy` once manually).
   //
-  // After that, every push to `develop` re-deploys both the static bundle
-  // and the API in a single Worker. See worker/README.md for details.
+  // After that, every push to `develop` re-deploys the API Worker. The
+  // static viewer ships separately via GitHub Pages — see CLAUDE.md
+  // "GitHub Pages + CF Worker hybrid" and worker/README.md.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "automatic-paper-search",
   "main": "worker/index.ts",
@@ -34,10 +38,6 @@
   ],
   "observability": {
     "enabled": true
-  },
-  "assets": {
-    "directory": "docs",
-    "binding": "ASSETS"
   },
   // Non-secret config — visible in the CF dashboard. The PAT itself is a
   // secret (set via `wrangler secret put GH_DISPATCH_PAT`).

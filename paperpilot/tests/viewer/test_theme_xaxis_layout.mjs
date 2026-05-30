@@ -54,6 +54,10 @@ function makeContext() {
     getElementById: () => makeStubElement(),
     createElement: () => makeStubElement(),
     createElementNS: () => makeStubElement(),
+    // theme.js reads the worker base URL from a <meta> at module load
+    // (post GH-Pages migration). The stub returns null so the optional
+    // chain in theme.js falls through to the empty default.
+    querySelector: () => null,
     fonts: { ready: Promise.resolve() },
   };
   const localStorageBacking = new Map();

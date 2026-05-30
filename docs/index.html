@@ -6,6 +6,12 @@
   <title>PaperPilot — Conference Paper Catalog</title>
   <meta name="description" content="AI/ML 学会論文の自動収集 + フィルタブルカタログ。" />
 
+  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we restore
+       the CF-Pages-era policy via meta. All pages outside /themes/
+       only fetch same-origin JSON, so `connect-src 'self'` stays
+       strict; the cross-origin Worker hop is `/themes/` only. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+
   <!-- Open Graph / Twitter Card. og:url is omitted intentionally so
        scrapers fall back to the actual requested URL — keeps the same
        HTML correct across the pages.dev / workers.dev / custom-domain
@@ -136,37 +142,6 @@
     <span>Auto-updated weekly · MIT License</span>
   </footer>
 
-  <script>
-    fetch("conferences.json")
-      .then((r) => r.json())
-      .then((conferences) => {
-        const list = document.getElementById("conf-list");
-        if (!conferences.length) {
-          list.innerHTML = `<li class="conf-empty">No conferences yet.</li>`;
-          return;
-        }
-        list.innerHTML = conferences.map((c) => {
-          const oral = c.types.Oral || 0;
-          const tags = c.top_tags.map(([t, n]) =>
-            `<span class="conf__tag">${t} <span class="conf__tag-count">${n}</span></span>`
-          ).join("");
-          return `
-            <li class="conf">
-              <div>
-                <h2 class="conf__name"><a href="${c.name}/">${c.name.toUpperCase().replace("-", " ")}</a></h2>
-                <p class="conf__meta">${c.papers} papers · ${oral} oral · ${c.top_tags.length} top tags</p>
-                <div class="conf__tags">${tags}</div>
-              </div>
-              <div>
-                <div class="conf__count">${c.papers}</div>
-                <span class="conf__count-label">papers</span>
-              </div>
-            </li>`;
-        }).join("");
-      })
-      .catch(() => {
-        document.getElementById("conf-list").innerHTML = `<li class="conf-empty">Failed to load conferences.json</li>`;
-      });
-  </script>
+  <script src="assets/conferences-index.js"></script>
 </body>
 </html>

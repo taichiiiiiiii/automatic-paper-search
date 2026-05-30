@@ -2,7 +2,7 @@
 
 AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン。補助出力として CSV / JSON / Slack / Email にも配信できます。
 
-**主要な出力:** Cloudflare Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。
+**主要な出力:** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。on-demand 入力 API は CF Worker（hybrid 構成）。
 LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に分類し、先行研究と後継研究を一枚の SVG で俯瞰できます。
 
 **4 つの自動実行モード**（GitHub Actions）：
@@ -120,7 +120,7 @@ python paperpilot/scripts/build_lineage.py --conference iclr-2026 --limit 1  # �
 python paperpilot/scripts/build_lineage.py --conference iclr-2026            # 全 Oral
 ```
 
-`docs/` 以下は Cloudflare Pages が自動デプロイします（リポジトリの GitHub 連携経由。`collect-weekly.yml` が docs/ を push すると Cloudflare が push をフックしてデプロイ）。ブラウザから `index.html` / `lineage.html` にアクセスできます。キャッシュ / セキュリティヘッダは `docs/_headers` で制御。
+`docs/` 以下は GitHub Pages が自動デプロイします（`develop` への push を `.github/workflows/pages.yml` がフック、`docs/**` 変更時のみ起動）。ブラウザから `index.html` / `lineage.html` にアクセスできます。on-demand テーマ生成の入力 API（`POST /api/themes`）だけは引き続き CF Worker — フロントは `docs/themes/index.html` の `<meta name="paperpilot-worker-base">` の値（Worker URL）を読んでクロスオリジンで叩きます。
 
 ### LLM プロバイダの優先順位
 
@@ -240,8 +240,7 @@ Stage 4 (LLM) を有効化すると、さらに `llm_relevance (1..5)` で最終
 ```
 automatic-paper-search/
 ├── docs/
-│   ├── _headers            # Cloudflare Pages キャッシュ / セキュリティヘッダ
-│   ├── iclr-2026/          # Cloudflare Pages 家系図ビュー（本命出力）
+│   ├── iclr-2026/          # GitHub Pages 家系図ビュー（本命出力）
 │   │   ├── index.html      # 論文一覧（papers.json）
 │   │   ├── lineage.html    # 家系図（lineage.json）
 │   │   └── {papers,lineage}.json

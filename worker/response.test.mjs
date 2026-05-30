@@ -65,9 +65,20 @@ tests.push(test("json() sets cache-control no-store", async () => {
   eq(r.headers.get("cache-control"), "no-store");
 }));
 
-tests.push(test("json() sets vary: origin", async () => {
+tests.push(test("json() sets access-control-allow-origin: * (GH Pages cross-origin)", async () => {
+  // The viewer ships from github.io and the Worker lives on a *.workers.dev
+  // (or CF custom domain). Without ACAO the browser blocks the response.
   const r = json({ ok: true, status: "queued" });
-  eq(r.headers.get("vary"), "origin");
+  eq(r.headers.get("access-control-allow-origin"), "*");
+}));
+
+tests.push(test("json() does NOT set vary: origin when ACAO is *", async () => {
+  // Vary: Origin is meaningful only when ACAO reflects the request
+  // origin — with a static "*" it just splits CDN cache by origin
+  // header for nothing. Pin removal so a future review doesn't
+  // re-add it without flipping ACAO too.
+  const r = json({ ok: true, status: "queued" });
+  eq(r.headers.get("vary"), null);
 }));
 
 tests.push(test("json() serializes the body", async () => {

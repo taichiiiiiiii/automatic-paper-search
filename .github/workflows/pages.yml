@@ -1,0 +1,57 @@
+name: Deploy docs/ to GitHub Pages
+
+# Replaces the previous CF Pages git auto-deploy for the static viewer.
+# CF Worker still owns /api/themes (see worker/index.ts + wrangler.jsonc);
+# this workflow only handles the static `docs/` bundle.
+#
+# Trigger: any commit on `develop` that touches the viewer surface
+# (docs/, the JS/CSS assets, the theme manifest). Manual dispatch is
+# allowed for the rare case where Pages drifts out of sync.
+#
+# Why `paths:` instead of "every push": Python/pipeline-only commits
+# don't change anything Pages serves, so skipping them saves an
+# Actions minute per push and keeps the deployment history readable.
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+# GitHub Pages requires these specific permissions; without them the
+# deploy step fails with an opaque "permission denied" message.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent two simultaneous Pages deploys from racing. `cancel-in-progress: true`
+# means a fast follow-up push wins — the older queued build is dropped.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload docs/ as Pages artifact
+        # Only the static viewer ships to Pages; everything else
+        # (paperpilot/, worker/, scripts) stays in the repo.
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
