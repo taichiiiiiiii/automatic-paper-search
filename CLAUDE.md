@@ -818,7 +818,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 |------|------|
 | ruff (lint) | ✅ 105 files clean |
 | mypy (type check) | ✅ 105 files clean |
-| pytest テスト数 | ✅ **644 tests pass** |
+| pytest テスト数 | ✅ **779 tests pass** |
 | venue 正規表現検出率 | ✅ 100% (60 パターン / 目標 95%) |
 | `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
 
