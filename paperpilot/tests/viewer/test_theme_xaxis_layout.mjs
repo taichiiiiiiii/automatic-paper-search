@@ -54,10 +54,6 @@ function makeContext() {
     getElementById: () => makeStubElement(),
     createElement: () => makeStubElement(),
     createElementNS: () => makeStubElement(),
-    // theme.js reads the worker base URL from a <meta> at module load
-    // (post GH-Pages migration). The stub returns null so the optional
-    // chain in theme.js falls through to the empty default.
-    querySelector: () => null,
     fonts: { ready: Promise.resolve() },
   };
   const localStorageBacking = new Map();
@@ -113,7 +109,6 @@ function loadThemeJs() {
       checkVenueYearConsistency,
       MIN_PLAUSIBLE_YEAR,
       MAX_PLAUSIBLE_YEAR,
-      existingThemeMatch,
       readUrlState,
       syncUrlState,
       state,
@@ -470,35 +465,9 @@ test("computeOrphanSet handles missing edge fields defensively", () => {
   eq(orphans.size, NODES.length - 2);
 });
 
-test("existingThemeMatch returns slug for case-insensitive theme name match", () => {
-  // existingThemeMatch reads `state.manifest` — set it up for these tests.
-  T.state.manifest = [
-    { slug: "vision-transformer", theme: "Vision Transformer" },
-    { slug: "mixture-of-experts", theme: "Mixture of Experts" },
-    { slug: "rlhf", theme: "Reinforcement Learning from Human Feedback" },
-  ];
-  eq(T.existingThemeMatch("Vision Transformer"), "vision-transformer");
-  eq(T.existingThemeMatch("vision transformer"), "vision-transformer", "case insensitive");
-  eq(T.existingThemeMatch("VISION TRANSFORMER"), "vision-transformer");
-  eq(T.existingThemeMatch("  Mixture of Experts  "), "mixture-of-experts", "trims whitespace");
-});
-
-test("existingThemeMatch returns slug for slug match too (autocomplete handles either)", () => {
-  T.state.manifest = [
-    { slug: "vision-transformer", theme: "Vision Transformer" },
-  ];
-  eq(T.existingThemeMatch("vision-transformer"), "vision-transformer");
-  eq(T.existingThemeMatch("VISION-TRANSFORMER"), "vision-transformer");
-});
-
-test("existingThemeMatch returns null for non-matching input or empty manifest", () => {
-  T.state.manifest = [{ slug: "vision-transformer", theme: "Vision Transformer" }];
-  eq(T.existingThemeMatch("Graph Neural Network"), null, "unknown theme");
-  eq(T.existingThemeMatch(""), null, "empty input");
-  eq(T.existingThemeMatch("   "), null, "whitespace input");
-  T.state.manifest = [];
-  eq(T.existingThemeMatch("anything"), null, "empty manifest");
-});
+// `existingThemeMatch` was the autocomplete used by the on-demand
+// submission form; removed when the viewer moved to GitHub Pages and
+// the form was replaced with a GitHub Issue link.
 
 test("buildLayoutContext indexes parents per node correctly", () => {
   const ctx = T.buildLayoutContext(NODES, EDGES);
