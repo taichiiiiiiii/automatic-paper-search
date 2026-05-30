@@ -60,19 +60,26 @@ jobs:
       # Same graceful-degrade contract: missing asset → no contexts,
       # not a build failure.
       - name: Download unarXive DuckDB (citation contexts, optional)
+        env:
+          # See theme-on-demand.yml: the anonymous public asset URL 404s
+          # on private repos, so we resolve the asset through the REST
+          # API using the workflow's contents:read permission.
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -u
           mkdir -p paperpilot/data/unarxive
-          # See theme-on-demand.yml: Release asset is gzipped to fit
-          # the 2 GB cap; runner gunzips before the pipeline opens it.
+          # Release asset is gzipped to fit the 2 GB cap; runner gunzips
+          # before the pipeline opens it.
           gz=paperpilot/data/unarxive/unarxive.duckdb.gz
           out=paperpilot/data/unarxive/unarxive.duckdb
-          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb.gz"
-          if curl --fail --location --silent --show-error \
-               --output "$gz" "$url" && gunzip -f "$gz"; then
+          if gh release download unarxive-v1 \
+               --repo "${{ github.repository }}" \
+               --pattern unarxive.duckdb.gz \
+               --output "$gz" \
+               --clobber && gunzip -f "$gz"; then
             echo "unarXive DuckDB ready: $(du -h "$out" | cut -f1)"
           else
-            echo "::notice::unarXive DuckDB unavailable at $url; citation contexts disabled (pipeline degrades to heuristics)"
+            echo "::notice::unarXive DuckDB unavailable on Release unarxive-v1; citation contexts disabled (pipeline degrades to heuristics)"
             rm -f "$gz" "$out"
           fi
         continue-on-error: true

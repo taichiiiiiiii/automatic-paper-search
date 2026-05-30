@@ -107,6 +107,13 @@ jobs:
       # new GitHub Release tagged `unarxive-v1`. The raw `.duckdb`
       # is larger than the 2 GB per-asset cap and must not be uploaded.
       - name: Download unarXive DuckDB (citation contexts, optional)
+        env:
+          # `gh release download` uses this token to authenticate against
+          # the GitHub REST asset endpoint. The anonymous public download
+          # URL (releases/download/<tag>/<name>) returns 404 for private
+          # repos even from inside Actions; the API endpoint resolves
+          # with the workflow's contents:read permission.
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -u
           mkdir -p paperpilot/data/unarxive
@@ -115,12 +122,14 @@ jobs:
           # pipeline opens it.
           gz=paperpilot/data/unarxive/unarxive.duckdb.gz
           out=paperpilot/data/unarxive/unarxive.duckdb
-          url="https://github.com/${{ github.repository }}/releases/download/unarxive-v1/unarxive.duckdb.gz"
-          if curl --fail --location --silent --show-error \
-               --output "$gz" "$url" && gunzip -f "$gz"; then
+          if gh release download unarxive-v1 \
+               --repo "${{ github.repository }}" \
+               --pattern unarxive.duckdb.gz \
+               --output "$gz" \
+               --clobber && gunzip -f "$gz"; then
             echo "unarXive DuckDB ready: $(du -h "$out" | cut -f1)"
           else
-            echo "::notice::unarXive DuckDB unavailable at $url; citation contexts disabled (pipeline degrades to heuristics)"
+            echo "::notice::unarXive DuckDB unavailable on Release unarxive-v1; citation contexts disabled (pipeline degrades to heuristics)"
             rm -f "$gz" "$out"
           fi
         continue-on-error: true
