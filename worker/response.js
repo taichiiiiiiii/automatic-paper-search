@@ -41,10 +41,16 @@ export function json(body, init = {}) {
     headers: {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
-      // Tight CORS — same-origin only, since the page is on the same
-      // CF Pages domain. If we ever expose the API for embeds, change
-      // this to a specific allow-list.
-      "vary": "origin",
+      // GH-Pages-hosted viewer + workers.dev-hosted API = cross-origin.
+      // The Worker is safe to expose to any origin: input is validated,
+      // requests are KV-rate-limited per-IP + globally, no cookies are
+      // read, no PII is returned. Anyone calling /api/themes still has
+      // to clear the same per-IP and global caps. If you ever lock the
+      // API to a specific origin, set ACAO to the actual GH-Pages URL
+      // AND restore `Vary: Origin` together — they're a matched pair
+      // (the Vary makes sense only when ACAO reflects the request
+      // origin; with a static "*" it just fragments CDN cache).
+      "access-control-allow-origin": "*",
     },
     ...init,
   });
