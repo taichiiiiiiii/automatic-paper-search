@@ -579,23 +579,28 @@ artifact 上げる → workflow が DL する** 構造。
 
 ```bash
 # 1. 依存追加 (一時的、メイン pyproject.toml には入れない)
-uv pip install duckdb datasets
+uv pip install duckdb huggingface_hub
 
-# 2. unarXive DuckDB を build (~10 min、~2-3 GB)
+# 2. unarXive DuckDB を build (~5 min、HF cache hit なら ~30 s)
+#    DuckDB native read_json_auto + 3-col 化 + 600ch trim で
+#    生 .duckdb は ~2-3 GB、.gz は ~1-1.5 GB (2 GB 上限内)
 uv run python -m paperpilot.scripts.build_unarxive_index \
     --out paperpilot/data/unarxive/unarxive.duckdb
 
-# 3. GitHub Release tag `unarxive-v1` を作って attach
+# 3. GitHub Release tag `unarxive-v1` を作って `.gz` を attach
+#    生 .duckdb は uploadしない (2 GB 超 + 帯域コスト)
 gh release create unarxive-v1 \
-    paperpilot/data/unarxive/unarxive.duckdb \
+    paperpilot/data/unarxive/unarxive.duckdb.gz \
     --title "unarXive 2022 DuckDB index (CC-BY-SA-4.0)" \
     --notes "Source: saier/unarXive_citrec, built $(date -u +%Y-%m-%d). \
-Citation contexts for arXiv CS papers 1991-2022-03."
+Citation contexts for arXiv CS papers 1991-2022-03. \
+Schema: (paper_arxiv_id, label, text[600ch]). gunzip on download."
 ```
 
-ライセンス: unarXive 2022 は CC-BY-SA-4.0。DuckDB 内に
-`paper_license` 列保持済。viewer footer に「data: unarXive 2022
-(Saier et al., CC-BY-SA-4.0)」明記すること。
+ライセンス: unarXive 2022 は CC-BY-SA-4.0。`paper_license` 列は
+2 GB 制約のために build 時に drop 済 (audit-only で runtime 未使用)。
+viewer footer に「data: unarXive 2022 (Saier et al., CC-BY-SA-4.0)」
+を必ず明記すること — 列削除した分、footer 明記が attribution 唯一の手段。
 
 artifact が無い場合:
 - workflow の DL step は `continue-on-error: true` で graceful skip
