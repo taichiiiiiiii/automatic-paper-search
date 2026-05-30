@@ -25,10 +25,12 @@ interface Env {
   GH_REF: string; // branch the workflow runs on, e.g. "develop"
   // KV namespace bound for per-IP rate limiting + slug existence cache.
   RATE_LIMIT_KV: KVNamespace;
-  // Static-asset binding produced by wrangler when `assets.directory` is
-  // configured. We hand non-API requests through to it so /themes/, /
-  // and friends keep working.
-  ASSETS: Fetcher;
+  // Optional static-asset binding. Present when the legacy
+  // "Workers + Static Assets" wrangler config (assets.directory = docs)
+  // is in effect; absent when the static viewer is served from GitHub
+  // Pages and the Worker only owns /api/*. Code paths that touch this
+  // tolerate both shapes via `env.ASSETS ?? globalThis`.
+  ASSETS?: Fetcher;
 }
 
 // Slug derivation + input pattern come from worker/slug.js — a plain
@@ -50,22 +52,50 @@ export { themeSlug };
 const THEME_PATTERN = THEME_INPUT_PATTERN;
 
 async function alreadyGenerated(slug: string, request: Request, env: Env): Promise<boolean> {
-  // Re-resolve against the static asset bundle on the same origin so we
-  // don't need a hard-coded site URL or external fetch. cf.cacheTtl=0
-  // keeps a freshly-deployed manifest visible without a cooldown.
-  const origin = new URL(request.url).origin;
-  const manifestUrl = `${origin}/themes/themes-manifest.json`;
-  // Prefer the static asset binding (no network hop, no CDN cache) when
-  // available; fall back to a regular fetch for compatibility with
-  // non-Pages deployments.
-  const fetcher = env.ASSETS ?? globalThis;
-  const resp = await fetcher.fetch(new Request(manifestUrl, { method: "GET" }));
-  if (!resp.ok) return false;
+  // Two manifest sources, picked by which deploy shape is live:
+  //
+  //   1. Same-origin /themes/themes-manifest.json via the ASSETS
+  //      binding — only when the legacy CF Pages-style deploy
+  //      (assets.directory = docs) is configured. No CDN hop.
+  //
+  //   2. raw.githubusercontent.com/<owner>/<repo>/<ref>/docs/themes/...
+  //      — used in the GH Pages + Worker hybrid. The Worker no longer
+  //      serves the static bundle, so we read the manifest straight
+  //      from the develop branch. GitHub's raw CDN has a ~5 min cache
+  //      that matches the previous CF Pages CDN behaviour, so a
+  //      freshly-published theme stays "new" for a similar window.
+  let manifestUrl: string;
+  // `new Request(url, ...)` is used at the call site so both fetchers
+  // (CF's Fetcher binding + globalThis.fetch) receive an identical
+  // Request object — Fetcher's signature is stricter than the global
+  // fetch's URL-or-Request-or-string union, so the explicit Request
+  // wrapper is what keeps the structural type check happy.
+  let fetcher: { fetch: typeof fetch };
+  if (env.ASSETS) {
+    manifestUrl = `${new URL(request.url).origin}/themes/themes-manifest.json`;
+    fetcher = env.ASSETS;
+  } else {
+    manifestUrl = `https://raw.githubusercontent.com/${env.GH_OWNER}/${env.GH_REPO}/${env.GH_REF}/docs/themes/themes-manifest.json`;
+    fetcher = globalThis;
+  }
+  // Fail closed on dedup: a non-200 / parse error here means we can't
+  // be sure the slug is new, so we report it as "already generated"
+  // and the caller answers "exists" instead of firing a redundant
+  // workflow_dispatch. The user-facing error is recoverable (they
+  // can retry once raw.githubusercontent.com is healthy); a silent
+  // duplicate run would burn an Actions minute and a Groq quota slot.
+  let resp: Response;
+  try {
+    resp = await fetcher.fetch(new Request(manifestUrl, { method: "GET" }));
+  } catch {
+    return true;
+  }
+  if (!resp.ok) return true;
   try {
     const data = (await resp.json()) as Array<{ slug?: string }>;
     return Array.isArray(data) && data.some((e) => e?.slug === slug);
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -250,13 +280,26 @@ const handler: ExportedHandler<Env> = {
     if (url.pathname === "/api/themes/status" && request.method === "GET") {
       return handleStatusGet(request, env);
     }
-    if (url.pathname === "/api/themes" && request.method === "OPTIONS") {
-      // Preflight isn't strictly needed for same-origin same-site posts,
-      // but reply 204 anyway in case a client sends one.
-      return new Response(null, { status: 204 });
+    if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
+      // Cross-origin preflight from the GH-Pages viewer. POST with a
+      // JSON body and content-type: application/json triggers a CORS
+      // preflight, so we must echo the allowed origin/method/headers
+      // before the browser will send the actual request. The wildcard
+      // ACAO matches the json() helper; tighten both together if you
+      // lock the API down to a single origin later.
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET, POST, OPTIONS",
+          "access-control-allow-headers": "content-type",
+          "access-control-max-age": "86400",
+        },
+      });
     }
-    // Anything else falls through to the static asset router (the
-    // worker only owns /api/*; everything else is the Pages bundle).
+    // Anything else falls through to the static asset router when it's
+    // configured (legacy CF Pages deploy). In the GH Pages + Worker
+    // hybrid the Worker only owns /api/*, so everything else is a 404.
     return env.ASSETS ? env.ASSETS.fetch(request) : new Response("Not Found", { status: 404 });
   },
 };

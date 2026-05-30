@@ -9,7 +9,7 @@
 ## プロジェクト概要
 
 - **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
-- **主要な出力：** Cloudflare Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`）。補助出力として CSV / JSON / Slack / Email も維持
+- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。on-demand 入力 API (`POST /api/themes`) は引き続き CF Worker（hybrid 構成）。補助出力として CSV / JSON / Slack / Email も維持
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
 - **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
 - **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
@@ -63,8 +63,7 @@ automatic-paper-search/
 ├── docs/
 │   ├── design/                          # 基本設計書 v2.1（markdown 正本）
 │   ├── research/                        # 市場調査レポート v2.0（markdown 正本）
-│   ├── _headers                         # Cloudflare Pages キャッシュ / セキュリティヘッダ
-│   ├── iclr-2026/                       # Cloudflare Pages 論文ビューア（家系図ビュー本命）
+│   ├── iclr-2026/                       # GitHub Pages 論文ビューア（家系図ビュー本命）
 │   │   ├── index.html                   # 採択論文一覧（papers.json を表示）
 │   │   ├── lineage.html                 # 家系図ビュー（lineage.json を表示）
 │   │   ├── papers.json                  # build_pages.py が生成
@@ -442,7 +441,7 @@ State                          → save_seen_ids + append_run_history
 
 ### Visualization 層（家系図ビュー）
 
-配信用 Exporter とは別に、Cloudflare Pages 上の家系図ビューを生成する **補助パイプライン** を `paperpilot/scripts/` に置く。通常ランの後に順に実行し、`docs/<conference>/` を更新する（Cloudflare Pages が push をフックして自動デプロイ）。
+配信用 Exporter とは別に、GitHub Pages 上の家系図ビューを生成する **補助パイプライン** を `paperpilot/scripts/` に置く。通常ランの後に順に実行し、`docs/<conference>/` を更新する（`develop` への push を `.github/workflows/pages.yml` がフックして自動デプロイ。`docs/**` 変更のあるコミットのみが Pages run を発火する `paths:` フィルタ済）。
 
 ```
 output/<conf>/papers_YYYY-MM-DD.csv
@@ -517,7 +516,9 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
 14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
-    - **オンデマンド生成パス**: ユーザーが `/themes/` のフォームに入力 → 同一オリジンの CF Worker `POST /api/themes` (`worker/index.ts`) → `theme-on-demand.yml` workflow_dispatch → `build_theme_lineage.py` → `develop` へ commit → CF Pages 自動デプロイ。フロントは `themes-manifest.json` をポーリングして slug 出現で redirect。Worker と静的バンドルは**ルートの単一 `wrangler.jsonc`** で共存させる（`main: worker/index.ts` + `assets.directory: docs`）。`-api` サブドメインは廃止。
+    - **オンデマンド生成パス**: ユーザーが `/themes/` のフォームに入力 → **クロスオリジン** で CF Worker `POST /api/themes` (`worker/index.ts`) → `theme-on-demand.yml` workflow_dispatch → `build_theme_lineage.py` → `develop` へ commit → GH Pages 自動デプロイ (`.github/workflows/pages.yml`)。フロントは `themes-manifest.json` をポーリングして slug 出現で redirect。Worker URL は `docs/themes/index.html` の `<meta name="paperpilot-worker-base">` で指定（空なら同一オリジン同居の旧 CF Pages 構成にフォールバック）。Worker は `wrangler.jsonc` で API only (`main: worker/index.ts`、`assets:` ブロックは削除済) を deploy する。
+    - **GitHub Pages + CF Worker hybrid (2026-05-30 移行)**: 静的バンドル `docs/` は GH Pages、サーバレス API `/api/themes` は CF Worker。ACAO `*` + per-IP/global KV rate limit で API 側のセキュリティを担保。manifest 重複検査は raw.githubusercontent.com 経由（`alreadyGenerated` の env.ASSETS なし分岐）。CF アカウント削除はせず、Worker / KV / 1 つの secret (`GH_DISPATCH_PAT`) のみ残す。
+    - **ロールバック手順**: 不具合時は wrangler.jsonc に `"assets": { "directory": "docs", "binding": "ASSETS" }` を復帰 → `wrangler deploy` で旧 CF Pages 一体型に即戻る（Env の `ASSETS?` optional 化により code は両構成対応済）。フロント側は `<meta name="paperpilot-worker-base" content="">` に戻す。
     - **slug 派生はの 3 か所で同期**: Python `theme_slug()`、JS `worker/slug.js`、フロント `SLUG_RE`。`paperpilot/tests/test_worker_slug_parity.py` が parity を pin。
     - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
     - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。

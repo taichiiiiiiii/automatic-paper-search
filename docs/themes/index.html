@@ -6,6 +6,23 @@
   <title>Theme Lineage — PaperPilot</title>
   <meta name="description" content="任意の研究テーマから生成した時系列付きの論文家系図。Y 軸は年（rank-based 等間隔）、横軸は 6 つの意味（引用ランク / log 引用数 / 系譜近接 / 中心性 / 会議格 / 新規性）から切替可能。" />
 
+  <!-- Cross-origin base for the CF Worker that owns /api/themes (submit)
+       and /api/themes/status (poll). When the static viewer ships from
+       GitHub Pages, the API lives on a *.workers.dev or worker custom
+       domain that is *not* same-origin. theme.js reads this tag and
+       prefixes all fetch URLs; leave content="" (or remove the tag) to
+       keep the original same-origin path. Fill in the Worker URL once
+       per deployment — see CLAUDE.md "GH Pages + CF Worker hybrid". -->
+  <meta name="paperpilot-worker-base" content="" />
+
+  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we restore the
+       CF-Pages-era policy via meta. `connect-src` adds *.workers.dev so
+       the cross-origin POST to /api/themes lands; the other HTMLs in
+       docs/ keep the stricter same-origin `connect-src 'self'`. Inline
+       scripts and the rationale `textContent` discipline carry over
+       unchanged. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.workers.dev; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
        follow-up rationale. og:url is intentionally omitted. -->
   <meta property="og:title" content="Theme Lineage — PaperPilot" />

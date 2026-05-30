@@ -18,6 +18,25 @@
 //     strings are untrusted.
 const { escapeHtml, formatStars } = window.PP;
 
+// Base URL of the CF Worker that owns /api/themes (submit) and
+// /api/themes/status (poll). When the static viewer ships from GitHub
+// Pages instead of CF Pages, these endpoints live on a different
+// origin — the value comes from a <meta name="paperpilot-worker-base">
+// tag in the host HTML. An empty / missing meta keeps the original
+// same-origin behaviour, so the CF-Pages-only deploy path still works
+// unchanged. Guarded against typeof checks so the layout-test VM (no
+// real document) can load the module without crashing.
+const WORKER_BASE = (
+  (typeof document !== "undefined"
+    ? document.querySelector('meta[name="paperpilot-worker-base"]')?.getAttribute("content")
+    : "") || ""
+).replace(/\/+$/, "");
+const apiUrl = (path) => `${WORKER_BASE}${path}`;
+// Cross-origin to the Worker means the browser must not include cookies
+// (we don't use any, but be explicit and avoid CORS preflight failures
+// over credentials). Same-origin keeps the original cookie-aware mode.
+const apiCreds = WORKER_BASE ? "omit" : "same-origin";
+
 // Mirror of paperpilot/scripts/_common._SLUG_ALLOWED_RE / theme_slug() output.
 const SLUG_RE = /^[a-z0-9-]+$/;
 
@@ -1289,11 +1308,11 @@ async function submitTheme() {
   // session story unchanged (we don't use either, but be explicit).
   let resp;
   try {
-    resp = await fetch("/api/themes", {
+    resp = await fetch(apiUrl("/api/themes"), {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ theme: raw }),
-      credentials: "same-origin",
+      credentials: apiCreds,
     });
   } catch (e) {
     showRequestError("送信できませんでした。ネットワーク接続を確認してください。");
@@ -1520,7 +1539,7 @@ async function pollForCompletion(slug) {
     pollIter++;
     if (pollIter % STATUS_CHECK_INTERVAL_POLLS === 0 && themeLabel) {
       try {
-        const sr = await fetch(`/api/themes/status?theme=${encodeURIComponent(themeLabel)}`);
+        const sr = await fetch(apiUrl(`/api/themes/status?theme=${encodeURIComponent(themeLabel)}`), { credentials: apiCreds });
         if (sr.ok) {
           const sd = await sr.json();
           const fail = failureFromRun(sd?.run);
