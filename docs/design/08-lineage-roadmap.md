@@ -20,7 +20,7 @@
 | 項目 | 値 |
 |---|---|
 | 入力 | 任意の研究テーマ文字列 (frontend form) |
-| パイプライン | CF Worker `/api/themes` → `theme-on-demand.yml` workflow_dispatch → `build_theme_lineage.py` → develop commit → CF Pages 自動デプロイ |
+| パイプライン | GitHub Issue (`theme-request` テンプレ) → 運用者が `gh workflow run theme-on-demand.yml` → `build_theme_lineage.py` → develop commit → GH Pages 自動デプロイ |
 | 公開済 themes | 19 (Diffusion / DPO / MoE / RAG / RLHF / Vision Transformer / GNN / Speculative Decoding / 他) |
 | デフォルト LLM mode | `--llm-strict=ambiguous`（free-tier Groq の TPM 6,000/min 制約に整合） |
 | 品質フィルタ | (1) Topic relevance seeds (2) Foundational ref 除外 (2× max seed cites) (3) Implementation denylist (Adam/PyTorch/NumPy 等) |
