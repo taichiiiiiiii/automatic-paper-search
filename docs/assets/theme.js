@@ -18,8 +18,25 @@
 //     strings are untrusted.
 const { escapeHtml, formatStars } = window.PP;
 
+// Base URL of the Vercel Function that owns POST /api/themes. The
+// viewer is on github.io and the Function lives on a *.vercel.app
+// origin — read from a <meta> in the host HTML and prefixed to every
+// fetch. Empty / missing meta keeps the form in "degraded" mode where
+// submit opens a pre-filled GitHub Issue page in a new tab instead of
+// posting silently. Guarded against typeof checks so the layout-test
+// VM (no querySelector) can load the module.
+const API_BASE = (
+  (typeof document !== "undefined" && typeof document.querySelector === "function"
+    ? document.querySelector('meta[name="paperpilot-api-base"]')?.getAttribute("content")
+    : "") || ""
+).replace(/\/+$/, "");
+
 // Mirror of paperpilot/scripts/_common._SLUG_ALLOWED_RE / theme_slug() output.
 const SLUG_RE = /^[a-z0-9-]+$/;
+// Same pattern api/themes.js enforces server-side. Validated client-side
+// too so the bad-input message can be styled and localised before the
+// round-trip.
+const THEME_REQUEST_PATTERN = /^[A-Za-z0-9 _-]{2,80}$/;
 
 const ALL_RELATIONS = ["supersedes", "successor", "extends", "ablation", "baseline_only", "contrasts"];
 const DEFAULT_RELATIONS = ["supersedes", "successor", "extends", "ablation", "contrasts"];
@@ -245,6 +262,12 @@ const els = {
   xAxisHint: document.getElementById("x-axis-hint"),
   xAxisLegendLeft: document.getElementById("x-axis-legend-left"),
   xAxisLegendRight: document.getElementById("x-axis-legend-right"),
+  // On-demand theme submission UI (form HTML in docs/themes/index.html).
+  reqForm: document.getElementById("theme-request"),
+  reqInput: document.getElementById("theme-request-input"),
+  reqSubmit: document.getElementById("theme-request-submit"),
+  reqHint: document.getElementById("theme-request-hint"),
+  reqStatus: document.getElementById("theme-request-status"),
   gallery: document.getElementById("theme-gallery"),
   heroDetails: document.getElementById("hero-details"),
   heroToggle: document.getElementById("hero-toggle"),
@@ -616,6 +639,145 @@ function commitStateChange({ render: doRender = true } = {}) {
   updateFiltersBadge();
   renderActiveFilters();
   if (doRender) render();
+}
+
+// ---- On-demand theme submission ---------------------------------------
+//
+// POST { theme } to API_BASE/api/themes (Vercel Function). The Function
+// validates, dedupes against themes-manifest.json + open Issues, and
+// creates a `theme-request`-labelled Issue. That label fires
+// .github/workflows/dispatch-on-theme-request.yml which dispatches
+// theme-on-demand.yml — generation happens in the background and the
+// new lineage commits to develop, then ships via the next pages.yml
+// deploy.
+//
+// Degraded mode: when API_BASE is empty (first deploy, before the
+// Vercel project URL has been wired in), the submit handler opens a
+// pre-filled GitHub Issue page in a new tab instead so users aren't
+// stuck. The visible UX is the same form, just one extra step on the
+// receiving end.
+
+function setRequestStatus(kind, html) {
+  // kind: "ok" | "err" | "pending" — drives CSS via data-kind.
+  if (!els.reqStatus) return;
+  els.reqStatus.dataset.kind = kind;
+  // We use innerHTML only with template-literal strings authored here
+  // (no LLM / user-controlled fragments); inputs are escaped via
+  // escapeHtml() before being splicing in.
+  els.reqStatus.innerHTML = html;
+  els.reqStatus.hidden = false;
+}
+
+function clearRequestStatus() {
+  if (!els.reqStatus) return;
+  els.reqStatus.hidden = true;
+  els.reqStatus.innerHTML = "";
+  els.reqStatus.dataset.kind = "";
+}
+
+function issueUrlFor(theme) {
+  // Mirror of the Function's server-side body. Used in degraded mode
+  // (no API_BASE configured) so users can still file the request.
+  const title = encodeURIComponent(`[theme request] ${theme}`);
+  const body = encodeURIComponent(
+    `## 希望テーマ\n${theme}\n\n## 理由 / 背景\n(任意)\n`,
+  );
+  return (
+    `https://github.com/taichiiiiiiii/automatic-paper-search/issues/new` +
+    `?labels=theme-request&title=${title}&body=${body}`
+  );
+}
+
+async function submitTheme() {
+  if (!els.reqForm || !els.reqInput) return;
+  const raw = (els.reqInput.value || "").trim();
+  if (!THEME_REQUEST_PATTERN.test(raw)) {
+    setRequestStatus(
+      "err",
+      `⚠️ 2〜80 文字、英数字・スペース・ハイフン・アンダースコアのみ使用可能です。`,
+    );
+    return;
+  }
+  // Degraded path: no Function configured yet → open Issue page.
+  if (!API_BASE) {
+    window.open(issueUrlFor(raw), "_blank", "noopener");
+    setRequestStatus(
+      "ok",
+      `📝 GitHub Issue 作成画面を新規タブで開きました。送信してください。`,
+    );
+    return;
+  }
+  if (els.reqSubmit) els.reqSubmit.disabled = true;
+  setRequestStatus("pending", "⏳ 送信中…");
+  let resp;
+  try {
+    resp = await fetch(`${API_BASE}/api/themes`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ theme: raw }),
+      credentials: "omit",
+    });
+  } catch (err) {
+    if (els.reqSubmit) els.reqSubmit.disabled = false;
+    setRequestStatus(
+      "err",
+      `❌ 送信できませんでした。ネットワーク接続を確認してください。`,
+    );
+    console.error("[theme-request] fetch failed:", err);
+    return;
+  }
+  if (els.reqSubmit) els.reqSubmit.disabled = false;
+  let data;
+  try {
+    data = await resp.json();
+  } catch {
+    setRequestStatus("err", `❌ サーバから不正な応答 (HTTP ${resp.status})`);
+    return;
+  }
+  if (data?.ok && data.status === "exists" && data.slug) {
+    setRequestStatus(
+      "ok",
+      `✅ そのテーマは既に生成済です。<a href="?theme=${encodeURIComponent(raw)}">表示する →</a>`,
+    );
+    return;
+  }
+  if (data?.ok && data.status === "pending" && data.issue_url) {
+    setRequestStatus(
+      "ok",
+      `⏳ 既にリクエスト済 (<a href="${escapeHtml(data.issue_url)}" target="_blank" rel="noopener">Issue #${Number(data.issue_number) || "?"}</a>)。生成完了をお待ちください。`,
+    );
+    return;
+  }
+  if (data?.ok && data.status === "queued" && data.issue_url) {
+    setRequestStatus(
+      "ok",
+      `🚀 受付完了 (<a href="${escapeHtml(data.issue_url)}" target="_blank" rel="noopener">Issue #${Number(data.issue_number) || "?"}</a>)。生成は数分かかります。完了後にこのページを再読み込みしてください。`,
+    );
+    if (els.reqInput) els.reqInput.value = "";
+    return;
+  }
+  // Anything else is an error response from the Function.
+  const msg = (data && typeof data.message === "string" && data.message) ||
+    `HTTP ${resp.status}`;
+  setRequestStatus("err", `❌ ${escapeHtml(msg)}`);
+}
+
+function bindThemeRequest() {
+  if (!els.reqForm) return;
+  els.reqForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    submitTheme().catch((err) => {
+      console.error("[theme-request] unexpected:", err);
+      setRequestStatus("err", "❌ 予期しないエラーが発生しました。");
+    });
+  });
+  if (els.reqInput) {
+    els.reqInput.addEventListener("input", () => {
+      // Clear any prior status as soon as the user types — avoids
+      // stale "error" banner sticking around after a corrective edit.
+      clearRequestStatus();
+    });
+  }
 }
 
 // ---- Slug fallback banner ---------------------------------------------
@@ -1146,6 +1308,7 @@ function hideCanvasLoading() {
 }
 
 async function init() {
+  bindThemeRequest();
   bindHeroToggle();
 
   state.manifest = await loadManifest();

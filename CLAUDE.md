@@ -9,7 +9,7 @@
 ## プロジェクト概要
 
 - **目的：** AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン
-- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。静的のみ — 旧 CF Worker / `POST /api/themes` パスは廃止済。新規テーマは GitHub Issue (`theme-request` テンプレ) → 運用者が `gh workflow run theme-on-demand.yml -f theme="..."` を手動 dispatch。補助出力として CSV / JSON / Slack / Email も維持
+- **主要な出力：** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。サイト上のフォームから新規テーマ投稿可能（Vercel Function `api/themes.js` → GitHub Issue `theme-request` ラベル → `.github/workflows/dispatch-on-theme-request.yml` → `theme-on-demand.yml` で自動生成）。補助出力として CSV / JSON / Slack / Email も維持
 - **対象ユーザー：** AI/ML 研究者、R&D エンジニア、独立リサーチャー
 - **運用コスト目標：** ¥0〜¥1,500/月（Stage 4 LLM / 系譜分類 LLM のみ有料オプション）
 - **差別化：** OSS・ローカル実行可能・YAML 設定駆動・日本語対応・品質シグナル統合スコア・**LLM による引用関係の意味分類**（`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`）
@@ -511,7 +511,9 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
     - **例外（家系図構築）:** `build_lineage.py` / `build_deep_lineage.py` が引用グラフ（S2 `references` / `citations`）を取得することは必要不可欠なので許可する。ただし焦点論文の `venue` / `venue_tier` / `citation_count` / `github_stars` は `papers.json`（Stage 2 成果物）の値を優先し、S2 からは引用関係のメタデータ（paperId, 引用 paperId のタイトル等）のみを取る。
 13. **家系図ビューの `docs/<conf>/lineage.json` は `build_lineage.py` が唯一の生成元。手編集禁止**
 14. **テーマ家系図 (`docs/themes/<slug>/lineage.json`) は `build_theme_lineage.py` が唯一の生成元。手編集禁止**
-    - **オンデマンド生成パス (post 2026-05-31 静的化)**: ユーザーが GitHub Issue (`theme-request` テンプレ) 経由でリクエスト → 運用者が `gh workflow run theme-on-demand.yml --ref develop -f theme="..."` を手動 dispatch → `build_theme_lineage.py` → `develop` へ commit → GH Pages 自動デプロイ (`.github/workflows/pages.yml`)。viewer (`docs/themes/`) は静的のみで、フォーム + CF Worker + wrangler.jsonc は廃止済。`/themes/?theme=<slug>` の slug-fallback バナーは Issue Form リンクに切替え。
+    - **オンデマンド生成パス (post 2026-06-01 Vercel 復活)**: ユーザーが `/themes/` のフォームに入力 → Vercel Function `api/themes.js` `POST /api/themes` → input validate + manifest dedup + Open Issue dedup → GitHub Issue 作成 (`theme-request` label) → `.github/workflows/dispatch-on-theme-request.yml` が label trigger で起動 → `gh workflow run theme-on-demand.yml -f theme=...` → `build_theme_lineage.py` → `develop` へ commit → GH Pages 自動デプロイ (`.github/workflows/pages.yml`)。フロントは Function URL を `docs/themes/index.html` の `<meta name="paperpilot-api-base">` から読む。空ならフォームは degraded mode（GitHub Issue 作成画面を新タブで開く）にフォールバック。
+    - **PAT 権限分離**: Vercel Function 用 PAT は `issues:write` のみ。ワークフロー dispatch は workflow 内の `GITHUB_TOKEN` (`actions:write`) で実行され、Function 経由のリーク経路は持たない。`dispatch-on-theme-request.yml` の if guard で `theme-request` label 付き Issue 以外は no-op。
+    - **degraded mode**: 初回デプロイで `paperpilot-api-base` が空のとき、フォームは `window.open(github issue URL)` で代替する。Function URL を埋めれば即 in-browser submit に切り替わる。
     - **slug 派生はの 2 か所で同期**: Python `theme_slug()`、フロント `SLUG_RE`。Worker 廃止に伴い `worker/slug.js` と `paperpilot/tests/test_worker_slug_parity.py` も削除済 (旧構成では Python ↔ JS の 3 way parity を pin していた)。
     - **入力源はテーマ文字列のみ**（`papers.json` 非依存、conference 横断）。S2 `/paper/search` で seed 論文を発見してよい（§12 の papers.json 依存ルールはこの新パイプラインに適用しない）。
     - **LLM 呼び出しは `AbstractLLMProvider` 経由（§11）**。`expand_keywords()` / `classify_relation()` ともに provider 抽象を通す。
@@ -556,10 +558,21 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 | `PAPERPILOT_GROQ_API_KEY` | テーマ家系図の LLM 分類 (Groq) | テーマ生成に必須 |
 | `PAPERPILOT_OPENALEX_EMAIL` | OpenAlex polite pool（フォールバックの安定性向上） | 推奨 |
 
-CF Worker 廃止 (2026-05-31): `theme-on-demand.yml` は `gh workflow run` の
-手動 dispatch でのみ起動するようになったため、`GH_DISPATCH_PAT` / CF
-KV / `wrangler.jsonc` / `worker/` ディレクトリは削除済。Issue
-(`theme-request` テンプレ) → 運用者 dispatch のフローに移行。
+### Vercel Function (theme submission API)
+
+Vercel project (`api/themes.js`) を repo 単位で配置。**Vercel 側の設定一回**:
+
+1. <https://vercel.com> に GitHub アカウントでサインイン
+2. Import Project → repo を選択 → Deploy（Build Command / Output は `vercel.json` で no-op 化済、`api/` だけ拾われる）
+3. Project Settings → Environment Variables で **`GH_TOKEN`** を設定
+    - fine-grained PAT、対象 repo のみ、permissions: **Issues: Read & write のみ**（actions / contents 等は不要）
+4. Deploy 後の URL（`https://automatic-paper-search-xxx.vercel.app`）を `docs/themes/index.html` の `<meta name="paperpilot-api-base" content="...">` に記入してコミット
+
+`GH_OWNER` / `GH_REPO` / `GH_REF` は `api/themes.js` 内に default 値 (`taichiiiiiiii` / `automatic-paper-search` / `develop`) があるので未設定でも動く。
+
+#### dispatch ブリッジ workflow
+
+`.github/workflows/dispatch-on-theme-request.yml` が `issues: [opened, labeled]` で発火。Issue タイトル `[theme request] <theme>` から theme を抽出し `gh workflow run theme-on-demand.yml -f theme="..."` を実行 → 結果を Issue にコメント。Function が直接 dispatch しない設計により、Function PAT のスコープが最小で済む。
 
 ### unarXive DuckDB アーティファクト (PR #222 Phase J / オペレータ runbook)
 

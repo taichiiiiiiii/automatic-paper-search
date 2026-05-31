@@ -1,0 +1,96 @@
+name: Dispatch theme-on-demand on theme-request Issue
+
+# Bridge between the GitHub Issue Form (filed manually or by the Vercel
+# `api/themes.js` Function) and the heavy theme-on-demand.yml run.
+#
+# Triggered whenever an Issue is opened OR receives the `theme-request`
+# label. We extract the requested theme from the Issue title (the form
+# templates always put it in `[theme request] <name>` shape), then call
+# theme-on-demand.yml's workflow_dispatch with that theme. Failures
+# leave the Issue open for the operator to investigate; success leaves
+# a comment with the run URL.
+#
+# Why decouple this from api/themes.js: the Vercel Function only has
+# `issues:write`. Workflow dispatch needs `actions:write`. Keeping the
+# scopes split means a leaked Function PAT can spam Issues but cannot
+# trigger CI runs directly — the bridge here is the only path from
+# label to dispatch, and it runs with the workflow's own
+# GITHUB_TOKEN.
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  issues: write
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    # Only fire when the relevant label is present. The "opened" event
+    # fires before any label is set if the user used a template without
+    # labels in the YAML — we re-check on the labeled event in that
+    # case. Skipping non-theme issues here is essential or the workflow
+    # would fan out on every issue creation in the repo.
+    if: |
+      contains(github.event.issue.labels.*.name, 'theme-request') &&
+      (github.event.action == 'opened' ||
+       github.event.label.name == 'theme-request')
+    steps:
+      - name: Extract theme from title
+        id: extract
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        # Title shape: "[theme request] <theme>". We pull everything
+        # after the bracket, trim, and bail if the result is empty or
+        # outside the 2-80 char range — same validation the Function
+        # already did, but defence-in-depth in case someone files an
+        # Issue manually with a malformed title.
+        run: |
+          set -euo pipefail
+          theme="${ISSUE_TITLE#\[theme request\]}"
+          theme="${theme# }"
+          theme="${theme%% }"
+          if [ -z "$theme" ]; then
+            echo "::error::could not parse theme from title: $ISSUE_TITLE"
+            exit 1
+          fi
+          len=${#theme}
+          if [ "$len" -lt 2 ] || [ "$len" -gt 80 ]; then
+            echo "::error::theme length $len outside [2,80]"
+            exit 1
+          fi
+          if ! echo "$theme" | grep -qE '^[A-Za-z0-9 _-]{2,80}$'; then
+            echo "::error::theme contains invalid characters: $theme"
+            exit 1
+          fi
+          echo "theme=$theme" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch theme-on-demand workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          THEME: ${{ steps.extract.outputs.theme }}
+        # `gh workflow run` uses the GITHUB_TOKEN which has
+        # actions:write here. We do NOT echo the result back into the
+        # issue body — a separate comment step does that and runs even
+        # when this step fails so the operator sees the failure mode.
+        run: |
+          gh workflow run theme-on-demand.yml \
+            --ref develop \
+            -f theme="$THEME"
+
+      - name: Comment dispatch outcome on the Issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          OUTCOME: ${{ job.status }}
+          THEME: ${{ steps.extract.outputs.theme }}
+        run: |
+          if [ "$OUTCOME" = "success" ]; then
+            msg="✅ \`theme-on-demand.yml\` を起動しました (\`$THEME\`)。生成完了は \`themes-manifest.json\` に反映されます。"
+          else
+            msg="❌ workflow_dispatch に失敗しました。テーマ名: \`$THEME\`。Actions タブで詳細を確認してください。"
+          fi
+          gh issue comment "$ISSUE_NUMBER" --body "$msg"
