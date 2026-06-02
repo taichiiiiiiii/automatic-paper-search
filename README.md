@@ -2,14 +2,14 @@
 
 AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品質シグナルで絞り込んだ上で **系譜（家系図）として可視化** するパイプライン。補助出力として CSV / JSON / Slack / Email にも配信できます。
 
-**主要な出力:** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。静的のみ。新規テーマは GitHub Issue (`theme-request` テンプレ) → 運用者の手動 dispatch で生成。
+**主要な出力:** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。サイト上のフォームから新規テーマ投稿 → Vercel Function (`api/themes.js`) → Issue 作成 → ラベル trigger workflow が `theme-on-demand.yml` を自動 dispatch して生成。
 LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に分類し、先行研究と後継研究を一枚の SVG で俯瞰できます。
 
 **4 つの自動実行モード**（GitHub Actions）：
 - **週次深掘り**（Sat 7:00 JST、`collect-weekly.yml`）— 収集 → スコアリング → summary.csv → papers.json → lineage.json の全工程を回す
 - **毎日の著者ウォッチ**（07:00 JST 毎日、`collect-daily-watch.yml`）— フォロー中の研究者の新作を公開 0 秒後に通知（lean、LLM 不使用）
 - **週次テーマ再生成**（Sun 9:00 JST、`regen-themes.yml`）— 既存全テーマの lineage.json を最新引用グラフで再構築
-- **オンデマンドテーマ生成**（手動 dispatch、`theme-on-demand.yml`）— GitHub Issue (`theme-request` テンプレ) で受付、運用者が `gh workflow run` で 1 件だけ生成
+- **オンデマンドテーマ生成**（フォーム経由、`theme-on-demand.yml`）— サイト上のフォームから新テーマを 1 件だけ生成、Vercel Function `api/themes` 経由で Issue 作成 → ラベル trigger workflow が自動 dispatch
 
 ## 特徴
 
