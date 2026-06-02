@@ -14,12 +14,11 @@
        Vercel project URL is known). -->
   <meta name="paperpilot-api-base" content="" />
 
-  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we restore
-       the CF-Pages-era policy via meta. `connect-src` allows Vercel
-       and Vercel-preview origins so the cross-origin `POST /api/themes`
-       lands; the other HTMLs in docs/ keep the stricter same-origin
-       `connect-src 'self'`. `textContent`-only rationale rendering
-       carries over unchanged. -->
+  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we declare
+       the policy via meta. `connect-src` allows Vercel + preview
+       origins so the cross-origin `POST /api/themes` lands; other
+       HTMLs in docs/ keep the stricter same-origin `connect-src 'self'`.
+       `textContent`-only rationale rendering carries over unchanged. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.vercel.app; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image

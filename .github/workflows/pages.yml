@@ -1,8 +1,6 @@
 name: Deploy docs/ to GitHub Pages
 
-# Replaces the previous CF Pages git auto-deploy for the static viewer.
-# CF Worker still owns /api/themes (see worker/index.ts + wrangler.jsonc);
-# this workflow only handles the static `docs/` bundle.
+# Static viewer publish for the `docs/` bundle.
 #
 # Trigger: any commit on `develop` that touches the viewer surface
 # (docs/, the JS/CSS assets, the theme manifest). Manual dispatch is
@@ -11,6 +9,12 @@ name: Deploy docs/ to GitHub Pages
 # Why `paths:` instead of "every push": Python/pipeline-only commits
 # don't change anything Pages serves, so skipping them saves an
 # Actions minute per push and keeps the deployment history readable.
+#
+# Form-submit dynamic path: the in-browser theme form posts to a
+# Vercel Function (api/themes.js) which opens a GitHub Issue. The
+# label trigger in dispatch-on-theme-request.yml then kicks off
+# theme-on-demand.yml, which commits to develop and re-fires this
+# Pages deploy via the `docs/**` path filter.
 
 on:
   push:
@@ -47,7 +51,7 @@ jobs:
 
       - name: Upload docs/ as Pages artifact
         # Only the static viewer ships to Pages; everything else
-        # (paperpilot/, worker/, scripts) stays in the repo.
+        # (paperpilot/, scripts, api/) stays in the repo.
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs

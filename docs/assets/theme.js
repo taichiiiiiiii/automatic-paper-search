@@ -785,9 +785,9 @@ function bindThemeRequest() {
 // Shown when the URL ?theme=<slug> doesn't match any known theme, so
 // the user understands they're not looking at what they asked for.
 // CTA drops them on a GitHub Issue ("theme request" template) with the
-// missing slug pre-filled in the title — this replaces the old in-page
-// form (CF Worker / workflow_dispatch path was retired when the viewer
-// moved to GitHub Pages).
+// missing slug pre-filled in the title — same shape the in-page form
+// posts to api/themes.js, so the slug -> Issue -> generate path stays
+// uniform regardless of entry point.
 function showSlugFallback(requestedSlug, fallbackSlug) {
   if (!els.slugFallback || !els.slugFallbackMsg) return;
   const fallbackTheme = state.manifest.find((e) => e.slug === fallbackSlug)?.theme || fallbackSlug;
