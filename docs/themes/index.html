@@ -6,13 +6,20 @@
   <title>Theme Lineage — PaperPilot</title>
   <meta name="description" content="任意の研究テーマから生成した時系列付きの論文家系図。Y 軸は年（rank-based 等間隔）、横軸は 6 つの意味（引用ランク / log 引用数 / 系譜近接 / 中心性 / 会議格 / 新規性）から切替可能。" />
 
-  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we restore
-       the CF-Pages-era policy via meta. Same-origin `connect-src 'self'`
-       only — the on-demand form has been removed (no cross-origin
-       Worker call); new themes are requested via the GitHub Issue
-       template linked from the hero. `textContent`-only rationale
-       rendering carries over unchanged. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+  <!-- Base URL of the Vercel Function that owns `POST /api/themes`.
+       The viewer is on GitHub Pages and the API is on Vercel — they
+       are not same-origin, so we read the URL from a meta tag and
+       theme.js prefixes the fetch with it. Leave content="" to fall
+       back to the Issue Form link (works on first deploy before the
+       Vercel project URL is known). -->
+  <meta name="paperpilot-api-base" content="" />
+
+  <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we declare
+       the policy via meta. `connect-src` allows Vercel + preview
+       origins so the cross-origin `POST /api/themes` lands; other
+       HTMLs in docs/ keep the stricter same-origin `connect-src 'self'`.
+       `textContent`-only rationale rendering carries over unchanged. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.vercel.app; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
        follow-up rationale. og:url is intentionally omitted. -->
@@ -104,18 +111,40 @@
         ホバーで LLM による分類理由が表示されます。データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で分類して生成。
       </p>
 
-      <!-- Static-only deploy: the on-demand form (CF Worker → workflow_dispatch)
-           was removed when the viewer moved fully to GitHub Pages. New
-           themes are now requested via a GitHub Issue using the
-           "Theme request" template, and an operator runs
-           `gh workflow run theme-on-demand.yml -f theme="..."` to
-           generate. Link below pre-fills the issue body. -->
-      <p class="theme-request-link">
-        <span aria-hidden="true">✨</span>
-        新しいテーマがほしい場合は
-        <a href="https://github.com/taichiiiiiiii/automatic-paper-search/issues/new?labels=theme-request&amp;title=%5Btheme%20request%5D%20&amp;body=%23%23%20%E5%B8%8C%E6%9C%9B%E3%83%86%E3%83%BC%E3%83%9E%0A%28%E4%BE%8B%3A%20Vision%20Transformer%29%0A%0A%23%23%20%E7%90%86%E7%94%B1%20%2F%20%E8%83%8C%E6%99%AF%0A" target="_blank" rel="noopener">GitHub Issue でリクエスト</a>
-        してください。承認後に自動生成されます。
-      </p>
+      <!-- In-browser submission: POST to the Vercel Function (api/themes.js)
+           which validates input, dedupes against the manifest, and
+           creates a GitHub Issue (label=theme-request). The label
+           fires .github/workflows/dispatch-on-theme-request.yml which
+           workflow_dispatches theme-on-demand.yml. theme.js shows the
+           Issue # in a status banner; the new lineage commits to
+           develop and ships via the next pages.yml deploy. When the
+           api-base meta is empty (first deploy), the form degrades to
+           a link that opens the GitHub Issue page directly. -->
+      <form class="theme-request" id="theme-request" autocomplete="off" novalidate>
+        <label class="theme-request__label" for="theme-request-input">
+          <span aria-hidden="true">✨</span>
+          テーマを自分で生成:
+        </label>
+        <input
+          id="theme-request-input"
+          class="theme-request__input"
+          type="text"
+          name="theme"
+          minlength="2"
+          maxlength="80"
+          pattern="[A-Za-z0-9 _\-]+"
+          placeholder="例: Vision Transformer / Graph Neural Network"
+          aria-describedby="theme-request-hint"
+          autocomplete="off"
+        />
+        <button type="submit" class="theme-request__submit" id="theme-request-submit">
+          生成する
+        </button>
+        <span class="theme-request__hint" id="theme-request-hint">
+          2〜80 文字 / 英数字・スペース・ハイフン / 生成完了まで数分
+        </span>
+        <div class="theme-request__status" id="theme-request-status" hidden role="status"></div>
+      </form>
     </div>
 
   </header>

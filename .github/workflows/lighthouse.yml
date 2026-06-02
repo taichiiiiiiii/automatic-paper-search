@@ -4,12 +4,12 @@ name: Lighthouse CI
 # the frontend and on a weekly schedule, so Core Web Vitals regressions
 # show up in the PR review instead of after deploy.
 #
-# Why a static serve (lhci's staticDistDir) and not the live CF Pages
-# URL: CF auto-deploys from develop, so there is no per-PR preview to
+# Why a static serve (lhci's staticDistDir) and not the live GH Pages
+# URL: Pages deploys from develop, so there is no per-PR preview to
 # point at. Serving the diff under test from the runner removes that
-# coupling and keeps the measurement reproducible — CF's brotli + edge
-# cache add a constant on top of the HTML/CSS/JS quality we actually
-# gate here.
+# coupling and keeps the measurement reproducible — the runtime CDN's
+# compression + edge cache add a constant on top of the HTML/CSS/JS
+# quality we actually gate here.
 
 on:
   pull_request:
