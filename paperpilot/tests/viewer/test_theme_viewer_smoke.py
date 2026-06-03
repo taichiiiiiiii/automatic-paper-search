@@ -1,12 +1,18 @@
-"""Pytest wrapper for the X-axis layout JS unit tests.
+"""Pytest wrappers for the docs/assets/theme.js front-end test scripts.
 
-The actual assertions live in ``test_theme_xaxis_layout.mjs``. This wrapper
-spawns ``node`` as a subprocess so the JS tests run as part of the regular
-``uv run pytest`` flow — keeping a single test command for both Python and
-front-end logic.
+Both wrappers spawn ``node`` as a subprocess so the JS tests run inside
+the regular ``uv run pytest`` flow. Skipped (not failed) when ``node`` is
+not on PATH so contributors who only work on the Python pipeline aren't
+blocked by a missing optional toolchain.
 
-Skipped (not failed) when ``node`` is not on PATH so contributors who only
-work on the Python pipeline aren't blocked by a missing optional toolchain.
+Two scripts are exercised here:
+
+1. ``test_theme_xaxis_layout.mjs`` — pure-logic regression for the X-axis
+   encoding modes (added to theme.js for the timeline viewer).
+2. ``test_theme_init_callees.mjs`` — static-analysis guard against the
+   PR #229 / PR #243 class of bug, where ``init()`` calls a function that
+   was deleted elsewhere in the file. The bug shipped to production for
+   ~5 days because the layout test never invokes init().
 """
 from __future__ import annotations
 
@@ -16,15 +22,17 @@ from pathlib import Path
 
 import pytest
 
-SCRIPT = Path(__file__).parent / "test_theme_xaxis_layout.mjs"
+VIEWER_DIR = Path(__file__).parent
+XAXIS_SCRIPT = VIEWER_DIR / "test_theme_xaxis_layout.mjs"
+INIT_CALLEES_SCRIPT = VIEWER_DIR / "test_theme_init_callees.mjs"
 
 
-def test_theme_xaxis_layout_js_passes() -> None:
+def _run_node(script: Path, *, min_ok_lines: int) -> None:
     node = shutil.which("node")
     if node is None:
-        pytest.skip("node is not installed; skipping theme.js layout tests")
+        pytest.skip("node is not installed; skipping theme.js front-end tests")
     result = subprocess.run(
-        [node, str(SCRIPT)],
+        [node, str(script)],
         capture_output=True,
         text=True,
         check=False,
@@ -32,12 +40,25 @@ def test_theme_xaxis_layout_js_passes() -> None:
     )
     output = result.stdout + "\n" + result.stderr
     assert result.returncode == 0, (
-        f"theme.js layout tests failed (exit={result.returncode}):\n{output}"
+        f"{script.name} failed (exit={result.returncode}):\n{output}"
     )
-    # Sanity check: each `ok ...` line corresponds to one passing test. We
-    # require a non-trivial number so an empty test file can't silently
-    # appear to pass.
+    # Sanity check: each `ok ...` line corresponds to one passing test.
+    # We require a non-trivial number so an empty / silently-bypassed
+    # script can't appear to pass.
     assert "passed, 0 failed" in output, output
-    assert output.count("\n  ok  ") >= 10, (
-        f"expected at least 10 passing assertions, got:\n{output}"
+    assert output.count("\n  ok  ") >= min_ok_lines, (
+        f"expected at least {min_ok_lines} passing assertions, got:\n{output}"
     )
+
+
+def test_theme_xaxis_layout_js_passes() -> None:
+    _run_node(XAXIS_SCRIPT, min_ok_lines=10)
+
+
+def test_theme_init_callees_defined() -> None:
+    # PR #229 → PR #243 postmortem: init() called populateThemeDatalist()
+    # whose definition was deleted, throwing on every page load. This
+    # static-analysis test asserts every identifier called inside init()
+    # is defined somewhere in theme.js (or is a JS/DOM builtin from the
+    # script's allowlist).
+    _run_node(INIT_CALLEES_SCRIPT, min_ok_lines=30)
