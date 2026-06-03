@@ -1,12 +1,14 @@
 name: PaperPilot Weekly Deep Survey
 
-# Weekly run with full signal maturation. Fires Friday 22:00 UTC
-# (Saturday 07:00 JST) so citations / stars / venue info have had the
-# week to settle.
+# Conference-catalog collector. Kept around for manual dispatch but the
+# weekly cron is **disabled** (2026-06-04): the project's active focus
+# is the テーマ家系図 (`theme-on-demand.yml` + `regen-themes.yml`), not
+# the conference catalog this workflow maintains. The schedule key was
+# removed instead of the workflow itself so the docs/iclr-2026/ pages
+# stay live and the build can be triggered on demand from the Actions
+# tab when fresh data is genuinely wanted.
 
 on:
-  schedule:
-    - cron: '0 22 * * 5'    # Fri 22:00 UTC = Sat 07:00 JST
   workflow_dispatch:
 
 permissions:

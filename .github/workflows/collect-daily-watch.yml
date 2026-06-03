@@ -1,13 +1,12 @@
 name: PaperPilot Daily Follow Watch
 
-# Lightweight daily run: scans arXiv + OpenAlex for yesterday's papers
-# and surfaces only those authored by researchers in
-# profile.follow_authors / follow_orgs. No LLM calls; no citation
-# lookups. Intended for real-time Slack / Email alerts.
+# Author-watch notifier (no LLM, no citation lookups). Kept around for
+# manual dispatch but the daily cron is **disabled** (2026-06-04): the
+# project's active focus is the テーマ家系図, and the follow-author
+# alert path doesn't feed into theme generation. Re-enable by adding
+# the `schedule:` block back if real-time alerts become useful again.
 
 on:
-  schedule:
-    - cron: '0 22 * * *'    # Every day 22:00 UTC = 07:00 JST
   workflow_dispatch:
 
 permissions:
