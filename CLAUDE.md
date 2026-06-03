@@ -566,11 +566,15 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 
 ### CF Worker (theme submission API)
 
-`worker/index.ts` を `wrangler.jsonc` の設定で `automatic-paper-search.puuptdbkh082.workers.dev` にデプロイ。`develop` への push で CF Workers Builds (GitHub 連携) が自動 build + deploy。**初回 / 再構築時の手順**:
+`worker/index.ts` を `wrangler.jsonc` の設定で `paperpilot-themes.puuptdbkh082.workers.dev` にデプロイ。`develop` への push で CF Workers Builds (GitHub 連携) が自動 build + deploy。
 
-1. **CF Access を OFF にする** ← workers.dev URL の前段に Access が居ると 302 でブラウザがブロックされる。`one.dash.cloudflare.com → Access → Applications` で該当 app を Delete、または `dash.cloudflare.com → Workers & Pages → automatic-paper-search → Settings → Access protection` のトグルを OFF
+**Worker 名の経緯**: 元は `automatic-paper-search` (workers.dev URL も同じ) だったが、2026-06-03 にその URL に **Cloudflare Access Application が紐付き、Worker 削除 + 再作成でも消えない** 状態が判明。Application を消すには Zero Trust Free を活性化 (規約同意 + 課金情報入力) する必要があったため、Worker 名を `paperpilot-themes` に変更して新 URL で Access binding を回避した。これは workers.dev のサブドメイン単位で Access が account に bind される仕様への workaround。
+
+**初回 / 再構築時の手順**:
+
+1. Worker 名が新規 (workers.dev 上で衝突なし) であることを確認。既に Access binding が存在する name は避ける。
 2. KV namespace を作成: `wrangler kv namespace create RATE_LIMIT_KV` → 出た id を `wrangler.jsonc` の `kv_namespaces[0].id` に書き戻す (placeholder のままだと deploy が validate で reject される)
-3. Secret を設定: `wrangler secret put GH_DISPATCH_PAT` → fine-grained PAT (this repo only, **Actions: Read & write**) を貼る
+3. Secret を設定: dashboard の Variables and Secrets → "+ Add" → Type=Secret, Name=`GH_DISPATCH_PAT`, Value=fine-grained PAT (this repo only, **Actions: Read & write**)。CLI 派は `wrangler secret put GH_DISPATCH_PAT` でも可
 4. `git push` → CF Workers Builds が build + deploy
 
 エンドポイント:
