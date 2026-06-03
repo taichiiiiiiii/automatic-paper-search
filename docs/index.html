@@ -9,7 +9,7 @@
   <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we declare
        the policy via meta. Pages outside /themes/ only fetch same-origin
        JSON, so `connect-src 'self'` stays strict; the cross-origin
-       Function hop (Vercel) is `/themes/` only. -->
+       Worker hop is `/themes/` only. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <!-- Open Graph / Twitter Card. og:url is omitted intentionally so

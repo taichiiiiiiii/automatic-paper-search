@@ -1,14 +1,15 @@
 name: theme-on-demand
 # Run name surfaces the theme input in /actions/workflows/.../runs so
-# operators can scan recent runs and spot which theme each one built
-# without opening the run. Falls back to the workflow name if
-# `inputs.theme` is somehow missing (manually re-run jobs etc).
+# the CF Worker (worker/index.ts) can match a polling client to its
+# run via the GET /api/themes/status endpoint — matched on the
+# substring after the colon, case-preserved. Falls back to the
+# workflow name if `inputs.theme` is somehow missing (manually re-run
+# jobs etc).
 run-name: "theme-on-demand: ${{ inputs.theme || 'manual' }}"
-# On-demand single-theme generation. Triggered by
-# .github/workflows/dispatch-on-theme-request.yml when a `theme-request`
-# Issue is opened (the Vercel Function api/themes.js creates that Issue
-# from the in-browser form). Generates one theme, refreshes the
-# manifest, commits to develop.
+# On-demand single-theme generation. Triggered by the CF Worker via
+# the GitHub Actions REST API `POST /repos/.../workflows/.../dispatches`
+# when the in-browser form on /themes/ is submitted. Generates one
+# theme, refreshes the manifest, commits to develop.
 #
 # Differences from regen-themes.yml:
 #   - takes a single `theme` input instead of iterating every existing

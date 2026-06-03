@@ -18,13 +18,13 @@
 //     strings are untrusted.
 const { escapeHtml, formatStars } = window.PP;
 
-// Base URL of the Vercel Function that owns POST /api/themes. The
-// viewer is on github.io and the Function lives on a *.vercel.app
-// origin — read from a <meta> in the host HTML and prefixed to every
-// fetch. Empty / missing meta keeps the form in "degraded" mode where
-// submit opens a pre-filled GitHub Issue page in a new tab instead of
-// posting silently. Guarded against typeof checks so the layout-test
-// VM (no querySelector) can load the module.
+// Base URL of the CF Worker that owns POST /api/themes. The viewer
+// ships from github.io and the API runs on workers.dev — read from a
+// <meta> in the host HTML and prefixed to every fetch. Empty / missing
+// meta keeps the form in "degraded" mode where submit opens a
+// pre-filled GitHub Issue page in a new tab instead of posting
+// silently. Guarded against typeof checks so the layout-test VM
+// (no querySelector) can load the module.
 const API_BASE = (
   (typeof document !== "undefined" && typeof document.querySelector === "function"
     ? document.querySelector('meta[name="paperpilot-api-base"]')?.getAttribute("content")
@@ -33,9 +33,9 @@ const API_BASE = (
 
 // Mirror of paperpilot/scripts/_common._SLUG_ALLOWED_RE / theme_slug() output.
 const SLUG_RE = /^[a-z0-9-]+$/;
-// Same pattern api/themes.js enforces server-side. Validated client-side
-// too so the bad-input message can be styled and localised before the
-// round-trip.
+// Same pattern worker/slug.js (THEME_INPUT_PATTERN) enforces server-side.
+// Validated client-side too so the bad-input message can be styled and
+// localised before the round-trip.
 const THEME_REQUEST_PATTERN = /^[A-Za-z0-9 _-]{2,80}$/;
 
 const ALL_RELATIONS = ["supersedes", "successor", "extends", "ablation", "baseline_only", "contrasts"];
@@ -643,19 +643,17 @@ function commitStateChange({ render: doRender = true } = {}) {
 
 // ---- On-demand theme submission ---------------------------------------
 //
-// POST { theme } to API_BASE/api/themes (Vercel Function). The Function
-// validates, dedupes against themes-manifest.json + open Issues, and
-// creates a `theme-request`-labelled Issue. That label fires
-// .github/workflows/dispatch-on-theme-request.yml which dispatches
-// theme-on-demand.yml — generation happens in the background and the
-// new lineage commits to develop, then ships via the next pages.yml
-// deploy.
+// POST { theme } to API_BASE/api/themes (CF Worker). The Worker
+// validates, dedupes against themes-manifest.json, rate-limits per IP
+// via KV, then dispatches theme-on-demand.yml directly via the GitHub
+// Actions REST API. Generation happens in the background and the new
+// lineage commits to develop, then ships via the next pages.yml deploy.
 //
-// Degraded mode: when API_BASE is empty (first deploy, before the
-// Vercel project URL has been wired in), the submit handler opens a
-// pre-filled GitHub Issue page in a new tab instead so users aren't
-// stuck. The visible UX is the same form, just one extra step on the
-// receiving end.
+// Degraded mode: when API_BASE is empty (e.g. CF Access is briefly
+// blocking the Worker, or wrangler.jsonc / KV id is being rotated),
+// the submit handler opens a pre-filled GitHub Issue page in a new
+// tab so users are never stuck. Operators can then dispatch
+// theme-on-demand.yml from the Issue manually.
 
 function setRequestStatus(kind, html) {
   // kind: "ok" | "err" | "pending" — drives CSS via data-kind.
@@ -676,8 +674,10 @@ function clearRequestStatus() {
 }
 
 function issueUrlFor(theme) {
-  // Mirror of the Function's server-side body. Used in degraded mode
-  // (no API_BASE configured) so users can still file the request.
+  // Pre-filled Issue page used in degraded mode (no API_BASE configured)
+  // so users can still file the request even when the Worker is briefly
+  // unreachable. Matches the `.github/ISSUE_TEMPLATE/theme-request.yml`
+  // shape so operators can manually trigger theme-on-demand.yml.
   const title = encodeURIComponent(`[theme request] ${theme}`);
   const body = encodeURIComponent(
     `## 希望テーマ\n${theme}\n\n## 理由 / 背景\n(任意)\n`,
@@ -741,22 +741,16 @@ async function submitTheme() {
     );
     return;
   }
-  if (data?.ok && data.status === "pending" && data.issue_url) {
+  if (data?.ok && data.status === "queued") {
     setRequestStatus(
       "ok",
-      `⏳ 既にリクエスト済 (<a href="${escapeHtml(data.issue_url)}" target="_blank" rel="noopener">Issue #${Number(data.issue_number) || "?"}</a>)。生成完了をお待ちください。`,
-    );
-    return;
-  }
-  if (data?.ok && data.status === "queued" && data.issue_url) {
-    setRequestStatus(
-      "ok",
-      `🚀 受付完了 (<a href="${escapeHtml(data.issue_url)}" target="_blank" rel="noopener">Issue #${Number(data.issue_number) || "?"}</a>)。生成は数分かかります。完了後にこのページを再読み込みしてください。`,
+      `🚀 受付完了。生成は数分かかります。完了後にこのページを再読み込みしてください。`,
     );
     if (els.reqInput) els.reqInput.value = "";
     return;
   }
-  // Anything else is an error response from the Function.
+  // Anything else (rate_limited / invalid / error) — surface the
+  // Worker's localised message verbatim.
   const msg = (data && typeof data.message === "string" && data.message) ||
     `HTTP ${resp.status}`;
   setRequestStatus("err", `❌ ${escapeHtml(msg)}`);
@@ -785,9 +779,9 @@ function bindThemeRequest() {
 // Shown when the URL ?theme=<slug> doesn't match any known theme, so
 // the user understands they're not looking at what they asked for.
 // CTA drops them on a GitHub Issue ("theme request" template) with the
-// missing slug pre-filled in the title — same shape the in-page form
-// posts to api/themes.js, so the slug -> Issue -> generate path stays
-// uniform regardless of entry point.
+// missing slug pre-filled in the title — same Issue shape the in-page
+// form degrades to when the Worker is unreachable, so the slug ->
+// Issue -> generate path stays uniform regardless of entry point.
 function showSlugFallback(requestedSlug, fallbackSlug) {
   if (!els.slugFallback || !els.slugFallbackMsg) return;
   const fallbackTheme = state.manifest.find((e) => e.slug === fallbackSlug)?.theme || fallbackSlug;
