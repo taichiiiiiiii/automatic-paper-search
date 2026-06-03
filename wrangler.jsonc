@@ -1,0 +1,59 @@
+{
+  // Cloudflare Worker config for the /api/themes submission endpoint.
+  //
+  // Deploy shape (post GH-Pages migration): the static `docs/` viewer
+  // ships from GitHub Pages via `.github/workflows/pages.yml`; this
+  // Worker only owns `/api/themes` (POST) and `/api/themes/status`
+  // (GET). The static-bundle binding (`assets.directory = docs`) was
+  // removed when traffic moved to GH Pages. The Env interface in
+  // worker/index.ts still declares ASSETS as optional so the Worker
+  // can be redeployed under the old all-in-one CF Pages shape without
+  // a code change if the migration is ever rolled back.
+  //
+  // CF git auto-deploy reads this file on every push to `develop`. If
+  // the KV id below is the 32-zero placeholder, the validator rejects
+  // the deploy silently — so the FIRST deploy needs a real KV id
+  // (see Setup).
+  //
+  // Setup (one-time, run from a developer machine with `wrangler login`):
+  //
+  //   1. wrangler kv namespace create RATE_LIMIT_KV
+  //      → copy the printed id over the placeholder in `kv_namespaces[0].id`.
+  //
+  //   2. wrangler secret put GH_DISPATCH_PAT
+  //      → paste a fine-grained PAT with `actions: read & write` scoped to
+  //        this repo only. Never share or reuse this PAT.
+  //
+  //   3. git commit + push (or `wrangler deploy` once manually).
+  //
+  // After that, every push to `develop` re-deploys the API Worker. The
+  // static viewer ships separately via GitHub Pages — see CLAUDE.md
+  // "GitHub Pages + CF Worker hybrid" and worker/README.md.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "automatic-paper-search",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-04-21",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "observability": {
+    "enabled": true
+  },
+  // Non-secret config — visible in the CF dashboard. The PAT itself is a
+  // secret (set via `wrangler secret put GH_DISPATCH_PAT`).
+  "vars": {
+    "GH_OWNER": "taichiiiiiiii",
+    "GH_REPO": "automatic-paper-search",
+    "GH_WORKFLOW_FILE": "theme-on-demand.yml",
+    "GH_REF": "develop"
+  },
+  // Per-IP rate limit + global daily cap. Replace the placeholder id with
+  // the value `wrangler kv namespace create` prints (see Setup above).
+  // Until that swap happens, deploys fail with a binding-validation error.
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT_KV",
+      "id": "3e11d3e73dae42a8b94f06a9fa9de19f"
+    }
+  ]
+}
