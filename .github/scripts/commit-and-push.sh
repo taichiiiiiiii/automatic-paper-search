@@ -2,10 +2,11 @@
 # Commit staged changes and push to origin/develop with retry on race.
 #
 # Why this script exists:
-#   theme-on-demand.yml is triggered by workflow_dispatch and can run in
-#   parallel (form-submit issues from different users + the weekly cron).
-#   When two runs finish their compute phase and try to push develop
-#   within the same few seconds, only one wins — the others see
+#   theme-on-demand.yml is triggered by workflow_dispatch which the CF
+#   Worker (worker/index.ts) fires up to 5 times in parallel from a
+#   single IP (RATE_LIMIT_PER_HOUR in worker/response.js). When two
+#   runs finish their compute phase and try to push develop within the
+#   same few seconds, only one wins — the others see
 #   `! [rejected] develop -> develop (fetch first)` and lose their
 #   generated lineage.json silently. This script wraps the commit + push
 #   sequence in a fetch + rebase + push retry loop so contended pushes

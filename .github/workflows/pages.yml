@@ -10,11 +10,11 @@ name: Deploy docs/ to GitHub Pages
 # don't change anything Pages serves, so skipping them saves an
 # Actions minute per push and keeps the deployment history readable.
 #
-# Form-submit dynamic path: the in-browser theme form posts to a
-# Vercel Function (api/themes.js) which opens a GitHub Issue. The
-# label trigger in dispatch-on-theme-request.yml then kicks off
-# theme-on-demand.yml, which commits to develop and re-fires this
-# Pages deploy via the `docs/**` path filter.
+# Form-submit dynamic path: the in-browser theme form posts to the
+# CF Worker (worker/index.ts), which validates / dedupes and dispatches
+# theme-on-demand.yml directly via the GitHub Actions REST API. That
+# workflow commits to develop and re-fires this Pages deploy via the
+# `docs/**` path filter.
 
 on:
   push:
