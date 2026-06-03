@@ -1,7 +1,9 @@
 name: regen-themes
 # Issue #84: weekly auto-regeneration of theme family-tree JSONs.
 # Runs every Sunday 09:00 JST (00:00 UTC). Pushes the updated docs/themes/
-# JSONs to develop; Cloudflare Pages picks them up automatically.
+# JSONs to develop; the final step dispatches pages.yml so the new themes
+# ship to GH Pages (GITHUB_TOKEN pushes don't fire downstream workflows
+# on their own — see theme-on-demand.yml for the same workaround).
 
 on:
   schedule:
@@ -33,6 +35,10 @@ jobs:
     timeout-minutes: 120
     permissions:
       contents: write
+      # actions: write lets the final "Trigger Pages deploy" step
+      # dispatch pages.yml. See theme-on-demand.yml's identical block
+      # for why this is needed.
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -176,3 +182,14 @@ jobs:
           git add paperpilot/data/lineage-cache/classifications.json || true
           msg="data(themes): weekly auto-regen ($(date -u +%Y-%m-%d))"
           bash .github/scripts/commit-and-push.sh "$msg" docs/themes/
+
+      - name: Trigger Pages deploy
+        # commit-and-push.sh writes the regen commit using GITHUB_TOKEN,
+        # which GitHub's anti-loop policy excludes from triggering other
+        # workflows. Dispatch pages.yml explicitly here so the Sunday
+        # cron's output ships to GH Pages without operator intervention.
+        # Cheap + idempotent if commit-and-push was a no-op.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --ref develop --repo "${{ github.repository }}"
