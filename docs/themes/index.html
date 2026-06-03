@@ -6,20 +6,21 @@
   <title>Theme Lineage — PaperPilot</title>
   <meta name="description" content="任意の研究テーマから生成した時系列付きの論文家系図。Y 軸は年（rank-based 等間隔）、横軸は 6 つの意味（引用ランク / log 引用数 / 系譜近接 / 中心性 / 会議格 / 新規性）から切替可能。" />
 
-  <!-- Base URL of the Vercel Function that owns `POST /api/themes`.
-       The viewer is on GitHub Pages and the API is on Vercel — they
-       are not same-origin, so we read the URL from a meta tag and
-       theme.js prefixes the fetch with it. Leave content="" to fall
-       back to the Issue Form link (works on first deploy before the
-       Vercel project URL is known). -->
-  <meta name="paperpilot-api-base" content="" />
+  <!-- Base URL of the CF Worker that owns `POST /api/themes`. The
+       viewer ships from GitHub Pages and the API runs on workers.dev
+       — they are not same-origin, so we read the URL from a meta tag
+       and theme.js prefixes the fetch with it. Leave content="" to
+       fall back to the GitHub Issue page so the form is never broken
+       (e.g. while CF Access is being toggled or the Worker is being
+       redeployed). -->
+  <meta name="paperpilot-api-base" content="https://automatic-paper-search.puuptdbkh082.workers.dev" />
 
   <!-- CSP defence-in-depth. GH Pages strips `_headers`, so we declare
-       the policy via meta. `connect-src` allows Vercel + preview
-       origins so the cross-origin `POST /api/themes` lands; other
-       HTMLs in docs/ keep the stricter same-origin `connect-src 'self'`.
+       the policy via meta. `connect-src` allows the workers.dev origin
+       so the cross-origin `POST /api/themes` lands; other HTMLs in
+       docs/ keep the stricter same-origin `connect-src 'self'`.
        `textContent`-only rationale rendering carries over unchanged. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.vercel.app; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.workers.dev; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'" />
 
   <!-- Open Graph / Twitter Card — see docs/index.html for the og:image
        follow-up rationale. og:url is intentionally omitted. -->
@@ -111,15 +112,14 @@
         ホバーで LLM による分類理由が表示されます。データは Semantic Scholar の引用関係を Groq Llama 3.3 70B で分類して生成。
       </p>
 
-      <!-- In-browser submission: POST to the Vercel Function (api/themes.js)
-           which validates input, dedupes against the manifest, and
-           creates a GitHub Issue (label=theme-request). The label
-           fires .github/workflows/dispatch-on-theme-request.yml which
-           workflow_dispatches theme-on-demand.yml. theme.js shows the
-           Issue # in a status banner; the new lineage commits to
-           develop and ships via the next pages.yml deploy. When the
-           api-base meta is empty (first deploy), the form degrades to
-           a link that opens the GitHub Issue page directly. -->
+      <!-- In-browser submission: POST to the CF Worker (worker/index.ts)
+           which validates input, dedupes against the manifest, rate-
+           limits per IP via KV, then dispatches theme-on-demand.yml
+           directly via the GitHub Actions REST API. The new lineage
+           commits to develop and ships via the next pages.yml deploy.
+           When the api-base meta is empty (e.g. Access is being
+           toggled), the form degrades to a link that opens the GitHub
+           Issue page directly. -->
       <form class="theme-request" id="theme-request" autocomplete="off" novalidate>
         <label class="theme-request__label" for="theme-request-input">
           <span aria-hidden="true">✨</span>
