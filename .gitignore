@@ -31,3 +31,9 @@ paperpilot/data/lineage-cache/*
 # uv lock — currently untracked; commit deliberately if reproducibility
 # is needed. Excluded here to keep status clean.
 uv.lock
+
+# unarXive citation contexts DuckDB (Phase J). build_unarxive_index.py
+# produces a ~7GB unarxive.duckdb under paperpilot/data/unarxive/; the
+# release artefact lives on GitHub Releases (downloaded by CI on demand)
+# so the local dir should never be staged.
+paperpilot/data/unarxive/
