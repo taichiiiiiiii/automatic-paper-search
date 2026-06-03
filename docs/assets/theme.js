@@ -1366,7 +1366,6 @@ async function init() {
   renderPicker();
   bindPicker();
   renderThemeGallery();
-  populateThemeDatalist();
   renderHeader();
   renderFilterChips();
   bindFilterBar();
