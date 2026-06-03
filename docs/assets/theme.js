@@ -718,9 +718,14 @@ async function submitTheme() {
     });
   } catch (err) {
     if (els.reqSubmit) els.reqSubmit.disabled = false;
+    // Worker unreachable (CORS-blocked Access redirect, DNS failure,
+    // offline...). Surface the failure but offer the Issue page link
+    // so the user can still file the request manually — the
+    // form-degraded path the comment block above promises.
+    const issueHref = escapeHtml(issueUrlFor(raw));
     setRequestStatus(
       "err",
-      `❌ 送信できませんでした。ネットワーク接続を確認してください。`,
+      `❌ サーバに届きませんでした。<a href="${issueHref}" target="_blank" rel="noopener">GitHub Issue で送信 →</a>`,
     );
     console.error("[theme-request] fetch failed:", err);
     return;
