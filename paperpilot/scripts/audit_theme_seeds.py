@@ -135,13 +135,17 @@ def _stem_contains(haystack: str, needle: str) -> bool:
 def _is_on_topic(theme: str, paper: dict) -> bool:
     """Mirror of build_theme_lineage._filter_topic_relevant_seeds (#209).
 
-    Uses viewer-side fields (title + tldr instead of title + abstract)
-    because the lineage.json doesn't persist the full abstract. The
-    audit's check is therefore strictly weaker than the production
-    filter — it can only flag seeds whose title+tldr also fails the
-    gate, never seeds that passed at build time but would fail today.
+    Reads the longest abstract field persisted in lineage.json:
+    ``short_abstract`` (1000-char excerpt) when available, falling back
+    to ``tldr`` (140-char excerpt) for legacy themes built before that
+    field landed. This is still strictly weaker than the production
+    filter (which sees the full abstract) but recovers the false-positive
+    cases where the theme keywords appear in the abstract beyond the
+    140-char tldr cutoff — the original audit failed e.g. for the ViT
+    "An Image is Worth 16x16 Words" seed under the "Vision Transformer"
+    theme, where "Vision Transformer" first appears past char 140.
 
-    2-word themes: phrase in (title+tldr) OR both words in title.
+    2-word themes: phrase in (title+abstract) OR both words in title.
     3+ word themes: phrase OR ceil(N/2) words anywhere.
 
     Uses ``_stem_contains`` for word checks so "distilled" matches
@@ -152,7 +156,8 @@ def _is_on_topic(theme: str, paper: dict) -> bool:
     words = _eligible_words(theme)
     if len(words) < 2:
         return True  # filter skipped at generation time
-    haystack = _normalize(f"{paper.get('title') or ''} {paper.get('tldr') or ''}")
+    abstract_excerpt = paper.get("short_abstract") or paper.get("tldr") or ""
+    haystack = _normalize(f"{paper.get('title') or ''} {abstract_excerpt}")
     phrase = _normalize(theme)
     if phrase and phrase in haystack:
         return True

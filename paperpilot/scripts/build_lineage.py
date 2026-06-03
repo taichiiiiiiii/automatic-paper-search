@@ -365,12 +365,28 @@ def to_node(
 ) -> dict:
     venue = override_venue or (paper.get("venue") or "arXiv").strip() or "arXiv"
     tier = override_tier or venue_tier_for(paper.get("venue") or "")
-    tldr = (paper.get("abstract") or "")[:140].strip()
+    abstract_full = (paper.get("abstract") or "").strip()
+    tldr = abstract_full[:140].strip()
     # Avoid cutting in the middle of a word
-    if tldr and len(paper.get("abstract", "")) > 140:
+    if tldr and len(abstract_full) > 140:
         last_space = tldr.rfind(" ")
         if last_space > 80:
             tldr = tldr[:last_space] + "…"
+    # short_abstract is the abstract excerpt the seed-relevance audit reads.
+    # Production filtering at build time sees the full abstract; the audit
+    # walks viewer-side fields (title + tldr) only — and 140 chars routinely
+    # misses theme keywords that appear later in the abstract, raising false
+    # positives on foundational papers whose title omits the theme name
+    # (ViT "An Image is Worth 16x16 Words" for the "Vision Transformer"
+    # theme, InstructGPT for "Reinforcement Learning from Human Feedback").
+    # 1000 chars at a word boundary gives the audit ~7× more text to match
+    # against without bloating lineage.json beyond what the viewer can keep
+    # in memory comfortably.
+    short_abstract = abstract_full[:1000].strip()
+    if short_abstract and len(abstract_full) > 1000:
+        last_space = short_abstract.rfind(" ")
+        if last_space > 800:
+            short_abstract = short_abstract[:last_space] + "…"
     # Catalog (Stage 2) values win when provided; otherwise use S2's response
     # so related nodes still have citation counts for the viewer to size on.
     citation_count = (
@@ -396,6 +412,10 @@ def to_node(
         "citation_count": citation_count,
         "github_stars": github_stars,
         "tldr": tldr,
+        # short_abstract is omitted when the source had no abstract at all —
+        # the audit then degrades to title+tldr matching the same way legacy
+        # lineage.json files (built before this field landed) degrade.
+        **({"short_abstract": short_abstract} if short_abstract else {}),
         **({"arxiv_id": arxiv_id} if arxiv_id else {}),
         **({"doi": doi} if doi else {}),
         **({"is_focus": True} if focus else {}),
