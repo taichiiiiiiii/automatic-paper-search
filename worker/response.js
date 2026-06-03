@@ -1,8 +1,5 @@
 // Response envelope + KV rate limiting helpers extracted from
-// worker/index.ts in Phase 0c (theme-pipeline v2). Splitting these out
-// lets the new queue consumer, R2 manifest route, and callback handler
-// each reuse the same JSON / rate-limit primitives without growing
-// index.ts past a comfortable size.
+// worker/index.ts so index.ts stays focused on routing.
 //
 // Plain JS (mirroring slug.js) so the node:test runner can import
 // directly without a TS-strip step; type info lives at the import site
