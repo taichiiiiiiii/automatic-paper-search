@@ -1697,6 +1697,22 @@ g.node-wrap.node-wrap--no-tx {
   letter-spacing: 0.04em;
   font-style: italic;
 }
+/* Quality badge surfaced from _quality.json. Sits below age so the
+ * primary stats (papers + year range + age) read first; the badge is
+ * a secondary signal for users who care about edge quality. The whole
+ * theme-gallery__card already has a `title` attribute via JS, so the
+ * badge's own `title` tooltip with the raw template_ratio % is the
+ * power-user-only path. */
+.theme-gallery__quality {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  margin-top: 0.2rem;
+  color: var(--color-ink-subtle);
+}
+.theme-gallery__card--active .theme-gallery__quality {
+  color: oklch(80% 0.012 270);
+}
 
 /* On-demand theme submission form + progress UI ---------------------- */
 .theme-request {

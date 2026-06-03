@@ -164,6 +164,12 @@ jobs:
           uv run python -m paperpilot.scripts.generate_themes_manifest \
             --themes-dir docs/themes
 
+      - name: Refresh quality rollup
+        # See theme-on-demand.yml for the rationale. Cheap step so the
+        # quality rollup tracks the latest data after every Sunday regen.
+        run: |
+          uv run python -m paperpilot.scripts.compute_theme_quality
+
       - name: Commit + push if changed
         run: |
           set -euo pipefail

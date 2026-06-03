@@ -189,6 +189,14 @@ jobs:
           uv run python -m paperpilot.scripts.generate_themes_manifest \
             --themes-dir docs/themes
 
+      - name: Refresh quality rollup
+        # Walks docs/themes/*/lineage.json and writes docs/themes/_quality.json
+        # with template_ratio + off-topic seed counts per theme. Viewer reads
+        # this to decorate theme cards with a quality badge. Cheap (~1s, no
+        # network) so it runs every on-demand build.
+        run: |
+          uv run python -m paperpilot.scripts.compute_theme_quality
+
       - name: Commit + push if changed
         env:
           THEME_INPUT: ${{ github.event.inputs.theme }}
