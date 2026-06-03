@@ -2815,7 +2815,47 @@ def _build_arg_parser() -> argparse.ArgumentParser:
              "cites: filter for BFS — no S2 calls anywhere, survives "
              "without PAPERPILOT_S2_API_KEY and shared-IP throttle.",
     )
+    ap.add_argument(
+        "--auto-expand",
+        dest="auto_expand",
+        action="store_true",
+        default=False,
+        help="Retry with larger BFS parameters when the first pass "
+             "produces a sparse lineage (< SPARSE_NODES nodes or < "
+             "SPARSE_EDGES edges). New themes whose citation graph "
+             "hasn't built up yet (e.g. 2024-2025 ideas like Mixture "
+             "of Depths) routinely undershoot at the workflow defaults "
+             "of --depth 1 --seeds 5 --width 8; retrying with depth+1, "
+             "seeds*2, width+4 typically densifies them. The retry uses "
+             "the same classifications.json cache so the LLM cost is "
+             "near-zero on the second pass. Off by default so bulk "
+             "regen-themes runs aren't doubled on every theme.",
+    )
     return ap
+
+
+# --auto-expand thresholds. A lineage with fewer than SPARSE_NODES nodes
+# OR fewer than SPARSE_EDGES edges is considered sparse and triggers the
+# retry. Numbers picked from the smallest themes that still felt useful
+# in the viewer (Speculative Decoding ~12 nodes / 14 edges) and the
+# Mixture of Depths regen that was visibly too thin (9 / 3).
+SPARSE_NODES = 15
+SPARSE_EDGES = 5
+
+
+def _expand_params(depth: int, seeds_count: int, width: int) -> tuple[int, int, int]:
+    """Compute the larger BFS parameters used on the auto-expand retry.
+
+    Each axis bumps independently so that callers with already-high
+    values don't bloat further than necessary: depth never exceeds 3
+    (BFS frontier explodes), seeds at least doubles but caps at 12
+    (Groq TPM bound on theme-on-demand.yml), width adds +4 with a 12 cap.
+    """
+    return (
+        min(3, depth + 1),
+        min(12, max(10, seeds_count * 2)),
+        min(12, width + 4),
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -2851,6 +2891,48 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+
+    # Auto-expand: detect a sparse lineage and rebuild with larger BFS
+    # parameters. The classification cache (lineage-cache/classifications.json)
+    # is shared between the two passes, so the LLM cost of the retry is
+    # bounded by the *new* parent/child pairs that the wider BFS surfaces —
+    # typically a small minority. Same out_path so the viewer URL is
+    # stable across retries.
+    if args.auto_expand:
+        try:
+            initial = json.loads(out_path.read_text())
+        except (OSError, json.JSONDecodeError):
+            initial = {"nodes": [], "edges": []}
+        n_nodes = len(initial.get("nodes") or [])
+        n_edges = len(initial.get("edges") or [])
+        if n_nodes < SPARSE_NODES or n_edges < SPARSE_EDGES:
+            d2, s2, w2 = _expand_params(args.depth, args.seeds_count, args.width)
+            print(
+                f"auto-expand: first pass {n_nodes} nodes / {n_edges} edges below "
+                f"({SPARSE_NODES} / {SPARSE_EDGES}); retrying with "
+                f"--depth {d2} --seeds {s2} --width {w2}",
+                file=sys.stderr,
+            )
+            try:
+                out_path = build_theme_lineage(
+                    theme=args.theme,
+                    depth=d2,
+                    seeds_count=s2,
+                    width=w2,
+                    since_year=args.since_year,
+                    output=output,
+                    use_openalex_fallback=args.use_openalex_fallback,
+                    llm_strict=args.llm_strict,
+                    primary_source=args.primary_source,
+                )
+            except ValueError as exc:
+                # Expansion failed but the first pass is already on disk —
+                # report the cause and keep the smaller lineage rather than
+                # crashing the entire CI run.
+                print(
+                    f"auto-expand retry failed; keeping initial lineage: {exc}",
+                    file=sys.stderr,
+                )
 
     # Issue #45: non-fatal exit code 3 distinguishes "ran cleanly but
     # produced no edges" from a normal success. CI / bulk scripts can

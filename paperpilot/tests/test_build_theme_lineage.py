@@ -1076,6 +1076,160 @@ def test_main_returns_0_on_normal_build(tmp_path: Path, monkeypatch):
     assert rc == 0, f"expected exit 0 on healthy build, got {rc}"
 
 
+# ---- --auto-expand sparse-theme retry (#247) --------------------------------
+
+
+def test_expand_params_bumps_each_axis_independently():
+    """The retry expander never lets any axis explode past the cap.
+    Independent bumps so a caller already at width=12 doesn't get pushed
+    past it just because seeds was low."""
+    # Workflow default for theme-on-demand.yml (depth=1, seeds=5, width=8).
+    assert build_theme_lineage._expand_params(1, 5, 8) == (2, 10, 12)
+    # Bulk regen default — already medium.
+    assert build_theme_lineage._expand_params(2, 8, 8) == (3, 12, 12)
+    # Cap pins: depth caps at 3 (BFS would explode), seeds at 12 (Groq TPM),
+    # width at 12.
+    assert build_theme_lineage._expand_params(3, 12, 12) == (3, 12, 12)
+    assert build_theme_lineage._expand_params(3, 10, 8) == (3, 12, 12)
+
+
+def test_auto_expand_retries_when_sparse(tmp_path: Path, monkeypatch):
+    """First pass produces a sparse lineage → main() invokes
+    build_theme_lineage again with the expanded params."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_log: list[dict] = []
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_log.append({"depth": depth, "seeds": seeds_count, "width": width})
+        # First call returns a sparse lineage; second call returns dense.
+        node_count = 5 if len(call_log) == 1 else 25
+        edge_count = 2 if len(call_log) == 1 else 30
+        out = tmp_path / "out.json"
+        out.write_text(json.dumps({
+            "nodes": [{"id": f"n{i}"} for i in range(node_count)],
+            "edges": [{"src": f"n{i}", "dst": f"n{i+1}"} for i in range(edge_count)],
+        }))
+        return out
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main([
+        "--theme", "Mixture of Depths",
+        "--depth", "1",
+        "--seeds", "5",
+        "--width", "8",
+        "--auto-expand",
+        "--output", str(tmp_path / "out.json"),
+    ])
+    assert rc == 0
+    assert len(call_log) == 2, f"expected 2 builds, got {len(call_log)}: {call_log}"
+    # First call: workflow defaults.
+    assert call_log[0] == {"depth": 1, "seeds": 5, "width": 8}
+    # Second call: _expand_params(1, 5, 8) = (2, 10, 12).
+    assert call_log[1] == {"depth": 2, "seeds": 10, "width": 12}
+
+
+def test_auto_expand_skips_retry_when_dense_enough(tmp_path: Path, monkeypatch):
+    """A first-pass lineage above SPARSE_NODES + SPARSE_EDGES must NOT
+    trigger a second build — Groq quota would be wasted on themes whose
+    citation graph is already mature."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_count = [0]
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_count[0] += 1
+        out = tmp_path / "out.json"
+        out.write_text(json.dumps({
+            "nodes": [{"id": f"n{i}"} for i in range(40)],
+            "edges": [{"src": f"n{i}", "dst": f"n{i+1}"} for i in range(50)],
+        }))
+        return out
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main([
+        "--theme", "Mamba",
+        "--depth", "1", "--seeds", "5", "--width", "8",
+        "--auto-expand",
+        "--output", str(tmp_path / "out.json"),
+    ])
+    assert rc == 0
+    assert call_count[0] == 1
+
+
+def test_auto_expand_off_by_default(tmp_path: Path, monkeypatch):
+    """Without --auto-expand, a sparse first pass returns exit 3 (existing
+    `0 edges` behaviour) instead of silently retrying. Keeps the bulk
+    regen-themes default of "one build per theme" intact."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_count = [0]
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_count[0] += 1
+        out = tmp_path / "out.json"
+        # Sparse + zero edges — exit 3 trigger.
+        out.write_text(json.dumps({"nodes": [{"id": "n0"}], "edges": []}))
+        return out
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main([
+        "--theme", "Some Sparse Topic",
+        "--depth", "1", "--seeds", "5", "--width", "8",
+        "--output", str(tmp_path / "out.json"),
+    ])
+    # No --auto-expand → original behaviour: exit 3, no retry.
+    assert call_count[0] == 1
+    assert rc == 3
+
+
+def test_auto_expand_handles_retry_failure(tmp_path: Path, monkeypatch, capsys):
+    """If the retry build itself raises ValueError, we keep the first
+    pass on disk and don't crash the workflow — surfacing the cause via
+    stderr but preserving partial output."""
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+
+    call_count = [0]
+
+    def fake_build(*, theme, depth, seeds_count, width, **kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            out = tmp_path / "out.json"
+            out.write_text(json.dumps({
+                "nodes": [{"id": "n0"}], "edges": [{"src": "n0", "dst": "n1"}],
+            }))
+            return out
+        # Second invocation (the retry) raises — simulate Groq quota
+        # blow-up mid-bulk.
+        raise ValueError("simulated retry failure")
+
+    monkeypatch.setattr(build_theme_lineage, "build_theme_lineage", fake_build)
+
+    rc = build_theme_lineage.main([
+        "--theme", "Theme",
+        "--depth", "1", "--seeds", "5", "--width", "8",
+        "--auto-expand",
+        "--output", str(tmp_path / "out.json"),
+    ])
+    # The first pass had 1 edge → exit 0; the retry failure is logged,
+    # not propagated as a crash.
+    assert call_count[0] == 2
+    assert rc == 0
+    err = capsys.readouterr().err
+    assert "auto-expand retry failed" in err
+
+
 # ---- LLM-zero relation derivation (#53) -------------------------------------
 
 

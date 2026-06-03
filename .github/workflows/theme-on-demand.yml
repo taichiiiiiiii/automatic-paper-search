@@ -178,11 +178,18 @@ jobs:
           THEME_INPUT: ${{ github.event.inputs.theme }}
         run: |
           set -euo pipefail
+          # --auto-expand (#247): if the first pass produces a sparse
+          # lineage (e.g. Mixture of Depths returned 9 nodes / 3 edges
+          # at these defaults), retry once with depth=2, seeds=10,
+          # width=12. The classifications.json cache is shared between
+          # the two passes so the LLM cost of the retry is just the
+          # *new* parent/child pairs the wider BFS surfaces.
           uv run python -m paperpilot.scripts.build_theme_lineage \
             --theme "$THEME_INPUT" \
             --depth 1 --seeds 5 --width 8 --since-year 2018 \
             --llm-strict ambiguous \
-            --primary-source openalex
+            --primary-source openalex \
+            --auto-expand
 
       - name: Refresh manifest
         run: |
