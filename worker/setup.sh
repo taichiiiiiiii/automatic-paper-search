@@ -87,7 +87,7 @@ ${WRANGLER} deploy
 
 echo
 echo "▶ post-deploy probe"
-BASE="https://automatic-paper-search.puuptdbkh082.workers.dev"
+BASE="https://paperpilot-themes.puuptdbkh082.workers.dev"
 sleep 5
 HTTP=$(curl -sS -o /dev/null --max-time 15 -w "%{http_code}" -X OPTIONS "${BASE}/api/themes" || echo "ERR")
 echo "    OPTIONS ${BASE}/api/themes → HTTP ${HTTP}"

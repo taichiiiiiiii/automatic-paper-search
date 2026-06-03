@@ -40,7 +40,7 @@ There is **one** `wrangler.jsonc` at the repo root. It owns both:
 - **The API** — `/api/themes` POST handled by `worker/index.ts` (this
   module). Anything else falls through to `env.ASSETS.fetch(request)`.
 
-Both live at the same origin (`automatic-paper-search.<account>.workers.dev`),
+Both live at the same origin (`paperpilot-themes.<account>.workers.dev`),
 so the form on `/themes/` posts to `/api/themes` on the same URL — no CORS,
 no second sub-domain, no confusion.
 
