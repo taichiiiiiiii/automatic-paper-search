@@ -43,6 +43,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # actions: write lets the final "Trigger Pages deploy" step
+      # dispatch pages.yml. Without it, the commit-and-push step writes
+      # a develop commit using GITHUB_TOKEN, and GitHub's "no recursive
+      # workflow triggers" policy stops pages.yml from firing on that
+      # push event — the new theme would be in develop but invisible
+      # on the GH Pages site until an operator manually re-ran pages.yml.
+      actions: write
     # 15 min (was 8) so Groq rate-limiting + S2 retries can't push us past
     # the workflow timeout. With Groq's 25-RPM throttle + ~90 LLM calls
     # worst case, the LLM phase alone is ~4 min; S2/OpenAlex throttling
@@ -205,3 +212,18 @@ jobs:
           # for why this needs to be more than a single `git push`.
           msg=$(printf 'data(themes): on-demand generation of "%s"' "$THEME_INPUT")
           bash .github/scripts/commit-and-push.sh "$msg" docs/themes/
+
+      - name: Trigger Pages deploy
+        # commit-and-push.sh writes the new lineage commit using
+        # GITHUB_TOKEN. GitHub's "commits from GITHUB_TOKEN don't fire
+        # workflows" rule (anti-infinite-loop) means pages.yml's
+        # `paths: docs/**` trigger does NOT match — the new theme lands
+        # on develop but never reaches GH Pages until something else
+        # forces a deploy. Workaround: dispatch pages.yml here via the
+        # Actions REST API, which `gh workflow run` wraps. Cheap (~30s
+        # extra Pages run) and idempotent if commit-and-push was a
+        # no-op (manifest unchanged → Pages republishes the same files).
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --ref develop --repo "${{ github.repository }}"
