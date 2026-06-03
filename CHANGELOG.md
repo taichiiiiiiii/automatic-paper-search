@@ -6,6 +6,72 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — Theme submission deployment: CF Worker resurrected (#233-#238)
+
+CF Worker (`worker/index.ts`) is the live theme-submission API again.
+The architecture flip-flopped twice through May-June: original CF
+Pages + CF Worker setup (working) → CF Access blocked the Worker URL
+→ migrated viewer to GH Pages + dropped the form (#229) → re-added
+form via Vercel Function as a workaround (#231) → discovered CF
+Access can be toggled off from the Workers Settings tab, restored
+the original CF Worker design, removed the Vercel detour (#233).
+
+Today's surface area:
+
+- **`worker/index.ts` + `wrangler.jsonc` + 54 tests restored** from
+  `0add33b^` (parent of the original retirement commit). Includes
+  the per-IP KV rate limiter (5 req/h/IP + 100/day global cap), the
+  manifest-dedup fast path (raw.githubusercontent.com), and the
+  /api/themes/status endpoint for client polling. `paperpilot/tests/
+  test_worker_slug_parity.py` re-pins the Python ↔ JS slug derivation
+  (`themeSlug()` in `worker/slug.js` vs `theme_slug()` in
+  `paperpilot/scripts/_common.py`).
+- **Vercel surface deleted**: `api/themes.js`, `api/themes.test.mjs`,
+  `vercel.json`, `.github/workflows/dispatch-on-theme-request.yml`,
+  `.github/ISSUE_TEMPLATE/theme-request.yml` all removed. PAT scope
+  collapses back to `actions:write` only (no separate `issues:write`
+  PAT for Vercel) — the Worker dispatches `theme-on-demand.yml`
+  directly via the GitHub Actions REST API.
+- **Frontend re-wired** (`docs/themes/index.html`,
+  `docs/assets/theme.js`): meta `paperpilot-api-base` points at
+  `https://automatic-paper-search.puuptdbkh082.workers.dev`. CSP
+  `connect-src` allows `*.workers.dev`. Submit logic handles the
+  Worker response shape (`{ok, status: queued|exists|invalid|
+  rate_limited|error, slug, message?}`) — no Vercel-specific
+  `pending` branch or `issue_url`/`issue_number` reads.
+- **Degraded-mode hardened** (#235): when the Worker is briefly
+  unreachable (typical during CF Access toggle), the form's error
+  banner now offers a "GitHub Issue で送信 →" link instead of just
+  "送信できませんでした", so users always have a path forward.
+- **Dead code removed** (#237, #238): `env.ASSETS` branch in
+  `worker/index.ts` (always undefined under the GH Pages deploy
+  shape — `if (env.ASSETS)` always took `else`), `THEME_PATTERN`
+  alias for `THEME_INPUT_PATTERN`, `RunFromApi` type duplicating
+  `RunSummary`, verbose wrangler.jsonc preamble re-explaining setup
+  steps that live in CLAUDE.md, unused `els.reqHint` DOM ref.
+- **CI noise reduction** (#236): `data-audit` `paths:` filter
+  narrowed from `docs/themes/**` to `docs/themes/*/lineage.json`,
+  so viewer-shell PRs (CSP / CSS / api-base tweaks) no longer
+  spuriously report the pre-existing 3-themes-flagged audit
+  failure. `audit_theme_seeds.py` footer rewrites operator hint
+  from "re-dispatch for every flagged theme" to "inspect each paper
+  first — audit only sees title+tldr, not the full abstract
+  production filtering uses, so it routinely flags foundational
+  papers like the ViT or InstructGPT seeds as false positives".
+
+**Slug parity invariant**: collapses back from 3-way (Python ↔
+front-end SLUG_RE ↔ Vercel `api/themes.js`) to 2-way (Python ↔
+`worker/slug.js`). Pinned by `test_worker_slug_parity.py`.
+
+Operator setup post-merge (one-time): toggle CF Access OFF for the
+Worker URL (Workers Settings tab in dash.cloudflare.com or
+Applications in one.dash.cloudflare.com), `wrangler secret put
+GH_DISPATCH_PAT` with a fine-grained PAT (this repo, Actions: RW
+only), push to develop — CF Workers Builds auto-deploys.
+
+5 PRs (#233 / #234 / #235 / #236 / #237 / #238), 779 total Python
+tests pass, 54 Worker tests pass, ruff clean.
+
 ### Added — unarXive 2022 citation contexts, S2-free (#209 Phase J)
 
 **Solves the 81% template-rationale problem without an S2 API key
