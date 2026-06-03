@@ -20,8 +20,14 @@ on:
   push:
     branches: [develop, main]
     paths:
-      - "docs/themes/**"
-      - "docs/iclr-*/**"
+      # Narrow to the generated data files only — `docs/themes/**`
+      # also matched docs/themes/index.html / theme-styles.css, so
+      # every viewer-shell PR (CSP / CSS / api-base tweaks) tripped
+      # the data audit even though the lineage JSONs were untouched.
+      # The audit walks lineage.json + themes-manifest.json only.
+      - "docs/themes/*/lineage.json"
+      - "docs/themes/themes-manifest.json"
+      - "docs/iclr-*/lineage.json"
       - "paperpilot/scripts/audit_theme_seeds.py"
       - "paperpilot/scripts/audit_lineage_quality.py"
       - "paperpilot/scripts/build_theme_lineage.py"
@@ -29,8 +35,9 @@ on:
       - ".github/workflows/data-audit.yml"
   pull_request:
     paths:
-      - "docs/themes/**"
-      - "docs/iclr-*/**"
+      - "docs/themes/*/lineage.json"
+      - "docs/themes/themes-manifest.json"
+      - "docs/iclr-*/lineage.json"
       - "paperpilot/scripts/audit_theme_seeds.py"
       - "paperpilot/scripts/audit_lineage_quality.py"
       - "paperpilot/scripts/build_theme_lineage.py"

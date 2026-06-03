@@ -205,8 +205,20 @@ def audit() -> int:
         for t in titles:
             print(f"    - {t[:80]}")
         print()
-    print("Operator action: re-dispatch theme-on-demand.yml for each above slug")
-    print("                 (or wait for the Sunday regen-themes cron at 09:00 JST).")
+    # Audit reads `title + tldr` only — production filtering sees the full
+    # abstract. Inspect each flagged paper manually before re-dispatching:
+    # foundational papers whose title omits the theme name (e.g. the ViT
+    # "An Image is Worth 16x16 Words" paper for the "Vision Transformer"
+    # theme, or InstructGPT for "Reinforcement Learning from Human
+    # Feedback") will appear here as false positives — regenerating them
+    # is wasted Groq quota since production correctly re-picks them.
+    print("Operator action: open each flagged paper, decide if it's truly")
+    print("                 off-topic (production filter saw the full")
+    print("                 abstract; audit only saw the tldr). If yes,")
+    print("                 re-dispatch theme-on-demand.yml for that slug.")
+    print("                 If no (foundational paper whose title omits")
+    print("                 the theme name), leave it — regen would pick")
+    print("                 the same seed again and waste Groq quota.")
     return 1
 
 
