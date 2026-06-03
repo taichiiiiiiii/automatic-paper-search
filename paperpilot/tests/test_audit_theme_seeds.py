@@ -193,3 +193,75 @@ def test_is_on_topic_keeps_vit_for_vision_transformer():
         "tldr": "vision transformer applied directly to image patches outperforms CNN baselines",
     }
     assert _is_on_topic("Vision Transformer", paper) is True
+
+
+# ---- short_abstract field (#245): audit reads the 1000-char abstract
+#      excerpt when available, falling back to tldr for legacy themes ----
+
+
+def test_is_on_topic_prefers_short_abstract_over_tldr():
+    """When ``short_abstract`` is present, the audit reads it instead of
+    tldr — recovering false positives where the theme keywords appear
+    later in the abstract than the 140-char tldr cutoff.
+
+    The original ViT abstract starts "While the Transformer architecture
+    has become the de-facto standard for natural language processing..."
+    — neither "Vision" nor "Transformer" appears in the first 140 chars,
+    so a tldr-only audit DROPS this seed even though production keeps it.
+    With short_abstract reaching ~chars 200-300, "Vision Transformer (ViT)"
+    becomes visible and the audit accepts the seed.
+    """
+    # Realistic ViT-style 1000-char excerpt; theme keyword "Vision Transformer"
+    # appears well past the 140-char tldr cutoff.
+    short_abstract = (
+        "While the Transformer architecture has become the de-facto "
+        "standard for natural language processing tasks, its applications "
+        "to computer vision remain limited. In vision, attention is either "
+        "applied in conjunction with convolutional networks, or used to "
+        "replace certain components of convolutional networks while keeping "
+        "their overall structure in place. We show that this reliance on "
+        "CNNs is not necessary and a pure transformer applied directly "
+        "to sequences of image patches can perform very well on image "
+        "classification tasks. When pre-trained on large amounts of data "
+        "and transferred to multiple mid-sized or small image recognition "
+        "benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer "
+        "(ViT) attains excellent results compared to state-of-the-art "
+        "convolutional networks while requiring substantially fewer "
+        "computational resources to train."
+    )
+    # tldr is the first 140 chars — "Vision Transformer" NOT visible here.
+    tldr = short_abstract[:140]
+    paper_legacy = {
+        "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+        "tldr": tldr,
+    }
+    paper_new = {**paper_legacy, "short_abstract": short_abstract}
+    # Legacy theme (no short_abstract): the audit reads tldr only and
+    # incorrectly flags the seed as off-topic.
+    assert _is_on_topic("Vision Transformer", paper_legacy) is False
+    # With short_abstract present, "Vision Transformer" surfaces in the
+    # haystack via the phrase match, and the seed is accepted.
+    assert _is_on_topic("Vision Transformer", paper_new) is True
+
+
+def test_is_on_topic_falls_back_to_tldr_for_legacy_lineage():
+    """Legacy themes (built before short_abstract landed) have no
+    short_abstract field. The audit must continue to read tldr without
+    raising KeyError or returning False on every legacy seed."""
+    paper = {
+        "title": "Diffusion Models in Practice",
+        "tldr": "we present diffusion models for image synthesis",
+    }
+    assert _is_on_topic("Diffusion Models", paper) is True
+
+
+def test_is_on_topic_handles_empty_short_abstract():
+    """Defensive: a short_abstract that's empty / None should not crash
+    and should not poison the haystack (audit degrades to title-only)."""
+    paper = {
+        "title": "Self-Supervised Learning of Visual Features",
+        "tldr": "",
+        "short_abstract": None,
+    }
+    # Two-word phrase in title → kept by title-only fallback.
+    assert _is_on_topic("Self-Supervised Learning", paper) is True
