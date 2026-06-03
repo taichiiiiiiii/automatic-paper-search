@@ -25,12 +25,6 @@ interface Env {
   GH_REF: string; // branch the workflow runs on, e.g. "develop"
   // KV namespace bound for per-IP rate limiting + slug existence cache.
   RATE_LIMIT_KV: KVNamespace;
-  // Optional static-asset binding. Present when the legacy
-  // "Workers + Static Assets" wrangler config (assets.directory = docs)
-  // is in effect; absent when the static viewer is served from GitHub
-  // Pages and the Worker only owns /api/*. Code paths that touch this
-  // tolerate both shapes via `env.ASSETS ?? globalThis`.
-  ASSETS?: Fetcher;
 }
 
 // Slug derivation + input pattern come from worker/slug.js — a plain
@@ -51,33 +45,13 @@ export { themeSlug };
 
 const THEME_PATTERN = THEME_INPUT_PATTERN;
 
-async function alreadyGenerated(slug: string, request: Request, env: Env): Promise<boolean> {
-  // Two manifest sources, picked by which deploy shape is live:
-  //
-  //   1. Same-origin /themes/themes-manifest.json via the ASSETS
-  //      binding — only when the legacy CF Pages-style deploy
-  //      (assets.directory = docs) is configured. No CDN hop.
-  //
-  //   2. raw.githubusercontent.com/<owner>/<repo>/<ref>/docs/themes/...
-  //      — used in the GH Pages + Worker hybrid. The Worker no longer
-  //      serves the static bundle, so we read the manifest straight
-  //      from the develop branch. GitHub's raw CDN has a ~5 min cache
-  //      that matches the previous CF Pages CDN behaviour, so a
-  //      freshly-published theme stays "new" for a similar window.
-  let manifestUrl: string;
-  // `new Request(url, ...)` is used at the call site so both fetchers
-  // (CF's Fetcher binding + globalThis.fetch) receive an identical
-  // Request object — Fetcher's signature is stricter than the global
-  // fetch's URL-or-Request-or-string union, so the explicit Request
-  // wrapper is what keeps the structural type check happy.
-  let fetcher: { fetch: typeof fetch };
-  if (env.ASSETS) {
-    manifestUrl = `${new URL(request.url).origin}/themes/themes-manifest.json`;
-    fetcher = env.ASSETS;
-  } else {
-    manifestUrl = `https://raw.githubusercontent.com/${env.GH_OWNER}/${env.GH_REPO}/${env.GH_REF}/docs/themes/themes-manifest.json`;
-    fetcher = globalThis;
-  }
+async function alreadyGenerated(slug: string, env: Env): Promise<boolean> {
+  // The viewer ships from GitHub Pages, so we read the manifest from
+  // raw.githubusercontent.com (the Worker doesn't serve static assets).
+  // GitHub's raw CDN has a ~5 min cache, so a freshly-published theme
+  // stays "new" for roughly that window — same freshness behaviour as
+  // CF Pages' old edge cache.
+  const manifestUrl = `https://raw.githubusercontent.com/${env.GH_OWNER}/${env.GH_REPO}/${env.GH_REF}/docs/themes/themes-manifest.json`;
   // Fail closed on dedup: a non-200 / parse error here means we can't
   // be sure the slug is new, so we report it as "already generated"
   // and the caller answers "exists" instead of firing a redundant
@@ -86,7 +60,7 @@ async function alreadyGenerated(slug: string, request: Request, env: Env): Promi
   // duplicate run would burn an Actions minute and a Groq quota slot.
   let resp: Response;
   try {
-    resp = await fetcher.fetch(new Request(manifestUrl, { method: "GET" }));
+    resp = await fetch(manifestUrl);
   } catch {
     return true;
   }
@@ -217,7 +191,7 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
   const slug = validation.slug;
 
   // Existing theme → short-circuit. No rate-limit charge, no dispatch.
-  if (await alreadyGenerated(slug, request, env)) {
+  if (await alreadyGenerated(slug, env)) {
     return json({ ok: true, status: "exists", slug });
   }
 
@@ -297,10 +271,10 @@ const handler: ExportedHandler<Env> = {
         },
       });
     }
-    // Anything else falls through to the static asset router when it's
-    // configured (legacy CF Pages deploy). In the GH Pages + Worker
-    // hybrid the Worker only owns /api/*, so everything else is a 404.
-    return env.ASSETS ? env.ASSETS.fetch(request) : new Response("Not Found", { status: 404 });
+    // Worker only owns /api/*. Everything else is the GH Pages
+    // viewer's domain, which the browser hits directly — nothing here
+    // should serve a non-/api/ path.
+    return new Response("Not Found", { status: 404 });
   },
 };
 

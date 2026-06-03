@@ -266,7 +266,6 @@ const els = {
   reqForm: document.getElementById("theme-request"),
   reqInput: document.getElementById("theme-request-input"),
   reqSubmit: document.getElementById("theme-request-submit"),
-  reqHint: document.getElementById("theme-request-hint"),
   reqStatus: document.getElementById("theme-request-status"),
   gallery: document.getElementById("theme-gallery"),
   heroDetails: document.getElementById("hero-details"),
