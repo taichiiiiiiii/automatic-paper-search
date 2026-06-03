@@ -544,8 +544,14 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 
 ## CI / GitHub Actions
 
-`.github/workflows/collect.yml` が毎日 22:00 UTC（07:00 JST）に実行。
-結果は `paperpilot/output/` と `paperpilot/data/` に commit される。
+定期実行のワークフロー (`.github/workflows/`):
+- `collect-weekly.yml` — 土曜 07:00 JST に主要会議の論文を深掘り収集 → `paperpilot/output/` に commit
+- `collect-daily-watch.yml` — 毎日 07:00 JST に follow 著者の新作を確認 → 通知のみ
+- `regen-themes.yml` — 日曜 09:00 JST に全テーマ家系図を再生成 → `docs/themes/<slug>/lineage.json` を更新
+- `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
+- `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
+- `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
+- `pages.yml` — `docs/**` 変更で GitHub Pages へデプロイ
 
 ### 必要な GitHub Secrets
 
@@ -723,7 +729,7 @@ refactor(scripts): dedupe slug->venue label into _common.py (closes #30)
 | 新 LLMProvider 追加 | `paperpilot/llm/<name>_provider.py`、`tests/`、`runner._build_llm_provider()`、`config.yaml`、`.env.example`、CLAUDE.md |
 | 環境変数追加 | `.env.example`、`utils/config_loader.py` の `load_config()`、CLAUDE.md「環境変数」 |
 | 新しい config キー | `config.yaml`、`runner.py` の該当 builder、設計書 §5.2 |
-| GitHub Actions の変更 | `.github/workflows/collect.yml`、README「GitHub Actions」節、CLAUDE.md「CI / GitHub Actions」 |
+| GitHub Actions の変更 | `.github/workflows/*.yml`、README「GitHub Actions」節、CLAUDE.md「CI / GitHub Actions」 |
 | venue 検出の tier / パターン変更 | `signals/venue_signal.py`、`tests/test_venue_stress.py`、設計書 §5.3.1 |
 
 ---
@@ -765,7 +771,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 
 ---
 
-## 実装ステータス（2026-05-25 時点）
+## 実装ステータス（2026-06-03 時点）
 
 ### パイプライン
 | 仕様 | 状態 |
@@ -796,7 +802,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | 論文一覧 (`papers.json`) | ✅ `index.html` + `build_pages.py` で生成 |
 | Conference 家系図 (`lineage.json`) | ✅ `build_lineage.py` が `AbstractLLMProvider.classify_relation` 経由で生成。週次 CI 統合済 |
 | Conference deep tree (`deep-*.json`) | ✅ `build_deep_lineage.py`、14 件生成済 |
-| **テーマ家系図 (`themes/<slug>/`)** | ✅ Issue → 運用者 dispatch → `theme-on-demand.yml` の静的 pipeline 稼働中。19 themes 公開 |
+| **テーマ家系図 (`themes/<slug>/`)** | ✅ `/themes/` のサイトフォーム → CF Worker (`worker/index.ts`) → `theme-on-demand.yml` を自動 dispatch (PR #233 で CF Worker 復活)。19 themes 公開 |
 
 ### Theme 家系図の品質改善 (本セッションの主軸)
 | 仕様 | 状態 |
@@ -814,7 +820,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | Seed gate v2 (#209 / #211) | ✅ 2-word phrase + title fallback、hyphen normalization、`_filter_denylisted_seeds` を seed phase に適用 |
 | Edge-level audit (#209 / #212) | ✅ `audit_lineage_quality` に `template_rationale_ratio` / `popularity_sinks` / `year_reversals`、themes opt-in (`--include-themes`) |
 | Tier 1 非 LLM seed quality (#209 / #214) | ✅ citation velocity ranking、survey title regex penalty (0.30×)、`paperpilot/data/theme_blacklist.json` per-theme veto |
-| S2 citation contexts → rationale (#209 / #216) | 🟡 S2 API key 必須、merge 保留 (PR #216 open) |
+| S2 citation contexts → rationale (#209 / #216) | 🟡 S2 API key 必須、PR #216 で close 済 (post #222 Phase J で OpenAlex/unarXive 経路に置換) |
 | **OpenAlex-primary architecture (#209 / #217)** | ✅ `--primary-source openalex` を workflows default 化、S2 API 完全不要で seed + BFS 動作。`_work_to_paper_dict` + `fetch_related_via_openalex` + paperId prefix routing |
 | **OpenAlex search relevance / field gate (#219 / #220)** | ✅ `sort=cited_by_count:desc` 削除 (relevance 順)、`primary_topic.field.id:fields/17` で Planck/AlphaFold 排除 |
 | **unarXive 2022 citation contexts (#222 Phase J)** | ✅ S2-free で paper-specific rationale 取得。HF `saier/unarXive_citrec` → DuckDB → `_classify_from_contexts` で regex 分類。LLM 不要、月 ¥0 |
@@ -829,9 +835,11 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
 
 ### 既知のオープン項目
-- **Bulk regen 19 themes の timeout 問題**: 60 / 120 min いずれも完走せず。S2 throttle on shared CI IP + 60s inter-theme cool-off が支配的。Matrix parallel 化が必要 (未着手)。
+- **Bulk regen 19 themes の timeout 問題**: 60 / 120 min いずれも完走せず。OpenAlex-primary (#217) + Groq circuit breaker (#191) で改善したが、Sunday cron は遅延配信に依存しがち。Matrix parallel 化が根本対策 (未着手)。
+- **data-audit の false positives**: `audit_theme_seeds` は `title + tldr` しか見ないので、ViT / InstructGPT 等の foundational paper を off-topic と flag する。Production filter は full abstract で正しく判定。`audit_theme_seeds.py` 末尾の operator hint で false positive 注意済 (PR #236)。根本対策は lineage.json に short abstract を persist させること (未着手)。
 - **LLM rationale 累積**: classifications.json は git 永続化済、theme-on-demand と weekly cron で漸進的に蓄積。
+- **CF Worker 運用**: CF Access を **OFF** にしておく必要あり (PR #233 / 復活時メモ参照)。`one.dash.cloudflare.com` or `dash.cloudflare.com → Workers Settings` のいずれかで管理可能。
 
 ---
 
-*最終更新：2026年5月25日（28 PRs の品質向上 + 整理セッション完了。詳細は CHANGELOG.md ## [Unreleased] 参照）*
+*最終更新：2026年6月3日（CF Worker 復活セッション完了 — PR #233-237。詳細は CHANGELOG.md ## [Unreleased] 参照）*

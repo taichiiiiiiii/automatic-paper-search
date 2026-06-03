@@ -43,8 +43,6 @@ import { pickMatchingRun } from "./run-match.js";
 import { validatePostInput } from "./validate-input.js";
 export { themeSlug };
 
-const THEME_PATTERN = THEME_INPUT_PATTERN;
-
 async function alreadyGenerated(slug: string, env: Env): Promise<boolean> {
   // The viewer ships from GitHub Pages, so we read the manifest from
   // raw.githubusercontent.com (the Worker doesn't serve static assets).
@@ -124,27 +122,10 @@ async function findRecentRun(theme: string, env: Env): Promise<RunSummary | null
     console.warn(`workflow runs query failed: ${resp.status}`);
     return null;
   }
-  type RunFromApi = {
-    status: string;
-    conclusion: string | null;
-    html_url: string;
-    created_at: string;
-    run_started_at: string | null;
-    display_title: string;
-  };
-  const data = await resp.json() as { workflow_runs?: RunFromApi[] };
+  const data = await resp.json() as { workflow_runs?: RunSummary[] };
   // Matching logic lives in run-match.js so it can be unit-tested
   // without an HTTP mock — see worker/run-match.test.mjs.
-  const match = pickMatchingRun(data?.workflow_runs as unknown[] | undefined, theme) as RunFromApi | null;
-  if (!match) return null;
-  return {
-    status: match.status,
-    conclusion: match.conclusion,
-    html_url: match.html_url,
-    created_at: match.created_at,
-    run_started_at: match.run_started_at,
-    display_title: match.display_title,
-  };
+  return (pickMatchingRun(data?.workflow_runs as unknown[] | undefined, theme) as RunSummary | null);
 }
 
 async function handleStatusGet(request: Request, env: Env): Promise<Response> {
@@ -152,7 +133,7 @@ async function handleStatusGet(request: Request, env: Env): Promise<Response> {
   const theme = url.searchParams.get("theme") ?? "";
   // Same validator as the POST endpoint — keep the surface area uniform
   // so a malformed query string can't probe the GH API on our behalf.
-  if (!THEME_PATTERN.test(theme.trim())) {
+  if (!THEME_INPUT_PATTERN.test(theme.trim())) {
     return json({
       ok: false,
       status: "invalid",
