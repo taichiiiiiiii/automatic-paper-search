@@ -1,5 +1,5 @@
 {
-  "root": "openalex:W4415795803",
+  "root": "openalex:W4393967974",
   "nodes": [
     {
       "id": "openalex:W4393967974",
@@ -18,6 +18,7 @@
       "citation_count": 4,
       "github_stars": 0,
       "tldr": "Transformer-based language models spread FLOPs uniformly across input sequences. In this work we demonstrate that transformers can instead…",
+      "short_abstract": "Transformer-based language models spread FLOPs uniformly across input sequences. In this work we demonstrate that transformers can instead learn to dynamically allocate FLOPs (or compute) to specific positions in a sequence, optimising the allocation along the sequence for different layers across the model depth. Our method enforces a total compute budget by capping the number of tokens ($k$) that can participate in the self-attention and MLP computations at a given layer. The tokens to be processed are determined by the network using a top-$k$ routing mechanism. Since $k$ is defined a priori, this simple procedure uses a static computation graph with known tensor sizes, unlike other conditional computation techniques. Nevertheless, since the identities of the $k$ tokens are fluid, this method can expend FLOPs non-uniformly across the time and model depth dimensions. Thus, compute expenditure is entirely predictable in sum total, but dynamic and context-sensitive at the token-level.…",
       "doi": "10.48550/arxiv.2404.02258",
       "is_focus": true
     },
@@ -38,6 +39,7 @@
       "citation_count": 2,
       "github_stars": 0,
       "tldr": "A well-known dilemma in large vision-language models (e.g., GPT-4, LLaVA) is that while increasing the number of vision tokens generally…",
+      "short_abstract": "A well-known dilemma in large vision-language models (e.g., GPT-4, LLaVA) is that while increasing the number of vision tokens generally enhances visual understanding, it also significantly raises memory and computational costs, especially in long-term, dense video frame streaming scenarios. Although learnable approaches like Q-Former and Perceiver Resampler have been developed to reduce the vision token burden, they overlook the context causally modeled by LLMs (i.e., key-value cache), potentially leading to missed visual cues when addressing user queries. In this paper, we introduce a novel approach to reduce vision compute by leveraging redundant vision tokens \"skipping layers\" rather than decreasing the number of vision tokens. Our method, VideoLLM-MoD, is inspired by mixture-of-depths LLMs and addresses the challenge of numerous vision tokens in long-term or streaming video. Specifically, for each transformer layer, we learn to skip the computation for a high proportion (e.g.,…",
       "doi": "10.48550/arxiv.2408.16730",
       "is_focus": true
     },
@@ -78,6 +80,7 @@
       "citation_count": 0,
       "github_stars": 0,
       "tldr": "Traditional transformer models often allocate a fixed amount of computational resources to every input token, leading to inefficient and…",
+      "short_abstract": "Traditional transformer models often allocate a fixed amount of computational resources to every input token, leading to inefficient and unnecessary computation. To address this, the Mixture of Depths (MoD) was introduced to dynamically adjust the computational depth by skipping less important layers. Despite its promise, current MoD approaches remain under-explored and face two main challenges: (1) _high training costs due to the need to train the entire model along with the routers that determine which layers to skip_, and (2) _the risk of performance degradation when important layers are bypassed_. In response to the first issue, we propose Router-Tuning, a method that fine-tunes only the router on a small dataset, drastically reducing the computational overhead associated with full model training. For the second challenge, we propose MindSkip, which deploys _Attention with Dynamic Depths_. This method preserves the model’s performance while significantly enhancing computational…",
       "doi": "10.32388/kyqecv"
     },
     {
@@ -95,6 +98,7 @@
       "citation_count": 0,
       "github_stars": 0,
       "tldr": "Existing scene classification methods allocate the same computational resources, i.e., all model parameters in the neural network, to each…",
+      "short_abstract": "Existing scene classification methods allocate the same computational resources, i.e., all model parameters in the neural network, to each remote sensing image whenever from any geographic scene. However, this might be redundant for images of certain scenes that are easy to discriminate, e.g., homogeneous scenes. This observation motivates us to propose an efficient method for on-orbit scene classification, namely, the Scale Boosting Model (SBM). Specifically, during the training process, the SBM is built as a set of different scale learners in a scale-increasing manner, each of which is used to learn and classify image features at a specific scale. During inference, the scale learners in the SBM will be selectively run in a scale-increasing manner and automatically decide when to exit early or expand the computation according to the scene complexity. In addition, by replacing the backbone of the scale learner, the SBM could provide a deployment possibility for computationally…",
       "doi": "10.1016/j.jag.2025.104447"
     },
     {
@@ -112,6 +116,7 @@
       "citation_count": 0,
       "github_stars": 0,
       "tldr": "Efficient action understanding in long videos remains a significant challenge for multimodal large language models (MLLMs), primarily due…",
+      "short_abstract": "Efficient action understanding in long videos remains a significant challenge for multimodal large language models (MLLMs), primarily due to the difficulty in localizing target actions within long frame sequences. This stems from the overwhelming interference of unrelated actions in long videos. In this work, we focus on efficient action localization to enhance video understanding from an internal interpretability perspective, leveraging the intricate relationship between text and video tokens to remove irrelevant tokens. By tracing attention distribution across videos of varying frame lengths, we observe that unsuccessful action understanding directly correlates with unrelated actions that receive notable attention scores. Motivated by these findings, we propose an Attend and Replay method that efficiently locates critical action information and strengthens its semantic representation. This approach first reduces unrelated action tokens using an attention-guided spatiotemporal…",
       "doi": "10.1109/iccvw69036.2025.00688"
     },
     {
@@ -131,6 +136,7 @@
       "citation_count": 0,
       "github_stars": 0,
       "tldr": "Scaling depth is a key driver for large language models (LLMs). Yet, as LLMs become deeper, they often suffer from signal degradation:…",
+      "short_abstract": "Scaling depth is a key driver for large language models (LLMs). Yet, as LLMs become deeper, they often suffer from signal degradation: informative features formed in shallow layers are gradually diluted by repeated residual updates, making them harder to recover in deeper layers. We introduce mixture-of-depths attention (MoDA), a mechanism that allows each attention head to attend to sequence KV pairs at the current layer and depth KV pairs from preceding layers. We further describe a hardware-efficient algorithm for MoDA that resolves non-contiguous memory-access patterns, achieving 97.3% of FlashAttention-2's efficiency at a sequence length of 64K. Experiments on 1.5B-parameter models demonstrate that MoDA consistently outperforms strong baselines. Notably, it improves average perplexity by 0.2 across 10 validation benchmarks and increases average performance by 2.11% on 10 downstream tasks, with a negligible 3.7% FLOPs computational overhead. We also find that combining MoDA with…",
       "is_focus": true
     },
     {
@@ -150,6 +156,7 @@
       "citation_count": 0,
       "github_stars": 0,
       "tldr": "Scaling depth is a key driver for large language models (LLMs). Yet, as LLMs become deeper, they often suffer from signal degradation:…",
+      "short_abstract": "Scaling depth is a key driver for large language models (LLMs). Yet, as LLMs become deeper, they often suffer from signal degradation: informative features formed in shallow layers are gradually diluted by repeated residual updates, making them harder to recover in deeper layers. We introduce mixture-of-depths attention (MoDA), a mechanism that allows each attention head to attend to sequence KV pairs at the current layer and depth KV pairs from preceding layers. We further describe a hardware-efficient algorithm for MoDA that resolves non-contiguous memory-access patterns, achieving 97.3% of FlashAttention-2's efficiency at a sequence length of 64K. Experiments on 1.5B-parameter models demonstrate that MoDA consistently outperforms strong baselines. Notably, it improves average perplexity by 0.2 across 10 validation benchmarks and increases average performance by 2.11% on 10 downstream tasks, with a negligible 3.7% FLOPs computational overhead. We also find that combining MoDA with…",
       "doi": "10.48550/arxiv.2603.15619",
       "is_focus": true
     },
@@ -169,6 +176,7 @@
       "citation_count": 0,
       "github_stars": 0,
       "tldr": "Streaming video large language models (LLMs) are increasingly used for real-time multimodal tasks such as video captioning, question…",
+      "short_abstract": "Streaming video large language models (LLMs) are increasingly used for real-time multimodal tasks such as video captioning, question answering, conversational agents, and augmented reality. However, these models face fundamental memory and computational challenges because their key-value (KV) caches grow substantially with continuous streaming video input. This process requires an iterative prefill stage, which is a unique feature of streaming video LLMs. Prior works reduce excessive cache overhead by utilizing the KV cache retrieval algorithm, which offloads the full KV cache to CPU memory or storage, then selectively fetches the most relevant entries. Nevertheless, due to its iterative prefill stage, they suffer from significant limitations, including extensive computation, substantial data transfer, and degradation in accuracy. Crucially, this issue is exacerbated for edge deployment, which is the primary target for these models. The memory footprint exceeds the memory capacity…",
       "doi": "10.1109/hpca68181.2026.11408603"
     }
   ],
@@ -193,6 +201,13 @@
       "rel": "contrasts",
       "conf": 0.8,
       "rationale": "B のアクションローカリゼーションは、A の Mixture-of-Depths ビジョン計算と異なり、内部解釈可能性に焦点を当てている。"
+    },
+    {
+      "src": "openalex:W4393967974",
+      "dst": "openalex:W4408178237",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     }
   ],
   "meta": {
@@ -211,6 +226,6 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-06-03T14:38:44.560403+00:00"
+    "generated_at": "2026-06-04T05:44:56.145294+00:00"
   }
 }

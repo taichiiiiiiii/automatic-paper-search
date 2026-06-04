@@ -14,7 +14,8 @@
       "kinds": [],
       "citation_count": 1102,
       "github_stars": 0,
-      "tldr": "An autoencoder network uses a set of recognition weights to convert an input vector into a code vector. It then uses a set of generative…"
+      "tldr": "An autoencoder network uses a set of recognition weights to convert an input vector into a code vector. It then uses a set of generative…",
+      "short_abstract": "An autoencoder network uses a set of recognition weights to convert an input vector into a code vector. It then uses a set of generative weights to convert the code vector into an approximate reconstruction of the input vector. We derive an objective function for training autoencoders based on the Minimum Description Length (MDL) principle. The aim is to minimize the information required to describe both the code vector and the reconstruction error. We show that this information is minimized by choosing code vectors stochastically according to a Boltzmann distri-bution, where the generative weights define the energy of each possible code vector given the input vector. Unfortunately, if the code vectors use distributed representations, it is exponentially expensive to compute this Boltzmann distribution because it involves all possible code vectors. We show that the recognition weights of an autoencoder can be used to compute an approximation to the Boltzmann distribution and that…"
     },
     {
       "id": "openalex:W2026799324",
@@ -32,6 +33,7 @@
       "citation_count": 1216,
       "github_stars": 0,
       "tldr": "Discovering the structure inherent in a set of patterns is a fundamental aim of statistical inference or learning. One fruitful approach…",
+      "short_abstract": "Discovering the structure inherent in a set of patterns is a fundamental aim of statistical inference or learning. One fruitful approach is to build a parameterized stochastic generative model, independent draws from which are likely to produce the patterns. For all but the simplest generative models, each pattern can be generated in exponentially many ways. It is thus intractable to adjust the parameters to maximize the probability of the observed patterns. We describe a way of finessing this combinatorial explosion by maximizing an easily computed lower bound on the probability of the observations. Our method can be viewed as a form of hierarchical self-supervised learning that may relate to the function of bottom-up and top-down cortical processing pathways.",
       "doi": "10.1162/neco.1995.7.5.889"
     },
     {
@@ -50,6 +52,7 @@
       "citation_count": 1114,
       "github_stars": 0,
       "tldr": "An unsupervised learning algorithm for a multilayer network of stochastic neurons is described. Bottom-up \"recognition\" connections…",
+      "short_abstract": "An unsupervised learning algorithm for a multilayer network of stochastic neurons is described. Bottom-up \"recognition\" connections convert the input into representations in successive hidden layers, and top-down \"generative\" connections reconstruct the representation in one layer from the representation in the layer above. In the \"wake\" phase, neurons are driven by recognition connections, and generative connections are adapted to increase the probability that they would reconstruct the correct activity vector in the layer below. In the \"sleep\" phase, neurons are driven by generative connections, and recognition connections are adapted to increase the probability that they would produce the correct activity vector in the layer above.",
       "doi": "10.1126/science.7761831"
     },
     {
@@ -64,9 +67,10 @@
         "William Bialek"
       ],
       "kinds": [],
-      "citation_count": 1863,
+      "citation_count": 1864,
       "github_stars": 0,
       "tldr": "A Python package for working with the Information Bottleneck [Tishby, Pereira, Bialek 2001] and the Deterministic (and Generalized)…",
+      "short_abstract": "A Python package for working with the Information Bottleneck [Tishby, Pereira, Bialek 2001] and the Deterministic (and Generalized) Information Bottleneck [Strouse and Schwab 2016]. Embo is especially geared towards the analysis of concrete, finite-size data sets. See on PyPI <strong>How to cite:</strong> Piasini, E., Filipowicz, A.L.S., Levine, J. and Gold, J.I., 2021. Embo: a Python package for empirical data analysis using the Information Bottleneck. <em>Journal of Open Research Software</em>, 9(1), p.10. DOI: http://doi.org/10.5334/jors.322",
       "doi": "10.48550/arxiv.physics/0004057"
     },
     {
@@ -82,6 +86,7 @@
       "citation_count": 1301,
       "github_stars": 0,
       "tldr": "In 1998 and again in 1999, the Lincoln Laboratory of MIT conducted a comparative evaluation of intrusion detection systems (IDSs)…",
+      "short_abstract": "In 1998 and again in 1999, the Lincoln Laboratory of MIT conducted a comparative evaluation of intrusion detection systems (IDSs) developed under DARPA funding. While this evaluation represents a significant and monumental undertaking, there are a number of issues associated with its design and execution that remain unsettled. Some methodologies used in the evaluation are questionable and may have biased its results. One problem is that the evaluators have published relatively little concerning some of the more critical aspects of their work, such as validation of their test data. The appropriateness of the evaluation techniques used needs further investigation. The purpose of this article is to attempt to identify the shortcomings of the Lincoln Lab effort in the hope that future efforts of this kind will be placed on a sounder footing. Some of the problems that the article points out might well be resolved if the evaluators were to publish a detailed description of their procedures…",
       "doi": "10.1145/382912.382923"
     },
     {
@@ -95,9 +100,10 @@
         "Jaana Kekäläinen"
       ],
       "kinds": [],
-      "citation_count": 4612,
+      "citation_count": 4613,
       "github_stars": 0,
       "tldr": "Modern large retrieval environments tend to overwhelm their users by their large output. Since all documents are not of equal relevance to…",
+      "short_abstract": "Modern large retrieval environments tend to overwhelm their users by their large output. Since all documents are not of equal relevance to their users, highly relevant documents should be identified and ranked first for presentation. In order to develop IR techniques in this direction, it is necessary to develop evaluation approaches and methods that credit IR methods for their ability to retrieve highly relevant documents. This can be done by extending traditional evaluation methods, that is, recall and precision based on binary relevance judgments, to graded relevance judgments. Alternatively, novel measures based on graded relevance judgments may be developed. This article proposes several novel measures that compute the cumulative gain the user obtains by examining the retrieval result up to a given ranked position. The first one accumulates the relevance scores of retrieved documents along the ranked result list. The second one is similar but applies a discount factor to the…",
       "doi": "10.1145/582415.582418"
     },
     {
@@ -117,6 +123,7 @@
       "citation_count": 161,
       "github_stars": 0,
       "tldr": "A fundamental problem in intrusion detection is what metric(s) can be used to objectively evaluate an intrusion detection system (IDS) in…",
+      "short_abstract": "A fundamental problem in intrusion detection is what metric(s) can be used to objectively evaluate an intrusion detection system (IDS) in terms of its ability to correctly classify events as normal or intrusive. Traditional metrics (e.g., true positive rate and false positive rate) measure different aspects, but no single metric seems sufficient to measure the capability of intrusion detection systems. The lack of a single unified metric makes it difficult to fine-tune and evaluate an IDS. In this paper, we provide an in-depth analysis of existing metrics. Specifically, we analyze a typical cost-based scheme [6], and demonstrate that this approach is very confusing and ineffective when the cost factor is not carefully selected. In addition, we provide a novel information-theoretic analysis of IDS and propose a new metric that highly complements cost-based analysis. When examining the intrusion detection process from an information-theoretic point of view, intuitively, we should have…",
       "doi": "10.1145/1128817.1128834"
     },
     {
@@ -132,7 +139,8 @@
       "kinds": [],
       "citation_count": 3576,
       "github_stars": 0,
-      "tldr": "Many existing approaches to collaborative filtering can neither handle very large datasets nor easily deal with users who have very few…"
+      "tldr": "Many existing approaches to collaborative filtering can neither handle very large datasets nor easily deal with users who have very few…",
+      "short_abstract": "Many existing approaches to collaborative filtering can neither handle very large datasets nor easily deal with users who have very few ratings. In this paper we present the Probabilistic Matrix Factorization (PMF) model which scales linearly with the number of observations and, more importantly, performs well on the large, sparse, and very imbalanced Netflix dataset. We further extend the PMF model to include an adaptive prior on the model parameters and show how the model capacity can be controlled automatically. Finally, we introduce a constrained version of the PMF model that is based on the assumption that users who have rated similar sets of movies are likely to have similar preferences. The resulting model is able to generalize considerably better for users with very few ratings. When the predictions of multiple PMF models are linearly combined with the predictions of Restricted Boltzmann Machines models, we achieve an error rate of 0.8861, that is nearly 7% better than the…"
     },
     {
       "id": "openalex:W2099866409",
@@ -149,6 +157,7 @@
       "citation_count": 1880,
       "github_stars": 0,
       "tldr": "Most of the existing approaches to collaborative filtering cannot handle very large data sets. In this paper we show how a class of…",
+      "short_abstract": "Most of the existing approaches to collaborative filtering cannot handle very large data sets. In this paper we show how a class of two-layer undirected graphical models, called Restricted Boltzmann Machines (RBM's), can be used to model tabular data, such as user's ratings of movies. We present efficient learning and inference procedures for this class of models and demonstrate that RBM's can be successfully applied to the Netflix data set, containing over 100 million user/movie ratings. We also show that RBM's slightly outperform carefully-tuned SVD models. When the predictions of multiple RBM models and multiple SVD models are linearly combined, we achieve an error rate that is well over 6% better than the score of Netflix's own system.",
       "doi": "10.1145/1273496.1273596"
     },
     {
@@ -163,9 +172,10 @@
         "Chris Volinsky"
       ],
       "kinds": [],
-      "citation_count": 3209,
+      "citation_count": 3211,
       "github_stars": 0,
       "tldr": "A common task of recommender systems is to improve customer experience through personalized recommendations based on prior implicit…",
+      "short_abstract": "A common task of recommender systems is to improve customer experience through personalized recommendations based on prior implicit feedback. These systems passively track different sorts of user behavior, such as purchase history, watching habits and browsing activity, in order to model user preferences. Unlike the much more extensively researched explicit feedback, we do not have any direct input from the users regarding their preferences. In particular, we lack substantial evidence on which products consumer dislike. In this work we identify unique properties of implicit feedback datasets. We propose treating the data as indication of positive and negative preference associated with vastly varying confidence levels. This leads to a factor model which is especially tailored for implicit feedback recommenders. We also suggest a scalable optimization procedure, which scales linearly with the data size. The algorithm is used successfully within a recommender system for television…",
       "doi": "10.1109/icdm.2008.22"
     },
     {
@@ -184,6 +194,7 @@
       "citation_count": 4192,
       "github_stars": 0,
       "tldr": "Detection of visually salient image regions is useful for applications like object segmentation, adaptive compression, and object…",
+      "short_abstract": "Detection of visually salient image regions is useful for applications like object segmentation, adaptive compression, and object recognition. In this paper, we introduce a method for salient region detection that outputs full resolution saliency maps with well-defined boundaries of salient objects. These boundaries are preserved by retaining substantially more frequency content from the original image than other existing techniques. Our method exploits features of color and luminance, is simple to implement, and is computationally efficient. We compare our algorithm to five state-of-the-art salient region detection methods with a frequency domain analysis, ground truth, and a salient object segmentation application. Our method outperforms the five algorithms both on the ground-truth evaluation and on the segmentation task by achieving both higher precision and better recall.",
       "doi": "10.1109/cvpr.2009.5206596"
     },
     {
@@ -197,9 +208,10 @@
         "David J. Hand"
       ],
       "kinds": [],
-      "citation_count": 665,
+      "citation_count": 666,
       "github_stars": 0,
       "tldr": "Since ROC curves have become ubiquitous in many application areas, the various advances have been scattered across disparate articles and…",
+      "short_abstract": "Since ROC curves have become ubiquitous in many application areas, the various advances have been scattered across disparate articles and texts. ROC Curves for Continuous Data is the first book solely devoted to the subject, bringing together all the relevant material to provide a clear understanding of how to analyze ROC curves.The fundamental theory of ROC curvesThe book first discusses the relationship between the ROC curve and numerous performance measures and then extends the theory into practice by describing how ROC curves are estimated. Further building on the theory, the authors prese",
       "doi": "10.1201/9781439800225"
     },
     {
@@ -219,6 +231,7 @@
       "citation_count": 324,
       "github_stars": 0,
       "tldr": "With the rapid evolution and proliferation of botnets, large-scale cyber attacks such as DDoS, spam emails are also becoming more and more…",
+      "short_abstract": "With the rapid evolution and proliferation of botnets, large-scale cyber attacks such as DDoS, spam emails are also becoming more and more dangerous and serious cyber threats. Because of this, network based security technologies such as Network based Intrusion Detection Systems (NIDSs), Intrusion Prevention Systems (IPSs), firewalls have received remarkable attention to defend our crucial computer systems, networks and sensitive information from attackers on the Internet. In particular, there has been much effort towards high-performance NIDSs based on data mining and machine learning techniques. However, there is a fatal problem in that the existing evaluation dataset, called KDD Cup 99' dataset, cannot reflect current network situations and the latest attack trends. This is because it was generated by simulation over a virtual network more than 10 years ago. To the best of our knowledge, there is no alternative evaluation dataset. In this paper, we present a new evaluation dataset,…",
       "doi": "10.1145/1978672.1978676"
     },
     {
@@ -234,9 +247,10 @@
         "Lars Schmidt-Thieme"
       ],
       "kinds": [],
-      "citation_count": 4366,
+      "citation_count": 4368,
       "github_stars": 0,
       "tldr": "Item recommendation is the task of predicting a personalized ranking on a set of items (e.g. websites, movies, products). In this paper,…",
+      "short_abstract": "Item recommendation is the task of predicting a personalized ranking on a set of items (e.g. websites, movies, products). In this paper, we investigate the most common scenario with implicit feedback (e.g. clicks, purchases). There are many methods for item recommendation from implicit feedback like matrix factorization (MF) or adaptive knearest-neighbor (kNN). Even though these methods are designed for the item prediction task of personalized ranking, none of them is directly optimized for ranking. In this paper we present a generic optimization criterion BPR-Opt for personalized ranking that is the maximum posterior estimator derived from a Bayesian analysis of the problem. We also provide a generic learning algorithm for optimizing models with respect to BPR-Opt. The learning method is based on stochastic gradient descent with bootstrap sampling. We show how to apply our method to two state-of-the-art recommender models: matrix factorization and adaptive kNN. Our experiments…",
       "doi": "10.48550/arxiv.1205.2618"
     },
     {
@@ -254,7 +268,8 @@
       "kinds": [],
       "citation_count": 3534,
       "github_stars": 0,
-      "tldr": "Deep and recurrent neural networks (DNNs and RNNs respectively) are powerful models that were considered to be almost impossible to train…"
+      "tldr": "Deep and recurrent neural networks (DNNs and RNNs respectively) are powerful models that were considered to be almost impossible to train…",
+      "short_abstract": "Deep and recurrent neural networks (DNNs and RNNs respectively) are powerful models that were considered to be almost impossible to train using stochastic gradient descent with momentum. In this paper, we show that when stochastic gradient descent with momentum uses a well-designed random initialization and a particular type of slowly increasing schedule for the momentum parameter, it can train both DNNs and RNNs (on datasets with long-term dependencies) to levels of performance that were previously achievable only with Hessian-Free optimization. We find that both the initialization and the momentum are crucial since poorly initialized networks cannot be trained with momentum and well-initialized networks perform markedly worse when the momentum is absent or poorly tuned. Our success training these models suggests that previous attempts to train deep and recurrent neural networks from random initializations have likely failed due to poor initialization schemes. Furthermore, carefully…"
     },
     {
       "id": "openalex:W571200655",
@@ -267,9 +282,10 @@
         "Yunqian Ma"
       ],
       "kinds": [],
-      "citation_count": 826,
+      "citation_count": 827,
       "github_stars": 0,
       "tldr": "The first book of its kind to review the current status and future direction of the exciting new branch of machine learning/data mining…",
+      "short_abstract": "The first book of its kind to review the current status and future direction of the exciting new branch of machine learning/data mining called imbalanced learning Imbalanced learning focuses on how an intelligent system can learn when it is provided with imbalanced data. Solving imbalanced learning problems is critical in numerous data-intensive networked systems, including surveillance, security, Internet, finance, biomedical, defense, and more. Due to the inherent complex characteristics of imbalanced data sets, learning from such data requires new understandings, principles, algorithms, and tools to transform vast amounts of raw data efficiently into information and knowledge representation. The first comprehensive look at this new branch of machine learning, this book offers a critical review of the problem of imbalanced learning, covering the state of the art in techniques, principles, and real-world applications. Featuring contributions from experts in both academia and…",
       "doi": "10.1002/9781118646106"
     },
     {
@@ -287,6 +303,7 @@
       "citation_count": 2652,
       "github_stars": 0,
       "tldr": "We marry ideas from deep neural networks and approximate Bayesian inference to derive a generalised class of deep, directed generative…",
+      "short_abstract": "We marry ideas from deep neural networks and approximate Bayesian inference to derive a generalised class of deep, directed generative models, endowed with a new algorithm for scalable inference and learning. Our algorithm introduces a recognition model to represent approximate posterior distributions, and that acts as a stochastic encoder of the data. We develop stochastic back-propagation -- rules for back-propagation through stochastic variables -- and use this to develop an algorithm that allows for joint optimisation of the parameters of both the generative and recognition model. We demonstrate on several real-world data sets that the model generates realistic samples, provides accurate imputations of missing data and is a useful tool for high-dimensional data visualisation.",
       "doi": "10.48550/arxiv.1401.4082"
     },
     {
@@ -304,6 +321,7 @@
       "citation_count": 1346,
       "github_stars": 0,
       "tldr": "We propose a deep learning framework for modeling complex high-dimensional densities called Non-linear Independent Component Estimation…",
+      "short_abstract": "We propose a deep learning framework for modeling complex high-dimensional densities called Non-linear Independent Component Estimation (NICE). It is based on the idea that a good representation is one in which the data has a distribution that is easy to model. For this purpose, a non-linear deterministic transformation of the data is learned that maps it to a latent space so as to make the transformed data conform to a factorized distribution, i.e., resulting in independent latent variables. We parametrize this transformation so that computing the Jacobian determinant and inverse transform is trivial, yet we maintain the ability to learn complex non-linear transformations, via a composition of simple building blocks, each based on a deep neural network. The training criterion is simply the exact log-likelihood, which is tractable. Unbiased ancestral sampling is also easy. We show that this approach yields good generative models on four image datasets and can be used for inpainting.",
       "doi": "10.48550/arxiv.1410.8516"
     },
     {
@@ -321,6 +339,7 @@
       "citation_count": 2316,
       "github_stars": 0,
       "tldr": "We introduce the \"exponential linear unit\" (ELU) which speeds up learning in deep neural networks and leads to higher classification…",
+      "short_abstract": "We introduce the \"exponential linear unit\" (ELU) which speeds up learning in deep neural networks and leads to higher classification accuracies. Like rectified linear units (ReLUs), leaky ReLUs (LReLUs) and parametrized ReLUs (PReLUs), ELUs alleviate the vanishing gradient problem via the identity for positive values. However, ELUs have improved learning characteristics compared to the units with other activation functions. In contrast to ReLUs, ELUs have negative values which allows them to push mean unit activations closer to zero like batch normalization but with lower computational complexity. Mean shifts toward zero speed up learning by bringing the normal gradient closer to the unit natural gradient because of a reduced bias shift effect. While LReLUs and PReLUs have negative values, too, they do not ensure a noise-robust deactivation state. ELUs saturate to a negative value with smaller inputs and thereby decrease the forward propagated variation and information. Therefore,…",
       "doi": "10.48550/arxiv.1511.07289"
     },
     {
@@ -337,7 +356,8 @@
       "kinds": [],
       "citation_count": 2138,
       "github_stars": 0,
-      "tldr": "Supervised deep learning has been successfully applied to many recognition problems. Although it can approximate a complex many-to-one…"
+      "tldr": "Supervised deep learning has been successfully applied to many recognition problems. Although it can approximate a complex many-to-one…",
+      "short_abstract": "Supervised deep learning has been successfully applied to many recognition problems. Although it can approximate a complex many-to-one function well when a large amount of training data is provided, it is still challenging to model complex structured output representations that effectively perform probabilistic inference and make diverse predictions. In this work, we develop a deep conditional generative model for structured output prediction using Gaussian latent variables. The model is trained efficiently in the framework of stochastic gradient variational Bayes, and allows for fast prediction using stochastic feed-forward inference. In addition, we provide novel strategies to build robust structured prediction algorithms, such as input noise-injection and multi-scale prediction objective at training. In experiments, we demonstrate the effectiveness of our proposed algorithm in comparison to the deterministic deep neural network counterparts in generating diverse but realistic…"
     },
     {
       "id": "openalex:W581956982",
@@ -353,7 +373,8 @@
       "kinds": [],
       "citation_count": 1405,
       "github_stars": 0,
-      "tldr": "The Recurrent Neural Network (RNN) is an ex-tremely powerful sequence model that is often difficult to train. The Long Short-Term Memory…"
+      "tldr": "The Recurrent Neural Network (RNN) is an ex-tremely powerful sequence model that is often difficult to train. The Long Short-Term Memory…",
+      "short_abstract": "The Recurrent Neural Network (RNN) is an ex-tremely powerful sequence model that is often difficult to train. The Long Short-Term Memory (LSTM) is a specific RNN architecture whose design makes it much easier to train. While wildly successful in practice, the LSTM’s archi-tecture appears to be ad-hoc so it is not clear if it is optimal, and the significance of its individual components is unclear. In this work, we aim to determine whether the LSTM architecture is optimal or whether much better architectures exist. We conducted a thor-ough architecture search where we evaluated over ten thousand different RNN architectures, and identified an architecture that outperforms both the LSTM and the recently-introduced Gated Recurrent Unit (GRU) on some but not all tasks. We found that adding a bias of 1 to the LSTM’s forget gate closes the gap between the LSTM and the GRU. 1."
     },
     {
       "id": "openalex:W1772076007",
@@ -368,9 +389,10 @@
         "Jia Li"
       ],
       "kinds": [],
-      "citation_count": 1331,
+      "citation_count": 1332,
       "github_stars": 0,
       "tldr": "We extensively compare, qualitatively and quantitatively, 41 state-of-the-art models (29 salient object detection, 10 fixation prediction,…",
+      "short_abstract": "We extensively compare, qualitatively and quantitatively, 41 state-of-the-art models (29 salient object detection, 10 fixation prediction, 1 objectness, and 1 baseline) over seven challenging data sets for the purpose of benchmarking salient object detection and segmentation methods. From the results obtained so far, our evaluation shows a consistent rapid progress over the last few years in terms of both accuracy and running time. The top contenders in this benchmark significantly outperform the models identified as the best in the previous benchmark conducted three years ago. We find that the models designed specifically for salient object detection generally work better than models in closely related areas, which in turn provides a precise definition and suggests an appropriate treatment of this problem that distinguishes it from other problems. In particular, we analyze the influences of center bias and scene complexity in model performance, which, along with the hard cases for…",
       "doi": "10.1109/tip.2015.2487833"
     },
     {
@@ -389,6 +411,7 @@
       "citation_count": 751,
       "github_stars": 0,
       "tldr": "This paper presents the Deep Convolution Inverse Graphics Network (DC-IGN), a model that learns an interpretable representation of images.…",
+      "short_abstract": "This paper presents the Deep Convolution Inverse Graphics Network (DC-IGN), a model that learns an interpretable representation of images. This representation is disentangled with respect to transformations such as out-of-plane rotations and lighting variations. The DC-IGN model is composed of multiple layers of convolution and de-convolution operators and is trained using the Stochastic Gradient Variational Bayes (SGVB) algorithm. We propose a training procedure to encourage neurons in the graphics code layer to represent a specific transformation (e.g. pose or light). Given a single input image, our model can generate new images of the same object with variations in pose and lighting. We present qualitative and quantitative results of the model's efficacy at learning a 3D rendering engine.",
       "doi": "10.48550/arxiv.1503.03167"
     },
     {
@@ -408,6 +431,7 @@
       "citation_count": 700,
       "github_stars": 0,
       "tldr": "In this paper, we explore the inclusion of latent random variables into the dynamic hidden state of a recurrent neural network (RNN) by…",
+      "short_abstract": "In this paper, we explore the inclusion of latent random variables into the dynamic hidden state of a recurrent neural network (RNN) by combining elements of the variational autoencoder. We argue that through the use of high-level latent random variables, the variational RNN (VRNN)1 can model the kind of variability observed in highly structured sequential data such as natural speech. We empirically evaluate the proposed model against related sequential models on four speech datasets and one handwriting dataset. Our results show the important roles that latent random variables can play in the RNN dynamic hidden state.",
       "doi": "10.48550/arxiv.1506.02216"
     },
     {
@@ -422,9 +446,10 @@
         "Thomas Brox"
       ],
       "kinds": [],
-      "citation_count": 682,
+      "citation_count": 683,
       "github_stars": 0,
       "tldr": "We train a generative convolutional neural network which is able to generate images of objects given object type, viewpoint, and color. We…",
+      "short_abstract": "We train a generative convolutional neural network which is able to generate images of objects given object type, viewpoint, and color. We train the network in a supervised manner on a dataset of rendered 3D chair models. Our experiments show that the network does not merely learn all images by heart, but rather finds a meaningful representation of a 3D chair model allowing it to assess the similarity of different chairs, interpolate between given viewpoints to generate the missing ones, or invent new chair styles by interpolating between chairs from the training set. We show that the network can be used to find correspondences between different chairs from the dataset, outperforming existing approaches on this task.",
       "doi": "10.1109/cvpr.2015.7298761"
     },
     {
@@ -442,6 +467,7 @@
       "citation_count": 3231,
       "github_stars": 0,
       "tldr": "Categorical variables are a natural choice for representing discrete structure in the world. However, stochastic neural networks rarely…",
+      "short_abstract": "Categorical variables are a natural choice for representing discrete structure in the world. However, stochastic neural networks rarely use categorical latent variables due to the inability to backpropagate through samples. In this work, we present an efficient gradient estimator that replaces the non-differentiable sample from a categorical distribution with a differentiable sample from a novel Gumbel-Softmax distribution. This distribution has the essential property that it can be smoothly annealed into a categorical distribution. We show that our Gumbel-Softmax estimator outperforms state-of-the-art gradient estimators on structured output prediction and unsupervised generative modeling tasks with categorical latent variables, and enables large speedups on semi-supervised classification.",
       "doi": "10.48550/arxiv.1611.01144"
     },
     {
@@ -460,7 +486,8 @@
       "kinds": [],
       "citation_count": 808,
       "github_stars": 0,
-      "tldr": "The framework of normalizing flows provides a general strategy for flexible variational inference of posteriors over latent variables. We…"
+      "tldr": "The framework of normalizing flows provides a general strategy for flexible variational inference of posteriors over latent variables. We…",
+      "short_abstract": "The framework of normalizing flows provides a general strategy for flexible variational inference of posteriors over latent variables. We propose a new type of normalizing flow, inverse autoregressive flow (IAF), that, in contrast to earlier published flows, scales well to high-dimensional latent spaces. The proposed flow consists of a chain of invertible transformations, where each transformation is based on an autoregressive neural network. In experiments, we show that IAF significantly improves upon diagonal Gaussian approximate posteriors. In addition, we demonstrate that a novel type of variational autoencoder, coupled with IAF, is competitive with neural autoregressive models in terms of attained log-likelihood on natural images, while allowing significantly faster synthesis."
     },
     {
       "id": "openalex:W2409550820",
@@ -475,6 +502,7 @@
       "citation_count": 792,
       "github_stars": 0,
       "tldr": "Unsupervised learning of probabilistic models is a central yet challenging problem in machine learning. Specifically, designing models…",
+      "short_abstract": "Unsupervised learning of probabilistic models is a central yet challenging problem in machine learning. Specifically, designing models with tractable learning, sampling, inference and evaluation is crucial in solving this task. We extend the space of such models using real-valued non-volume preserving (real NVP) transformations, a set of powerful invertible and learnable transformations, resulting in an unsupervised learning algorithm with exact log-likelihood computation, exact sampling, exact inference of latent variables, and an interpretable latent space. We demonstrate its ability to model natural images on four datasets through sampling, log-likelihood evaluation and latent variable manipulations.",
       "doi": "10.48550/arxiv.1605.08803"
     },
     {
@@ -493,6 +521,7 @@
       "citation_count": 539,
       "github_stars": 0,
       "tldr": "We propose a systematic approach to reduce the memory consumption of deep neural network training. Specifically, we design an algorithm…",
+      "short_abstract": "We propose a systematic approach to reduce the memory consumption of deep neural network training. Specifically, we design an algorithm that costs O(sqrt(n)) memory to train a n layer network, with only the computational cost of an extra forward pass per mini-batch. As many of the state-of-the-art models hit the upper bound of the GPU memory, our algorithm allows deeper and more complex models to be explored, and helps advance the innovations in deep learning research. We focus on reducing the memory cost to store the intermediate feature maps and gradients during training. Computation graph analysis is used for automatic in-place operation and memory sharing optimizations. We show that it is possible to trade computation for memory - giving a more memory efficient training algorithm with a little extra computation cost. In the extreme case, our analysis also shows that the memory consumption can be reduced to O(log n) with as little as O(n log n) extra cost for forward computation.…",
       "doi": "10.48550/arxiv.1604.06174"
     },
     {
@@ -507,9 +536,10 @@
         "Jon D. McAuliffe"
       ],
       "kinds": [],
-      "citation_count": 3683,
+      "citation_count": 3688,
       "github_stars": 0,
       "tldr": "One of the core problems of modern statistics is to approximate difficult-to-compute probability densities. This problem is especially…",
+      "short_abstract": "One of the core problems of modern statistics is to approximate difficult-to-compute probability densities. This problem is especially important in Bayesian statistics, which frames all inference about unknown quantities as a calculation involving the posterior density. In this article, we review variational inference (VI), a method from machine learning that approximates probability densities through optimization. VI has been used in many applications and tends to be faster than classical methods, such as Markov chain Monte Carlo sampling. The idea behind VI is to first posit a family of densities and then to find a member of that family which is close to the target density. Closeness is measured by Kullback–Leibler divergence. We review the ideas behind mean-field variational inference, discuss the special case of VI applied to exponential family models, present a full example with a Bayesian mixture of Gaussians, and derive a variant that uses stochastic optimization to scale up…",
       "doi": "10.1080/01621459.2017.1285773"
     },
     {
@@ -524,9 +554,10 @@
         "Gabriel Brostow"
       ],
       "kinds": [],
-      "citation_count": 3249,
+      "citation_count": 3250,
       "github_stars": 0,
       "tldr": "Learning based methods have shown very promising results for the task of depth estimation in single images. However, most existing…",
+      "short_abstract": "Learning based methods have shown very promising results for the task of depth estimation in single images. However, most existing approaches treat depth prediction as a supervised regression problem and as a result, require vast quantities of corresponding ground truth depth data for training. Just recording quality depth data in a range of environments is a challenging problem. In this paper, we innovate beyond existing approaches, replacing the use of explicit depth data during training with easier-to-obtain binocular stereo footage. We propose a novel training objective that enables our convolutional neural network to learn to perform single image depth estimation, despite the absence of ground truth depth data. Ex-ploiting epipolar geometry constraints, we generate disparity images by training our network with an image reconstruction loss. We show that solving for image reconstruction alone results in poor quality depth images. To overcome this problem, we propose a novel…",
       "doi": "10.1109/cvpr.2017.699"
     },
     {
@@ -544,6 +575,7 @@
       "citation_count": 826,
       "github_stars": 0,
       "tldr": "© 2017. The copyright of this document resides with its authors. We present a deep learning framework for probabilistic pixel-wise…",
+      "short_abstract": "© 2017. The copyright of this document resides with its authors. We present a deep learning framework for probabilistic pixel-wise semantic segmentation, which we term Bayesian SegNet. Semantic segmentation is an important tool for visual scene understanding and a meaningful measure of uncertainty is essential for decision making. Our contribution is a practical system which is able to predict pixel-wise class labels with a measure of model uncertainty using Bayesian deep learning. We achieve this by Monte Carlo sampling with dropout at test time to generate a posterior distribution of pixel class labels. In addition, we show that modelling uncertainty improves segmentation performance by 2-3% across a number of datasets and architectures such as SegNet, FCN, Dilation Network and DenseNet.",
       "doi": "10.5244/c.31.57"
     },
     {
@@ -560,6 +592,7 @@
       "citation_count": 802,
       "github_stars": 0,
       "tldr": "Despite their great success, there is still no comprehensive theoretical understanding of learning with Deep Neural Networks (DNNs) or…",
+      "short_abstract": "Despite their great success, there is still no comprehensive theoretical understanding of learning with Deep Neural Networks (DNNs) or their inner organization. Previous work proposed to analyze DNNs in the \\textit{Information Plane}; i.e., the plane of the Mutual Information values that each layer preserves on the input and output variables. They suggested that the goal of the network is to optimize the Information Bottleneck (IB) tradeoff between compression and prediction, successively, for each layer. In this work we follow up on this idea and demonstrate the effectiveness of the Information-Plane visualization of DNNs. Our main results are: (i) most of the training epochs in standard DL are spent on {\\emph compression} of the input to efficient representation and not on fitting the training labels. (ii) The representation compression phase begins when the training errors becomes small and the Stochastic Gradient Decent (SGD) epochs change from a fast drift to smaller training…",
       "doi": "10.48550/arxiv.1703.00810"
     },
     {
@@ -577,6 +610,7 @@
       "citation_count": 753,
       "github_stars": 0,
       "tldr": "The choice of activation functions in deep networks has a significant effect on the training dynamics and task performance. Currently, the…",
+      "short_abstract": "The choice of activation functions in deep networks has a significant effect on the training dynamics and task performance. Currently, the most successful and widely-used activation function is the Rectified Linear Unit (ReLU). Although various hand-designed alternatives to ReLU have been proposed, none have managed to replace it due to inconsistent gains. In this work, we propose to leverage automatic search techniques to discover new activation functions. Using a combination of exhaustive and reinforcement learning-based search, we discover multiple novel activation functions. We verify the effectiveness of the searches by conducting an empirical evaluation with the best discovered activation function. Our experiments show that the best discovered activation function, $f(x) = x \\cdot \\text{sigmoid}(βx)$, which we name Swish, tends to work better than ReLU on deeper models across a number of challenging datasets. For example, simply replacing ReLUs with Swish units improves top-1…",
       "doi": "10.48550/arxiv.1710.05941"
     },
     {
@@ -596,6 +630,7 @@
       "citation_count": 656,
       "github_stars": 0,
       "tldr": "Saliency detection aims to highlight the most relevant objects in an image. Methods using conventional models struggle whenever salient…",
+      "short_abstract": "Saliency detection aims to highlight the most relevant objects in an image. Methods using conventional models struggle whenever salient objects are pictured on top of a cluttered background while deep neural nets suffer from excess complexity and slow evaluation speeds. In this paper, we propose a simplified convolutional neural network which combines local and global information through a multi-resolution 4×5 grid structure. Instead of enforcing spacial coherence with a CRF or superpixels as is usually the case, we implemented a loss function inspired by the Mumford-Shah functional which penalizes errors on the boundary. We trained our model on the MSRA-B dataset, and tested it on six different saliency benchmark datasets. Results show that our method is on par with the state-of-the-art while reducing computation time by a factor of 18 to 100 times, enabling near real-time, high performance saliency detection.",
       "doi": "10.1109/cvpr.2017.698"
     },
     {
@@ -614,6 +649,7 @@
       "citation_count": 656,
       "github_stars": 0,
       "tldr": "With the ever-growing volume of online information, recommender systems have been an effective strategy to overcome such information…",
+      "short_abstract": "With the ever-growing volume of online information, recommender systems have been an effective strategy to overcome such information overload. The utility of recommender systems cannot be overstated, given its widespread adoption in many web applications, along with its potential impact to ameliorate many problems related to over-choice. In recent years, deep learning has garnered considerable interest in many research fields such as computer vision and natural language processing, owing not only to stellar performance but also the attractive property of learning feature representations from scratch. The influence of deep learning is also pervasive, recently demonstrating its effectiveness when applied to information retrieval and recommender systems research. Evidently, the field of deep learning in recommender system is flourishing. This article aims to provide a comprehensive review of recent research efforts on deep learning based recommender systems. More concretely, we provide…",
       "doi": "10.48550/arxiv.1707.07435"
     },
     {
@@ -631,6 +667,7 @@
       "citation_count": 2430,
       "github_stars": 0,
       "tldr": "Despite recent progress in generative image modeling, successfully generating high-resolution, diverse samples from complex datasets such…",
+      "short_abstract": "Despite recent progress in generative image modeling, successfully generating high-resolution, diverse samples from complex datasets such as ImageNet remains an elusive goal. To this end, we train Generative Adversarial Networks at the largest scale yet attempted, and study the instabilities specific to such scale. We find that applying orthogonal regularization to the generator renders it amenable to a simple \"truncation trick,\" allowing fine control over the trade-off between sample fidelity and variety by reducing the variance of the Generator's input. Our modifications lead to models which set the new state of the art in class-conditional image synthesis. When trained on ImageNet at 128x128 resolution, our models (BigGANs) achieve an Inception Score (IS) of 166.5 and Frechet Inception Distance (FID) of 7.4, improving over the previous best IS of 52.52 and FID of 18.6.",
       "doi": "10.48550/arxiv.1809.11096"
     },
     {
@@ -647,9 +684,10 @@
         "Kuiyuan Yang"
       ],
       "kinds": [],
-      "citation_count": 1634,
+      "citation_count": 1635,
       "github_stars": 0,
       "tldr": "Semantic image segmentation is a basic street scene understanding task in autonomous driving, where each pixel in a high resolution image…",
+      "short_abstract": "Semantic image segmentation is a basic street scene understanding task in autonomous driving, where each pixel in a high resolution image is categorized into a set of semantic labels. Unlike other scenarios, objects in autonomous driving scene exhibit very large scale changes, which poses great challenges for high-level feature representation in a sense that multi-scale information must be correctly encoded. To remedy this problem, atrous convolution[14]was introduced to generate features with larger receptive fields without sacrificing spatial resolution. Built upon atrous convolution, Atrous Spatial Pyramid Pooling (ASPP)[2] was proposed to concatenate multiple atrous-convolved features using different dilation rates into a final feature representation. Although ASPP is able to generate multi-scale features, we argue the feature resolution in the scale-axis is not dense enough for the autonomous driving scenario. To this end, we propose Densely connected Atrous Spatial Pyramid…",
       "doi": "10.1109/cvpr.2018.00388"
     },
     {
@@ -665,6 +703,7 @@
       "citation_count": 1508,
       "github_stars": 0,
       "tldr": "Most studies of Malay names to date have been based on ethnographic and literary sources. This article presents a new dataset for Malay…",
+      "short_abstract": "Most studies of Malay names to date have been based on ethnographic and literary sources. This article presents a new dataset for Malay onomastics, namely Islamic seals from Southeast Asia, inscribed in Arabic script and dating from the late 16th to early 20th century, over half of which bear a personal name. A high proportion of these seals are of sovereigns, and Malay seals are thus an exceptionally valuable primary source for regnal names. Yet while in Malay texts and chronicles the use of personal names is generally avoided in favour of kinship terms, relational names, titles and descriptive epithets, Malay seals are almost invariably inscribed with standard Arabic-Islamic personal names. This feature should be interpreted in the context of the image of self which the sealholder wished to project to the outside world, in which his or her Islamic identity, and membership of the universal ummah, was of prime importance. Keywords: Malay names, onomastic, Malay seals, regnal names,…",
       "doi": "10.37052/ml.31(1)no1"
     },
     {
@@ -680,9 +719,10 @@
         "Tony Jebara"
       ],
       "kinds": [],
-      "citation_count": 1282,
+      "citation_count": 1284,
       "github_stars": 0,
       "tldr": "We extend variational autoencoders (VAEs) to collaborative filtering for implicit feedback. This non-linear probabilistic model enables us…",
+      "short_abstract": "We extend variational autoencoders (VAEs) to collaborative filtering for implicit feedback. This non-linear probabilistic model enables us to go beyond the limited modeling capacity of linear factor models which still largely dominate collaborative filtering research.We introduce a generative model with multinomial likelihood and use Bayesian inference for parameter estimation. Despite widespread use in language modeling and economics, the multinomial likelihood receives less attention in the recommender systems literature. We introduce a different regularization parameter for the learning objective, which proves to be crucial for achieving competitive performance. Remarkably, there is an efficient way to tune the parameter using annealing. The resulting model and learning algorithm has information-theoretic connections to maximum entropy discrimination and the information bottleneck principle. Empirically, we show that the proposed approach significantly outperforms several…",
       "doi": "10.1145/3178876.3186150",
       "is_focus": true
     },
@@ -697,9 +737,10 @@
         "Max Welling"
       ],
       "kinds": [],
-      "citation_count": 2475,
+      "citation_count": 2479,
       "github_stars": 0,
       "tldr": "Variational autoencoders provide a principled framework for learning deep latent-variable models and corresponding inference models. In…",
+      "short_abstract": "Variational autoencoders provide a principled framework for learning deep latent-variable models and corresponding inference models. In this work, we provide an introduction to variational autoencoders and some important extensions.",
       "doi": "10.1561/2200000056",
       "is_focus": true
     },
@@ -716,9 +757,10 @@
         "Yi Tay"
       ],
       "kinds": [],
-      "citation_count": 1375,
+      "citation_count": 1377,
       "github_stars": 0,
       "tldr": "With the growing volume of online information, recommender systems have been an effective strategy to overcome information overload. The…",
+      "short_abstract": "With the growing volume of online information, recommender systems have been an effective strategy to overcome information overload. The utility of recommender systems cannot be overstated, given their widespread adoption in many web applications, along with their potential impact to ameliorate many problems related to over-choice. In recent years, deep learning has garnered considerable interest in many research fields such as computer vision and natural language processing, owing not only to stellar performance but also to the attractive property of learning feature representations from scratch. The influence of deep learning is also pervasive, recently demonstrating its effectiveness when applied to information retrieval and recommender systems research. The field of deep learning in recommender system is flourishing. This article aims to provide a comprehensive review of recent research efforts on deep learning-based recommender systems. More concretely, we provide and devise a…",
       "doi": "10.1145/3285029"
     },
     {
@@ -735,9 +777,10 @@
         "Yongdong Zhang"
       ],
       "kinds": [],
-      "citation_count": 4025,
+      "citation_count": 4031,
       "github_stars": 0,
       "tldr": "Graph Convolution Network (GCN) has become new state-of-the-art for collaborative filtering. Nevertheless, the reasons of its…",
+      "short_abstract": "Graph Convolution Network (GCN) has become new state-of-the-art for collaborative filtering. Nevertheless, the reasons of its effectiveness for recommendation are not well understood. Existing work that adapts GCN to recommendation lacks thorough ablation analyses on GCN, which is originally designed for graph classification tasks and equipped with many neural network operations. However, we empirically find that the two most common designs in GCNs -- feature transformation and nonlinear activation -- contribute little to the performance of collaborative filtering. Even worse, including them adds to the difficulty of training and degrades recommendation performance.",
       "doi": "10.1145/3397271.3401063"
     },
     {
@@ -754,9 +797,10 @@
         "Jianbing Shen"
       ],
       "kinds": [],
-      "citation_count": 825,
+      "citation_count": 826,
       "github_stars": 0,
       "tldr": "We present a comprehensive study on a new task named camouflaged object detection (COD), which aims to identify objects that are…",
+      "short_abstract": "We present a comprehensive study on a new task named camouflaged object detection (COD), which aims to identify objects that are “seamlessly” embedded in their surroundings. The high intrinsic similarities between the target object and the background make COD far more challenging than the traditional object detection task. To address this issue, we elaborately collect a novel dataset, called COD10K, which comprises 10,000 images covering camouflaged objects in various natural scenes, over 78 object categories. All the images are densely annotated with category, bounding-box, object-/instance-level, and matting-level labels. This dataset could serve as a catalyst for progressing many vision tasks, e.g., localization, segmentation, and alpha-matting, etc. In addition, we develop a simple but effective framework for COD, termed Search Identification Network (SINet). Without any bells and whistles, SINet outperforms various state-of-the-art object detection baselines on all datasets…",
       "doi": "10.1109/cvpr42600.2020.00285"
     },
     {
@@ -773,9 +817,10 @@
         "Ming‐Ming Cheng"
       ],
       "kinds": [],
-      "citation_count": 687,
+      "citation_count": 688,
       "github_stars": 0,
       "tldr": "The use of RGB-D information for salient object detection (SOD) has been extensively explored in recent years. However, relatively few…",
+      "short_abstract": "The use of RGB-D information for salient object detection (SOD) has been extensively explored in recent years. However, relatively few efforts have been put toward modeling SOD in real-world human activity scenes with RGB-D. In this article, we fill the gap by making the following contributions to RGB-D SOD: 1) we carefully collect a new <bold xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">S</b> al <bold xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">i</b> ent <bold xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">P</b> erson (SIP) data set that consists of ~1 K high-resolution images that cover diverse real-world scenes from various viewpoints, poses, occlusions, illuminations, and background s; 2) we conduct a large-scale (and, so far, the most comprehensive) benchmark comparing contemporary methods, which has long been missing in the field and can serve as…",
       "doi": "10.1109/tnnls.2020.2996406"
     },
     {
@@ -795,6 +840,7 @@
       "citation_count": 400,
       "github_stars": 0,
       "tldr": "In this paper, we propose the first framework (UCNet) to employ uncertainty for RGB-D saliency detection by learning from the data…",
+      "short_abstract": "In this paper, we propose the first framework (UCNet) to employ uncertainty for RGB-D saliency detection by learning from the data labeling process. Existing RGB-D saliency detection methods treat the saliency detection task as a point estimation problem, and produce a single saliency map following a deterministic learning pipeline. Inspired by the saliency data labeling process, we propose probabilistic RGB-D saliency detection network via conditional variational autoencoders to model human annotation uncertainty and generate multiple saliency maps for each input image by sampling in the latent space. With the proposed saliency consensus process, we are able to generate an accurate saliency map based on these multiple predictions. Quantitative and qualitative evaluations on six challenging benchmark datasets against 18 competing algorithms demonstrate the effectiveness of our approach in learning the distribution of saliency maps, leading to a new state-of-the-art in RGB-D saliency…",
       "doi": "10.1109/cvpr42600.2020.00861",
       "is_focus": true
     },
@@ -812,6 +858,7 @@
       "citation_count": 378,
       "github_stars": 0,
       "tldr": "Normalizing flows, autoregressive models, variational autoencoders (VAEs), and deep energy-based models are among competing…",
+      "short_abstract": "Normalizing flows, autoregressive models, variational autoencoders (VAEs), and deep energy-based models are among competing likelihood-based frameworks for deep generative learning. Among them, VAEs have the advantage of fast and tractable sampling and easy-to-access encoding networks. However, they are currently outperformed by other models such as normalizing flows and autoregressive models. While the majority of the research in VAEs is focused on the statistical challenges, we explore the orthogonal direction of carefully designing neural architectures for hierarchical VAEs. We propose Nouveau VAE (NVAE), a deep hierarchical VAE built for image generation using depth-wise separable convolutions and batch normalization. NVAE is equipped with a residual parameterization of Normal distributions and its training is stabilized by spectral regularization. We show that NVAE achieves state-of-the-art results among non-autoregressive likelihood-based models on the MNIST, CIFAR-10, CelebA…",
       "doi": "10.48550/arxiv.2007.03898",
       "is_focus": true
     },
@@ -829,6 +876,7 @@
       "citation_count": 307,
       "github_stars": 0,
       "tldr": "The rapid increase in network traffic has recently led to the importance of flow-based intrusion detection systems processing a small…",
+      "short_abstract": "The rapid increase in network traffic has recently led to the importance of flow-based intrusion detection systems processing a small amount of traffic data. Furthermore, anomaly-based methods, which can identify unknown attacks are also integrated into these systems. In this study, the focus is concentrated on the detection of anomalous network traffic (or intrusions) from flow-based data using unsupervised deep learning methods with semi-supervised learning approach. More specifically, Autoencoder and Variational Autoencoder methods were employed to identify unknown attacks using flow features. In the experiments carried out, the flow-based features extracted out of network traffic data, including typical and different types of attacks, were used. The Receiver Operating Characteristics (ROC) and the area under ROC curve, resulting from these methods were calculated and compared with One-Class Support Vector Machine. The ROC curves were examined in detail to analyze the performance…",
       "doi": "10.1109/access.2020.3001350",
       "is_focus": true
     },
@@ -846,9 +894,10 @@
         "Li Liu"
       ],
       "kinds": [],
-      "citation_count": 2409,
+      "citation_count": 2413,
       "github_stars": 0,
       "tldr": "Uncertainty quantification (UQ) methods play a pivotal role in reducing the impact of uncertainties during both optimization and decision…",
+      "short_abstract": "Uncertainty quantification (UQ) methods play a pivotal role in reducing the impact of uncertainties during both optimization and decision making processes. They have been applied to solve a variety of real-world problems in science and engineering. Bayesian approximation and ensemble learning techniques are two widely-used types of uncertainty quantification (UQ) methods. In this regard, researchers have proposed different UQ methods and examined their performance in a variety of applications such as computer vision (e.g., self-driving cars and object detection), image processing (e.g., image restoration), medical image analysis (e.g., medical image classification and segmentation), natural language processing (e.g., text classification, social media texts and recidivism risk-scoring), bioinformatics, etc. This study reviews recent advances in UQ methods used in deep learning, investigates the application of these methods in reinforcement learning, and highlights fundamental research…",
       "doi": "10.1016/j.inffus.2021.05.008"
     },
     {
@@ -865,6 +914,7 @@
       "citation_count": 2170,
       "github_stars": 0,
       "tldr": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this…",
+      "short_abstract": "We show that diffusion models can achieve image sample quality superior to the current state-of-the-art generative models. We achieve this on unconditional image synthesis by finding a better architecture through a series of ablations. For conditional image synthesis, we further improve sample quality with classifier guidance: a simple, compute-efficient method for trading off diversity for fidelity using gradients from a classifier. We achieve an FID of 2.97 on ImageNet 128$\\times$128, 4.59 on ImageNet 256$\\times$256, and 7.72 on ImageNet 512$\\times$512, and we match BigGAN-deep even with as few as 25 forward passes per sample, all while maintaining better coverage of the distribution. Finally, we find that classifier guidance combines well with upsampling diffusion models, further improving FID to 3.94 on ImageNet 256$\\times$256 and 3.85 on ImageNet 512$\\times$512. We release our code at https://github.com/openai/guided-diffusion",
       "doi": "10.48550/arxiv.2105.05233"
     },
     {
@@ -881,9 +931,10 @@
         "Liang Chen"
       ],
       "kinds": [],
-      "citation_count": 1315,
+      "citation_count": 1316,
       "github_stars": 0,
       "tldr": "Representation learning on user-item graph for recommendation has evolved from using single ID or interaction history to exploiting…",
+      "short_abstract": "Representation learning on user-item graph for recommendation has evolved from using single ID or interaction history to exploiting higher-order neighbors. This leads to the success of graph convolution networks (GCNs) for recommendation such as PinSage and LightGCN. Despite effectiveness, we argue that they suffer from two limitations: (1) high-degree nodes exert larger impact on the representation learning, deteriorating the recommendations of low-degree (long-tail) items; and (2) representations are vulnerable to noisy interactions, as the neighborhood aggregation scheme further enlarges the impact of observed edges.",
       "doi": "10.1145/3404835.3462862"
     },
     {
@@ -900,9 +951,10 @@
         "Wojciech Samek"
       ],
       "kinds": [],
-      "citation_count": 800,
+      "citation_count": 802,
       "github_stars": 0,
       "tldr": "Deep learning approaches to anomaly detection (AD) have recently improved the state of the art in detection performance on complex data…",
+      "short_abstract": "Deep learning approaches to anomaly detection (AD) have recently improved the state of the art in detection performance on complex data sets, such as large collections of images or text. These results have sparked a renewed interest in the AD problem and led to the introduction of a great variety of new methods. With the emergence of numerous such methods, including approaches based on generative models, one-class classification, and reconstruction, there is a growing need to bring methods of this field into a systematic and unified perspective. In this review, we aim to identify the common underlying principles and the assumptions that are often made implicitly by various methods. In particular, we draw connections between classic “shallow” and novel deep approaches and show how this relation might cross-fertilize or extend both directions. We further provide an empirical assessment of major existing methods that are enriched by the use of recent explainability techniques and…",
       "doi": "10.1109/jproc.2021.3052449"
     },
     {
@@ -918,6 +970,7 @@
       "citation_count": 614,
       "github_stars": 0,
       "tldr": "Deep generative models are a class of techniques that train deep neural networks to model the distribution of training samples. Research…",
+      "short_abstract": "Deep generative models are a class of techniques that train deep neural networks to model the distribution of training samples. Research has fragmented into various interconnected approaches, each of which make trade-offs including run-time, diversity, and architectural restrictions. In particular, this compendium covers energy-based models, variational autoencoders, generative adversarial networks, autoregressive models, normalizing flows, in addition to numerous hybrid approaches. These techniques are compared and contrasted, explaining the premises behind each and how they are interrelated, while reviewing current state-of-the-art advances and implementations.",
       "doi": "10.1109/tpami.2021.3116668"
     },
     {
@@ -937,6 +990,7 @@
       "citation_count": 585,
       "github_stars": 0,
       "tldr": "Denoising diffusion probabilistic models (DDPM) have shown remarkable performance in unconditional image generation. However, due to the…",
+      "short_abstract": "Denoising diffusion probabilistic models (DDPM) have shown remarkable performance in unconditional image generation. However, due to the stochasticity of the generative process in DDPM, it is challenging to generate images with the desired semantics. In this work, we propose Iterative Latent Variable Refinement (ILVR), a method to guide the generative process in DDPM to generate high-quality images based on a given reference image. Here, the refinement of the generative process in DDPM enables a single DDPM to sample images from various sets directed by the reference image. The proposed ILVR method generates high-quality images while controlling the generation. The controllability of our method allows adaptation of a single DDPM without any additional learning in various image generation tasks, such as generation from various downsampling factors, multi-domain image translation, paint-to-image, and editing with scribbles.",
       "doi": "10.1109/iccv48922.2021.01410"
     },
     {
@@ -953,9 +1007,10 @@
         "Michael Langguth"
       ],
       "kinds": [],
-      "citation_count": 534,
+      "citation_count": 535,
       "github_stars": 0,
       "tldr": "The recent hype about artificial intelligence has sparked renewed interest in applying the successful deep learning (DL) methods for image…",
+      "short_abstract": "The recent hype about artificial intelligence has sparked renewed interest in applying the successful deep learning (DL) methods for image recognition, speech recognition, robotics, strategic games and other application areas to the field of meteorology. There is some evidence that better weather forecasts can be produced by introducing big data mining and neural networks into the weather prediction workflow. Here, we discuss the question of whether it is possible to completely replace the current numerical weather models and data assimilation systems with DL approaches. This discussion entails a review of state-of-the-art machine learning concepts and their applicability to weather data with its pertinent statistical properties. We think that it is not inconceivable that numerical weather models may one day become obsolete, but a number of fundamental breakthroughs are needed before this goal comes into reach. This article is part of the theme issue 'Machine learning for weather and…",
       "doi": "10.1098/rsta.2020.0097"
     },
     {
@@ -975,6 +1030,7 @@
       "citation_count": 509,
       "github_stars": 0,
       "tldr": "Camouflage is a key defence mechanism across species that is critical to survival. Common strategies for camouflage include background…",
+      "short_abstract": "Camouflage is a key defence mechanism across species that is critical to survival. Common strategies for camouflage include background matching, imitating the color and pattern of the environment, and disruptive coloration, disguising body outlines [37]. Camouflaged object detection (COD) aims to segment camouflaged objects hiding in their surroundings. Existing COD models are built upon binary ground truth to segment the camouflaged objects without illustrating the level of camouflage. In this paper, we revisit this task and argue that explicitly modeling the conspicuousness of camouflaged objects against their particular backgrounds can not only lead to a better understanding about camouflage and evolution of animals, but also provide guidance to design more sophisticated camouflage techniques. Furthermore, we observe that it is some specific parts of the camouflaged objects that make them detectable by predators. With the above understanding about camouflaged objects, we present…",
       "doi": "10.1109/cvpr46437.2021.01142"
     },
     {
@@ -988,9 +1044,10 @@
         "Sharnil Pandya"
       ],
       "kinds": [],
-      "citation_count": 387,
+      "citation_count": 389,
       "github_stars": 0,
       "tldr": "Internet of Things (IoT) technology is prospering and entering every part of our lives, be it education, home, vehicles, or healthcare.…",
+      "short_abstract": "Internet of Things (IoT) technology is prospering and entering every part of our lives, be it education, home, vehicles, or healthcare. With the increase in the number of connected devices, several challenges are also coming up with IoT technology: heterogeneity, scalability, quality of service, security requirements, and many more. Security management takes a back seat in IoT because of cost, size, and power. It poses a significant risk as lack of security makes users skeptical towards using IoT devices. This, in turn, makes IoT vulnerable to security attacks, ultimately causing enormous financial and reputational losses. It makes up for an urgent need to assess present security risks and discuss the upcoming challenges to be ready to face the same. The undertaken study is a multi-fold survey of different security issues present in IoT layers: perception layer, network layer, support layer, application layer, with further focus on Distributed Denial of Service (DDoS) attacks. DDoS…",
       "doi": "10.1109/access.2021.3073408"
     },
     {
@@ -1010,6 +1067,7 @@
       "citation_count": 205,
       "github_stars": 0,
       "tldr": "The purpose is to explore the feature recognition, diagnosis, and forecasting performances of Semi-Supervised Support Vector Machines…",
+      "short_abstract": "The purpose is to explore the feature recognition, diagnosis, and forecasting performances of Semi-Supervised Support Vector Machines (S3VMs) for brain image fusion Digital Twins (DTs). Both unlabeled and labeled data are used regarding many unlabeled data in brain images, and semi supervised support vector machine (SVM) is proposed. Meantime, the AlexNet model is improved, and the brain images in real space are mapped to virtual space by using digital twins. Moreover, a diagnosis and prediction model of brain image fusion digital twins based on semi supervised SVM and improved AlexNet is constructed. Magnetic Resonance Imaging (MRI) data from the Brain Tumor Department of a Hospital are collected to test the performance of the constructed model through simulation experiments. Some state-of-art models are included for performance comparison: Long Short-Term Memory (LSTM), Convolutional Neural Network (CNN), Recurrent Neural Network (RNN), AlexNet, and Multi-Layer Perceptron (MLP).…",
       "doi": "10.3389/fnins.2021.705323"
     },
     {
@@ -1028,6 +1086,7 @@
       "citation_count": 171,
       "github_stars": 0,
       "tldr": "As technology evolves, more components are integrated into printed circuit boards (PCBs) and the PCB layout increases. Because small…",
+      "short_abstract": "As technology evolves, more components are integrated into printed circuit boards (PCBs) and the PCB layout increases. Because small defects on signal trace can cause significant damage to the system, PCB surface inspection is one of the most important quality control processes. Owing to the limitations of manual inspection, significant efforts have been made to automate the inspection by utilizing high resolution CCD or CMOS sensors. Despite the advanced sensor technology, setting the pass/fail criteria based on small failure samples has always been challenging in traditional machine vision approaches. To overcome these problems, we propose an advanced PCB inspection system based on a skip-connected convolutional autoencoder. The deep autoencoder model was trained to decode the original non-defect images from the defect images. The decoded images were then compared with the input image to identify the defect location. To overcome the small and imbalanced dataset in the early…",
       "doi": "10.3390/s21154968"
     },
     {
@@ -1044,9 +1103,10 @@
         "Karina Gomez"
       ],
       "kinds": [],
-      "citation_count": 158,
+      "citation_count": 159,
       "github_stars": 0,
       "tldr": "Anomalies could be the threats to the network that has ever/never happened. To detect and protect networks against malicious access is…",
+      "short_abstract": "Anomalies could be the threats to the network that has ever/never happened. To detect and protect networks against malicious access is always challenging even though it has been studied for a long time. Due to the evolution of network in both new technologies and fast growth of connected devices, network attacks are getting versatile as well. Comparing to the traditional detection approaches, machine learning is a novel and flexible method to detect intrusions in the network, it is applicable to any network structure. In this paper, we introduce the challenges of anomaly detection in the traditional network, as well as the next generation network, and review the implementation of machine learning in anomaly detection under different network contexts. The procedure of each machine learning type is explained, as well as the methodology and advantages presented. The comparison of using different machine learning models is also summarised.",
       "doi": "10.1109/access.2021.3126834"
     },
     {
@@ -1066,6 +1126,7 @@
       "citation_count": 1633,
       "github_stars": 0,
       "tldr": "We present SR3, an approach to image Super-Resolution via Repeated Refinement. SR3 adapts denoising diffusion probabilistic models (Ho et…",
+      "short_abstract": "We present SR3, an approach to image Super-Resolution via Repeated Refinement. SR3 adapts denoising diffusion probabilistic models (Ho et al. 2020), (Sohl-Dickstein et al. 2015) to image-to-image translation, and performs super-resolution through a stochastic iterative denoising process. Output images are initialized with pure Gaussian noise and iteratively refined using a U-Net architecture that is trained on denoising at various noise levels, conditioned on a low-resolution input image. SR3 exhibits strong performance on super-resolution tasks at different magnification factors, on faces and natural images. We conduct human evaluation on a standard 8× face super-resolution task on CelebA-HQ for which SR3 achieves a fool rate close to 50%, suggesting photo-realistic outputs, while GAN baselines do not exceed a fool rate of 34%. We evaluate SR3 on a 4× super-resolution task on ImageNet, where SR3 outperforms baselines in human evaluation and classification accuracy of a ResNet-50…",
       "doi": "10.1109/tpami.2022.3204461"
     },
     {
@@ -1082,9 +1143,10 @@
         "Mohammed Bennamoun"
       ],
       "kinds": [],
-      "citation_count": 812,
+      "citation_count": 815,
       "github_stars": 0,
       "tldr": "Modern deep learning methods constitute incredibly powerful tools to tackle a myriad of challenging problems. However, since deep learning…",
+      "short_abstract": "Modern deep learning methods constitute incredibly powerful tools to tackle a myriad of challenging problems. However, since deep learning methods operate as black boxes, the uncertainty associated with their predictions is often challenging to quantify. Bayesian statistics offer a formalism to understand and quantify the uncertainty associated with deep neural network predictions. This tutorial provides deep learning practitioners with an overview of the relevant literature and a complete toolset to design, implement, train, use and evaluate Bayesian neural networks, <italic xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">i</i> . <italic xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">e</i> ., stochastic artificial neural networks trained using Bayesian methods.",
       "doi": "10.1109/mci.2022.3155327"
     },
     {
@@ -1101,9 +1163,10 @@
         "Runsheng Xu"
       ],
       "kinds": [],
-      "citation_count": 1363,
+      "citation_count": 1365,
       "github_stars": 0,
       "tldr": "Diffusion models have emerged as a powerful new family of deep generative models with record-breaking performance in many applications,…",
+      "short_abstract": "Diffusion models have emerged as a powerful new family of deep generative models with record-breaking performance in many applications, including image synthesis, video generation, and molecule design. In this survey, we provide an overview of the rapidly expanding body of work on diffusion models, categorizing the research into three key areas: efficient sampling, improved likelihood estimation, and handling data with special structures. We also discuss the potential for combining diffusion models with other generative models for enhanced results. We further review the wide-ranging applications of diffusion models in fields spanning from computer vision, natural language processing, temporal data modeling, to interdisciplinary applications in other scientific disciplines. This survey aims to provide a contextualized, in-depth look at the state of diffusion models, identifying the key areas of focus and pointing to potential areas for further exploration. Github:…",
       "doi": "10.1145/3626235",
       "is_trending": true
     }
@@ -1425,132 +1488,6 @@
       "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
     },
     {
-      "src": "openalex:W1909320841",
-      "dst": "openalex:W2225156818",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W1909320841",
-      "dst": "openalex:W1583912456",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
-    },
-    {
-      "src": "openalex:W581956982",
-      "dst": "openalex:W2587284713",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
-    },
-    {
-      "src": "openalex:W1909320841",
-      "dst": "openalex:W2587284713",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W1909320841",
-      "dst": "openalex:W2409550820",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W1583912456",
-      "dst": "openalex:W2409550820",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W2176412452",
-      "dst": "openalex:W2520707372",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W2176412452",
-      "dst": "openalex:W2767286248",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W2893749619",
-      "dst": "openalex:W3155072588",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W2409550820",
-      "dst": "openalex:W3155072588",
-      "rel": "supersedes",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
-    },
-    {
-      "src": "openalex:W2026799324",
-      "dst": "openalex:W1909320841",
-      "rel": "supersedes",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
-    },
-    {
-      "src": "openalex:W2026799324",
-      "dst": "openalex:W3162926177",
-      "rel": "supersedes",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
-    },
-    {
-      "src": "openalex:W2893749619",
-      "dst": "openalex:W3162926177",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W3155072588",
-      "dst": "openalex:W3162926177",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
-    },
-    {
-      "src": "openalex:W2893749619",
-      "dst": "openalex:W3191805365",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W2140310134",
-      "dst": "openalex:W2739273093",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W104184427",
-      "dst": "openalex:W581956982",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W2957414648",
-      "dst": "openalex:W3034684132",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
-    },
-    {
       "src": "openalex:W1772076007",
       "dst": "openalex:W2957414648",
       "rel": "successor",
@@ -1563,6 +1500,41 @@
       "rel": "successor",
       "conf": 0.7,
       "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W1993845689",
+      "dst": "openalex:W2026799324",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
+    },
+    {
+      "src": "openalex:W2102409316",
+      "dst": "openalex:W2026799324",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W1909320841",
+      "dst": "openalex:W1893585201",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W2176412452",
+      "dst": "openalex:W2767286248",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W2957414648",
+      "dst": "openalex:W3034684132",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
     },
     {
       "src": "openalex:W2137245235",
@@ -1579,15 +1551,36 @@
       "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
     },
     {
-      "src": "openalex:W2026799324",
-      "dst": "openalex:W1993845689",
+      "src": "openalex:W2176412452",
+      "dst": "openalex:W2520707372",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W2099866409",
+      "dst": "openalex:W2137245235",
       "rel": "contrasts",
       "conf": 0.7,
       "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
     },
     {
-      "src": "openalex:W2099866409",
-      "dst": "openalex:W2137245235",
+      "src": "openalex:W2140310134",
+      "dst": "openalex:W2739273093",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W104184427",
+      "dst": "openalex:W581956982",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W1909320841",
+      "dst": "openalex:W1583912456",
       "rel": "contrasts",
       "conf": 0.7,
       "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
@@ -1598,13 +1591,6 @@
       "rel": "contrasts",
       "conf": 0.7,
       "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
-    },
-    {
-      "src": "openalex:W2225156818",
-      "dst": "openalex:W3043426275",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     },
     {
       "src": "openalex:W2103328396",
@@ -1642,27 +1628,6 @@
       "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     },
     {
-      "src": "openalex:W1993845689",
-      "dst": "openalex:W2026799324",
-      "rel": "contrasts",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
-    },
-    {
-      "src": "openalex:W2102409316",
-      "dst": "openalex:W2026799324",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
-      "src": "openalex:W1909320841",
-      "dst": "openalex:W1893585201",
-      "rel": "successor",
-      "conf": 0.7,
-      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
-    },
-    {
       "src": "openalex:W2799213142",
       "dst": "openalex:W3176152216",
       "rel": "successor",
@@ -1682,6 +1647,104 @@
       "rel": "contrasts",
       "conf": 0.7,
       "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
+    },
+    {
+      "src": "openalex:W581956982",
+      "dst": "openalex:W2587284713",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
+    },
+    {
+      "src": "openalex:W1909320841",
+      "dst": "openalex:W2587284713",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W2893749619",
+      "dst": "openalex:W3155072588",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W2409550820",
+      "dst": "openalex:W3155072588",
+      "rel": "supersedes",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
+    },
+    {
+      "src": "openalex:W2026799324",
+      "dst": "openalex:W1993845689",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
+    },
+    {
+      "src": "openalex:W2026799324",
+      "dst": "openalex:W3162926177",
+      "rel": "supersedes",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
+    },
+    {
+      "src": "openalex:W2893749619",
+      "dst": "openalex:W3162926177",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W3155072588",
+      "dst": "openalex:W3162926177",
+      "rel": "contrasts",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A と根本的に異なるアプローチを提案している。"
+    },
+    {
+      "src": "openalex:W1909320841",
+      "dst": "openalex:W2409550820",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W1583912456",
+      "dst": "openalex:W2409550820",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W2026799324",
+      "dst": "openalex:W1909320841",
+      "rel": "supersedes",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の手法を置き換える改良版として提案されている。"
+    },
+    {
+      "src": "openalex:W2225156818",
+      "dst": "openalex:W3043426275",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W2893749619",
+      "dst": "openalex:W3191805365",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
+    },
+    {
+      "src": "openalex:W1909320841",
+      "dst": "openalex:W2225156818",
+      "rel": "successor",
+      "conf": 0.7,
+      "rationale": "論文 B は論文 A の研究ラインを継承し自然に発展させている。"
     }
   ],
   "meta": {
@@ -1700,6 +1763,6 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-05-31T04:52:52.126142+00:00"
+    "generated_at": "2026-06-04T06:07:55.220971+00:00"
   }
 }
