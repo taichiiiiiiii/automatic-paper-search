@@ -3314,6 +3314,14 @@ g.node-wrap.node-wrap--no-tx {
 .minimap canvas:active {
   cursor: grabbing;
 }
+/* The minimap is a desktop-only navigation aid — at mobile widths it
+ * just overlaps the actual canvas content (which is already small)
+ * and the user can pan the canvas directly anyway. Hide it below the
+ * 'lineage cards switch to single column' breakpoint instead of
+ * fighting it for screen real estate. */
+@media (max-width: 640px) {
+  .minimap { display: none; }
+}
 
 /* #82: image export buttons in the toolbar. */
 .theme-export {
