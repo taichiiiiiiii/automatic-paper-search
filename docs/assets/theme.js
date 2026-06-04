@@ -39,7 +39,13 @@ const SLUG_RE = /^[a-z0-9-]+$/;
 const THEME_REQUEST_PATTERN = /^[A-Za-z0-9 _-]{2,80}$/;
 
 const ALL_RELATIONS = ["supersedes", "successor", "extends", "ablation", "baseline_only", "contrasts"];
-const DEFAULT_RELATIONS = ["supersedes", "successor", "extends", "ablation", "contrasts"];
+// contrasts removed from defaults (2026-06-04 UX audit): the live
+// gallery showed dense red dashed lines dominating the canvas — useful
+// signal for power users but visually overwhelming on first impression.
+// The relation chip stays in the toolbar so users who want to study
+// disagreements can re-enable with one click; the preference is then
+// persisted via the existing localStorage prefs path.
+const DEFAULT_RELATIONS = ["supersedes", "successor", "extends", "ablation"];
 const RELATION_LABEL_JA = {
   supersedes: "置換", successor: "後継", extends: "拡張",
   ablation: "分析", baseline_only: "比較", contrasts: "対立",
