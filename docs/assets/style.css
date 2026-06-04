@@ -1550,6 +1550,27 @@ g.node-wrap.node-wrap--no-tx {
 }
 .stale-banner__close:hover { color: var(--color-ink); }
 
+/* Sparse-theme empty-state hint. Visually quieter than the stale
+ * banner — sparse is not an error, just a "this theme is young"
+ * heads-up. Sits at the top of the canvas, scrolls vertically with
+ * the page but stays at the canvas's left edge horizontally. */
+.sparse-hint {
+  display: block;
+  position: sticky;
+  left: 0;
+  margin: 0.5rem var(--space-edge) 0;
+  padding: 0.5rem 0.85rem;
+  background: oklch(98% 0.025 145);
+  border: 1px solid oklch(82% 0.08 145);
+  border-left: 3px solid oklch(67% 0.18 145);
+  border-radius: 4px 8px 8px 4px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+  max-width: 90vw;
+}
+
 /* Theme gallery: horizontal card row above the toolbar listing every
    generated theme with its key stats. Cards stay readable down to ~6
    per row at 1600px; below that they wrap. */

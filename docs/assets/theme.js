@@ -367,6 +367,32 @@ function slugFromLocation() {
   return raw && SLUG_RE.test(raw) ? raw : null;
 }
 
+// Default landing slug when the URL has no ?theme= or the requested slug
+// doesn't match the manifest. Optimises for the first-visit demo: pick
+// the theme most likely to look impressive — high quality (low template
+// ratio) and recent (fresh generated_at). Falls back through the gallery
+// sort order if _quality.json hasn't loaded yet. Read by init() right
+// after both the manifest and quality fetches resolve.
+function pickDefaultSlug() {
+  if (!Array.isArray(state.manifest) || state.manifest.length === 0) {
+    return null;
+  }
+  // Reuse the same sort the gallery applies so the default lands on
+  // the same theme the user sees pinned at row 1 — no surprise.
+  const ranked = [...state.manifest]
+    .filter((e) => typeof e?.slug === "string" && SLUG_RE.test(e.slug))
+    .filter((e) => (e.paper_count || 0) > 0)
+    .sort((a, b) => {
+      const tierA = QUALITY_TIERS[qualityTierFor(state.quality?.[a.slug])].rank;
+      const tierB = QUALITY_TIERS[qualityTierFor(state.quality?.[b.slug])].rank;
+      if (tierA !== tierB) return tierA - tierB;
+      const tA = Date.parse(a.generated_at || "") || 0;
+      const tB = Date.parse(b.generated_at || "") || 0;
+      return tB - tA;
+    });
+  return ranked[0]?.slug || state.manifest[0].slug;
+}
+
 // #65: ?node=<paperId> permalink. paperIds are 40-char hex digests
 // (S2 Corpus IDs); validate before using so a bad URL can't poison
 // later DOM lookups via attribute selectors.
@@ -1044,6 +1070,42 @@ function bindKeyboardShortcuts() {
   }
 }
 
+// Sparse-theme empty-state hint. Newly-submitted 2024-2025 themes
+// (Mixture of Depths, Constitutional AI etc.) routinely return a thin
+// lineage — the citation graph just hasn't densified yet. The canvas
+// then looks broken to first-time visitors who can't tell whether the
+// pipeline failed or the topic is genuinely young. Surface a one-line
+// hint when the lineage is below the sparse thresholds so they know
+// it's a data limit, not a viewer bug. Thresholds mirror
+// build_theme_lineage.SPARSE_NODES / SPARSE_EDGES.
+const SPARSE_NODE_THRESHOLD = 15;
+const SPARSE_EDGE_THRESHOLD = 5;
+function maybeShowSparseHint() {
+  if (!state.data || !els.canvas) return;
+  const nodeCount = (state.data.nodes || []).length;
+  const edgeCount = (state.data.edges || []).length;
+  if (nodeCount >= SPARSE_NODE_THRESHOLD && edgeCount >= SPARSE_EDGE_THRESHOLD) {
+    return;
+  }
+  // Avoid duplicating the hint when the theme picker re-renders or the
+  // SPA-style URL change re-runs init (defensive — init() currently
+  // doesn't re-run, but this future-proofs against that).
+  if (document.getElementById("sparse-hint")) return;
+  const hint = document.createElement("div");
+  hint.id = "sparse-hint";
+  hint.className = "sparse-hint";
+  hint.setAttribute("role", "status");
+  // textContent for the body so any future theme name change in the
+  // header can't poison this banner. The label is constant text.
+  hint.textContent =
+    `🌱 このテーマは家系図がまだ薄いです (${nodeCount} 件 / ${edgeCount} edges)。` +
+    `引用グラフが熟成すると毎週日曜の再生成で密になります。`;
+  // Insert before the SVG so the hint reads first when the canvas
+  // scrolls horizontally — the SVG itself scrolls but the hint stays
+  // in place at the canvas's left edge.
+  els.canvas.insertAdjacentElement("afterbegin", hint);
+}
+
 // First-visit onboarding hint pointing at the X-axis pill row.
 // Surfaces the most important interactive feature (mode switching)
 // since the rest of the chrome is intentionally minimal and the modes
@@ -1407,12 +1469,15 @@ async function init() {
   }
 
   // Pick the requested slug if it's known; otherwise fall back to the
-  // alphabetically first manifest entry.
+  // highest-quality fresh theme. First-time visitors land on a theme
+  // whose family tree actually demonstrates the tool well, instead of
+  // the alphabetically first entry which has historically been a 🔴
+  // template-heavy theme (Chain of Thought etc.).
   const requested = slugFromLocation();
   const known = new Set(state.manifest.map((e) => e.slug));
   state.currentSlug = (requested && known.has(requested))
     ? requested
-    : state.manifest[0].slug;
+    : pickDefaultSlug();
   // If the requested slug exists but is unknown, surface a banner so
   // the user knows the URL didn't match anything and we silently
   // substituted. Don't fire when no theme= param was supplied — the
@@ -1480,6 +1545,7 @@ async function init() {
   render();
   showOnboardingHintIfFirstVisit();
   maybeShowStaleBanner();
+  maybeShowSparseHint();
 
   // #65: if the URL carried a ?node=, scroll to it and highlight after
   // the SVG has had a frame to paint. Two requestAnimationFrame ticks
