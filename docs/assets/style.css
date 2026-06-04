@@ -1713,6 +1713,23 @@ g.node-wrap.node-wrap--no-tx {
 .theme-gallery__card--active .theme-gallery__quality {
   color: oklch(80% 0.012 270);
 }
+/* Quality tier stripe — a 3 px left border on each card so the
+ * primary visual signal of "is this theme trustworthy?" reads
+ * pre-attentively, before the user parses any text. Colours picked
+ * to stay legible on both the default light card and the active
+ * dark card without a per-tier active-state override. */
+.theme-gallery__card--high {
+  border-left: 3px solid oklch(67% 0.18 145);  /* green */
+}
+.theme-gallery__card--mixed {
+  border-left: 3px solid oklch(80% 0.16 80);   /* amber */
+}
+.theme-gallery__card--generic {
+  border-left: 3px solid oklch(70% 0.18 30);   /* red-orange */
+}
+.theme-gallery__card--unknown {
+  border-left: 3px solid transparent;
+}
 
 /* On-demand theme submission form + progress UI ---------------------- */
 .theme-request {
