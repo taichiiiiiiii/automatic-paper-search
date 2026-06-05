@@ -1776,13 +1776,55 @@ def test_apply_llm_classification_llm_hiccup_keeps_heuristic():
     """LLM provider returned None (Groq throttled, parse failure, etc.)
     → fall back to the heuristic edge. This is the protective case:
     heuristic has REAL signal (methodology intent or year/cite
-    contrast), so dropping the edge would be a regression. Only the
-    no-signal path (#209) drops when LLM fails — see
+    contrast) AND a paper-specific rationale (e.g. from a Phase J
+    unarXive context), so dropping the edge would be a regression.
+    Only the no-signal path (#209) drops when LLM fails — see
     test_derive_relation_no_signal_drops_when_llm_returns_none."""
     heuristic = {
         "relation": "extends",
         "confidence": 0.7,
-        "rationale": "heuristic",
+        "rationale": "B の DPO は A の RLHF の reward モデルを単一段階で置換している。",
+    }
+    merged = build_theme_lineage._apply_llm_classification(heuristic, None)
+    assert merged is heuristic
+
+
+def test_apply_llm_classification_drops_heuristic_with_template_when_llm_fails():
+    """2026-06-05 followup: when the LLM fails AND the heuristic rationale
+    is a known TEMPLATE_RATIONALES string, drop the edge instead of
+    keeping the template.
+
+    Background: the year-delta-1-5 fallback in derive_relation produces
+    successor edges with TEMPLATE_RATIONALES["successor_result"]. The
+    earlier behaviour kept those edges on LLM hiccup, which is why 14 /
+    21 themes ended up >= 95 % template-rationale on the quality rollup.
+    A template tells the user nothing about why A → B, so dropping is
+    the honest move when LLM can't replace it with paper-specific text.
+    """
+    from paperpilot.llm.base import TEMPLATE_RATIONALES
+
+    heuristic = {
+        "relation": "successor",
+        "confidence": 0.7,
+        "rationale": TEMPLATE_RATIONALES["successor_result"],
+    }
+    merged = build_theme_lineage._apply_llm_classification(heuristic, None)
+    assert merged is None
+
+
+def test_apply_llm_classification_template_check_is_byte_exact():
+    """The template drop check uses byte-for-byte set membership against
+    TEMPLATE_RATIONALES.values(). Paraphrased near-templates ('B は A の
+    手法を別ドメインに適用…' is NOT in the set) stay — they're either
+    LLM output that bypassed the from_dict reject, or Phase J context
+    snippets that happen to read template-shaped. Detecting those
+    would need a much richer check (uniqueness, embedding similarity)
+    and isn't this branch's job."""
+    paraphrased = "B のシステムは A の手法を別ドメインに適用している。"
+    heuristic = {
+        "relation": "extends",
+        "confidence": 0.7,
+        "rationale": paraphrased,
     }
     merged = build_theme_lineage._apply_llm_classification(heuristic, None)
     assert merged is heuristic
