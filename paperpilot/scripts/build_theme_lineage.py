@@ -1807,6 +1807,37 @@ def _normalize_relevance_text(text: str) -> str:
     return re.sub(r"\s+", " ", text.replace("-", " ").lower()).strip()
 
 
+# Maximum token-position distance between the two theme words in the
+# title-only fallback for 2-word themes (2026-06-05 audit). Without
+# this guard, "Real-World-Weight Cross-Entropy Loss Function: Modeling
+# the Costs" passed the World Model theme because both 'world' and
+# 'model' appeared in the title — but 6 tokens apart, in two unrelated
+# compound terms. K=3 was picked from the 70-seed audit corpus:
+#   - keeps every legitimate seed (DDPM dist=2, FSMANet dist=3,
+#     Encoder-Decoder ... Semantic Segmentation dist=2)
+#   - drops every off-topic seed (World Model's 3 seeds at dist=6/11/6)
+# The phrase route (theme verbatim in title+abstract) is untouched
+# because that path's evidence is already much stronger.
+_TWO_WORD_FALLBACK_MAX_DISTANCE = 3
+
+
+def _min_token_distance(text: str, word_a: str, word_b: str) -> int | None:
+    """Smallest token-index distance between any occurrence of word_a
+    and any occurrence of word_b in ``text``.
+
+    Both ``text`` and the words must already be lowercased + hyphen-
+    normalised. Match is substring-within-token so ``model`` finds
+    ``modeling`` (matches the stem-aware behaviour the rest of this
+    gate has). Returns ``None`` when either word fails to match.
+    """
+    tokens = text.split()
+    positions_a = [i for i, t in enumerate(tokens) if word_a in t]
+    positions_b = [i for i, t in enumerate(tokens) if word_b in t]
+    if not positions_a or not positions_b:
+        return None
+    return min(abs(a - b) for a in positions_a for b in positions_b)
+
+
 def _filter_topic_relevant_seeds(
     seeds: list[dict[str, Any]],
     *,
@@ -1862,11 +1893,20 @@ def _filter_topic_relevant_seeds(
             if phrase and phrase in haystack:
                 kept.append(p)
                 continue
-            # Fallback: both words must appear *in the title*. Title-
-            # only is much higher signal than title+abstract — LPIPS
-            # had both words in its abstract but neither in its title,
-            # which the old rule treated as a match.
-            if all(w and w in title_only for w in normalised_words):
+            # Fallback: both words must appear *in the title* AND be
+            # within _TWO_WORD_FALLBACK_MAX_DISTANCE token positions
+            # of each other. Title-only is much higher signal than
+            # title+abstract (LPIPS had both words in its abstract but
+            # neither in its title), and the distance bound catches
+            # compound-term false matches like World Model accepting
+            # "Real-World-Weight ... Modeling" (world at pos 1,
+            # modeling at pos 7).
+            if not all(w and w in title_only for w in normalised_words):
+                continue
+            distance = _min_token_distance(
+                title_only, normalised_words[0], normalised_words[1]
+            )
+            if distance is not None and distance <= _TWO_WORD_FALLBACK_MAX_DISTANCE:
                 kept.append(p)
         return kept
     threshold = max(
