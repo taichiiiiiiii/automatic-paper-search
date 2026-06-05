@@ -1715,7 +1715,11 @@ g.node-wrap.node-wrap--no-tx {
 .theme-gallery__age {
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  color: var(--color-ink-subtle);
+  /* Promoted from --color-ink-subtle (48% L) → --color-ink-muted (42% L)
+     so the larger size that landed in this PR doesn't sit below WCAG AA
+     contrast against --color-surface-elevated. Active card override
+     remains lighter for the inverted scheme. */
+  color: var(--color-ink-muted);
   letter-spacing: 0.04em;
   font-style: italic;
 }
@@ -1730,7 +1734,8 @@ g.node-wrap.node-wrap--no-tx {
   font-size: 0.68rem;
   letter-spacing: 0.04em;
   margin-top: 0.22rem;
-  color: var(--color-ink-subtle);
+  /* See .theme-gallery__age — same WCAG AA promotion. */
+  color: var(--color-ink-muted);
 }
 .theme-gallery__card--active .theme-gallery__quality {
   color: oklch(80% 0.012 270);
@@ -2397,7 +2402,10 @@ g.node-wrap.node-wrap--no-tx {
 
 .edge-label {
   font-family: var(--font-sans);
-  font-size: 10.5px;
+  /* rem so user font-scaling lifts the label with body text. 0.66rem
+     ≈ 10.5px at the default 16px root — visually identical at zoom 1×
+     but respects user accessibility settings. */
+  font-size: 0.66rem;
   font-weight: 600;
   fill: var(--color-ink);
   pointer-events: none;
