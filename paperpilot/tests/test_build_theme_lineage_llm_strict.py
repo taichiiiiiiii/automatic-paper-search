@@ -252,17 +252,35 @@ def test_ambiguous_drops_edge_when_llm_unrelated():
     assert out is None
 
 
-def test_ambiguous_falls_back_to_heuristic_when_llm_returns_none():
-    # LLM call failed / unparseable → keep the heuristic edge instead of
-    # dropping a perfectly fine derived rel.
+def test_ambiguous_drops_edge_when_llm_returns_none_and_heuristic_is_template():
+    """2026-06-05 followup: when the heuristic produced a
+    TEMPLATE_RATIONALES rationale (year-delta 1-5 successor catchall:
+    parent=2018, child=2022, delta=4) AND the LLM call failed, drop
+    the edge instead of keeping the template. A template rationale
+    tells the viewer nothing specific about A → B, and the old
+    'keep heuristic' branch turned out to be the dominant lineage-
+    quality leak on Groq Free quota exhaustion (14 / 21 themes at >=
+    95 % template).
+    """
+    from paperpilot.llm.base import TEMPLATE_RATIONALES
+
     p = _FakeProvider(queued=[None])
     baseline = btl.derive_relation(_INFLUENTIAL_NO_INTENTS, parent=_PARENT, child=_CHILD)
+    # Sanity-check the fixture: the baseline heuristic still uses a
+    # template rationale (otherwise this test would mean the wrong
+    # thing — the fixture's year delta drives the template-fallback
+    # path).
+    assert baseline is not None
+    assert baseline["rationale"] in TEMPLATE_RATIONALES.values()
+
     out = btl.derive_relation(
         _INFLUENTIAL_NO_INTENTS,
         parent=_PARENT, child=_CHILD,
         provider=p, strict_mode="ambiguous",
     )
-    assert out == baseline
+    assert out is None, (
+        f"expected template-rationale + LLM-None to drop, got: {out!r}"
+    )
 
 
 # ---------- derive_relation: strict_mode = "all" ----------

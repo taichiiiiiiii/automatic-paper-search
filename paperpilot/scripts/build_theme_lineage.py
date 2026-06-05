@@ -747,33 +747,53 @@ def _is_ambiguous(intent_record: dict) -> bool:
     return all(keyword not in intents_set for keyword, _, _ in _INTENT_RELATION_MAP)
 
 
+_TEMPLATE_RATIONALES_SET: frozenset[str] = frozenset(TEMPLATE_RATIONALES.values())
+
+
 def _apply_llm_classification(
     heuristic: dict, llm_result: RelationClassification | None
 ) -> dict | None:
     """Merge an LLM classification into an existing heuristic edge.
 
-    Decision matrix (#118 / #209):
-      * ``llm_result is None``                 → keep heuristic
-        (LLM hiccup; the heuristic has real signal so we don't
-        regress the edge to nothing just because Groq throttled).
-      * ``relation == "unrelated"``            → drop the edge
+    Decision matrix (#118 / #209 / 2026-06-05 followup):
+      * ``llm_result is None`` AND heuristic rationale IS a template
+        from ``TEMPLATE_RATIONALES``                  → drop the edge.
+        The template adds zero signal to the viewer (it reads
+        identically across hundreds of edges) and inflates the
+        lineage's template_ratio without telling the user anything
+        about *why* the two papers are linked. With the LLM unable
+        to provide a paper-specific rationale, the honest move is
+        no edge at all. See the 2026-06-05 quality investigation
+        for the data — 14 of 21 themes were >= 95 % template-rationale
+        because this branch used to keep them.
+      * ``llm_result is None`` AND heuristic rationale is paper-
+        specific (Phase J unarXive context, etc.)    → keep heuristic.
+        Phase J already gave us a citing-sentence excerpt; the LLM
+        was just an optional refinement step.
+      * ``relation == "unrelated"``                   → drop the edge
         (LLM positively rejects the relation).
-      * ``llm_result.confidence < threshold``  → drop the edge (#209)
+      * ``llm_result.confidence < threshold``         → drop the edge
         (LLM has read both abstracts and judged the connection weak;
         the heuristic's 0.7 confidence is an artefact, not a signal —
         trusting it over the LLM's own assessment misleads the user).
-      * otherwise                              → use LLM verbatim
+      * otherwise                                     → use LLM verbatim
         (#209: was max(heuristic, llm) — pinning conf to 0.7 floor
         hid the LLM's own uncertainty signal).
 
-    Why rationale comes from the LLM: heuristic rationale is a
-    template (one of `TEMPLATE_RATIONALES.values()`); the LLM's
-    rationale is grounded in the actual abstracts. The from_dict
+    Why rationale must come from the LLM (or Phase J) when kept: a
+    heuristic-template rationale reads the same across every edge it
+    decorates ("論文 B は論文 A の研究ラインを継承し自然に発展さ
+    せている。" hit 27 / 41 edges of Mixture of Experts), so it tells
+    the reader nothing specific about A → B. The from_dict
     template-echo reject (#131) means an LLM-supplied template would
     have already been turned into ``None`` by RelationClassification,
-    so reaching this point means the rationale is paper-specific.
+    so reaching this point with a non-None llm_result means the
+    rationale is paper-specific.
     """
     if llm_result is None:
+        heuristic_rationale = (heuristic.get("rationale") or "").strip()
+        if heuristic_rationale in _TEMPLATE_RATIONALES_SET:
+            return None
         return heuristic
     if llm_result.relation == "unrelated":
         return None
