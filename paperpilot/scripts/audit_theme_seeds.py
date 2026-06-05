@@ -39,6 +39,25 @@ THEMES_DIR = ROOT / "docs" / "themes"
 # direction than the inverse.
 _MIN_WORD_LEN = 3
 _THRESHOLD_RATIO = 0.5
+# Mirror of build_theme_lineage._TWO_WORD_FALLBACK_MAX_DISTANCE — see
+# the audit corpus rationale in that constant's docstring.
+_TWO_WORD_FALLBACK_MAX_DISTANCE = 3
+
+
+def _min_token_distance(text: str, word_a: str, word_b: str) -> int | None:
+    """Smallest token-index distance between any occurrence of ``word_a``
+    and any occurrence of ``word_b`` in ``text``. Both inputs must
+    already be lower-cased + hyphen-normalised. Returns ``None`` when
+    either word doesn't match any token (substring-within-token, so
+    'model' finds 'modeling'). Mirrors the helper in
+    build_theme_lineage so the audit's drop set matches what the
+    production filter would have removed."""
+    tokens = text.split()
+    positions_a = [i for i, t in enumerate(tokens) if word_a in t]
+    positions_b = [i for i, t in enumerate(tokens) if word_b in t]
+    if not positions_a or not positions_b:
+        return None
+    return min(abs(a - b) for a in positions_a for b in positions_b)
 
 
 def _normalize(text: str) -> str:
@@ -164,7 +183,16 @@ def _is_on_topic(theme: str, paper: dict) -> bool:
     normalised_words = [_normalize(w) for w in words]
     if len(words) == 2:
         title_only = _normalize(paper.get("title") or "")
-        return all(w and _stem_contains(title_only, w) for w in normalised_words)
+        if not all(w and _stem_contains(title_only, w) for w in normalised_words):
+            return False
+        # 2026-06-05 followup: mirror the production filter's
+        # token-distance bound on the title-only fallback. Without it,
+        # 'World Model' accepted 'Real-World-Weight ... Modeling' (the
+        # two theme words 6 tokens apart in unrelated compounds).
+        distance = _min_token_distance(
+            title_only, normalised_words[0], normalised_words[1]
+        )
+        return distance is not None and distance <= _TWO_WORD_FALLBACK_MAX_DISTANCE
     threshold = max(2, math.ceil(len(words) * _THRESHOLD_RATIO))
     hits = sum(1 for w in normalised_words if w and _stem_contains(haystack, w))
     return hits >= threshold
