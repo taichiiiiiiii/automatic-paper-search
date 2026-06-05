@@ -219,10 +219,16 @@ const state = {
   xAxisMode: typeof prefs?.xAxisMode === "string" && X_AXIS_MODES.includes(prefs.xAxisMode)
     ? prefs.xAxisMode
     : DEFAULT_X_AXIS_MODE,
-  // Hide orphan papers (no incident edge). Default off — orphans are
-  // topically relevant to the theme even when LLM dropped their edges
-  // as `unrelated`. URL: ?orphan=hide.
-  hideOrphans: false,
+  // Hide orphan papers (no incident edge) by default (2026-06-05
+  // followup to PR #253). With template-rationale edges now dropped,
+  // many themes leave a long tail of papers whose only edges were
+  // generic-template — visually they read as 'cards floating in space'
+  // and obscure the actual family-tree structure. Defaulting to hide
+  // keeps the canvas focused on edges-with-signal; users who want the
+  // full topical set still toggle the chip or use ?orphan=show.
+  // Backward-compatible URL handling: ?orphan=hide is still accepted
+  // (just redundant now), ?orphan=show is the new opt-in to reveal.
+  hideOrphans: true,
   orphanSet: new Set(),
 };
 
@@ -672,8 +678,14 @@ function readUrlState() {
       }
     }
 
-    // Orphan hide flag: only "hide" is meaningful; absent = default show.
-    if (params.get("orphan") === "hide") state.hideOrphans = true;
+    // Orphan visibility. Default is hide (2026-06-05 PR #253 followup);
+    // ?orphan=show opts in to the full topical set including
+    // edges-dropped papers. ?orphan=hide is still accepted for
+    // backward-compatible bookmarks even though it now matches the
+    // default — explicit > implicit when the user already typed it.
+    const orphanParam = params.get("orphan");
+    if (orphanParam === "show") state.hideOrphans = false;
+    else if (orphanParam === "hide") state.hideOrphans = true;
   } catch (e) {
     console.warn("[url-state] read failed:", e);
   } finally {
@@ -723,7 +735,11 @@ function syncUrlState() {
       p.delete("rels");
     }
 
-    if (state.hideOrphans) p.set("orphan", "hide");
+    // Symmetric with the read side: only persist the non-default
+    // choice. New default is hide, so persist ?orphan=show when the
+    // user opted in to show orphans, and clear the param otherwise
+    // (including when state.hideOrphans is true, matching the default).
+    if (!state.hideOrphans) p.set("orphan", "show");
     else p.delete("orphan");
 
     // replaceState (not pushState) — we don't want each filter twiddle
