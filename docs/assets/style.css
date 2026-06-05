@@ -1586,7 +1586,7 @@ g.node-wrap.node-wrap--no-tx {
   /* CLS fix (Lighthouse baseline 2026-05-25 / 0.25 on themes/):
      gallery starts empty, becomes 19+ cards once manifest resolves.
      Reserve one row of card height so the canvas below stays put. */
-  min-height: calc(56px + 0.6rem);
+  min-height: calc(68px + 0.6rem);
   /* Right-edge fade hints "there's more to scroll" without a
      scrollbar. Falls back gracefully on browsers without mask-image. */
   -webkit-mask-image: linear-gradient(to right, black 92%, transparent 100%);
@@ -1599,15 +1599,16 @@ g.node-wrap.node-wrap--no-tx {
     overflow-x: visible;
     -webkit-mask-image: none;
             mask-image: none;
-    /* CLS fix: at desktop viewport the gallery wraps to 2-3 rows
-       (~180px). The single-row reservation below would otherwise
-       under-shoot and the toolbar / canvas would slide 100+px when
-       cards finished populating. Verified post-#194 the actual filled
-       height clusters around 240-260 px on 1440 / 1920 viewports
-       (3 wrapped rows × ~80 px). Reserve 250 to cover the common
-       case; the gallery can still grow taller without CLS because
-       min-height doesn't cap. */
-    min-height: 250px;
+    /* CLS fix: at desktop viewport the gallery wraps to 2-4 rows.
+       Each card is now 68px intrinsic + 2 × 0.6rem vertical
+       padding (~87px per row) + 0.18rem row gap. 3 wrapped rows ≈
+       267px on 1440px viewports; 4 rows on 1920px ≈ 357px.
+       Reserve 290 to cover the common 3-row case without
+       reintroducing the toolbar-slide CLS the prior 250 reservation
+       guarded against (cards were 56px / 80px row before #260).
+       4-row case is still ~70px short — acceptable; that range
+       cannot be guarded without over-reserving for 1-2 row layouts. */
+    min-height: 290px;
   }
 }
 .theme-gallery[hidden] { display: none; }
@@ -1623,12 +1624,12 @@ g.node-wrap.node-wrap--no-tx {
      shift layout. Modern browsers honor this; older just render
      normally. */
   content-visibility: auto;
-  contain-intrinsic-size: 180px 56px;
-  flex: 0 0 180px;
+  contain-intrinsic-size: 220px 68px;
+  flex: 0 0 220px;
   display: flex;
   flex-direction: column;
-  gap: 0.12rem;
-  padding: 0.45rem 0.75rem;
+  gap: 0.18rem;
+  padding: 0.6rem 0.9rem;
   background: var(--color-surface-elevated);
   border: 1px solid var(--color-rule);
   border-radius: 8px;
@@ -1694,7 +1695,7 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-gallery__title {
   font-family: var(--font-serif, var(--font-body));
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -1703,7 +1704,7 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-gallery__stats {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   color: var(--color-ink-muted);
   letter-spacing: 0.04em;
 }
@@ -1713,8 +1714,12 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-gallery__age {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--color-ink-subtle);
+  font-size: 0.68rem;
+  /* Promoted from --color-ink-subtle (48% L) → --color-ink-muted (42% L)
+     so the larger size that landed in this PR doesn't sit below WCAG AA
+     contrast against --color-surface-elevated. Active card override
+     remains lighter for the inverted scheme. */
+  color: var(--color-ink-muted);
   letter-spacing: 0.04em;
   font-style: italic;
 }
@@ -1726,10 +1731,11 @@ g.node-wrap.node-wrap--no-tx {
  * power-user-only path. */
 .theme-gallery__quality {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   letter-spacing: 0.04em;
-  margin-top: 0.2rem;
-  color: var(--color-ink-subtle);
+  margin-top: 0.22rem;
+  /* See .theme-gallery__age — same WCAG AA promotion. */
+  color: var(--color-ink-muted);
 }
 .theme-gallery__card--active .theme-gallery__quality {
   color: oklch(80% 0.012 270);
@@ -2269,18 +2275,13 @@ g.node-wrap.node-wrap--no-tx {
 /* SVG edge styles */
 .edge {
   fill: none;
-  transition: stroke-width 0.15s ease, opacity 0.15s ease;
-}
-.edge:hover { stroke-width: 4; opacity: 1 !important; }
-
-.edge {
-  fill: none;
-  /* Base opacity bumped 0.55 → 0.85 so edges are actually visible at
-     rest. Earlier value treated all edges as background and made the
-     graph look like cards floating with no connections — the lineage
-     story is mostly told by the edges, so the default should make
-     them legible. Hover still boosts to 1.0 + thicker stroke. */
-  opacity: 0.85;
+  /* Base opacity tuned to 0.7 — high enough that edges still tell the
+     lineage story at rest, low enough that they stop competing with
+     card text for visual weight. Earlier 0.85 made edges feel as
+     loud as titles on dense trees (Mamba 40 edges). Hover still
+     boosts to 1.0 + thicker stroke. Prior history: 0.55 was too
+     ghostly, 0.85 too loud, 0.7 splits the difference. */
+  opacity: 0.7;
   transition: opacity 0.15s ease, stroke-width 0.15s ease;
 }
 .edge:hover {
@@ -2297,18 +2298,16 @@ g.node-wrap.node-wrap--no-tx {
 .edge--dim {
   opacity: 0.15 !important;
 }
-/* Per-relation stroke widths + dashes. The weaker-signal relations
-   (ablation / baseline / contrasts) used to ride 0.3-0.4 opacity on
-   top of the 0.55 base, making them effectively invisible. They are
-   important context — extending arms of the family tree — and need
-   to read as "secondary but real". Widths bumped a notch and per-
-   class opacity removed so the .edge base 0.85 applies. */
-.edge--supersedes { stroke: var(--rel-supersedes); stroke-width: 2.8; }
-.edge--successor  { stroke: var(--rel-successor); stroke-width: 2.4; }
-.edge--extends    { stroke: var(--rel-extends); stroke-width: 2; stroke-dasharray: 7 4; }
-.edge--ablation   { stroke: var(--rel-ablation); stroke-width: 1.8; stroke-dasharray: 5 4; }
-.edge--baseline   { stroke: var(--rel-baseline); stroke-width: 1.8; stroke-dasharray: 2 4; }
-.edge--contrasts  { stroke: var(--rel-contrasts); stroke-width: 1.8; stroke-dasharray: 4 2 1 2; }
+/* Per-relation stroke widths + dashes. Widths trimmed -0.3 from the
+   loud era (2.8/2.4/2/1.8 → 2.5/2.1/1.7/1.5) and paired with the
+   0.7 base opacity so edges read as "secondary but real" against
+   card titles on dense trees instead of competing with them. */
+.edge--supersedes { stroke: var(--rel-supersedes); stroke-width: 2.5; }
+.edge--successor  { stroke: var(--rel-successor); stroke-width: 2.1; }
+.edge--extends    { stroke: var(--rel-extends); stroke-width: 1.7; stroke-dasharray: 7 4; }
+.edge--ablation   { stroke: var(--rel-ablation); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.edge--baseline   { stroke: var(--rel-baseline); stroke-width: 1.5; stroke-dasharray: 2 4; }
+.edge--contrasts  { stroke: var(--rel-contrasts); stroke-width: 1.5; stroke-dasharray: 4 2 1 2; }
 
 /* Paper node card */
 .node-card {
@@ -2403,12 +2402,15 @@ g.node-wrap.node-wrap--no-tx {
 
 .edge-label {
   font-family: var(--font-sans);
-  font-size: 9.5px;
+  /* rem so user font-scaling lifts the label with body text. 0.66rem
+     ≈ 10.5px at the default 16px root — visually identical at zoom 1×
+     but respects user accessibility settings. */
+  font-size: 0.66rem;
   font-weight: 600;
   fill: var(--color-ink);
   pointer-events: none;
   user-select: none;
-  opacity: 0.9;
+  opacity: 0.95;
   paint-order: stroke;
   stroke: var(--color-surface-elevated, #fff);
   stroke-width: 3;
@@ -2439,11 +2441,11 @@ g.node-wrap.node-wrap--no-tx {
 
 .node-card__venue {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
   color: var(--color-ink-muted);
   text-transform: uppercase;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.32rem;
   display: flex;
   justify-content: space-between;
   gap: 0.5rem;
@@ -2458,10 +2460,10 @@ g.node-wrap.node-wrap--no-tx {
 
 .node-card__title {
   font-family: var(--font-serif);
-  font-size: 0.92rem;
-  line-height: 1.25;
+  font-size: 1rem;
+  line-height: 1.28;
   font-weight: 500;
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.4rem;
   color: var(--color-ink);
   letter-spacing: -0.01em;
   display: -webkit-box;
@@ -2471,25 +2473,25 @@ g.node-wrap.node-wrap--no-tx {
 }
 
 .node-card__authors {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--color-ink-muted);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.42rem;
 }
 
 .node-card__tldr {
-  font-size: 0.73rem;
+  font-size: 0.78rem;
   color: var(--color-ink-muted);
-  line-height: 1.4;
-  margin-bottom: 0.45rem;
+  line-height: 1.42;
+  margin-bottom: 0.48rem;
   font-style: italic;
 }
 
 .node-card__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.32rem;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   color: var(--color-ink-muted);
   align-items: center;
 }
@@ -3118,10 +3120,10 @@ g.node-wrap.node-wrap--no-tx {
 /* #63: TLDR — 2-line clamp under the title. Keeps the card height
    bounded while giving readers a fast sniff-test of the abstract. */
 .node-card--theme .node-card__tldr {
-  font-size: 0.74rem;
-  line-height: 1.35;
+  font-size: 0.78rem;
+  line-height: 1.4;
   color: var(--color-ink-muted);
-  margin: 0.25rem 0;
+  margin: 0.28rem 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -3443,8 +3445,8 @@ g.node-wrap.node-wrap--no-tx {
 }
 
 .node-card--theme .node-card__authors {
-  font-size: 0.72rem;
-  line-height: 1.3;
+  font-size: 0.78rem;
+  line-height: 1.32;
   color: var(--color-ink-muted);
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -3457,7 +3459,7 @@ g.node-wrap.node-wrap--no-tx {
   display: flex;
   gap: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--color-ink-muted);
-  margin-top: 0.25rem;
+  margin-top: 0.28rem;
 }
