@@ -3404,6 +3404,89 @@ def test_filter_topic_relevant_seeds_two_word_keeps_when_both_words_in_title():
     assert [s["paperId"] for s in kept] == ["ddpm"]
 
 
+# ---- 2026-06-05 followup: title-only fallback distance bound ----------------
+
+
+def test_filter_topic_relevant_seeds_drops_compound_term_false_match():
+    """Two-word title-only fallback rejects compound-term false matches
+    where the two words appear in unrelated subexpressions.
+
+    Real production failure: 'World Model' theme accepted
+    'The Real-World-Weight Cross-Entropy Loss Function: Modeling the
+    Costs of Mislabeling' because 'world' (inside Real-World-Weight)
+    and 'model' (inside Modeling) both appear in the title — but 6
+    tokens apart, in two unrelated compound terms. The distance bound
+    rejects when the words are more than
+    _TWO_WORD_FALLBACK_MAX_DISTANCE positions apart.
+    """
+    seeds = [
+        _mk_s2_paper(
+            "off_topic",
+            title="The Real-World-Weight Cross-Entropy Loss Function: Modeling the Costs of Mislabeling",
+            abstract="we present a cross-entropy loss generalisation",
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="World Model"
+    )
+    assert kept == [], (
+        "Real-World-Weight + Modeling should be rejected: "
+        "the words are 6 tokens apart in two unrelated compound terms"
+    )
+
+
+def test_filter_topic_relevant_seeds_keeps_seeds_with_adjacent_match():
+    """The distance bound must NOT regress seeds where the two theme
+    words are within range (DDPM dist=2, "Vector Database" dist=1, etc.)."""
+    seeds = [
+        _mk_s2_paper(
+            "ddpm",
+            title="Denoising Diffusion Probabilistic Models",
+            abstract="diffusion probabilistic models",
+        ),
+        _mk_s2_paper(
+            "encdec",
+            # 'Semantic' + 'Image' + 'Segmentation' — semantic and
+            # segmentation are 2 tokens apart. The audit corpus marks
+            # this as a legitimate seed (real Encoder-Decoder paper).
+            title="Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+            abstract="..",
+        ),
+    ]
+    kept = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Diffusion Models"
+    )
+    assert "ddpm" in [s["paperId"] for s in kept]
+    kept2 = build_theme_lineage._filter_topic_relevant_seeds(
+        seeds, theme="Semantic Segmentation"
+    )
+    assert "encdec" in [s["paperId"] for s in kept2]
+
+
+def test_min_token_distance_matches_substring_per_token():
+    """Pin the helper: 'model' matches 'modeling' (substring within a
+    single token) so DDPM-style stem inflections still count, and the
+    min over Cartesian positions handles repeated words correctly."""
+    fn = build_theme_lineage._min_token_distance
+    # 'modeling' starts at token 7; 'world' at token 1 — distance 6.
+    assert fn(
+        "the real world weight cross entropy loss function modeling the costs",
+        "world",
+        "model",
+    ) == 6
+    # Adjacent: 'world models' — distance 1.
+    assert fn("through world models", "world", "model") == 1
+    # Missing word → None
+    assert fn("only world here", "world", "model") is None
+    # Repeated word: pick the closest pair (here both 'model' positions
+    # are far from 'world'; closer one wins).
+    assert fn(
+        "world ofX modeling and another modeling",
+        "world",
+        "model",
+    ) == 2
+
+
 def test_filter_denylisted_seeds_drops_known_lib_papers():
     """#209 seed-phase denylist application: SciPy / NumPy / QIIME
     titles that slip past S2's fieldsOfStudy=Mathematics gate must

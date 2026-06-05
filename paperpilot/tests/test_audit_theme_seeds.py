@@ -265,3 +265,45 @@ def test_is_on_topic_handles_empty_short_abstract():
     }
     # Two-word phrase in title → kept by title-only fallback.
     assert _is_on_topic("Self-Supervised Learning", paper) is True
+
+
+# ---- 2026-06-05 followup: title-only fallback distance bound ----------------
+
+
+def test_is_on_topic_drops_compound_term_false_match_for_world_model():
+    """World Model theme audit must drop seeds where 'world' and 'model'
+    appear in unrelated compounds.
+
+    Three real-production seeds caught:
+      1. 'Real-World-Weight ... Modeling' (world at pos 1, model at pos 7)
+      2. 'Real-World Single Image Super-Resolution ... Model'
+         (world at pos 2, model at pos 14)
+      3. 'foundation model ... real-world data'
+         (model at pos 3, world at pos 9)
+    """
+    cases = [
+        "The Real-World-Weight Cross-Entropy Loss Function: Modeling the Costs of Mislabeling",
+        "Toward Real-World Single Image Super-Resolution: A New Benchmark and a New Model",
+        "A whole-slide foundation model for digital pathology from real-world data",
+    ]
+    for title in cases:
+        paper = {"title": title, "tldr": ""}
+        assert _is_on_topic("World Model", paper) is False, (
+            f"expected reject for: {title!r}"
+        )
+
+
+def test_is_on_topic_keeps_world_model_proper_seeds():
+    """The distance bound must keep the legitimate World Model seeds —
+    DreamerV3 and the surveys whose title carries the phrase verbatim."""
+    legit = [
+        # Phrase appears verbatim → phrase route, distance bound irrelevant.
+        "Mastering diverse control tasks through world models",
+        # Phrase appears verbatim with hyphen normalisation.
+        "Deep learning, reinforcement learning, and world models",
+    ]
+    for title in legit:
+        paper = {"title": title, "tldr": ""}
+        assert _is_on_topic("World Model", paper) is True, (
+            f"expected keep for: {title!r}"
+        )
