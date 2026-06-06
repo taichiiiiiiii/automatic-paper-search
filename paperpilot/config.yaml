@@ -80,8 +80,16 @@ embedding:
 #   - ollama : local, free (requires `ollama serve` + `ollama pull <model>`)
 #   - gemini : cloud, free tier (requires PAPERPILOT_GEMINI_API_KEY)
 #   - claude : cloud, paid (requires PAPERPILOT_CLAUDE_API_KEY) — spec's primary
-#   - groq   : cloud, free tier 30 RPM / 14400 RPD (requires PAPERPILOT_GROQ_API_KEY)
+#   - groq   : cloud, free tier 30 RPM / 1,000 RPD / 12K TPM / 100K TPD
+#              (requires PAPERPILOT_GROQ_API_KEY)
 #              primary backend for lineage relation classification
+#              Daily quotas appear to use a rolling 24h window — the
+#              `x-ratelimit-reset-requests` response header returns time
+#              remaining as a duration (e.g. "2m59.56s"), not an
+#              absolute UTC reset timestamp. Empirical at 2026-06-06:
+#              a ~24h gap restored capacity for ~2-3 large theme runs,
+#              not the previous 14,400 RPD assumed in earlier configs.
+#              Live limits at https://console.groq.com/docs/rate-limits
 # Disable this block to skip Stage 4 entirely.
 llm:
   enabled: false         # flip to true once the provider is ready
