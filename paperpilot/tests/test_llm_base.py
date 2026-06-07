@@ -287,9 +287,10 @@ def test_theme_workflows_use_ambiguous_strict_mode():
     """``--llm-strict=all`` on the Groq free tier blew the TPM budget and
     timed out the workflow (#131 PR #132 deploy → #133 walk-back). Both
     theme-producing workflows — the on-demand single-theme dispatch and
-    the weekly bulk regen — MUST stay on ``--llm-strict=ambiguous`` until
-    the operator moves to a paid plan; a careless flip back to ``all``
-    would silently re-introduce the production cancellation.
+    the manual bulk regen (cron retired in PR #261) — MUST stay on
+    ``--llm-strict=ambiguous`` until the operator moves to a paid plan;
+    a careless flip back to ``all`` would silently re-introduce the
+    production cancellation.
 
     Reading the YAML as plain text (no yaml.safe_load tree walk) keeps
     the test resilient to comment / whitespace re-shuffling — the only

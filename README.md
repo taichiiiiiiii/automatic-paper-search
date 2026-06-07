@@ -5,11 +5,11 @@ AI/ML 論文を arXiv / Semantic Scholar / OpenAlex から自動収集し、品�
 **主要な出力:** GitHub Pages 上のインタラクティブ家系図ビュー（`docs/<conference>/lineage.html`、`.github/workflows/pages.yml` でデプロイ）。サイト上のフォームから新規テーマ投稿 → CF Worker (`worker/index.ts`) が validate + dedup + rate-limit してから `theme-on-demand.yml` を直接 dispatch して生成。
 LLM が論文間の引用関係を 7 種類 (`supersedes` / `successor` / `extends` / `ablation` / `baseline_only` / `contrasts` / `unrelated`) に分類し、先行研究と後継研究を一枚の SVG で俯瞰できます。
 
-**4 つの自動実行モード**（GitHub Actions）：
+**3 つの自動実行モード + 1 つの手動メンテナンス**（GitHub Actions）：
 - **週次深掘り**（Sat 7:00 JST、`collect-weekly.yml`）— 収集 → スコアリング → summary.csv → papers.json → lineage.json の全工程を回す
 - **毎日の著者ウォッチ**（07:00 JST 毎日、`collect-daily-watch.yml`）— フォロー中の研究者の新作を公開 0 秒後に通知（lean、LLM 不使用）
-- **週次テーマ再生成**（Sun 9:00 JST、`regen-themes.yml`）— 既存全テーマの lineage.json を最新引用グラフで再構築
-- **オンデマンドテーマ生成**（フォーム経由、`theme-on-demand.yml`）— サイト上のフォームから新テーマを 1 件だけ生成、CF Worker `worker/index.ts` 経由で直接 `theme-on-demand.yml` を dispatch
+- **オンデマンドテーマ生成**（フォーム経由、`theme-on-demand.yml`）— サイト上のフォームから新テーマを 1 件だけ生成、CF Worker `worker/index.ts` 経由で直接 `theme-on-demand.yml` を dispatch。`/themes/` ギャラリーは **このフォーム経由で生成されたテーマだけ** を表示する
+- **手動バルク再生成**（`regen-themes.yml` の `workflow_dispatch` のみ）— LLM 契約変更や lineage 形式バンプ等のメンテナンス用ブレークグラス。通常は使わない（PR #261 で週次 cron を廃止）
 
 ## 特徴
 
