@@ -285,6 +285,22 @@ const els = {
   reqInput: document.getElementById("theme-request-input"),
   reqSubmit: document.getElementById("theme-request-submit"),
   reqStatus: document.getElementById("theme-request-status"),
+  // Generation progress panel — hidden until a submit succeeds and
+  // startProgress() takes over from setRequestStatus(). All refs are
+  // looked up once at module load; helpers guard each access so a
+  // page that drops the progress block (e.g. CSP-stripped variant)
+  // still renders.
+  progress: document.getElementById("theme-progress"),
+  progressTitle: document.getElementById("theme-progress-title"),
+  progressElapsed: document.getElementById("theme-progress-elapsed"),
+  progressBar: document.getElementById("theme-progress-bar"),
+  progressSteps: document.getElementById("theme-progress-steps"),
+  progressCancel: document.getElementById("theme-progress-cancel"),
+  progressFailure: document.getElementById("theme-progress-failure"),
+  progressFailureTitle: document.getElementById("theme-progress-failure-title"),
+  progressFailureMsg: document.getElementById("theme-progress-failure-msg"),
+  progressFailureRetry: document.getElementById("theme-progress-failure-retry"),
+  progressFailureDismiss: document.getElementById("theme-progress-failure-dismiss"),
   gallery: document.getElementById("theme-gallery"),
   heroDetails: document.getElementById("hero-details"),
   heroToggle: document.getElementById("hero-toggle"),
@@ -816,6 +832,276 @@ function issueUrlFor(theme) {
   );
 }
 
+// ---- Theme generation progress ----------------------------------------
+//
+// After the Worker accepts a submit (status "queued"), we swap the form's
+// success banner for a richer progress panel: time-based step transitions
+// + manifest polling for completion + /api/themes/status checks for
+// terminal failure. The progress UI replays the proven design from PRs
+// #162 / #164 / #166 (removed in #229, restored here once the Worker
+// path is healthy again).
+
+// 5 s feels responsive while staying well under the GH API rate limit
+// even with several concurrent users — the status check fires once per
+// STATUS_CHECK_INTERVAL_POLLS ≈ 30 s.
+const POLL_INTERVAL_MS = 5_000;
+// 12 min hard cap. The theme-on-demand workflow has a 15 min
+// timeout-minutes; we surface "taking too long" before the workflow
+// would actually time out so the user knows something is wrong instead
+// of seeing a manifest that never updates.
+const POLL_TIMEOUT_MS = 12 * 60 * 1_000;
+// Step list mirrored from the HTML data-step values — keep in sync.
+const PROGRESS_STEPS = ["dispatch", "queue", "generate", "commit", "ready"];
+// 4 failures × 5 s ≈ 20 s of trouble before the user sees a soft
+// "retrying" warning in the progress title. Below this threshold the
+// loop just retries silently — single flaky fetches shouldn't alarm.
+const POLL_FAILURE_THRESHOLD = 4;
+// 1 status check per 6 manifest polls ≈ once every 30 s. Frequent
+// enough to surface a failed workflow well before the 12 min cap,
+// sparse enough to stay safely under the GH API rate limit.
+const STATUS_CHECK_INTERVAL_POLLS = 6;
+
+// Module-level so the bound cancel/retry handlers can flip `cancelled`
+// without re-binding on every submit.
+let progressState = null;
+
+// Translate a GitHub Actions run summary (from /api/themes/status) into
+// the failure-UI fields. Returns null while the run is still in flight
+// or already succeeded. Pure — exported via the module's call-site
+// shape so the .mjs unit test can exercise every conclusion branch
+// without a DOM.
+function failureFromRun(run) {
+  if (!run || run.status !== "completed") return null;
+  const conc = run.conclusion;
+  // shouldn't happen — manifest poll catches success first
+  if (conc === "success") return null;
+  const url = typeof run.html_url === "string" ? run.html_url : "";
+  if (conc === "failure") {
+    return {
+      title: "ワークフロー実行が失敗しました",
+      message: "GitHub Actions の theme-on-demand ジョブが failure で完了しました。S2 のレート制限、Groq LLM の TPM 上限、または build_theme_lineage.py の内部エラーの可能性があります。ログから原因を特定してください。",
+      runUrl: url,
+    };
+  }
+  if (conc === "cancelled") {
+    return {
+      title: "ワークフローがキャンセルされました",
+      message: "GitHub Actions のジョブが外部からキャンセルされました。再試行してください。",
+      runUrl: url,
+    };
+  }
+  if (conc === "timed_out") {
+    return {
+      title: "ワークフローがタイムアウトしました",
+      message: "ジョブが GitHub Actions 側で時間切れになりました (workflow timeout-minutes 超過)。数分待ってから再試行してください。",
+      runUrl: url,
+    };
+  }
+  return null;
+}
+
+// Pure step → percent mapping. Exposed for the unit test; both the test
+// and the DOM helper below depend on PROGRESS_STEPS staying in sync
+// with the HTML data-step values.
+function progressPercentFor(step) {
+  const idx = PROGRESS_STEPS.indexOf(step);
+  if (idx < 0) return 0;
+  return Math.min(100, (idx / (PROGRESS_STEPS.length - 1)) * 100);
+}
+
+function setProgressStep(step) {
+  if (!els.progressSteps) return;
+  const idx = PROGRESS_STEPS.indexOf(step);
+  for (const li of els.progressSteps.querySelectorAll("li[data-step]")) {
+    const liIdx = PROGRESS_STEPS.indexOf(li.dataset.step);
+    li.classList.toggle("theme-progress__step--done", liIdx < idx);
+    li.classList.toggle("theme-progress__step--current", liIdx === idx);
+    li.classList.toggle("theme-progress__step--pending", liIdx > idx);
+  }
+  if (els.progressBar) {
+    els.progressBar.style.width = `${progressPercentFor(step)}%`;
+  }
+}
+
+function updateElapsed() {
+  if (!progressState || !els.progressElapsed) return;
+  const elapsed = Date.now() - progressState.startedAt;
+  const m = Math.floor(elapsed / 60_000);
+  const s = Math.floor((elapsed % 60_000) / 1_000);
+  els.progressElapsed.textContent = `経過 ${m}:${String(s).padStart(2, "0")}`;
+}
+
+function maybeAdvance(step) {
+  if (!progressState || progressState.cancelled) return;
+  setProgressStep(step);
+}
+
+function setProgressNetworkWarning(on) {
+  if (!els.progressTitle) return;
+  const baseTitle = progressState?.themeLabel
+    ? `「${progressState.themeLabel}」を生成中...`
+    : "生成中...";
+  els.progressTitle.textContent = on
+    ? `${baseTitle} (マニフェスト取得に再試行中)`
+    : baseTitle;
+}
+
+function showProgressFailure({ title, message, retrySlug, runUrl }) {
+  if (!els.progress) return;
+  if (progressState) {
+    progressState.cancelled = true;
+    if (progressState.timer) clearInterval(progressState.timer);
+  }
+  if (els.progressSteps) els.progressSteps.hidden = true;
+  const cancelWrap = els.progressCancel?.parentElement;
+  if (cancelWrap) cancelWrap.hidden = true;
+  if (els.progressFailure) {
+    if (els.progressFailureTitle && title) els.progressFailureTitle.textContent = title;
+    if (els.progressFailureMsg && message) {
+      // Build the optional link as a DOM node so runUrl can't inject
+      // bad markup. rel=noopener + target=_blank so navigating away
+      // doesn't kill the user's progress view.
+      els.progressFailureMsg.textContent = message;
+      if (runUrl) {
+        const sep = document.createElement("span");
+        sep.textContent = " ";
+        const a = document.createElement("a");
+        a.href = runUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "GitHub Actions のログを開く →";
+        a.className = "theme-progress__failure-link";
+        els.progressFailureMsg.appendChild(sep);
+        els.progressFailureMsg.appendChild(a);
+      }
+    }
+    els.progressFailure.hidden = false;
+    if (retrySlug && els.progressFailureRetry) {
+      els.progressFailureRetry.dataset.retrySlug = retrySlug;
+    }
+  }
+  // Re-enable input so the user can retry the same slug or type a
+  // different one if they suspect input was the issue.
+  if (els.reqSubmit) els.reqSubmit.disabled = false;
+  if (els.reqInput) els.reqInput.disabled = false;
+}
+
+function cancelProgress() {
+  if (progressState) {
+    progressState.cancelled = true;
+    if (progressState.timer) clearInterval(progressState.timer);
+  }
+  if (els.progress) els.progress.hidden = true;
+  if (els.progressFailure) els.progressFailure.hidden = true;
+  if (els.reqSubmit) els.reqSubmit.disabled = false;
+  if (els.reqInput) els.reqInput.disabled = false;
+}
+
+async function pollForCompletion(slug) {
+  const startedAt = Date.now();
+  let consecutiveFailures = 0;
+  let pollIter = 0;
+  const themeLabel = progressState?.themeLabel ?? "";
+  while (progressState && !progressState.cancelled) {
+    if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
+      showProgressFailure({
+        title: "生成がタイムアウトしました (12 分経過)",
+        message: "S2 / Groq LLM のレート制限、または GitHub Actions の内部エラーの可能性があります。数分後に再試行するか、既存テーマを確認してください。",
+        retrySlug: slug,
+      });
+      return;
+    }
+    try {
+      // cache: "no-store" is intentional — this loop fires every
+      // POLL_INTERVAL_MS while the user waits, and CF Pages can serve
+      // a stale manifest from the edge for ~30 s after the deploy
+      // lands. 304 from no-cache would still return cached bytes
+      // missing our slug.
+      const r = await fetch("themes-manifest.json", { cache: "no-store" });
+      if (r.ok) {
+        consecutiveFailures = 0;
+        const data = await r.json();
+        if (Array.isArray(data) && data.some((e) => e?.slug === slug)) {
+          setProgressStep("ready");
+          // Brief pause so the user sees the green "完了" tick.
+          setTimeout(() => {
+            window.location.href = `?theme=${encodeURIComponent(slug)}`;
+          }, 800);
+          return;
+        }
+      } else {
+        consecutiveFailures++;
+      }
+    } catch {
+      consecutiveFailures++;
+    }
+    if (consecutiveFailures === POLL_FAILURE_THRESHOLD) {
+      setProgressNetworkWarning(true);
+    } else if (consecutiveFailures === 0) {
+      setProgressNetworkWarning(false);
+    }
+    // Every Nth poll, ask the Worker for the actual GH Actions run
+    // state. Catches workflow failures (non-zero exit, S2 throttle,
+    // ...) much earlier than the timeout would.
+    pollIter++;
+    if (pollIter % STATUS_CHECK_INTERVAL_POLLS === 0 && themeLabel && API_BASE) {
+      try {
+        const sr = await fetch(
+          `${API_BASE}/api/themes/status?theme=${encodeURIComponent(themeLabel)}`,
+          { credentials: "omit" },
+        );
+        if (sr.ok) {
+          const sd = await sr.json();
+          const fail = failureFromRun(sd?.run);
+          if (fail) {
+            showProgressFailure({
+              title: fail.title,
+              message: fail.message,
+              retrySlug: slug,
+              runUrl: fail.runUrl,
+            });
+            return;
+          }
+        }
+      } catch {
+        // Non-fatal — manifest poll + timeout still cover the failure
+        // modes, just with less specificity.
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+  }
+}
+
+function startProgress(slug, themeLabel) {
+  if (els.progress) els.progress.hidden = false;
+  if (els.progressTitle) els.progressTitle.textContent = `「${themeLabel}」を生成中...`;
+  // Clear any leftover form-status banner so the progress panel is the
+  // only feedback surface.
+  clearRequestStatus();
+  setProgressStep("dispatch");
+  progressState = {
+    slug,
+    themeLabel,
+    startedAt: Date.now(),
+    cancelled: false,
+    timer: null,
+  };
+  if (els.progressFailure) els.progressFailure.hidden = true;
+  if (els.progressSteps) els.progressSteps.hidden = false;
+  const cancelWrap = els.progressCancel?.parentElement;
+  if (cancelWrap) cancelWrap.hidden = false;
+  // Time-based step transitions. The Worker can't tell us the live
+  // workflow step without a second API hop on every poll, so we use
+  // a fixed schedule tuned to typical run time (~5 min total based
+  // on the 9 themes regenerated 2026-06-05/06).
+  setTimeout(() => maybeAdvance("queue"), 5_000);
+  setTimeout(() => maybeAdvance("generate"), 30_000);
+  setTimeout(() => maybeAdvance("commit"), 180_000);
+  pollForCompletion(slug);
+  progressState.timer = setInterval(updateElapsed, 1_000);
+  updateElapsed();
+}
+
 async function submitTheme() {
   if (!els.reqForm || !els.reqInput) return;
   const raw = (els.reqInput.value || "").trim();
@@ -875,6 +1161,18 @@ async function submitTheme() {
     return;
   }
   if (data?.ok && data.status === "queued") {
+    // Hand off to the progress UI — startProgress() takes over the
+    // visual feedback channel (polls themes-manifest.json + /api/themes/
+    // status, auto-redirects on success, surfaces failure inline).
+    const slug = typeof data.slug === "string" && SLUG_RE.test(data.slug) ? data.slug : null;
+    if (slug) {
+      startProgress(slug, raw);
+      if (els.reqInput) els.reqInput.value = "";
+      return;
+    }
+    // Defensive fallback: Worker accepted but didn't return a slug
+    // we can poll on. Fall back to the original "reload after a few
+    // minutes" message so the user isn't left stuck.
     setRequestStatus(
       "ok",
       `🚀 受付完了。生成は数分かかります。完了後にこのページを再読み込みしてください。`,
@@ -903,6 +1201,30 @@ function bindThemeRequest() {
       // Clear any prior status as soon as the user types — avoids
       // stale "error" banner sticking around after a corrective edit.
       clearRequestStatus();
+    });
+  }
+  // Progress panel controls. Cancel + dismiss share cancelProgress();
+  // retry re-fires the original submit using the slug stashed on the
+  // failure block's dataset (set inside showProgressFailure).
+  if (els.progressCancel) {
+    els.progressCancel.addEventListener("click", cancelProgress);
+  }
+  if (els.progressFailureDismiss) {
+    els.progressFailureDismiss.addEventListener("click", cancelProgress);
+  }
+  if (els.progressFailureRetry) {
+    els.progressFailureRetry.addEventListener("click", () => {
+      // Best-effort: re-humanise the slug into the form input and let
+      // the user hit submit again, so any LLM/S2 transient is the only
+      // thing being retried — not the validation path.
+      const retrySlug = els.progressFailureRetry.dataset.retrySlug || "";
+      cancelProgress();
+      if (retrySlug && els.reqInput) {
+        els.reqInput.value = retrySlug
+          .replace(/-/g, " ")
+          .replace(/\b[a-z]/g, (c) => c.toUpperCase());
+        els.reqInput.focus();
+      }
     });
   }
 }
