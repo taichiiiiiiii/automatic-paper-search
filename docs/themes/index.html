@@ -145,6 +145,56 @@
         </span>
         <div class="theme-request__status" id="theme-request-status" hidden role="status"></div>
       </form>
+      <!-- Generation progress panel. Hidden until submitTheme() succeeds
+           and switches the user from the form into the polling view via
+           startProgress(). Steps + bar are driven by time-based
+           setProgressStep() advances (the Worker can't tell us the
+           live workflow step without an extra API hop), plus
+           pollForCompletion() which watches themes-manifest.json and
+           swaps to setProgressStep("ready") + auto-redirect when the
+           new slug appears.  Persistent failure block (steps replaced
+           by retry/dismiss) takes over when polling exceeds the
+           timeout or /api/themes/status surfaces a failed run. -->
+      <div class="theme-progress" id="theme-progress" hidden aria-live="polite">
+        <div class="theme-progress__head">
+          <span class="theme-progress__spinner" aria-hidden="true"></span>
+          <strong class="theme-progress__title" id="theme-progress-title">生成中...</strong>
+          <span class="theme-progress__elapsed" id="theme-progress-elapsed"></span>
+        </div>
+        <div class="theme-progress__bar" aria-hidden="true">
+          <div class="theme-progress__bar-fill" id="theme-progress-bar"></div>
+        </div>
+        <ul class="theme-progress__steps" id="theme-progress-steps">
+          <li data-step="dispatch">📨 ジョブを送信</li>
+          <li data-step="queue">⏳ Actions キュー待ち</li>
+          <li data-step="generate">🔍 論文収集 + LLM 関係分類</li>
+          <li data-step="commit">📦 develop に commit</li>
+          <li data-step="ready">✅ 完了 → 自動で表示します</li>
+        </ul>
+        <p class="theme-progress__cancel">
+          <button type="button" class="theme-progress__cancel-btn" id="theme-progress-cancel">
+            キャンセルして既存テーマを見る
+          </button>
+        </p>
+        <!-- Persistent failure block. Replaces the steps list / cancel
+             button when polling exceeds POLL_TIMEOUT_MS or
+             /api/themes/status surfaces a failed run. Stays visible
+             until the user explicitly dismisses or retries — unlike
+             setRequestStatus("err", ...) which is meant for synchronous
+             validation errors. -->
+        <div class="theme-progress__failure" id="theme-progress-failure" hidden role="alert">
+          <strong class="theme-progress__failure-title" id="theme-progress-failure-title">生成に失敗しました</strong>
+          <p class="theme-progress__failure-msg" id="theme-progress-failure-msg"></p>
+          <div class="theme-progress__failure-actions">
+            <button type="button" class="theme-progress__failure-retry" id="theme-progress-failure-retry">
+              再試行
+            </button>
+            <button type="button" class="theme-progress__failure-dismiss" id="theme-progress-failure-dismiss">
+              閉じて既存テーマを見る
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </header>
