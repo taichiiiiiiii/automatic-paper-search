@@ -74,7 +74,7 @@ automatic-paper-search/
 │   └── workflows/
 │       ├── collect-weekly.yml           # 毎週土曜 07:00 JST 深掘り（PAT に workflow scope 必要）
 │       ├── collect-daily-watch.yml      # 毎日 07:00 JST フォロー著者ウォッチ
-│       ├── regen-themes.yml             # 毎週日曜 09:00 JST 全テーマ再生成
+│       ├── regen-themes.yml             # 手動 workflow_dispatch のみ (PR #261 で週次 cron 廃止)
 │       ├── theme-on-demand.yml          # ★ オンデマンド単一テーマ生成（運用者が gh workflow run で手動 dispatch）
 │       ├── lighthouse.yml               # PR ごと + 週次の Lighthouse / Core Web Vitals 測定
 │       ├── data-audit.yml               # ★ PR/push 時に audit_theme_seeds + audit_lineage_quality 自動実行 → off-topic seed / 構造異常 regression を block
@@ -547,7 +547,7 @@ generate_themes_manifest.py → docs/themes/themes-manifest.json
 定期実行のワークフロー (`.github/workflows/`):
 - `collect-weekly.yml` — 土曜 07:00 JST に主要会議の論文を深掘り収集 → `paperpilot/output/` に commit
 - `collect-daily-watch.yml` — 毎日 07:00 JST に follow 著者の新作を確認 → 通知のみ
-- `regen-themes.yml` — 日曜 09:00 JST に全テーマ家系図を再生成 → `docs/themes/<slug>/lineage.json` を更新
+- `regen-themes.yml` — 手動 `workflow_dispatch` 専用 (PR #261 で週次 cron 廃止)。LLM 契約変更や lineage 形式バンプ後にバルク再生成する break-glass
 - `theme-on-demand.yml` — フォーム送信または手動 dispatch で 1 テーマだけ生成
 - `data-audit.yml` — `docs/themes/*/lineage.json` 等が変わった PR/push で seed/lineage 監査
 - `lighthouse.yml` — frontend 変更 PR + 月曜定例で Core Web Vitals 計測
@@ -794,7 +794,7 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | 週次深掘り (`collect-weekly.yml`) | ✅ uv sync 移行 (#136)、合計 3 件の startup_failure + numpy missing + empty-dir guard 修正 (#135-137)、develop push (#141) |
 | 毎日 follow-watch (`collect-daily-watch.yml`) | ✅ uv sync 移行 (#142)、develop push (#141) |
 | オンデマンド theme (`theme-on-demand.yml`) | ✅ `--llm-strict=ambiguous` + `--primary-source openalex` + **unarXive DuckDB DL (post #222 Phase J)**、timeout 15min |
-| 週次 theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` + `--primary-source openalex` + **unarXive DuckDB DL (post #222)**、timeout 120min |
+| 手動バルク theme regen (`regen-themes.yml`) | ✅ `--llm-strict=ambiguous` + `--primary-source openalex` + **unarXive DuckDB DL (post #222)**、timeout 120min。週次 cron は PR #261 で廃止 (gallery は site-request 由来のみに) |
 | Push race retry (`commit-and-push.sh`) | ✅ 5 回 retry + jittered sleep + multi-path 対応 (#122 / #140)、12 unit tests |
 | Workflow YAML 不変条件 | ✅ `test_workflow_yaml_quality.py` (secrets-in-step-if 防止 #135) |
 | Lighthouse CI (`lighthouse.yml`) | ✅ PR + 週次月曜で `treosh/lighthouse-ci-action@v12` 実行、staticDistDir で docs/ をローカル serve → 4 ページ × 3 run。`LHCI_GITHUB_APP_TOKEN` (任意) があれば PR コメント、無ければ temporary-public-storage アップロード。assert は warn-only (LCP 2.5s / CLS 0.1 / TBT 200ms / FCP 1.5s 上限) |

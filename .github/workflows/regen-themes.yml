@@ -1,14 +1,20 @@
 name: regen-themes
-# Issue #84: weekly auto-regeneration of theme family-tree JSONs.
-# Runs every Sunday 09:00 JST (00:00 UTC). Pushes the updated docs/themes/
-# JSONs to develop; the final step dispatches pages.yml so the new themes
-# ship to GH Pages (GITHUB_TOKEN pushes don't fire downstream workflows
-# on their own — see theme-on-demand.yml for the same workaround).
+# Bulk regeneration of theme family-tree JSONs.
+#
+# Originally wired on a Sunday 09:00 JST cron (issue #84). The schedule
+# was retired (PR #261) when the gallery became site-request-driven: the
+# manifest now reflects only themes a visitor explicitly submits via the
+# in-browser form (theme-on-demand.yml). Auto-refreshing every Sunday
+# would either re-seed dead themes or silently mutate user-requested
+# ones behind their back.
+#
+# `workflow_dispatch` is kept as a break-glass: operators can still bulk
+# regenerate after an LLM contract change, a `lineage.json` schema bump,
+# or a data-quality incident — just point it at the slugs in question.
+# Default (empty input) iterates every dir under `docs/themes/`, which
+# is normally empty on a fresh install.
 
 on:
-  schedule:
-    # Sunday 00:00 UTC = Sunday 09:00 JST
-    - cron: '0 0 * * 0'
   workflow_dispatch:
     inputs:
       themes:
@@ -17,8 +23,8 @@ on:
         default: ''
 
 # No concurrency group — see theme-on-demand.yml for rationale (#125).
-# A Sunday cron racing an on-demand submission is handled by the rebase+
-# retry loop in .github/scripts/commit-and-push.sh, same as the
+# A manual dispatch racing an on-demand submission is handled by the
+# rebase+retry loop in .github/scripts/commit-and-push.sh, same as the
 # theme-on-demand → theme-on-demand case.
 
 jobs:
@@ -166,7 +172,7 @@ jobs:
 
       - name: Refresh quality rollup
         # See theme-on-demand.yml for the rationale. Cheap step so the
-        # quality rollup tracks the latest data after every Sunday regen.
+        # quality rollup tracks the latest data after each bulk regen.
         run: |
           uv run python -m paperpilot.scripts.compute_theme_quality
 
@@ -177,23 +183,24 @@ jobs:
           git config user.name "github-actions[bot]"
           # Stage only the published JSONs — the local lineage-cache
           # holds large per-paper S2 fetches whose growth would inflate
-          # the repo every week (review #87 HIGH finding). Push retry +
-          # rebase live in .github/scripts/commit-and-push.sh; see #121.
+          # the repo on every dispatch (review #87 HIGH finding). Push
+          # retry + rebase live in .github/scripts/commit-and-push.sh;
+          # see #121.
           #
           # EXCEPTION: classifications.json (the LLM rationale cache) IS
           # committed across runs so quality accumulates instead of
-          # resetting every Sunday. The rest of lineage-cache/ is still
-          # gitignored. `|| true` because the file may not exist on a
-          # cold checkout.
+          # resetting on every dispatch. The rest of lineage-cache/ is
+          # still gitignored. `|| true` because the file may not exist
+          # on a cold checkout.
           git add paperpilot/data/lineage-cache/classifications.json || true
-          msg="data(themes): weekly auto-regen ($(date -u +%Y-%m-%d))"
+          msg="data(themes): manual bulk regen ($(date -u +%Y-%m-%d))"
           bash .github/scripts/commit-and-push.sh "$msg" docs/themes/
 
       - name: Trigger Pages deploy
         # commit-and-push.sh writes the regen commit using GITHUB_TOKEN,
         # which GitHub's anti-loop policy excludes from triggering other
-        # workflows. Dispatch pages.yml explicitly here so the Sunday
-        # cron's output ships to GH Pages without operator intervention.
+        # workflows. Dispatch pages.yml explicitly here so the bulk
+        # regen output ships to GH Pages without operator intervention.
         # Cheap + idempotent if commit-and-push was a no-op.
         env:
           GH_TOKEN: ${{ github.token }}
