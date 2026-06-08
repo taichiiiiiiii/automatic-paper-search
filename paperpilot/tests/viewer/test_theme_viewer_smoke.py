@@ -26,6 +26,7 @@ VIEWER_DIR = Path(__file__).parent
 XAXIS_SCRIPT = VIEWER_DIR / "test_theme_xaxis_layout.mjs"
 INIT_CALLEES_SCRIPT = VIEWER_DIR / "test_theme_init_callees.mjs"
 CLS_RESERVATION_SCRIPT = VIEWER_DIR / "test_theme_gallery_cls_reservation.mjs"
+TYPOGRAPHY_TOKENS_SCRIPT = VIEWER_DIR / "test_theme_typography_tokens.mjs"
 
 
 def _run_node(script: Path, *, min_ok_lines: int) -> None:
@@ -73,3 +74,13 @@ def test_theme_gallery_cls_reservation() -> None:
     # have been re-added at wider viewports, and FAILS if the manifest
     # grows past 10 themes (forces us to revisit the reservation).
     _run_node(CLS_RESERVATION_SCRIPT, min_ok_lines=8)
+
+
+def test_theme_typography_tokens() -> None:
+    # Issue #257: pins the four typography tokens (--text-caption,
+    # --text-body-sm, --text-card-title, --text-edge-label) and asserts
+    # the 14 callsites listed in the issue use them instead of raw
+    # rem literals. Scope-excluded variants (.node-card--theme
+    # .node-card__title at 0.9rem) are explicitly left untouched —
+    # the follow-up issue extends adoption.
+    _run_node(TYPOGRAPHY_TOKENS_SCRIPT, min_ok_lines=50)
