@@ -119,10 +119,11 @@ const rootBody = extractRoot(css);
 
 console.log("Typography tokens in :root");
 const EXPECTED_TOKENS = {
-  "--text-caption":    "0.68rem",
-  "--text-body-sm":    "0.78rem",
-  "--text-card-title": "1rem",
-  "--text-edge-label": "0.66rem",
+  "--text-caption":          "0.68rem",
+  "--text-body-sm":          "0.78rem",
+  "--text-card-title":       "1rem",
+  "--text-card-title-theme": "0.9rem",  // added in #266
+  "--text-edge-label":       "0.66rem",
 };
 for (const [name, expected] of Object.entries(EXPECTED_TOKENS)) {
   const got = tokenValue(rootBody, name);
@@ -179,17 +180,32 @@ for (const [selector, token, oldLiteral] of CALLSITES) {
   ok(!literalRe.test(block), `${selector}: no font-size: ${oldLiteral} literal`);
 }
 
-// ---- sanity: scope-excluded selector stays untouched ----
-console.log("\nScope exclusions stay as-is (follow-up issue territory)");
+// ---- #266: theme-variant card title now tokenised ----
+console.log("\n#266 theme variant card title");
 const themeTitle = extractSelectorBlock(
   css,
   ".node-card--theme .node-card__title",
 );
 ok(themeTitle !== null, ".node-card--theme .node-card__title block exists");
 if (themeTitle) {
-  ok(/font-size\s*:\s*0\.9rem\s*;/.test(themeTitle),
-     ".node-card--theme .node-card__title still 0.9rem (intentional follow-up scope)");
+  ok(/font-size\s*:\s*var\(--text-card-title-theme\)/.test(themeTitle),
+     ".node-card--theme .node-card__title uses var(--text-card-title-theme)");
+  ok(!/font-size\s*:\s*0\.9rem\s*;/.test(themeTitle),
+     ".node-card--theme .node-card__title no 0.9rem literal");
 }
+
+// ---- #266: codebase-wide adoption ----
+//
+// After this PR, NO `.css` font-size declaration should carry a raw
+// `0.66rem`, `0.68rem`, `0.72rem`, `0.78rem`, `0.82rem`, or `0.95rem`
+// literal anywhere in style.css. The token system is now the single
+// source of truth for these scale steps. Failing this check means a
+// new callsite was added with a literal instead of `var(--text-…)`.
+console.log("\n#266 no raw rem literals at the tokenised sizes");
+const literalRe = /font-size\s*:\s*(0\.66|0\.68|0\.72|0\.78|0\.82|0\.95)rem\s*;/g;
+const literals = [...css.matchAll(literalRe)].map((m) => m[1]);
+ok(literals.length === 0,
+   `${literals.length} raw literals remain (offenders: ${literals.join(", ") || "none"})`);
 
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
