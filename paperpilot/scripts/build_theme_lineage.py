@@ -47,11 +47,41 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from paperpilot.llm.base import (  # noqa: E402
-    TEMPLATE_RATIONALES,
     AbstractLLMProvider,
-    RelationClassification,
 )
 from paperpilot.scripts._common import theme_slug  # noqa: E402
+
+# #207 extraction: the 16 symbols below moved to _lineage_classify but
+# stay importable as `build_theme_lineage.X` so existing tests
+# (`btl.derive_relation`, `btl._INTENT_RELATION_MAP`, etc.) keep
+# working without modification. F401 is suppressed because most of
+# these are accessed only through the `btl.*` re-export surface and
+# never used directly in this file's body.
+from paperpilot.scripts._lineage_classify import (  # noqa: E402, F401
+    _CITATION_CONTEXT_PATTERNS,
+    _DERIVED_CONFIDENCE,
+    _INTENT_RELATION_MAP,
+    _MAX_CONTEXT_RATIONALE_LEN,
+    _MIN_LLM_CONFIDENCE,
+    _TEMPLATE_RATIONALES_SET,
+    _apply_llm_classification,
+    _build_edge_from_llm,
+    _CachedClassifyProvider,
+    _classify_from_contexts,
+    _derive_relation_heuristic,
+    _is_ambiguous,
+    _load_classification_cache,
+    _make_derived,
+    derive_relation,
+)
+
+# Aliased so the local thin wrapper `_wrap_provider_with_cache` below
+# can bind in the module-level `_CLASSIFICATION_CACHE_PATH` + the
+# `persist_classifications` callable from build_lineage — that's the
+# whole reason this symbol is not in the F401 block above.
+from paperpilot.scripts._lineage_classify import (  # noqa: E402
+    _wrap_provider_with_cache as _wrap_provider_with_cache_impl,
+)
 from paperpilot.scripts.build_lineage import (  # noqa: E402
     CACHE_DIR,
     build_provider,
@@ -231,164 +261,6 @@ def _is_trending(paper: dict, current_year: int) -> bool:
     return (cit / age_years) >= _TRENDING_VELOCITY_THRESHOLD
 
 
-# Issue #53: heuristic templates that mirror build_deep_lineage's lenient
-# fallback rationales. derive_relation() picks one based on S2's intent
-# array so we get a non-empty rationale for free (the stage-4 'drop empty
-# rationale' filter would otherwise silently kill every derived edge).
-# Rationale strings are sourced from base.TEMPLATE_RATIONALES so the
-# heuristic-emitted text matches the reject set used by
-# RelationClassification.from_dict (#131 / #145 followup) — the two
-# CANNOT drift.
-_INTENT_RELATION_MAP: list[tuple[str, str, str]] = [
-    # (intent name, relation enum, rationale template) — order matters:
-    # methodology > result > background when an entry has multiple
-    # intents, since methodology implies the citing paper actually built
-    # on top of the referenced work.
-    ("methodology", "extends", TEMPLATE_RATIONALES["extends_methodology"]),
-    ("result", "successor", TEMPLATE_RATIONALES["successor_result"]),
-    ("background", "baseline_only", TEMPLATE_RATIONALES["baseline_only_background"]),
-]
-_DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
-
-# Minimum LLM confidence to keep an edge (#209). Below this, the LLM
-# itself is signalling that the relation is weak; emitting it as a
-# styled arrow misleads the reader. Threshold chosen at 0.4 so a "low
-# but real" 0.5 still passes (the LLM has actually read both abstracts
-# and judged a connection), while a tentative 0.3 is dropped. This
-# only applies when classify_relation() returned a real result — LLM
-# hiccups (None) still fall back to the heuristic at the merge step.
-_MIN_LLM_CONFIDENCE = 0.4
-
-# ---- #209 Phase J: unarXive citation-context classifier ----
-# Pattern table for the S2-free regex classifier. When the BFS layer
-# attaches `_contexts` (citation paragraphs from unarXive 2022) to an
-# edge, ``_classify_from_contexts`` scans these patterns in priority
-# order and the first match wins. The matched paragraph becomes the
-# edge rationale verbatim (trimmed to _MAX_CONTEXT_RATIONALE_LEN),
-# the relation enum + confidence come from the pattern entry.
-#
-# Why patterns, not an LLM: the citing sentence itself is direct
-# evidence. "we extend [12]" is more reliable than asking an LLM
-# "what's the relation between these two papers" with no context.
-# Patterns also keep cost at ¥0 — no API call per edge.
-#
-# Priority order matters because some sentences match multiple
-# patterns (e.g. "we extend [X], outperforming the baseline" matches
-# both extends and supersedes — supersedes wins).
-_MAX_CONTEXT_RATIONALE_LEN = 280
-_CITATION_CONTEXT_PATTERNS: list[tuple[str, float, list[re.Pattern[str]]]] = [
-    (
-        "supersedes",
-        0.88,
-        [
-            re.compile(r"\boutperform(s|ed|ing)?\b", re.IGNORECASE),
-            re.compile(r"\bsupersed(es|ed|e)\b", re.IGNORECASE),
-            re.compile(r"\bsurpass(es|ed|ing)?\b", re.IGNORECASE),
-            re.compile(
-                r"\bnew\s+state[\s\-]of[\s\-]the[\s\-]art\b", re.IGNORECASE
-            ),
-            re.compile(r"\bachiev(es|ed|ing)\s+sota\b", re.IGNORECASE),
-        ],
-    ),
-    (
-        "contrasts",
-        0.86,
-        [
-            re.compile(r"\bunlike\b", re.IGNORECASE),
-            re.compile(r"\bin\s+contrast\s+to\b", re.IGNORECASE),
-            re.compile(r"\bdiffer(s|ent)?\s+from\b", re.IGNORECASE),
-            re.compile(r"\bas\s+opposed\s+to\b", re.IGNORECASE),
-        ],
-    ),
-    (
-        "extends",
-        0.84,
-        [
-            re.compile(r"\bbuild(s|ing)?\s+(on|upon)\b", re.IGNORECASE),
-            re.compile(r"\bextend(s|ing|ed)?\b", re.IGNORECASE),
-            # Tightened (#222 review MEDIUM): plain "based on" matched
-            # background sentences ("evaluated based on F1 score") and
-            # bibliographic introductions ("Based on previous work
-            # by [12]…"). Require a self-referential subject ("our X",
-            # "this X") so the phrase only fires when the CITING paper
-            # claims to build on the cited one.
-            re.compile(
-                r"\b(?:our|this)\s+(?:model|method|approach|work|paper|system|framework|architecture)\s+is\s+based\s+on\b",
-                re.IGNORECASE,
-            ),
-            re.compile(r"\bfollowing\s+\[?", re.IGNORECASE),
-            re.compile(r"\bimprov(e|es|ing|ed)\s+(on|upon)\b", re.IGNORECASE),
-            re.compile(r"\binspired\s+by\b", re.IGNORECASE),
-            re.compile(r"\badapt(s|ed|ing)?\s+from\b", re.IGNORECASE),
-        ],
-    ),
-    (
-        "ablation",
-        0.82,
-        [
-            re.compile(r"\bablation\b", re.IGNORECASE),
-            re.compile(r"\bablate(s|d|ing)?\b", re.IGNORECASE),
-        ],
-    ),
-    (
-        "baseline_only",
-        0.78,
-        [
-            re.compile(r"\bas\s+a\s+baseline\b", re.IGNORECASE),
-            re.compile(r"\bbaseline(s)?\b", re.IGNORECASE),
-            re.compile(r"\bcompare(d|s)?\s+(to|with|against)\b", re.IGNORECASE),
-            re.compile(r"\bcomparison\s+(to|with|against)\b", re.IGNORECASE),
-        ],
-    ),
-    (
-        "successor",
-        0.75,
-        [
-            re.compile(r"\bsubsequent\s+work\b", re.IGNORECASE),
-            re.compile(r"\bsuccessor\b", re.IGNORECASE),
-            re.compile(r"\bfollow[\-\s]?up\b", re.IGNORECASE),
-        ],
-    ),
-]
-
-
-def _classify_from_contexts(
-    contexts: list[str] | None,
-) -> dict[str, Any] | None:
-    """Match citation-paragraph text against the relation pattern
-    table. First match wins (priority order: supersedes > contrasts >
-    extends > ablation > baseline_only > successor).
-
-    Returns ``{relation, confidence, rationale}`` where ``rationale``
-    is the matched paragraph trimmed to ``_MAX_CONTEXT_RATIONALE_LEN``
-    chars. ``None`` if no context provided or no pattern fires —
-    callers (``derive_relation``) fall through to the intent-map /
-    year-cite heuristic.
-
-    Multiple contexts: scan each in turn under the same pattern; once
-    any context matches a higher-priority pattern, return immediately.
-    This lets the strongest single piece of evidence win even when
-    other paragraphs would land on weaker relations.
-    """
-    if not contexts or not isinstance(contexts, list):
-        return None
-    for relation, confidence, patterns in _CITATION_CONTEXT_PATTERNS:
-        for ctx in contexts:
-            if not isinstance(ctx, str) or not ctx.strip():
-                continue
-            for pattern in patterns:
-                if pattern.search(ctx):
-                    rationale = ctx.strip()
-                    if len(rationale) > _MAX_CONTEXT_RATIONALE_LEN:
-                        rationale = (
-                            rationale[: _MAX_CONTEXT_RATIONALE_LEN - 1] + "…"
-                        )
-                    return {
-                        "relation": relation,
-                        "confidence": confidence,
-                        "rationale": rationale,
-                    }
-    return None
 
 
 def _add_cross_node_edges(
@@ -472,372 +344,23 @@ def _add_cross_node_edges(
     return added
 
 
-class _CachedClassifyProvider(AbstractLLMProvider):
-    """Decorate an LLM provider so classify_relation() hits a shared
-    persistent cache keyed by ``f"{a.paperId}->{b.paperId}"`` first.
-
-    Why this exists (#131-followup): theme rebuilds on the free Groq
-    tier were re-querying the LLM for every edge in every run. With the
-    shared cache from build_lineage.py wired in, the SECOND build of a
-    given theme — and any cross-theme overlap — is served from disk at
-    zero LLM cost. The cache is a plain dict on disk so it composes with
-    the existing build_lineage flow without further coordination.
-
-    Behaviour matches build_lineage.py's ``_classify_cached``:
-      * Hit: deserialize through ``RelationClassification.from_dict``
-        (which now also rejects #131 template echoes — those entries
-        fall back to the heuristic via _apply_llm_classification).
-      * Miss with successful inner call: store + persist atomically.
-      * Miss with inner returning None (LLM throttle / parse error):
-        do NOT poison the cache — let the next attempt retry the LLM.
-      * Missing paperIds on either side: skip cache entirely (defensive
-        — the theme pipeline always populates paperIds, but a regression
-        elsewhere shouldn't silently cache an empty key).
-
-    Wraps any AbstractLLMProvider; evaluate_batch is delegated through
-    unchanged because the cache only meaningfully applies to per-edge
-    classify_relation calls.
-    """
-
-    def __init__(
-        self,
-        inner: AbstractLLMProvider,
-        cache: dict[str, dict],
-        *,
-        cache_path: Path | None,
-    ) -> None:
-        # We deliberately do NOT call super().__init__() because
-        # AbstractLLMProvider sets a bunch of config-derived state we
-        # don't need (timeout, batch_size etc.) — the inner provider
-        # already owns those. Set the class-level `name` and `enabled`
-        # attributes directly so they're plain attributes (matching the
-        # base's declared shape) rather than properties (which mypy
-        # rejects as an override mismatch).
-        self.name = f"{inner.name}+cache"
-        self.enabled = bool(getattr(inner, "enabled", True))
-        self._inner = inner
-        self._cache = cache
-        self._cache_path = cache_path
-
-    def evaluate_batch(self, papers, profile):  # pragma: no cover - delegated
-        return self._inner.evaluate_batch(papers, profile)
-
-    def classify_relation(
-        self, a: dict, b: dict
-    ) -> RelationClassification | None:
-        a_id = a.get("paperId") if isinstance(a, dict) else None
-        b_id = b.get("paperId") if isinstance(b, dict) else None
-        if not (isinstance(a_id, str) and a_id and isinstance(b_id, str) and b_id):
-            # Defensive: defer to inner provider but do NOT cache.
-            return self._inner.classify_relation(a, b)
-        key = f"{a_id}->{b_id}"
-        cached = self._cache.get(key)
-        if cached is not None:
-            return RelationClassification.from_dict(cached)
-        rc = self._inner.classify_relation(a, b)
-        if rc is not None:
-            self._cache[key] = {
-                "relation": rc.relation,
-                "confidence": rc.confidence,
-                "rationale": rc.rationale,
-            }
-            # Persist only when the parent directory exists. Tests that
-            # don't care about on-disk state point the path at a stub
-            # like /nonexistent/... — silently skipping persist keeps
-            # the in-memory cache intact for the rest of the run.
-            if (
-                self._cache_path is not None
-                and self._cache_path.parent.exists()
-            ):
-                try:
-                    persist_classifications(self._cache, self._cache_path)
-                except OSError as exc:
-                    logger.warning(
-                        "classifications cache persist failed (%s) — "
-                        "in-memory state still consistent",
-                        exc,
-                    )
-        return rc
-
-
-def _load_classification_cache(
-    cache_path: Path,
-) -> dict[str, dict]:
-    """Load the shared classifications cache from disk; return ``{}`` on
-    missing or malformed file. Mirrors the bootstrap snippet in
-    build_lineage.py so callers don't reimplement the same guards."""
-    if not cache_path.exists():
-        return {}
-    try:
-        data = json.loads(cache_path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError) as exc:
-        logger.warning(
-            "classifications cache at %s unreadable (%s) — starting empty",
-            cache_path, exc,
-        )
-        return {}
-    return data if isinstance(data, dict) else {}
-
-
 def _wrap_provider_with_cache(
     inner: AbstractLLMProvider,
 ) -> tuple[_CachedClassifyProvider, dict[str, dict]]:
-    """Wrap ``inner`` with the shared classification cache so theme
-    rebuilds reuse classified (parent, child) pairs at zero LLM cost.
+    """Module-local thin wrapper around the impl in _lineage_classify.
 
-    Returns ``(wrapped_provider, loaded_cache)`` so the caller can log
-    the entry count without reaching into the wrapper's internals.
-    The cache path is the module-level ``_CLASSIFICATION_CACHE_PATH``
-    constant so tests can monkeypatch it.
+    Binds in the module-level ``_CLASSIFICATION_CACHE_PATH`` constant
+    (so tests can ``monkeypatch.setattr(btl, '_CLASSIFICATION_CACHE_PATH', ...)``
+    without reaching into ``_lineage_classify``) and the
+    ``persist_classifications`` callable from ``build_lineage`` (kept as
+    an injection point so ``_lineage_classify`` stays free of the
+    ``build_lineage`` import).
     """
-    cache = _load_classification_cache(_CLASSIFICATION_CACHE_PATH)
-    return (
-        _CachedClassifyProvider(
-            inner, cache, cache_path=_CLASSIFICATION_CACHE_PATH
-        ),
-        cache,
+    return _wrap_provider_with_cache_impl(
+        inner,
+        cache_path=_CLASSIFICATION_CACHE_PATH,
+        persist_fn=persist_classifications,
     )
-
-
-def derive_relation(
-    intent_record: dict,
-    *,
-    parent: dict | None = None,
-    child: dict | None = None,
-    provider: AbstractLLMProvider | None = None,
-    strict_mode: str = "off",
-) -> dict | None:
-    """Classify how the cited paper relates to the citing paper.
-
-    Heuristic path (S2 intents + year/citation contrast) is the default,
-    matching the LLM-free post-#54 behavior. When ``strict_mode`` is
-    ``"ambiguous"`` or ``"all"``, the result of the heuristic is then
-    refined by a real LLM classification via ``provider.classify_relation``.
-
-    Modes:
-      * ``"off"``       (default): heuristic only. ``provider`` is ignored
-        even if supplied — Phase 0c compat.
-      * ``"ambiguous"`` : LLM is called only when S2 intents do not pick
-        a key in ``_INTENT_RELATION_MAP`` (= the heuristic fell through
-        to year/citation or the default rule).
-      * ``"all"``       : LLM is called on every influential edge.
-        Cost warning: a wide graph (e.g. seeds=8, width=8, depth=2) can
-        produce a few hundred calls/run; depth 3+ can exceed 1000. On
-        Groq this is throttled via 429s (we fall back to heuristic);
-        on Claude/Gemini paid plans the operator bears the cost. Follow-up
-        issue #119 will add an explicit per-run cap. Use ``"ambiguous"``
-        unless you have a budget cap in place.
-
-    Direction conventions are unchanged from the pre-Step 1 contract:
-      * BFS (references): parent = intent_record, child = citing paper.
-      * Descendants: parent = seed, child = intent_record.
-      * Cross-node: parent = intent_record (cited), child = citing node.
-
-    Returns ``None`` when S2 flagged the citation as non-influential,
-    when neither the heuristic nor the LLM produced an edge, or when
-    the LLM judges the relation as ``unrelated`` / low-confidence.
-
-    LLM-call failure (provider returns ``None``) falls back to the
-    heuristic edge IF the heuristic had real signal — we never silently
-    drop a methodology-intent edge because Groq hiccupped. But when the
-    heuristic itself had no signal (no S2 intent + no year/cite
-    contrast), we no longer fabricate an "extends" template (#209): we
-    either invoke the LLM in strict modes, or drop the edge entirely.
-    """
-    # _is_influential=False is an explicit drop signal from S2 — never
-    # spend an LLM call on a citation we'd discard anyway.
-    if intent_record.get("_is_influential") is False:
-        return None
-
-    # #209 Phase J: try unarXive citation contexts FIRST — these are
-    # actual sentences the citing paper wrote about the cited paper
-    # (paper-specific, evidence-based, no LLM cost). When a pattern
-    # match fires, the matched paragraph becomes the edge rationale
-    # verbatim and we skip every downstream heuristic.
-    context_edge = _classify_from_contexts(intent_record.get("_contexts"))
-    if context_edge is not None:
-        return context_edge
-
-    heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
-
-    if heuristic is None:
-        # Pre-#209: this path fabricated _DEFAULT_DERIVED ("extends"
-        # template). The audit found 1222/1304 (93.7%) of published
-        # edges came from this fallback — pure noise. Now we only emit
-        # an edge if the LLM produces one; otherwise drop.
-        if strict_mode == "off" or provider is None:
-            return None
-        llm_result = provider.classify_relation(parent or {}, child or {})
-        return _build_edge_from_llm(llm_result)
-
-    if strict_mode == "off" or provider is None:
-        return heuristic
-    if strict_mode == "ambiguous" and not _is_ambiguous(intent_record):
-        return heuristic
-    llm_result = provider.classify_relation(parent or {}, child or {})
-    return _apply_llm_classification(heuristic, llm_result)
-
-
-def _derive_relation_heuristic(
-    intent_record: dict,
-    *,
-    parent: dict | None = None,
-    child: dict | None = None,
-) -> dict | None:
-    """Heuristic LLM-free classifier — extracted from derive_relation in
-    Phase A Step 1 so the public ``derive_relation`` can compose the
-    heuristic with an optional LLM pass.
-
-    Returns ``None`` when there is no real signal (no matching S2
-    intent and no year/cite contrast trigger). Pre-#209 this path
-    fabricated an "extends" template; the audit found that fallback
-    was the source of 93.7% of published edges (1222/1304) and the
-    main reason the lineage view felt junk. ``derive_relation`` now
-    treats ``None`` as "let LLM decide; drop if it can't".
-
-    The ``_is_influential`` check has moved up to ``derive_relation``
-    so callers that bypass this helper still get the same drop.
-    """
-    intents = intent_record.get("_intents") or []
-    intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
-    for keyword, relation, rationale in _INTENT_RELATION_MAP:
-        if keyword in intents_set:
-            return _make_derived(relation, rationale)
-
-    # No matching intent — try year + citation contrast.
-    if parent is not None and child is not None:
-        py = parent.get("year")
-        cy = child.get("year")
-        pc = parent.get("citationCount") or parent.get("citation_count") or 0
-        cc = child.get("citationCount") or child.get("citation_count") or 0
-        if isinstance(py, int) and isinstance(cy, int):
-            delta = cy - py
-            if delta >= 3 and pc > 100 and cc >= pc * 1.5:
-                return _make_derived(
-                    "supersedes",
-                    TEMPLATE_RATIONALES["supersedes_year_cite"],
-                )
-            if delta <= 1 and pc > 100 and 0.5 <= cc / max(pc, 1) <= 2.0:
-                return _make_derived(
-                    "contrasts",
-                    TEMPLATE_RATIONALES["contrasts_year_cite"],
-                )
-            if delta <= 2 and cc < 100 and pc > 1000:
-                return _make_derived(
-                    "ablation",
-                    TEMPLATE_RATIONALES["ablation_year_cite"],
-                )
-            if 1 <= delta <= 5:
-                return _make_derived(
-                    "successor",
-                    TEMPLATE_RATIONALES["successor_result"],
-                )
-    return None
-
-
-def _is_ambiguous(intent_record: dict) -> bool:
-    """True iff S2 intents fail to pick a key in ``_INTENT_RELATION_MAP``.
-
-    Gating predicate for ``--llm-strict=ambiguous``: edges whose intent
-    set matches a known key are kept on the cheap heuristic path; the
-    rest get the LLM treatment. Phase A Step 1 / CRITICAL C7.
-    """
-    intents = intent_record.get("_intents") or []
-    intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
-    return all(keyword not in intents_set for keyword, _, _ in _INTENT_RELATION_MAP)
-
-
-_TEMPLATE_RATIONALES_SET: frozenset[str] = frozenset(TEMPLATE_RATIONALES.values())
-
-
-def _apply_llm_classification(
-    heuristic: dict, llm_result: RelationClassification | None
-) -> dict | None:
-    """Merge an LLM classification into an existing heuristic edge.
-
-    Decision matrix (#118 / #209 / 2026-06-05 followup):
-      * ``llm_result is None`` AND heuristic rationale IS a template
-        from ``TEMPLATE_RATIONALES``                  → drop the edge.
-        The template adds zero signal to the viewer (it reads
-        identically across hundreds of edges) and inflates the
-        lineage's template_ratio without telling the user anything
-        about *why* the two papers are linked. With the LLM unable
-        to provide a paper-specific rationale, the honest move is
-        no edge at all. See the 2026-06-05 quality investigation
-        for the data — 14 of 21 themes were >= 95 % template-rationale
-        because this branch used to keep them.
-      * ``llm_result is None`` AND heuristic rationale is paper-
-        specific (Phase J unarXive context, etc.)    → keep heuristic.
-        Phase J already gave us a citing-sentence excerpt; the LLM
-        was just an optional refinement step.
-      * ``relation == "unrelated"``                   → drop the edge
-        (LLM positively rejects the relation).
-      * ``llm_result.confidence < threshold``         → drop the edge
-        (LLM has read both abstracts and judged the connection weak;
-        the heuristic's 0.7 confidence is an artefact, not a signal —
-        trusting it over the LLM's own assessment misleads the user).
-      * otherwise                                     → use LLM verbatim
-        (#209: was max(heuristic, llm) — pinning conf to 0.7 floor
-        hid the LLM's own uncertainty signal).
-
-    Why rationale must come from the LLM (or Phase J) when kept: a
-    heuristic-template rationale reads the same across every edge it
-    decorates ("論文 B は論文 A の研究ラインを継承し自然に発展さ
-    せている。" hit 27 / 41 edges of Mixture of Experts), so it tells
-    the reader nothing specific about A → B. The from_dict
-    template-echo reject (#131) means an LLM-supplied template would
-    have already been turned into ``None`` by RelationClassification,
-    so reaching this point with a non-None llm_result means the
-    rationale is paper-specific.
-    """
-    if llm_result is None:
-        heuristic_rationale = (heuristic.get("rationale") or "").strip()
-        if heuristic_rationale in _TEMPLATE_RATIONALES_SET:
-            return None
-        return heuristic
-    if llm_result.relation == "unrelated":
-        return None
-    if float(llm_result.confidence) < _MIN_LLM_CONFIDENCE:
-        return None
-    return {
-        "relation": llm_result.relation,
-        "confidence": float(llm_result.confidence),
-        "rationale": llm_result.rationale,
-    }
-
-
-def _build_edge_from_llm(
-    llm_result: RelationClassification | None,
-) -> dict | None:
-    """Build an edge dict from an LLM-only classification.
-
-    Used by ``derive_relation`` when the heuristic produced no signal
-    (#209). Distinct from ``_apply_llm_classification`` because there
-    is no heuristic to fall back to — if the LLM didn't produce a
-    confident, non-unrelated result, the edge is dropped entirely.
-
-    Same thresholds as the merge path: ``unrelated`` and confidence
-    below ``_MIN_LLM_CONFIDENCE`` both yield ``None``.
-    """
-    if llm_result is None:
-        return None
-    if llm_result.relation == "unrelated":
-        return None
-    if float(llm_result.confidence) < _MIN_LLM_CONFIDENCE:
-        return None
-    return {
-        "relation": llm_result.relation,
-        "confidence": float(llm_result.confidence),
-        "rationale": llm_result.rationale,
-    }
-
-
-def _make_derived(relation: str, rationale: str) -> dict:
-    return {
-        "relation": relation,
-        "confidence": _DERIVED_CONFIDENCE,
-        "rationale": rationale,
-    }
 
 
 # ---------- Theme input ----------
