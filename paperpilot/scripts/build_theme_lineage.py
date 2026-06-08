@@ -1002,6 +1002,47 @@ def _apply_seed_filters(
     return _rank_and_truncate(candidates, top_n=top_n, since_year=since_year)
 
 
+def _openalex_search_per_keyword(
+    keywords: list[str],
+    *,
+    top_n: int,
+    since_year: int | None,
+    email: str | None,
+) -> list[dict[str, Any]]:
+    """Run OpenAlex ``/works`` once per non-empty keyword and dedup the
+    raw Work dicts by OpenAlex short ID.
+
+    Why per-keyword (not one joined query): OpenAlex's relevance
+    scoring weights individual term hits more heavily than long
+    phrases, so a multi-keyword theme like ``["mixture", "of",
+    "experts"]`` returns a richer candidate pool when each keyword
+    runs its own search than when they're concatenated into
+    ``"mixture of experts"``. This used to be the OpenAlex-primary
+    behaviour but the S2-fallback path joined the keywords — #269
+    unifies both on this helper so the same multi-keyword theme
+    produces the same OpenAlex candidate set regardless of which
+    path picked it up.
+
+    Returns raw Works (the caller decides whether to convert via
+    ``_work_to_paper_dict`` for the OpenAlex-primary path, or via
+    ``_resolve_openalex_to_s2`` for the S2-fallback path).
+    """
+    by_id: dict[str, dict[str, Any]] = {}
+    for kw in keywords:
+        if not kw or not kw.strip():
+            continue
+        for work in discover_seeds_via_openalex(
+            query=kw,
+            top_n=top_n,
+            since_year=since_year,
+            email=email,
+        ):
+            wid = work.get("id")
+            if isinstance(wid, str) and wid:
+                by_id.setdefault(wid, work)
+    return list(by_id.values())
+
+
 def _discover_seeds_openalex_primary(
     *,
     keywords: list[str],
@@ -1023,25 +1064,19 @@ def _discover_seeds_openalex_primary(
     map DOIs onto S2 paperIds: that endpoint shares S2's IP-pool
     throttle and was the choke point pre-#209. Skipping it makes the
     pipeline robust to S2 outages.
-
-    Single OpenAlex search per keyword (their relevance ranker is fine
-    on multi-word strings); dedup by OpenAlex short ID.
     """
+    works = _openalex_search_per_keyword(
+        keywords,
+        top_n=top_n,
+        since_year=since_year,
+        email=openalex_email,
+    )
     by_id: dict[str, dict[str, Any]] = {}
-    for kw in keywords:
-        if not kw or not kw.strip():
+    for work in works:
+        paper = _work_to_paper_dict(work)
+        if paper is None:
             continue
-        works = discover_seeds_via_openalex(
-            query=kw,
-            top_n=top_n,
-            since_year=since_year,
-            email=openalex_email,
-        )
-        for work in works:
-            paper = _work_to_paper_dict(work)
-            if paper is None:
-                continue
-            by_id.setdefault(paper["paperId"], paper)
+        by_id.setdefault(paper["paperId"], paper)
     return _apply_seed_filters(
         by_id, theme=theme, top_n=top_n, since_year=since_year
     )
@@ -1128,24 +1163,28 @@ def _top_up_via_openalex(
     augmented with any newly-discovered papers (dedup by ``paperId``).
 
     Pure function: ``by_id`` is read but not mutated. Returns ``by_id``
-    unchanged when there's nothing to add (no keywords, OpenAlex empty,
-    DOI resolution empty), so the caller can compare lengths to decide
-    whether to log / re-rank.
+    unchanged when there's nothing to add (no non-blank keywords,
+    OpenAlex empty, DOI resolution empty), so the caller can compare
+    lengths to decide whether to log / re-rank.
 
-    The OpenAlex query is built from all non-empty keywords joined with
-    spaces; for the single-keyword default (theme as one keyword) this
-    collapses to the theme itself. ``openalex_email`` enables the polite
-    pool for higher per-IP throughput.
+    Query construction goes through ``_openalex_search_per_keyword``
+    (#269) so this path discovers the same OpenAlex candidate set as
+    the OpenAlex-primary path for the same keyword list. Prior to
+    #269 this path joined the keywords into a single query, which
+    silently produced a different candidate set for multi-keyword
+    themes depending on whether S2 had thrown 429 or not.
+
+    ``openalex_email`` enables OpenAlex's polite pool for higher
+    per-IP throughput.
     """
-    query = " ".join(k for k in keywords if k and k.strip())
-    if not query:
+    if not any(k and k.strip() for k in keywords):
         return by_id
     logger.info(
-        "S2 yielded %d seeds (target=%d); trying OpenAlex fallback (theme=%r)",
-        len(by_id), top_n, query,
+        "S2 yielded %d seeds (target=%d); trying OpenAlex fallback (keywords=%r)",
+        len(by_id), top_n, [k for k in keywords if k and k.strip()],
     )
-    works = discover_seeds_via_openalex(
-        query=query,
+    works = _openalex_search_per_keyword(
+        keywords,
         top_n=top_n,
         since_year=since_year,
         email=openalex_email,
