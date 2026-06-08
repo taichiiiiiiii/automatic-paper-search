@@ -33,6 +33,16 @@
   --text-body: 0.95rem;
   --text-title: clamp(1.05rem, 0.95rem + 0.4vw, 1.35rem);
   --text-display: clamp(2.4rem, 1.6rem + 3.5vw, 4.5rem);
+  /* Typography tokens added in #257 for the gallery + lineage node
+     cards + edge labels. Use these instead of raw rem literals when
+     touching those surfaces. Out-of-scope follow-ups: the
+     .node-card--theme .node-card__title (0.9rem) compact override
+     and any 0.66 / 0.68 / 0.78 rem literals that still live outside
+     the 15 callsites this PR covered — see the #257 follow-up issue. */
+  --text-caption: 0.68rem;       /* mono labels, badges, age, meta */
+  --text-body-sm: 0.78rem;       /* card authors / tldr / theme badges */
+  --text-card-title: 1rem;       /* gallery + base node-card title */
+  --text-edge-label: 0.66rem;    /* SVG <text> on lineage edges */
 
   --space-edge: clamp(1.25rem, 0.5rem + 3vw, 4rem);
   --space-section: clamp(2.5rem, 1.5rem + 4vw, 6rem);
@@ -1699,7 +1709,7 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-gallery__title {
   font-family: var(--font-serif, var(--font-body));
-  font-size: 1rem;
+  font-size: var(--text-card-title);
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -1708,7 +1718,7 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-gallery__stats {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-tag);
   color: var(--color-ink-muted);
   letter-spacing: 0.04em;
 }
@@ -1718,7 +1728,7 @@ g.node-wrap.node-wrap--no-tx {
 }
 .theme-gallery__age {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
   /* Promoted from --color-ink-subtle (48% L) → --color-ink-muted (42% L)
      so the larger size that landed in this PR doesn't sit below WCAG AA
      contrast against --color-surface-elevated. Active card override
@@ -1735,7 +1745,7 @@ g.node-wrap.node-wrap--no-tx {
  * power-user-only path. */
 .theme-gallery__quality {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
   letter-spacing: 0.04em;
   margin-top: 0.22rem;
   /* See .theme-gallery__age — same WCAG AA promotion. */
@@ -2409,7 +2419,7 @@ g.node-wrap.node-wrap--no-tx {
   /* rem so user font-scaling lifts the label with body text. 0.66rem
      ≈ 10.5px at the default 16px root — visually identical at zoom 1×
      but respects user accessibility settings. */
-  font-size: 0.66rem;
+  font-size: var(--text-edge-label);
   font-weight: 600;
   fill: var(--color-ink);
   pointer-events: none;
@@ -2445,7 +2455,7 @@ g.node-wrap.node-wrap--no-tx {
 
 .node-card__venue {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
   letter-spacing: 0.08em;
   color: var(--color-ink-muted);
   text-transform: uppercase;
@@ -2464,7 +2474,7 @@ g.node-wrap.node-wrap--no-tx {
 
 .node-card__title {
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: var(--text-card-title);
   line-height: 1.28;
   font-weight: 500;
   margin: 0 0 0.4rem;
@@ -2477,13 +2487,13 @@ g.node-wrap.node-wrap--no-tx {
 }
 
 .node-card__authors {
-  font-size: 0.78rem;
+  font-size: var(--text-body-sm);
   color: var(--color-ink-muted);
   margin-bottom: 0.42rem;
 }
 
 .node-card__tldr {
-  font-size: 0.78rem;
+  font-size: var(--text-body-sm);
   color: var(--color-ink-muted);
   line-height: 1.42;
   margin-bottom: 0.48rem;
@@ -2495,7 +2505,7 @@ g.node-wrap.node-wrap--no-tx {
   flex-wrap: wrap;
   gap: 0.32rem;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
   color: var(--color-ink-muted);
   align-items: center;
 }
@@ -3091,7 +3101,7 @@ g.node-wrap.node-wrap--no-tx {
 .node-card--theme .node-card__hub {
   display: inline-block;
   margin-left: 0.4rem;
-  font-size: 0.78rem;
+  font-size: var(--text-body-sm);
   background: oklch(94% 0.10 90 / 0.95);
   border-radius: 999px;
   padding: 0 0.4rem;
@@ -3109,7 +3119,7 @@ g.node-wrap.node-wrap--no-tx {
 .node-card--theme .node-card__trending {
   display: inline-block;
   margin-left: 0.4rem;
-  font-size: 0.78rem;
+  font-size: var(--text-body-sm);
   background: oklch(94% 0.06 30 / 0.95);
   border-radius: 999px;
   padding: 0 0.4rem;
@@ -3124,7 +3134,7 @@ g.node-wrap.node-wrap--no-tx {
 /* #63: TLDR — 2-line clamp under the title. Keeps the card height
    bounded while giving readers a fast sniff-test of the abstract. */
 .node-card--theme .node-card__tldr {
-  font-size: 0.78rem;
+  font-size: var(--text-body-sm);
   line-height: 1.4;
   color: var(--color-ink-muted);
   margin: 0.28rem 0;
@@ -3449,7 +3459,7 @@ g.node-wrap.node-wrap--no-tx {
 }
 
 .node-card--theme .node-card__authors {
-  font-size: 0.78rem;
+  font-size: var(--text-body-sm);
   line-height: 1.32;
   color: var(--color-ink-muted);
   display: -webkit-box;
@@ -3463,7 +3473,7 @@ g.node-wrap.node-wrap--no-tx {
   display: flex;
   gap: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
   color: var(--color-ink-muted);
   margin-top: 0.28rem;
 }
