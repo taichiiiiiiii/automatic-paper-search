@@ -25,6 +25,7 @@ import pytest
 VIEWER_DIR = Path(__file__).parent
 XAXIS_SCRIPT = VIEWER_DIR / "test_theme_xaxis_layout.mjs"
 INIT_CALLEES_SCRIPT = VIEWER_DIR / "test_theme_init_callees.mjs"
+CLS_RESERVATION_SCRIPT = VIEWER_DIR / "test_theme_gallery_cls_reservation.mjs"
 
 
 def _run_node(script: Path, *, min_ok_lines: int) -> None:
@@ -62,3 +63,13 @@ def test_theme_init_callees_defined() -> None:
     # is defined somewhere in theme.js (or is a JS/DOM builtin from the
     # script's allowlist).
     _run_node(INIT_CALLEES_SCRIPT, min_ok_lines=30)
+
+
+def test_theme_gallery_cls_reservation() -> None:
+    # Issue #258 follow-up: post-#260 the gallery is site-request-only
+    # and currently holds < 10 themes, so the wrap-row reservation
+    # collapses to the 1-card-row floor (calc(68px + 0.6rem)). This
+    # test pins that contract + asserts no over-reservation steps
+    # have been re-added at wider viewports, and FAILS if the manifest
+    # grows past 10 themes (forces us to revisit the reservation).
+    _run_node(CLS_RESERVATION_SCRIPT, min_ok_lines=8)
