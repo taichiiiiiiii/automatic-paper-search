@@ -1047,6 +1047,122 @@ def _discover_seeds_openalex_primary(
     )
 
 
+def _search_one_keyword_via_s2(
+    *,
+    keyword: str,
+    since_year: int | None,
+) -> list[dict[str, Any]]:
+    """One ``/paper/search`` call (or a cached replay of one) for a
+    single keyword.
+
+    Returns the raw paper dicts S2 emitted, deduped by ``paperId`` /
+    ``title`` presence. Fail-safe: returns ``[]`` for blank input,
+    cache miss with a network failure (resp is ``None`` / non-200),
+    or a malformed cache file. Caller is responsible for merging
+    results across keywords via ``setdefault`` for dedup.
+
+    Cache lives under ``_seed_cache_path(keyword, since_year)`` — a
+    successful network call writes a JSON list there; a network
+    failure writes ``[]`` so the next run doesn't re-hit S2 in the
+    same window. This mirrors the cache pattern in ``fetch_related``.
+    """
+    if not keyword or not keyword.strip():
+        return []
+    cache = _seed_cache_path(keyword, since_year)
+    if cache.exists():
+        try:
+            cached = json.loads(cache.read_text())
+        except json.JSONDecodeError:
+            return []
+        if not isinstance(cached, list):
+            return []
+        return [
+            p for p in cached
+            if isinstance(p, dict) and p.get("paperId")
+        ]
+    params = {
+        "query": keyword,
+        "fields": _S2_FIELDS_SEARCH,
+        "limit": _S2_SEARCH_LIMIT,
+        # CS-adjacent gate at the API level — see _S2_FIELDS_OF_STUDY
+        # comment for the medical / biology contamination this guards
+        # against. S2 returns a subset of the natural relevance
+        # ranking; if the user-typed theme is unambiguously CS this
+        # is a clean win, and the (rare) CS / interdisciplinary
+        # theme will still surface its top CS papers.
+        "fieldsOfStudy": _S2_FIELDS_OF_STUDY,
+    }
+    resp = request_with_retry(
+        "GET",
+        _S2_SEARCH_URL,
+        params=params,
+        headers={"User-Agent": "PaperPilot/0.1"},
+        timeout=20,
+    )
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    if resp is None or resp.status_code != 200:
+        cache.write_text("[]")
+        return []
+    try:
+        payload = resp.json()
+    except ValueError:
+        payload = {}
+    items: list[dict[str, Any]] = [
+        p for p in (payload.get("data") or [])
+        if isinstance(p, dict) and p.get("paperId") and p.get("title")
+    ]
+    cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
+    return items
+
+
+def _top_up_via_openalex(
+    by_id: dict[str, dict[str, Any]],
+    *,
+    keywords: list[str],
+    top_n: int,
+    since_year: int | None,
+    openalex_email: str | None,
+) -> dict[str, dict[str, Any]]:
+    """OpenAlex fallback: query OpenAlex for the theme, resolve DOIs
+    through S2 ``/paper/batch``, return a NEW dict that's ``by_id``
+    augmented with any newly-discovered papers (dedup by ``paperId``).
+
+    Pure function: ``by_id`` is read but not mutated. Returns ``by_id``
+    unchanged when there's nothing to add (no keywords, OpenAlex empty,
+    DOI resolution empty), so the caller can compare lengths to decide
+    whether to log / re-rank.
+
+    The OpenAlex query is built from all non-empty keywords joined with
+    spaces; for the single-keyword default (theme as one keyword) this
+    collapses to the theme itself. ``openalex_email`` enables the polite
+    pool for higher per-IP throughput.
+    """
+    query = " ".join(k for k in keywords if k and k.strip())
+    if not query:
+        return by_id
+    logger.info(
+        "S2 yielded %d seeds (target=%d); trying OpenAlex fallback (theme=%r)",
+        len(by_id), top_n, query,
+    )
+    works = discover_seeds_via_openalex(
+        query=query,
+        top_n=top_n,
+        since_year=since_year,
+        email=openalex_email,
+    )
+    if not works:
+        return by_id
+    resolved = _resolve_openalex_to_s2(works)
+    if not resolved:
+        return by_id
+    merged = dict(by_id)
+    for paper in resolved:
+        pid = paper.get("paperId")
+        if pid and pid not in merged:
+            merged[pid] = paper
+    return merged
+
+
 def discover_seeds(
     *,
     keywords: list[str],
@@ -1060,22 +1176,16 @@ def discover_seeds(
     """Find seed papers for the theme via S2 ``/paper/search`` (default)
     or OpenAlex ``/works`` (``primary_source="openalex"``).
 
-    Calls the search endpoint once per keyword, dedupes by paperId,
-    filters by ``since_year``, sorts by citationCount desc, returns
-    top ``top_n``. Each per-keyword call is cached to disk (mirrors
-    ``fetch_related``'s cache pattern in build_lineage.py) so re-runs
-    are cheap.
-
-    Network failures (resp is None / non-200) are written as an empty
-    cache entry — same fail-safe behaviour as the rest of the pipeline.
-
-    OpenAlex fallback (``use_openalex_fallback=True``, default): when
-    S2 yields fewer than ``top_n`` seeds — the steady-state failure
-    mode on shared GitHub Actions runner IPs throttled by S2 — search
-    OpenAlex for the theme, resolve the resulting DOIs through S2
-    ``/paper/batch`` (separate rate budget from ``/paper/search``),
-    and merge the new papers in (dedup by paperId). ``openalex_email``
-    enables OpenAlex's polite pool for higher reliability under load.
+    Orchestrates three steps via private helpers:
+      1. ``_search_one_keyword_via_s2`` once per keyword, deduped into
+         ``by_id``.
+      2. ``_apply_seed_filters`` (denylist → topic → blacklist → rank)
+         produces the primary seed list.
+      3. If S2 under-delivered and ``use_openalex_fallback=True``,
+         ``_top_up_via_openalex`` returns an augmented pool that we
+         feed back through ``_apply_seed_filters`` for the final
+         re-rank (fallback can introduce off-topic papers the
+         single-pass filter would have removed).
 
     ``primary_source="openalex"`` (#209 S2-free Phase 1): inverts the
     priority. OpenAlex becomes the primary data source and S2 is only
@@ -1085,148 +1195,62 @@ def discover_seeds(
     ``openalex:`` prefix so BFS routes to OpenAlex.
     """
     if primary_source == "openalex":
-        primary = _discover_seeds_openalex_primary(
+        # No S2 top-up here: the whole point of this path is to avoid
+        # S2 entirely. If OpenAlex under-delivered, the lineage will
+        # be sparser but the build still completes.
+        return _discover_seeds_openalex_primary(
             keywords=keywords,
             top_n=top_n,
             since_year=since_year,
             openalex_email=openalex_email,
             theme=theme,
         )
-        # No S2 top-up here: the whole point of this path is to avoid
-        # S2 entirely. If OpenAlex under-delivered, the lineage will
-        # be sparser but the build still completes.
-        return primary
 
-    by_id: dict[str, dict[str, Any]] = {}
-
-    for kw in keywords:
-        if not kw or not kw.strip():
-            continue
-        cache = _seed_cache_path(kw, since_year)
-        if cache.exists():
-            try:
-                cached = json.loads(cache.read_text())
-            except json.JSONDecodeError:
-                cached = []
-            if isinstance(cached, list):
-                for p in cached:
-                    if isinstance(p, dict) and p.get("paperId"):
-                        by_id.setdefault(p["paperId"], p)
-            continue
-
-        params = {
-            "query": kw,
-            "fields": _S2_FIELDS_SEARCH,
-            "limit": _S2_SEARCH_LIMIT,
-            # CS-adjacent gate at the API level — see _S2_FIELDS_OF_STUDY
-            # comment for the medical / biology contamination this guards
-            # against. S2 returns a subset of the natural relevance
-            # ranking; if the user-typed theme is unambiguously CS this
-            # is a clean win, and the (rare) CS / interdisciplinary
-            # theme will still surface its top CS papers.
-            "fieldsOfStudy": _S2_FIELDS_OF_STUDY,
-        }
-        resp = request_with_retry(
-            "GET",
-            _S2_SEARCH_URL,
-            params=params,
-            headers={"User-Agent": "PaperPilot/0.1"},
-            timeout=20,
-        )
-        cache.parent.mkdir(parents=True, exist_ok=True)
-        if resp is None or resp.status_code != 200:
-            cache.write_text("[]")
-            continue
-        try:
-            payload = resp.json()
-        except ValueError:
-            payload = {}
-        items: list[dict[str, Any]] = []
-        for p in payload.get("data") or []:
-            if isinstance(p, dict) and p.get("paperId") and p.get("title"):
-                items.append(p)
-                by_id.setdefault(p["paperId"], p)
-        cache.write_text(json.dumps(items, ensure_ascii=False, indent=2))
-
-    # Topic relevance gate: drop seeds whose title+abstract don't include
-    # enough of the theme's words. ``theme`` is optional for backwards
-    # compatibility with callers that already pre-filter their input;
-    # production passes the original theme string so the GNN→Pandas
-    # bug can't recur (issue #126 followup). Warn when omitted so the
-    # regression can't slip back in via a forgotten kwarg.
+    # ``theme`` is optional for backwards compatibility with callers
+    # that already pre-filter their input; production passes the
+    # original theme string so the GNN→Pandas bug can't recur
+    # (issue #126 followup). Warn when omitted so the regression
+    # can't slip back in via a forgotten kwarg.
     if theme is None:
         logger.warning(
             "discover_seeds called without theme= ; topic-relevance filter "
             "is bypassed and off-topic seeds may slip in (caller should pass "
             "the sanitised theme string)"
         )
-    candidates: list[dict[str, Any]] = list(by_id.values())
-    # Denylist runs ahead of the topic gate — it's a hard veto on a
-    # known canonical-but-off-topic list (SciPy / NumPy / QIIME etc.)
-    # and is theme-independent. Cheap to run; never causes loss.
-    candidates = _filter_denylisted_seeds(candidates)
-    if theme:
-        candidates = _filter_topic_relevant_seeds(candidates, theme=theme)
-        # Per-theme keyword blacklist (#209 Tier 1) runs after the
-        # topic-relevance gate — it's a hard veto on cross-domain
-        # leakage (microbiome / clinical / homology modelling) that
-        # the substring relevance filter doesn't catch.
-        candidates = _filter_theme_blacklist(candidates, theme=theme)
-    primary = _rank_and_truncate(candidates, top_n=top_n, since_year=since_year)
+
+    # Step 1: gather S2 hits across all keywords.
+    by_id: dict[str, dict[str, Any]] = {}
+    for kw in keywords:
+        for paper in _search_one_keyword_via_s2(
+            keyword=kw, since_year=since_year
+        ):
+            by_id.setdefault(paper["paperId"], paper)
+
+    # Step 2: primary filter + rank.
+    primary = _apply_seed_filters(
+        by_id, theme=theme, top_n=top_n, since_year=since_year
+    )
     if not use_openalex_fallback or len(primary) >= top_n:
         return primary
 
-    # Fallback path: top up the seed pool when S2 alone wasn't enough.
-    # Build the OpenAlex query from all non-empty keywords; for the
-    # current single-keyword default (theme as one keyword) this
-    # collapses to the theme string itself.
-    query = " ".join(k for k in keywords if k and k.strip())
-    if not query:
-        return primary
-    logger.info(
-        "S2 yielded %d/%d seeds; trying OpenAlex fallback (theme=%r)",
-        len(primary), top_n, query,
-    )
-    works = discover_seeds_via_openalex(
-        query=query,
-        top_n=top_n,
-        since_year=since_year,
-        email=openalex_email,
-    )
-    if not works:
-        return primary
-    resolved = _resolve_openalex_to_s2(works)
-    if not resolved:
-        return primary
-
-    for paper in resolved:
-        pid = paper.get("paperId")
-        if pid and pid not in by_id:
-            by_id[pid] = paper
-
-    # Re-apply the topic gate after the OpenAlex top-up — fallback can
-    # introduce a brand new off-topic paper that the S2-only path would
-    # have filtered. Without this, off-topic seeds slip in only when S2
-    # fell short, producing flaky before/after comparisons.
+    # Step 3: OpenAlex top-up + re-rank.
     #
     # Invariant note: with the current substring-only filter, every
     # element of ``primary`` also passes the second filter pass, so
     # ``len(merged) >= len(primary)`` holds. If the filter is ever
-    # tightened (e.g. embedding similarity), revisit the log delta below
-    # which assumes that invariant.
-    candidates_after_fallback: list[dict[str, Any]] = list(by_id.values())
-    candidates_after_fallback = _filter_denylisted_seeds(
-        candidates_after_fallback
+    # tightened (e.g. embedding similarity), revisit the log delta
+    # below which assumes that invariant.
+    augmented = _top_up_via_openalex(
+        by_id,
+        keywords=keywords,
+        top_n=top_n,
+        since_year=since_year,
+        openalex_email=openalex_email,
     )
-    if theme:
-        candidates_after_fallback = _filter_topic_relevant_seeds(
-            candidates_after_fallback, theme=theme
-        )
-        candidates_after_fallback = _filter_theme_blacklist(
-            candidates_after_fallback, theme=theme
-        )
-    merged = _rank_and_truncate(
-        candidates_after_fallback, top_n=top_n, since_year=since_year
+    if len(augmented) == len(by_id):
+        return primary
+    merged = _apply_seed_filters(
+        augmented, theme=theme, top_n=top_n, since_year=since_year
     )
     logger.info(
         "OpenAlex fallback added %d new seeds (final=%d)",
