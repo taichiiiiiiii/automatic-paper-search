@@ -51,6 +51,17 @@
   --text-card-title-theme: 0.9rem; /* compact theme-variant card title */
   --text-edge-label: 0.66rem;    /* SVG <text> on lineage edges */
 
+  /* Gallery layout primitives (#264). Two surfaces share these values
+     by physical necessity: `.theme-gallery__card`'s
+     `contain-intrinsic-size` reserves the rendered card box, and
+     `.theme-gallery`'s `min-height` reserves the gallery's vertical
+     footprint before the manifest paints. Drifting them silently
+     re-introduces the manifest-paint CLS the 1-row floor was put in
+     place to defend against. */
+  --gallery-card-width: 220px;
+  --gallery-card-height: 68px;
+  --gallery-pad-top: 0.6rem;
+
   --space-edge: clamp(1.25rem, 0.5rem + 3vw, 4rem);
   --space-section: clamp(2.5rem, 1.5rem + 4vw, 6rem);
 
@@ -1602,8 +1613,9 @@ g.node-wrap.node-wrap--no-tx {
   overflow-x: auto;
   /* CLS fix (Lighthouse baseline 2026-05-25 / 0.25 on themes/):
      gallery starts empty, becomes 19+ cards once manifest resolves.
-     Reserve one row of card height so the canvas below stays put. */
-  min-height: calc(68px + 0.6rem);
+     Reserve one row of card height so the canvas below stays put.
+     Token-bound — see :root for the shared card box dimensions. */
+  min-height: calc(var(--gallery-card-height) + var(--gallery-pad-top));
   /* Right-edge fade hints "there's more to scroll" without a
      scrollbar. Falls back gracefully on browsers without mask-image. */
   -webkit-mask-image: linear-gradient(to right, black 92%, transparent 100%);
@@ -1629,7 +1641,7 @@ g.node-wrap.node-wrap--no-tx {
        point reintroduce a wrap-row reservation (likely via a
        container query so it scales with the actual rendered row
        count rather than viewport width). */
-    min-height: calc(68px + 0.6rem);
+    min-height: calc(var(--gallery-card-height) + var(--gallery-pad-top));
   }
 }
 .theme-gallery[hidden] { display: none; }
@@ -1645,8 +1657,8 @@ g.node-wrap.node-wrap--no-tx {
      shift layout. Modern browsers honor this; older just render
      normally. */
   content-visibility: auto;
-  contain-intrinsic-size: 220px 68px;
-  flex: 0 0 220px;
+  contain-intrinsic-size: var(--gallery-card-width) var(--gallery-card-height);
+  flex: 0 0 var(--gallery-card-width);
   display: flex;
   flex-direction: column;
   gap: 0.18rem;
