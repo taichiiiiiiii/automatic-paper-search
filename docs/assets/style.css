@@ -1599,16 +1599,20 @@ g.node-wrap.node-wrap--no-tx {
     overflow-x: visible;
     -webkit-mask-image: none;
             mask-image: none;
-    /* CLS fix: at desktop viewport the gallery wraps to 2-4 rows.
-       Each card is now 68px intrinsic + 2 × 0.6rem vertical
-       padding (~87px per row) + 0.18rem row gap. 3 wrapped rows ≈
-       267px on 1440px viewports; 4 rows on 1920px ≈ 357px.
-       Reserve 290 to cover the common 3-row case without
-       reintroducing the toolbar-slide CLS the prior 250 reservation
-       guarded against (cards were 56px / 80px row before #260).
-       4-row case is still ~70px short — acceptable; that range
-       cannot be guarded without over-reserving for 1-2 row layouts. */
-    min-height: 290px;
+    /* CLS reservation: matches the nowrap baseline (one card row +
+       gallery top padding). Post-PR #260 the gallery is
+       site-request-only and currently holds < 10 themes, so multi-row
+       wrap doesn't trigger — reserving 290px (the pre-#260 3-row
+       figure) creates ~210px of visible blank void below the gallery
+       and Lighthouse penalises the manifest-paint collapse anyway.
+       The 1-row floor reserves what we actually paint while keeping
+       the canvas below stable. Pinned by
+       paperpilot/tests/viewer/test_theme_gallery_cls_reservation.mjs
+       which alarms once the manifest exceeds 10 themes — at that
+       point reintroduce a wrap-row reservation (likely via a
+       container query so it scales with the actual rendered row
+       count rather than viewport width). */
+    min-height: calc(68px + 0.6rem);
   }
 }
 .theme-gallery[hidden] { display: none; }
