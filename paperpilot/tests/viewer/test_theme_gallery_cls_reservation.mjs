@@ -18,10 +18,10 @@
 //      media query.
 //
 // What this guards:
-//   - The 1440px @media block reserves exactly one card row, not the
-//     pre-#260 290px (regression to over-reservation) and not a
-//     stepped 290→360→450 ladder (latent over-reservation at all
-//     wider viewports while gallery is small).
+//   - The 1440px @media block reserves exactly one card row via the
+//     shared `--gallery-card-height` / `--gallery-pad-top` tokens
+//     (post-#264). Drift between the gallery's min-height and the
+//     card's contain-intrinsic-size is now structurally impossible.
 //   - No 1920px / 2560px `min-width` step on `.theme-gallery` exists.
 //     If gallery grows past ~10 themes the follow-up issue will
 //     revisit the design; until then those steps must stay absent so
@@ -108,13 +108,16 @@ const mh1440 = galleryMinHeight(wrapBlock);
 ok(mh1440 !== null, ".theme-gallery defines min-height in the 1440 block");
 
 // The contract: one card row + the gallery top padding. This matches
-// the nowrap baseline at line 1589 — `calc(68px + 0.6rem)` — so the
-// reservation is consistent across the wrap/nowrap boundary. Spaces
-// inside calc() are normalised before comparison.
+// the nowrap baseline value, so the reservation is consistent across
+// the wrap/nowrap boundary. Post-#264 the reservation is composed
+// from the `--gallery-card-height` + `--gallery-pad-top` tokens so
+// any future change to the card box only needs to update the token —
+// the two `min-height` and one `contain-intrinsic-size` callsites
+// auto-sync. Spaces inside calc() are normalised before comparison.
 const normalised = (mh1440 || "").replace(/\s+/g, "");
 ok(
-  normalised === "calc(68px+0.6rem)",
-  `min-height is calc(68px + 0.6rem) (got: ${JSON.stringify(mh1440)})`,
+  normalised === "calc(var(--gallery-card-height)+var(--gallery-pad-top))",
+  `min-height is calc(var(--gallery-card-height) + var(--gallery-pad-top)) (got: ${JSON.stringify(mh1440)})`,
 );
 
 console.log("\nNo over-reservation steps for wider viewports");
@@ -154,6 +157,36 @@ ok(
 ok(
   /(one|1|single)[-\s]row|row[-\s]floor/i.test(wrapBlock || ""),
   "comment documents the 1-row reservation strategy",
+);
+
+// ---- #264: gallery card box tokens ----
+//
+// The `--gallery-card-height` / `--gallery-card-width` /
+// `--gallery-pad-top` tokens are physical-necessity tokens: both
+// `.theme-gallery__card` (`contain-intrinsic-size`) and
+// `.theme-gallery` (`min-height`) read from them. Renaming or
+// dropping any of the three silently re-introduces CLS drift.
+console.log("\n#264 gallery layout tokens");
+ok(
+  /--gallery-card-height\s*:\s*68px/.test(cssSrc),
+  ":root defines --gallery-card-height: 68px",
+);
+ok(
+  /--gallery-card-width\s*:\s*220px/.test(cssSrc),
+  ":root defines --gallery-card-width: 220px",
+);
+ok(
+  /--gallery-pad-top\s*:\s*0\.6rem/.test(cssSrc),
+  ":root defines --gallery-pad-top: 0.6rem",
+);
+ok(
+  /contain-intrinsic-size\s*:\s*var\(--gallery-card-width\)\s+var\(--gallery-card-height\)/
+    .test(cssSrc),
+  ".theme-gallery__card uses var() for contain-intrinsic-size",
+);
+ok(
+  !/contain-intrinsic-size\s*:\s*220px\s+68px/.test(cssSrc),
+  "no raw `220px 68px` literal survives for contain-intrinsic-size",
 );
 
 console.log(`\n${passed} passed, ${failed} failed`);
