@@ -3716,6 +3716,58 @@ def test_work_to_paper_dict_handles_arxiv_id():
     assert paper["externalIds"]["ArXiv"] == "2103.14030"
 
 
+# --- #273 publication_year corruption guard ---
+
+def test_work_to_paper_dict_year_normal_case():
+    """When publication_year and created_date agree within 2 years
+    (normal preprint→proceedings lag) `_trustworthy_year` returns the
+    declared publication_year unchanged."""
+    work = _mk_oa_work_v2("W1", year=2022)
+    work["created_date"] = "2022-03-15T00:00:00"
+    assert build_theme_lineage._work_to_paper_dict(work)["year"] == 2022
+
+
+def test_work_to_paper_dict_year_preprint_lag_accepted():
+    """A 2-year gap (preprint registered 2017, journal year 2019) is
+    still within the legitimate range and the publication_year is
+    trusted."""
+    work = _mk_oa_work_v2("W2", year=2019)
+    work["created_date"] = "2017-06-23T00:00:00"
+    assert build_theme_lineage._work_to_paper_dict(work)["year"] == 2019
+
+
+def test_work_to_paper_dict_year_corruption_replaced():
+    """#273: "Attention Is All You Need" (W2626778328) carries
+    publication_year=2025 with created_date=2017 because of an
+    OpenAlex re-mirror. We trust the created_date and reject the
+    publication_year when the gap is >= 3 years."""
+    work = _mk_oa_work_v2("W2626778328", year=2025)
+    work["created_date"] = "2017-06-23T00:00:00"
+    assert build_theme_lineage._work_to_paper_dict(work)["year"] == 2017
+
+
+def test_work_to_paper_dict_year_missing_created_keeps_publication_year():
+    """Defensive: when created_date is absent or malformed, fall back
+    to publication_year (no clamping signal available)."""
+    work = _mk_oa_work_v2("W3", year=2024)
+    # No created_date.
+    assert build_theme_lineage._work_to_paper_dict(work)["year"] == 2024
+    work2 = _mk_oa_work_v2("W4", year=2024)
+    work2["created_date"] = "garbage"
+    assert build_theme_lineage._work_to_paper_dict(work2)["year"] == 2024
+
+
+def test_work_to_paper_dict_year_drift_threshold_boundary():
+    """3 years is the inclusive trigger for the corruption guard.
+    2-year gap stays trusted; 3-year gap flips to created_date."""
+    work_2 = _mk_oa_work_v2("W5", year=2020)
+    work_2["created_date"] = "2018-01-01T00:00:00"
+    assert build_theme_lineage._work_to_paper_dict(work_2)["year"] == 2020
+    work_3 = _mk_oa_work_v2("W6", year=2020)
+    work_3["created_date"] = "2017-01-01T00:00:00"
+    assert build_theme_lineage._work_to_paper_dict(work_3)["year"] == 2017
+
+
 def test_discover_seeds_openalex_primary_uses_openalex_not_s2(
     tmp_path: Path, monkeypatch
 ):
