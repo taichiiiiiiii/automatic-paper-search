@@ -70,6 +70,7 @@ from paperpilot.scripts._lineage_classify import (  # noqa: E402, F401
     _classify_from_contexts,
     _derive_relation_heuristic,
     _is_ambiguous,
+    _is_foundational_ancestor,
     _load_classification_cache,
     _make_derived,
     derive_relation,
@@ -829,6 +830,37 @@ def _enrich_child_with_unarxive(
     return child
 
 
+def _split_by_foundational_priority(
+    papers: list[dict[str, Any]],
+    *,
+    budget: int,
+) -> list[dict[str, Any]]:
+    """Return at most ``budget`` papers, always keeping foundational-
+    allowlist matches first.
+
+    Why (#277): OpenAlex's ``referenced_works`` ordering buries famous
+    ancestors below position 8 for ViT-class papers (the array starts
+    with whatever the OpenAlex indexer enumerated first, not by
+    importance), so a naive ``ref_ids[:width]`` cut throws ResNet,
+    AlexNet, DETR, etc. away before the allowlist edge filter in
+    ``derive_relation`` ever sees them. This helper bypasses the width
+    budget for foundational hits, then back-fills the remainder with
+    the head of the list to preserve the previous behaviour for
+    non-foundational refs.
+    """
+    foundational: list[dict[str, Any]] = []
+    rest: list[dict[str, Any]] = []
+    for p in papers:
+        if _is_foundational_ancestor(p):
+            foundational.append(p)
+        else:
+            rest.append(p)
+    # Keep ALL foundational hits — they're tightly allowlisted by title
+    # regex (~30 entries) so the upper bound per seed is small.
+    fill = max(0, budget - len(foundational))
+    return foundational + rest[:fill]
+
+
 def fetch_related_via_openalex(
     openalex_short_id: str,
     kind: str,
@@ -903,9 +935,22 @@ def fetch_related_via_openalex(
         # arxiv_id is fine — _enrich_parent_with_unarxive returns []
         # and the edge falls through to year/cite heuristic later.
         focal_arxiv = ((payload or {}).get("ids") or {}).get("arxiv_id")
-        # Cap before the batch fetch to avoid wasting OpenAlex quota
-        # on papers we'd discard anyway.
-        parents = _fetch_openalex_works_by_ids(ref_ids[:page_size], email=email)
+        # #277 followup: fetch a wider window (up to OpenAlex per-page
+        # cap) and let the foundational-allowlist filter keep canonical
+        # ancestors regardless of where they sit in the
+        # referenced_works ordering. Previously this path truncated to
+        # `page_size` (= BFS width = 8) BEFORE batch-fetching titles,
+        # so famous ancestors that OpenAlex listed below position 8
+        # silently dropped. The widened fetch is still bounded by
+        # OpenAlex's 200-per-page cap, and the post-filter clamp
+        # keeps the per-seed budget the caller asked for.
+        wide_cap = min(len(ref_ids), _OPENALEX_PER_PAGE_MAX)
+        wide_parents = _fetch_openalex_works_by_ids(
+            ref_ids[:wide_cap], email=email,
+        )
+        parents = _split_by_foundational_priority(
+            wide_parents, budget=page_size,
+        )
         enriched = [_attach_empty_intent_fields(p) for p in parents]
         if focal_arxiv:
             # focal cites each parent → citing=focal.arxiv, cited=parent
