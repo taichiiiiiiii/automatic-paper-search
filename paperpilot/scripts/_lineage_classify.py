@@ -444,19 +444,31 @@ def derive_relation(
 
     heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
 
+    # #277: foundational ancestor short-circuit, takes priority over the
+    # heuristic. Two reasons it lives BEFORE the None/Some split:
+    #
+    #   1. Heuristic-None path: parents with no S2 intent + outside
+    #      the year/cite contrast windows would otherwise reach the LLM
+    #      strict-mode branch and likely come back as "unrelated".
+    #   2. Heuristic-template path: parents like ResNet (2015) → ViT
+    #      (2020) hit the year/cite "successor" branch which emits a
+    #      template rationale. Pre-#277 that template would survive
+    #      OR be dropped depending on whether the LLM rescued it. With
+    #      Groq quota exhausted (a steady-state condition for free-tier
+    #      bulk regen), every template edge dies at
+    #      _apply_llm_classification's reject step. Replacing the
+    #      template here with the foundational allowlist edge — which
+    #      embeds the parent title in the rationale — keeps the
+    #      seminal-ancestor link visible even when the LLM is dark.
+    #
+    # Tight allowlist (~30 regexes) bounds the number of synthesised
+    # edges per theme to single digits; the #209 fabrication problem
+    # (93.7% template-rationale rate) doesn't recur because we only
+    # rescue canonical anchors, not arbitrary refs.
+    if _is_foundational_ancestor(parent):
+        return _foundational_ancestor_edge(parent)
+
     if heuristic is None:
-        # #277: when a depth-1 reference is a canonical ML foundational
-        # paper (Attention Is All You Need, ResNet, AlexNet, BiT, DETR,
-        # iGPT, ...), the LLM tends to classify it as "unrelated"
-        # because it doesn't see why a ViT paper would *research-lineage*
-        # cite ResNet. But these papers are universally recognised
-        # research-lineage anchors and the viewer reads as broken when
-        # the seminal ancestor is missing from the graph. The allowlist
-        # bypass emits a stable extends edge with a paper-specific
-        # rationale (parent title in the text, so the template-echo
-        # filter at _apply_llm_classification can't reject it later).
-        if _is_foundational_ancestor(parent):
-            return _foundational_ancestor_edge(parent)
         # Pre-#209: this path fabricated _DEFAULT_DERIVED ("extends"
         # template). The audit found 1222/1304 (93.7%) of published
         # edges came from this fallback — pure noise. Now we only emit
