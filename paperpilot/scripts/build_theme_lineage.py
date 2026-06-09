@@ -525,13 +525,50 @@ def _work_to_paper_dict(work: dict) -> dict[str, Any] | None:
     return {
         "paperId": f"{_OPENALEX_PAPER_ID_PREFIX}{short}",
         "title": title,
-        "year": work.get("publication_year"),
+        "year": _trustworthy_year(work),
         "venue": venue,
         "citationCount": int(work.get("cited_by_count") or 0),
         "abstract": abstract,
         "authors": authors,
         "externalIds": external_ids,
     }
+
+
+# Guards against OpenAlex `publication_year` corruption (#273).
+# Empirical: "Attention Is All You Need" (W2626778328) carries
+# publication_year=2025 with created_date=2017-06-23 because of an
+# OpenAlex re-mirror with a non-canonical DOI. Trusting publication_year
+# here pushes the seminal paper to the right edge of the chronological
+# axis and breaks the year/cite-contrast classifier (a 2025 parent of
+# a 2020 child trivially produces a backwards edge).
+#
+# Heuristic: when publication_year and created_date diverge by 3+
+# years, prefer created_date. Legitimate gaps (conference proceedings
+# year vs arXiv preprint year) stay within 2 years; 3+ years is the
+# fingerprint of a re-publication rewrite.
+_PUBLICATION_YEAR_DRIFT_THRESHOLD = 3
+
+
+def _trustworthy_year(work: dict) -> int | None:
+    """Return ``work['publication_year']`` unless it diverges from
+    ``created_date``'s year by ``_PUBLICATION_YEAR_DRIFT_THRESHOLD`` or
+    more, in which case fall back to ``created_date`` — that's the
+    initial OpenAlex registration timestamp and tracks the real
+    publication closely. See #273 for the empirical evidence.
+    """
+    pub_year = work.get("publication_year")
+    if not isinstance(pub_year, int):
+        return pub_year if pub_year is None else None
+    created_date = work.get("created_date") or ""
+    if not (isinstance(created_date, str) and len(created_date) >= 4):
+        return pub_year
+    created_prefix = created_date[:4]
+    if not created_prefix.isdigit():
+        return pub_year
+    created_year = int(created_prefix)
+    if abs(pub_year - created_year) >= _PUBLICATION_YEAR_DRIFT_THRESHOLD:
+        return created_year
+    return pub_year
 
 
 def _extract_doi(work: dict) -> str | None:
@@ -2248,17 +2285,30 @@ def build_theme_lineage(
         theme=sanitised,
         primary_source=primary_source,
     )
-    # Alias fallback: when the canonical theme name doesn't surface any
-    # seeds (S2 indexed under a different spelling, abbreviation
-    # mismatch, etc), retry with operator-curated alternates from
-    # theme_aliases.json. Only fires on 0-seed outcomes so the common
-    # path stays a single search. See the doc string of
-    # _load_theme_aliases for the file shape.
-    if not seeds:
-        for alt_kw in _aliases_for(sanitised):
+    # Alias merge (#274 upgrade): when ``theme_aliases.json`` has
+    # alternates for this theme, run each one as its own search and
+    # union the results into the seed pool. Pre-#274 this only fired
+    # on a 0-seed primary, but the "Flash Attention" case showed that
+    # the primary can return a non-zero number of off-topic seeds
+    # while completely missing the canonical paper indexed under a
+    # tokenisation variant ("FlashAttention" vs "Flash Attention" —
+    # OpenAlex doesn't lemmatise these to the same form). Always
+    # merging aliases makes the canonical-paper discovery robust at
+    # the cost of N extra OpenAlex calls per theme — cheap; the polite
+    # pool absorbs them.
+    #
+    # The merged pool is re-ranked + re-filtered through the same
+    # `_apply_seed_filters` chain so off-topic alias hits can't smuggle
+    # past the denylist / topic-relevance gate.
+    aliases = _aliases_for(sanitised)
+    if aliases:
+        merged_by_id: dict[str, dict[str, Any]] = {
+            s["paperId"]: s for s in seeds if s.get("paperId")
+        }
+        for alt_kw in aliases:
             logger.info(
-                "primary keyword %r returned 0 seeds; trying alias %r",
-                sanitised, alt_kw,
+                "merging alias %r into seeds for theme %r",
+                alt_kw, sanitised,
             )
             alt_seeds = discover_seeds(
                 keywords=[alt_kw],
@@ -2267,10 +2317,21 @@ def build_theme_lineage(
                 use_openalex_fallback=use_openalex_fallback,
                 openalex_email=openalex_email,
                 theme=sanitised,
+                primary_source=primary_source,
             )
-            if alt_seeds:
-                seeds = alt_seeds
-                break
+            for s in alt_seeds:
+                pid = s.get("paperId")
+                if pid and pid not in merged_by_id:
+                    merged_by_id[pid] = s
+        # Re-rank the unified pool by citation count, then cap at
+        # seeds_count so the BFS budget doesn't blow up on a popular
+        # theme with many aliases.
+        ranked = sorted(
+            merged_by_id.values(),
+            key=lambda p: int(p.get("citationCount") or 0),
+            reverse=True,
+        )
+        seeds = ranked[:seeds_count]
     logger.info(
         "discovered %d seeds: %s",
         len(seeds),
