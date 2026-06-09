@@ -1,5 +1,5 @@
 {
-  "root": "openalex:W3131500599",
+  "root": "openalex:W3094502228",
   "nodes": [
     {
       "id": "openalex:W2147800946",
@@ -822,8 +822,8 @@
       "src": "openalex:W3094502228",
       "dst": "openalex:W3138516171",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "B の Shifted Windows は、A のパッチベースのアプローチを階層的に拡張し効率化している。"
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W2963091558",
@@ -831,6 +831,13 @@
       "rel": "contrasts",
       "conf": 0.8,
       "rationale": "B の Shifted Windows は、A の非局所操作と異なり、自己注意を効率化するために階層的なウィンドウを使用している。"
+    },
+    {
+      "src": "openalex:W3035524453",
+      "dst": "openalex:W3094502228",
+      "rel": "contrasts",
+      "conf": 0.8,
+      "rationale": "B の Transformer アーキテクチャは、A の Momentum Contrast に対して畳み込みネットワークを必要としない代替アプローチを示している。"
     },
     {
       "src": "openalex:W2147800946",
@@ -850,8 +857,8 @@
       "src": "openalex:W2626778328",
       "dst": "openalex:W3094502228",
       "rel": "extends",
-      "conf": 0.9,
-      "rationale": "B の Transformer 構造は、A のシーケンストランスダクションに限らなかった attention メカニズムを、画像認識タスクのパッチシーケンスに適用している。"
+      "conf": 0.65,
+      "rationale": "Attention Is All You Need is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W2981689412",
@@ -906,8 +913,8 @@
       "src": "openalex:W3094502228",
       "dst": "openalex:W3159481202",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "B の Vision Transformer (ViT) は、A の Transformer アーキテクチャを自己教師あり学習から自己教師なし学習に拡張し、セマンティックセグメンテーション情報を明示的に含む特徴を抽出している。"
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W2133564696",
@@ -1004,15 +1011,15 @@
       "src": "openalex:W3094502228",
       "dst": "openalex:W3135367836",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "B の自然言語による視覚モデルの学習は、A の Transformer による画像認識のアイデアを、画像とキャプションのペア予測タスクに拡張している。"
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W3094502228",
       "dst": "openalex:W3131500599",
       "rel": "extends",
-      "conf": 0.8,
-      "rationale": "B の Pyramid Vision Transformer は、A の Vision Transformer を画像分類から密な予測タスクに拡張し、解像度の低下問題を解決している。"
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W4312443924",
@@ -1065,21 +1072,14 @@
     },
     {
       "src": "openalex:W2097117768",
-      "dst": "openalex:W3212386989",
+      "dst": "openalex:W2963446712",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W2097117768",
-      "dst": "openalex:W4226334005",
-      "rel": "extends",
-      "conf": 0.65,
-      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
-    },
-    {
-      "src": "openalex:W2097117768",
-      "dst": "openalex:W4386076493",
+      "dst": "openalex:W2622263826",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
@@ -1092,11 +1092,130 @@
       "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W2183341477",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W2962843773",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W1821462560",
+      "dst": "openalex:W2962843773",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W1903029394",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W3207918547",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W4212875960",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W4226334005",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W1821462560",
+      "dst": "openalex:W2798991696",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W4386047745",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
       "src": "openalex:W1821462560",
       "dst": "openalex:W4386047745",
       "rel": "extends",
       "conf": 0.65,
       "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W4386076493",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W639708223",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W1821462560",
+      "dst": "openalex:W3030163527",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W2549139847",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2626778328",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Attention Is All You Need is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W4225672218",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W3094502228",
+      "dst": "openalex:W3145450063",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     }
   ],
   "meta": {
@@ -1115,6 +1234,6 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-06-09T04:46:17.897860+00:00"
+    "generated_at": "2026-06-09T04:58:43.739964+00:00"
   }
 }
