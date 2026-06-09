@@ -542,19 +542,26 @@ def _work_to_paper_dict(work: dict) -> dict[str, Any] | None:
 # axis and breaks the year/cite-contrast classifier (a 2025 parent of
 # a 2020 child trivially produces a backwards edge).
 #
-# Heuristic: when publication_year and created_date diverge by 3+
-# years, prefer created_date. Legitimate gaps (conference proceedings
-# year vs arXiv preprint year) stay within 2 years; 3+ years is the
-# fingerprint of a re-publication rewrite.
+# Heuristic: the corruption fingerprint is publication_year >>
+# created_year, not the other way around. A recent re-mirror (see
+# the W7133227460 FlashAttention case in the #273 followup tests)
+# can bump created_date forward without touching the still-correct
+# publication_year — so an abs() guard wrongly rewrites the correct
+# year forward. We only fall back when publication_year is at least
+# _PUBLICATION_YEAR_DRIFT_THRESHOLD years AHEAD of created_year.
 _PUBLICATION_YEAR_DRIFT_THRESHOLD = 3
 
 
 def _trustworthy_year(work: dict) -> int | None:
-    """Return ``work['publication_year']`` unless it diverges from
-    ``created_date``'s year by ``_PUBLICATION_YEAR_DRIFT_THRESHOLD`` or
-    more, in which case fall back to ``created_date`` — that's the
-    initial OpenAlex registration timestamp and tracks the real
-    publication closely. See #273 for the empirical evidence.
+    """Return ``work['publication_year']`` unless it is at least
+    ``_PUBLICATION_YEAR_DRIFT_THRESHOLD`` years AHEAD of ``created_date``,
+    in which case fall back to ``created_date``. The one-way condition
+    matters: a recent re-mirror can bump ``created_date`` forward
+    without touching the (still-correct) ``publication_year``, while
+    the corruption mode we actually want to catch rewrites
+    ``publication_year`` forward and leaves the original
+    ``created_date`` behind. See #273 for the W2626778328 and
+    W7133227460 empirical cases.
     """
     pub_year = work.get("publication_year")
     if not isinstance(pub_year, int):
@@ -566,7 +573,10 @@ def _trustworthy_year(work: dict) -> int | None:
     if not created_prefix.isdigit():
         return pub_year
     created_year = int(created_prefix)
-    if abs(pub_year - created_year) >= _PUBLICATION_YEAR_DRIFT_THRESHOLD:
+    # One-way: only collapse to created_year when publication_year has
+    # been rewritten forward. Backward gaps (legitimate older re-mirror)
+    # leave publication_year untouched.
+    if pub_year - created_year >= _PUBLICATION_YEAR_DRIFT_THRESHOLD:
         return created_year
     return pub_year
 
