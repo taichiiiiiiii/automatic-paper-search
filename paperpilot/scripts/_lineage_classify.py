@@ -31,6 +31,7 @@ What does NOT live here:
 """
 from __future__ import annotations
 
+import functools
 import json
 import os
 import re
@@ -444,6 +445,18 @@ def derive_relation(
     heuristic = _derive_relation_heuristic(intent_record, parent=parent, child=child)
 
     if heuristic is None:
+        # #277: when a depth-1 reference is a canonical ML foundational
+        # paper (Attention Is All You Need, ResNet, AlexNet, BiT, DETR,
+        # iGPT, ...), the LLM tends to classify it as "unrelated"
+        # because it doesn't see why a ViT paper would *research-lineage*
+        # cite ResNet. But these papers are universally recognised
+        # research-lineage anchors and the viewer reads as broken when
+        # the seminal ancestor is missing from the graph. The allowlist
+        # bypass emits a stable extends edge with a paper-specific
+        # rationale (parent title in the text, so the template-echo
+        # filter at _apply_llm_classification can't reject it later).
+        if _is_foundational_ancestor(parent):
+            return _foundational_ancestor_edge(parent)
         # Pre-#209: this path fabricated _DEFAULT_DERIVED ("extends"
         # template). The audit found 1222/1304 (93.7%) of published
         # edges came from this fallback — pure noise. Now we only emit
@@ -617,4 +630,80 @@ def _make_derived(relation: str, rationale: str) -> dict:
         "relation": relation,
         "confidence": _DERIVED_CONFIDENCE,
         "rationale": rationale,
+    }
+
+
+# ===== #277: foundational-ancestor allowlist =====
+#
+# OpenAlex-sourced refs carry no S2 intent labels, so the heuristic
+# falls through to year/cite contrast — which only fires inside a narrow
+# delta range. The LLM then arbitrates ambiguous edges in --llm-strict=
+# ambiguous mode, but it's conservative on "is this paper a
+# research-lineage parent?" — and for canonical ML foundations
+# (Attention Is All You Need, ResNet, AlexNet, BiT, DETR, etc.) it
+# tended to return "unrelated", dropping the seminal ancestor from the
+# viewer. The allowlist file declares the small set of papers that are
+# universally recognised lineage anchors so we can emit a stable edge
+# for them at the heuristic stage, before the LLM gets a chance to
+# reject. See lineage_foundational_allowlist.json + issue #277.
+_FOUNDATIONAL_ALLOWLIST_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "lineage_foundational_allowlist.json"
+)
+_FOUNDATIONAL_ALLOWLIST_CONFIDENCE = 0.65
+
+
+@functools.lru_cache(maxsize=1)
+def _load_foundational_allowlist() -> list[re.Pattern[str]]:
+    """Compile title patterns once per process — the allowlist is tiny
+    (~30 entries) and never mutated at runtime.
+    """
+    try:
+        data = json.loads(
+            _FOUNDATIONAL_ALLOWLIST_PATH.read_text(encoding="utf-8")
+        )
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return []
+    patterns = data.get("title_patterns") or []
+    compiled: list[re.Pattern[str]] = []
+    for pat in patterns:
+        if isinstance(pat, str) and pat.strip():
+            try:
+                compiled.append(re.compile(pat, re.IGNORECASE))
+            except re.error:
+                continue
+    return compiled
+
+
+def _is_foundational_ancestor(parent: dict | None) -> bool:
+    """True iff ``parent`` matches a title pattern in the foundational
+    allowlist. Used by ``derive_relation`` to bypass LLM rejection for
+    canonical ML lineage anchors. Returns False for None / missing
+    title so the call site doesn't need a guard.
+    """
+    if not isinstance(parent, dict):
+        return False
+    title = parent.get("title") or ""
+    if not isinstance(title, str) or not title.strip():
+        return False
+    return any(pat.search(title) for pat in _load_foundational_allowlist())
+
+
+def _foundational_ancestor_edge(parent: dict | None) -> dict:
+    """Emit a stable extends edge for a foundational ancestor. The
+    rationale embeds the parent title so it can't collide with the
+    `_TEMPLATE_RATIONALES_SET` reject filter used by
+    ``_apply_llm_classification`` for future LLM passes.
+    """
+    title = (parent or {}).get("title", "") if isinstance(parent, dict) else ""
+    title = title.strip() or "the cited work"
+    return {
+        "relation": "extends",
+        "confidence": _FOUNDATIONAL_ALLOWLIST_CONFIDENCE,
+        "rationale": (
+            f"{title} is a canonical research-lineage ancestor and "
+            "is preserved here as a direct extends edge — see "
+            "lineage_foundational_allowlist.json."
+        ),
     }

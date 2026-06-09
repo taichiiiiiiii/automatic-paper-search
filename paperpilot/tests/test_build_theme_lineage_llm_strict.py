@@ -358,3 +358,70 @@ def test_argparse_rejects_invalid(monkeypatch, capsys):
     monkeypatch.setattr("sys.argv", ["build_theme_lineage.py", "--theme", "X", "--llm-strict", "bogus"])
     with pytest.raises(SystemExit):
         btl._build_arg_parser().parse_args()
+
+
+# --- #277 foundational ancestor allowlist ---
+
+
+def test_foundational_ancestor_bypasses_llm_rejection():
+    """#277: when the heuristic returns None and the parent is on the
+    foundational allowlist, derive_relation emits a stable extends
+    edge even without invoking the LLM. Catches the regression where
+    canonical ML ancestors (AIAYN, ResNet, AlexNet etc.) silently
+    dropped out of theme lineages."""
+    parent = {
+        "paperId": "openalex:W_alex",
+        "title": "ImageNet Classification with Deep Convolutional Neural Networks",
+        "year": 2012,
+        "citationCount": 100000,
+    }
+    child = {
+        "paperId": "openalex:W_vit",
+        "title": "An Image is Worth 16x16 Words",
+        "year": 2020,
+        "citationCount": None,
+    }
+    intent_record = {
+        "paperId": parent["paperId"],
+        "_intents": [],
+        "_is_influential": True,
+    }
+    edge = btl.derive_relation(
+        intent_record, parent=parent, child=child,
+        provider=None, strict_mode="off",
+    )
+    assert edge is not None, (
+        "foundational allowlist failed to emit an edge — #277 regression"
+    )
+    assert edge["relation"] == "extends"
+    # Rationale must include the title verbatim so it can't collide
+    # with the _TEMPLATE_RATIONALES_SET reject filter.
+    assert "ImageNet Classification" in edge["rationale"]
+
+
+def test_non_foundational_parent_drops_when_heuristic_none():
+    """Tightness: a parent NOT in the allowlist (random off-topic
+    paper) still drops to None when the heuristic fails, preserving
+    the #209 noise-reduction invariant."""
+    parent = {
+        "paperId": "openalex:W_rand",
+        "title": "A Survey of Sitting Posture Recognition",
+        "year": 2024,
+        "citationCount": 50,
+    }
+    child = {
+        "paperId": "openalex:W_vit",
+        "title": "An Image is Worth 16x16 Words",
+        "year": 2020,
+        "citationCount": None,
+    }
+    intent_record = {
+        "paperId": parent["paperId"],
+        "_intents": [],
+        "_is_influential": True,
+    }
+    edge = btl.derive_relation(
+        intent_record, parent=parent, child=child,
+        provider=None, strict_mode="off",
+    )
+    assert edge is None
