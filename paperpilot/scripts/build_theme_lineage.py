@@ -2100,7 +2100,18 @@ def _run_bfs_and_descendants(
         ]
         influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
         non_influential.sort(key=lambda x: x.get("citationCount") or 0, reverse=True)
-        parents = (influential + non_influential)[:width]
+        # #277 followup: protect foundational allowlist hits from the
+        # width truncation here too. _split_by_foundational_priority
+        # already preserved them through the OpenAlex fetch + filter
+        # stages, but the per-seed cap at the BFS layer would still
+        # drop them when ranked below width on the
+        # influential-then-cite ordering. Always keep allowlist
+        # matches; backfill the rest of width with the ordered list.
+        ranked = influential + non_influential
+        foundational_parents = [p for p in ranked if _is_foundational_ancestor(p)]
+        non_foundational = [p for p in ranked if not _is_foundational_ancestor(p)]
+        fill = max(0, width - len(foundational_parents))
+        parents = foundational_parents + non_foundational[:fill]
 
         for parent in parents:
             pid = parent.get("paperId")
