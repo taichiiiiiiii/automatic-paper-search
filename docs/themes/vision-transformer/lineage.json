@@ -907,9 +907,9 @@
     {
       "src": "openalex:W2097117768",
       "dst": "openalex:W3138516171",
-      "rel": "contrasts",
-      "conf": 0.8,
-      "rationale": "B の Swin Transformer は、A の畳み込みベースの Inception アーキテクチャと異なり、シフト窓を用いた階層型 Transformer を提案している。"
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W2565639579",
@@ -977,9 +977,9 @@
     {
       "src": "openalex:W2097117768",
       "dst": "openalex:W4312443924",
-      "rel": "contrasts",
-      "conf": 0.8,
-      "rationale": "B の Vision Transformers は、A の ConvNet アーキテクチャを超える新しい画像認識手法を提案している。"
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W2102605133",
@@ -1001,6 +1001,20 @@
       "rel": "contrasts",
       "conf": 0.8,
       "rationale": "B の Vision Transformers は、A の ConvNet ベースの Fast R-CNN と異なり、画像認識タスクで state-of-the-art である。"
+    },
+    {
+      "src": "openalex:W2133564696",
+      "dst": "openalex:W3159481202",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Neural Machine Translation by Jointly Learning to Align and Translate is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W1821462560",
+      "dst": "openalex:W3159481202",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W2798991696",
@@ -1033,9 +1047,9 @@
     {
       "src": "openalex:W2097117768",
       "dst": "openalex:W3131500599",
-      "rel": "contrasts",
-      "conf": 0.8,
-      "rationale": "B の Pyramid Vision Transformer は、A の畳み込みベースの Inception アーキテクチャと対照的に、畳み込みを用いない設計を採用している。"
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     },
     {
       "src": "openalex:W1903029394",
@@ -1171,11 +1185,95 @@
       "rationale": "B のUNETRは、A のPyramid Vision Transformerを3D医用画像セグメンテーションタスクに拡張し、Transformerを利用した長距離空間依存性の学習を実現している。"
     },
     {
-      "src": "openalex:W2533598788",
-      "dst": "openalex:W3094502228",
+      "src": "openalex:W639708223",
+      "dst": "openalex:W2601564443",
+      "rel": "extends",
+      "conf": 0.8,
+      "rationale": "B のデフォーマブル畳み込みは、A の RPN の特徴抽出能力を向上させ、より複雑なオブジェクト検出タスクに対応できる。"
+    },
+    {
+      "src": "openalex:W1903029394",
+      "dst": "openalex:W2601564443",
+      "rel": "extends",
+      "conf": 0.8,
+      "rationale": "B のデフォーム可能な畳み込みは、A の完全畳み込みネットワークの限界を解消し、より複雑な形状のオブジェクトを捉えることができる。"
+    },
+    {
+      "src": "openalex:W2102605133",
+      "dst": "openalex:W2601564443",
+      "rel": "extends",
+      "conf": 0.8,
+      "rationale": "B のデフォーマブル畳み込みは、A の CNN をより柔軟な特徴抽出に拡張している。"
+    },
+    {
+      "src": "openalex:W2565639579",
+      "dst": "openalex:W2601564443",
       "rel": "contrasts",
       "conf": 0.8,
-      "rationale": "B の Transformer アーキテクチャは、A の従来の手法である SVM 分類器と対照的に、画像認識タスクに大規模な自己注意メカニズムを適用している。"
+      "rationale": "B のデフォーム可能な畳み込みは、A のフィーチャーピラミッドの固定的なスケールに異なるアプローチを取っている。"
+    },
+    {
+      "src": "openalex:W1536680647",
+      "dst": "openalex:W2601564443",
+      "rel": "extends",
+      "conf": 0.8,
+      "rationale": "B のデフォーマブル畳み込みは、A の Fast R-CNN の特徴抽出能力を向上させている。"
+    },
+    {
+      "src": "openalex:W2412782625",
+      "dst": "openalex:W2601564443",
+      "rel": "contrasts",
+      "conf": 0.8,
+      "rationale": "B のデフォーム可能な畳み込みは、A のアトラス畳み込みと異なり動的なフィルタ形状を実現する。"
+    },
+    {
+      "src": "openalex:W1903029394",
+      "dst": "openalex:W2981689412",
+      "rel": "extends",
+      "conf": 0.8,
+      "rationale": "B の Criss-Cross アテンションは、A の Fully Convolutional ネットワークを拡張し、セマンティックセグメンテーションの精度を向上させている。"
+    },
+    {
+      "src": "openalex:W2752782242",
+      "dst": "openalex:W2981689412",
+      "rel": "extends",
+      "conf": 0.7,
+      "rationale": "B の Criss-Cross アテンションは、A の Squeeze-and-Excitation ブロックのチャネル間関係を空間的なアテンションに拡張している"
+    },
+    {
+      "src": "openalex:W1821462560",
+      "dst": "openalex:W4386047745",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Distilling the Knowledge in a Neural Network is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W4386076493",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W4386076325",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W3212386989",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
+    },
+    {
+      "src": "openalex:W2097117768",
+      "dst": "openalex:W4226334005",
+      "rel": "extends",
+      "conf": 0.65,
+      "rationale": "Going deeper with convolutions is a canonical research-lineage ancestor and is preserved here as a direct extends edge — see lineage_foundational_allowlist.json."
     }
   ],
   "meta": {
@@ -1194,6 +1292,6 @@
     ],
     "depth": 1,
     "since_year": 2018,
-    "generated_at": "2026-06-09T02:28:28.232483+00:00"
+    "generated_at": "2026-06-09T04:23:06.654872+00:00"
   }
 }
