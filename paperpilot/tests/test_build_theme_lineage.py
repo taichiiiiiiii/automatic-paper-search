@@ -3759,13 +3759,27 @@ def test_work_to_paper_dict_year_missing_created_keeps_publication_year():
 
 def test_work_to_paper_dict_year_drift_threshold_boundary():
     """3 years is the inclusive trigger for the corruption guard.
-    2-year gap stays trusted; 3-year gap flips to created_date."""
+    2-year forward gap stays trusted; 3-year forward gap flips to
+    created_date."""
     work_2 = _mk_oa_work_v2("W5", year=2020)
     work_2["created_date"] = "2018-01-01T00:00:00"
     assert build_theme_lineage._work_to_paper_dict(work_2)["year"] == 2020
     work_3 = _mk_oa_work_v2("W6", year=2020)
     work_3["created_date"] = "2017-01-01T00:00:00"
     assert build_theme_lineage._work_to_paper_dict(work_3)["year"] == 2017
+
+
+def test_work_to_paper_dict_year_recent_re_mirror_keeps_publication_year():
+    """#273 followup: W7133227460 is a FlashAttention re-mirror where
+    publication_year=2022 (correct) but created_date=2026-03-03
+    (re-mirror timestamp). An ``abs()`` condition would wrongly flip
+    2022 → 2026; the one-way condition leaves publication_year
+    untouched when created_date is ahead of it. Empirically this is
+    the inverse of the W2626778328 case, so the guard must NOT be
+    symmetric."""
+    work = _mk_oa_work_v2("W7133227460", year=2022)
+    work["created_date"] = "2026-03-03T00:00:00"
+    assert build_theme_lineage._work_to_paper_dict(work)["year"] == 2022
 
 
 def test_discover_seeds_openalex_primary_uses_openalex_not_s2(
