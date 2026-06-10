@@ -6,6 +6,48 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Refactored — Removed dead heuristic emit paths (#283)
+
+`paperpilot/scripts/_lineage_classify.py` previously emitted
+`supersedes` / `ablation` / `baseline_only` candidates with the
+canonical template rationales, which `_apply_llm_classification`
+unconditionally dropped whenever the LLM returned `None` (the
+steady-state condition under Groq free-tier quota exhaustion).
+Net effect on published lineage: zero edges of those three relations
+across 99 production edges (vision-transformer + flash-attention).
+
+This release rips those three emit paths out of the heuristic:
+
+- `_INTENT_RELATION_MAP` no longer maps `background → baseline_only`
+  (unreachable on the OpenAlex-primary pipeline since OpenAlex
+  provides no S2 intent labels at all)
+- The year/cite block no longer emits `supersedes_year_cite`
+  (was: `delta >= 3 AND parent_cite > 100 AND child_cite >= parent_cite * 1.5`)
+- The year/cite block no longer emits `ablation_year_cite`
+  (was: `delta <= 2 AND child_cite < 100 AND parent_cite > 1000`)
+
+A side-effect worth flagging: `background`-only intent edges are
+now `_is_ambiguous == True`, so under `--llm-strict=ambiguous`
+(production default) they route to the LLM instead of being silently
+skipped after the template reject. Net effect under quota exhaustion
+is the same (no edge), but with budget the LLM can now rescue them.
+
+Kept alive (regression-guarded by `test_year_cite_still_emits_*`):
+`contrasts_year_cite` (16/99 edges real) and `successor_result`
+(out of scope; deferred until LLM-only-edge subset measurement).
+
+Also closes a single-source-of-truth violation flagged by parallel
+review: `paperpilot/scripts/build_deep_lineage.py:_FALLBACK_RATIONALE`
+previously duplicated `paperpilot/llm/base.py:TEMPLATE_RATIONALES`
+byte-for-byte. Replaced with a derived mapping that fails at import
+time on any drift.
+
+Follow-up issue tracks the prompt rewrite phase (per-relation 1-line
+description + 2 good examples for supersedes/ablation, char cap
+unchanged, mirroring `docs/design/08-lineage-roadmap.md:136-142`
+verbatim — pending LLM-only subset measurement and 50-edge gold-set
+manual labels before the prompt change ships).
+
 ### Changed — Theme submission deployment: CF Worker resurrected (#233-#238)
 
 CF Worker (`worker/index.ts`) is the live theme-submission API again.

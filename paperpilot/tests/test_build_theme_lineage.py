@@ -1247,14 +1247,20 @@ def test_derive_relation_result_intent_to_successor():
     assert rel is not None and rel["relation"] == "successor"
 
 
-def test_derive_relation_background_intent_to_baseline_only():
+def test_derive_relation_background_intent_no_longer_maps_to_baseline_only():
+    """#283: the (background, baseline_only, ...) intent map entry was
+    a dead path — unreachable on OpenAlex (no intent labels) and
+    template-rejected on S2 (LLM-None steady state). Background-only
+    intent now falls through the heuristic.
+    """
     parent = {"_is_influential": True, "_intents": ["background"]}
     rel = build_theme_lineage.derive_relation(parent)
-    assert rel is not None and rel["relation"] == "baseline_only"
+    assert rel is None
 
 
-def test_derive_relation_methodology_takes_precedence_over_background():
-    """Multi-intent: methodology > result > background."""
+def test_derive_relation_methodology_still_wins_over_background():
+    """Multi-intent: methodology > result. Background no longer maps to
+    anything post-#283 (regression guard for that removal)."""
     parent = {"_is_influential": True, "_intents": ["background", "methodology"]}
     rel = build_theme_lineage.derive_relation(parent)
     assert rel is not None and rel["relation"] == "extends"
@@ -1277,12 +1283,18 @@ def test_derive_relation_no_signal_returns_none_in_off_mode():
 # ---- #80: heuristic refinement when intents missing -------------------------
 
 
-def test_derive_relation_supersedes_via_heuristic():
-    """3+ year gap + child citation count overtakes parent → supersedes."""
+def test_derive_relation_supersedes_no_longer_emitted_by_heuristic():
+    """#283: 3+ year gap + citation overtake previously emitted supersedes
+    with a template rationale — always dropped by `_apply_llm_classification`
+    when the LLM was None (steady state). Now the heuristic returns None
+    for this shape and the LLM (if available) is the only path to a
+    supersedes edge; otherwise the edge is dropped.
+    """
     parent = {"_is_influential": True, "year": 2017, "citationCount": 1000}
     child = {"year": 2022, "citationCount": 5000}
     rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
-    assert rel is not None and rel["relation"] == "supersedes"
+    # Falls through to the successor branch (1 <= delta=5 <= 5 catch-all).
+    assert rel is not None and rel["relation"] == "successor"
 
 
 def test_derive_relation_contrasts_via_heuristic():
@@ -1293,13 +1305,17 @@ def test_derive_relation_contrasts_via_heuristic():
     assert rel is not None and rel["relation"] == "contrasts"
 
 
-def test_derive_relation_ablation_via_heuristic():
-    """Within 2y + tiny child cite count alongside high-cite parent →
-    ablation-style follow-up."""
+def test_derive_relation_ablation_no_longer_emitted_by_heuristic():
+    """#283: within-2y + tiny child cite vs high-cite parent previously
+    emitted ablation with a template rationale — always dropped by
+    `_apply_llm_classification` when the LLM was None. Now falls through
+    to successor (the 1<=delta<=5 catch-all) instead of producing a
+    rejected template ablation edge.
+    """
     parent = {"_is_influential": True, "year": 2022, "citationCount": 5000}
     child = {"year": 2024, "citationCount": 30}
     rel = build_theme_lineage.derive_relation(parent, parent=parent, child=child)
-    assert rel is not None and rel["relation"] == "ablation"
+    assert rel is not None and rel["relation"] == "successor"
 
 
 def test_derive_relation_successor_via_heuristic():
@@ -1844,10 +1860,13 @@ def test_build_theme_lineage_makes_zero_classify_calls(tmp_path, monkeypatch):
         "_is_influential": True,
         "_intents": ["methodology"],
     }
+    # #283: previously "background"→baseline_only. That mapping was a
+    # dead path (template-reject) and was removed. Use "result"→successor
+    # which is the remaining alive intent mapping besides methodology.
     p2 = {
-        **_mk_s2_paper("p2", title="Background ref", year=2017),
+        **_mk_s2_paper("p2", title="Result ref", year=2017),
         "_is_influential": True,
-        "_intents": ["background"],
+        "_intents": ["result"],
     }
 
     with (
@@ -1868,13 +1887,13 @@ def test_build_theme_lineage_makes_zero_classify_calls(tmp_path, monkeypatch):
 
     payload = json.loads(out_path.read_text())
     rels = sorted({e["rel"] for e in payload["edges"]})
-    # The BFS-derived edges (p1→seed methodology, p2→seed background) must
+    # The BFS-derived edges (p1→seed methodology, p2→seed result) must
     # both be present; cross-node may add more edges between p1/p2 since
     # the test's fetch_related stub returns [p1, p2] for any caller. We
     # care that the intent-derived relations are picked up correctly, not
     # the exact count.
-    assert "extends" in rels and "baseline_only" in rels, (
-        f"expected at least extends + baseline_only from intents, got: {rels}"
+    assert "extends" in rels and "successor" in rels, (
+        f"expected at least extends + successor from intents, got: {rels}"
     )
     # The acceptance criteria: NO LLM calls fired during the build.
     assert provider.chat_calls == [], (
