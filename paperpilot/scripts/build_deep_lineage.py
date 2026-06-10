@@ -57,13 +57,28 @@ logger = get_logger(__name__)
 # and the edge disappears entirely, defeating the purpose of deep BFS. This
 # table provides a templated fallback rationale keyed on the relation type
 # so a thin-but-real edge survives instead of silently vanishing.
-_FALLBACK_RATIONALE = {
-    "supersedes": "論文 B は論文 A の手法を置き換える改良版として提案されている。",
-    "successor":  "論文 B は論文 A の研究ラインを継承し自然に発展させている。",
-    "extends":    "論文 B は論文 A の手法を異なる領域・タスク・スケールに拡張している。",
-    "ablation":   "論文 B は論文 A の構成要素を分析・ablation している。",
-    "baseline_only": "論文 B は論文 A をベースライン比較にのみ用いている。",
-    "contrasts":  "論文 B は論文 A と根本的に異なるアプローチを提案している。",
+#
+# #283: derive from paperpilot.llm.base.TEMPLATE_RATIONALES to close a
+# byte-for-byte duplication flagged by the SSoT review. The mapping below
+# is the relation-name ↔ heuristic-key bridge; an import-time KeyError
+# guarantees we can't drift out of sync.
+from paperpilot.llm.base import TEMPLATE_RATIONALES as _BASE_TEMPLATE_RATIONALES  # noqa: E402
+
+_RELATION_TO_HEURISTIC_KEY: dict[str, str] = {
+    "supersedes":    "supersedes_year_cite",
+    "successor":     "successor_result",
+    "extends":       "extends_methodology",
+    # ablation + baseline_only: heuristic no longer emits these post-#283.
+    # The fallback rationale is still needed because depth 2+ LLM calls
+    # can still return these relations from the LLM itself — only the
+    # heuristic emit was removed, not the relation enum.
+    "ablation":      "ablation_year_cite",
+    "baseline_only": "baseline_only_background",
+    "contrasts":     "contrasts_year_cite",
+}
+_FALLBACK_RATIONALE: dict[str, str] = {
+    relation: _BASE_TEMPLATE_RATIONALES[heuristic_key]
+    for relation, heuristic_key in _RELATION_TO_HEURISTIC_KEY.items()
 }
 
 

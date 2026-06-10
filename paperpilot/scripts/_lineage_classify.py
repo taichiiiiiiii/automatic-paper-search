@@ -61,12 +61,19 @@ logger = get_logger(__name__)
 # CANNOT drift.
 _INTENT_RELATION_MAP: list[tuple[str, str, str]] = [
     # (intent name, relation enum, rationale template) — order matters:
-    # methodology > result > background when an entry has multiple
-    # intents, since methodology implies the citing paper actually built
-    # on top of the referenced work.
+    # methodology > result when an entry has multiple intents, since
+    # methodology implies the citing paper actually built on top of the
+    # referenced work.
+    #
+    # #283 removed the (background, baseline_only, ...) entry. It was
+    # unreachable on the OpenAlex-primary pipeline (OpenAlex does not
+    # supply S2 intent labels at all), and on S2 inputs the template
+    # rationale was always stripped by `_apply_llm_classification`'s
+    # template-reject step whenever the LLM was None (the steady-state
+    # condition under Groq free-tier quota exhaustion). Net production
+    # output: zero baseline_only edges across 99 published edges.
     ("methodology", "extends", TEMPLATE_RATIONALES["extends_methodology"]),
     ("result", "successor", TEMPLATE_RATIONALES["successor_result"]),
-    ("background", "baseline_only", TEMPLATE_RATIONALES["baseline_only_background"]),
 ]
 _DERIVED_CONFIDENCE = 0.7  # constant — heuristic, not LLM probability
 
@@ -513,6 +520,14 @@ def _derive_relation_heuristic(
             return _make_derived(relation, rationale)
 
     # No matching intent — try year + citation contrast.
+    #
+    # #283 removed the supersedes_year_cite and ablation_year_cite emits.
+    # Both produced template rationales that `_apply_llm_classification`
+    # always rejected when the LLM returned None (steady state under
+    # Groq free-tier quota). Net production output: 0 supersedes + 0
+    # ablation across 99 published edges. The LLM is now the only path
+    # to a supersedes or ablation edge — heuristic returns None for those
+    # shapes and `derive_relation` falls through to the LLM-only branch.
     if parent is not None and child is not None:
         py = parent.get("year")
         cy = child.get("year")
@@ -520,20 +535,10 @@ def _derive_relation_heuristic(
         cc = child.get("citationCount") or child.get("citation_count") or 0
         if isinstance(py, int) and isinstance(cy, int):
             delta = cy - py
-            if delta >= 3 and pc > 100 and cc >= pc * 1.5:
-                return _make_derived(
-                    "supersedes",
-                    TEMPLATE_RATIONALES["supersedes_year_cite"],
-                )
             if delta <= 1 and pc > 100 and 0.5 <= cc / max(pc, 1) <= 2.0:
                 return _make_derived(
                     "contrasts",
                     TEMPLATE_RATIONALES["contrasts_year_cite"],
-                )
-            if delta <= 2 and cc < 100 and pc > 1000:
-                return _make_derived(
-                    "ablation",
-                    TEMPLATE_RATIONALES["ablation_year_cite"],
                 )
             if 1 <= delta <= 5:
                 return _make_derived(
@@ -549,6 +554,12 @@ def _is_ambiguous(intent_record: dict) -> bool:
     Gating predicate for ``--llm-strict=ambiguous``: edges whose intent
     set matches a known key are kept on the cheap heuristic path; the
     rest get the LLM treatment. Phase A Step 1 / CRITICAL C7.
+
+    #283: after ``background → baseline_only`` was removed from
+    ``_INTENT_RELATION_MAP``, ``background``-only edges are now
+    ambiguous and route to the LLM (previously they were kept on the
+    cheap path and then template-rejected). Pinned by
+    ``test_background_intent_is_ambiguous_post_removal``.
     """
     intents = intent_record.get("_intents") or []
     intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
