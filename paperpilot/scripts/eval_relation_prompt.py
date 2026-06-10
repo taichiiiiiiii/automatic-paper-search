@@ -77,25 +77,39 @@ def _predict_static(records: list[dict]) -> list[str | None]:
 
 
 def _predict_live(records: list[dict]) -> list[str | None]:
-    """Run ``classify_relation`` against each pair via the configured LLM."""
-    from paperpilot.llm.base import build_classify_prompt  # noqa: F401  (sanity)
+    """Run ``classify_relation`` against each pair via the live LLM.
+
+    Hardcoded to Groq because that's the only provider production
+    lineage classification actually uses (config.yaml's ``provider: ollama``
+    default is for local dev exploration, not the live pipeline). Loads
+    the api_key the same way ``paperpilot.pipeline.runner`` does — via
+    ``config_loader``'s ``.env`` extraction into ``config["env"]``.
+    Without ``PAPERPILOT_GROQ_API_KEY`` in ``paperpilot/.env`` (or a
+    fresh-enough key — expired keys return ``401`` and ``provider.classify_relation``
+    returns ``None``), the call refuses to run.
+    """
+    from paperpilot.llm.groq_provider import GroqProvider
     from paperpilot.utils.config_loader import load_config
 
-    config = load_config()
-    provider_name = (config.get("llm") or {}).get("provider", "groq")
+    config_path = REPO_ROOT / "paperpilot" / "config.yaml"
+    config = load_config(config_path)
+    api_key = (config.get("env") or {}).get("groq_api_key")
 
-    if provider_name == "groq":
-        from paperpilot.llm.groq_provider import GroqProvider
-
-        provider = GroqProvider(config.get("llm", {}))
-    else:
-        raise RuntimeError(
-            f"live predictor only wired for groq, got provider={provider_name!r}"
-        )
+    # Always run Groq for live eval — the prompt under test is the
+    # Groq-tuned one in paperpilot/llm/base.py.
+    groq_config = {
+        "enabled": True,
+        "provider": "groq",
+        "model": (config.get("env") or {}).get("groq_model")
+        or "llama-3.3-70b-versatile",
+    }
+    provider = GroqProvider(groq_config, api_key=api_key)
 
     if not provider.enabled:
         raise RuntimeError(
-            "live predictor requires a real LLM. Check GROQ_API_KEY."
+            "live predictor requires a real LLM with PAPERPILOT_GROQ_API_KEY "
+            "set in paperpilot/.env. A 401 from Groq means the key has expired "
+            "— rotate it before re-running."
         )
 
     predictions: list[str | None] = []
