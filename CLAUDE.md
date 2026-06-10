@@ -839,11 +839,12 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 | `build_theme_lineage()` 行数 | ✅ Stage 別 helper 抽出後 238 行 (#148) |
 
 ### 既知のオープン項目
-- **Bulk regen 19 themes の timeout 問題**: 60 / 120 min いずれも完走せず。OpenAlex-primary (#217) + Groq circuit breaker (#191) で改善したが、Sunday cron は遅延配信に依存しがち。Matrix parallel 化が根本対策 (未着手)。
-- **data-audit の false positives**: `audit_theme_seeds` は `title + tldr` しか見ないので、ViT / InstructGPT 等の foundational paper を off-topic と flag する。Production filter は full abstract で正しく判定。`audit_theme_seeds.py` 末尾の operator hint で false positive 注意済 (PR #236)。根本対策は lineage.json に short abstract を persist させること (未着手)。
-- **LLM rationale 累積**: classifications.json は git 永続化済、theme-on-demand と weekly cron で漸進的に蓄積。
+- ~~**Bulk regen 19 themes の timeout 問題**~~ — **解消** (PR #260 で site-request-only に移行、21 seed themes 全消し + `regen-themes.yml` 週次 cron 廃止により前提消滅)
+- ~~**data-audit の false positives** (lineage.json に short abstract を persist)~~ — **解消** (`lineage.json` に `short_abstract` (1000-char) 全 nodes で persist 済、`audit_theme_seeds.py:158-178` でも `short_abstract` を優先読み。直近 audit すべて clean)
+- **LLM rationale 累積**: classifications.json は git 永続化済、theme-on-demand で漸進的に蓄積 (weekly cron は #260 で廃止)。
 - **CF Worker 運用**: CF Access を **OFF** にしておく必要あり (PR #233 / 復活時メモ参照)。`one.dash.cloudflare.com` or `dash.cloudflare.com → Workers Settings` のいずれかで管理可能。
+- **Foundational ancestor allowlist** (PR #278-#281): `paperpilot/data/lineage_foundational_allowlist.json` の ~30 entries は ML/CV/NLP の canonical 古典のみ。新規 entry は PR description で justification 必須。
 
 ---
 
-*最終更新：2026年6月3日（CF Worker 復活セッション完了 — PR #233-237。詳細は CHANGELOG.md ## [Unreleased] 参照）*
+*最終更新：2026年6月10日（Issue #277 chain クローズ — PR #278-#281。既知オープン項目 stale 2 件を解消マークに更新。詳細は CHANGELOG.md ## [Unreleased] 参照）*
