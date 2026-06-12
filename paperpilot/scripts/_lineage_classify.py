@@ -88,6 +88,20 @@ _MIN_LLM_CONFIDENCE = 0.4
 
 _TEMPLATE_RATIONALES_SET: frozenset[str] = frozenset(TEMPLATE_RATIONALES.values())
 
+# Closed enum of valid provenance labels for lineage edges.
+# Every emit path in this module MUST set one of these values on the
+# returned dict. PR1 (lineage-edge-provenance-field) adds the field;
+# PR2 (audit-script-provenance) will use it for breakdown reporting.
+_VALID_PROVENANCES: frozenset[str] = frozenset(
+    {
+        "context_pattern",      # unarXive citation context regex matched
+        "intent_map",           # S2 intent label matched _INTENT_RELATION_MAP
+        "year_cite",            # year / citation-count contrast heuristic
+        "foundational_allowlist",  # title matched lineage_foundational_allowlist.json
+        "llm",                  # LLM provider returned a valid classification
+    }
+)
+
 # ===== Phase J: unarXive citation-context classifier =====
 # Pattern table for the S2-free regex classifier. When the BFS layer
 # attaches `_contexts` (citation paragraphs from unarXive 2022) to an
@@ -218,6 +232,7 @@ def _classify_from_contexts(
                         "relation": relation,
                         "confidence": confidence,
                         "rationale": rationale,
+                        "provenance": "context_pattern",
                     }
     return None
 
@@ -517,7 +532,7 @@ def _derive_relation_heuristic(
     intents_set = {str(i).lower() for i in intents if isinstance(i, str)}
     for keyword, relation, rationale in _INTENT_RELATION_MAP:
         if keyword in intents_set:
-            return _make_derived(relation, rationale)
+            return _make_derived(relation, rationale, "intent_map")
 
     # No matching intent — try year + citation contrast.
     #
@@ -539,11 +554,13 @@ def _derive_relation_heuristic(
                 return _make_derived(
                     "contrasts",
                     TEMPLATE_RATIONALES["contrasts_year_cite"],
+                    "year_cite",
                 )
             if 1 <= delta <= 5:
                 return _make_derived(
                     "successor",
                     TEMPLATE_RATIONALES["successor_result"],
+                    "year_cite",
                 )
     return None
 
@@ -610,6 +627,7 @@ def _apply_llm_classification(
         heuristic_rationale = (heuristic.get("rationale") or "").strip()
         if heuristic_rationale in _TEMPLATE_RATIONALES_SET:
             return None
+        # Preserve the heuristic's own provenance (e.g. "context_pattern").
         return heuristic
     if llm_result.relation == "unrelated":
         return None
@@ -619,6 +637,7 @@ def _apply_llm_classification(
         "relation": llm_result.relation,
         "confidence": float(llm_result.confidence),
         "rationale": llm_result.rationale,
+        "provenance": "llm",
     }
 
 
@@ -645,14 +664,24 @@ def _build_edge_from_llm(
         "relation": llm_result.relation,
         "confidence": float(llm_result.confidence),
         "rationale": llm_result.rationale,
+        "provenance": "llm",
     }
 
 
-def _make_derived(relation: str, rationale: str) -> dict:
+def _make_derived(relation: str, rationale: str, provenance: str) -> dict:
+    # Code-reviewer MEDIUM (#285 PR1): runtime guard against typos in
+    # new emit paths. _VALID_PROVENANCES is the canonical closed set;
+    # without this assert it would silently appear as an unknown bucket
+    # in PR2's breakdown.
+    assert provenance in _VALID_PROVENANCES, (
+        f"provenance={provenance!r} not in _VALID_PROVENANCES — see "
+        f"_lineage_classify._VALID_PROVENANCES for the closed set"
+    )
     return {
         "relation": relation,
         "confidence": _DERIVED_CONFIDENCE,
         "rationale": rationale,
+        "provenance": provenance,
     }
 
 
@@ -729,4 +758,5 @@ def _foundational_ancestor_edge(parent: dict | None) -> dict:
             "is preserved here as a direct extends edge — see "
             "lineage_foundational_allowlist.json."
         ),
+        "provenance": "foundational_allowlist",
     }
