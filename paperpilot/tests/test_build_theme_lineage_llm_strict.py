@@ -111,9 +111,21 @@ def test_is_ambiguous_treats_missing_intents_key_as_ambiguous():
 
 
 def test_apply_keeps_heuristic_when_llm_is_none():
-    heuristic = {"relation": "extends", "confidence": 0.7, "rationale": "H"}
+    """Code-reviewer #285 MEDIUM: pin that a heuristic with provenance
+    survives `_apply_llm_classification` unchanged when the LLM call
+    returned None and the rationale is paper-specific (not in the
+    template reject set). This is the field-read-relies-on-this path
+    for PR2's audit migration."""
+    heuristic = {
+        "relation": "extends",
+        "confidence": 0.7,
+        "rationale": "H",
+        "provenance": "context_pattern",
+    }
     out = btl._apply_llm_classification(heuristic, None)
     assert out == heuristic
+    assert out is not None
+    assert out["provenance"] == "context_pattern"
 
 
 def test_apply_drops_edge_when_llm_unrelated():
@@ -169,7 +181,10 @@ def test_apply_preserves_relation_keys_in_output_shape():
     heuristic = {"relation": "extends", "confidence": 0.7, "rationale": "H"}
     out = btl._apply_llm_classification(heuristic, _rc("ablation", 0.8, "L"))
     assert out is not None
-    assert set(out.keys()) == {"relation", "confidence", "rationale"}
+    # provenance="llm" is now added by _apply_llm_classification when the
+    # LLM result is used verbatim (PR1: lineage-edge-provenance-field).
+    assert set(out.keys()) == {"relation", "confidence", "rationale", "provenance"}
+    assert out["provenance"] == "llm"
 
 
 # ---------- derive_relation: strict_mode = "off" (default) ----------
