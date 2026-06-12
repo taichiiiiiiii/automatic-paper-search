@@ -105,19 +105,32 @@
 
 ## 判定品質の改善計画
 
-Phase 1 実測で以下の傾向が見えた:
+### 実測結果 (2026-06-12 時点、issue #285)
 
-| 観察 | 対処 |
+`paperpilot/scripts/audit_lineage_classification_breakdown` (#286) を public lineage + persistent LLM cache に走らせた結果:
+
+- **`supersedes`=0 / `ablation`=0** across 452 wellformed LLM calls (`paperpilot/data/lineage-cache/classifications.json`)
+- LLM-only edges の 98% が `extends` + `contrasts` に collapse
+- Prompt が bottleneck であることが定量的に確定
+
+`paperpilot/tests/fixtures/relation_gold_set.jsonl` (#287、29 records 人手ラベル) に対する current prompt の baseline:
+
+- **macro-F1 = 0.237** (`uv run python -m paperpilot.scripts.eval_relation_prompt`)
+- **Caveat**: macro-F1 0.237 は `successor` / `unrelated` / `baseline_only` が 0 emit による分母膨張アーティファクト。`extends` + `contrasts` のみで見た binary-F1 は ~0.59。これらを emit させたい label とするか自体が未決定 (issue #285 step 4 前段の判断項目)。
+
+### 残作業
+
+- **(blocker)** `paperpilot/.env` の `PAPERPILOT_GROQ_API_KEY` rotate — 現状 401 で `--predictor=live` 不可
+- prompt rewrite gate 案: live macro-F1 ≥ **0.40** (#288 PR description で提案、未確定)
+- gold set scaling (29 → 50+) — second labeler validation 含む
+
+### 過去の傾向 (Phase 1 実測、refs only)
+
+| 観察 | 対処方針 |
 |---|---|
-| `supersedes` がほぼ付かない | プロンプト例示で明示的に区別 |
+| `supersedes` がほぼ付かない | プロンプト例示で明示的に区別 (#285 step 4) |
 | `ablation` もほぼ付かない | 同上、または ablation を `extends` のサブタイプに統合 |
-| `extends` が全体の 46% | 基準を厳しくする（真に別ドメイン応用のみ） |
-
-### LLM-as-judge 評価
-
-- サンプル 100 エッジを目視ラベル付け
-- プロンプトを A/B して精度測定
-- 閾値調整（confidence 0.7 未満を除外するか等）
+| `extends` が全体の 46% | 基準を厳しくする (#285 step 4 で扱う) |
 
 ## ユーザー向け設定の予定
 

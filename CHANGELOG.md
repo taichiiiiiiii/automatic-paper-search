@@ -6,6 +6,41 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — Lineage classification audit & evaluation infrastructure (#285 in flight)
+
+Three PRs ship the measurement scaffolding required before the LLM
+relation-classification prompt rewrite (#285 step 4-5) can be merged
+under a real macro-F1 gate.
+
+- **#286** `paperpilot/scripts/audit_lineage_classification_breakdown`:
+  reads `docs/themes/*/lineage.json` plus
+  `paperpilot/data/lineage-cache/classifications.json` and produces a
+  per-provenance × per-relation distribution. Confirmed
+  **`supersedes`=0 / `ablation`=0 across 452 wellformed LLM calls**,
+  pinpointing the prompt (not the heuristic) as the bottleneck.
+- **#287** `paperpilot/tests/fixtures/relation_gold_set.jsonl` +
+  `paperpilot/scripts/eval_relation_prompt`: 29 human-labeled
+  (parent, child) pairs from the published LLM-decided edges, plus
+  a precision / recall / macro-F1 evaluator with `--predictor=current`
+  (static snapshot, no API call) and `--predictor=live` (re-query the
+  LLM with the bundled abstracts). Current baseline: macro-F1=0.237.
+  Caveat: 4 of 7 classes are absent from the LLM output (`successor`,
+  `unrelated`, `baseline_only` always; `supersedes`, `ablation`
+  always), so the headline F1 is dragged down by the empty classes —
+  binary-F1 over `extends` + `contrasts` alone is ~0.59. Whether to
+  push the LLM to emit the absent labels (`successor` / `unrelated` /
+  `baseline_only` / `supersedes` / `ablation`) is the open decision
+  for step 4.
+- **#288** `eval_relation_prompt --predictor=live` wiring fix: the
+  initial cut left `GroqProvider` constructed without `api_key`, so
+  `.enabled` evaluated False and the live mode aborted. Now loads the
+  key via `config_loader.env.groq_api_key` and forces Groq (the only
+  production-supported provider). The fix surfaces a 401 from the
+  current `.env` key — rotate to unblock #285 step 5.
+
+Open items recorded in `CLAUDE.md` § 既知のオープン項目 and
+`docs/design/08-lineage-roadmap.md` § 判定品質の改善計画.
+
 ### Refactored — Removed dead heuristic emit paths (#283)
 
 `paperpilot/scripts/_lineage_classify.py` previously emitted

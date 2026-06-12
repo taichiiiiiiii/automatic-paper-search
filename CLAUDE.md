@@ -844,7 +844,8 @@ Skill / Agent を追加・変更した時は、この表と `.claude/agents/agen
 - **LLM rationale 累積**: classifications.json は git 永続化済、theme-on-demand で漸進的に蓄積 (weekly cron は #260 で廃止)。
 - **CF Worker 運用**: CF Access を **OFF** にしておく必要あり (PR #233 / 復活時メモ参照)。`one.dash.cloudflare.com` or `dash.cloudflare.com → Workers Settings` のいずれかで管理可能。
 - **Foundational ancestor allowlist** (PR #278-#281): `paperpilot/data/lineage_foundational_allowlist.json` の ~30 entries は ML/CV/NLP の canonical 古典のみ。新規 entry は PR description で justification 必須。
+- **LLM relation prompt rewrite (#285)**: prompt が真の bottleneck であることは確定 (cache 452 wellformed calls で `supersedes`=0 / `ablation`=0、#286 audit script で再現可能)。gold set 29 edges + baseline macro-F1=0.237 measured (#287)。step 4-5 (prompt rewrite + live macro-F1 ≥0.40 gate、**0.40 は提案段階・未確定**) は `paperpilot/.env` の `PAPERPILOT_GROQ_API_KEY` rotate (401) 待ち。詳細は `docs/design/08-lineage-roadmap.md` §判定品質の改善計画。
 
 ---
 
-*最終更新：2026年6月10日（Issue #277 chain クローズ — PR #278-#281。既知オープン項目 stale 2 件を解消マークに更新。詳細は CHANGELOG.md ## [Unreleased] 参照）*
+*最終更新：2026年6月12日（#285 LLM relation prompt rewrite の stall 状態を open-item に記録、Groq key rotate 待ち。詳細は CHANGELOG.md ## [Unreleased] 参照）*
