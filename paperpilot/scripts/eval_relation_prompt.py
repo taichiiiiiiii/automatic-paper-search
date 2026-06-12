@@ -15,14 +15,23 @@ Two modes:
   fixture, then scores the live response. Use this to measure a
   prompt rewrite before merging.
 
-Live mode requires the same Groq config as the rest of the lineage
-pipeline (``GROQ_API_KEY``, ``LLM_RATE_LIMIT_RPM``). It will refuse to
-run without a real provider configured.
+Live mode accepts an optional ``--provider`` flag:
+
+* ``--provider=auto`` (default) selects the first available provider
+  using the same priority logic as ``build_lineage`` (Groq → Gemini).
+* ``--provider=groq`` forces Groq; raises if ``PAPERPILOT_GROQ_API_KEY``
+  is absent.
+* ``--provider=gemini`` forces Gemini; raises if
+  ``PAPERPILOT_GEMINI_API_KEY`` is absent.
+
+Note: ``--provider=claude`` is intentionally excluded until PR-B adds
+``ClaudeProvider.classify_relation``.
 
 Usage:
 
     uv run python -m paperpilot.scripts.eval_relation_prompt
     uv run python -m paperpilot.scripts.eval_relation_prompt --predictor=live
+    uv run python -m paperpilot.scripts.eval_relation_prompt --predictor=live --provider=gemini
     uv run python -m paperpilot.scripts.eval_relation_prompt --confidence=high
 
 Exit code is 0 unless ``--gate-macro-f1=<float>`` is passed and the
@@ -76,41 +85,99 @@ def _predict_static(records: list[dict]) -> list[str | None]:
     return [r["current_rel"] for r in records]
 
 
-def _predict_live(records: list[dict]) -> list[str | None]:
+def _load_env_for_provider() -> dict:
+    """Load .env secrets for provider construction.
+
+    Extracted into its own function so tests can monkeypatch it without
+    touching the real filesystem or environment.
+    """
+    from paperpilot.utils.config_loader import load_env
+
+    return load_env(REPO_ROOT / "paperpilot" / ".env")
+
+
+def _build_eval_provider(choice: str):  # -> AbstractLLMProvider
+    """Return a configured LLM provider for the eval live predictor.
+
+    Args:
+        choice: One of ``"auto"``, ``"groq"``, ``"gemini"``.
+                ``"claude"`` is intentionally excluded until PR-B.
+
+    Returns:
+        A concrete ``AbstractLLMProvider`` instance.
+
+    Raises:
+        ValueError: When *choice* is not a recognised value.
+    """
+    from paperpilot.llm.gemini_provider import GeminiProvider
+    from paperpilot.llm.groq_provider import GroqProvider
+
+    _base_cfg: dict = {"enabled": True, "temperature": 0.1, "timeout_seconds": 30}
+
+    if choice == "auto":
+        from paperpilot.scripts.build_lineage import build_provider
+
+        provider, _delay = build_provider()
+        return provider
+
+    env = _load_env_for_provider()
+
+    if choice == "groq":
+        return GroqProvider(
+            {**_base_cfg, "model": env.get("groq_model") or "llama-3.3-70b-versatile"},
+            api_key=env.get("groq_api_key"),
+        )
+
+    if choice == "gemini":
+        return GeminiProvider(
+            {**_base_cfg, "model": env.get("gemini_model") or "gemini-2.5-flash"},
+            api_key=env.get("gemini_api_key"),
+        )
+
+    raise ValueError(f"unknown provider: {choice!r}")
+
+
+def _predict_live(
+    records: list[dict],
+    provider_choice: str = "auto",
+) -> list[str | None]:
     """Run ``classify_relation`` against each pair via the live LLM.
 
-    Hardcoded to Groq because that's the only provider production
-    lineage classification actually uses (config.yaml's ``provider: ollama``
-    default is for local dev exploration, not the live pipeline). Loads
-    the api_key the same way ``paperpilot.pipeline.runner`` does — via
-    ``config_loader``'s ``.env`` extraction into ``config["env"]``.
-    Without ``PAPERPILOT_GROQ_API_KEY`` in ``paperpilot/.env`` (or a
-    fresh-enough key — expired keys return ``401`` and ``provider.classify_relation``
-    returns ``None``), the call refuses to run.
+    Args:
+        records: Gold-set records with ``parent`` / ``child`` sub-dicts.
+        provider_choice: Which provider to use — ``"auto"`` (default),
+            ``"groq"``, or ``"gemini"``.  See module docstring for details.
+
+    Raises:
+        RuntimeError: When the chosen provider is disabled (missing API key).
     """
-    from paperpilot.llm.groq_provider import GroqProvider
-    from paperpilot.utils.config_loader import load_config
-
-    config_path = REPO_ROOT / "paperpilot" / "config.yaml"
-    config = load_config(config_path)
-    api_key = (config.get("env") or {}).get("groq_api_key")
-
-    # Always run Groq for live eval — the prompt under test is the
-    # Groq-tuned one in paperpilot/llm/base.py.
-    groq_config = {
-        "enabled": True,
-        "provider": "groq",
-        "model": (config.get("env") or {}).get("groq_model")
-        or "llama-3.3-70b-versatile",
-    }
-    provider = GroqProvider(groq_config, api_key=api_key)
+    provider = _build_eval_provider(provider_choice)
 
     if not provider.enabled:
+        # When --provider=auto and no key is set, `_build_eval_provider`
+        # raises from inside `build_lineage.build_provider()` before we
+        # ever see a disabled provider here. The RuntimeError below
+        # only fires for explicit choices, so naming the literal env
+        # var is safe (we never reach this with provider_choice="auto").
+        # Code-reviewer LOW: drop the misleading PAPERPILOT_AUTO_API_KEY
+        # interpolation by listing the per-provider key directly.
+        env_var = {
+            "groq": "PAPERPILOT_GROQ_API_KEY",
+            "gemini": "PAPERPILOT_GEMINI_API_KEY",
+        }.get(provider_choice, "the provider's API key env var")
         raise RuntimeError(
-            "live predictor requires a real LLM with PAPERPILOT_GROQ_API_KEY "
-            "set in paperpilot/.env. A 401 from Groq means the key has expired "
-            "— rotate it before re-running."
+            f"--provider={provider_choice} requested but the required "
+            f"API key is missing in paperpilot/.env. Check {env_var}."
         )
+
+    # Code-reviewer MEDIUM: surface which provider --provider=auto
+    # resolved to so operators don't get silent cross-provider results.
+    # Goes to stderr so machine-readable --json stays clean.
+    print(
+        f"[eval_relation_prompt] provider={provider.name} "
+        f"(choice={provider_choice}, model={getattr(provider, 'model', '?')})",
+        file=sys.stderr,
+    )
 
     predictions: list[str | None] = []
     for record in records:
@@ -203,13 +270,27 @@ def _print_report(metrics: dict, predictor: str, confidence: str) -> None:
         )
 
 
-def main() -> int:
+def _build_arg_parser() -> argparse.ArgumentParser:
+    """Build and return the argument parser for this script.
+
+    Extracted so tests can import and invoke it without calling ``main()``.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--predictor",
         choices=("current", "live"),
         default="current",
         help="current = static current_rel snapshot; live = call classify_relation now",
+    )
+    parser.add_argument(
+        "--provider",
+        choices=("auto", "groq", "gemini"),
+        default="auto",
+        help=(
+            "Provider for --predictor=live. auto = first available (Groq→Gemini); "
+            "groq / gemini = force that provider (key must be set in paperpilot/.env). "
+            "claude is deferred to PR-B."
+        ),
     )
     parser.add_argument(
         "--confidence",
@@ -228,7 +309,11 @@ def main() -> int:
         action="store_true",
         help="Emit JSON metrics instead of the human report.",
     )
-    args = parser.parse_args()
+    return parser
+
+
+def main() -> int:
+    args = _build_arg_parser().parse_args()
 
     records = _filter_by_confidence(_load_records(), args.confidence)
     if not records:
@@ -238,7 +323,7 @@ def main() -> int:
     if args.predictor == "current":
         predictions = _predict_static(records)
     else:
-        predictions = _predict_live(records)
+        predictions = _predict_live(records, provider_choice=args.provider)
 
     metrics = _macro_f1((r["gold_rel"] for r in records), predictions)
 
