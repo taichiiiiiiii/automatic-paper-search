@@ -4454,3 +4454,67 @@ def test_build_theme_lineage_shares_classification_cache(tmp_path, monkeypatch):
     assert any(
         e["rationale"] == cached_rationale for e in payload["edges"]
     ), f"cached rationale did not appear in output edges: {payload['edges']}"
+
+
+# ---- Test 10: provenance field is serialised into lineage.json edges ----
+
+
+def test_build_theme_lineage_edge_serializes_provenance(tmp_path, monkeypatch):
+    """BFS edges written to lineage.json must carry a 'provenance' key.
+
+    This is the integration pin for PR1 (lineage-edge-provenance-field).
+    We force a methodology-intent edge so the heuristic fires deterministically
+    (intent_map path), then verify that the serialised JSON edge dict contains
+    the 'provenance' key.
+    """
+    _patch_env(monkeypatch)
+    monkeypatch.setattr(build_theme_lineage, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(build_theme_lineage, "DOCS_ROOT", tmp_path / "docs")
+    monkeypatch.setattr(
+        build_theme_lineage,
+        "_CLASSIFICATION_CACHE_PATH",
+        tmp_path / "classifications.json",
+    )
+    monkeypatch.setattr(
+        build_theme_lineage, "build_provider",
+        lambda: (_FakeProvider(classification=None), 0.0),
+    )
+
+    seed = _mk_s2_paper(
+        "seed_prov",
+        title="Attention Mechanism",
+        abstract="self-attention for sequences",
+        year=2020, cites=5_000,
+    )
+    parent = {
+        **_mk_s2_paper("parent_prov", year=2018, cites=1_000),
+        "_is_influential": True,
+        "_intents": ["methodology"],
+    }
+
+    def _fetch_related_side(s2_id, kind, limit):
+        return [parent] if kind == "references" else []
+
+    with (
+        patch.object(
+            build_theme_lineage,
+            "request_with_retry",
+            return_value=_mk_s2_search_response([seed]),
+        ),
+        patch.object(
+            build_theme_lineage,
+            "fetch_related",
+            side_effect=_fetch_related_side,
+        ),
+    ):
+        out_path = build_theme_lineage.build_theme_lineage(
+            theme="Attention Mechanism",
+            depth=1, seeds_count=1, width=4, since_year=None,
+            llm_strict="off",
+        )
+    payload = json.loads(out_path.read_text())
+    edges = payload.get("edges", [])
+    assert edges, "expected at least one edge in output (methodology-intent path)"
+    assert all(
+        "provenance" in e for e in edges
+    ), f"some edges are missing 'provenance': {edges}"

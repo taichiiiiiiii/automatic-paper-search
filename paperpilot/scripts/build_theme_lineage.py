@@ -34,6 +34,7 @@ import math
 import re
 import sys
 import unicodedata
+from collections import Counter
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
@@ -64,6 +65,7 @@ from paperpilot.scripts._lineage_classify import (  # noqa: E402, F401
     _MAX_CONTEXT_RATIONALE_LEN,
     _MIN_LLM_CONFIDENCE,
     _TEMPLATE_RATIONALES_SET,
+    _VALID_PROVENANCES,
     _apply_llm_classification,
     _build_edge_from_llm,
     _CachedClassifyProvider,
@@ -339,6 +341,7 @@ def _add_cross_node_edges(
                 "rel": cls["relation"],
                 "conf": cls["confidence"],
                 "rationale": cls["rationale"],
+                "provenance": cls.get("provenance"),
             })
             existing.add(edge_key)
             added += 1
@@ -2142,6 +2145,7 @@ def _run_bfs_and_descendants(
                         "rel": cls["relation"],
                         "conf": cls["confidence"],
                         "rationale": cls["rationale"],
+                        "provenance": cls.get("provenance"),
                     }
                 )
             if pid not in visited:
@@ -2205,6 +2209,7 @@ def _run_bfs_and_descendants(
                 "rel": cls["relation"],
                 "conf": cls["confidence"],
                 "rationale": cls["rationale"],
+                "provenance": cls.get("provenance"),
             })
             desc_added += 1
     if desc_added:
@@ -2490,6 +2495,20 @@ def build_theme_lineage(
         ),
     )
 
+    # Code-reviewer #285 PR1 LOW: edges without provenance are silently
+    # dropped from the breakdown rather than surfaced as an "unknown"
+    # bucket. In steady state every emit path sets provenance (asserted
+    # in _make_derived), so missing values only arise from
+    # legacy-shaped edges (#285 PR2 audit migration handles that case
+    # in audit_lineage_classification_breakdown via fallback to
+    # rationale string match).
+    provenance_breakdown = dict(
+        Counter(
+            e["provenance"]
+            for e in cleaned_edges
+            if e.get("provenance") is not None
+        )
+    )
     payload = {
         "root": root_id,
         "nodes": sorted_nodes,
@@ -2503,6 +2522,7 @@ def build_theme_lineage(
             "depth": depth,
             "since_year": since_year,
             "generated_at": datetime.now(timezone.utc).isoformat(),
+            "provenance_breakdown": provenance_breakdown,
         },
     }
 
