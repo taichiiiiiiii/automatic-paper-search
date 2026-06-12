@@ -6,6 +6,30 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Added — Lineage edge provenance field + audit migration (#285 prep, 2 PRs)
+
+Two PRs land the schema work that the upcoming LLM relation prompt
+rewrite (#285 step 4-5) will measure against. Splitting field-add
+from audit-migration kept the diff readable and let the field shape
+be validated against real data between the two merges.
+
+- **#290** `paperpilot/scripts/_lineage_classify.py` + `build_theme_lineage.py`:
+  add a closed-enum `provenance` field to every edge emit path
+  (`context_pattern` / `intent_map` / `year_cite` /
+  `foundational_allowlist` / `llm`) and persist it through BFS,
+  descendants, and cross-node serialization into
+  `docs/themes/<slug>/lineage.json`. `_make_derived` asserts the
+  value is in the closed set at runtime so typos surface immediately.
+  Aggregate `meta.provenance_breakdown` Counter added to the payload.
+- **#291** `paperpilot/scripts/audit_lineage_classification_breakdown`:
+  migrate from rationale-string match to field-read with rationale
+  fallback for legacy lineage.json (pre-#290 themes). Output reshapes
+  from the old 3-bucket form to the new 5-enum, with all 5 buckets
+  pre-initialized so empty ones still print n=0. Legacy normalization
+  map covers all 6 `TEMPLATE_RATIONALES` values (not just the 2
+  post-#283 survivors). Forward-compat: unknown future enum values
+  warned once via dedup set, bucketed dynamically via `setdefault`.
+
 ### Added — Lineage classification audit & evaluation infrastructure (#285 in flight)
 
 Three PRs ship the measurement scaffolding required before the LLM
