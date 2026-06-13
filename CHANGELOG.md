@@ -61,6 +61,21 @@ under a real macro-F1 gate.
   key via `config_loader.env.groq_api_key` and forces Groq (the only
   production-supported provider). The fix surfaces a 401 from the
   current `.env` key — rotate to unblock #285 step 5.
+- **#293** `eval_relation_prompt --provider {auto,groq,gemini}`: adds a
+  provider selector to live mode and produced the first live macro-F1
+  numbers. **Key finding that revised #286's conclusion**: with the
+  prompt unchanged, `gemini-2.5-flash` scored macro-F1 **0.372**
+  (re-measured 2026-06-13: **0.354**) vs Groq llama-3.3-70b's 0.237 —
+  Gemini emits `successor` / `unrelated`, the two relations Groq never
+  produced across 452 calls. So the bottleneck is **model + prompt**,
+  not prompt alone. Caveats baked into the docs: magnitude is noisy
+  (n=29, single labeler, and free-tier Gemini 429-storms — the
+  re-measurement saw **8/29 = 28% of calls fail to None=wrong**), and
+  free-tier Gemini cannot survive a ~90-call production regen, so a
+  production switch needs a paid tier plus a model-aware cache and a
+  `PAPERPILOT_LLM_PROVIDER` override (neither exists yet). The provider
+  switch decision and gold-set scaling (29→50+, add `ablation` /
+  `supersedes` records, second labeler) remain open.
 
 Open items recorded in `CLAUDE.md` § 既知のオープン項目 and
 `docs/design/08-lineage-roadmap.md` § 判定品質の改善計画.
