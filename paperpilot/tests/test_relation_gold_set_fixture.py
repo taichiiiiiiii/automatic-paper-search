@@ -52,14 +52,23 @@ def test_every_record_has_required_fields():
 
 
 def test_every_relation_in_valid_enum():
-    """Both current_rel and gold_rel must be values the production
-    pipeline knows. Catches typos and accidental enum expansion."""
+    """gold_rel must always be a relation the production pipeline knows.
+    current_rel is a *prediction* field, so it may also be None: records
+    added after #285 step 2 (the 2026-06-13 gold-set expansion) carry
+    current_rel=None because their current-prompt snapshot has not been
+    measured yet (Phase 1b backfills it live). None is a legitimate
+    prediction outcome that eval_relation_prompt._macro_f1 already scores
+    as a miss. Any non-None value, in either field, must be a valid enum
+    so typos and accidental enum expansion are still caught."""
     for r in _load_records():
-        for field in ("current_rel", "gold_rel"):
-            assert r[field] in _VALID_RELATIONS, (
-                f"record {r['id']!r}: {field}={r[field]!r} is not in "
-                f"_VALID_RELATIONS={sorted(_VALID_RELATIONS)}"
-            )
+        assert r["gold_rel"] in _VALID_RELATIONS, (
+            f"record {r['id']!r}: gold_rel={r['gold_rel']!r} is not in "
+            f"_VALID_RELATIONS={sorted(_VALID_RELATIONS)}"
+        )
+        assert r["current_rel"] is None or r["current_rel"] in _VALID_RELATIONS, (
+            f"record {r['id']!r}: current_rel={r['current_rel']!r} is "
+            f"neither None nor in _VALID_RELATIONS={sorted(_VALID_RELATIONS)}"
+        )
 
 
 def test_every_confidence_is_high_or_medium():
