@@ -201,6 +201,56 @@ def test_classify_prompt_includes_good_examples():
     )
 
 
+def test_classify_prompt_defines_each_relation():
+    """The #285 fix: the prompt must give the LLM a per-relation definition,
+    not just the enum NAMES. Audit #286 showed ``supersedes``=0 / ``ablation``=0
+    across 452 calls because the LLM had no way to tell the relations apart.
+    Each of the 6 emitted relations must carry a definitional fragment lifted
+    verbatim from docs/design/08-lineage-roadmap.md §関係種別ラベルの定義."""
+    definitional_fragments = {
+        "supersedes": "凌駕",
+        "ablation": "構成要素の寄与を分解測定",
+        "successor": "漸進",
+        "extends": "応用",
+        "baseline_only": "比較対象",
+        "contrasts": "根本的に異なる",
+    }
+    # Fragments are chosen to appear in the definition line; "構成要素の寄与を
+    # 分解測定" matches the ablation definition specifically (the example uses
+    # "構成要素を取り除いて…寄与を分解測定", a different surface form).
+    missing = [
+        rel
+        for rel, frag in definitional_fragments.items()
+        if frag not in CLASSIFY_SYSTEM_PROMPT
+    ]
+    assert not missing, (
+        f"prompt is missing a definitional fragment for: {missing}. "
+        f"Each relation needs its rubric definition so the LLM can "
+        f"distinguish e.g. supersedes from successor."
+    )
+
+
+def test_classify_prompt_has_supersedes_and_ablation_examples():
+    """#285 adds two few-shot examples — the canonical FlashAttention
+    supersedes case and an ablation case — because audit #286 showed those
+    two labels were never emitted. The example must illustrate each, not
+    merely name the relation. (The bare ``"supersedes" in prompt`` /
+    ``"ablation" in prompt`` checks are intentionally omitted — both pass
+    on the enum header line even with no example, so they pin nothing.)"""
+    # supersedes example must show the replace/outperform pattern.
+    supersedes_markers = ["FlashAttention-2", "置き換え"]
+    assert any(m in CLASSIFY_SYSTEM_PROMPT for m in supersedes_markers), (
+        f"prompt lacks a supersedes example illustrating replacement; "
+        f"expected one of {supersedes_markers}"
+    )
+    # ablation example must show the component-removal / contribution pattern.
+    ablation_markers = ["寄与を分解", "構成要素を取り除いて"]
+    assert any(m in CLASSIFY_SYSTEM_PROMPT for m in ablation_markers), (
+        f"prompt lacks an ablation example illustrating component teardown; "
+        f"expected one of {ablation_markers}"
+    )
+
+
 def test_relation_classification_rejects_known_template_rationale():
     """Second-line defence (#131): if the LLM regurgitates a template
     string verbatim, treat the response as a failure and fall back to
@@ -264,15 +314,16 @@ def test_relation_classification_keeps_paper_specific_rationale():
 def test_classify_prompt_within_groq_tpm_budget():
     """The system prompt + a typical user prompt (two 600-char abstracts
     plus boilerplate) must fit under a token budget that lets
-    --llm-strict=ambiguous run on Groq's 6,000 TPM free tier without
+    --llm-strict=ambiguous run on Groq's ~12,000 TPM free tier without
     burning into the rate limiter.
 
     Char count is a coarse proxy for tokens — Japanese is ~1.5 tok/char,
     English ~0.25 tok/char — but it's robust enough as a guard against
     obvious blowups (the #131 first-cut prompt was 1,696 chars and caused
     the regression). We cap the system prompt at 1,200 chars (current
-    is 855), leaving room for measured iteration without re-triggering
-    the production timeout.
+    is 1,191 after the #285 per-relation definitions were added), leaving
+    little headroom — a further bump needs a deliberate cap raise here
+    plus a matching rate-limit lowering.
     """
     assert len(CLASSIFY_SYSTEM_PROMPT) <= 1200, (
         f"CLASSIFY_SYSTEM_PROMPT is {len(CLASSIFY_SYSTEM_PROMPT)} chars — over 1200 budget. "
