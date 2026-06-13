@@ -111,18 +111,39 @@
 
 - **`supersedes`=0 / `ablation`=0** across 452 wellformed LLM calls (`paperpilot/data/lineage-cache/classifications.json`)
 - LLM-only edges の 98% が `extends` + `contrasts` に collapse
-- Prompt が bottleneck であることが定量的に確定
+- Prompt は bottleneck の一つであることが定量的に確定 — **ただし #293 (下記「Provider 比較」) で model も同等以上の bottleneck と判明**。当初の「prompt が真の bottleneck」という結論は改訂された
 
 `paperpilot/tests/fixtures/relation_gold_set.jsonl` (#287、29 records 人手ラベル) に対する current prompt の baseline:
 
 - **macro-F1 = 0.237** (`uv run python -m paperpilot.scripts.eval_relation_prompt`)
 - **Caveat**: macro-F1 0.237 は `successor` / `unrelated` / `baseline_only` が 0 emit による分母膨張アーティファクト。`extends` + `contrasts` のみで見た binary-F1 は ~0.59。これらを emit させたい label とするか自体が未決定 (issue #285 step 4 前段の判断項目)。
 
+### Provider 比較 (2026-06-13 追記、issue #293 + 再測定)
+
+`eval_relation_prompt --provider {auto,groq,gemini}` (#293) で初の **live** macro-F1 を測定。**prompt は無変更**で provider のみ差し替えた:
+
+| Predictor | Model | n | accuracy | macro-F1 | 429 で None 化 |
+|---|---|---|---|---|---|
+| current (snapshot) | groq llama-3.3-70b | 29 | 0.448 | **0.237** | — |
+| live (#293) | gemini-2.5-flash | 29 | 0.414 | **0.372** | 4/29 (14%) |
+| live (再測定 2026-06-13) | gemini-2.5-flash | 29 | 0.379 | **0.354** | **8/29 (28%)** |
+
+判明したこと:
+
+- **方向は頑健**: Gemini は Groq が 452 call で一度も出さなかった `successor` / `unrelated` を自然に emit する (再測定の per-class: `unrelated` F1=0.667 / `extends`=0.571 / `successor`=0.333)。モデル差は実在。
+- **magnitude はノイズ帯**: 0.354↔0.372 の振れは主に free-tier 429 の None=wrong 汚染が原因 (`_macro_f1` は `pred is None` を gold class の fn に計上、`eval_relation_prompt.py:218`)。n=29・単一ラベラーの noise (±~0.05) と合わせ、現状の数字で magnitude を確定してはいけない。
+- **🔴 free-tier Gemini の 429-storm は本番ブロッカー (実証)**: わずか 29 call の eval で 28% が 429 失敗。本番 regen は ~90 LLM call/run なので free-tier では大量の無言 heuristic fallback で崩壊する。`GeminiProvider` には Groq 相当の quota circuit breaker (#191) が無いため劣化が無言。**本番で Gemini を使うなら paid tier が前提**。
+
 ### 残作業
 
-- **(blocker)** `paperpilot/.env` の `PAPERPILOT_GROQ_API_KEY` rotate — 現状 401 で `--predictor=live` 不可
-- prompt rewrite gate 案: live macro-F1 ≥ **0.40** (#288 PR description で提案、未確定)
-- gold set scaling (29 → 50+) — second labeler validation 含む
+- **(measurement)** clean 再測定: 429 を retry し None≠wrong にしてから macro-F1 を確定。free-tier では 429-storm で不可なので **paid Gemini key** または十分な間隔を空けた batching が要る
+- **(measurement)** gold set scaling (29 → 50+) — `ablation` / `supersedes` の gold record 追加 (現状 0 件で測定不能) + second labeler validation (Cohen's κ)
+- gate 案: live macro-F1 ≥ **0.40** (#288 PR description で提案、未確定)。**Gemini は既に 0.354–0.372 で gate 寸前**
+- ~~`PAPERPILOT_GROQ_API_KEY` rotate~~ — Gemini key で live 測定可能になったため blocker から降格 (Groq の live 数字が要るときのみ)
+- **(decision, user 判断項目)** 本番 provider を Groq→Gemini に切替えるか。切替えるなら裸 flip は不可で、以下のガードレールが必須:
+  - cache key (`f"{a}->{b}"`、`paperpilot/data/lineage-cache/classifications.json`) は **model-blind**。889 entry 全 Groq 産なので、naive flip では cache-hit ペアが全部 Groq のまま残り、lineage が Groq/Gemini 混在で監査不能になる。cache key を model+prompt_version aware にするか、cache value に `model` field を追加する
+  - provenance schema (#290) は機構 (`llm`) のみ記録し model を記録しないため、混在を検出できない
+  - `PAPERPILOT_LLM_PROVIDER` override は未実装 (`build_provider()` は key 有無の優先順で Groq 固定勝ち)。override 追加 + `theme-on-demand.yml`/`regen-themes.yml` への `PAPERPILOT_GEMINI_API_KEY` 配線 + Gemini circuit breaker が要る
 
 ### 過去の傾向 (Phase 1 実測、refs only)
 
